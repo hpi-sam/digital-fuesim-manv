@@ -1,0 +1,5 @@
+<ul>
+    <li *ngFor="let message of messages$ | async">
+        {{ message.text }} - {{ message.username }}
+    </li>
+</ul>
