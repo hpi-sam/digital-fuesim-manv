@@ -1,8 +1,8 @@
-import { UUID } from '../utils';
+import { UUID, uuid } from '../utils';
 import { Position } from './utils';
 
 export class Vehicle {
-    public id: UUID;
+    public id: UUID = uuid();
 
     /**
      * Exclusive-or to {@link transfer}
@@ -18,13 +18,12 @@ export class Vehicle {
         targetTransferPointId: UUID;
     };
 
-    public personellIds: Set<UUID>;
+    public personellIds: Set<UUID> = new Set();
+    public patientIds: Set<UUID> = new Set();
 
-    public materialId: UUID;
-
-    public patientCapacity: number;
-
-    public patientIds: Set<UUID>;
-
-    public name: string;
+    constructor(
+        public materialId: UUID,
+        public patientCapacity: number,
+        public name: string
+    ) {}
 }

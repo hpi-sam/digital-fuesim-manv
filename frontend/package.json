@@ -1,5 +1,5 @@
 {
-    "name": "digital-fuesim-manv",
+    "name": "digital-fuesim-manv-frontend",
     "version": "0.0.0",
     "scripts": {
         "ng": "ng",
@@ -34,7 +34,8 @@
         "bootstrap": "^5.1.3",
         "rxjs": "~7.4.0",
         "tslib": "^2.3.0",
-        "zone.js": "~0.11.4"
+        "zone.js": "~0.11.4",
+        "digital-fuesim-manv-shared": "file:../shared"
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "~13.0.4",

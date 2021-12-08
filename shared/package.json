@@ -1,0 +1,43 @@
+{
+    "name": "digital-fuesim-manv-shared",
+    "version": "0.0.0",
+    "type": "module",
+    "main": "./dist/index.js",
+    "esnext": "./dist/index.js",
+    "module": "./dist/index.js",
+    "es2015": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "/dist"
+    ],
+    "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "watch": "tsc -p tsconfig.json --watch",
+        "prettier": "prettier --loglevel warn --write \"./**/*.{ts,json,js,yml}\""
+    },
+    "prettier": {
+        "singleQuote": true,
+        "trailingComma": "es5",
+        "tabWidth": 4
+    },
+    "private": true,
+    "engines": {
+        "node": ">=12",
+        "npm": ">=7"
+    },
+    "dependencies": {
+        "lodash-es": "^4.17.21",
+        "typescript": "~4.1.5",
+        "uuid": "^8.3.2"
+    },
+    "devDependencies": {
+        "prettier": "^2.2.1",
+        "@types/uuid": "^8.3.3"
+    },
+    "exports": {
+        ".": {
+            "node": "./dist/index.js",
+            "default": "./dist/index.js"
+        }
+    }
+}

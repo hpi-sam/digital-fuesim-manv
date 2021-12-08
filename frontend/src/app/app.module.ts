@@ -14,6 +14,11 @@ import { DisplayChatMessagesComponent } from './components/display-chat-messages
         AppRoutingModule,
         NgxsModule.forRoot([], {
             developmentMode: !environment.production,
+            selectorOptions: {
+                // in preparation for ngxs@4
+                suppressErrors: false,
+                injectContainerState: false,
+            },
         }),
     ],
     providers: [],

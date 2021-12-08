@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { ChatMessage } from './chat-message';
 import { Chat } from './chat.actions';
@@ -12,6 +13,7 @@ export interface ChatStateModel {
         messages: [],
     },
 })
+@Injectable()
 export class ChatState {
     // this is memoized
     @Selector()

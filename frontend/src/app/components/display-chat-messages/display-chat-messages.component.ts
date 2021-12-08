@@ -53,3 +53,5 @@ export class DisplayChatMessagesComponent {
  * Therefore we have to do it ourselves via this helper type.
  */
 type SelectType<T extends (...args: any[]) => any> = Observable<ReturnType<T>>;
+
+// TODO: Check wether [StateTokens](https://www.ngxs.io/advanced/token) solve this problem
