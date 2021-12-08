@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DisplayChatMessagesComponent } from './display-chat-messages.component';
+import { ListViewportsComponent } from './list-viewports.component';
 
-describe('DisplayChatMessagesComponent', () => {
-    let component: DisplayChatMessagesComponent;
-    let fixture: ComponentFixture<DisplayChatMessagesComponent>;
+describe('ListViewportsComponent', () => {
+    let component: ListViewportsComponent;
+    let fixture: ComponentFixture<ListViewportsComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [DisplayChatMessagesComponent],
+            declarations: [ListViewportsComponent],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(DisplayChatMessagesComponent);
+        fixture = TestBed.createComponent(ListViewportsComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

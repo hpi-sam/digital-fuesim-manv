@@ -1,0 +1,7 @@
+{{ numberOfViewports$ | async }}
+
+<ul>
+    <li *ngFor="let viewport of viewports$ | async | keyvalue">
+        {{ viewport | json }}
+    </li>
+</ul>

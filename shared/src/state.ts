@@ -13,16 +13,15 @@ import {
     VehicleTemplate,
     Viewport,
 } from './models';
-import { UUID } from './utils';
-import { uuid } from './utils/uuid';
+import { UUID, uuid } from './utils';
 
-export class ExerciseState {
+export class Exercise {
     public id = uuid();
-    public viewport: Map<UUID, Viewport> = new Map();
+    public viewports: Map<UUID, Viewport> = new Map();
     public vehicles: Map<UUID, Vehicle> = new Map();
     public personell: Map<UUID, Personell> = new Map();
     public patients: Map<UUID, Patient> = new Map();
-    public material: Map<UUID, Material> = new Map();
+    public materials: Map<UUID, Material> = new Map();
     public images: Map<UUID, Image> = new Map();
     public transferPoints: Map<UUID, TransferPoint> = new Map();
     public clients: Map<UUID, Client> = new Map();
