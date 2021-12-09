@@ -1,7 +1,8 @@
 {{ numberOfViewports$ | async }}
 
 <ul>
-    <li *ngFor="let viewport of viewports$ | async | keyvalue">
-        {{ viewport | json }}
+    <li *ngFor="let viewportKeyValue of viewports$ | async | keyvalue">
+        {{ viewportKeyValue.value.id | json }}
+        <button (click)="removeViewport(viewportKeyValue.key)" class="btn btn-sm btn-danger d-inline">Remove</button>
     </li>
 </ul>

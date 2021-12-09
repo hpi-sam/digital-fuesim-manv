@@ -28,11 +28,13 @@
     "dependencies": {
         "lodash-es": "^4.17.21",
         "typescript": "~4.1.5",
-        "uuid": "^8.3.2"
+        "uuid": "^8.3.2",
+        "@ngrx/store": "^13.0.2",
+        "ngrx-immer": "^2.0.0"
     },
     "devDependencies": {
-        "prettier": "^2.2.1",
-        "@types/uuid": "^8.3.3"
+        "@types/uuid": "^8.3.3",
+        "prettier": "^2.2.1"
     },
     "exports": {
         ".": {

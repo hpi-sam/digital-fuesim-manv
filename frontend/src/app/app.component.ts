@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { Store } from '@ngxs/store';
-import { uuid, Viewport } from 'digital-fuesim-manv-shared';
-import { ExerciseActions } from './store/excercise/exercise.actions';
+import { Store } from '@ngrx/store';
+import { uuid, Viewport, addViewport } from 'digital-fuesim-manv-shared';
+import { AppState } from './state/app.state';
 
 @Component({
     selector: 'app-root',
@@ -9,7 +9,7 @@ import { ExerciseActions } from './store/excercise/exercise.actions';
     styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-    constructor(private store: Store) {}
+    constructor(private readonly store: Store<AppState>) {}
 
     // Action
     public addViewport(
@@ -19,6 +19,6 @@ export class AppComponent {
             uuid()
         )
     ) {
-        this.store.dispatch(new ExerciseActions.AddViewport(viewport));
+        this.store.dispatch(addViewport({ viewport }));
     }
 }
