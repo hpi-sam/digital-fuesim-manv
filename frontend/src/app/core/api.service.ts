@@ -28,7 +28,6 @@ export class ApiService {
         action: A,
         optimistic = false
     ): Promise<any> {
-        console.log(action);
         this.socket.emit('action', action);
         // this.store.dispatch(action as Action);
         // TODO: wait for response message from server

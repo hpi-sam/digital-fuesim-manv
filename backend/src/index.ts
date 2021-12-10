@@ -1,3 +1,9 @@
+import {
+    Exercise,
+    ExerciseActions,
+    exerciseReducer,
+    generateExercise,
+} from 'digital-fuesim-manv-shared';
 import express from 'express';
 import { createServer } from 'http';
 import { Server, Socket } from 'socket.io';
@@ -23,7 +29,9 @@ io.on('connection', (socket) => {
     registerClient(socket);
 });
 
-// const state = new Exercise();
+let state = generateExercise();
+
+new ExerciseActions.AddViewport({} as any);
 
 function registerClient(client: Socket) {
     // send the current state to the client
@@ -31,8 +39,9 @@ function registerClient(client: Socket) {
 
     // register handlers
     client.on('action', (action) => {
-        // exerciseReducer(state, action);
+        state = exerciseReducer(state, action);
         // client.emit('action', action);
         io.emit('action', action);
+        console.log(state);
     });
 }

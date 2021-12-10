@@ -15,6 +15,13 @@ import {
 } from './models';
 import { UUID, uuid } from './utils';
 
+// TODO: This is a workaround, because else the following error is thrown when using produce():
+// `[Immer] produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'.Got '[object Object]'`
+// (I have no idea why...)
+export function generateExercise() {
+    return { ...new Exercise() };
+}
+
 export class Exercise {
     public id = uuid();
     public viewports: Map<UUID, Viewport> = new Map();

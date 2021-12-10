@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { exerciseActionCreators, UUID } from 'digital-fuesim-manv-shared';
+import { ExerciseActions, UUID } from 'digital-fuesim-manv-shared';
 import { pairwise, Subject, takeUntil } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { AppState } from 'src/app/state/app.state';
@@ -28,13 +28,13 @@ export class ListViewportsComponent implements OnDestroy {
             .pipe(pairwise(), takeUntil(this.destroy))
             .subscribe(([a, b]) => {
                 // as you can see the values have always another reference
-                console.log(a === b);
+                // console.log(a === b); // false
             });
     }
 
     public removeViewport(viewportId: UUID) {
         this.apiService.sendAction(
-            exerciseActionCreators.removeViewport({ viewportId })
+            new ExerciseActions.RemoveViewport(viewportId)
         );
     }
 

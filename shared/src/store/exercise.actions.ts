@@ -1,18 +1,25 @@
-import { createAction, props } from '@ngrx/store';
+import { Action } from '@ngrx/store';
 import { Viewport, UUID } from '..';
 
-export type ExerciseAction = ReturnType<
-    typeof exerciseActionCreators[keyof typeof exerciseActionCreators]
->;
+/**
+ *  These actions are POJOS used to update the store in the frontend and are send to the backend to apply the changes there too.
+ */
+export namespace ExerciseActions {
+    export class AddViewport implements Action {
+        readonly type = '[Viewport] Add viewport';
 
-export const exerciseActionCreators = {
-    // These actions are used to update the store in the frontend and are send to the backend to apply the changes there too.
-    addViewport: createAction(
-        '[Viewport] Add viewport',
-        props<{ viewport: Viewport }>()
-    ),
-    removeViewport: createAction(
-        '[Viewport] Remove viewport',
-        props<{ viewportId: UUID }>()
-    ),
-};
+        // TODO: it would be better code to provide an object like { viewport: Viewport } instead of constructor arguments
+        // See https://github.com/microsoft/TypeScript/issues/5326
+        constructor(public viewport: Viewport) {}
+    }
+
+    export class RemoveViewport implements Action {
+        readonly type = '[Viewport] Remove viewport';
+
+        constructor(public viewportId: UUID) {}
+    }
+}
+
+export type ExerciseAction = InstanceType<
+    typeof ExerciseActions[keyof typeof ExerciseActions]
+>;

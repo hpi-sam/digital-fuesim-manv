@@ -1,35 +1,35 @@
-import { on } from '@ngrx/store';
-import { createImmerReducer } from 'ngrx-immer/store';
+import { ExerciseAction } from '.';
 import { Exercise } from '..';
-import { exerciseActionCreators } from './exercise.actions';
+import { produce, enableMapSet } from 'immer';
 
-// TODO: this want to be compiled with Angular under the hood :/
+enableMapSet();
+
 /**
- * Reducer function that applies Actions on the provided state.
- * You can use it either in combination with the @ngrx/store or manually like this:
- *
- * ```typescript
- * const state = { ...new Exercise() };
- * const action = addViewport({ viewport: {} as any });
- * exerciseReducer(state, action);
- * // the state is now updated
- * ```
+ * A pure reducer function that applies Actions on the provided state.
+ * @param state The current state (immutable)
+ * @param action The action to apply on the current state
+ * @returns the new state
  */
-// `createImmerReducer` is a helper function that applies [immers produce](https://immerjs.github.io/immer/produce/) during each `on` reducer
-// this means that the state is immutable (which is required in the frontend). To make it mutable, you could use createReducer instead (performance benefit).
-export const exerciseReducer = createImmerReducer(
-    // TODO: else the following error is thrown:
-    // `[Immer] produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'.Got '[object Object]'`
-    // (I have no idea why...)
-    { ...new Exercise() },
-    on(exerciseActionCreators.addViewport, (state, { viewport }) => {
-        console.log(exerciseActionCreators.addViewport({ viewport }));
+export function exerciseReducer(state: Exercise, action: ExerciseAction) {
+    // use immer to convert mutating operations to immutable ones (https://immerjs.github.io/immer/produce)
+    return produce(state, (draftState) =>
+        // typescript doesn't narrow action and the reducer to the correct ones based on action.type
+        exerciseReducerMap[action.type](draftState!, action as any)
+    );
+}
 
+const exerciseReducerMap: {
+    [Action in ExerciseAction as Action['type']]: (
+        state: Exercise,
+        action: Action
+    ) => Exercise;
+} = {
+    '[Viewport] Add viewport': (state, { viewport }) => {
         state.viewports.set(viewport.id, viewport);
         return state;
-    }),
-    on(exerciseActionCreators.removeViewport, (state, { viewportId }) => {
+    },
+    '[Viewport] Remove viewport': (state, { viewportId }) => {
         state.viewports.delete(viewportId);
         return state;
-    })
-);
+    },
+};
