@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { removeViewport, UUID } from 'digital-fuesim-manv-shared';
+import { exerciseActionCreators, UUID } from 'digital-fuesim-manv-shared';
 import { pairwise, Subject, takeUntil } from 'rxjs';
+import { ApiService } from 'src/app/core/api.service';
 import { AppState } from 'src/app/state/app.state';
 import { selectViewports } from 'src/app/state/exercise/exercise.selectors';
 
@@ -19,7 +20,10 @@ export class ListViewportsComponent implements OnDestroy {
         (state) => state.exercise.viewports.size
     );
 
-    constructor(private store: Store<AppState>) {
+    constructor(
+        private store: Store<AppState>,
+        private readonly apiService: ApiService
+    ) {
         this.viewports$
             .pipe(pairwise(), takeUntil(this.destroy))
             .subscribe(([a, b]) => {
@@ -29,7 +33,9 @@ export class ListViewportsComponent implements OnDestroy {
     }
 
     public removeViewport(viewportId: UUID) {
-        this.store.dispatch(removeViewport({ viewportId }));
+        this.apiService.sendAction(
+            exerciseActionCreators.removeViewport({ viewportId })
+        );
     }
 
     ngOnDestroy() {

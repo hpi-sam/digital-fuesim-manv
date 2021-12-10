@@ -1,8 +1,9 @@
 import { on } from '@ngrx/store';
 import { createImmerReducer } from 'ngrx-immer/store';
 import { Exercise } from '..';
-import { addViewport, removeViewport } from './exercise.actions';
+import { exerciseActionCreators } from './exercise.actions';
 
+// TODO: this want to be compiled with Angular under the hood :/
 /**
  * Reducer function that applies Actions on the provided state.
  * You can use it either in combination with the @ngrx/store or manually like this:
@@ -21,13 +22,13 @@ export const exerciseReducer = createImmerReducer(
     // `[Immer] produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'.Got '[object Object]'`
     // (I have no idea why...)
     { ...new Exercise() },
-    on(addViewport, (state, { viewport }) => {
-        console.log(addViewport({ viewport }));
+    on(exerciseActionCreators.addViewport, (state, { viewport }) => {
+        console.log(exerciseActionCreators.addViewport({ viewport }));
 
         state.viewports.set(viewport.id, viewport);
         return state;
     }),
-    on(removeViewport, (state, { viewportId }) => {
+    on(exerciseActionCreators.removeViewport, (state, { viewportId }) => {
         state.viewports.delete(viewportId);
         return state;
     })
