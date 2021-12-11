@@ -20,10 +20,7 @@ export class Client {
         return true;
     }
 
-    public get exercise(): ExerciseWrapper {
-        if (!this.chosenExercise) {
-            throw new Error('Exercise undefined');
-        }
+    public get exercise(): ExerciseWrapper | undefined {
         return this.chosenExercise;
     }
 }
