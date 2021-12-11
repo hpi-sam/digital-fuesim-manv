@@ -1,4 +1,4 @@
-import { UUID, uuid } from '../utils';
+import { UUID, uuid, UUIDSet } from '../utils';
 import { Position } from './utils';
 
 export class Material {
@@ -6,7 +6,7 @@ export class Material {
 
     constructor(
         public vehicleId: UUID,
-        public assignedPatientIds: Set<UUID>,
+        public assignedPatientIds: UUIDSet,
         public canCaterFor: {
             red: number;
             yellow: number;

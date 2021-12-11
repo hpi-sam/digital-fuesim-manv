@@ -6,10 +6,12 @@ export class TransferPoint {
 
     constructor(
         public position: Position,
-        public reachableTransferPoints: Set<{
-            duration: number;
-            targetId: UUID;
-        }>,
+        public reachableTransferPoints: Record<
+            UUID,
+            {
+                duration: number;
+            }
+        >,
         public internalName: string,
         public externalName: string
     ) {}

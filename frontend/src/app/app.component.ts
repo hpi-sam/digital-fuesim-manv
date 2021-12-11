@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ExerciseActions, uuid, Viewport } from 'digital-fuesim-manv-shared';
+import { uuid, Viewport } from 'digital-fuesim-manv-shared';
 import { ApiService } from './core/api.service';
 
 @Component({
@@ -18,6 +18,9 @@ export class AppComponent {
             uuid()
         )
     ) {
-        this.apiService.sendAction(new ExerciseActions.AddViewport(viewport));
+        this.apiService.sendAction({
+            type: '[Viewport] Add viewport',
+            viewport,
+        });
     }
 }

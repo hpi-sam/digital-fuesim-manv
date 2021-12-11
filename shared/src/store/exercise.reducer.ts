@@ -1,8 +1,6 @@
 import { ExerciseAction } from '.';
 import { Exercise } from '..';
-import { produce, enableMapSet } from 'immer';
-
-enableMapSet();
+import { produce } from 'immer';
 
 /**
  * A pure reducer function that applies Actions on the provided state.
@@ -25,11 +23,11 @@ const exerciseReducerMap: {
     ) => Exercise;
 } = {
     '[Viewport] Add viewport': (state, { viewport }) => {
-        state.viewports.set(viewport.id, viewport);
+        state.viewports[viewport.id] = viewport;
         return state;
     },
     '[Viewport] Remove viewport': (state, { viewportId }) => {
-        state.viewports.delete(viewportId);
+        delete state.viewports[viewportId];
         return state;
     },
 };

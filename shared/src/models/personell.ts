@@ -1,4 +1,4 @@
-import { UUID, uuid } from '../utils';
+import { UUID, uuid, UUIDSet } from '../utils';
 import { PersonellType, Position } from './utils';
 
 export class Personell {
@@ -12,6 +12,6 @@ export class Personell {
     constructor(
         public vehicleId: UUID,
         public personellType: PersonellType,
-        public assignedPatientIds: Set<UUID>
+        public assignedPatientIds: UUIDSet
     ) {}
 }

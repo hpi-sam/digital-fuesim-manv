@@ -1,9 +1,4 @@
-import {
-    Exercise,
-    ExerciseActions,
-    exerciseReducer,
-    generateExercise,
-} from 'digital-fuesim-manv-shared';
+import { exerciseReducer, generateExercise } from 'digital-fuesim-manv-shared';
 import express from 'express';
 import { createServer } from 'http';
 import { Server, Socket } from 'socket.io';
@@ -30,8 +25,6 @@ io.on('connection', (socket) => {
 });
 
 let state = generateExercise();
-
-new ExerciseActions.AddViewport({} as any);
 
 function registerClient(client: Socket) {
     // send the current state to the client

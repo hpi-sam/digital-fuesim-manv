@@ -7,16 +7,12 @@ import { Viewport, UUID } from '..';
 export namespace ExerciseActions {
     export class AddViewport implements Action {
         readonly type = '[Viewport] Add viewport';
-
-        // TODO: it would be better code to provide an object like { viewport: Viewport } instead of constructor arguments
-        // See https://github.com/microsoft/TypeScript/issues/5326
-        constructor(public viewport: Viewport) {}
+        public viewport!: Viewport;
     }
 
     export class RemoveViewport implements Action {
         readonly type = '[Viewport] Remove viewport';
-
-        constructor(public viewportId: UUID) {}
+        public viewportId!: UUID;
     }
 }
 

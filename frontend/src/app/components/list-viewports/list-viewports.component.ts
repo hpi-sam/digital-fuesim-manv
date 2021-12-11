@@ -17,7 +17,7 @@ export class ListViewportsComponent implements OnDestroy {
 
     public readonly viewports$ = this.store.select(selectViewports);
     public readonly numberOfViewports$ = this.store.select(
-        (state) => state.exercise.viewports.size
+        (state) => Object.keys(state.exercise.viewports).length
     );
 
     constructor(
@@ -33,9 +33,10 @@ export class ListViewportsComponent implements OnDestroy {
     }
 
     public removeViewport(viewportId: UUID) {
-        this.apiService.sendAction(
-            new ExerciseActions.RemoveViewport(viewportId)
-        );
+        this.apiService.sendAction({
+            type: '[Viewport] Remove viewport',
+            viewportId,
+        });
     }
 
     ngOnDestroy() {
