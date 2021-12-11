@@ -1,4 +1,3 @@
-import { Action } from '@ngrx/store';
 import { Viewport, UUID } from '..';
 
 /**
@@ -19,3 +18,7 @@ export namespace ExerciseActions {
 export type ExerciseAction = InstanceType<
     typeof ExerciseActions[keyof typeof ExerciseActions]
 >;
+
+interface Action {
+    readonly type: string;
+}

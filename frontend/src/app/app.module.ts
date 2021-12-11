@@ -9,12 +9,14 @@ import { StoreModule } from '@ngrx/store';
 import { appReducers } from './state/app.reducers';
 import { AppState } from './state/app.state';
 import { AppAction } from './state/app.actions';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
     declarations: [AppComponent, ListViewportsComponent],
     imports: [
         CommonModule,
         BrowserModule,
+        FormsModule,
         AppRoutingModule,
         StoreModule.forRoot<AppState, AppAction>(appReducers),
     ],

@@ -1,0 +1,6 @@
+- Messages Client -> Server:
+    - joinExercise
+    - proposeAction
+    - getState
+- Messages Server -> Client:
+    - performAction

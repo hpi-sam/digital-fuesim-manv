@@ -8,6 +8,8 @@ import { ApiService } from './core/api.service';
     styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+    public exerciseId = 'abcdefghijk';
+
     constructor(private readonly apiService: ApiService) {}
 
     // Action
@@ -22,5 +24,9 @@ export class AppComponent {
             type: '[Viewport] Add viewport',
             viewport,
         });
+    }
+
+    public async joinExercise() {
+        console.log(await this.apiService.joinExercise(this.exerciseId));
     }
 }

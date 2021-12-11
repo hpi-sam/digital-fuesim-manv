@@ -1,5 +1,5 @@
 import { ExerciseAction } from '.';
-import { Exercise } from '..';
+import { ExerciseState } from '..';
 import { produce } from 'immer';
 
 /**
@@ -8,7 +8,7 @@ import { produce } from 'immer';
  * @param action The action to apply on the current state
  * @returns the new state
  */
-export function exerciseReducer(state: Exercise, action: ExerciseAction) {
+export function exerciseReducer(state: ExerciseState, action: ExerciseAction) {
     // use immer to convert mutating operations to immutable ones (https://immerjs.github.io/immer/produce)
     return produce(state, (draftState) =>
         // typescript doesn't narrow action and the reducer to the correct ones based on action.type
@@ -18,9 +18,9 @@ export function exerciseReducer(state: Exercise, action: ExerciseAction) {
 
 const exerciseReducerMap: {
     [Action in ExerciseAction as Action['type']]: (
-        state: Exercise,
+        state: ExerciseState,
         action: Action
-    ) => Exercise;
+    ) => ExerciseState;
 } = {
     '[Viewport] Add viewport': (state, { viewport }) => {
         state.viewports[viewport.id] = viewport;

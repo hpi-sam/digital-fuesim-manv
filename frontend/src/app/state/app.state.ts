@@ -1,5 +1,5 @@
-import { Exercise } from 'digital-fuesim-manv-shared';
+import { ExerciseState } from 'digital-fuesim-manv-shared';
 
 export interface AppState {
-    exercise: Exercise;
+    exercise: ExerciseState;
 }
