@@ -21,6 +21,9 @@ export class Client {
     }
 
     public get exercise(): ExerciseWrapper {
-        return this.exercise;
+        if (!this.chosenExercise) {
+            throw new Error('Exercise undefined');
+        }
+        return this.chosenExercise;
     }
 }
