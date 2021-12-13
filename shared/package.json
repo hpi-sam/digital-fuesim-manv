@@ -26,6 +26,7 @@
         "npm": ">=7"
     },
     "dependencies": {
+        "class-validator": "^0.13.2",
         "lodash-es": "^4.17.21",
         "typescript": "~4.1.5",
         "uuid": "^8.3.2",
@@ -33,6 +34,7 @@
     },
     "devDependencies": {
         "@types/uuid": "^8.3.3",
+        "@types/validator": "^13.7.0",
         "prettier": "^2.2.1"
     },
     "exports": {

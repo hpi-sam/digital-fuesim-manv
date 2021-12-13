@@ -1,10 +1,20 @@
-export interface Size {
+import { IsNumber } from 'class-validator';
+
+export class Size {
     /**
      * The width in meters.
      */
-    width: number;
+    @IsNumber()
+    public width: number;
+
     /**
      * The width in meters.
      */
-    height: number;
+    @IsNumber()
+    public height: number;
+
+    public constructor(width: number, height: number) {
+        this.width = width;
+        this.height = height;
+    }
 }

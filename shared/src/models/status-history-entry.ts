@@ -1,13 +1,21 @@
-import { uuid, UUID } from '../utils';
+import { IsDate, IsUUID } from 'class-validator';
+import { uuid, UUID, UUIDValidationOptions } from '../utils';
 
 export class StatusHistoryEntry {
+    @IsUUID(4, UUIDValidationOptions)
     public id: UUID = uuid();
 
-    constructor(
-        public status: 'paused' | 'running',
-        /**
-         * The time from which on this status was set.
-         */
-        public startTimestamp: Date
-    ) {}
+    // TODO
+    public status: 'paused' | 'running';
+
+    /**
+     * The time from which on this status was set.
+     */
+    @IsDate()
+    public startTimestamp: Date;
+
+    constructor(status: 'paused' | 'running', startTimestamp: Date) {
+        this.status = status;
+        this.startTimestamp = startTimestamp;
+    }
 }

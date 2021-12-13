@@ -20,6 +20,7 @@
         "npm": ">=7"
     },
     "dependencies": {
+        "class-validator": "^0.13.2",
         "digital-fuesim-manv-shared": "file:../shared",
         "express": "^4.17.1",
         "lodash-es": "4.17.21",

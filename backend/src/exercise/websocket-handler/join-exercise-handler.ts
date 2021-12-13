@@ -1,4 +1,3 @@
-import { SocketResponse } from 'digital-fuesim-manv-shared';
 import { ExerciseServer, ExerciseSocket } from '../../exercise-server';
 import { clientMap } from '../client-map';
 
