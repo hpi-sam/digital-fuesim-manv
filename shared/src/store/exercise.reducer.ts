@@ -1,6 +1,9 @@
 import { ExerciseAction } from '.';
-import { ExerciseState } from '..';
+import { ExerciseState, Viewport } from '..';
 import { produce } from 'immer';
+import { plainToInstance } from 'class-transformer';
+import { validateSync } from 'class-validator';
+import { ValidationFailedError } from '../errors';
 
 /**
  * A pure reducer function that applies Actions on the provided state.
@@ -23,6 +26,11 @@ const exerciseReducerMap: {
     ) => ExerciseState;
 } = {
     '[Viewport] Add viewport': (state, { viewport }) => {
+        const viewportClass = plainToInstance(Viewport, viewport);
+        const errors = validateSync(viewportClass);
+        if (errors.length > 0) {
+            throw new ValidationFailedError(errors);
+        }
         state.viewports[viewport.id] = viewport;
         return state;
     },

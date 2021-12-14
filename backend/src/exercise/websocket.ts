@@ -1,7 +1,8 @@
-import { generateExercise } from 'digital-fuesim-manv-shared';
 import { ExerciseSocket, ExerciseServer } from '../exercise-server';
 import { clientMap } from './client-map';
 import { Client } from './clients';
+import { exerciseMap } from './exercise-map';
+import { ExerciseWrapper } from './exercise-wrapper';
 import {
     registerGetStateHandler,
     registerJoinExerciseHandler,
@@ -18,7 +19,8 @@ export const setupWebsocket = (io: ExerciseServer): void => {
         registerClient(socket);
     });
 
-    let state = generateExercise();
+    const exerciseWrapper = new ExerciseWrapper()
+    exerciseMap.set('abcdefghijk', exerciseWrapper);
     const registerClient = (client: ExerciseSocket): void => {
         // Add client
         clientMap.set(client, new Client(client));
