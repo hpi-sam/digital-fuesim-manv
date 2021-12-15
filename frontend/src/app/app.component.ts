@@ -20,7 +20,7 @@ export class AppComponent {
             uuid()
         )
     ) {
-        this.apiService.sendAction({
+        this.apiService.proposeAction({
             type: '[Viewport] Add viewport',
             viewport,
         });

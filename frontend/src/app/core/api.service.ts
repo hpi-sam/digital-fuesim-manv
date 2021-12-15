@@ -42,7 +42,8 @@ export class ApiService {
             return currentState!;
         },
         (action) => this.store.dispatch(action),
-        this.sendAction
+        // sendAction needs access to this.socket
+        (action) => this.sendAction(action)
     );
 
     constructor(private readonly store: Store<AppState>) {
@@ -57,6 +58,12 @@ export class ApiService {
         });
     }
 
+    public joinExercise(exerciseId: string): Promise<SocketResponse> {
+        return new Promise<SocketResponse>((resolve) => {
+            this.socket.emit('joinExercise', exerciseId, resolve);
+        });
+    }
+
     /**
      *
      * @param optimistic wether the action should be applied before the server responds (to reduce latency) (this update is guaranteed to be synchronous)
@@ -67,12 +74,6 @@ export class ApiService {
         optimistic = false
     ) {
         return this.optimisticActionHandler.proposeAction(action, optimistic);
-    }
-
-    public joinExercise(exerciseId: string): Promise<SocketResponse> {
-        return new Promise<SocketResponse>((resolve) => {
-            this.socket.emit('joinExercise', exerciseId, resolve);
-        });
     }
 
     /**
