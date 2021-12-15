@@ -1,3 +1,10 @@
+/**
+ * This class handels optimistic actions on a state.
+ * The following assertions have to be met:
+ * - the state is immutable and can only be modified via {@link setState } and {@link applyAction }
+ * - {@link  applyAction} on the same state is a pure function
+ * - if a proposedAction succeeds, the action should be applied to the state via {@link performAction}
+ */
 export class OptimisticActionHandler<
     Action extends object,
     State extends object,
@@ -24,12 +31,33 @@ export class OptimisticActionHandler<
     private isWaiting = false;
 
     constructor(
+        /**
+         * This function has to set the state synchronously to another value
+         * The state is required to be immutable!
+         */
         private readonly setState: (state: State) => void,
+        /**
+         * Returns the current state synchronously
+         * The state is required to be immutable!
+         */
         private readonly getState: () => State,
+        /**
+         * Applies (reduces) the state to the state
+         * The state is required to be immutable!
+         */
         private readonly applyAction: (action: Action) => void,
+        /**
+         * Sends the action to the server and resolves with a response
+         */
         private readonly sendAction: (action: Action) => Promise<ServerResponse>
     ) {}
 
+    /**
+     *
+     * @param action the action that should be proposed to the server
+     * @param optimistic wether the action should be applied before the server responds (in a way that the state doesn't get corrupted because of another action order on the server side)
+     * @returns the response of the server
+     */
     public async proposeAction<A extends Action>(
         action: A,
         optimistic: boolean
@@ -67,6 +95,11 @@ export class OptimisticActionHandler<
         return response;
     }
 
+    /**
+     * Only and all actions that are send from the server should be applied via this function
+     * It is expected that successfully proposed actions are applied via this function too
+     * @param action
+     */
     public performAction<A extends Action>(action: A) {
         if (this.isWaiting) {
             this.performActionQueue.push(action);

@@ -57,6 +57,11 @@ export class ApiService {
         });
     }
 
+    /**
+     *
+     * @param optimistic wether the action should be applied before the server responds (to reduce latency) (this update is guaranteed to be synchronous)
+     * @returns the response of the server
+     */
     public async proposeAction<A extends ExerciseAction>(
         action: A,
         optimistic = false
@@ -70,6 +75,9 @@ export class ApiService {
         });
     }
 
+    /**
+     * Proposes an action to the server
+     */
     private async sendAction(action: ExerciseAction) {
         const response = await new Promise<SocketResponse>((resolve) => {
             this.socket.emit('proposeAction', action, resolve);

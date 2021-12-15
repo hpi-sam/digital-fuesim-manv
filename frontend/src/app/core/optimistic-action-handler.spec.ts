@@ -135,15 +135,15 @@ describe('OptimisticActionHandler', () => {
             action1,
             true
         );
-        const normalAction1 = optimisticActionHandler.proposeAction(
+        const normalAction2 = optimisticActionHandler.proposeAction(
             action2,
             false
         );
-        const optimisticAction2 = optimisticActionHandler.proposeAction(
+        const optimisticAction3 = optimisticActionHandler.proposeAction(
             action3,
             true
         );
-        const normalAction2 = optimisticActionHandler.proposeAction(
+        const normalAction4 = optimisticActionHandler.proposeAction(
             action4,
             false
         );
@@ -152,19 +152,19 @@ describe('OptimisticActionHandler', () => {
         expect(state.word).toEqual('');
         optimisticActionHandler.performAction(action1);
         expect(state.word).toEqual('a');
-        expectAsync(optimisticAction2).toBePending();
-        expectAsync(normalAction2).toBePending();
+        expectAsync(optimisticAction3).toBePending();
+        expectAsync(normalAction4).toBePending();
 
-        await normalAction1;
+        await normalAction2;
         optimisticActionHandler.performAction(action2);
         expect(state.word).toEqual('ab');
-        expectAsync(normalAction2).toBePending();
+        expectAsync(normalAction4).toBePending();
 
-        await optimisticAction2;
+        await optimisticAction3;
         optimisticActionHandler.performAction(action3);
         expect(state.word).toEqual('abc');
 
-        await normalAction2;
+        await normalAction4;
         optimisticActionHandler.performAction(action4);
         expect(state.word).toEqual('abcd');
     });
