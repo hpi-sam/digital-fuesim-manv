@@ -27,6 +27,6 @@ export class AppComponent {
     }
 
     public async joinExercise() {
-        console.log(await this.apiService.joinExercise(this.exerciseId));
+        this.apiService.joinExercise(this.exerciseId);
     }
 }

@@ -11,6 +11,7 @@ import { AppState } from '../state/app.state';
 import { io, Socket } from 'socket.io-client';
 import { OptimisticActionHandler } from './optimistic-action-handler';
 import { first } from 'rxjs';
+import { AppAction } from '../state/app.actions';
 
 @Injectable({
     providedIn: 'root',
@@ -27,7 +28,7 @@ export class ApiService {
         SocketResponse
     >(
         (exercise) =>
-            this.store.dispatch({
+            this.store.dispatch<AppAction>({
                 type: '[Exercise] Set state',
                 exercise,
             }),
@@ -41,7 +42,7 @@ export class ApiService {
                 .subscribe((s) => (currentState = s));
             return currentState!;
         },
-        (action) => this.store.dispatch(action),
+        (action) => this.store.dispatch<AppAction>(action),
         // sendAction needs access to this.socket
         (action) => this.sendAction(action)
     );
@@ -54,14 +55,21 @@ export class ApiService {
             console.log('Socket disconnected', this.socket.id);
         });
         this.socket.on('performAction', (action: ExerciseAction) => {
-            this.store.dispatch(action);
+            this.optimisticActionHandler.performAction(action);
         });
     }
 
-    public joinExercise(exerciseId: string): Promise<SocketResponse> {
-        return new Promise<SocketResponse>((resolve) => {
+    /**
+     * Join an exercise and retrieve its state
+     */
+    public async joinExercise(exerciseId: string) {
+        const joinExercise = await new Promise<SocketResponse>((resolve) => {
             this.socket.emit('joinExercise', exerciseId, resolve);
         });
+        if (!joinExercise.success) {
+            return false;
+        }
+        return this.synchronizeState();
     }
 
     /**
@@ -82,6 +90,21 @@ export class ApiService {
     private async sendAction(action: ExerciseAction) {
         const response = await new Promise<SocketResponse>((resolve) => {
             this.socket.emit('proposeAction', action, resolve);
+        });
+        return response;
+    }
+
+    private async synchronizeState() {
+        // TODO: check which actions have to be applied
+        const response = await new Promise<SocketResponse<ExerciseState>>(
+            (resolve) => this.socket.emit('getState', resolve)
+        );
+        if (!response.success) {
+            return response;
+        }
+        this.store.dispatch<AppAction>({
+            type: '[Exercise] Set state',
+            exercise: response.payload,
         });
         return response;
     }
