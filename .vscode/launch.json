@@ -7,9 +7,42 @@
         {
             "type": "pwa-chrome",
             "request": "launch",
-            "name": "Launch Chrome against localhost",
+            "name": "[frontend] Launch Chrome against localhost",
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}/frontend"
+        },
+        // See https://medium.com/nextfaze/debug-angular-10-karma-tests-in-vscode-9685b0565e8
+        {
+            "type": "pwa-chrome",
+            "request": "attach",
+            "name": "[frontend] Attach to Karma",
+            "address": "localhost",
+            "restart": true,
+            "port": 9222,
+            "timeout": 600000,
+            "sourceMaps": true,
+            "webRoot": "${workspaceFolder}/frontend",
+            "pathMapping": {
+                "/_karma_webpack_": "${workspaceFolder}/frontend"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "[frontend] Run test file",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "console": "integratedTerminal",
+            "program": "${workspaceFolder}/frontend/node_modules/.bin/ng",
+            "args": [
+                "test",
+                "--include",
+                "${relativeFile}"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/frontend/**/*.js"
+            ]
         }
-    ]
+    ],
 }
