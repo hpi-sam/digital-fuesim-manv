@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Action, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import {
     ClientToServerEvents,
     ExerciseAction,
+    ExerciseState,
     ServerToClientEvents,
     SocketResponse,
 } from 'digital-fuesim-manv-shared';
 import { AppState } from '../state/app.state';
 import { io, Socket } from 'socket.io-client';
+import { OptimisticActionHandler } from './optimistic-action-handler';
+import { first } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -17,6 +20,30 @@ export class ApiService {
         ServerToClientEvents,
         ClientToServerEvents
     > = io(`ws://${window.location.host.split(':')[0]}:3200`);
+
+    private readonly optimisticActionHandler = new OptimisticActionHandler<
+        ExerciseAction,
+        ExerciseState,
+        SocketResponse
+    >(
+        (exercise) =>
+            this.store.dispatch({
+                type: '[Exercise] Set state',
+                exercise,
+            }),
+        () => {
+            // There is sadly currently no other way to get the state synchronously...
+            let currentState: ExerciseState;
+            // "Subscribing to Store will always be guaranteed to be synchronous" - https://github.com/ngrx/platform/issues/227#issuecomment-431682349
+            this.store
+                .select((state) => state.exercise)
+                .pipe(first())
+                .subscribe((s) => (currentState = s));
+            return currentState!;
+        },
+        (action) => this.store.dispatch(action),
+        this.sendAction
+    );
 
     constructor(private readonly store: Store<AppState>) {
         this.socket.on('connect', () => {
@@ -30,24 +57,23 @@ export class ApiService {
         });
     }
 
-    public async sendAction<A extends ExerciseAction>(
+    public async proposeAction<A extends ExerciseAction>(
         action: A,
         optimistic = false
     ) {
-        if (optimistic) {
-            // TODO:
-            this.store.dispatch(action as Action);
-        }
-
-        const response = await new Promise<SocketResponse>((resolve) => {
-            this.socket.emit('proposeAction', action, resolve);
-        });
-        return response;
+        return this.optimisticActionHandler.proposeAction(action, optimistic);
     }
 
     public joinExercise(exerciseId: string): Promise<SocketResponse> {
         return new Promise<SocketResponse>((resolve) => {
             this.socket.emit('joinExercise', exerciseId, resolve);
         });
+    }
+
+    private async sendAction(action: ExerciseAction) {
+        const response = await new Promise<SocketResponse>((resolve) => {
+            this.socket.emit('proposeAction', action, resolve);
+        });
+        return response;
     }
 }

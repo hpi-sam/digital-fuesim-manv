@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { ExerciseActions, UUID } from 'digital-fuesim-manv-shared';
+import { UUID } from 'digital-fuesim-manv-shared';
 import { pairwise, Subject, takeUntil } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { AppState } from 'src/app/state/app.state';
@@ -33,7 +33,7 @@ export class ListViewportsComponent implements OnDestroy {
     }
 
     public removeViewport(viewportId: UUID) {
-        this.apiService.sendAction({
+        this.apiService.proposeAction({
             type: '[Viewport] Remove viewport',
             viewportId,
         });
