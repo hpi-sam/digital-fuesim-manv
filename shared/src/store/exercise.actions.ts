@@ -1,5 +1,5 @@
 import { IsUUID, ValidateNested } from 'class-validator';
-import { Viewport, UUID, UUIDValidationOptions } from '..';
+import { Viewport, UUID, UUIDValidationOptions, Patient } from '..';
 
 /**
  *  These actions are POJOS used to update the store in the frontend and are send to the backend to apply the changes there too.
@@ -15,6 +15,18 @@ export namespace ExerciseActions {
         readonly type = '[Viewport] Remove viewport';
         @IsUUID(4, UUIDValidationOptions)
         public viewportId!: UUID;
+    }
+
+    export class AddPatient implements Action {
+        readonly type = '[Patient] Add patient';
+        @IsUUID(4, UUIDValidationOptions)
+        public patient!: Patient;
+    }
+
+    export class RemovePatient implements Action {
+        readonly type = '[Patient] Remove patient';
+        @IsUUID(4, UUIDValidationOptions)
+        public patientId!: UUID;
     }
 }
 

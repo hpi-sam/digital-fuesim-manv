@@ -1,7 +1,30 @@
+<div class="container">
+    <br />
+    <div
+        *ngIf="
+            (apiService.hasJoinedExerciseState$ | async) !== 'joined';
+            else joinedTemplate
+        "
+    >
+        <input [(ngModel)]="exerciseId" type="text" />
+        <button (click)="joinExercise()" class="btn btn-primary">
+            Join Exercise
+        </button>
+    </div>
 
-<input [(ngModel)]="exerciseId" type="text" >
-<button (click)="joinExercise()" class="btn btn-primary">Join Exercise</button>
+    <ng-template #joinedTemplate>
+        <div>
+            <app-patients-list></app-patients-list>
 
-<app-list-viewports></app-list-viewports>
-
-<button (click)="addViewport()" class="btn btn-primary">Add Viewport</button>
+            <button (click)="addPatient()" class="btn btn-primary">
+                Add Patient
+            </button>
+        </div>
+    </ng-template>
+    <button
+        (click)="keepAddingPatients = !keepAddingPatients"
+        class="btn btn-primary"
+    >
+        Toggle adding patients
+    </button>
+</div>

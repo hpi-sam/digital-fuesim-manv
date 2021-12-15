@@ -38,4 +38,12 @@ const exerciseReducerMap: {
         delete state.viewports[viewportId];
         return state;
     },
+    '[Patient] Add patient': (state, { patient }) => {
+        state.patients[patient.id] = patient;
+        return state;
+    },
+    '[Patient] Remove patient': (state, { patientId }) => {
+        delete state.patients[patientId];
+        return state;
+    },
 };

@@ -15,15 +15,15 @@ export class Patient {
     // TODO
     public realStatus: PatientStatus;
 
-    @IsDate()
-    public nextPhaseChange: Date;
+    // TODO: this was Date
+    public nextPhaseChange: string;
 
     constructor(
         // TODO: Specify patient data (e.g. injuries, name, etc.)
         personalInformation: any,
         visibleStatus: PatientStatus | null,
         realStatus: PatientStatus,
-        nextPhaseChange: Date
+        nextPhaseChange: string
     ) {
         this.personalInformation = personalInformation;
         this.visibleStatus = visibleStatus;

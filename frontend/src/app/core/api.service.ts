@@ -10,7 +10,7 @@ import {
 import { AppState } from '../state/app.state';
 import { io, Socket } from 'socket.io-client';
 import { OptimisticActionHandler } from './optimistic-action-handler';
-import { first } from 'rxjs';
+import { BehaviorSubject, first } from 'rxjs';
 import { AppAction } from '../state/app.actions';
 
 @Injectable({
@@ -59,17 +59,30 @@ export class ApiService {
         });
     }
 
+    public hasJoinedExerciseState$ = new BehaviorSubject<
+        'not-joined' | 'joining' | 'joined'
+    >('not-joined');
+
     /**
      * Join an exercise and retrieve its state
+     * @returns wether the join was successful
      */
-    public async joinExercise(exerciseId: string) {
+    public async joinExercise(exerciseId: string): Promise<boolean> {
+        this.hasJoinedExerciseState$.next('joining');
         const joinExercise = await new Promise<SocketResponse>((resolve) => {
             this.socket.emit('joinExercise', exerciseId, resolve);
         });
         if (!joinExercise.success) {
+            this.hasJoinedExerciseState$.next('not-joined');
             return false;
         }
-        return this.synchronizeState();
+        const stateSynchronized = await this.synchronizeState();
+        if (!stateSynchronized.success) {
+            this.hasJoinedExerciseState$.next('not-joined');
+            return false;
+        }
+        this.hasJoinedExerciseState$.next('joined');
+        return true;
     }
 
     /**

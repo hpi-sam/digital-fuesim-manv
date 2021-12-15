@@ -1,0 +1,15 @@
+<h1>
+    {{ numberOfPatients$ | async }}
+</h1>
+
+<ul>
+    <li *ngFor="let patientKeyValue of patients$ | async | keyvalue">
+        {{ patientKeyValue.value.personalInformation.name }}
+        <button
+            (click)="removePatient(patientKeyValue.key)"
+            class="btn btn-sm btn-outline-danger d-inline"
+        >
+            Remove
+        </button>
+    </li>
+</ul>
