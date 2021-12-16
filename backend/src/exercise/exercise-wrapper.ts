@@ -8,7 +8,7 @@ import {
 export class ExerciseWrapper {
     private currentState = generateExercise();
 
-    private stateHistory: ExerciseState[] = [];
+    private readonly stateHistory: ExerciseState[] = [];
 
     public getStateSnapshot(): ExerciseState {
         return this.currentState;
