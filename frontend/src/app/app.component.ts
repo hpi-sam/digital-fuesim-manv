@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Patient } from 'digital-fuesim-manv-shared';
+import { Patient, uuid } from 'digital-fuesim-manv-shared';
 import { ApiService } from './core/api.service';
 
 @Component({
@@ -13,7 +13,7 @@ export class AppComponent {
     constructor(public readonly apiService: ApiService) {}
 
     // Action
-    public addPatient(
+    public async addPatient(
         patient: Patient = new Patient(
             { hair: 'brown', eyeColor: 'blue', name: 'John Doe', age: 42 },
             'green',
@@ -21,19 +21,23 @@ export class AppComponent {
             Date.now().toString()
         )
     ) {
-        this.apiService.proposeAction({
+        patient.vehicleId = uuid();
+        const response = await this.apiService.proposeAction({
             type: '[Patient] Add patient',
             patient,
         });
+        if (!response.success) {
+            console.error(response.message);
+        }
     }
 
     public keepAddingPatients = true;
     public async joinExercise() {
         this.apiService.joinExercise(this.exerciseId);
-        setInterval(() => {
-            if (this.keepAddingPatients) {
-                this.addPatient();
-            }
-        }, 1000);
+        // setInterval(() => {
+        //     if (this.keepAddingPatients) {
+        //         this.addPatient();
+        //     }
+        // }, 1000);
     }
 }

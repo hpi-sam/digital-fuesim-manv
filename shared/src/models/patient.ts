@@ -37,6 +37,7 @@ export class Patient {
     @ValidateNested()
     public position?: Position;
 
+    // TODO: how to make this vaidator optional?
     /**
      * Exclusive-or to {@link position}
      */

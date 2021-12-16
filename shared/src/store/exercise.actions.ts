@@ -3,6 +3,8 @@ import { Viewport, UUID, UUIDValidationOptions, Patient } from '..';
 
 /**
  *  These actions are POJOS used to update the store in the frontend and are send to the backend to apply the changes there too.
+ *
+ *  Their constructor must be callable without any arguments, to allow getting their type-value to validate the action objects in the backend
  */
 export namespace ExerciseActions {
     export class AddViewport implements Action {
@@ -19,7 +21,7 @@ export namespace ExerciseActions {
 
     export class AddPatient implements Action {
         readonly type = '[Patient] Add patient';
-        @IsUUID(4, UUIDValidationOptions)
+        @ValidateNested()
         public patient!: Patient;
     }
 
