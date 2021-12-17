@@ -1,0 +1,17 @@
+{
+    "name": "digital-fuesim-manv",
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "build": "cd shared && npm run build && cd .. && concurrently \"cd frontend && npm run build\" \"cd backend && npm run build\"",
+        "install": "concurrently \"cd shared && npm i\" \"cd frontend && npm i\" \"cd backend && npm i\""
+    },
+    "private": true,
+    "engines": {
+        "node": ">=12",
+        "npm": ">=7"
+    },
+    "dependencies": {
+        "concurrently": "^6.5.0"
+    }
+}

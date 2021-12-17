@@ -1,11 +1,10 @@
 {
     "name": "digital-fuesim-manv-backend",
     "version": "0.0.0",
-    "main": "index.js",
     "type": "module",
     "scripts": {
-        "start": "node dist/index.js",
-        "dev": "node --loader ts-node/esm --es-module-specifier-resolution=node src/index.ts",
+        "start:once": "node dist/index.js",
+        "start": "nodemon --watch \"./**/*.ts\" --exec \"node --experimental-specifier-resolution=node --loader ts-node/esm\" src/index.ts",
         "build": "tsc --project ./",
         "prettier": "prettier --ignore-path .gitignore --loglevel warn --write \"./**/*.{ts,json,js,yml,css,sccs,html,angular}\""
     },
@@ -16,7 +15,7 @@
     },
     "private": true,
     "engines": {
-        "node": ">=12",
+        "node": ">=14",
         "npm": ">=7"
     },
     "dependencies": {
@@ -24,13 +23,14 @@
         "digital-fuesim-manv-shared": "file:../shared",
         "express": "^4.17.1",
         "lodash-es": "4.17.21",
-        "socket.io": "^4.4.0",
-        "ts-node": "^10.4.0"
+        "socket.io": "^4.4.0"
     },
     "devDependencies": {
         "@types/express": "^4.17.13",
         "@types/node": "^12.20.37",
         "prettier": "^2.5.1",
-        "typescript": "~4.4.3"
+        "ts-node": "^10.4.0",
+        "typescript": "~4.4.3",
+        "nodemon": "^2.0.15"
     }
 }
