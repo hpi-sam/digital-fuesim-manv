@@ -4,14 +4,19 @@
     "type": "module",
     "scripts": {
         "build": "cd shared && npm run build && cd .. && concurrently \"cd frontend && npm run build\" \"cd backend && npm run build\"",
-        "install": "concurrently \"cd shared && npm i\" \"cd frontend && npm i\" \"cd backend && npm i\""
+        "install:all": "npm i && concurrently \"cd shared && npm i\" \"cd frontend && npm i\" \"cd backend && npm i\"",
+        "prettier": "prettier --ignore-path .gitignore --loglevel warn --write \"./**/*.{ts,json,js,yml,css,sccs,html,angular}\""
     },
     "private": true,
     "engines": {
         "node": ">=12",
         "npm": ">=7"
     },
-    "dependencies": {
-        "concurrently": "^6.5.0"
+    "devDependencies": {
+        "concurrently": "^6.5.0",
+        "prettier": "^2.5.1",
+        "@typescript-eslint/eslint-plugin": "^5.7.0",
+        "@typescript-eslint/parser": "^5.7.0",
+        "eslint": "^8.4.1"
     }
 }

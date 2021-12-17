@@ -6,13 +6,7 @@
         "start": "ng serve",
         "build": "ng build",
         "watch": "ng build --watch --configuration development",
-        "test": "ng test",
-        "prettier": "prettier --ignore-path .gitignore --loglevel warn --write \"./**/*.{ts,json,js,yml,css,sccs,html,angular}\""
-    },
-    "prettier": {
-        "singleQuote": true,
-        "trailingComma": "es5",
-        "tabWidth": 4
+        "test": "ng test"
     },
     "private": true,
     "engines": {
@@ -50,7 +44,6 @@
         "karma-coverage": "~2.0.3",
         "karma-jasmine": "~4.0.0",
         "karma-jasmine-html-reporter": "~1.7.0",
-        "prettier": "^2.5.1",
         "typescript": "~4.4.3"
     }
 }

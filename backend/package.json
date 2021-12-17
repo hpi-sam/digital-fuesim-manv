@@ -5,13 +5,7 @@
     "scripts": {
         "start:once": "node dist/index.js",
         "start": "nodemon --watch \"./**/*.ts\" --exec \"node --experimental-specifier-resolution=node --loader ts-node/esm\" src/index.ts",
-        "build": "tsc --project ./",
-        "prettier": "prettier --ignore-path .gitignore --loglevel warn --write \"./**/*.{ts,json,js,yml,css,sccs,html,angular}\""
-    },
-    "prettier": {
-        "singleQuote": true,
-        "trailingComma": "es5",
-        "tabWidth": 4
+        "build": "tsc --project ./"
     },
     "private": true,
     "engines": {
@@ -28,7 +22,6 @@
     "devDependencies": {
         "@types/express": "^4.17.13",
         "@types/node": "^12.20.37",
-        "prettier": "^2.5.1",
         "ts-node": "^10.4.0",
         "typescript": "~4.4.3",
         "nodemon": "^2.0.15"

@@ -12,13 +12,7 @@
     ],
     "scripts": {
         "build": "tsc -p tsconfig.json",
-        "watch": "tsc -p tsconfig.json --watch",
-        "prettier": "prettier --loglevel warn --write \"./**/*.{ts,json,js,yml}\""
-    },
-    "prettier": {
-        "singleQuote": true,
-        "trailingComma": "es5",
-        "tabWidth": 4
+        "watch": "tsc -p tsconfig.json --watch"
     },
     "private": true,
     "engines": {
@@ -35,8 +29,7 @@
     },
     "devDependencies": {
         "@types/uuid": "^8.3.3",
-        "@types/validator": "^13.7.0",
-        "prettier": "^2.2.1"
+        "@types/validator": "^13.7.0"
     },
     "exports": {
         ".": {
