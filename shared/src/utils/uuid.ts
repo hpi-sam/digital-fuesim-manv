@@ -11,13 +11,16 @@ export function uuid(): UUID {
 
 export type UUID = string;
 
-
-const UUIDValidationFailedWithId: ((id: string) => string) = (id: string) => `Got malformed id: '${id}'.`
-const UUIDValidationFailedMessage: ((validationArguments: ValidationArguments) => string) = (validationArguments: ValidationArguments) => UUIDValidationFailedWithId(String(validationArguments.value))
+const UUIDValidationFailedWithId: (id: string) => string = (id: string) =>
+    `Got malformed id: '${id}'.`;
+const UUIDValidationFailedMessage: (
+    validationArguments: ValidationArguments
+) => string = (validationArguments: ValidationArguments) =>
+    UUIDValidationFailedWithId(String(validationArguments.value));
 export const UUIDValidationOptions: ValidationOptions = {
-  message: UUIDValidationFailedMessage,
-}
+    message: UUIDValidationFailedMessage,
+};
 export const UUIDArrayValidationOptions: ValidationOptions = {
-  ...UUIDValidationOptions,
-  each: true,
-}
+    ...UUIDValidationOptions,
+    each: true,
+};

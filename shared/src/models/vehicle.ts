@@ -1,5 +1,11 @@
 import { IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuid, UUIDArrayValidationOptions, UUIDSet, UUIDValidationOptions } from '../utils';
+import {
+    UUID,
+    uuid,
+    UUIDArrayValidationOptions,
+    UUIDSet,
+    UUIDValidationOptions,
+} from '../utils';
 import { Position, Transfer } from './utils';
 
 export class Vehicle {

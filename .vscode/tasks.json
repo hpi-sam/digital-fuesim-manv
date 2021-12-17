@@ -3,11 +3,7 @@
     "tasks": [
         {
             "label": "Start all",
-            "dependsOn": [
-                "Start frontend",
-                "Start backend",
-                "Watch shared"
-            ],
+            "dependsOn": ["Start frontend", "Start backend", "Watch shared"],
             "isBackground": true,
             "problemMatcher": []
         },
@@ -16,14 +12,14 @@
             "type": "npm",
             "script": "start",
             "path": "frontend/",
-            "problemMatcher": [],
+            "problemMatcher": []
         },
         {
             "label": "Start backend",
             "type": "npm",
             "script": "start",
             "path": "backend/",
-            "problemMatcher": [],
+            "problemMatcher": []
         },
         {
             "label": "Watch shared",
@@ -31,7 +27,7 @@
             "script": "watch",
             "path": "shared/",
             "group": "build",
-            "problemMatcher": [],
+            "problemMatcher": []
         }
     ]
 }

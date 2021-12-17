@@ -30,19 +30,11 @@
             "name": "[frontend] Run test file",
             "type": "node",
             "request": "launch",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
+            "skipFiles": ["<node_internals>/**"],
             "console": "integratedTerminal",
             "program": "${workspaceFolder}/frontend/node_modules/.bin/ng",
-            "args": [
-                "test",
-                "--include",
-                "${relativeFile}"
-            ],
-            "outFiles": [
-                "${workspaceFolder}/frontend/**/*.js"
-            ]
-        },
-    ],
+            "args": ["test", "--include", "${relativeFile}"],
+            "outFiles": ["${workspaceFolder}/frontend/**/*.js"]
+        }
+    ]
 }

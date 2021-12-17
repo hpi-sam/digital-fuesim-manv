@@ -19,7 +19,7 @@ export const setupWebsocket = (io: ExerciseServer): void => {
         registerClient(socket);
     });
 
-    const exerciseWrapper = new ExerciseWrapper()
+    const exerciseWrapper = new ExerciseWrapper();
     exerciseMap.set('abcdefghijk', exerciseWrapper);
     const registerClient = (client: ExerciseSocket): void => {
         // Add client

@@ -1,4 +1,4 @@
-import { IsEnum, IsIn, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsString, IsUUID } from 'class-validator';
 import { UUID, uuid, UUIDValidationOptions } from '../utils';
 import { Role } from './utils';
 
