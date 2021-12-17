@@ -23,15 +23,20 @@ If you are using [vscode](https://code.visualstudio.com/), you can run the [task
 2. Open another terminal in `/frontend` and run `npm run start`
 3. Open another terminal in `/backend` and run `npm run start`
 
-## Debugging (in vscode)
+## Debugging
 
 ### frontend
 
-There are already the following [debug configurations](https://code.visualstudio.com/docs/editor/debugging) saved:
+There are already the following [debug configurations](https://code.visualstudio.com/docs/editor/debugging) for vscode saved:
 
 -   [frontend] Launch Chrome against localhost
 -   [frontend] Attach to Karma
 -   [frontend] Run test file
+
+In addition you can make use of the following browser extensions:
+
+-   [Angular DevTools](https://chrome.google.com/webstore/detail/angular-devtools/ienfalfjdbdpebioblfackkekamfmbnh)
+-   [Redux DevTools Extension](https://github.com/zalmoxisus/redux-devtools-extension/) for [NgRx](https://ngrx.io/guide/store-devtools)
 
 ## Styleguide
 
