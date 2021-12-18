@@ -1,11 +1,12 @@
 {
     "name": "digital-fuesim-manv",
     "version": "0.0.0",
-    "type": "module",
     "scripts": {
         "build": "cd shared && npm run build && cd .. && concurrently \"cd frontend && npm run build\" \"cd backend && npm run build\"",
         "install:all": "npm i && concurrently \"cd shared && npm i\" \"cd frontend && npm i\" \"cd backend && npm i\"",
-        "prettier": "prettier --ignore-path .gitignore --loglevel warn --write \"./**/*.{ts,json,js,yml,css,sccs,html,angular}\""
+        "prettier": "prettier --ignore-path .gitignore --loglevel warn --write \"./**/*.{ts,json,js,yml,css,sccs,html,angular}\"",
+        "lint": "concurrently \"cd shared && npm run lint\" \"cd frontend && npm run lint\" \"cd backend && npm run lint\"",
+        "lint:fix": "concurrently \"cd shared && npm run lint:fix\" \"cd frontend && npm run lint:fix\" \"cd backend && npm run lint:fix\""
     },
     "private": true,
     "engines": {
@@ -14,9 +15,6 @@
     },
     "devDependencies": {
         "concurrently": "^6.5.0",
-        "prettier": "^2.5.1",
-        "@typescript-eslint/eslint-plugin": "^5.7.0",
-        "@typescript-eslint/parser": "^5.7.0",
-        "eslint": "^8.4.1"
+        "prettier": "^2.5.1"
     }
 }
