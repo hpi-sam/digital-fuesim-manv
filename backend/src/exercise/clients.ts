@@ -1,10 +1,10 @@
-import { ExerciseSocket } from '../exercise-server';
+import type { ExerciseSocket } from '../exercise-server';
 import { exerciseMap } from './exercise-map';
-import { ExerciseWrapper } from './exercise-wrapper';
+import type { ExerciseWrapper } from './exercise-wrapper';
 
 export class Client {
     public constructor(
-        private socket: ExerciseSocket,
+        private readonly socket: ExerciseSocket,
         private chosenExercise?: ExerciseWrapper
     ) {}
 

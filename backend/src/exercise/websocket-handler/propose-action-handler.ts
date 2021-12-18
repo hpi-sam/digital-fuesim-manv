@@ -1,8 +1,6 @@
-import {
-    ExerciseAction,
-    validateExerciseAction,
-} from 'digital-fuesim-manv-shared';
-import { ExerciseServer, ExerciseSocket } from '../../exercise-server';
+import type { ExerciseAction } from 'digital-fuesim-manv-shared';
+import { validateExerciseAction } from 'digital-fuesim-manv-shared';
+import type { ExerciseServer, ExerciseSocket } from '../../exercise-server';
 import { clientMap } from '../client-map';
 
 export const registerProposeActionHandler = (

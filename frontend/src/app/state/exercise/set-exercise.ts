@@ -1,4 +1,4 @@
-import { ExerciseState } from 'digital-fuesim-manv-shared';
+import type { ExerciseState } from 'digital-fuesim-manv-shared';
 
 /**
  * This actions sets the whole exercise state to a provided value

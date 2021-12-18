@@ -1,7 +1,7 @@
-import { ActionReducerMap } from '@ngrx/store';
+import type { ActionReducerMap } from '@ngrx/store';
 import { exerciseReducer, generateExercise } from 'digital-fuesim-manv-shared';
-import { AppAction } from './app.actions';
-import { AppState } from './app.state';
+import type { AppAction } from './app.actions';
+import type { AppState } from './app.state';
 
 export const appReducers: ActionReducerMap<AppState, AppAction> = {
     exercise: (state, action) => {

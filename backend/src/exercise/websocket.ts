@@ -1,4 +1,4 @@
-import { ExerciseSocket, ExerciseServer } from '../exercise-server';
+import type { ExerciseSocket, ExerciseServer } from '../exercise-server';
 import { clientMap } from './client-map';
 import { Client } from './clients';
 import { exerciseMap } from './exercise-map';

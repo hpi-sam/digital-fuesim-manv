@@ -32,7 +32,7 @@ export class AppComponent {
     }
 
     public keepAddingPatients = true;
-    public async joinExercise() {
+    public joinExercise() {
         this.apiService.joinExercise(this.exerciseId);
         // setInterval(() => {
         //     if (this.keepAddingPatients) {

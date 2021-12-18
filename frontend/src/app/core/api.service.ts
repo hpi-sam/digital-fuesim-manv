@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import {
+import type {
     ClientToServerEvents,
     ExerciseAction,
     ExerciseState,
     ServerToClientEvents,
     SocketResponse,
 } from 'digital-fuesim-manv-shared';
-import { AppState } from '../state/app.state';
-import { io, Socket } from 'socket.io-client';
-import { OptimisticActionHandler } from './optimistic-action-handler';
+import type { Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { BehaviorSubject, first } from 'rxjs';
-import { AppAction } from '../state/app.actions';
+import type { AppState } from '../state/app.state';
+import type { AppAction } from '../state/app.actions';
+import { OptimisticActionHandler } from './optimistic-action-handler';
 
 @Injectable({
     providedIn: 'root',
@@ -44,7 +45,7 @@ export class ApiService {
         },
         (action) => this.store.dispatch<AppAction>(action),
         // sendAction needs access to this.socket
-        (action) => this.sendAction(action)
+        async (action) => this.sendAction(action)
     );
 
     constructor(private readonly store: Store<AppState>) {
@@ -60,7 +61,7 @@ export class ApiService {
     }
 
     public hasJoinedExerciseState$ = new BehaviorSubject<
-        'not-joined' | 'joining' | 'joined'
+        'joined' | 'joining' | 'not-joined'
     >('not-joined');
 
     /**

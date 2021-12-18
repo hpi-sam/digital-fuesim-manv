@@ -8,13 +8,13 @@ import {
 } from '@angular/platform-browser-dynamic/testing';
 
 declare const require: {
-    context(
+    context: (
         path: string,
         deep?: boolean,
         filter?: RegExp
-    ): {
+    ) => {
         <T>(id: string): T;
-        keys(): string[];
+        keys: () => string[];
     };
 };
 
@@ -25,6 +25,6 @@ getTestBed().initTestEnvironment(
 );
 
 // Then we find all the tests.
-const context = require.context('./', true, /\.spec\.ts$/);
+const context = require.context('./', true, /\.spec\.ts$/u);
 // And load the modules.
 context.keys().map(context);

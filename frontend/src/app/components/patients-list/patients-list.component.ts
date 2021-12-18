@@ -1,9 +1,10 @@
-import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import type { OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
-import { AppState } from 'src/app/state/app.state';
+import type { AppState } from 'src/app/state/app.state';
 import { selectPatients } from 'src/app/state/exercise/exercise.selectors';
 
 @Component({

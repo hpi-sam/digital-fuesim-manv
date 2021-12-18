@@ -1,4 +1,4 @@
-import { ExerciseSocket } from '../exercise-server';
-import { Client } from './clients';
+import type { ExerciseSocket } from '../exercise-server';
+import type { Client } from './clients';
 
 export const clientMap = new Map<ExerciseSocket, Client>();

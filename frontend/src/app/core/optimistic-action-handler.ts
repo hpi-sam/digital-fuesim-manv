@@ -8,16 +8,16 @@
 export class OptimisticActionHandler<
     Action extends object,
     State extends object,
-    ServerResponse extends any
+    ServerResponse
 > {
     /**
      * The actions that should be proposed to the server after the waiting period has passed
      */
-    private proposeActionQueue: {
+    private readonly proposeActionQueue: {
         action: Action;
         optimistic: boolean;
         resolve: (
-            response: ServerResponse | PromiseLike<ServerResponse>
+            response: PromiseLike<ServerResponse> | ServerResponse
         ) => void;
     }[] = [];
     /**

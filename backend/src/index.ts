@@ -1,7 +1,7 @@
+import { createServer } from 'node:http';
 import express from 'express';
-import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { ExerciseServer } from './exercise-server';
+import type { ExerciseServer } from './exercise-server';
 import { setupWebsocket } from './exercise/websocket';
 
 const app = express();

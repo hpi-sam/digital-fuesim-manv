@@ -1,4 +1,4 @@
-import { ExerciseSocket, ExerciseServer } from '../../exercise-server';
+import type { ExerciseSocket, ExerciseServer } from '../../exercise-server';
 import { clientMap } from '../client-map';
 
 export const registerGetStateHandler = (

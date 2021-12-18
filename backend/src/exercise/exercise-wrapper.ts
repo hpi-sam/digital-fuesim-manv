@@ -1,9 +1,5 @@
-import {
-    ExerciseAction,
-    exerciseReducer,
-    ExerciseState,
-    generateExercise,
-} from 'digital-fuesim-manv-shared';
+import type { ExerciseAction, ExerciseState } from 'digital-fuesim-manv-shared';
+import { exerciseReducer, generateExercise } from 'digital-fuesim-manv-shared';
 
 export class ExerciseWrapper {
     private currentState = generateExercise();
