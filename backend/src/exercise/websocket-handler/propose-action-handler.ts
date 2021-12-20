@@ -9,13 +9,11 @@ export const registerProposeActionHandler = (
 ) => {
     client.on('proposeAction', (action: ExerciseAction, callback): void => {
         // 1. validate json
-        try {
-            validateExerciseAction(action);
-        } catch (error) {
-            // TODO: how should you check for the type of thrown error?
+        const errors = validateExerciseAction(action);
+        if (errors.length > 0) {
             callback({
                 success: false,
-                message: `Invalid payload: ${(error as any)?.errors}`,
+                message: `Invalid payload: ${errors}`,
             });
             return;
         }
@@ -29,11 +27,12 @@ export const registerProposeActionHandler = (
             });
             return;
         }
-        // 4. apply action (+ save to timeline) (includes validation)
+        // 4. apply action (+ save to timeline)
         exerciseWrapper.reduce(action);
         // 5. TODO: send success response to emitting client
         // 6. TODO: determine affected clients
         // 7. send new state to all affected clients
+        // TODO: is this order of emits correct?
         io.emit('performAction', action);
         callback({
             success: true,

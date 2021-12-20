@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { UUID, uuid, UUIDValidationOptions } from '../utils';
 import { Role } from './utils';
 
@@ -13,6 +13,7 @@ export class Client {
     public role: Role;
 
     @IsUUID(4, UUIDValidationOptions)
+    @IsOptional()
     public viewRestrictedToViewportId?: UUID;
 
     constructor(name: string, role: Role, viewRestrictedToViewportId?: UUID) {

@@ -1,5 +1,7 @@
+import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
 import { Viewport, UUID, UUIDValidationOptions, Patient } from '..';
+import "reflect-metadata"
 
 /**
  *  These actions are POJOS used to update the store in the frontend and are send to the backend to apply the changes there too.
@@ -10,6 +12,7 @@ export namespace ExerciseActions {
     export class AddViewport implements Action {
         readonly type = '[Viewport] Add viewport';
         @ValidateNested()
+        @Type(() => Viewport)
         public viewport!: Viewport;
     }
 
@@ -22,6 +25,7 @@ export namespace ExerciseActions {
     export class AddPatient implements Action {
         readonly type = '[Patient] Add patient';
         @ValidateNested()
+        @Type(() => Patient)
         public patient!: Patient;
     }
 

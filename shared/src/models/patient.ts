@@ -1,4 +1,4 @@
-import { IsDate, IsUUID, ValidateNested } from 'class-validator';
+import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, UUIDValidationOptions } from '../utils';
 import { PatientStatus, Position } from './utils';
 
@@ -35,12 +35,12 @@ export class Patient {
      * Exclusive-or to {@link vehicleId}
      */
     @ValidateNested()
+    @IsOptional()
     public position?: Position;
-
-    // TODO: how to make this vaidator optional?
     /**
      * Exclusive-or to {@link position}
      */
     @IsUUID(4, UUIDValidationOptions)
+    @IsOptional()
     public vehicleId?: UUID;
 }

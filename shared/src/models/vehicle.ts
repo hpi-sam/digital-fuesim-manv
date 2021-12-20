@@ -1,4 +1,4 @@
-import { IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import {
     UUID,
     uuid,
@@ -25,12 +25,14 @@ export class Vehicle {
      * Exclusive-or to {@link transfer}
      */
     @ValidateNested()
+    @IsOptional()
     public position?: Position;
 
     /**
      * Exclusive-or to {@link position}
      */
     @ValidateNested()
+    @IsOptional()
     public transfer?: Transfer;
 
     @IsUUID(4, UUIDArrayValidationOptions) // TODO: does this work on this kind of sets?

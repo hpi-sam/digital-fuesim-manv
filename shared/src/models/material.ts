@@ -1,4 +1,4 @@
-import { IsUUID, ValidateNested } from 'class-validator';
+import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import {
     UUID,
     uuid,
@@ -25,6 +25,7 @@ export class Material {
      * if undefined, is in vehicle with {@link vehicleId}
      */
     @ValidateNested()
+    @IsOptional()
     public position?: Position;
 
     constructor(

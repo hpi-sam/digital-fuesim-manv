@@ -1,35 +1,27 @@
 import { plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { validateSync, ValidationError } from 'class-validator';
 import { ExerciseAction, ExerciseActions } from '.';
 import { ValidationFailedError } from '..';
 
 /**
  *
  * @param action An json object that should be checked for validity.
- * @throws an error if the provided {@link action} is not an ExerciseAction.
+ * @returns An array of errors validating {@link action}. An empty array indicates a valid action object.
  */
-// TODO: would it be better to just return the error/a success boolean instead of throwing an error?
-export function validateExerciseAction(action: ExerciseAction): void {
-    // Be aware that `action` could be any json object. We need to program defensiv here.
+export function validateExerciseAction(action: ExerciseAction): (ValidationError | string)[] {
+    // Be aware that `action` could be any json object. We need to program defensively here.
     if (typeof action.type !== 'string') {
-        // TODO: What kind of error should be thrown here?
-        throw { errors: ['Action type is not a string.'] };
+        return ['Action type is not a string.'];
     }
     const actionClass = getExerciseActionClassDictionary()[action.type] as
         | ExerciseActionClassesDictionary[typeof action.type]
         | undefined;
     if (!actionClass) {
-        // TODO: What kind of error should be thrown here?
-        throw {
-            errors: [`Unknown action type: ${action.type}`],
-        };
+        return [`Unknown action type: ${action.type}`];
     }
 
     // This works - no idea about the type error though...
-    const errors = validateSync(plainToInstance(actionClass as any, action));
-    if (errors.length > 0) {
-        throw new ValidationFailedError(errors);
-    }
+    return validateSync(plainToInstance(actionClass as any, action));
 }
 
 type ExerciseActionClassesDictionary = {
