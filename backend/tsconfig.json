@@ -11,7 +11,8 @@
         "rootDir": "./src",
         "composite": true,
         "skipLibCheck": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "types": ["node"]
     },
     "references": [],
     "include": ["src/**/*"],

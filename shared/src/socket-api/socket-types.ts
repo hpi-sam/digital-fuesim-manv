@@ -22,16 +22,16 @@ export interface InterServerEvents {}
 
 export interface SocketData {}
 
-export type SocketResponse<T = undefined> = T extends undefined
-    ? {
-          success: true;
-      }
-    :
-          | {
-                success: false;
-                message: string;
+export type SocketResponse<T = undefined> =
+    | (T extends undefined
+          ? {
+                success: true;
             }
-          | {
+          : {
                 success: true;
                 payload: T;
-            };
+            })
+    | {
+          success: false;
+          message: string;
+      };
