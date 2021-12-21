@@ -57,13 +57,13 @@ describe('OptimisticActionHandler', () => {
     });
 
     it('should correctly perform an action', async () => {
-        await optimisticActionHandler.performAction({
+        optimisticActionHandler.performAction({
             type: 'addLetter',
             letter: 'a',
         });
         expect(state.word).toEqual('a');
 
-        await optimisticActionHandler.performAction({
+        optimisticActionHandler.performAction({
             type: 'addLetter',
             letter: 'a',
         });
@@ -82,7 +82,7 @@ describe('OptimisticActionHandler', () => {
         expect(state.word).toEqual('a');
         await proposedAction;
         expect(state.word).toEqual('');
-        await optimisticActionHandler.performAction({
+        optimisticActionHandler.performAction({
             type: 'addLetter',
             letter: 'a',
         });

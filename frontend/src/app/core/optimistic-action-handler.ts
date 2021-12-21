@@ -54,33 +54,37 @@ export class OptimisticActionHandler<
 
     /**
      *
-     * @param action the action that should be proposed to the server
-     * @param optimistic wether the action should be applied before the server responds (in a way that the state doesn't get corrupted because of another action order on the server side)
+     * @param proposedAction the action that should be proposed to the server
+     * @param beOptimistic wether the action should be applied before the server responds (in a way that the state doesn't get corrupted because of another action order on the server side)
      * @returns the response of the server
      */
     public async proposeAction<A extends Action>(
-        action: A,
-        optimistic: boolean
+        proposedAction: A,
+        beOptimistic: boolean
     ): Promise<ServerResponse> {
         if (this.isWaiting) {
             return new Promise((resolve) => {
                 // we don't want to apply another action while we are waiting for the response of the previous one
-                this.proposeActionQueue.push({ action, optimistic, resolve });
+                this.proposeActionQueue.push({
+                    action: proposedAction,
+                    optimistic: beOptimistic,
+                    resolve,
+                });
             });
         }
-        if (!optimistic) {
+        if (!beOptimistic) {
             // we just send the action to the server
             // if the action changes the state, we will be notified via a performAction call instead of this response
-            return this.sendAction(action);
+            return this.sendAction(proposedAction);
         }
         this.isWaiting = true;
         const state = this.getState();
-        this.applyAction(action);
-        const response = await this.sendAction(action);
+        this.applyAction(proposedAction);
+        const response = await this.sendAction(proposedAction);
         // we reset the state to the state before the action was applied
         this.setState(state);
         this.isWaiting = false;
-        // we apply all the actions from the server (in order) that were send in the meantime
+        // we apply all the actions from the server (in order) that were sent in the meantime
         this.performActionQueue.forEach((action) => this.applyAction(action));
         this.performActionQueue = [];
         // we propose the actions that were proposed in the meantime

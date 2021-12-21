@@ -6,7 +6,7 @@ export { EocLogEntry } from './eoc-log-entry';
 export { VehicleTemplate } from './vehicle-template';
 export { Vehicle } from './vehicle';
 export { Viewport } from './viewport';
-export { TransferPoint } from './transferPoint';
+export { TransferPoint } from './transfer-point';
 export { Image } from './image';
 export { Client } from './client';
 export { ImageTemplate } from './image-template';

@@ -6,7 +6,7 @@
         "start:once": "node dist/index.js",
         "start": "nodemon --watch \"./**/*.ts\" --exec \"node --experimental-specifier-resolution=node --loader ts-node/esm\" src/index.ts",
         "build": "tsc --project ./",
-        "lint": "eslint --ignore-path .gitignore \"./**/*.{ts,js,yml,html}\"",
+        "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,html}\"",
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,html}\""
     },
     "private": true,

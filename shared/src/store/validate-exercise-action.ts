@@ -1,14 +1,17 @@
 import { plainToInstance } from 'class-transformer';
-import { validateSync, ValidationError } from 'class-validator';
-import { ExerciseAction, ExerciseActions } from '.';
-import { ValidationFailedError } from '..';
+import type { ValidationError } from 'class-validator';
+import { validateSync } from 'class-validator';
+import type { ExerciseAction } from '.';
+import { ExerciseActions } from '.';
 
 /**
  *
  * @param action An json object that should be checked for validity.
  * @returns An array of errors validating {@link action}. An empty array indicates a valid action object.
  */
-export function validateExerciseAction(action: ExerciseAction): (ValidationError | string)[] {
+export function validateExerciseAction(
+    action: ExerciseAction
+): (ValidationError | string)[] {
     // Be aware that `action` could be any json object. We need to program defensively here.
     if (typeof action.type !== 'string') {
         return ['Action type is not a string.'];
@@ -33,7 +36,7 @@ type ExerciseActionClassesDictionary = {
  */
 let exerciseActionClassesDictionary:
     | ExerciseActionClassesDictionary
-    | undefined = undefined;
+    | undefined;
 
 // TODO: write a test for this function
 /**

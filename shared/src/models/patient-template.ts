@@ -1,9 +1,10 @@
 import { IsUUID, ValidateNested } from 'class-validator';
-import { Patient } from '.';
-import { UUID, uuid, UUIDValidationOptions } from '../utils';
+import type { UUID } from '../utils';
+import { uuid, uuidValidationOptions } from '../utils';
+import type { Patient } from '.';
 
 export class PatientTemplate {
-    @IsUUID(4, UUIDValidationOptions)
+    @IsUUID(4, uuidValidationOptions)
     public id: UUID = uuid();
 
     @ValidateNested() // TODO: Does this work on Exclude?

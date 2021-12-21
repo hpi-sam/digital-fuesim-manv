@@ -111,7 +111,9 @@ export class ApiService {
     private async synchronizeState() {
         // TODO: check which actions have to be applied
         const response = await new Promise<SocketResponse<ExerciseState>>(
-            (resolve) => this.socket.emit('getState', resolve)
+            (resolve) => {
+                this.socket.emit('getState', resolve);
+            }
         );
         if (!response.success) {
             return response;

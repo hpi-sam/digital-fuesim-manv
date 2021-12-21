@@ -1,1 +1,1 @@
-export type PatientStatus = 'black' | 'red' | 'yellow' | 'green';
+export type PatientStatus = 'black' | 'green' | 'red' | 'yellow';

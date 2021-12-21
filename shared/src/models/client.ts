@@ -1,9 +1,10 @@
 import { IsOptional, IsString, IsUUID } from 'class-validator';
-import { UUID, uuid, UUIDValidationOptions } from '../utils';
-import { Role } from './utils';
+import type { UUID } from '../utils';
+import { uuid, uuidValidationOptions } from '../utils';
+import type { Role } from './utils';
 
 export class Client {
-    @IsUUID(4, UUIDValidationOptions)
+    @IsUUID(4, uuidValidationOptions)
     public id: UUID = uuid();
 
     @IsString()
@@ -12,7 +13,7 @@ export class Client {
     // TODO
     public role: Role;
 
-    @IsUUID(4, UUIDValidationOptions)
+    @IsUUID(4, uuidValidationOptions)
     @IsOptional()
     public viewRestrictedToViewportId?: UUID;
 

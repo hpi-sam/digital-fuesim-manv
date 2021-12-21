@@ -10,9 +10,9 @@ import {
 } from './websocket-handler';
 
 export const setupWebsocket = (io: ExerciseServer): void => {
-    const PORT = 3200;
+    const port = 3200;
 
-    io.listen(PORT);
+    io.listen(port);
 
     io.on('connection', (socket) => {
         console.log('a user connected');

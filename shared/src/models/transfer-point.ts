@@ -1,21 +1,21 @@
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuid, UUIDValidationOptions } from '../utils';
-import { Position } from './utils';
+import type { UUID } from '../utils';
+import { uuid, uuidValidationOptions } from '../utils';
+import type { Position } from './utils';
 
 export class TransferPoint {
-    @IsUUID(4, UUIDValidationOptions)
+    @IsUUID(4, uuidValidationOptions)
     public id: UUID = uuid();
 
     @ValidateNested()
     public position: Position;
 
     // TODO
-    public reachableTransferPoints: Record<
-        UUID,
-        {
+    public reachableTransferPoints: {
+        [key: UUID]: {
             duration: number;
-        }
-    >;
+        };
+    };
 
     @IsString()
     public internalName: string;
@@ -25,12 +25,11 @@ export class TransferPoint {
 
     constructor(
         position: Position,
-        reachableTransferPoints: Record<
-            UUID,
-            {
+        reachableTransferPoints: {
+            [key: UUID]: {
                 duration: number;
-            }
-        >,
+            };
+        },
         internalName: string,
         externalName: string
     ) {

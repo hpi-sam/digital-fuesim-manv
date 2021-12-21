@@ -1,4 +1,4 @@
-import {
+import type {
     Client,
     EocLogEntry,
     Image,
@@ -13,25 +13,26 @@ import {
     VehicleTemplate,
     Viewport,
 } from './models';
-import { UUID, uuid } from './utils';
+import type { UUID } from './utils';
+import { uuid } from './utils';
 
 // TODO: This is a workaround, because else the following error is thrown when using produce():
 // `[Immer] produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'.Got '[object Object]'`
 // (I have no idea why...)
-export const generateExercise = (): ExerciseState => {
-    return { ...new ExerciseState() };
-};
+export const generateExercise = (): ExerciseState => ({
+    ...new ExerciseState(),
+});
 
 export class ExerciseState {
     public id = uuid();
-    public viewports: Record<UUID, Viewport> = {};
-    public vehicles: Record<UUID, Vehicle> = {};
-    public personell: Record<UUID, Personell> = {};
-    public patients: Record<UUID, Patient> = {};
-    public materials: Record<UUID, Material> = {};
-    public images: Record<UUID, Image> = {};
-    public transferPoints: Record<UUID, TransferPoint> = {};
-    public clients: Record<UUID, Client> = {};
+    public viewports: { [key: UUID]: Viewport } = {};
+    public vehicles: { [key: UUID]: Vehicle } = {};
+    public personell: { [key: UUID]: Personell } = {};
+    public patients: { [key: UUID]: Patient } = {};
+    public materials: { [key: UUID]: Material } = {};
+    public images: { [key: UUID]: Image } = {};
+    public transferPoints: { [key: UUID]: TransferPoint } = {};
+    public clients: { [key: UUID]: Client } = {};
     public patientTemplates: PatientTemplate[] = [];
     public vehicleTemplates: VehicleTemplate[] = [];
     public imageTemplates: ImageTemplate[] = [];

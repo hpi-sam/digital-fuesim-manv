@@ -1,4 +1,4 @@
-import { ExerciseState, ExerciseAction } from '..';
+import type { ExerciseState, ExerciseAction } from '..';
 
 export interface ServerToClientEvents {
     performAction: (action: ExerciseAction) => void;
@@ -22,16 +22,16 @@ export interface InterServerEvents {}
 
 export interface SocketData {}
 
-export type SocketResponse<T = undefined> =
-    | {
-          success: false;
-          message: string;
+export type SocketResponse<T = undefined> = T extends undefined
+    ? {
+          success: true;
       }
-    | (T extends undefined
-          ? {
-                success: true;
+    :
+          | {
+                success: false;
+                message: string;
             }
-          : {
+          | {
                 success: true;
                 payload: T;
-            });
+            };

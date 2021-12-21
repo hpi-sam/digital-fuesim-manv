@@ -1,4 +1,4 @@
-import { ValidationArguments, ValidationOptions } from 'class-validator';
+import type { ValidationArguments, ValidationOptions } from 'class-validator';
 import { v4 } from 'uuid';
 
 /**
@@ -11,16 +11,16 @@ export function uuid(): UUID {
 
 export type UUID = string;
 
-const UUIDValidationFailedWithId: (id: string) => string = (id: string) =>
+const uuidValidationFailedWithId: (id: string) => string = (id: string) =>
     `Got malformed id: '${id}'.`;
-const UUIDValidationFailedMessage: (
+const uuidValidationFailedMessage: (
     validationArguments: ValidationArguments
 ) => string = (validationArguments: ValidationArguments) =>
-    UUIDValidationFailedWithId(String(validationArguments.value));
-export const UUIDValidationOptions: ValidationOptions = {
-    message: UUIDValidationFailedMessage,
+    uuidValidationFailedWithId(String(validationArguments.value));
+export const uuidValidationOptions: ValidationOptions = {
+    message: uuidValidationFailedMessage,
 };
-export const UUIDArrayValidationOptions: ValidationOptions = {
-    ...UUIDValidationOptions,
+export const uuidArrayValidationOptions: ValidationOptions = {
+    ...uuidValidationOptions,
     each: true,
 };

@@ -1,8 +1,9 @@
 import { IsDate, IsString, IsUUID } from 'class-validator';
-import { UUID, uuid, UUIDValidationOptions } from '../utils';
+import type { UUID } from '../utils';
+import { uuid, uuidValidationOptions } from '../utils';
 
 export class EocLogEntry {
-    @IsUUID(4, UUIDValidationOptions)
+    @IsUUID(4, uuidValidationOptions)
     public id: UUID = uuid();
 
     /**
@@ -20,7 +21,7 @@ export class EocLogEntry {
     @IsString()
     public message: string;
 
-    @IsUUID(4, UUIDValidationOptions)
+    @IsUUID(4, uuidValidationOptions)
     public clientId: UUID;
 
     constructor(

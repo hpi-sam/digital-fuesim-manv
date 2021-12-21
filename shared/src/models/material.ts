@@ -1,21 +1,20 @@
 import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
+import type { UUID, UUIDSet } from '../utils';
 import {
-    UUID,
     uuid,
-    UUIDArrayValidationOptions,
-    UUIDSet,
-    UUIDValidationOptions,
+    uuidArrayValidationOptions,
+    uuidValidationOptions,
 } from '../utils';
-import { CanCaterFor, Position } from './utils';
+import type { CanCaterFor, Position } from './utils';
 
 export class Material {
-    @IsUUID(4, UUIDValidationOptions)
+    @IsUUID(4, uuidValidationOptions)
     public id: UUID = uuid();
 
-    @IsUUID(4, UUIDValidationOptions)
+    @IsUUID(4, uuidValidationOptions)
     public vehicleId: UUID;
 
-    @IsUUID(4, UUIDArrayValidationOptions) // TODO: does this work on this kind of sets?
+    @IsUUID(4, uuidArrayValidationOptions) // TODO: does this work on this kind of sets?
     public assignedPatientIds: UUIDSet;
 
     @ValidateNested()

@@ -1,14 +1,15 @@
 import { IsNumber, IsUUID } from 'class-validator';
-import { UUID, UUIDValidationOptions } from '../..';
+import type { UUID } from '../..';
+import { uuidValidationOptions } from '../..';
 
 export class Transfer {
     @IsNumber()
     public timeRemaining: number;
 
-    @IsUUID(4, UUIDValidationOptions)
+    @IsUUID(4, uuidValidationOptions)
     public startTransferPointId: UUID;
 
-    @IsUUID(4, UUIDValidationOptions)
+    @IsUUID(4, uuidValidationOptions)
     public targetTransferPointId: UUID;
 
     public constructor(

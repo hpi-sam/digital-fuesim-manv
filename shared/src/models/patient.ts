@@ -1,9 +1,10 @@
 import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuid, UUIDValidationOptions } from '../utils';
-import { PatientStatus, Position } from './utils';
+import type { UUID } from '../utils';
+import { uuid, uuidValidationOptions } from '../utils';
+import type { PatientStatus, Position } from './utils';
 
 export class Patient {
-    @IsUUID(4, UUIDValidationOptions)
+    @IsUUID(4, uuidValidationOptions)
     public id: UUID = uuid();
 
     // TODO: any can't be validated
@@ -40,7 +41,7 @@ export class Patient {
     /**
      * Exclusive-or to {@link position}
      */
-    @IsUUID(4, UUIDValidationOptions)
+    @IsUUID(4, uuidValidationOptions)
     @IsOptional()
     public vehicleId?: UUID;
 }

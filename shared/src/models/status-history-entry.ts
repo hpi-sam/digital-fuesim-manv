@@ -1,8 +1,9 @@
 import { IsDate, IsUUID } from 'class-validator';
-import { uuid, UUID, UUIDValidationOptions } from '../utils';
+import type { UUID } from '../utils';
+import { uuid, uuidValidationOptions } from '../utils';
 
 export class StatusHistoryEntry {
-    @IsUUID(4, UUIDValidationOptions)
+    @IsUUID(4, uuidValidationOptions)
     public id: UUID = uuid();
 
     // TODO

@@ -295,6 +295,7 @@ module.exports = {
         ],
         '@typescript-eslint/no-base-to-string': 'warn',
         '@typescript-eslint/no-confusing-non-null-assertion': 'warn',
+        '@typescript-eslint/no-namespace': 'warn',
         '@typescript-eslint/non-nullable-type-assertion-style': 'warn',
         '@typescript-eslint/sort-type-union-intersection-members': 'warn',
         '@typescript-eslint/no-confusing-void-expression': [
@@ -302,7 +303,7 @@ module.exports = {
             { ignoreArrowShorthand: true },
         ],
         // "@typescript-eslint/no-dynamic-delete": "warn",
-        '@typescript-eslint/no-empty-interface': 'warn',
+        '@typescript-eslint/no-empty-interface': 'off',
         '@typescript-eslint/no-explicit-any': ['off'],
         '@typescript-eslint/no-extraneous-class': [
             'warn',

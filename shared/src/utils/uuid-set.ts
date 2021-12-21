@@ -1,3 +1,5 @@
-import { UUID } from '.';
+import type { UUID } from '.';
 
-export type UUIDSet = Record<UUID, true>;
+export interface UUIDSet {
+    [key: UUID]: true;
+}

@@ -1,2 +1,2 @@
 // TODO: Personell settings (imageBlobId, name, type, capacity)
-export type PersonellType = 'firefighter' | 'retSan' | 'notSan';
+export type PersonellType = 'firefighter' | 'notSan' | 'retSan';

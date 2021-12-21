@@ -1,9 +1,10 @@
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuid, UUIDValidationOptions } from '../utils';
-import { Position, Size } from './utils';
+import type { UUID } from '../utils';
+import { uuid, uuidValidationOptions } from '../utils';
+import type { Position, Size } from './utils';
 
 export class Viewport {
-    @IsUUID(4, UUIDValidationOptions)
+    @IsUUID(4, uuidValidationOptions)
     public id: UUID = uuid();
 
     @ValidateNested()
