@@ -63,8 +63,14 @@ export class OptimisticActionHandler<
         beOptimistic: boolean
     ): Promise<ServerResponse> {
         if (this.isWaiting) {
+            // apply the action if the it's optimistic
+            if (beOptimistic) {
+                // the state we will reset to later has already been saved by the action we are currently waiting for
+                this.applyAction(proposedAction);
+            }
+            // return the eventual response of the server to the action proposal
             return new Promise((resolve) => {
-                // we don't want to apply another action while we are waiting for the response of the previous one
+                // save to propose the action later
                 this.proposeActionQueue.push({
                     action: proposedAction,
                     optimistic: beOptimistic,
