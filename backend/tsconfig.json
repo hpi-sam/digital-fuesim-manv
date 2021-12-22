@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "module": "ESNext",
+        "target": "ES2021",
+        "declaration": true,
+        "outDir": "./dist",
+        "sourceMap": true,
+        "moduleResolution": "node",
+        "declarationMap": true,
+        "rootDir": ".",
+        "composite": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "types": ["jest", "node"]
+    },
+    "references": [],
+    "include": ["src/**/*", "test/**/*"],
+    "exclude": ["node_modules"]
+}

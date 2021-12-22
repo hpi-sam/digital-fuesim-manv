@@ -1,0 +1,40 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "[frontend] Launch Chrome against localhost",
+            "type": "pwa-chrome",
+            "request": "launch",
+            "url": "http://localhost:4200",
+            "webRoot": "${workspaceFolder}/frontend"
+        },
+        // See https://medium.com/nextfaze/debug-angular-10-karma-tests-in-vscode-9685b0565e8
+        {
+            "name": "[frontend] Attach to Karma",
+            "type": "pwa-chrome",
+            "request": "attach",
+            "address": "localhost",
+            "restart": true,
+            "port": 9222,
+            "timeout": 600000,
+            "sourceMaps": true,
+            "webRoot": "${workspaceFolder}/frontend",
+            "pathMapping": {
+                "/_karma_webpack_": "${workspaceFolder}/frontend"
+            }
+        },
+        {
+            "name": "[frontend] Run test file",
+            "type": "node",
+            "request": "launch",
+            "skipFiles": ["<node_internals>/**"],
+            "console": "integratedTerminal",
+            "program": "${workspaceFolder}/frontend/node_modules/.bin/ng",
+            "args": ["test", "--include", "${relativeFile}"],
+            "outFiles": ["${workspaceFolder}/frontend/**/*.js"]
+        }
+    ]
+}

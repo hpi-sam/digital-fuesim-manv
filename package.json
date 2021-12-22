@@ -1,0 +1,22 @@
+{
+    "name": "digital-fuesim-manv",
+    "version": "0.0.0",
+    "scripts": {
+        "build": "cd shared && npm run build && cd .. && concurrently \"cd frontend && npm run build\" \"cd backend && npm run build\"",
+        "install:all": "npm i && concurrently \"cd shared && npm i\" \"cd frontend && npm i\" \"cd backend && npm i\"",
+        "prettier": "prettier --ignore-path .gitignore --loglevel warn --write \"./**/*.{ts,json,js,yml,css,sccs,html,angular}\"",
+        "prettier:check": "prettier --ignore-path .gitignore --loglevel warn --check \"./**/*.{ts,json,js,yml,css,sccs,html,angular}\"",
+        "lint": "concurrently \"cd shared && npm run lint\" \"cd frontend && npm run lint\" \"cd backend && npm run lint\"",
+        "lint:fix": "concurrently \"cd shared && npm run lint:fix\" \"cd frontend && npm run lint:fix\" \"cd backend && npm run lint:fix\"",
+        "test": "concurrently \"cd shared && npm run test\" \"cd frontend && npm run test\" \"cd backend && npm run test\""
+    },
+    "private": true,
+    "engines": {
+        "node": ">=12",
+        "npm": ">=7"
+    },
+    "devDependencies": {
+        "concurrently": "^6.5.0",
+        "prettier": "^2.5.1"
+    }
+}

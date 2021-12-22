@@ -1,0 +1,14 @@
+{
+    "root": true,
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "parserOptions": {
+                "project": ["tsconfig.json"],
+                "createDefaultProgram": true
+            },
+            "parser": "@typescript-eslint/parser",
+            "extends": ["../eslint/typescript.eslintrc.js", "prettier"]
+        }
+    ]
+}
