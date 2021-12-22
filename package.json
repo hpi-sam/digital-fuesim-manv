@@ -7,7 +7,8 @@
         "prettier": "prettier --ignore-path .gitignore --loglevel warn --write \"./**/*.{ts,json,js,yml,css,sccs,html,angular}\"",
         "prettier:check": "prettier --ignore-path .gitignore --loglevel warn --check \"./**/*.{ts,json,js,yml,css,sccs,html,angular}\"",
         "lint": "concurrently \"cd shared && npm run lint\" \"cd frontend && npm run lint\" \"cd backend && npm run lint\"",
-        "lint:fix": "concurrently \"cd shared && npm run lint:fix\" \"cd frontend && npm run lint:fix\" \"cd backend && npm run lint:fix\""
+        "lint:fix": "concurrently \"cd shared && npm run lint:fix\" \"cd frontend && npm run lint:fix\" \"cd backend && npm run lint:fix\"",
+        "test": "concurrently \"cd shared && npm run test\" \"cd frontend && npm run test\" \"cd backend && npm run test\""
     },
     "private": true,
     "engines": {

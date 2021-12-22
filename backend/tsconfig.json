@@ -8,13 +8,13 @@
         "sourceMap": true,
         "moduleResolution": "node",
         "declarationMap": true,
-        "rootDir": "./src",
+        "rootDir": ".",
         "composite": true,
         "skipLibCheck": true,
         "esModuleInterop": true,
-        "types": ["node"]
+        "types": ["jest", "node"]
     },
     "references": [],
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "test/**/*"],
     "exclude": ["node_modules"]
 }

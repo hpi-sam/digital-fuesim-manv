@@ -14,7 +14,8 @@
         "build": "tsc -p tsconfig.json",
         "watch": "tsc -p tsconfig.json --watch",
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,html}\"",
-        "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,html}\""
+        "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,html}\"",
+        "test": "echo \"There are no tests for shared\""
     },
     "private": true,
     "engines": {
