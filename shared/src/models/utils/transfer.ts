@@ -3,8 +3,11 @@ import type { UUID } from '../..';
 import { uuidValidationOptions } from '../..';
 
 export class Transfer {
+    /**
+     * The timestamp in exercise time when the transfer will end.
+     */
     @IsNumber()
-    public timeRemaining: number;
+    public endTimeStamp: number;
 
     @IsUUID(4, uuidValidationOptions)
     public startTransferPointId: UUID;
@@ -13,11 +16,11 @@ export class Transfer {
     public targetTransferPointId: UUID;
 
     public constructor(
-        timeRemaining: number,
+        endTimeStamp: number,
         startTransferPointId: UUID,
         targetTransferPointId: UUID
     ) {
-        this.timeRemaining = timeRemaining;
+        this.endTimeStamp = endTimeStamp;
         this.startTransferPointId = startTransferPointId;
         this.targetTransferPointId = targetTransferPointId;
     }
