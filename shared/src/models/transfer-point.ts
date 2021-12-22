@@ -1,13 +1,15 @@
+import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import type { UUID } from '../utils';
 import { uuid, uuidValidationOptions } from '../utils';
-import type { Position } from './utils';
+import { Position } from './utils';
 
 export class TransferPoint {
     @IsUUID(4, uuidValidationOptions)
     public id: UUID = uuid();
 
     @ValidateNested()
+    @Type(() => Position)
     public position: Position;
 
     // TODO

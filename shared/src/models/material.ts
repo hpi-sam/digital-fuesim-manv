@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import type { UUID, UUIDSet } from '../utils';
 import {
@@ -5,7 +6,7 @@ import {
     uuidArrayValidationOptions,
     uuidValidationOptions,
 } from '../utils';
-import type { CanCaterFor, Position } from './utils';
+import { CanCaterFor, Position } from './utils';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
@@ -18,12 +19,14 @@ export class Material {
     public assignedPatientIds: UUIDSet;
 
     @ValidateNested()
+    @Type(() => CanCaterFor)
     public canCaterFor: CanCaterFor;
 
     /**
      * if undefined, is in vehicle with {@link vehicleId}
      */
     @ValidateNested()
+    @Type(() => Position)
     @IsOptional()
     public position?: Position;
 

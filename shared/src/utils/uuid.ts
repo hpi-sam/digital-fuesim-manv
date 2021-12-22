@@ -11,8 +11,7 @@ export function uuid(): UUID {
 
 export type UUID = string;
 
-const uuidValidationFailedWithId: (id: string) => string = (id: string) =>
-    `Got malformed id: '${id}'.`;
+const uuidValidationFailedWithId = (id: string) => `Got malformed id: '${id}'.`;
 const uuidValidationFailedMessage: (
     validationArguments: ValidationArguments
 ) => string = (validationArguments: ValidationArguments) =>

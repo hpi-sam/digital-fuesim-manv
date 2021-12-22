@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
     IsNumber,
     IsOptional,
@@ -11,7 +12,7 @@ import {
     uuidArrayValidationOptions,
     uuidValidationOptions,
 } from '../utils';
-import type { Position, Transfer } from './utils';
+import { Position, Transfer } from './utils';
 
 export class Vehicle {
     @IsUUID(4, uuidValidationOptions)
@@ -30,6 +31,7 @@ export class Vehicle {
      * Exclusive-or to {@link transfer}
      */
     @ValidateNested()
+    @Type(() => Position)
     @IsOptional()
     public position?: Position;
 
@@ -37,6 +39,7 @@ export class Vehicle {
      * Exclusive-or to {@link position}
      */
     @ValidateNested()
+    @Type(() => Transfer)
     @IsOptional()
     public transfer?: Transfer;
 

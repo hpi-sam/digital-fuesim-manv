@@ -8,7 +8,7 @@ export class Size {
     public width: number;
 
     /**
-     * The width in meters.
+     * The height in meters.
      */
     @IsNumber()
     public height: number;

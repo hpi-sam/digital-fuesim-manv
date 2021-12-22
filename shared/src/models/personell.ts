@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import type { UUID, UUIDSet } from '../utils';
 import {
@@ -5,7 +6,8 @@ import {
     uuidArrayValidationOptions,
     uuidValidationOptions,
 } from '../utils';
-import type { PersonellType, Position } from './utils';
+import type { PersonellType } from './utils';
+import { Position } from './utils';
 
 export class Personell {
     @IsUUID(4, uuidValidationOptions)
@@ -24,6 +26,7 @@ export class Personell {
      * if undefined, is in vehicle with {@link vehicleId}
      */
     @ValidateNested()
+    @Type(() => Position)
     @IsOptional()
     public position?: Position;
 

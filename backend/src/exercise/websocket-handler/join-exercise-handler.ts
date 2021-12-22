@@ -7,11 +7,12 @@ export const registerJoinExerciseHandler = (
 ) => {
     client.on('joinExercise', (exerciseId: string, callback): void => {
         console.log(exerciseId);
-        if (!clientMap.get(client)?.setExercise(exerciseId)) {
+        if (!clientMap.get(client)?.joinExercise(exerciseId)) {
             callback({
                 success: false,
                 message: 'The exercise does not exist',
             });
+            return;
         }
         callback({
             success: true,

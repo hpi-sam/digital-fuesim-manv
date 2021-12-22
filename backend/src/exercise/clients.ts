@@ -12,7 +12,7 @@ export class Client {
      * @param exerciseId The exercise id to be used for the client.
      * @returns Whether the exercise exists.
      */
-    public setExercise(exerciseId: string): boolean {
+    public joinExercise(exerciseId: string): boolean {
         if (!exerciseMap.has(exerciseId)) {
             return false;
         }
