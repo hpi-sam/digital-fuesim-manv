@@ -6,7 +6,7 @@
         "start": "ng serve",
         "build": "ng build",
         "watch": "ng build --watch --configuration development",
-        "test": "ng test",
+        "test": "ng test --watch=false",
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,css,sccs,html,angular}\"",
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,css,sccs,html,angular}\""
     },
