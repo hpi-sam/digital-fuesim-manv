@@ -22,10 +22,13 @@ export class AppComponent {
         )
     ) {
         patient.vehicleId = uuid();
-        const response = await this.apiService.proposeAction({
-            type: '[Patient] Add patient',
-            patient,
-        });
+        const response = await this.apiService.proposeAction(
+            {
+                type: '[Patient] Add patient',
+                patient,
+            },
+            true
+        );
         if (!response.success) {
             console.error(response.message);
         }
