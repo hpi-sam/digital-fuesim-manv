@@ -1,8 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
-import type { UUID } from '../utils';
-import { uuid, uuidValidationOptions } from '../utils';
-import { Position, Size } from './utils';
+import { uuid, UUID, uuidValidationOptions } from '../utils';
+import { Size, Position } from './utils';
 
 export class Image {
     @IsUUID(4, uuidValidationOptions)

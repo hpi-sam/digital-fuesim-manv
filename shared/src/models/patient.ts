@@ -1,8 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
-import type { UUID } from '../utils';
-import { uuid, uuidValidationOptions } from '../utils';
-import type { PatientStatus} from './utils';
+import { UUID, uuid, uuidValidationOptions } from '../utils';
+import type { PatientStatus } from './utils';
 import { Position } from './utils';
 
 export class Patient {

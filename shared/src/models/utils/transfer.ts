@@ -1,6 +1,5 @@
 import { IsNumber, IsUUID } from 'class-validator';
-import type { UUID } from '../..';
-import { uuidValidationOptions } from '../..';
+import { UUID, uuidValidationOptions } from '../../utils';
 
 export class Transfer {
     /**

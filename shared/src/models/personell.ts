@@ -1,7 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
-import type { UUID, UUIDSet } from '../utils';
 import {
+    UUID,
+    UUIDSet,
     uuid,
     uuidArrayValidationOptions,
     uuidValidationOptions,
