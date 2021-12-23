@@ -5,17 +5,15 @@
     "testEnvironment": "node",
     "testRegex": "\\.(e2e-)?spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+        "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverage": true,
     "coverageDirectory": "./coverage",
-    "collectCoverageFrom": [
-      "./src/**/*.ts"
-    ],
+    "collectCoverageFrom": ["./src/**/*.ts"],
     "coveragePathIgnorePatterns": [
-      "./src/migrations/*",
-      "./src/config/ormconfig.ts",
-      "./src/main.ts"
+        "./src/migrations/*",
+        "./src/config/ormconfig.ts",
+        "./src/main.ts"
     ],
     "coverageReporters": ["text", "text-summary", "json", "lcov", "cobertura"]
-  }
+}
