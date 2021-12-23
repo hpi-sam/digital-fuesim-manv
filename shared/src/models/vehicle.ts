@@ -6,13 +6,15 @@ import {
     IsUUID,
     ValidateNested,
 } from 'class-validator';
-import type { UUID, UUIDSet } from '../utils';
 import {
     uuid,
     uuidArrayValidationOptions,
     uuidValidationOptions,
+    UUID,
+    UUIDSet,
 } from '../utils';
-import { Position, Transfer } from './utils';
+import { Position } from './utils';
+import type { Transfer } from './utils';
 
 export class Vehicle {
     @IsUUID(4, uuidValidationOptions)
@@ -38,9 +40,9 @@ export class Vehicle {
     /**
      * Exclusive-or to {@link position}
      */
-    @ValidateNested()
-    @Type(() => Transfer)
-    @IsOptional()
+    // @ValidateNested()
+    // @Type(() => Transfer)
+    // @IsOptional()
     public transfer?: Transfer;
 
     @IsUUID(4, uuidArrayValidationOptions) // TODO: does this work on this kind of sets?

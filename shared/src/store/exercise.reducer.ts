@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import type { ExerciseState } from '..';
-import type { ExerciseAction } from '.';
+import type { ExerciseAction } from './exercise.actions';
 
 /**
  * A pure reducer function that applies Actions on the provided state.

@@ -1,7 +1,6 @@
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import type { UUID } from '../utils';
-import { uuid, uuidValidationOptions } from '../utils';
-import type { Vehicle } from '.';
+import { UUID, uuid, uuidValidationOptions } from '../utils';
+import type { Vehicle } from './vehicle';
 
 export class VehicleTemplate {
     @IsUUID(4, uuidValidationOptions)

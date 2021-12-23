@@ -1,10 +1,6 @@
-// this import is needed for `import { Type } from 'class-transformer';` to work
-import 'reflect-metadata';
-
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
-import type { UUID } from '..';
-import { Viewport, uuidValidationOptions, Patient } from '..';
+import { UUID, Viewport, uuidValidationOptions, Patient } from '..';
 
 /**
  *  These actions are POJOS used to update the store in the frontend and are send to the backend to apply the changes there too.

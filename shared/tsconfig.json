@@ -5,6 +5,7 @@
         "target": "ESNext",
         "declaration": true,
         "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
         "outDir": "./dist",
         "sourceMap": true,
         "moduleResolution": "node",
