@@ -1,3 +1,6 @@
+// this import is needed for `import { Type } from 'class-transformer';` to work
+import 'reflect-metadata';
+
 export { Material } from './material';
 export { Patient } from './patient';
 export { Personell } from './personell';
