@@ -48,5 +48,5 @@ export type ExerciseAction = InstanceType<
 >;
 
 interface Action {
-    readonly type: string;
+    readonly type: `[${string}] ${string}`;
 }
