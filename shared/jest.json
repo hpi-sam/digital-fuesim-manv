@@ -1,0 +1,16 @@
+{
+    "verbose": true,
+    "moduleFileExtensions": ["js", "json", "ts"],
+    "moduleDirectories": ["node_modules", "src"],
+    "rootDir": ".",
+    "testEnvironment": "node",
+    "testRegex": "\\.(e2e-)?spec\\.ts$",
+    "transform": {
+        "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverage": true,
+    "coverageDirectory": "./coverage",
+    "collectCoverageFrom": ["./src/**/*.ts"],
+    "coveragePathIgnorePatterns": [".*/index.ts"],
+    "coverageReporters": ["text", "text-summary", "json", "lcov", "cobertura"]
+}
