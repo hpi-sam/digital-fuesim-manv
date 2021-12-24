@@ -1,0 +1,130 @@
+name: Complete pipeline
+
+on: push
+
+jobs:
+    build:
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
+            fail-fast: false
+
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: '14'
+            - name: Cache node modules
+              uses: actions/cache@v2
+              id: cache-node-modules
+              env:
+                  cache-name: cache-node-modules
+              with:
+                  path: |
+                      node_modules
+                      shared/node_modules
+                      frontend/node_modules
+                      backend/node_modules
+                  key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-build-${{ env.cache-name }}-
+                      ${{ runner.os }}-build-
+                      ${{ runner.os }}-
+            - name: Install dependencies
+              if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              run: npm run install:all
+            - name: Build shared
+              if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              run: cd shared && npm run build && cd ..
+            - name: Install shared to frontend & backend
+              if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              run: cd frontend && npm i && cd ../backend && npm i && cd ..
+    lint:
+        runs-on: ${{ matrix.os }}
+
+        needs: build
+
+        strategy:
+            matrix:
+                os: [ubuntu-latest]
+            fail-fast: false
+
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: '14'
+            - name: Cache node modules
+              uses: actions/cache@v2
+              id: cache-node-modules
+              env:
+                  cache-name: cache-node-modules
+              with:
+                  path: |
+                      node_modules
+                      shared/node_modules
+                      frontend/node_modules
+                      backend/node_modules
+                  key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-build-${{ env.cache-name }}-
+                      ${{ runner.os }}-build-
+                      ${{ runner.os }}-
+            - name: Install dependencies
+              if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              run: npm run install:all
+            - name: Build shared
+              if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              run: cd shared && npm run build && cd ..
+            - name: Install shared to frontend & backend
+              if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              run: cd frontend && npm i && cd ../backend && npm i && cd ..
+            - name: Run ESLint
+              run: npm run lint
+            - name: Run Prettier
+              run: npm run prettier:check
+    test:
+        runs-on: ${{ matrix.os }}
+
+        needs: build
+
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
+                environment: [shared, frontend, backend]
+            fail-fast: false
+
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: '14'
+            - name: Cache node modules
+              uses: actions/cache@v2
+              id: cache-node-modules
+              env:
+                  cache-name: cache-node-modules
+              with:
+                  path: |
+                      node_modules
+                      shared/node_modules
+                      frontend/node_modules
+                      backend/node_modules
+                  key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-build-${{ env.cache-name }}-
+                      ${{ runner.os }}-build-
+                      ${{ runner.os }}-
+            - name: Install dependencies
+              if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              run: npm run install:all
+            - name: Build shared
+              if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              run: cd shared && npm run build && cd ..
+            - name: Install shared to frontend & backend
+              if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              run: cd frontend && npm i && cd ../backend && npm i && cd ..
+            - name: Run Tests
+              run: cd ${{ matrix.environment }} && npm run test
