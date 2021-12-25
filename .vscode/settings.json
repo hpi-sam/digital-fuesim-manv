@@ -1,3 +1,4 @@
 {
-    "eslint.workingDirectories": ["./backend", "./shared", "./frontend"]
+    "eslint.workingDirectories": ["./backend", "./shared", "./frontend"],
+    "jest.jestCommandLine": "node_modules\\.bin\\jest"
 }

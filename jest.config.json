@@ -1,0 +1,7 @@
+{
+    "projects": ["<rootDir>/shared", "<rootDir>/backend"],
+    "collectCoverage": true,
+    "coverageDirectory": "./coverage",
+    "coverageReporters": ["text", "text-summary", "json", "lcov", "cobertura"],
+    "collectCoverageFrom": ["./src/**/*.ts", "!src/**/index.ts"]
+}
