@@ -11,17 +11,19 @@
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}/frontend"
         },
-        // TODO: not working on windows
+        // See https://jestjs.io/docs/troubleshooting#debugging-in-vs-code
         {
-            "name": "vscode-jest-tests",
+            "name": "Debug Jest Tests",
             "type": "node",
             "request": "launch",
+            "runtimeArgs": [
+                "--inspect-brk",
+                "${workspaceRoot}/node_modules/jest/bin/jest.js",
+                "--runInBand"
+            ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
-            "disableOptimisticBPs": true,
-            "program": "${workspaceFolder}/node_modules/.bin/jest.js",
-            "cwd": "${workspaceFolder}",
-            "args": ["--runInBand", "--watchAll=false"]
+            "port": 9229
         }
     ]
 }
