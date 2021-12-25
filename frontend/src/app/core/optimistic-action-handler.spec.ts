@@ -152,13 +152,10 @@ describe('OptimisticActionHandler', () => {
         expect(state.word).toEqual('');
         optimisticActionHandler.performAction(action1);
         expect(state.word).toEqual('a');
-        expectAsync(optimisticAction3).toBePending();
-        expectAsync(normalAction4).toBePending();
 
         await normalAction2;
         optimisticActionHandler.performAction(action2);
         expect(state.word).toEqual('ab');
-        expectAsync(normalAction4).toBePending();
 
         await optimisticAction3;
         optimisticActionHandler.performAction(action3);

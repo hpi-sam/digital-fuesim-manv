@@ -6,6 +6,7 @@
         "declaration": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
+        "esModuleInterop": true,
         "outDir": "./dist",
         "sourceMap": true,
         "moduleResolution": "node",

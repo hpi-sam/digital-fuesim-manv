@@ -31,8 +31,6 @@ If you are using [vscode](https://code.visualstudio.com/), you can run the [task
 There are already the following [debug configurations](https://code.visualstudio.com/docs/editor/debugging) for vscode saved:
 
 -   [frontend] Launch Chrome against localhost
--   [frontend] Attach to Karma
--   [frontend] Run test file
 
 In addition you can make use of the following browser extensions:
 
