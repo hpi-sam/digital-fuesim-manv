@@ -98,9 +98,9 @@ describe('OptimisticActionHandler', () => {
 
         optimisticActionHandler.performAction({
             type: 'addLetter',
-            letter: 'a',
+            letter: 'b',
         });
-        expect(wordStateManager.state.word).toEqual('aa');
+        expect(wordStateManager.state.word).toEqual('ab');
     });
 
     it('should correctly apply optimistic actions', async () => {
@@ -113,6 +113,7 @@ describe('OptimisticActionHandler', () => {
         );
         // should be synchronously applied
         expect(wordStateManager.state.word).toEqual('a');
+        // the response from the server to the proposed action
         optimisticActionHandler.performAction({
             type: 'addLetter',
             letter: 'a',
@@ -140,7 +141,7 @@ describe('OptimisticActionHandler', () => {
         wordStateManager.respondToProposedAction({ success: true });
         await proposedAction;
         expect(wordStateManager.state.word).toEqual('b');
-        // this is the response from the server for the optimistic action send at the beginning
+        // this is the response from the server for the optimistic action sent at the beginning
         optimisticActionHandler.performAction({
             type: 'addLetter',
             letter: 'a',
@@ -148,80 +149,80 @@ describe('OptimisticActionHandler', () => {
         expect(wordStateManager.state.word).toEqual('ba');
     });
 
-    it('should perform already proposed actions after the optimised update is done', async () => {
-        const action1 = {
+    it('should perform already proposed actions after the optimistic update is done', async () => {
+        const actionA = {
             type: 'addLetter',
             letter: 'a',
         } as const;
-        const action2 = {
+        const actionB = {
             type: 'addLetter',
             letter: 'b',
         } as const;
-        const action3 = {
+        const actionC = {
             type: 'addLetter',
             letter: 'c',
         } as const;
-        const action4 = {
+        const actionD = {
             type: 'addLetter',
             letter: 'd',
         } as const;
 
-        const optimisticAction1 = optimisticActionHandler.proposeAction(
-            action1,
+        const optimisticProposalA = optimisticActionHandler.proposeAction(
+            actionA,
             true
         );
         expect(wordStateManager.state.word).toEqual('a');
 
-        const normalAction2 = optimisticActionHandler.proposeAction(
-            action2,
+        const normalProposalB = optimisticActionHandler.proposeAction(
+            actionB,
             false
         );
         expect(wordStateManager.state.word).toEqual('a');
 
-        const optimisticAction3 = optimisticActionHandler.proposeAction(
-            action3,
+        const optimisticProposalC = optimisticActionHandler.proposeAction(
+            actionC,
             true
         );
         expect(wordStateManager.state.word).toEqual('ac');
 
-        const normalAction4 = optimisticActionHandler.proposeAction(
-            action4,
+        const normalProposalD = optimisticActionHandler.proposeAction(
+            actionD,
             false
         );
         expect(wordStateManager.state.word).toEqual('ac');
 
-        optimisticActionHandler.performAction(action1);
+        optimisticActionHandler.performAction(actionA);
         expect(wordStateManager.state.word).toEqual('aca');
 
         wordStateManager.respondToProposedAction({ success: true });
-        await optimisticAction1;
+        await optimisticProposalA;
         expect(wordStateManager.state.word).toEqual('ac');
-        expectAsync(normalAction2).toBePending();
-        expectAsync(optimisticAction3).toBePending();
-        expectAsync(normalAction4).toBePending();
+        expectAsync(normalProposalB).toBePending();
+        expectAsync(optimisticProposalC).toBePending();
+        expectAsync(normalProposalD).toBePending();
 
-        optimisticActionHandler.performAction(action2);
+        optimisticActionHandler.performAction(actionB);
         expect(wordStateManager.state.word).toEqual('acb');
 
         wordStateManager.respondToProposedAction({ success: true });
-        await normalAction2;
+        await normalProposalB;
         expect(wordStateManager.state.word).toEqual('acb');
-        expectAsync(optimisticAction3).toBePending();
-        expectAsync(normalAction4).toBePending();
+        expectAsync(optimisticProposalC).toBePending();
+        expectAsync(normalProposalD).toBePending();
 
-        optimisticActionHandler.performAction(action3);
+        optimisticActionHandler.performAction(actionC);
         expect(wordStateManager.state.word).toEqual('acbc');
 
         wordStateManager.respondToProposedAction({ success: true });
-        await optimisticAction3;
+        await optimisticProposalC;
         expect(wordStateManager.state.word).toEqual('abc');
-        expectAsync(normalAction4).toBePending();
+        expectAsync(normalProposalD).toBePending();
 
-        optimisticActionHandler.performAction(action4);
+        optimisticActionHandler.performAction(actionD);
         expect(wordStateManager.state.word).toEqual('abcd');
 
         wordStateManager.respondToProposedAction({ success: true });
-        await normalAction4;
+        await normalProposalD;
         expect(wordStateManager.state.word).toEqual('abcd');
     });
 });

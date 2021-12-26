@@ -63,7 +63,7 @@ export class OptimisticActionHandler<
         beOptimistic: boolean
     ): Promise<ServerResponse> {
         if (this.isWaiting) {
-            // apply the action if the it's optimistic
+            // directly apply the action if it's optimistic
             if (beOptimistic) {
                 // the state we will reset to later has already been saved by the action we are currently waiting for
                 this.applyAction(proposedAction);
