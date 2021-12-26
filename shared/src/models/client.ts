@@ -1,6 +1,5 @@
 import { IsOptional, IsString, IsUUID } from 'class-validator';
-import type { UUID } from '../utils';
-import { uuid, uuidValidationOptions } from '../utils';
+import { UUID, uuid, uuidValidationOptions } from '../utils';
 import type { Role } from './utils';
 
 export class Client {

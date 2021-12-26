@@ -1,7 +1,6 @@
 import { IsUUID, ValidateNested } from 'class-validator';
-import type { UUID } from '../utils';
-import { uuid, uuidValidationOptions } from '../utils';
-import type { Patient } from '.';
+import { UUID, uuid, uuidValidationOptions } from '../utils';
+import type { Patient } from './patient';
 
 export class PatientTemplate {
     @IsUUID(4, uuidValidationOptions)
