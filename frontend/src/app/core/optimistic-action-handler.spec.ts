@@ -1,10 +1,51 @@
 import { OptimisticActionHandler } from './optimistic-action-handler';
 
-describe('OptimisticActionHandler', () => {
-    let state = { word: '' };
+/**
+ * A helper class for testing the optimistic action handler.
+ */
+class WordStateManager {
     /**
-     * The proposed action fails always if the letter is `0`
+     * The current immutable state
      */
+    public state = { word: '' };
+
+    /**
+     * Applies an action to the (immutable) state
+     */
+    public applyAction(action: { type: 'addLetter'; letter: string }) {
+        this.state = { word: this.state.word + action.letter };
+    }
+
+    /**
+     * The proposed actions that are still waiting for a response
+     */
+    private readonly proposedActionQueue: {
+        resolve: (value: { success: boolean }) => void;
+    }[] = [];
+    /**
+     * (Would) Send a proposed action to the server
+     */
+    public async sendAction(action: {
+        type: 'addLetter';
+        letter: string;
+    }): Promise<{ success: boolean }> {
+        return new Promise((resolve) => {
+            this.proposedActionQueue.push({
+                resolve,
+            });
+        });
+    }
+
+    /**
+     * Responds to the first proposed action that hasn't been responded to yet
+     */
+    public respondToProposedAction(response: { success: boolean }) {
+        this.proposedActionQueue.shift()!.resolve(response);
+    }
+}
+
+describe('OptimisticActionHandler', () => {
+    let wordStateManager = new WordStateManager();
     let optimisticActionHandler: OptimisticActionHandler<
         {
             type: 'addLetter';
@@ -15,59 +56,51 @@ describe('OptimisticActionHandler', () => {
     >;
 
     beforeEach(() => {
-        state = { word: '' };
+        wordStateManager = new WordStateManager();
         optimisticActionHandler = new OptimisticActionHandler(
-            (newState) => (state = newState),
-            () => state,
-            (action) => {
-                // this has to be immutable
-                state = { word: state.word + action.letter };
-            },
-            async (action) => {
-                if (action.letter === '0') {
-                    return { success: false };
-                }
-                return { success: true };
-            }
+            (newState) => (wordStateManager.state = newState),
+            () => wordStateManager.state,
+            (action) => wordStateManager.applyAction(action),
+            async (action) => wordStateManager.sendAction(action)
         );
     });
 
     it('should correctly apply not optimistic proposed actions', async () => {
-        expect(
-            await optimisticActionHandler.proposeAction(
-                {
-                    type: 'addLetter',
-                    letter: 'a',
-                },
-                false
-            )
-        ).toEqual({ success: true });
+        const proposedAction1 = optimisticActionHandler.proposeAction(
+            {
+                type: 'addLetter',
+                letter: 'a',
+            },
+            false
+        );
+        wordStateManager.respondToProposedAction({ success: true });
+        expect(await proposedAction1).toEqual({ success: true });
         // the state should only be updated via the performAction call
-        expect(state.word).toEqual('');
-        expect(
-            await optimisticActionHandler.proposeAction(
-                {
-                    type: 'addLetter',
-                    letter: '0',
-                },
-                false
-            )
-        ).toEqual({ success: false });
-        expect(state.word).toEqual('');
+        expect(wordStateManager.state.word).toEqual('');
+        const proposedAction2 = optimisticActionHandler.proposeAction(
+            {
+                type: 'addLetter',
+                letter: '0',
+            },
+            false
+        );
+        wordStateManager.respondToProposedAction({ success: false });
+        expect(await proposedAction2).toEqual({ success: false });
+        expect(wordStateManager.state.word).toEqual('');
     });
 
-    it('should correctly perform an action', async () => {
+    it('should correctly perform actions', async () => {
         optimisticActionHandler.performAction({
             type: 'addLetter',
             letter: 'a',
         });
-        expect(state.word).toEqual('a');
+        expect(wordStateManager.state.word).toEqual('a');
 
         optimisticActionHandler.performAction({
             type: 'addLetter',
-            letter: 'a',
+            letter: 'b',
         });
-        expect(state.word).toEqual('aa');
+        expect(wordStateManager.state.word).toEqual('ab');
     });
 
     it('should correctly apply optimistic actions', async () => {
@@ -79,14 +112,16 @@ describe('OptimisticActionHandler', () => {
             true
         );
         // should be synchronously applied
-        expect(state.word).toEqual('a');
-        await proposedAction;
-        expect(state.word).toEqual('');
+        expect(wordStateManager.state.word).toEqual('a');
+        // the response from the server to the proposed action
         optimisticActionHandler.performAction({
             type: 'addLetter',
             letter: 'a',
         });
-        expect(state.word).toEqual('a');
+        expect(wordStateManager.state.word).toEqual('aa');
+        wordStateManager.respondToProposedAction({ success: true });
+        await proposedAction;
+        expect(wordStateManager.state.word).toEqual('a');
     });
 
     it('should keep the right order when applying optimistic updates and performed updates', async () => {
@@ -97,75 +132,97 @@ describe('OptimisticActionHandler', () => {
             },
             true
         );
-        expect(state.word).toEqual('a');
+        expect(wordStateManager.state.word).toEqual('a');
         optimisticActionHandler.performAction({
             type: 'addLetter',
             letter: 'b',
         });
-        expect(state.word).toEqual('ab');
+        expect(wordStateManager.state.word).toEqual('ab');
+        wordStateManager.respondToProposedAction({ success: true });
         await proposedAction;
-        expect(state.word).toEqual('b');
-        // this is the response from the server for the optimistic action send at the beginning
+        expect(wordStateManager.state.word).toEqual('b');
+        // this is the response from the server for the optimistic action sent at the beginning
         optimisticActionHandler.performAction({
             type: 'addLetter',
             letter: 'a',
         });
-        expect(state.word).toEqual('ba');
+        expect(wordStateManager.state.word).toEqual('ba');
     });
 
-    it('should perform already proposed actions after the optimised update is done', async () => {
-        const action1 = {
+    it('should perform already proposed actions after the optimistic update is done', async () => {
+        const actionA = {
             type: 'addLetter',
             letter: 'a',
         } as const;
-        const action2 = {
+        const actionB = {
             type: 'addLetter',
             letter: 'b',
         } as const;
-        const action3 = {
+        const actionC = {
             type: 'addLetter',
             letter: 'c',
         } as const;
-        const action4 = {
+        const actionD = {
             type: 'addLetter',
             letter: 'd',
         } as const;
 
-        const optimisticAction1 = optimisticActionHandler.proposeAction(
-            action1,
+        const optimisticProposalA = optimisticActionHandler.proposeAction(
+            actionA,
             true
         );
-        const normalAction2 = optimisticActionHandler.proposeAction(
-            action2,
+        expect(wordStateManager.state.word).toEqual('a');
+
+        const normalProposalB = optimisticActionHandler.proposeAction(
+            actionB,
             false
         );
-        const optimisticAction3 = optimisticActionHandler.proposeAction(
-            action3,
+        expect(wordStateManager.state.word).toEqual('a');
+
+        const optimisticProposalC = optimisticActionHandler.proposeAction(
+            actionC,
             true
         );
-        const normalAction4 = optimisticActionHandler.proposeAction(
-            action4,
+        expect(wordStateManager.state.word).toEqual('ac');
+
+        const normalProposalD = optimisticActionHandler.proposeAction(
+            actionD,
             false
         );
-        expect(state.word).toEqual('a');
-        await optimisticAction1;
-        expect(state.word).toEqual('');
-        optimisticActionHandler.performAction(action1);
-        expect(state.word).toEqual('a');
-        expectAsync(optimisticAction3).toBePending();
-        expectAsync(normalAction4).toBePending();
+        expect(wordStateManager.state.word).toEqual('ac');
 
-        await normalAction2;
-        optimisticActionHandler.performAction(action2);
-        expect(state.word).toEqual('ab');
-        expectAsync(normalAction4).toBePending();
+        optimisticActionHandler.performAction(actionA);
+        expect(wordStateManager.state.word).toEqual('aca');
 
-        await optimisticAction3;
-        optimisticActionHandler.performAction(action3);
-        expect(state.word).toEqual('abc');
+        wordStateManager.respondToProposedAction({ success: true });
+        await optimisticProposalA;
+        expect(wordStateManager.state.word).toEqual('ac');
+        expectAsync(normalProposalB).toBePending();
+        expectAsync(optimisticProposalC).toBePending();
+        expectAsync(normalProposalD).toBePending();
 
-        await normalAction4;
-        optimisticActionHandler.performAction(action4);
-        expect(state.word).toEqual('abcd');
+        optimisticActionHandler.performAction(actionB);
+        expect(wordStateManager.state.word).toEqual('acb');
+
+        wordStateManager.respondToProposedAction({ success: true });
+        await normalProposalB;
+        expect(wordStateManager.state.word).toEqual('acb');
+        expectAsync(optimisticProposalC).toBePending();
+        expectAsync(normalProposalD).toBePending();
+
+        optimisticActionHandler.performAction(actionC);
+        expect(wordStateManager.state.word).toEqual('acbc');
+
+        wordStateManager.respondToProposedAction({ success: true });
+        await optimisticProposalC;
+        expect(wordStateManager.state.word).toEqual('abc');
+        expectAsync(normalProposalD).toBePending();
+
+        optimisticActionHandler.performAction(actionD);
+        expect(wordStateManager.state.word).toEqual('abcd');
+
+        wordStateManager.respondToProposedAction({ success: true });
+        await normalProposalD;
+        expect(wordStateManager.state.word).toEqual('abcd');
     });
 });
