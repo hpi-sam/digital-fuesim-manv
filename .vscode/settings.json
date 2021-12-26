@@ -1,4 +1,10 @@
 {
     "eslint.workingDirectories": ["./backend", "./shared", "./frontend"],
-    "jest.jestCommandLine": "node_modules\\.bin\\jest"
+    "jest.jestCommandLine": "node_modules\\.bin\\jest",
+    // See https://github.com/jest-community/vscode-jest/issues/757#issuecomment-905067951 and following 2 cooments
+    "jest.autoRun": {
+        "watch": false,
+        "onSave": "test-src-file",
+        "onStartup": ["all-tests"]
+    }
 }
