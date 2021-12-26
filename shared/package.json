@@ -15,7 +15,7 @@
         "watch": "tsc -p tsconfig.build.json --watch",
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,html}\"",
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,html}\"",
-        "test:watch": "jest --runInBand --coverage --verbose --watch"
+        "test:watch": "jest --runInBand --verbose --watch"
     },
     "private": true,
     "engines": {
