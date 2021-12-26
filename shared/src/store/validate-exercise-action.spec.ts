@@ -3,7 +3,7 @@ import type { ExerciseAction } from '.';
 import { validateExerciseAction } from '.';
 
 describe('validateExerciseAction', () => {
-    it('should accept an valid action object', () => {
+    it('should accept a valid action object', () => {
         expect(
             validateExerciseAction({
                 type: '[Viewport] Remove viewport',
