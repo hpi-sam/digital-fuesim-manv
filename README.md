@@ -31,11 +31,21 @@ If you are using [vscode](https://code.visualstudio.com/), you can run the [task
 There are already the following [debug configurations](https://code.visualstudio.com/docs/editor/debugging) for vscode saved:
 
 -   [frontend] Launch Chrome against localhost
+-   Debug Jest Tests
 
 In addition you can make use of the following browser extensions:
 
 -   [Angular DevTools](https://chrome.google.com/webstore/detail/angular-devtools/ienfalfjdbdpebioblfackkekamfmbnh)
 -   [Redux DevTools Extension](https://github.com/zalmoxisus/redux-devtools-extension/) for [NgRx](https://ngrx.io/guide/store-devtools)
+
+## Testing
+
+We are using [Jest](https://jestjs.io/) for our unit tests.
+
+You can run it during development
+
+-   from the terminal via `npm run test:watch` in the root, `/shared`, `/backend` or `/frontend` folder
+-   or via the [recommended vscode extension](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest).
 
 ## Styleguide
 
