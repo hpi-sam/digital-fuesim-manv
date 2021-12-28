@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-namespace */
+/* eslint-disable @typescript-eslint/method-signature-style */
 // ***********************************************************
 // This example support/index.js is processed and
 // loaded automatically before your test files.
@@ -14,4 +16,31 @@
 // ***********************************************************
 
 // When a command from ./commands is ready to use, import with `import './commands'` syntax
-// import './commands';
+import './commands';
+
+/// <reference types="cypress" />
+declare global {
+    namespace Cypress {
+        interface Chainable {
+            /**
+             * @param name The name of the snapshots that will be generated
+             * @param testThreshold A number between 0 and 1 that represents the allowed percentage of pixels that can be different between the two snapshots
+             * @example cy.compareSnapshot('empty-canvas', 0.1)
+             */
+            compareSnapshot(
+                name: string,
+                testThreshold: number,
+                retryOptions?: {
+                    /**
+                     * The maximum number of retries
+                     */
+                    limit: number;
+                    /**
+                     * Delay before next iteration in ms
+                     */
+                    delay: number;
+                }
+            ): Chainable<Element>;
+        }
+    }
+}

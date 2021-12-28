@@ -27,4 +27,9 @@ describe('The landing page', () => {
         cy.contains('Add').click();
         cy.get('.container').should('contain', '2');
     });
+
+    it('is possible to make visual regression tests (for e.g. a canvas)', () => {
+        cy.visit('/');
+        cy.get('.container').compareSnapshot('landing page', 0.1);
+    });
 });

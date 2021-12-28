@@ -26,6 +26,8 @@ testem.log
 /cypress/screenshots
 /cypress/videos
 /cypress/downloads
+/cypress-visual-screenshots/comparison
+/cypress-visual-screenshots/diff
 
 # System Files
 .DS_Store
