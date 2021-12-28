@@ -2,6 +2,16 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Start all & cypress",
+            "dependsOn": [
+                "Start frontend",
+                "Start backend",
+                "Watch shared",
+                "Start cypress"
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "Start all",
             "dependsOn": ["Start frontend", "Start backend", "Watch shared"],
             "isBackground": true,
@@ -11,6 +21,13 @@
             "label": "Start frontend",
             "type": "npm",
             "script": "start",
+            "path": "frontend/",
+            "problemMatcher": []
+        },
+        {
+            "label": "Start cypress",
+            "type": "npm",
+            "script": "cy:open",
             "path": "frontend/",
             "problemMatcher": []
         },
