@@ -11,30 +11,19 @@
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}/frontend"
         },
-        // See https://medium.com/nextfaze/debug-angular-10-karma-tests-in-vscode-9685b0565e8
+        // See https://jestjs.io/docs/troubleshooting#debugging-in-vs-code
         {
-            "name": "[frontend] Attach to Karma",
-            "type": "pwa-chrome",
-            "request": "attach",
-            "address": "localhost",
-            "restart": true,
-            "port": 9222,
-            "timeout": 600000,
-            "sourceMaps": true,
-            "webRoot": "${workspaceFolder}/frontend",
-            "pathMapping": {
-                "/_karma_webpack_": "${workspaceFolder}/frontend"
-            }
-        },
-        {
-            "name": "[frontend] Run test file",
+            "name": "Debug Jest Tests",
             "type": "node",
             "request": "launch",
-            "skipFiles": ["<node_internals>/**"],
+            "runtimeArgs": [
+                "--inspect-brk",
+                "${workspaceRoot}/node_modules/jest/bin/jest.js",
+                "--runInBand"
+            ],
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/frontend/node_modules/.bin/ng",
-            "args": ["test", "--include", "${relativeFile}"],
-            "outFiles": ["${workspaceFolder}/frontend/**/*.js"]
+            "internalConsoleOptions": "neverOpen",
+            "port": 9229
         }
     ]
 }

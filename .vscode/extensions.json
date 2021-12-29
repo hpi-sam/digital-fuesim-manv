@@ -14,6 +14,7 @@
         "wallabyjs.quokka-vscode",
         "wayou.vscode-todo-highlight",
         "visualstudioexptteam.vscodeintellicode",
+        "orta.vscode-jest",
         // frontend
         "angular.ng-template",
         "ghaschel.vscode-angular-html",

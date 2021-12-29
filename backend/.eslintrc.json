@@ -2,13 +2,13 @@
     "root": true,
     "overrides": [
         {
-            "files": ["*.ts"],
+            "files": ["*.ts", "*.js"],
             "parserOptions": {
                 "project": ["tsconfig.json"],
                 "createDefaultProgram": true
             },
             "parser": "@typescript-eslint/parser",
-            "extends": ["../eslint/typescript.eslintrc.js", "prettier"]
+            "extends": ["../eslint/typescript.eslintrc.cjs", "prettier"]
         }
     ]
 }

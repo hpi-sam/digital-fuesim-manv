@@ -1,6 +1,6 @@
 /**
  * This extension should be imported in projects with angular components.
- * Be aware that the `typescript.eslintrc.js` file should be imported afterwards.
+ * Be aware that the `typescript.eslintrc.cjs` file should be imported afterwards.
  */
 module.exports = {
     plugins: [

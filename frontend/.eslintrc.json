@@ -3,15 +3,15 @@
     "ignorePatterns": "index.html",
     "overrides": [
         {
-            "files": ["*.ts"],
+            "files": ["*.ts", "*.js"],
             "parserOptions": {
                 "project": ["tsconfig.json"],
                 "createDefaultProgram": true
             },
             "parser": "@typescript-eslint/parser",
             "extends": [
-                "../eslint/angular-typescript.eslintrc.js",
-                "../eslint/typescript.eslintrc.js",
+                "../eslint/angular-typescript.eslintrc.cjs",
+                "../eslint/typescript.eslintrc.cjs",
                 "prettier"
             ]
         },
@@ -22,7 +22,7 @@
                 "createDefaultProgram": true
             },
             "parser": "@angular-eslint/template-parser",
-            "extends": ["../eslint/angular-template.eslintrc.js"]
+            "extends": ["../eslint/angular-template.eslintrc.cjs"]
         }
     ]
 }
