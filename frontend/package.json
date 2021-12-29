@@ -1,6 +1,7 @@
 {
     "name": "digital-fuesim-manv-frontend",
     "version": "0.0.0",
+    "type": "module",
     "scripts": {
         "cy:open": "cypress open",
         "cy:run": "cypress run",
@@ -9,9 +10,9 @@
         "start": "ng serve",
         "build": "ng build",
         "watch": "ng build --watch --configuration development",
-        "test": "ng test --watch=false",
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,css,sccs,html,angular}\"",
-        "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,css,sccs,html,angular}\""
+        "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,css,sccs,html,angular}\"",
+        "test:watch": "jest --runInBand --verbose --watch"
     },
     "private": true,
     "engines": {
@@ -47,6 +48,7 @@
         "@angular/compiler-cli": "~13.0.0",
         "@briebug/cypress-schematic": "^5.0.1",
         "@types/jasmine": "~3.10.0",
+        "@types/jest": "^27.0.3",
         "@types/lodash-es": "^4.17.5",
         "@types/node": "^12.11.1",
         "@typescript-eslint/eslint-plugin": "5.7.0",
@@ -60,11 +62,8 @@
         "eslint-plugin-rxjs-angular": "^2.0.0",
         "eslint-plugin-unicorn": "^39.0.0",
         "jasmine-core": "~3.10.0",
-        "karma": "~6.3.0",
-        "karma-chrome-launcher": "~3.1.0",
-        "karma-coverage": "~2.0.3",
-        "karma-jasmine": "~4.0.0",
-        "karma-jasmine-html-reporter": "~1.7.0",
+        "jest": "^27.4.5",
+        "jest-preset-angular": "^11.0.1",
         "typescript": "~4.4.3"
     }
 }
