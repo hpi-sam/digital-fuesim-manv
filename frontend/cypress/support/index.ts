@@ -18,28 +18,22 @@
 // When a command from ./commands is ready to use, import with `import './commands'` syntax
 import './commands';
 
+import type { RecurseDefaults } from 'cypress-recurse';
+
 /// <reference types="cypress" />
 declare global {
     namespace Cypress {
         interface Chainable {
             /**
              * @param name The name of the snapshots that will be generated
-             * @param testThreshold A number between 0 and 1 that represents the allowed percentage of pixels that can be different between the two snapshots
+             * @param testThreshold @default 0 A number between 0 and 1 that represents the allowed percentage of pixels that can be different between the two snapshots
+             * @param retryOptions @default { limit: 0, timeout: Cypress.config('defaultCommandTimeout'), delay: Cypress.config('defaultCommandTimeout') / 5 }
              * @example cy.compareSnapshot('empty-canvas', 0.1)
              */
             compareSnapshot(
                 name: string,
-                testThreshold: number,
-                retryOptions?: {
-                    /**
-                     * The maximum number of retries
-                     */
-                    limit: number;
-                    /**
-                     * Delay before next iteration in ms
-                     */
-                    delay: number;
-                }
+                testThreshold?: number,
+                retryOptions?: typeof RecurseDefaults
             ): Chainable<Element>;
         }
     }
