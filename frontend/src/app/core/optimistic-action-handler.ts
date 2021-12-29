@@ -1,3 +1,5 @@
+import type { Immutable } from 'digital-fuesim-manv-shared';
+
 /**
  * This class handels optimistic actions on a state.
  * The following assertions have to be met:
@@ -8,13 +10,15 @@
 export class OptimisticActionHandler<
     Action extends object,
     State extends object,
-    ServerResponse
+    ServerResponse,
+    ImmutableAction extends Immutable<Action> = Immutable<Action>,
+    ImmutableState extends Immutable<State> = Immutable<State>
 > {
     /**
      * The actions that should be proposed to the server after the waiting period has passed
      */
     private readonly proposeActionQueue: {
-        action: Action;
+        action: ImmutableAction;
         optimistic: boolean;
         resolve: (
             response: PromiseLike<ServerResponse> | ServerResponse
@@ -23,7 +27,7 @@ export class OptimisticActionHandler<
     /**
      * The actions that have been send from the server and should be performed since the start of the current waiting period
      */
-    private performActionQueue: Action[] = [];
+    private performActionQueue: ImmutableAction[] = [];
 
     /**
      * Wether we are waiting for the response to an optimistic action
@@ -33,23 +37,22 @@ export class OptimisticActionHandler<
     constructor(
         /**
          * This function has to set the state synchronously to another value
-         * The state is required to be immutable!
          */
-        private readonly setState: (state: State) => void,
+        private readonly setState: (state: ImmutableState) => void,
         /**
          * Returns the current state synchronously
-         * The state is required to be immutable!
          */
-        private readonly getState: () => State,
+        private readonly getState: () => ImmutableState,
         /**
          * Applies (reduces) the state to the state
-         * The state is required to be immutable!
          */
-        private readonly applyAction: (action: Action) => void,
+        private readonly applyAction: (action: ImmutableAction) => void,
         /**
          * Sends the action to the server and resolves with a response
          */
-        private readonly sendAction: (action: Action) => Promise<ServerResponse>
+        private readonly sendAction: (
+            action: ImmutableAction
+        ) => Promise<ServerResponse>
     ) {}
 
     /**
@@ -58,7 +61,7 @@ export class OptimisticActionHandler<
      * @param beOptimistic wether the action should be applied before the server responds (in a way that the state doesn't get corrupted because of another action order on the server side)
      * @returns the response of the server
      */
-    public async proposeAction<A extends Action>(
+    public async proposeAction<A extends ImmutableAction>(
         proposedAction: A,
         beOptimistic: boolean
     ): Promise<ServerResponse> {
@@ -110,7 +113,7 @@ export class OptimisticActionHandler<
      * It is expected that successfully proposed actions are applied via this function too
      * @param action
      */
-    public performAction<A extends Action>(action: A) {
+    public performAction<A extends ImmutableAction>(action: A) {
         if (this.isWaiting) {
             this.performActionQueue.push(action);
         }
