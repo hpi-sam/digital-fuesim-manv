@@ -4,11 +4,14 @@ on: push
 
 jobs:
     build:
+        timeout-minutes: 10
         runs-on: ${{ matrix.os }}
 
         strategy:
             matrix:
-                os: [ubuntu-latest, windows-latest, macos-latest]
+                # As the CI seems to have high run times, limit it to ubuntu-latest
+                # os: [ubuntu-latest, windows-latest, macos-latest]
+                os: [ubuntu-latest]
             fail-fast: false
 
         steps:
@@ -42,6 +45,7 @@ jobs:
               if: steps.cache-node-modules.outputs.cache-hit != 'true'
               run: cd frontend && npm i && cd ../backend && npm i && cd ..
     lint:
+        timeout-minutes: 10
         runs-on: ${{ matrix.os }}
 
         needs: build
@@ -86,13 +90,16 @@ jobs:
             - name: Run Prettier
               run: npm run prettier:check
     test:
+        timeout-minutes: 10
         runs-on: ${{ matrix.os }}
 
         needs: build
 
         strategy:
             matrix:
-                os: [ubuntu-latest, windows-latest, macos-latest]
+                # As the CI seems to have high run times, limit it to ubuntu-latest
+                # os: [ubuntu-latest, windows-latest, macos-latest]
+                os: [ubuntu-latest]
                 environment: [shared, frontend, backend]
             fail-fast: false
 
