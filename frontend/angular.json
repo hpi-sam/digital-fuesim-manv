@@ -149,30 +149,6 @@
                     "options": {
                         "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
                     }
-                },
-                "cypress-run": {
-                    "builder": "@briebug/cypress-schematic:cypress",
-                    "options": {
-                        "devServerTarget": "digital-fuesim-manv:serve"
-                    },
-                    "configurations": {
-                        "production": {
-                            "devServerTarget": "digital-fuesim-manv:serve:production"
-                        }
-                    }
-                },
-                "cypress-open": {
-                    "builder": "@briebug/cypress-schematic:cypress",
-                    "options": {
-                        "devServerTarget": "digital-fuesim-manv:serve",
-                        "watch": true,
-                        "headless": false
-                    },
-                    "configurations": {
-                        "production": {
-                            "devServerTarget": "digital-fuesim-manv:serve:production"
-                        }
-                    }
                 }
             }
         }
