@@ -44,11 +44,11 @@ export class OptimisticActionHandler<
          */
         private readonly getState: () => ImmutableState,
         /**
-         * Applies (reduces) the state to the state
+         * Applies (reduces) the action to the state
          */
         private readonly applyAction: (action: ImmutableAction) => void,
         /**
-         * Sends the action to the server and resolves with a response
+         * Sends the action to the server and resolves with a the servers response
          */
         private readonly sendAction: (
             action: ImmutableAction
