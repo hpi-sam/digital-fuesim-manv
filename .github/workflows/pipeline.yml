@@ -37,7 +37,7 @@ jobs:
                       ${{ runner.os }}-
             - name: Install dependencies
               if: steps.cache-node-modules.outputs.cache-hit != 'true'
-              run: npm run install:all
+              run: cd shared && npm i && cd ..
             - name: Build shared
               if: steps.cache-node-modules.outputs.cache-hit != 'true'
               run: cd shared && npm run build && cd ..
@@ -76,15 +76,6 @@ jobs:
                       ${{ runner.os }}-build-${{ env.cache-name }}-
                       ${{ runner.os }}-build-
                       ${{ runner.os }}-
-            - name: Install dependencies
-              if: steps.cache-node-modules.outputs.cache-hit != 'true'
-              run: npm run install:all
-            - name: Build shared
-              if: steps.cache-node-modules.outputs.cache-hit != 'true'
-              run: cd shared && npm run build && cd ..
-            - name: Install shared to frontend & backend
-              if: steps.cache-node-modules.outputs.cache-hit != 'true'
-              run: cd frontend && npm i && cd ../backend && npm i && cd ..
             - name: Run ESLint
               run: npm run lint
             - name: Run Prettier
@@ -124,14 +115,5 @@ jobs:
                       ${{ runner.os }}-build-${{ env.cache-name }}-
                       ${{ runner.os }}-build-
                       ${{ runner.os }}-
-            - name: Install dependencies
-              if: steps.cache-node-modules.outputs.cache-hit != 'true'
-              run: npm run install:all
-            - name: Build shared
-              if: steps.cache-node-modules.outputs.cache-hit != 'true'
-              run: cd shared && npm run build && cd ..
-            - name: Install shared to frontend & backend
-              if: steps.cache-node-modules.outputs.cache-hit != 'true'
-              run: cd frontend && npm i && cd ../backend && npm i && cd ..
             - name: Run Tests
               run: cd ${{ matrix.environment }} && npm run test
