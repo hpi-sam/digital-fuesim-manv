@@ -108,4 +108,4 @@ A consequence of the synchronisation strategy described before is that it takes 
 This is where optimistic updates come into play. We just assume optimistically that the proposed action will be applied on the server. Therefore we can apply the action on the client directly without waiting for a `performAction` from the server.
 
 If the server rejects the proposal or one of various race conditions applies, the client corrects its state again.
-In our case the [optimisticActionHandler](./frontend\src\app\core\optimistic-action-handler.ts) encapsulates this functionality.
+In our case the [optimisticActionHandler](./frontend/src/app/core/optimistic-action-handler.ts) encapsulates this functionality.
