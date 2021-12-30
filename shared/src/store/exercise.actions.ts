@@ -4,9 +4,9 @@ import { UUID, Viewport, uuidValidationOptions, Patient } from '..';
 import type { Immutable } from '../utils/immutability';
 
 /**
- *  These actions are interfaces for POJOS used to update the store in the frontend and are send to the backend to apply the changes there too.
+ *  These actions are interfaces for immutable JSON objects used to update the store in the frontend and are send to the backend to apply the changes there too.
  *
- *  The classes themself should only be used to validate the POJOS in the backend, not to create them.
+ *  The classes themself should only be used to validate the JSON objects in the backend, not to create them.
  *  Instead you should use the classes solely as interfaces and instantiate them like this:
  *  ```ts
  *  const action: ExerciseActions.RemoveViewport = {

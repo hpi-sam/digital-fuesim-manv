@@ -75,7 +75,7 @@ We borrow these core concepts from [Redux](https://redux.js.org/).
 A JSON object is an object whose properties are only the primitives `string`, `number`, `boolean` or `null` or another JSON object or an array of any of these (only state - no `functions`).
 Any object reference can't occur more than once anywhere in an JSON object (including nested objects). This means especially that no circular references are possible.
 
-[An immutable object is an object whose state cannot be modified after it is created](https://en.wikipedia.org/wiki/Immutable_object).
+[An immutable object is an object whose state cannot be modified after it is created](https://en.wikipedia.org/wiki/Immutable_object). In the code immutability is conveyed via typescripts [readonly](https://www.typescriptlang.org/docs/handbook/2/objects.html#readonly-properties) and the helper type `Immutable<T>`.
 
 #### State
 
