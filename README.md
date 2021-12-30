@@ -63,8 +63,8 @@ One Server can be hosting multiple _exercises_. To each exercise multiple client
 
 This is a realtime application.
 The single point of truth for the whole state of an exercise is the server.
-Each client is connected to the server via a [websocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) connection.
-Via [SocketIO](https://socket.io/docs) it is also possible to easily send [acknowledgements](https://socket.io/docs/v4/emitting-events/#acknowledgements).
+Each client is connected to the server via a [websocket connection](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API).
+Via [socket.io](https://socket.io/docs) it is also possible to easily send [acknowledgements](https://socket.io/docs/v4/emitting-events/#acknowledgements).
 
 ### State, actions and reducers
 
@@ -86,6 +86,12 @@ You can find all exercise actions [here](./shared/store/exercise.actions.ts).
 A reducer is a [pure function](https://en.wikipedia.org/wiki/Pure_function) (no side effects!) that takes a state and an action and returns a new state where the changes described in the action are applied.
 A state can only be modified through a reducer.
 You can find all exercise reducers [here](./shared/store/exercise.reducer.ts).
+
+### Immutability
+
+Because the state is immutable and reducers (should) only update the properties that have changed, it is very performant to compare two states in the same context.
+Instead of comparing the values of all the properties, we can just compare the references and short circuit.
+It is also very performant to save a previous state, because we can just save its reference.
 
 ### Synchronisation
 
