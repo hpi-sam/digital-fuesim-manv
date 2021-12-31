@@ -1,23 +1,38 @@
-# DigitalFuesimManv
+# Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.0.4.
+This is an [angular](https://angular.io/) application. It doesn't run standalone but requires the built code from [shared](../shared) at building time and a working [backend](../backend) at runtime.
 
-## Development server
+Please look in the [root readme](../README.md) for general information about how to start and develop the whole application.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+### Code scaffolding
 
-## Code scaffolding
+You can either use the [Angular CLI](https://angular.io/cli):
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|guard|module|web-worker `.
 
-## Build
+Or an extension:
+[Angular Schematics (vscode)](https://marketplace.visualstudio.com/items?itemName=cyrilletuzi.angular-schematics).
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Architecture
 
-## Running end-to-end tests
+For most this is a typical angular-app.
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+We are calling Angular components, pipes, directives, services and modules "Angular elements".
 
-## Further help
+In [src/app/state](./src/app/state) are all actions, reducers, selectors and state that are used by [NGRX](https://ngrx.io/).
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+In `src/app` and every descending folder the following guidelines apply:
+
+-   `/core`:
+    -   singleton-services and route guards that can be used by all other Angular elements that are direct or indirect children of the `core`'s parent-folder
+-   `/shared`:
+    -   utility Angular elements as well as classes, functions, types etc. that (can) have multiple instances and can be used by all other Angular elements that are direct or indirect children of the `shared`'s parent-folder
+    -   every folder with Angular components, pipes or directives in a `shared`-folder should have it's own module, that exports these Angular elements
+-   `/feature`
+    -   here are components/pipes/directives that should only be used in the `/pages`-folder at the same level (in opposite to `/shared` no nested folders)
+-   `/pages`:
+    -   in here all all Angular elements and utilities located that are only used on the according route (-> lazy loading)
+
+### State management
+
+We are using [NGRX](https://ngrx.io/) for state management.
