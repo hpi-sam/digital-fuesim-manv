@@ -35,13 +35,13 @@ jobs:
                       ${{ runner.os }}-build-${{ env.cache-name }}-
                       ${{ runner.os }}-build-
                       ${{ runner.os }}-
-            - name: Install dependencies
+            - name: Install dependencies of shared
               if: steps.cache-node-modules.outputs.cache-hit != 'true'
               run: cd shared && npm i && cd ..
             - name: Build shared
               if: steps.cache-node-modules.outputs.cache-hit != 'true'
               run: cd shared && npm run build && cd ..
-            - name: Install shared to frontend & backend
+            - name: Install dependencies of frontend and backend
               if: steps.cache-node-modules.outputs.cache-hit != 'true'
               run: cd frontend && npm i && cd ../backend && npm i && cd ..
     lint:
