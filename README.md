@@ -81,7 +81,7 @@ Any object reference can't occur more than once anywhere in an JSON object (incl
 
 A state is an immutable JSON object. Each client as well as the server has a global state for an exercise. The single point of truth for all states of an exercise is the server. All these states should be synchronised.
 
-You can find the exercise state [here](./shared/state.ts).
+You can find the exercise state [here](./shared/src/state.ts).
 
 #### Action
 
@@ -89,14 +89,14 @@ An action is an immutable JSON object that describes what should be changed in a
 
 Actions can not be applied in parallel. The order of actions is important.
 
-You can find all exercise actions [here](./shared/store/exercise.actions.ts).
+You can find all exercise actions [here](./shared//src/store/exercise.actions.ts).
 
 #### Reducer
 
 A reducer is a [pure function](https://en.wikipedia.org/wiki/Pure_function) (no side effects!) that takes a state and an action of an specific type and returns a new state where the changes described in the action are applied. A state can only be modified by a reducer.
 It is advisable (but not guaranteed) that the reducer only changes the references of properties that have been changed.
 
-You can find all exercise reducers [here](./shared/store/exercise.reducer.ts).
+You can find all exercise reducers [here](./shared/src/store/exercise.reducer.ts).
 
 ### Immutability
 
