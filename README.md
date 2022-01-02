@@ -89,12 +89,15 @@ An action is an immutable JSON object that describes what should be changed in a
 
 Actions can not be applied in parallel. The order of actions is important.
 
+It is a bad practise to encode part of the state in the action (or from it derived/calculated values). Instead you should make these reads and calculations in the accompanying reducer.
+
 You can find all exercise actions [here](./shared//src/store/exercise.actions.ts).
 
 #### Reducer
 
 A reducer is a [pure function](https://en.wikipedia.org/wiki/Pure_function) (no side effects!) that takes a state and an action of an specific type and returns a new state where the changes described in the action are applied. A state can only be modified by a reducer.
-It is advisable (but not guaranteed) that the reducer only changes the references of properties that have been changed.
+
+To be able to apply certain optimisations it is advisable (but not necessary or guaranteed) that the reducer only changes the references of properties that have been changed.
 
 You can find all exercise reducers [here](./shared/src/store/exercise.reducer.ts).
 
@@ -102,6 +105,16 @@ You can find all exercise reducers [here](./shared/src/store/exercise.reducer.ts
 
 Because the state is immutable and reducers (should) only update the properties that have changed, it is very performant to compare two states in the same context, because can short circuit in comparisons between immutable objects, if the references of objects in a property are equal.
 It is also very performant to save a state, because we can just save a reference to a state to save it. If the state would have to be changed, a new reference is created, because the state is immutable.
+
+### Large values (WIP)
+
+Large values (images, large text, binary etc.) are not directly stored in the state. Instead the store only contains uuids that identify the blob. The blob can be retrieved via a separate (yet to be implemented) REST API.
+
+The blob that belongs to an uuid cannot be changed or deleted. To change a blob, a new one should be uploaded and the old uuid in the state replaced with the new one.
+
+If an action would add a new blobId to the state, the blob should have previously been uploaded to the server.
+
+A blob should only be downloaded on demand (lazy) and cached.
 
 ### Synchronisation
 
@@ -119,3 +132,7 @@ This is where optimistic updates come into play. We just assume optimistically t
 
 If the server rejects the proposal or one of various race conditions applies, the client corrects its state again.
 In our case the [optimisticActionHandler](./frontend/src/app/core/optimistic-action-handler.ts) encapsulates this functionality.
+
+The state in the frontend is not guaranteed to be correct. It is only guaranteed to automatically correct itself.
+
+If you need to read from the state to change it, you should do this inside the action reducer, because the `currentState` passed into a reducer is always guaranteed to be correct.
