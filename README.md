@@ -85,7 +85,7 @@ You can find the exercise state [here](./shared/src/state.ts).
 
 #### Action
 
-An action is an immutable JSON object that describes what should be changed in a state. The changes described by each action are [atomic](<https://en.wikipedia.org/wiki/Atomicity_(database_systems)>) - this means either all the changes described by an action occur or nothing at all.
+An action is an immutable JSON object that describes what should be changed in a state. The changes described by each action are [atomic](https://en.wikipedia.org/wiki/Atomicity_(database_systems)) - this means either all the changes described by an action occur or nothing at all.
 
 Actions can not be applied in parallel. The order of actions is important.
 
