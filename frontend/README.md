@@ -1,6 +1,6 @@
 # Frontend
 
-This is an [angular](https://angular.io/) application. It doesn't run standalone but requires the built code from [shared](../shared) at building time and a working [backend](../backend) at runtime.
+This is an [angular](https://angular.io/) application. It doesn't run standalone but requires the built code from [shared](../shared) at build time and a working [backend](../backend) at runtime.
 
 Please look in the [root readme](../README.md) for general information about how to start and develop the whole application.
 
