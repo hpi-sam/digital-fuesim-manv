@@ -48,7 +48,7 @@ export class OptimisticActionHandler<
          */
         private readonly applyAction: (action: ImmutableAction) => void,
         /**
-         * Sends the action to the server and resolves with a the servers response
+         * Sends the action to the server and resolves with the servers response
          */
         private readonly sendAction: (
             action: ImmutableAction
