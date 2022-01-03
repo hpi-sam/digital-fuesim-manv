@@ -1,6 +1,6 @@
 // TODO: we only want to use Immutable and Mutable for JsonObjects (not for Maps, Sets, Functions, ...)
 /**
- * An immutable object is an object whose state can not be modified.
+ * An immutable object is an object whose state cannot be modified.
  * Makes all properties in the given object readonly (recursive).
  */
 export type Immutable<T extends object> = {
