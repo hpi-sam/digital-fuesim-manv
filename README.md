@@ -95,7 +95,7 @@ You can find all exercise actions [here](./shared//src/store/exercise.actions.ts
 
 #### Reducer
 
-A reducer is a [pure function](https://en.wikipedia.org/wiki/Pure_function) (no side effects!) that takes a state and an action of an specific type and returns a new state where the changes described in the action are applied. A state can only be modified by a reducer.
+A reducer is a [pure function](https://en.wikipedia.org/wiki/Pure_function) (no side effects!) that takes a state and an action of a specific type and returns a new state where the changes described in the action are applied. A state can only be modified by a reducer.
 
 To be able to apply certain optimisations it is advisable (but not necessary or guaranteed) that the reducer only changes the references of properties that have been changed.
 
