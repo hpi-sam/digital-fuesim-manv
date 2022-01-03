@@ -121,7 +121,7 @@ A blob should only be downloaded on demand (lazy) and cached.
 ### Synchronisation
 
 1. A client gets a snapshot of the state from the server via `getState`.
-2. Always, when an action is applied on the server, it is send to all clients via `performAction` and applied on them too.
+2. Any time an action is applied on the server, it is send to all clients via `performAction` and applied on them too.
 3. A client can propose an action to the server via `proposeAction`.
 4. The server responds directly to this proposal with a response that indicates a success or rejection via an [acknowledgement](https://socket.io/docs/v4/emitting-events/#acknowledgements).
 5. If the proposal was accepted, the action is applied on the server and send to all clients via `performAction`.
