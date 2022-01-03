@@ -4,9 +4,7 @@
         {
             "label": "Start all & cypress",
             "dependsOn": [
-                "Start frontend",
-                "Start backend",
-                "Watch shared",
+                "Start all",
                 "Start cypress"
             ],
             "problemMatcher": []
