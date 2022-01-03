@@ -106,7 +106,7 @@ You can find all exercise reducers [here](./shared/src/store/exercise.reducer.ts
 Because the state is immutable and reducers (should) only update the properties that have changed, you can short circuit in comparisons between immutable objects, if the references of objects in a property are equal. Therefore it is very performant to compare two states in the same context.
 
 To save a state it is enough to save it's reference. Therefore it is very performant as well.
-If the state would have to be changed, a new reference is created, because the state is immutable.
+If the state would have to be changed, a new reference is created as the state is immutable.
 
 ### Large values (WIP)
 
