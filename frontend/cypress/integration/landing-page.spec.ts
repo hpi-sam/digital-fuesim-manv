@@ -7,10 +7,6 @@ describe('The landing page', () => {
         // or creating a new exercise
     });
 
-    after(() => {
-        // TODO: reset the state of the backend database
-    });
-
     it('loads the landing page', () => {
         cy.visit('/');
     });
