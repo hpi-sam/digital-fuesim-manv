@@ -3,6 +3,9 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
+        "cy:open": "cypress open",
+        "cy:run": "cypress run",
+        "cy:update-snapshots": "cypress-image-diff -u",
         "ng": "ng",
         "start": "ng serve",
         "build": "ng build",
@@ -48,6 +51,8 @@
         "@types/node": "^12.11.1",
         "@typescript-eslint/eslint-plugin": "5.7.0",
         "@typescript-eslint/parser": "5.7.0",
+        "cypress": "^9.2.0",
+        "cypress-image-diff-js": "^1.16.0",
         "eslint": "^8.5.0",
         "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-import": "~2.25.3",
