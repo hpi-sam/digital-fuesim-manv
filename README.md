@@ -89,7 +89,7 @@ An action is an immutable JSON object that describes what should be changed in a
 
 Actions cannot be applied in parallel. The order of actions is important.
 
-It is a bad practise to encode part of the state in the action (or values derived/calculated from it). Instead you should make these reads and calculations in the accompanying reducer.
+It is a bad practise to encode part of the state in the action (or values derived/calculated from it). Instead you should only read the state in the accompanying reducer.
 
 You can find all exercise actions [here](./shared//src/store/exercise.actions.ts).
 
