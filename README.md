@@ -112,7 +112,7 @@ If the state would have to be changed, a new reference is created as the state i
 
 Large values (images, large text, binary etc.) are not directly stored in the state. Instead the store only contains uuids that identify the blob. The blob can be retrieved via a separate (yet to be implemented) REST API.
 
-The blob that belongs to an uuid cannot be changed or deleted. To change a blob, a new one should be uploaded and the old uuid in the state replaced with the new one.
+The blob that belongs to an uuid cannot be changed or deleted while the state is still saved on the server. To change a blob, a new one should be uploaded and the old uuid in the state replaced with the new one.
 
 If an action would add a new blobId to the state, the blob should have previously been uploaded to the server.
 
@@ -132,7 +132,7 @@ A consequence of the synchronisation strategy described before is that it takes 
 
 This is where optimistic updates come into play. We just assume optimistically that the proposed action will be applied on the server. Therefore we can apply the action on the client directly without waiting for a `performAction` from the server.
 
-If the server rejects the proposal or one of various race conditions applies, the client corrects its state again.
+If the server rejects the proposal or a race condition occurs, the client corrects its state again.
 In our case the [optimisticActionHandler](./frontend/src/app/core/optimistic-action-handler.ts) encapsulates this functionality.
 
 The state in the frontend is not guaranteed to be correct. It is only guaranteed to automatically correct itself.
