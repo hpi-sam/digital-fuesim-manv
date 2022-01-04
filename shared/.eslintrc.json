@@ -8,7 +8,7 @@
                 "createDefaultProgram": true
             },
             "parser": "@typescript-eslint/parser",
-            "extends": ["../eslint/typescript.eslintrc.cjs", "prettier"]
+            "extends": ["../.eslint/typescript.eslintrc.cjs", "prettier"]
         }
     ]
 }

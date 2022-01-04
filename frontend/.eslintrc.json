@@ -10,8 +10,8 @@
             },
             "parser": "@typescript-eslint/parser",
             "extends": [
-                "../eslint/angular-typescript.eslintrc.cjs",
-                "../eslint/typescript.eslintrc.cjs",
+                "../.eslint/angular-typescript.eslintrc.cjs",
+                "../.eslint/typescript.eslintrc.cjs",
                 "prettier"
             ]
         },
@@ -22,7 +22,7 @@
                 "createDefaultProgram": true
             },
             "parser": "@angular-eslint/template-parser",
-            "extends": ["../eslint/angular-template.eslintrc.cjs"]
+            "extends": ["../.eslint/angular-template.eslintrc.cjs"]
         }
     ]
 }
