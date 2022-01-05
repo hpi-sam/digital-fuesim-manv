@@ -1,5 +1,6 @@
 import { produce } from 'immer';
 import type { ExerciseState } from '..';
+import type { Mutable } from '../utils/immutability';
 import type { ExerciseAction } from '.';
 
 /**
@@ -8,19 +9,23 @@ import type { ExerciseAction } from '.';
  * @param action The action to apply on the current state
  * @returns the new state
  */
-export function exerciseReducer(state: ExerciseState, action: ExerciseAction) {
+export function exerciseReducer(
+    state: ExerciseState,
+    action: ExerciseAction
+): ExerciseState {
     // use immer to convert mutating operations to immutable ones (https://immerjs.github.io/immer/produce)
     return produce(state, (draftState) =>
         // typescript doesn't narrow action and the reducer to the correct ones based on action.type
-        exerciseReducerMap[action.type](draftState!, action as any)
+        exerciseReducerMap[action.type](draftState, action as any)
     );
 }
 
 const exerciseReducerMap: {
     [Action in ExerciseAction as Action['type']]: (
-        state: ExerciseState,
+        // These functions can only work with a mutable state object, because we expect them to be executed in immers produce context.
+        state: Mutable<ExerciseState>,
         action: Action
-    ) => ExerciseState;
+    ) => Mutable<ExerciseState>;
 } = {
     '[Viewport] Add viewport': (state, { viewport }) => {
         state.viewports[viewport.id] = viewport;

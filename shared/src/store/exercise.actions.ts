@@ -1,12 +1,22 @@
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
 import { UUID, Viewport, uuidValidationOptions, Patient } from '..';
+import type { Immutable } from '../utils/immutability';
 
 /**
- *  These actions are POJOS used to update the store in the frontend and are send to the backend to apply the changes there too.
+ *  These actions are interfaces for immutable JSON objects used to update the store in the frontend and are send to the backend to apply the changes there too.
  *
- *  Their constructor must be callable without any arguments, to allow getting their type-value to validate the action objects in the backend.
- *  Their properties must be decorated with class-validator decorators to allow validating them in the backend.
+ *  The classes themself should only be used to validate the JSON objects in the backend, not to create them.
+ *  Instead you should use the classes solely as interfaces and instantiate them like this:
+ *  ```ts
+ *  const action: ExerciseActions.RemoveViewport = {
+ *      type: '[Viewport] Remove viewport',
+ *      viewportId: 'some-uuid',
+ *  };
+ *  ```
+ *
+ *  The constructor of an Action must be callable without any arguments, to allow getting their type-value to validate the action objects in the backend.
+ *  The properties of an Action must be decorated with class-validator decorators to allow validating them in the backend.
  */
 // Namespaces are basically transpiled to:
 // (function (exerciseActions) {
@@ -43,8 +53,8 @@ export namespace ExerciseActions {
     }
 }
 
-export type ExerciseAction = InstanceType<
-    typeof ExerciseActions[keyof typeof ExerciseActions]
+export type ExerciseAction = Immutable<
+    InstanceType<typeof ExerciseActions[keyof typeof ExerciseActions]>
 >;
 
 interface Action {
