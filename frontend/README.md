@@ -15,9 +15,9 @@ Or an extension:
 
 ## Architecture
 
-For most this is a typical angular-app.
+For most, the frontend follows the [project file structure dictated by angular](https://angular.io/guide/file-structure).
 
-We are calling Angular components, pipes, directives, services and modules "Angular elements".
+We call Angular components, pipes, directives, services and modules "Angular elements".
 
 In [src/app/state](./src/app/state) are all actions, reducers, selectors and state that are used by [NGRX](https://ngrx.io/).
 
@@ -28,10 +28,10 @@ In `src/app` and every descending folder the following guidelines apply:
 -   `/shared`:
     -   utility Angular elements as well as classes, functions, types etc. that (can) have multiple instances and can be used by all other Angular elements that are direct or indirect children of the `shared`'s parent-folder
     -   every folder with Angular components, pipes or directives in a `shared`-folder should have it's own module, that exports these Angular elements
--   `/feature`
+-   `/features`
     -   here are components/pipes/directives that should only be used in the `/pages`-folder at the same level (in opposite to `/shared` no nested folders)
 -   `/pages`:
-    -   in here all all Angular elements and utilities located that are only used on the according route (-> lazy loading)
+    -   in here all Angular elements and utilities located that are only used on the according route (-> lazy loading)
 
 ### State management
 
