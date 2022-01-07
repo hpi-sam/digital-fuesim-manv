@@ -23,21 +23,27 @@ export function exerciseReducer(
 const exerciseReducerMap: {
     [Action in ExerciseAction as Action['type']]: ReducerFunction<Action>;
 } = {
-    '[Viewport] Add viewport': (state, { viewport }) => {
-        state.viewports[viewport.id] = viewport;
-        return state;
+    '[Viewport] Add viewport': (draftState, { viewport }) => {
+        draftState.viewports[viewport.id] = viewport;
+        return draftState;
     },
-    '[Viewport] Remove viewport': (state, { viewportId }) => {
-        delete state.viewports[viewportId];
-        return state;
+    '[Viewport] Remove viewport': (draftState, { viewportId }) => {
+        if (!draftState.viewports[viewportId]) {
+            throw Error(`Viewport with id ${viewportId} does not exist`);
+        }
+        delete draftState.viewports[viewportId];
+        return draftState;
     },
-    '[Patient] Add patient': (state, { patient }) => {
-        state.patients[patient.id] = patient;
-        return state;
+    '[Patient] Add patient': (draftState, { patient }) => {
+        draftState.patients[patient.id] = patient;
+        return draftState;
     },
-    '[Patient] Remove patient': (state, { patientId }) => {
-        delete state.patients[patientId];
-        return state;
+    '[Patient] Remove patient': (draftState, { patientId }) => {
+        if (!draftState.patients[patientId]) {
+            throw Error(`Patient with id ${patientId} does not exist`);
+        }
+        delete draftState.patients[patientId];
+        return draftState;
     },
 };
 
