@@ -7,6 +7,7 @@ import type { ExerciseAction } from '.';
  * A pure reducer function that applies Actions on the provided state.
  * @param state The current state (immutable)
  * @param action The action to apply on the current state
+ * @throws Error if the action is not applicable on the current state
  * @returns the new state
  */
 export function exerciseReducer(
@@ -49,6 +50,9 @@ const exerciseReducerMap: {
 
 /**
  * A pure function that applies the action on the provided state.
+ *
+ * The function should throw an error if the action is not applicable on the provided state.
+ *
  * It is expected to be used inside [immers produce](https://immerjs.github.io/immer/produce).
  *
  * [For expensive search operations, read from the original state, not the draft](https://immerjs.github.io/immer/performance#for-expensive-search-operations-read-from-the-original-state-not-the-draft)
