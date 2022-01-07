@@ -1,3 +1,3 @@
 export * from './exercise.actions';
-export * from './exercise.reducer';
+export * from './reduce-exercise-state';
 export * from './validate-exercise-action';

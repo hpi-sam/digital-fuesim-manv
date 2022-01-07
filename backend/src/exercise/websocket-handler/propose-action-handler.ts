@@ -37,11 +37,10 @@ export const registerProposeActionHandler = (
             });
             return;
         }
-        // 5. TODO: send success response to emitting client
-        // 6. TODO: determine affected clients
-        // 7. send new state to all affected clients
-        // TODO: is this order of emits correct?
+        // 5. TODO: determine affected clients
+        // 6. send new state to all affected clients
         io.emit('performAction', action);
+        // 7. send success response to emitting client
         callback({
             success: true,
         });

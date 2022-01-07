@@ -1,6 +1,6 @@
 import type { ExerciseState, UUID, Viewport } from '..';
 import { uuid, generateExercise } from '..';
-import { exerciseReducer } from '.';
+import { reduceExerciseState } from '.';
 
 describe('exerciseReducer', () => {
     let state: ExerciseState;
@@ -15,14 +15,14 @@ describe('exerciseReducer', () => {
     }
 
     function addViewport(viewport: Viewport) {
-        state = exerciseReducer(state, {
+        state = reduceExerciseState(state, {
             type: '[Viewport] Add viewport',
             viewport,
         });
     }
 
     function removeViewport(viewportId: UUID) {
-        state = exerciseReducer(state, {
+        state = reduceExerciseState(state, {
             type: '[Viewport] Remove viewport',
             viewportId,
         });

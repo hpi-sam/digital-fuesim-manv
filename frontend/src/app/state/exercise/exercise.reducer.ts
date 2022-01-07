@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import type { ExerciseState } from 'digital-fuesim-manv-shared';
 import {
-    exerciseReducer as reduceExercise,
+    reduceExerciseState,
     generateExercise,
 } from 'digital-fuesim-manv-shared';
 import { applyServerAction, setExerciseState } from './exercise.actions';
@@ -14,7 +14,7 @@ export const exerciseReducer = createReducer(
     on(applyServerAction, (state, { serverAction }) => {
         let newState: ExerciseState | undefined;
         try {
-            newState = reduceExercise(state!, serverAction);
+            newState = reduceExerciseState(state!, serverAction);
         } catch (error: any) {
             console.warn(
                 `Error while applying server action: ${error.message} \n
