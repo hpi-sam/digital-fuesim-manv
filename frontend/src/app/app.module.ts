@@ -6,10 +6,9 @@ import { StoreModule } from '@ngrx/store';
 import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { appReducers } from './state/app.reducers';
 import type { AppState } from './state/app.state';
-import type { AppAction } from './state/app.actions';
 import { PatientsListComponent } from './components/patients-list/patients-list.component';
+import { appReducers } from './state/app.reducer';
 
 @NgModule({
     declarations: [AppComponent, PatientsListComponent],
@@ -18,7 +17,7 @@ import { PatientsListComponent } from './components/patients-list/patients-list.
         BrowserModule,
         FormsModule,
         AppRoutingModule,
-        StoreModule.forRoot<AppState, AppAction>(appReducers),
+        StoreModule.forRoot<AppState>(appReducers),
     ],
     providers: [],
     bootstrap: [AppComponent],

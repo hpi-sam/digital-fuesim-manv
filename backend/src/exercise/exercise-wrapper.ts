@@ -10,8 +10,13 @@ export class ExerciseWrapper {
         return this.currentState;
     }
 
+    /**
+     * Applies the action on the current state.
+     * @throws Error if the action is not applicable on the current state
+     */
     public reduce(action: ExerciseAction): void {
-        this.setState(exerciseReducer(this.currentState, action));
+        const newState = exerciseReducer(this.currentState, action);
+        this.setState(newState);
     }
 
     private setState(newExerciseState: ExerciseState): void {

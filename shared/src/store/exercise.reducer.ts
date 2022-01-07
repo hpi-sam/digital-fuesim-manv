@@ -4,7 +4,7 @@ import type { Mutable } from '../utils/immutability';
 import type { ExerciseAction } from '.';
 
 /**
- * A pure reducer function that applies Actions on the provided state.
+ * A pure reducer function that applies the action on the state without mutating it.
  * @param state The current state (immutable)
  * @param action The action to apply on the current state
  * @throws Error if the action is not applicable on the current state

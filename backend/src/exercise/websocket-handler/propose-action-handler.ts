@@ -28,7 +28,15 @@ export const registerProposeActionHandler = (
             return;
         }
         // 4. apply action (+ save to timeline)
-        exerciseWrapper.reduce(action);
+        try {
+            exerciseWrapper.reduce(action);
+        } catch (error: any) {
+            callback({
+                success: false,
+                message: error.message,
+            });
+            return;
+        }
         // 5. TODO: send success response to emitting client
         // 6. TODO: determine affected clients
         // 7. send new state to all affected clients
