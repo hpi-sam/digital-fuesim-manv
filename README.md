@@ -7,7 +7,7 @@ The official code for BP2021HG1.
 1. Install [NodeJs](https://nodejs.org/) (at least version 14.x)
 2. [npm](https://www.npmjs.com/) should already come with NodeJs - if not install it
 3. Clone this repository
-4. Run `npm run install:complete` from the root folder
+4. Run `npm run setup` from the root folder
 
 ## Starting for development
 
