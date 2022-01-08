@@ -3,10 +3,7 @@
     "tasks": [
         {
             "label": "Start all & cypress",
-            "dependsOn": [
-                "Start all",
-                "Start cypress"
-            ],
+            "dependsOn": ["Start all", "Start cypress"],
             "problemMatcher": []
         },
         {
