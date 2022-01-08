@@ -1,3 +1,4 @@
+import { ReducerError } from '.';
 import type { ExerciseState, Viewport, UUID } from '../..';
 import { uuid, generateExercise } from '../..';
 import { reduceExerciseState } from './reduce-exercise-state';
@@ -43,6 +44,6 @@ describe('exerciseReducer', () => {
     });
 
     it('should throw an error if an action is unsuccessful', () => {
-        expect(() => removeViewport(uuid())).toThrow();
+        expect(() => removeViewport(uuid())).toThrow(ReducerError);
     });
 });
