@@ -1,6 +1,6 @@
-import type { ExerciseState, UUID, Viewport } from '..';
-import { uuid, generateExercise } from '..';
-import { reduceExerciseState } from '.';
+import type { ExerciseState, Viewport, UUID } from '../..';
+import { uuid, generateExercise } from '../..';
+import { reduceExerciseState } from './reduce-exercise-state';
 
 describe('exerciseReducer', () => {
     let state: ExerciseState;

@@ -1,13 +1,13 @@
 import { produce } from 'immer';
-import type { ExerciseState } from '..';
+import type { ExerciseAction } from '..';
+import type { ExerciseState } from '../..';
 import { exerciseReducerMap } from './exercise-reducer-map';
-import type { ExerciseAction } from '.';
 
 /**
  * A pure reducer function that applies the action on the state without mutating it.
  * @param state The current state (immutable)
  * @param action The action to apply on the current state
- * @throws Error if the action is not applicable on the current state
+ * @throws {ReducerError} if the action is not applicable on the current state
  * @returns the new state
  */
 export function reduceExerciseState(

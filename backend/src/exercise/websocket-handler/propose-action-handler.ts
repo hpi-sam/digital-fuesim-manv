@@ -1,5 +1,8 @@
 import type { ExerciseAction } from 'digital-fuesim-manv-shared';
-import { validateExerciseAction } from 'digital-fuesim-manv-shared';
+import {
+    ReducerError,
+    validateExerciseAction,
+} from 'digital-fuesim-manv-shared';
 import type { ExerciseServer, ExerciseSocket } from '../../exercise-server';
 import { clientMap } from '../client-map';
 
@@ -31,11 +34,14 @@ export const registerProposeActionHandler = (
         try {
             exerciseWrapper.reduce(action);
         } catch (error: any) {
-            callback({
-                success: false,
-                message: error.message,
-            });
-            return;
+            if (error instanceof ReducerError) {
+                callback({
+                    success: false,
+                    message: error.message,
+                });
+                return;
+            }
+            throw error;
         }
         // 5. TODO: determine affected clients
         // 6. send new state to all affected clients

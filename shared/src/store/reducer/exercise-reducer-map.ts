@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-throw-literal */
+import type { ExerciseAction } from '..';
 import type { ReducerFunction } from './reducer-function';
-import type { ExerciseAction } from '.';
+import { ReducerError } from '.';
 
 /**
  * Here are all the reducers for the exercise state specified.
@@ -14,7 +16,9 @@ export const exerciseReducerMap: {
     },
     '[Viewport] Remove viewport': (draftState, { viewportId }) => {
         if (!draftState.viewports[viewportId]) {
-            throw Error(`Viewport with id ${viewportId} does not exist`);
+            throw new ReducerError(
+                `Viewport with id ${viewportId} does not exist`
+            );
         }
         delete draftState.viewports[viewportId];
         return draftState;
@@ -25,7 +29,9 @@ export const exerciseReducerMap: {
     },
     '[Patient] Remove patient': (draftState, { patientId }) => {
         if (!draftState.patients[patientId]) {
-            throw Error(`Patient with id ${patientId} does not exist`);
+            throw new ReducerError(
+                `Patient with id ${patientId} does not exist`
+            );
         }
         delete draftState.patients[patientId];
         return draftState;

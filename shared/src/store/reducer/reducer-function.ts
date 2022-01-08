@@ -1,10 +1,10 @@
-import type { Mutable, ExerciseState } from '..';
-import type { ExerciseAction } from '.';
+import type { ExerciseAction } from '..';
+import type { Mutable, ExerciseState } from '../..';
 
 /**
  * A pure function that applies the action on the provided state.
  *
- * The function should throw an error if the action is not applicable on the provided state.
+ * @throws {ReducerError} if the action is not applicable on the provided state
  *
  * It is expected to be used inside [immers produce](https://immerjs.github.io/immer/produce).
  *
