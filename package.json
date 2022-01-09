@@ -19,8 +19,8 @@
         "npm": ">=7"
     },
     "devDependencies": {
-        "concurrently": "^6.5.0",
+        "concurrently": "^7.0.0",
         "prettier": "^2.5.1",
-        "jest": "^27.4.5"
+        "jest": "^27.4.7"
     }
 }
