@@ -13,6 +13,17 @@
             "problemMatcher": []
         },
         {
+            "label": "Run CI",
+            "dependsOn": [
+                "Prettier",
+                "Lint",
+                "Test",
+                "Start all",
+                "Cypress:run"
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "Start frontend",
             "type": "npm",
             "script": "start",
@@ -40,6 +51,28 @@
             "path": "shared/",
             "group": "build",
             "problemMatcher": []
+        },
+        {
+            "label": "Prettier",
+            "type": "npm",
+            "script": "prettier:check"
+        },
+        {
+            "label": "Test",
+            "type": "npm",
+            "script": "test"
+        },
+        {
+            "label": "Lint",
+            "type": "npm",
+            "script": "lint",
+            "problemMatcher": ["$eslint-compact"]
+        },
+        {
+            "label": "Cypress:run",
+            "type": "npm",
+            "script": "cy:run",
+            "path": "frontend/"
         }
     ]
 }
