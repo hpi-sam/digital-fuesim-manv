@@ -1,7 +1,7 @@
-import { ReducerError } from '.';
 import type { ExerciseState, Viewport, UUID } from '../..';
 import { uuid, generateExercise } from '../..';
 import { reduceExerciseState } from './reduce-exercise-state';
+import { ReducerError } from '.';
 
 describe('exerciseReducer', () => {
     let state: ExerciseState;
