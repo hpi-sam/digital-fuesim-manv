@@ -1,5 +1,8 @@
 import type { ExerciseAction, ExerciseState } from 'digital-fuesim-manv-shared';
-import { exerciseReducer, generateExercise } from 'digital-fuesim-manv-shared';
+import {
+    reduceExerciseState,
+    generateExercise,
+} from 'digital-fuesim-manv-shared';
 
 export class ExerciseWrapper {
     private currentState = generateExercise();
@@ -10,8 +13,13 @@ export class ExerciseWrapper {
         return this.currentState;
     }
 
+    /**
+     * Applies the action on the current state.
+     * @throws Error if the action is not applicable on the current state
+     */
     public reduce(action: ExerciseAction): void {
-        this.setState(exerciseReducer(this.currentState, action));
+        const newState = reduceExerciseState(this.currentState, action);
+        this.setState(newState);
     }
 
     private setState(newExerciseState: ExerciseState): void {
