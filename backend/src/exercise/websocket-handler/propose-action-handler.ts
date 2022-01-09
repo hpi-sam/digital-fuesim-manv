@@ -1,5 +1,8 @@
 import type { ExerciseAction } from 'digital-fuesim-manv-shared';
-import { validateExerciseAction } from 'digital-fuesim-manv-shared';
+import {
+    ReducerError,
+    validateExerciseAction,
+} from 'digital-fuesim-manv-shared';
 import type { ExerciseServer, ExerciseSocket } from '../../exercise-server';
 import { clientMap } from '../client-map';
 
@@ -28,12 +31,22 @@ export const registerProposeActionHandler = (
             return;
         }
         // 4. apply action (+ save to timeline)
-        exerciseWrapper.reduce(action);
-        // 5. TODO: send success response to emitting client
-        // 6. TODO: determine affected clients
-        // 7. send new state to all affected clients
-        // TODO: is this order of emits correct?
+        try {
+            exerciseWrapper.reduce(action);
+        } catch (error: any) {
+            if (error instanceof ReducerError) {
+                callback({
+                    success: false,
+                    message: error.message,
+                });
+                return;
+            }
+            throw error;
+        }
+        // 5. TODO: determine affected clients
+        // 6. send new state to all affected clients
         io.emit('performAction', action);
+        // 7. send success response to emitting client
         callback({
             success: true,
         });

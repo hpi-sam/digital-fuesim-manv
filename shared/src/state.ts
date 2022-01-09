@@ -20,7 +20,7 @@ import type { Immutable } from './utils/immutability';
 // TODO: This is a workaround, because else the following error is thrown when using produce():
 // `[Immer] produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'.Got '[object Object]'`
 // (I have no idea why...)
-export const generateExercise = (): Immutable<ExerciseState> => ({
+export const generateExercise = (): ExerciseState => ({
     ...new ExerciseStateClass(),
 });
 

@@ -11,7 +11,10 @@ import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import { BehaviorSubject, first } from 'rxjs';
 import type { AppState } from '../state/app.state';
-import type { AppAction } from '../state/app.actions';
+import {
+    applyServerAction,
+    setExerciseState,
+} from '../state/exercise/exercise.actions';
 import { OptimisticActionHandler } from './optimistic-action-handler';
 
 @Injectable({
@@ -28,11 +31,7 @@ export class ApiService {
         ExerciseState,
         SocketResponse
     >(
-        (exercise) =>
-            this.store.dispatch<AppAction>({
-                type: '[Exercise] Set state',
-                exercise,
-            }),
+        (exercise) => this.store.dispatch(setExerciseState(exercise)),
         () => {
             // There is sadly currently no other way to get the state synchronously...
             let currentState: ExerciseState;
@@ -43,7 +42,7 @@ export class ApiService {
                 .subscribe((s) => (currentState = s));
             return currentState!;
         },
-        (action) => this.store.dispatch<AppAction>(action),
+        (action) => this.store.dispatch(applyServerAction(action)),
         // sendAction needs access to this.socket
         async (action) => this.sendAction(action)
     );
@@ -109,7 +108,6 @@ export class ApiService {
     }
 
     private async synchronizeState() {
-        // TODO: check which actions have to be applied
         const response = await new Promise<SocketResponse<ExerciseState>>(
             (resolve) => {
                 this.socket.emit('getState', resolve);
@@ -118,10 +116,7 @@ export class ApiService {
         if (!response.success) {
             return response;
         }
-        this.store.dispatch<AppAction>({
-            type: '[Exercise] Set state',
-            exercise: response.payload,
-        });
+        this.store.dispatch(setExerciseState(response.payload));
         return response;
     }
 }
