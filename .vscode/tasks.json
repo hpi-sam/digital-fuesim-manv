@@ -3,16 +3,24 @@
     "tasks": [
         {
             "label": "Start all & cypress",
-            "dependsOn": [
-                "Start all",
-                "Start cypress"
-            ],
+            "dependsOn": ["Start all", "Start cypress"],
             "problemMatcher": []
         },
         {
             "label": "Start all",
             "dependsOn": ["Start frontend", "Start backend", "Watch shared"],
             "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Run CI",
+            "dependsOn": [
+                "Prettier",
+                "Lint",
+                "Test",
+                "Start all",
+                "Cypress:run"
+            ],
             "problemMatcher": []
         },
         {
@@ -43,6 +51,28 @@
             "path": "shared/",
             "group": "build",
             "problemMatcher": []
+        },
+        {
+            "label": "Prettier",
+            "type": "npm",
+            "script": "prettier:check"
+        },
+        {
+            "label": "Test",
+            "type": "npm",
+            "script": "test"
+        },
+        {
+            "label": "Lint",
+            "type": "npm",
+            "script": "lint",
+            "problemMatcher": ["$eslint-compact"]
+        },
+        {
+            "label": "Cypress:run",
+            "type": "npm",
+            "script": "cy:run",
+            "path": "frontend/"
         }
     ]
 }
