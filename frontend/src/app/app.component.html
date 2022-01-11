@@ -14,17 +14,11 @@
 
     <ng-template #joinedTemplate>
         <div>
-            <app-patients-list></app-patients-list>
+            <app-exercise-map></app-exercise-map>
 
             <button (click)="addPatient()" class="btn btn-primary">
                 Add Patient
             </button>
         </div>
     </ng-template>
-    <button
-        (click)="keepAddingPatients = !keepAddingPatients"
-        class="btn btn-primary"
-    >
-        Toggle adding patients
-    </button>
 </div>

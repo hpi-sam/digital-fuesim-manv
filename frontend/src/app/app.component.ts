@@ -12,15 +12,18 @@ export class AppComponent {
 
     constructor(public readonly apiService: ApiService) {}
 
-    // Action
-    public async addPatient(
-        patient: Patient = new Patient(
+    private getDummyPatient() {
+        const patient = new Patient(
             { hair: 'brown', eyeColor: 'blue', name: 'John Doe', age: 42 },
             'green',
             'green',
             Date.now().toString()
-        )
-    ) {
+        );
+        patient.position = { x: 1461752.9315300942, y: 6871641.509884497 };
+        return patient;
+    }
+    // Action
+    public async addPatient(patient: Patient = this.getDummyPatient()) {
         patient.vehicleId = uuid();
         const response = await this.apiService.proposeAction(
             {
@@ -34,13 +37,7 @@ export class AppComponent {
         }
     }
 
-    public keepAddingPatients = true;
     public joinExercise() {
         this.apiService.joinExercise(this.exerciseId);
-        // setInterval(() => {
-        //     if (this.keepAddingPatients) {
-        //         this.addPatient();
-        //     }
-        // }, 1000);
     }
 }
