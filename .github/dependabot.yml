@@ -1,0 +1,66 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: "dev"
+    # Labels on pull requests for security and version updates
+    labels:
+      - "npm dependencies (dev, root)"
+  - package-ecosystem: "npm"
+    directory: "/shared"
+    schedule:
+      interval: "daily"
+    target-branch: "dev"
+    # Labels on pull requests for security and version updates
+    labels:
+      - "npm dependencies (dev, shared)"
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "daily"
+    target-branch: "dev"
+    # Labels on pull requests for security and version updates
+    labels:
+      - "npm dependencies (dev, frontend)"
+  - package-ecosystem: "npm"
+    directory: "/backend"
+    schedule:
+      interval: "daily"
+    target-branch: "dev"
+    # Labels on pull requests for security and version updates
+    labels:
+      - "npm dependencies (dev, backend)"
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: "main"
+    # Labels on pull requests for security and version updates
+    labels:
+      - "npm dependencies (main, root)"
+  - package-ecosystem: "npm"
+    directory: "/shared"
+    schedule:
+      interval: "daily"
+    target-branch: "main"
+    # Labels on pull requests for security and version updates
+    labels:
+      - "npm dependencies (main, shared)"
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "daily"
+    target-branch: "main"
+    # Labels on pull requests for security and version updates
+    labels:
+      - "npm dependencies (main, frontend)"
+  - package-ecosystem: "npm"
+    directory: "/backend"
+    schedule:
+      interval: "daily"
+    target-branch: "main"
+    # Labels on pull requests for security and version updates
+    labels:
+      - "npm dependencies (main, backend)"
