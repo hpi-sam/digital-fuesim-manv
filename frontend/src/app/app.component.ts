@@ -13,12 +13,14 @@ export class AppComponent {
     constructor(public readonly apiService: ApiService) {}
 
     private getDummyPatient() {
-        const patient = new Patient(
-            { hair: 'brown', eyeColor: 'blue', name: 'John Doe', age: 42 },
-            'green',
-            'green',
-            Date.now().toString()
-        );
+        const patient = {
+            ...new Patient(
+                { hair: 'brown', eyeColor: 'blue', name: 'John Doe', age: 42 },
+                'green',
+                'green',
+                Date.now().toString()
+            ),
+        };
         patient.position = { x: 1461752.9315300942, y: 6871641.509884497 };
         return patient;
     }

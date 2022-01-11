@@ -1,9 +1,10 @@
-import type { OnDestroy } from '@angular/core';
+import type { AfterViewInit, OnDestroy } from '@angular/core';
 import {
     ElementRef,
     ViewChild,
     Component,
     ChangeDetectionStrategy,
+    NgZone,
 } from '@angular/core';
 import OlMap from 'ol/Map';
 import View from 'ol/View';
@@ -12,13 +13,16 @@ import XYZ from 'ol/source/XYZ';
 import { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import { selectPatients } from 'src/app/state/exercise/exercise.selectors';
-import { Subject, takeUntil } from 'rxjs';
+import { pairwise, startWith, Subject, takeUntil } from 'rxjs';
 import { transform } from 'ol/proj';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import Circle from 'ol/geom/Circle';
-import { Feature } from 'ol';
 import { Translate, defaults as defaultInteractions } from 'ol/interaction';
+import type { Feature } from 'ol';
+import type Geometry from 'ol/geom/Geometry';
+import { ApiService } from 'src/app/core/api.service';
+import { handleChanges } from './handle-changes';
+import { PatientRenderer } from './element-renderer';
 
 @Component({
     selector: 'app-exercise-map',
@@ -26,18 +30,30 @@ import { Translate, defaults as defaultInteractions } from 'ol/interaction';
     styleUrls: ['./exercise-map.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExerciseMapComponent implements OnDestroy {
+export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     private readonly destroy$ = new Subject<void>();
 
     @ViewChild('openLayersContainer')
     openLayersContainer!: ElementRef<HTMLDivElement>;
 
     private olMap?: OlMap;
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(
+        private readonly store: Store<AppState>,
+        private readonly ngZone: NgZone,
+        private readonly apiService: ApiService
+    ) {}
 
     // https://www.openstreetmap.org/#map=19/52.39378/13.13115
     // https://www.openstreetmap.org/#map=19/52.39377/13.13093
     ngAfterViewInit(): void {
+        // run outside angular zone for better performance
+        this.ngZone.runOutsideAngular(() => {
+            this.setupMap();
+        });
+    }
+
+    private setupMap() {
+        // Layers
         // TODO: display streets above satellite
         // const normal = new TileLayer({source: new XYZ({
         //     url: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -51,17 +67,15 @@ export class ExerciseMapComponent implements OnDestroy {
                 ],
             }),
         });
-
         const patientLayer = new VectorLayer({
             source: new VectorSource(),
         });
-
+        // Interactions
+        const translateInteraction = new Translate({
+            features: patientLayer.getSource().getFeaturesCollection(),
+        });
         this.olMap = new OlMap({
-            interactions: defaultInteractions().extend([
-                new Translate({
-                    features: patientLayer.getSource().getFeaturesCollection(),
-                }),
-            ]),
+            interactions: defaultInteractions().extend([translateInteraction]),
             target: this.openLayersContainer.nativeElement,
             layers: [satellite, patientLayer],
             view: new View({
@@ -73,20 +87,36 @@ export class ExerciseMapComponent implements OnDestroy {
                 zoom: 20,
             }),
         });
+        // Event listeners
+        // TODO: this event isn't fired automatically, we therefore propagate it manually
+        translateInteraction.on('translateend', (event) => {
+            event.features.forEach((feature: Feature<Geometry>) => {
+                feature.dispatchEvent('translateend');
+            });
+        });
+        // Renderers
+        const patientRenderer = new PatientRenderer(
+            patientLayer,
+            this.apiService
+        );
         this.store
             .select(selectPatients)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((patients) => {
-                // render the patients at their respective location
-                for (const patient of Object.values(patients)) {
-                    const circleFeature = new Feature(
-                        new Circle(
-                            [patient.position!.x, patient.position!.y],
-                            10
-                        )
+            .pipe(startWith({}), pairwise(), takeUntil(this.destroy$))
+            .subscribe(([oldPatients, newPatients]) => {
+                // run outside angular zone for better performance
+                this.ngZone.runOutsideAngular(() => {
+                    handleChanges(
+                        oldPatients,
+                        newPatients,
+                        (patient) => patientRenderer.createElement(patient),
+                        (patient) => patientRenderer.deleteElement(patient),
+                        (oldPatient, newPatient) =>
+                            patientRenderer.changeElement(
+                                oldPatient,
+                                newPatient
+                            )
                     );
-                    patientLayer.getSource().addFeature(circleFeature);
-                }
+                });
             });
     }
 
