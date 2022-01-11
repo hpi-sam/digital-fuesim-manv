@@ -27,6 +27,10 @@ export const exerciseReducerMap: {
         draftState.patients[patient.id] = patient;
         return draftState;
     },
+    '[Patient] Move patient': (draftState, { patientId, position }) => {
+        draftState.patients[patientId].position = position;
+        return draftState;
+    },
     '[Patient] Remove patient': (draftState, { patientId }) => {
         if (!draftState.patients[patientId]) {
             throw new ReducerError(
