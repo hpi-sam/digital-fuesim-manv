@@ -96,6 +96,7 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         });
         // Renderers
         const patientRenderer = new PatientRenderer(
+            this.olMap,
             patientLayer,
             this.apiService
         );
