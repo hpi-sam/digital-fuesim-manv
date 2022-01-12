@@ -25,7 +25,7 @@ export class PatientRenderer extends ElementRenderer<Patient> {
             return;
         }
         const circleFeature = new Feature(
-            new Circle([patient.position.x, patient.position.y], 10)
+            new Circle([patient.position.x, patient.position.y], 1)
         );
         circleFeature.setId(patient.id);
         this.patientLayer.getSource().addFeature(circleFeature);
