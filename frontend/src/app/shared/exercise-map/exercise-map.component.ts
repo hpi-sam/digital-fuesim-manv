@@ -81,11 +81,12 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
             target: this.openLayersContainer.nativeElement,
             layers: [satellite, patientLayer],
             view: new View({
-                center: transform(
-                    [13.13115, 52.39378],
-                    'EPSG:4326',
-                    'EPSG:3857'
-                ),
+                center: [1461850.1072131598, 6871673.736095486],
+                // center: transform(
+                //     [13.13115, 52.39378],
+                //     'EPSG:4326',
+                //     'EPSG:3857'
+                // ),
                 zoom: 20,
             }),
         });

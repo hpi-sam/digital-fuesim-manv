@@ -21,7 +21,7 @@ export class AppComponent {
                 Date.now().toString()
             ),
         };
-        patient.position = { x: 1461752.9315300942, y: 6871641.509884497 };
+        patient.position = { x: 1461850.1072131598, y: 6871673.736095486 };
         return patient;
     }
     // Action
