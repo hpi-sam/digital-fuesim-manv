@@ -14,7 +14,6 @@ import { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import { selectPatients } from 'src/app/state/exercise/exercise.selectors';
 import { pairwise, startWith, Subject, takeUntil } from 'rxjs';
-import { transform } from 'ol/proj';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Translate, defaults as defaultInteractions } from 'ol/interaction';
