@@ -8,19 +8,8 @@ import type { ApiService } from 'src/app/core/api.service';
 import { getVectorContext } from 'ol/render';
 import type OlMap from 'ol/Map';
 import type RenderEvent from 'ol/render/Event';
-
-/**
- * Provides an Api to render an element
- */
-export abstract class ElementRenderer<Element extends object> {
-    abstract createElement(element: Element): void;
-    abstract deleteElement(element: Element): void;
-
-    public changeElement(oldElement: Element, newElement: Element): void {
-        this.deleteElement(oldElement);
-        this.createElement(newElement);
-    }
-}
+import { hasAPropertyChanged } from '../utility/has-a-property-changed';
+import { ElementRenderer } from './element-renderer';
 
 export class PatientRenderer extends ElementRenderer<Patient> {
     constructor(
@@ -32,8 +21,11 @@ export class PatientRenderer extends ElementRenderer<Patient> {
     }
 
     public createElement(patient: Patient): void {
+        if (!patient.position) {
+            return;
+        }
         const circleFeature = new Feature(
-            new Circle([patient.position!.x, patient.position!.y], 10)
+            new Circle([patient.position.x, patient.position.y], 10)
         );
         circleFeature.setId(patient.id);
         this.patientLayer.getSource().addFeature(circleFeature);
@@ -65,14 +57,16 @@ export class PatientRenderer extends ElementRenderer<Patient> {
         oldPatient: Patient,
         newPatient: Patient
     ): void {
-        // TODO: check if only the position has changed
-        const newPatientPosition = newPatient.position;
         if (
-            oldPatient.position !== newPatient.position &&
-            oldPatient.personalInformation === newPatient.personalInformation &&
-            newPatientPosition !== undefined
+            !hasAPropertyChanged<Patient>(oldPatient, newPatient, ['position'])
         ) {
-            //
+            const newPatientPosition = newPatient.position;
+
+            if (newPatientPosition === undefined) {
+                // the patient is not visible on the map
+                this.deleteElement(oldPatient);
+                return;
+            }
             this.animateFeatureMovement(this.getPatientFeature(newPatient), [
                 newPatientPosition.x,
                 newPatientPosition.y,

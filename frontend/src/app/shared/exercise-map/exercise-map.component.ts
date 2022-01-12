@@ -21,8 +21,8 @@ import { Translate, defaults as defaultInteractions } from 'ol/interaction';
 import type { Feature } from 'ol';
 import type Geometry from 'ol/geom/Geometry';
 import { ApiService } from 'src/app/core/api.service';
-import { handleChanges } from './handle-changes';
-import { PatientRenderer } from './element-renderer';
+import { handleChanges } from './utility/handle-changes';
+import { PatientRenderer } from './renderers/patient-renderer';
 
 @Component({
     selector: 'app-exercise-map',
