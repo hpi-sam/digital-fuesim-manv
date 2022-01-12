@@ -28,7 +28,13 @@ export const exerciseReducerMap: {
         return draftState;
     },
     '[Patient] Move patient': (draftState, { patientId, position }) => {
-        draftState.patients[patientId].position = position;
+        const patient = draftState.patients[patientId];
+        if (!patient) {
+            throw new ReducerError(
+                `Patient with id ${patientId} does not exist`
+            );
+        }
+        patient.position = position;
         return draftState;
     },
     '[Patient] Remove patient': (draftState, { patientId }) => {
