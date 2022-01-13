@@ -8,8 +8,8 @@
         "build": "tsc --project ./tsconfig.build.json",
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,html}\"",
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,html}\"",
-        "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --coverage --verbose",
-        "test:watch": "jest --runInBand --verbose --watch"
+        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose",
+        "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --verbose --watch"
     },
     "private": true,
     "engines": {

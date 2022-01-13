@@ -6,8 +6,6 @@ interface ExerciseCreationResponse {
     exerciseId: string;
 }
 
-exports = 1
-
 describe('exercise', () => {
     let server: Server;
     beforeEach(() => {
