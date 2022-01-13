@@ -1,7 +1,3 @@
-# compiled output
-/dist
-/out-tsc
-
-# dependencies
 /node_modules
-
+/dist
+tsconfig.build.tsbuildinfo
