@@ -6,7 +6,19 @@
             else joinedTemplate
         "
     >
-        <input [(ngModel)]="exerciseId" type="text" />
+        <p>
+            Exercise Id:
+            <input [(ngModel)]="exerciseId" type="text" />
+        </p>
+        <br />
+        <p>
+            Public Name:
+            <input [(ngModel)]="clientName" type="text" />
+        </p>
+        <p>
+            Be a trainer?
+            <input [(ngModel)]="beTrainer" type="checkbox" />
+        </p>
         <button (click)="joinExercise()" class="btn btn-primary">
             Join Exercise
         </button>

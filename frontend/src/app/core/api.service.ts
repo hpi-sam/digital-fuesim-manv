@@ -10,6 +10,7 @@ import type {
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import { BehaviorSubject, first } from 'rxjs';
+import type { Role } from 'digital-fuesim-manv-shared/dist/models/utils';
 import type { AppState } from '../state/app.state';
 import {
     applyServerAction,
@@ -67,10 +68,10 @@ export class ApiService {
      * Join an exercise and retrieve its state
      * @returns wether the join was successful
      */
-    public async joinExercise(exerciseId: string): Promise<boolean> {
+    public async joinExercise(exerciseId: string, clientName: string, role: Role): Promise<boolean> {
         this.hasJoinedExerciseState$.next('joining');
         const joinExercise = await new Promise<SocketResponse>((resolve) => {
-            this.socket.emit('joinExercise', exerciseId, resolve);
+            this.socket.emit('joinExercise', exerciseId, clientName, role, resolve);
         });
         if (!joinExercise.success) {
             this.hasJoinedExerciseState$.next('not-joined');

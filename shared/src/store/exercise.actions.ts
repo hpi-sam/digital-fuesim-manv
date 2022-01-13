@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
-import { UUID, Viewport, uuidValidationOptions, Patient } from '..';
+import { UUID, Viewport, uuidValidationOptions, Patient, Client } from '..';
 import type { Immutable } from '../utils/immutability';
 
 /**
@@ -50,6 +50,19 @@ export namespace ExerciseActions {
         readonly type = '[Patient] Remove patient';
         @IsUUID(4, uuidValidationOptions)
         public patientId!: UUID;
+    }
+
+    export class AddClient implements Action {
+        readonly type = '[Client] Add client';
+        @ValidateNested()
+        @Type(() => Client)
+        public client!: Client;
+    }
+
+    export class RemoveClient implements Action {
+        readonly type = '[Client] Remove client';
+        @IsUUID(4, uuidValidationOptions)
+        public clientId!: UUID;
     }
 }
 

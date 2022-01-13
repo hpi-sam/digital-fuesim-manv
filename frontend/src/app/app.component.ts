@@ -10,6 +10,10 @@ import { ApiService } from './core/api.service';
 export class AppComponent {
     public exerciseId = 'abcdefghijk';
 
+    public clientName = '';
+
+    public beTrainer = false;
+
     constructor(public readonly apiService: ApiService) {}
 
     // Action
@@ -36,7 +40,7 @@ export class AppComponent {
 
     public keepAddingPatients = true;
     public joinExercise() {
-        this.apiService.joinExercise(this.exerciseId);
+        this.apiService.joinExercise(this.exerciseId, this.clientName, this.beTrainer ? 'trainer' : 'participant');
         // setInterval(() => {
         //     if (this.keepAddingPatients) {
         //         this.addPatient();
