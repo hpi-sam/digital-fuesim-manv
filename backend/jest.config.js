@@ -5,4 +5,6 @@ export default {
     name: 'backend',
     displayName: 'Backend',
     roots: ['<rootDir>'],
+    extensionsToTreatAsEsm: ['.ts'],
+    transform: {}
 };

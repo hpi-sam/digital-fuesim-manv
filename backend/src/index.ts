@@ -5,16 +5,20 @@ import type { ExerciseServer } from './exercise-server';
 import { setupWebsocket } from './exercise/websocket';
 import { setupHttpServer } from './exercise/http-server';
 
-const app = express();
+export const main = () => {
+    const app = express();
 
-const httpServer = createServer(app);
+    const httpServer = createServer(app);
 
-const io: ExerciseServer = new Server(httpServer, {
-    // TODO: this is only a temporary solution to make this work
-    cors: {
-        origin: '*',
-    },
-});
+    const io: ExerciseServer = new Server(httpServer, {
+        // TODO: this is only a temporary solution to make this work
+        cors: {
+            origin: '*',
+        },
+    });
 
-setupWebsocket(io);
-setupHttpServer(app);
+    setupWebsocket(io);
+    return setupHttpServer(app);
+};
+
+main();

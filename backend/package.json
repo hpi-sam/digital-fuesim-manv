@@ -8,6 +8,7 @@
         "build": "tsc --project ./tsconfig.build.json",
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,html}\"",
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,html}\"",
+        "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --coverage --verbose",
         "test:watch": "jest --runInBand --verbose --watch"
     },
     "private": true,
@@ -20,12 +21,14 @@
         "digital-fuesim-manv-shared": "file:../shared",
         "express": "^4.17.2",
         "lodash-es": "4.17.21",
-        "socket.io": "^4.4.1"
+        "socket.io": "^4.4.1",
+        "supertest": "^6.2.1"
     },
     "devDependencies": {
         "@types/express": "^4.17.13",
         "@types/jest": "^27.4.0",
         "@types/node": "^14",
+        "@types/supertest": "^2.0.11",
         "@typescript-eslint/eslint-plugin": "5.9.0",
         "@typescript-eslint/parser": "5.9.0",
         "eslint": "^8.6.0",
