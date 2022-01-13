@@ -3,6 +3,7 @@ import express from 'express';
 import { Server } from 'socket.io';
 import type { ExerciseServer } from './exercise-server';
 import { setupWebsocket } from './exercise/websocket';
+import { setupHttpServer } from './exercise/http-server';
 
 const app = express();
 
@@ -16,3 +17,4 @@ const io: ExerciseServer = new Server(httpServer, {
 });
 
 setupWebsocket(io);
+setupHttpServer(app);
