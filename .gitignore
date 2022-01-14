@@ -2,7 +2,7 @@ node_modules/
 dist/
 
 # jest
-/coverage/
+/coverage
 
 # TODO: These are currently duplicated as a workaround for https://github.com/hpi-sam/digital-fuesim-manv/issues/36
 # cypress
@@ -12,5 +12,9 @@ frontend/cypress/downloads
 frontend/cypress-visual-screenshots/comparison
 frontend/cypress-visual-screenshots/diff
 frontend/.angular
-# typescript
+frontend/coverage
+
+backend/coverage
+
+shared/coverage
 shared/tsconfig.build.tsbuildinfo
