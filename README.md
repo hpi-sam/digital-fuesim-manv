@@ -1,10 +1,14 @@
 # digital-fuesim-manv
 
-The official code for BP2021HG1.
+The official code for BP2021HG1
+
+You can find the (internal) documentation for this project [here](https://github.com/hpi-sam/BP2021HG1).
+
+The (internal) project-board is [here](https://github.com/orgs/hpi-sam/projects/4).
 
 ## Installation
 
-1. Install [NodeJs](https://nodejs.org/) (at least version 14.x)
+1. Install [NodeJs](https://nodejs.org/) (at least version 16.x) (if you need different node versions on your machine we recommend [nvm](https://github.com/nvm-sh/nvm) or [nvm for windows](https://github.com/coreybutler/nvm-windows))
 2. [npm](https://www.npmjs.com/) should already come with NodeJs - if not install it
 3. Clone this repository
 4. Run `npm run setup` from the root folder
