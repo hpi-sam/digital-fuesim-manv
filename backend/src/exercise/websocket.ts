@@ -9,10 +9,10 @@ import {
     registerProposeActionHandler,
 } from './websocket-handler';
 
-export const setupWebsocket = (io: ExerciseServer): void => {
+export const setupWebsocket = (io: ExerciseServer): ExerciseServer => {
     const port = 3200;
 
-    io.listen(port);
+    const websocketServer = io.listen(port);
 
     io.on('connection', (socket) => {
         console.log('a user connected');
@@ -30,4 +30,6 @@ export const setupWebsocket = (io: ExerciseServer): void => {
         registerProposeActionHandler(io, client);
         registerJoinExerciseHandler(io, client);
     };
+
+    return websocketServer;
 };

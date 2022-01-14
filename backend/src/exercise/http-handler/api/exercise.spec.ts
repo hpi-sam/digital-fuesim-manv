@@ -1,6 +1,6 @@
 import type { Server } from 'node:http';
 import request from 'supertest';
-import { main } from '../../..';
+import { closeServers, main } from '../../..';
 
 interface ExerciseCreationResponse {
     exerciseId: string;
@@ -9,7 +9,11 @@ interface ExerciseCreationResponse {
 describe('exercise', () => {
     let server: Server;
     beforeEach(() => {
+        closeServers();
         server = main();
+    });
+    afterEach(() => {
+        closeServers();
     });
     describe('POST /api/exercise', () => {
         it('returns an exercise id', async () => {
