@@ -72,6 +72,9 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         });
         const patientLayer = new VectorLayer({
             source: new VectorSource(),
+            // TODO: these two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
+            updateWhileAnimating: true,
+            updateWhileInteracting: true,
         });
         // Interactions
         const translateInteraction = new Translate({
