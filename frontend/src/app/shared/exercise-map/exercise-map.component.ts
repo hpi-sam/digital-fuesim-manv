@@ -62,6 +62,8 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
                 // this is server specific - the sever only supports up to zoom level 20
                 maxZoom: 20,
+                // We want to keep the tiles cached if we are zooming in and out fast
+                cacheSize: 1000,
                 attributions: [
                     // TODO: DO we need this?
                     // 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
