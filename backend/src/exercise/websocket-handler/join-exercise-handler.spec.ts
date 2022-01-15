@@ -16,7 +16,7 @@ describe('join exercise', () => {
     it('adds the joining client to the state', async () => {
         const exerciseId = await createExercise();
 
-        environment.withWebsocket(async (clientSocket) => {
+        await environment.withWebsocket(async (clientSocket) => {
             const clientName = 'someRandomName';
 
             const joinExercise = await clientSocket.emit(
@@ -50,7 +50,7 @@ describe('join exercise', () => {
         const firstExerciseId = await createExercise();
         const secondExerciseId = await createExercise();
 
-        environment.withWebsocket(async (firstClientSocket) => {
+        await environment.withWebsocket(async (firstClientSocket) => {
             const firstClientName = 'someRandomName';
 
             await firstClientSocket.emit(
@@ -91,7 +91,7 @@ describe('join exercise', () => {
     it('sends a message to existing clients when another client is joining the exercises', async () => {
         const exerciseId = await createExercise();
 
-        environment.withWebsocket(async (firstClientSocket) => {
+        await environment.withWebsocket(async (firstClientSocket) => {
             const firstClientName = 'someRandomName';
 
             firstClientSocket.spyOn('performAction');

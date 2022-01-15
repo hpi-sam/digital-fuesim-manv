@@ -20,8 +20,8 @@ export class WebsocketClient {
         private readonly socket: Socket<DefaultEventsMap, DefaultEventsMap>
     ) {}
 
-    public emit<T>(event: string, ...args: any[]): Promise<SocketResponse<T>> {
-        return new Promise<SocketResponse<T>>((resolve) => {
+    public async emit<T>(event: string, ...args: any[]): Promise<SocketResponse<T>> {
+        return await new Promise<SocketResponse<T>>((resolve) => {
             this.socket.emit(event, ...args, resolve);
         });
     }
@@ -50,14 +50,18 @@ class TestEnvironment {
         return request(this.server.httpServer)[method](url);
     }
 
-    public withWebsocket(
-        closure: (websocketClient: WebsocketClient) => void
-    ): void {
+    public async withWebsocket(
+        closure: (websocketClient: WebsocketClient) => Promise<void>
+    ): Promise<void> {
         // TODO: This should not be hard coded
-        const clientSocket = io('ws://localhost:3200');
-        const websocketClient = new WebsocketClient(clientSocket);
-        closure(websocketClient);
-        clientSocket.close();
+        let clientSocket: Socket<DefaultEventsMap, DefaultEventsMap> | undefined = undefined
+        try {
+            clientSocket = io('ws://localhost:3200');
+            const websocketClient = new WebsocketClient(clientSocket);
+            await closure(websocketClient);
+        } finally {
+            clientSocket?.close();
+        }
     }
 }
 
