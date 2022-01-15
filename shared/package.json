@@ -20,7 +20,7 @@
     },
     "private": true,
     "engines": {
-        "node": ">=12",
+        "node": ">=16",
         "npm": ">=7"
     },
     "dependencies": {
