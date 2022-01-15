@@ -1,22 +1,14 @@
-import request from 'supertest';
-import { FuesimServer } from '../../../fuesim-server';
+import { createTestEnvironment, HttpMethod } from '../../../test-utils';
 
-interface ExerciseCreationResponse {
+export interface ExerciseCreationResponse {
     exerciseId: string;
 }
 
 describe('exercise', () => {
-    let server: FuesimServer;
-    beforeEach(() => {
-        server = FuesimServer.create();
-    });
-    afterEach(() => {
-        server.destroy();
-    });
+    const environment = createTestEnvironment();
     describe('POST /api/exercise', () => {
         it('returns an exercise id', async () => {
-            const response = await request(server.httpServer)
-                .post('/api/exercise')
+            const response = await environment.httpRequest(HttpMethod.POST, '/api/exercise')
                 .expect(201);
 
             const exerciseCreationResponse =
