@@ -7,7 +7,7 @@ describe('join exercise', () => {
 
     const createExercise = async (): Promise<string> => {
         const response = await environment
-            .httpRequest(HttpMethod.POST, '/api/exercise')
+            .httpRequest('post', '/api/exercise')
             .expect(201);
 
         return (response.body as ExerciseCreationResponse).exerciseId;
@@ -38,9 +38,8 @@ describe('join exercise', () => {
             expect(getState.payload).toBeDefined();
             expect(getState.payload.clients).toBeDefined();
             expect(
-                Object.keys(getState.payload.clients).filter(
-                    (client) =>
-                        getState.payload.clients[client].name === clientName
+                Object.values(getState.payload.clients).filter(
+                    (client) => client.name === clientName
                 ).length
             ).toBe(1);
         });
@@ -78,10 +77,8 @@ describe('join exercise', () => {
                     return;
                 }
                 expect(
-                    Object.keys(state.payload.clients).some(
-                        (client) =>
-                            state.payload.clients[client].name ===
-                            secondClientName
+                    Object.values(state.payload.clients).some(
+                        (client) => client.name === secondClientName
                     )
                 ).toBe(false);
             });
@@ -113,7 +110,7 @@ describe('join exercise', () => {
                     'trainer'
                 );
 
-                expect(firstClientSocket.timesCalled('performAction')).toBe(1);
+                expect(firstClientSocket.getTimesCalled('performAction')).toBe(1);
             });
         });
     });

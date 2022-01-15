@@ -6,11 +6,11 @@ import { exerciseMap } from './exercise-map';
 import type { ExerciseWrapper } from './exercise-wrapper';
 
 export class ClientWrapper {
-    public constructor(
-        private readonly socket: ExerciseSocket,
-        private chosenExercise?: ExerciseWrapper,
-        private relatedExerciseClient?: Client
-    ) {}
+    public constructor(private readonly socket: ExerciseSocket) {}
+
+    private chosenExercise?: ExerciseWrapper;
+
+    private relatedExerciseClient?: Client;
 
     /**
      * @param exerciseId The exercise id to be used for the client.

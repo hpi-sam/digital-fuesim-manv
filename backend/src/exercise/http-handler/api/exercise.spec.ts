@@ -8,7 +8,7 @@ describe('exercise', () => {
     const environment = createTestEnvironment();
     describe('POST /api/exercise', () => {
         it('returns an exercise id', async () => {
-            const response = await environment.httpRequest(HttpMethod.POST, '/api/exercise')
+            const response = await environment.httpRequest('post', '/api/exercise')
                 .expect(201);
 
             const exerciseCreationResponse =

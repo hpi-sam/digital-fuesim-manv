@@ -7,7 +7,7 @@ interface ExerciseId {
 }
 
 export const postExercise = (): ExerciseId => {
-    let newExerciseId = UserReadableIdGenerator.generateId();
+    const newExerciseId = UserReadableIdGenerator.generateId();
     exerciseMap.set(newExerciseId, new ExerciseWrapper());
     return {
         exerciseId: newExerciseId,
