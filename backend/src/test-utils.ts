@@ -21,7 +21,7 @@ export class WebsocketClient {
     ) {}
 
     public async emit<T>(event: string, ...args: any[]): Promise<SocketResponse<T>> {
-        return await new Promise<SocketResponse<T>>((resolve) => {
+        return new Promise<SocketResponse<T>>((resolve) => {
             this.socket.emit(event, ...args, resolve);
         });
     }
@@ -47,7 +47,7 @@ class TestEnvironment {
     public server: FuesimServer = FuesimServer.create();
 
     public httpRequest(method: HttpMethod, url: string): request.Test {
-        return request(this.server.httpServer)[method](url);
+        return request(this.server.httpServer.httpServer)[method](url);
     }
 
     public async withWebsocket(

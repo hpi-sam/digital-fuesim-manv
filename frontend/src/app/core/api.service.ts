@@ -10,7 +10,7 @@ import type {
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import { BehaviorSubject, first } from 'rxjs';
-import type { Role } from 'digital-fuesim-manv-shared/dist/models/utils';
+import type { Role } from 'digital-fuesim-manv-shared';
 import type { AppState } from '../state/app.state';
 import {
     applyServerAction,

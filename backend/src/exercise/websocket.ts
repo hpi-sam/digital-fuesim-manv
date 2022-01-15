@@ -1,3 +1,6 @@
+import type * as core from 'express-serve-static-core';
+import { createServer } from 'node:http';
+import { Server } from 'socket.io';
 import type { ExerciseSocket, ExerciseServer } from '../exercise-server';
 import { clientMap } from './client-map';
 import { ClientWrapper } from './client-wrapper';
@@ -9,26 +12,40 @@ import {
     registerProposeActionHandler,
 } from './websocket-handler';
 
-export const setupWebsocket = (io: ExerciseServer, port: number): ExerciseServer => {
+export class ExerciseWebsocketServer {
+    public readonly exerciseServer: ExerciseServer;
+    public constructor(app: core.Express, port: number) {
+        const server = createServer(app);
 
-    const websocketServer = io.listen(port);
+        this.exerciseServer = new Server(server, {
+            // TODO: this is only a temporary solution to make this work
+            cors: {
+                origin: '*',
+            },
+        });
 
-    io.on('connection', (socket) => {
-        console.log('a user connected');
-        registerClient(socket);
-    });
+        this.exerciseServer.listen(port);
 
-    const exerciseWrapper = new ExerciseWrapper();
-    exerciseMap.set('abcdefghijk', exerciseWrapper);
-    const registerClient = (client: ExerciseSocket): void => {
+        this.exerciseServer.on('connection', (socket) => {
+            console.log('a user connected');
+            this.registerClient(socket);
+        });
+
+        const exerciseWrapper = new ExerciseWrapper();
+        exerciseMap.set('abcdefghijk', exerciseWrapper);
+    }
+
+    private registerClient(client: ExerciseSocket): void {
         // Add client
         clientMap.set(client, new ClientWrapper(client));
 
         // register handlers
-        registerGetStateHandler(io, client);
-        registerProposeActionHandler(io, client);
-        registerJoinExerciseHandler(io, client);
-    };
+        registerGetStateHandler(this.exerciseServer, client);
+        registerProposeActionHandler(this.exerciseServer, client);
+        registerJoinExerciseHandler(this.exerciseServer, client);
+    }
 
-    return websocketServer;
-};
+    public close(): void {
+        this.exerciseServer.close();
+    }
+}

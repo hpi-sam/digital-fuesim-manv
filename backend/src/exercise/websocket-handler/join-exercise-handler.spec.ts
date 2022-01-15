@@ -60,7 +60,7 @@ describe('join exercise', () => {
                 'trainer'
             );
 
-            environment.withWebsocket(async (secondClientSocket) => {
+            await environment.withWebsocket(async (secondClientSocket) => {
                 const secondClientName = 'anotherRandomName';
 
                 await secondClientSocket.emit(
@@ -103,7 +103,7 @@ describe('join exercise', () => {
                 'trainer'
             );
 
-            environment.withWebsocket(async (secondClientSocket) => {
+            await environment.withWebsocket(async (secondClientSocket) => {
                 const secondClientName = 'anotherRandomName';
 
                 await secondClientSocket.emit(

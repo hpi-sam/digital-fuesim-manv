@@ -52,6 +52,7 @@ export namespace ExerciseActions {
         public patientId!: UUID;
     }
 
+    // TODO: Only the server should be able to propose these actions
     export class AddClient implements Action {
         readonly type = '[Client] Add client';
         @ValidateNested()

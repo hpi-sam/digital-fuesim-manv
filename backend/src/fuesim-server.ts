@@ -1,10 +1,7 @@
 import type { Server as HttpServer } from 'node:http';
-import { createServer } from 'node:http';
 import express from 'express';
-import { Server } from 'socket.io';
-import type { ExerciseServer } from './exercise-server';
-import { setupWebsocket } from './exercise/websocket';
-import { setupHttpServer } from './exercise/http-server';
+import { ExerciseWebsocketServer } from './exercise/websocket';
+import { ExerciseHttpServer } from './exercise/http-server';
 
 export class FuesimServer {
     private static _singleInstance?: FuesimServer;
@@ -15,32 +12,23 @@ export class FuesimServer {
         }
         const app = express();
 
-        const server = createServer(app);
-
-        const io: ExerciseServer = new Server(server, {
-            // TODO: this is only a temporary solution to make this work
-            cors: {
-                origin: '*',
-            },
-        });
-
-        const websocketServer = setupWebsocket(io, websocketPort);
-        const httpServer = setupHttpServer(app, httpPort);
+        const websocketServer = new ExerciseWebsocketServer(app, websocketPort);
+        const httpServer = new ExerciseHttpServer(app, httpPort);
 
         this._singleInstance = new FuesimServer(websocketServer, httpServer);
         return this.singleInstance;
     }
 
     constructor(
-        private readonly _websocketServer: ExerciseServer,
-        private readonly _httpServer: HttpServer
+        private readonly _websocketServer: ExerciseWebsocketServer,
+        private readonly _httpServer: ExerciseHttpServer
     ) {}
 
-    public get websocketServer(): ExerciseServer {
+    public get websocketServer(): ExerciseWebsocketServer {
         return this._websocketServer;
     }
 
-    public get httpServer(): HttpServer {
+    public get httpServer(): ExerciseHttpServer {
         return this._httpServer;
     }
 

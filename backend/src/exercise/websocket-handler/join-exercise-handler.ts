@@ -1,4 +1,4 @@
-import type { Role } from 'digital-fuesim-manv-shared/dist/models/utils';
+import type { Role } from 'digital-fuesim-manv-shared';
 import type { ExerciseServer, ExerciseSocket } from '../../exercise-server';
 import { clientMap } from '../client-map';
 

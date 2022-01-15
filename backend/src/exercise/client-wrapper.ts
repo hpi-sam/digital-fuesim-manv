@@ -15,7 +15,6 @@ export class ClientWrapper {
     /**
      * @param exerciseId The exercise id to be used for the client.
      * @param clientName The public name of the client.
-     * @param role The role of the client.
      * @returns Whether the exercise exists.
      */
     public joinExercise(
@@ -27,9 +26,8 @@ export class ClientWrapper {
             return false;
         }
         this.chosenExercise = exerciseMap.get(exerciseId);
-        const thisClient = new Client(clientName, role, undefined);
-        this.relatedExerciseClient = thisClient;
-        this.chosenExercise?.addClient(this);
+        this.relatedExerciseClient = new Client(clientName, role, undefined);
+        this.chosenExercise!.addClient(this);
         return true;
     }
 

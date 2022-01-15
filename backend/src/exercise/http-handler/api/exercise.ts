@@ -1,20 +1,13 @@
+import { UserReadableIdGenerator } from '../../../utils/user-readable-id-generator';
 import { exerciseMap } from '../../exercise-map';
 import { ExerciseWrapper } from '../../exercise-wrapper';
-
-const createExerciseId = (): number => Math.floor(Math.random() * 100_000);
 
 interface ExerciseId {
     readonly exerciseId: string;
 }
 
 export const postExercise = (): ExerciseId => {
-    let newExerciseId: string | undefined;
-    do {
-        newExerciseId = createExerciseId().toString();
-        if (exerciseMap.has(newExerciseId)) {
-            newExerciseId = undefined;
-        }
-    } while (newExerciseId === undefined);
+    let newExerciseId = UserReadableIdGenerator.generateId();
     exerciseMap.set(newExerciseId, new ExerciseWrapper());
     return {
         exerciseId: newExerciseId,

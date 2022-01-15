@@ -12,7 +12,7 @@ export class AppComponent {
 
     public clientName = '';
 
-    public beTrainer = false;
+    public isTrainer = false;
 
     constructor(public readonly apiService: ApiService) {}
 
@@ -40,7 +40,7 @@ export class AppComponent {
 
     public keepAddingPatients = true;
     public joinExercise() {
-        this.apiService.joinExercise(this.exerciseId, this.clientName, this.beTrainer ? 'trainer' : 'participant');
+        this.apiService.joinExercise(this.exerciseId, this.clientName, this.isTrainer ? 'trainer' : 'participant');
         // setInterval(() => {
         //     if (this.keepAddingPatients) {
         //         this.addPatient();
