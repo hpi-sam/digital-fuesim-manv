@@ -1,23 +1,21 @@
-import type { Server } from 'node:http';
 import request from 'supertest';
-import { closeServers, main } from '../../..';
+import { FuesimServer } from '../../../fuesim-server';
 
 interface ExerciseCreationResponse {
     exerciseId: string;
 }
 
 describe('exercise', () => {
-    let server: Server;
+    let server: FuesimServer;
     beforeEach(() => {
-        closeServers();
-        server = main();
+        server = FuesimServer.create();
     });
     afterEach(() => {
-        closeServers();
+        server.destroy();
     });
     describe('POST /api/exercise', () => {
         it('returns an exercise id', async () => {
-            const response = await request(server)
+            const response = await request(server.httpServer)
                 .post('/api/exercise')
                 .expect(201);
 

@@ -9,8 +9,7 @@ import {
     registerProposeActionHandler,
 } from './websocket-handler';
 
-export const setupWebsocket = (io: ExerciseServer): ExerciseServer => {
-    const port = 3200;
+export const setupWebsocket = (io: ExerciseServer, port: number): ExerciseServer => {
 
     const websocketServer = io.listen(port);
 

@@ -279,7 +279,7 @@ module.exports = {
             {
                 selector: 'default',
                 format: ['camelCase'],
-                leadingUnderscore: 'forbid',
+                leadingUnderscore: 'allowSingle',
                 trailingUnderscore: 'forbid',
             },
             {

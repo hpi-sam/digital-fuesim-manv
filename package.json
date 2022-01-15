@@ -11,7 +11,8 @@
         "lint": "concurrently \"cd shared && npm run lint\" \"cd frontend && npm run lint\" \"cd backend && npm run lint\"",
         "lint:fix": "concurrently \"cd shared && npm run lint:fix\" \"cd frontend && npm run lint:fix\" \"cd backend && npm run lint:fix\"",
         "test:gloabl": "jest --runInBand --coverage --verbose",
-        "test": "concurrently \"cd shared && npm run test\" \"cd frontend && npm run test\" \"cd backend && npm run test\"",
+        "test:concurrently": "concurrently \"cd shared && npm run test\" \"cd frontend && npm run test\" \"cd backend && npm run test\"",
+        "test": "cd shared && npm run test && cd ../frontend && npm run test && cd ../backend && npm run test",
         "test:watch": "jest --runInBand --verbose --watch"
     },
     "private": true,
