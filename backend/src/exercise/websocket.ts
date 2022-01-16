@@ -30,9 +30,6 @@ export class ExerciseWebsocketServer {
             console.log('a user connected');
             this.registerClient(socket);
         });
-
-        const exerciseWrapper = new ExerciseWrapper();
-        exerciseMap.set('abcdefghijk', exerciseWrapper);
     }
 
     private registerClient(client: ExerciseSocket): void {
