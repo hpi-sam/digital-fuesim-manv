@@ -1,0 +1,12 @@
+/node_modules
+/dist
+
+/.angular
+/coverage
+
+# cypress
+/cypress/screenshots
+/cypress/videos
+/cypress/downloads
+/cypress-visual-screenshots/comparison
+/cypress-visual-screenshots/diff

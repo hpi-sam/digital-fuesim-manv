@@ -1,0 +1,160 @@
+{
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "version": 1,
+    "newProjectRoot": "projects",
+    "projects": {
+        "digital-fuesim-manv": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "style": "scss"
+                },
+                "@schematics/angular:application": {
+                    "strict": true
+                }
+            },
+            "root": "",
+            "sourceRoot": "src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "dist/digital-fuesim-manv",
+                        "index": "src/index.html",
+                        "main": "src/main.ts",
+                        "polyfills": "src/polyfills.ts",
+                        "tsConfig": "tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": ["src/favicon.ico", "src/assets"],
+                        "styles": ["src/styles.scss"],
+                        "scripts": [],
+                        "allowedCommonJsDependencies": [
+                            "validator/lib/isLatLong",
+                            "validator/lib/isDivisibleBy",
+                            "validator/lib/contains",
+                            "validator/lib/isAlpha",
+                            "validator/lib/isAlphanumeric",
+                            "validator/lib/isAscii",
+                            "validator/lib/isBIC",
+                            "validator/lib/isBase32",
+                            "validator/lib/isBase64",
+                            "validator/lib/isBoolean",
+                            "validator/lib/isBtcAddress",
+                            "validator/lib/isByteLength",
+                            "validator/lib/isCreditCard",
+                            "validator/lib/isCurrency",
+                            "validator/lib/isDataURI",
+                            "validator/lib/isDecimal",
+                            "validator/lib/isEAN",
+                            "validator/lib/isEmail",
+                            "validator/lib/isEthereumAddress",
+                            "validator/lib/isFQDN",
+                            "validator/lib/isFullWidth",
+                            "validator/lib/isHSL",
+                            "validator/lib/isHalfWidth",
+                            "validator/lib/isHash",
+                            "validator/lib/isHexColor",
+                            "validator/lib/isHexadecimal",
+                            "validator/lib/isIBAN",
+                            "validator/lib/isIP",
+                            "validator/lib/isISBN",
+                            "validator/lib/isISIN",
+                            "validator/lib/isISO8601",
+                            "validator/lib/isISO31661Alpha2",
+                            "validator/lib/isISO31661Alpha3",
+                            "validator/lib/isISRC",
+                            "validator/lib/isISSN",
+                            "validator/lib/isIdentityCard",
+                            "validator/lib/isJSON",
+                            "validator/lib/isJWT",
+                            "validator/lib/isLocale",
+                            "validator/lib/isLowercase",
+                            "validator/lib/isMACAddress",
+                            "validator/lib/isMagnetURI",
+                            "validator/lib/isMimeType",
+                            "validator/lib/isMobilePhone",
+                            "validator/lib/isMongoId",
+                            "validator/lib/isMultibyte",
+                            "validator/lib/isNumeric",
+                            "validator/lib/isOctal",
+                            "validator/lib/isPassportNumber",
+                            "validator/lib/isPort",
+                            "validator/lib/isPostalCode",
+                            "validator/lib/isRFC3339",
+                            "validator/lib/isRgbColor",
+                            "validator/lib/isSemVer",
+                            "validator/lib/isSurrogatePair",
+                            "validator/lib/isUUID",
+                            "validator/lib/isUppercase",
+                            "validator/lib/isURL",
+                            "validator/lib/isVariableWidth",
+                            "validator/lib/isLength",
+                            "validator/lib/matches"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "500kb",
+                                    "maximumError": "1mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "2kb",
+                                    "maximumError": "4kb"
+                                }
+                            ],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
+                            "outputHashing": "all"
+                        },
+                        "development": {
+                            "buildOptimizer": false,
+                            "optimization": false,
+                            "vendorChunk": true,
+                            "extractLicenses": false,
+                            "sourceMap": true,
+                            "namedChunks": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "configurations": {
+                        "production": {
+                            "browserTarget": "digital-fuesim-manv:build:production"
+                        },
+                        "development": {
+                            "browserTarget": "digital-fuesim-manv:build:development"
+                        }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "browserTarget": "digital-fuesim-manv:build"
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-eslint/builder:lint",
+                    "options": {
+                        "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+                    }
+                }
+            }
+        }
+    },
+    "defaultProject": "digital-fuesim-manv",
+    "cli": {
+        "defaultCollection": "@angular-eslint/schematics"
+    }
+}

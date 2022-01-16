@@ -1,0 +1,26 @@
+{
+    "name": "digital-fuesim-manv",
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "build": "cd shared && npm run build && cd .. && concurrently \"cd frontend && npm run build\" \"cd backend && npm run build\"",
+        "install:all": "npm i && concurrently \"cd shared && npm i\" \"cd frontend && npm i\" \"cd backend && npm i\"",
+        "setup": "npm i && cd shared && npm i && npm run build && cd .. && concurrently \"cd frontend && npm i\" \"cd backend && npm i\"",
+        "prettier": "prettier --ignore-path .gitignore --loglevel warn --write \"**/*\" --ignore-unknown",
+        "prettier:check": "prettier --ignore-path .gitignore --loglevel warn --check \"**/*\" --ignore-unknown",
+        "lint": "concurrently \"cd shared && npm run lint\" \"cd frontend && npm run lint\" \"cd backend && npm run lint\"",
+        "lint:fix": "concurrently \"cd shared && npm run lint:fix\" \"cd frontend && npm run lint:fix\" \"cd backend && npm run lint:fix\"",
+        "test": "jest --runInBand --coverage --verbose",
+        "test:watch": "jest --runInBand --verbose --watch"
+    },
+    "private": true,
+    "engines": {
+        "node": ">=16",
+        "npm": ">=7"
+    },
+    "devDependencies": {
+        "concurrently": "^7.0.0",
+        "prettier": "^2.5.1",
+        "jest": "^27.4.7"
+    }
+}
