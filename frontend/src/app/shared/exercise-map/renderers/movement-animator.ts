@@ -85,6 +85,7 @@ export class MovementAnimator {
         if (progress >= 1) {
             this.stopMovementAnimation(feature);
             featureGeometry.setCenter(endPosition);
+            this.olMap.render();
             return;
         }
         // The next position is calculated by a linear interpolation between the start and end position
