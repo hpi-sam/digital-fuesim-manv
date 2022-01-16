@@ -1,5 +1,5 @@
-import { ExerciseState, SocketResponse } from 'digital-fuesim-manv-shared';
-import { createTestEnvironment, HttpMethod } from '../../test-utils';
+import { ExerciseState } from 'digital-fuesim-manv-shared';
+import { createTestEnvironment } from '../../test-utils';
 import { ExerciseCreationResponse } from '../http-handler/api/exercise.spec';
 
 describe('join exercise', () => {
@@ -110,7 +110,9 @@ describe('join exercise', () => {
                     'trainer'
                 );
 
-                expect(firstClientSocket.getTimesCalled('performAction')).toBe(1);
+                expect(firstClientSocket.getTimesCalled('performAction')).toBe(
+                    1
+                );
             });
         });
     });
