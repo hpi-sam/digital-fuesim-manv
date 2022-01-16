@@ -31,7 +31,7 @@
         "eslint": "^8.6.0",
         "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-import": "~2.25.4",
-        "eslint-plugin-unicorn": "^40.0.0",
+        "eslint-plugin-unicorn": "^40.1.0",
         "jest": "^27.4.7",
         "nodemon": "^2.0.15",
         "ts-jest": "^27.1.2",
