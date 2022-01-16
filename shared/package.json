@@ -25,7 +25,7 @@
     "dependencies": {
         "class-transformer": "^0.5.1",
         "class-validator": "^0.13.2",
-        "immer": "^9.0.7",
+        "immer": "^9.0.12",
         "lodash-es": "^4.17.21",
         "reflect-metadata": "^0.1.13",
         "uuid": "^8.3.2"
