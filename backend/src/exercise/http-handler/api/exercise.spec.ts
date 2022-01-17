@@ -1,4 +1,4 @@
-import { createTestEnvironment, HttpMethod } from '../../../test-utils';
+import { createTestEnvironment } from '../../../test-utils';
 
 export interface ExerciseCreationResponse {
     exerciseId: string;

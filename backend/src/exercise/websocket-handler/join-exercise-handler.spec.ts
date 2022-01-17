@@ -1,5 +1,4 @@
 import assert from 'node:assert';
-import { ExerciseState } from 'digital-fuesim-manv-shared';
 import { createTestEnvironment } from '../../test-utils';
 import { ExerciseCreationResponse } from '../http-handler/api/exercise.spec';
 
@@ -29,7 +28,7 @@ describe('join exercise', () => {
 
             expect(joinExercise).toStrictEqual({ success: true });
 
-            const getState = await clientSocket.emit<ExerciseState>('getState');
+            const getState = await clientSocket.emit('getState');
 
             expect(getState.success).toBe(true);
 
@@ -68,9 +67,7 @@ describe('join exercise', () => {
                     'trainer'
                 );
 
-                const state = await firstClientSocket.emit<ExerciseState>(
-                    'getState'
-                );
+                const state = await firstClientSocket.emit('getState');
 
                 assert(state.success);
                 expect(

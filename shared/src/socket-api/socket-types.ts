@@ -5,6 +5,7 @@ export interface ServerToClientEvents {
     performAction: (action: ExerciseAction) => void;
 }
 
+// The last argument is always expected to be the callback function. (To be able to use it in advanced typings)
 export interface ClientToServerEvents {
     joinExercise: (
         exerciseId: string,
