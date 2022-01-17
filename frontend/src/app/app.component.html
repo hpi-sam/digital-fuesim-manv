@@ -19,6 +19,8 @@
             <button (click)="addPatient()" class="btn btn-primary">
                 Add Patient
             </button>
+
+            {{ numberOfPatients$ | async }}
         </div>
     </ng-template>
 </div>

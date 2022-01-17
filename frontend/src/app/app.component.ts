@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Patient, uuid } from 'digital-fuesim-manv-shared';
+import { map } from 'rxjs';
 import { ApiService } from './core/api.service';
+import type { AppState } from './state/app.state';
+import { selectPatients } from './state/exercise/exercise.selectors';
 
 @Component({
     selector: 'app-root',
@@ -10,7 +14,13 @@ import { ApiService } from './core/api.service';
 export class AppComponent {
     public exerciseId = 'abcdefghijk';
 
-    constructor(public readonly apiService: ApiService) {}
+    public readonly numberOfPatients$ = this.store
+        .select(selectPatients)
+        .pipe(map((patients) => Object.keys(patients).length));
+    constructor(
+        public readonly apiService: ApiService,
+        private readonly store: Store<AppState>
+    ) {}
 
     private getDummyPatient() {
         const patient = {
@@ -21,7 +31,12 @@ export class AppComponent {
                 Date.now().toString()
             ),
         };
-        patient.position = { x: 1461850.1072131598, y: 6871673.736095486 };
+        const xOffset = Math.random() * 50;
+        const yOffset = Math.random() * 25;
+        patient.position = {
+            x: 1461830 + xOffset,
+            y: 6871673 + yOffset,
+        };
         return patient;
     }
     // Action
