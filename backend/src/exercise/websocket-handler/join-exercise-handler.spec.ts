@@ -1,5 +1,6 @@
-import { ExerciseState, SocketResponse } from 'digital-fuesim-manv-shared';
-import { createTestEnvironment, HttpMethod } from '../../test-utils';
+import assert from 'node:assert';
+import { ExerciseState } from 'digital-fuesim-manv-shared';
+import { createTestEnvironment } from '../../test-utils';
 import { ExerciseCreationResponse } from '../http-handler/api/exercise.spec';
 
 describe('join exercise', () => {
@@ -32,9 +33,7 @@ describe('join exercise', () => {
 
             expect(getState.success).toBe(true);
 
-            if (!getState.success) {
-                return;
-            }
+            assert(getState.success);
             expect(getState.payload).toBeDefined();
             expect(getState.payload.clients).toBeDefined();
             expect(
@@ -73,9 +72,7 @@ describe('join exercise', () => {
                     'getState'
                 );
 
-                if (!state.success) {
-                    return;
-                }
+                assert(state.success);
                 expect(
                     Object.values(state.payload.clients).some(
                         (client) => client.name === secondClientName
@@ -110,7 +107,9 @@ describe('join exercise', () => {
                     'trainer'
                 );
 
-                expect(firstClientSocket.getTimesCalled('performAction')).toBe(1);
+                expect(firstClientSocket.getTimesCalled('performAction')).toBe(
+                    1
+                );
             });
         });
     });
