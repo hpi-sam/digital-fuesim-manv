@@ -20,9 +20,6 @@ import { Translate, defaults as defaultInteractions } from 'ol/interaction';
 import type { Feature } from 'ol';
 import type Geometry from 'ol/geom/Geometry';
 import { ApiService } from 'src/app/core/api.service';
-import Style from 'ol/style/Style';
-import Point from 'ol/geom/Point';
-import Icon from 'ol/style/Icon';
 import { PatientRenderer } from './renderers/patient-renderer';
 import { handleChanges } from './utility/handle-changes';
 
@@ -56,10 +53,6 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
 
     private setupMap() {
         // Layers
-        // TODO: display streets above satellite
-        // const normal = new TileLayer({source: new XYZ({
-        //     url: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-        // })});
         const satellite = new TileLayer({
             source: new XYZ({
                 url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -74,27 +67,14 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
             }),
             className: 'map-tile-layer',
         });
-        const imageStyle = new Style({
-            image: new Icon({
-                src: 'https://svgsilh.com/svg/2098868.svg',
-            }),
-        });
 
         const patientLayer = new VectorLayer({
-            style: (feature, resolution) => {
-                const featureGeometry = feature.getGeometry() as Point;
-                // We have to create a new Point and can't reuse it because else the you can't select the image
-                imageStyle.setGeometry(
-                    new Point(featureGeometry.getCoordinates())
-                );
-                const image = imageStyle.getImage();
-                // Normalize the image size
-                const imageScale = 80 / (image.getImageSize()?.[1] ?? 0);
-
-                // Make sure the image is always the same size on the map
-                image.setScale(imageScale / (resolution * 23));
-                return imageStyle;
-            },
+            // Call the style function defined on the feature
+            style: (feature, resolution) =>
+                (feature as Feature<Geometry>).get('style')(
+                    feature,
+                    resolution
+                ),
             source: new VectorSource(),
             // TODO: these two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
             updateWhileAnimating: true,
@@ -113,16 +93,10 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
             target: this.openLayersContainer.nativeElement,
             layers: [satellite, patientLayer],
             view: new View({
-                center: [1461850.1072131598, 6871673.736095486],
-                // center: transform(
-                //     [13.13115, 52.39378],
-                //     'EPSG:4326',
-                //     'EPSG:3857'
-                // ),
+                center: [1461850, 6871673],
                 zoom: 20,
                 maxZoom: 23,
             }),
-            pixelRatio: window.devicePixelRatio,
         });
         this.olMap.on('pointermove', (event) => {
             this.olMap!.getTargetElement().style.cursor =

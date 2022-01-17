@@ -6,6 +6,8 @@ import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
+import Style from 'ol/style/Style';
+import Icon from 'ol/style/Icon';
 import { hasAPropertyChanged } from '../utility/has-a-property-changed';
 import { ElementRenderer } from './element-renderer';
 import { MovementAnimator } from './movement-animator';
@@ -28,17 +30,20 @@ export class PatientRenderer extends ElementRenderer<Patient> {
         if (!patient.position) {
             return;
         }
-        const circleFeature = new Feature(
-            new Point([patient.position.x, patient.position.y], 1)
+        const patientFeature = new Feature(
+            new Point([patient.position.x, patient.position.y])
         );
-        circleFeature.setId(patient.id);
-        this.patientLayer.getSource().addFeature(circleFeature);
+        patientFeature.setId(patient.id);
+        patientFeature.setStyle((feature, resolution) =>
+            this.getStyle(feature as Feature<Geometry>, resolution)
+        );
+        this.patientLayer.getSource().addFeature(patientFeature);
         this.getPatientFeature(patient).addEventListener(
             'translateend',
             (event) => {
-                const patientFeature = event.target as Feature<Point>;
+                const feature = event.target as Feature<Point>;
 
-                const [x, y] = patientFeature.getGeometry()!.getCoordinates();
+                const [x, y] = feature.getGeometry()!.getCoordinates();
                 this.apiService.proposeAction(
                     {
                         type: '[Patient] Move patient',
@@ -84,5 +89,32 @@ export class PatientRenderer extends ElementRenderer<Patient> {
         return this.patientLayer
             .getSource()
             .getFeatureById(patient.id) as Feature<Point>;
+    }
+
+    private readonly imageStyle = new Style({
+        image: new Icon({
+            src: 'https://svgsilh.com/svg/2098868.svg',
+        }),
+    });
+
+    private readonly normalizedImageSize = 80;
+    // This function should be as efficient as possible, because it is called per feature on each rendered frame
+    private getStyle(feature: Feature<Geometry>, resolution: number) {
+        const featureGeometry = feature.getGeometry() as Point;
+        // TODO: cache the point per feature and only update its coordinates
+        // We have to create a new Point and can't reuse it because else the you can't select the image
+        this.imageStyle.setGeometry(
+            new Point(featureGeometry.getCoordinates())
+        );
+        const image = this.imageStyle.getImage();
+        // Normalize the image size
+        const normalizedImageScale =
+            this.normalizedImageSize / (image.getImageSize()?.[1] ?? 1);
+        const newScale = normalizedImageScale / (resolution * 23);
+        if (image.getScale() !== newScale) {
+            // Make sure the image is always the same size on the map
+            image.setScale(newScale);
+        }
+        return this.imageStyle;
     }
 }
