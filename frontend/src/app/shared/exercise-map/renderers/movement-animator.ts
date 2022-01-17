@@ -5,7 +5,7 @@ import type OlMap from 'ol/Map';
 import type RenderEvent from 'ol/render/Event';
 import type { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
-import type Circle from 'ol/geom/Circle';
+import type Point from 'ol/geom/Point';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
 
@@ -35,12 +35,15 @@ export class MovementAnimator {
      * If the feature is removed from the layer before the animation is finished, it is recommended to call {@link stopMovementAnimation}.
      */
     public animateFeatureMovement(
-        feature: Feature<Circle>,
+        feature: Feature<Point>,
         endPosition: [number, number]
     ) {
         const startTime = Date.now();
         const featureGeometry = feature.getGeometry()!;
-        const startPosition = featureGeometry.getCenter() as [number, number];
+        const startPosition = featureGeometry.getCoordinates() as [
+            number,
+            number
+        ];
         // Stop an ongoing movement animation
         this.stopMovementAnimation(feature);
         // We don't have to animate this
@@ -72,7 +75,7 @@ export class MovementAnimator {
         startTime: number,
         startPosition: [number, number],
         endPosition: [number, number],
-        feature: Feature<Circle>
+        feature: Feature<Point>
     ) {
         const featureGeometry = feature.getGeometry()!;
         const elapsedTime = event.frameState!.time - startTime;
@@ -84,7 +87,7 @@ export class MovementAnimator {
         // We should already be (nearly) at the end position
         if (progress >= 1) {
             this.stopMovementAnimation(feature);
-            featureGeometry.setCenter(endPosition);
+            featureGeometry.setCoordinates(endPosition);
             this.olMap.render();
             return;
         }
@@ -93,12 +96,12 @@ export class MovementAnimator {
             startPosition[0] + (endPosition[0] - startPosition[0]) * progress,
             startPosition[1] + (endPosition[1] - startPosition[1]) * progress,
         ];
-        featureGeometry.setCenter(nextPosition);
+        featureGeometry.setCoordinates(nextPosition);
         getVectorContext(event).drawGeometry(featureGeometry);
         this.olMap.render();
     }
 
-    public stopMovementAnimation(feature: Feature<Circle>) {
+    public stopMovementAnimation(feature: Feature<Point>) {
         const listenerId = this.getFeatureId(feature);
         if (!this.animationListeners.has(listenerId)) {
             return;
@@ -107,7 +110,7 @@ export class MovementAnimator {
         this.animationListeners.delete(listenerId);
     }
 
-    private getFeatureId(feature: Feature<Circle>) {
+    private getFeatureId(feature: Feature<Point>) {
         // TODO: handle features without an id
         return feature.getId()! as UUID;
     }

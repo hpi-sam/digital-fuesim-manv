@@ -1,6 +1,6 @@
 import type { Patient } from 'digital-fuesim-manv-shared';
 import { Feature } from 'ol';
-import Circle from 'ol/geom/Circle';
+import Point from 'ol/geom/Point';
 import type Geometry from 'ol/geom/Geometry';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
@@ -29,16 +29,16 @@ export class PatientRenderer extends ElementRenderer<Patient> {
             return;
         }
         const circleFeature = new Feature(
-            new Circle([patient.position.x, patient.position.y], 1)
+            new Point([patient.position.x, patient.position.y], 1)
         );
         circleFeature.setId(patient.id);
         this.patientLayer.getSource().addFeature(circleFeature);
         this.getPatientFeature(patient).addEventListener(
             'translateend',
             (event) => {
-                const patientFeature = event.target as Feature<Circle>;
+                const patientFeature = event.target as Feature<Point>;
 
-                const [x, y] = patientFeature.getGeometry()!.getCenter();
+                const [x, y] = patientFeature.getGeometry()!.getCoordinates();
                 this.apiService.proposeAction(
                     {
                         type: '[Patient] Move patient',
@@ -80,9 +80,9 @@ export class PatientRenderer extends ElementRenderer<Patient> {
         super.changeElement(oldPatient, newPatient);
     }
 
-    private getPatientFeature(patient: Patient): Feature<Circle> {
+    private getPatientFeature(patient: Patient): Feature<Point> {
         return this.patientLayer
             .getSource()
-            .getFeatureById(patient.id) as Feature<Circle>;
+            .getFeatureById(patient.id) as Feature<Point>;
     }
 }
