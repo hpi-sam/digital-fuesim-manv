@@ -68,10 +68,20 @@ export class ApiService {
      * Join an exercise and retrieve its state
      * @returns wether the join was successful
      */
-    public async joinExercise(exerciseId: string, clientName: string, role: Role): Promise<boolean> {
+    public async joinExercise(
+        exerciseId: string,
+        clientName: string,
+        role: Role
+    ): Promise<boolean> {
         this.hasJoinedExerciseState$.next('joining');
         const joinExercise = await new Promise<SocketResponse>((resolve) => {
-            this.socket.emit('joinExercise', exerciseId, clientName, role, resolve);
+            this.socket.emit(
+                'joinExercise',
+                exerciseId,
+                clientName,
+                role,
+                resolve
+            );
         });
         if (!joinExercise.success) {
             this.hasJoinedExerciseState$.next('not-joined');

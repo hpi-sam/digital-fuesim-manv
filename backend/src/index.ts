@@ -1,3 +1,3 @@
-import { FuesimServer } from "./fuesim-server";
+import { FuesimServer } from './fuesim-server';
 
 FuesimServer.create();

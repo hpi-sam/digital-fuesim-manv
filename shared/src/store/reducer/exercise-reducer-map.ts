@@ -42,9 +42,7 @@ export const exerciseReducerMap: {
     },
     '[Client] Remove client': (draftState, { clientId }) => {
         if (!draftState.clients[clientId]) {
-            throw new ReducerError(
-                `Client with id ${clientId} does not exist`
-            );
+            throw new ReducerError(`Client with id ${clientId} does not exist`);
         }
         delete draftState.clients[clientId];
         return draftState;

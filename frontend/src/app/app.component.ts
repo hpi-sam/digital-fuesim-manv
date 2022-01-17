@@ -40,7 +40,11 @@ export class AppComponent {
 
     public keepAddingPatients = true;
     public joinExercise() {
-        this.apiService.joinExercise(this.exerciseId, this.clientName, this.isTrainer ? 'trainer' : 'participant');
+        this.apiService.joinExercise(
+            this.exerciseId,
+            this.clientName,
+            this.isTrainer ? 'trainer' : 'participant'
+        );
         // setInterval(() => {
         //     if (this.keepAddingPatients) {
         //         this.addPatient();
