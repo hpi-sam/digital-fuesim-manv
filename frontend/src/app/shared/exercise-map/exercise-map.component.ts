@@ -20,8 +20,11 @@ import { Translate, defaults as defaultInteractions } from 'ol/interaction';
 import type { Feature } from 'ol';
 import type Geometry from 'ol/geom/Geometry';
 import { ApiService } from 'src/app/core/api.service';
-import { handleChanges } from './utility/handle-changes';
+import Style from 'ol/style/Style';
+import Point from 'ol/geom/Point';
+import Icon from 'ol/style/Icon';
 import { PatientRenderer } from './renderers/patient-renderer';
+import { handleChanges } from './utility/handle-changes';
 
 @Component({
     selector: 'app-exercise-map',
@@ -69,17 +72,42 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                     // 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
                 ],
             }),
+            className: 'map-tile-layer',
         });
+        const imageStyle = new Style({
+            image: new Icon({
+                src: 'https://svgsilh.com/svg/2098868.svg',
+            }),
+        });
+
         const patientLayer = new VectorLayer({
+            style: (feature, resolution) => {
+                const featureGeometry = feature.getGeometry() as Point;
+                // We have to create a new Point and can't reuse it because else the you can't select the image
+                imageStyle.setGeometry(
+                    new Point(featureGeometry.getCoordinates())
+                );
+                const image = imageStyle.getImage();
+                // Normalize the image size
+                const imageScale = 80 / (image.getImageSize()?.[1] ?? 0);
+
+                // Make sure the image is always the same size on the map
+                image.setScale(imageScale / (resolution * 23));
+                return imageStyle;
+            },
             source: new VectorSource(),
             // TODO: these two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
             updateWhileAnimating: true,
             updateWhileInteracting: true,
+            // TODO: Recommended value: the size of the largest symbol, line width or label.
+            // The value is in pixel -> if we are very zoomed in we might need to increase it
+            renderBuffer: 250,
         });
         // Interactions
         const translateInteraction = new Translate({
             features: patientLayer.getSource().getFeaturesCollection(),
         });
+
         this.olMap = new OlMap({
             interactions: defaultInteractions().extend([translateInteraction]),
             target: this.openLayersContainer.nativeElement,
@@ -92,8 +120,15 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 //     'EPSG:3857'
                 // ),
                 zoom: 20,
+                maxZoom: 23,
             }),
+            pixelRatio: window.devicePixelRatio,
         });
+        this.olMap.on('pointermove', (event) => {
+            this.olMap!.getTargetElement().style.cursor =
+                this.olMap!.hasFeatureAtPixel(event.pixel) ? 'pointer' : '';
+        });
+
         // Event listeners
         // TODO: this event isn't fired automatically, we therefore propagate it manually
         translateInteraction.on('translateend', (event) => {
