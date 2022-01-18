@@ -1,5 +1,3 @@
-import type { Immutable } from 'digital-fuesim-manv-shared';
-import { handleChanges } from './handle-changes';
 import { hasAPropertyChanged } from './has-a-property-changed';
 
 describe('HasAPropertyChanged', () => {

@@ -65,16 +65,9 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                     // 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
                 ],
             }),
-            className: 'map-tile-layer',
         });
 
         const patientLayer = new VectorLayer({
-            // Call the style function defined on the feature
-            style: (feature, resolution) =>
-                (feature as Feature<Geometry>).get('style')(
-                    feature,
-                    resolution
-                ),
             source: new VectorSource(),
             // TODO: these two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
             updateWhileAnimating: true,
@@ -98,18 +91,25 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 maxZoom: 23,
             }),
         });
+        // Event listeners
         this.olMap.on('pointermove', (event) => {
             this.olMap!.getTargetElement().style.cursor =
                 this.olMap!.hasFeatureAtPixel(event.pixel) ? 'pointer' : '';
         });
 
-        // Event listeners
-        // TODO: this event isn't fired automatically, we therefore propagate it manually
-        translateInteraction.on('translateend', (event) => {
-            event.features.forEach((feature: Feature<Geometry>) => {
-                feature.dispatchEvent('translateend');
+        // These event don't propagate to anything else bz default. We therefore propagate it manually to the specific features.
+        const translateEvents = [
+            'translatestart',
+            'translating',
+            'translateend',
+        ] as const;
+        for (const eventName of translateEvents) {
+            translateInteraction.on(eventName, (event) => {
+                event.features.forEach((feature: Feature<Geometry>) => {
+                    feature.dispatchEvent(event);
+                });
             });
-        });
+        }
         // Renderers
         const patientRenderer = new PatientRenderer(
             this.olMap,
