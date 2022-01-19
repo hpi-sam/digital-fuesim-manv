@@ -1,6 +1,6 @@
 import type { Feature } from 'ol';
 import type Geometry from 'ol/geom/Geometry';
-import Point from 'ol/geom/Point';
+import type Point from 'ol/geom/Point';
 import Icon from 'ol/style/Icon';
 import Style from 'ol/style/Style';
 
@@ -28,11 +28,7 @@ export class ImageStyleHelper {
     // This function should be as efficient as possible, because it is called per feature on each rendered frame
     public getStyle(feature: Feature<Geometry>, resolution: number) {
         const featureGeometry = feature.getGeometry() as Point;
-        // TODO: cache the point per feature and only update its coordinates
-        // We have to create a new Point and can't reuse it because else the you can't select the image
-        this.imageStyle.setGeometry(
-            new Point(featureGeometry.getCoordinates())
-        );
+        this.imageStyle.setGeometry(featureGeometry);
         const image = this.imageStyle.getImage();
         // Normalize the image size
         const normalizedImageScale =
