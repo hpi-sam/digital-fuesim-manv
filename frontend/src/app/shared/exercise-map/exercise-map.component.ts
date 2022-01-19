@@ -13,6 +13,7 @@ import XYZ from 'ol/source/XYZ';
 import { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import { selectPatients } from 'src/app/state/exercise/exercise.selectors';
+import type { Observable } from 'rxjs';
 import { pairwise, startWith, Subject, takeUntil } from 'rxjs';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
@@ -20,8 +21,10 @@ import { Translate, defaults as defaultInteractions } from 'ol/interaction';
 import type { Feature } from 'ol';
 import type Geometry from 'ol/geom/Geometry';
 import { ApiService } from 'src/app/core/api.service';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import { PatientRenderer } from './renderers/patient-renderer';
 import { handleChanges } from './utility/handle-changes';
+import type { ElementRenderer } from './renderers/element-renderer';
 
 @Component({
     selector: 'app-exercise-map',
@@ -91,10 +94,11 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 maxZoom: 23,
             }),
         });
-        // Event listeners
+        // Cursors
         this.olMap.on('pointermove', (event) => {
-            this.olMap!.getTargetElement().style.cursor =
-                this.olMap!.hasFeatureAtPixel(event.pixel) ? 'pointer' : '';
+            this.setCursorStyle(
+                this.olMap!.hasFeatureAtPixel(event.pixel) ? 'pointer' : ''
+            );
         });
 
         // These event don't propagate to anything else bz default. We therefore propagate it manually to the specific features.
@@ -116,25 +120,35 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
             patientLayer,
             this.apiService
         );
-        this.store
-            .select(selectPatients)
+        this.registerRenderer(
+            patientRenderer,
+            this.store.select(selectPatients)
+        );
+    }
+
+    private registerRenderer<Element extends object>(
+        renderer: ElementRenderer<Element>,
+        elementDictionary$: Observable<{ [id: UUID]: Element }>
+    ) {
+        elementDictionary$
             .pipe(startWith({}), pairwise(), takeUntil(this.destroy$))
-            .subscribe(([oldPatients, newPatients]) => {
+            .subscribe(([oldElementDictionary, newElementDictionary]) => {
                 // run outside angular zone for better performance
                 this.ngZone.runOutsideAngular(() => {
                     handleChanges(
-                        oldPatients,
-                        newPatients,
-                        (patient) => patientRenderer.createElement(patient),
-                        (patient) => patientRenderer.deleteElement(patient),
-                        (oldPatient, newPatient) =>
-                            patientRenderer.changeElement(
-                                oldPatient,
-                                newPatient
-                            )
+                        oldElementDictionary,
+                        newElementDictionary,
+                        (element) => renderer.createElement(element),
+                        (element) => renderer.deleteElement(element),
+                        (oldElement, newElement) =>
+                            renderer.changeElement(oldElement, newElement)
                     );
                 });
             });
+    }
+
+    private setCursorStyle(cursorStyle: string) {
+        this.olMap!.getTargetElement().style.cursor = cursorStyle;
     }
 
     ngOnDestroy(): void {
