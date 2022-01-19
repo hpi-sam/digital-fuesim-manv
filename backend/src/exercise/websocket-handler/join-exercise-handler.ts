@@ -14,7 +14,6 @@ export const registerJoinExerciseHandler = (
             role: Role,
             callback
         ): void => {
-            console.log(exerciseId);
             if (
                 !clientMap
                     .get(client)

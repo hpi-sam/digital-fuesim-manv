@@ -50,10 +50,8 @@ export class ApiService {
 
     constructor(private readonly store: Store<AppState>) {
         this.socket.on('connect', () => {
-            console.log('Socket connected', this.socket.id);
         });
         this.socket.on('disconnect', () => {
-            console.log('Socket disconnected', this.socket.id);
         });
         this.socket.on('performAction', (action: ExerciseAction) => {
             this.optimisticActionHandler.performAction(action);
