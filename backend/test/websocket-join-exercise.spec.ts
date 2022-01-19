@@ -1,6 +1,6 @@
 import assert from 'node:assert';
-import { createTestEnvironment } from '../../test-utils';
-import { ExerciseCreationResponse } from '../http-handler/api/exercise.spec';
+import { ExerciseCreationResponse } from './http-exercise.spec';
+import { createTestEnvironment } from './utils';
 
 describe('join exercise', () => {
     const environment = createTestEnvironment();

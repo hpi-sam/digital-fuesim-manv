@@ -5,7 +5,7 @@ import {
 import { io, Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import request from 'supertest';
-import { FuesimServer } from './fuesim-server';
+import { FuesimServer } from '../src/fuesim-server';
 
 export type HttpMethod =
     | 'get'
