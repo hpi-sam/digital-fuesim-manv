@@ -27,7 +27,6 @@ export class ExerciseWebsocketServer {
         this.exerciseServer.listen(port);
 
         this.exerciseServer.on('connection', (socket) => {
-            console.log('a user connected');
             this.registerClient(socket);
         });
     }
