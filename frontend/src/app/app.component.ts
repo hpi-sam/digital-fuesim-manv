@@ -8,7 +8,7 @@ import { ApiService } from './core/api.service';
     styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-    public exerciseId = 'abcdefghijk';
+    public exerciseId = '';
 
     public clientName = '';
 
@@ -50,5 +50,12 @@ export class AppComponent {
         //         this.addPatient();
         //     }
         // }, 1000);
+    }
+
+    public createExercise() {
+        const request = this.apiService.createExercise();
+        request.subscribe((response) => {
+            this.exerciseId = response.exerciseId;
+        });
     }
 }

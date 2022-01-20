@@ -8,19 +8,23 @@
     >
         <p>
             Exercise Id:
-            <input [(ngModel)]="exerciseId" type="text" />
+            <input [(ngModel)]="exerciseId" type="text" id="exerciseId" />
         </p>
         <br />
         <p>
             Public Name:
-            <input [(ngModel)]="clientName" type="text" />
+            <input [(ngModel)]="clientName" type="text" id="publicName" />
         </p>
         <p>
             Be a trainer?
-            <input [(ngModel)]="beTrainer" type="checkbox" />
+            <input [(ngModel)]="isTrainer" type="checkbox" id="isTrainer" />
         </p>
-        <button (click)="joinExercise()" class="btn btn-primary">
+        <button (click)="joinExercise()" class="btn btn-primary" id="join">
             Join Exercise
+        </button>
+        <br />
+        <button (click)="createExercise()" class="btn btn-primary" id="create">
+            Create Exercise
         </button>
     </div>
 
@@ -28,7 +32,7 @@
         <div>
             <app-patients-list></app-patients-list>
 
-            <button (click)="addPatient()" class="btn btn-primary">
+            <button (click)="addPatient()" class="btn btn-primary" id="addPatient">
                 Add Patient
             </button>
         </div>
@@ -36,6 +40,7 @@
     <button
         (click)="keepAddingPatients = !keepAddingPatients"
         class="btn btn-primary"
+        id="toggleAddPatients"
     >
         Toggle adding patients
     </button>

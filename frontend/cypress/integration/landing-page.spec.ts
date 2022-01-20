@@ -18,6 +18,13 @@ describe('The landing page', () => {
         cy.get('.container').should('contain', 'Add');
     });
 
+    it('can create an exercise', () => {
+        cy.visit('/')
+        cy.get('#exerciseId').should('equal', '')
+        cy.contains('Create').click()
+        cy.get('#exerciseId').should('not.equal', '')
+    })
+
     // it('can add new patients', () => {
     //     cy.visit('/');
     //     cy.contains('Join').click();

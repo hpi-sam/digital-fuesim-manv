@@ -4,8 +4,6 @@ import { Server } from 'socket.io';
 import type { ExerciseSocket, ExerciseServer } from '../exercise-server';
 import { clientMap } from './client-map';
 import { ClientWrapper } from './client-wrapper';
-import { exerciseMap } from './exercise-map';
-import { ExerciseWrapper } from './exercise-wrapper';
 import {
     registerGetStateHandler,
     registerJoinExerciseHandler,

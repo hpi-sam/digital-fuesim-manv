@@ -3,6 +3,7 @@ import { Store } from '@ngrx/store';
 import type {
     ClientToServerEvents,
     ExerciseAction,
+    ExerciseId,
     ExerciseState,
     ServerToClientEvents,
     SocketResponse,
@@ -17,15 +18,22 @@ import {
     setExerciseState,
 } from '../state/exercise/exercise.actions';
 import { OptimisticActionHandler } from './optimistic-action-handler';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ApiService {
+    private readonly host = window.location.host.split(':')[0];
+    private readonly websocketPort = 3200;
+    private readonly httpPort = 3201;
+
+    private readonly httpBase = `http://${this.host}:${this.httpPort}`;
+
     private readonly socket: Socket<
         ServerToClientEvents,
         ClientToServerEvents
-    > = io(`ws://${window.location.host.split(':')[0]}:3200`);
+    > = io(`ws://${this.host}:${this.websocketPort}`);
 
     private readonly optimisticActionHandler = new OptimisticActionHandler<
         ExerciseAction,
@@ -48,11 +56,12 @@ export class ApiService {
         async (action) => this.sendAction(action)
     );
 
-    constructor(private readonly store: Store<AppState>) {
-        this.socket.on('connect', () => {
-        });
-        this.socket.on('disconnect', () => {
-        });
+    constructor(
+        private readonly store: Store<AppState>,
+        private readonly httpClient: HttpClient
+    ) {
+        this.socket.on('connect', () => {});
+        this.socket.on('disconnect', () => {});
         this.socket.on('performAction', (action: ExerciseAction) => {
             this.optimisticActionHandler.performAction(action);
         });
@@ -127,5 +136,9 @@ export class ApiService {
         }
         this.store.dispatch(setExerciseState(response.payload));
         return response;
+    }
+
+    public createExercise() {
+        return this.httpClient.post<ExerciseId>(`${this.httpBase}/api/exercise`, {});
     }
 }
