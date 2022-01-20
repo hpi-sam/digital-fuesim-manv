@@ -71,7 +71,7 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         });
 
         const patientLayer = new VectorLayer({
-            source: new VectorSource(),
+            source: new VectorSource<Point>(),
             // TODO: these two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
             updateWhileAnimating: true,
             updateWhileInteracting: true,
@@ -127,7 +127,7 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     }
 
     private registerRenderer<Element extends object>(
-        renderer: ElementRenderer<Element>,
+        renderer: ElementRenderer<Element, any, any, any>,
         elementDictionary$: Observable<{ [id: UUID]: Element }>
     ) {
         elementDictionary$

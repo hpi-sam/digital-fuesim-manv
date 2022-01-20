@@ -1,58 +1,126 @@
+import type { Feature } from 'ol';
+import { generateChangedProperties } from '../utility/generate-changed-properties';
+
 /**
- * Provides an Api to render an element
- * The {@link Element} must be immutable.
+ * Provides an Api to update the rendered the changes to an element (patient, vehicle, etc.)
+ *
+ * {@link Element} is the immutable JSON object (Patient, Vehicle, etc.)
+ * {@link ElementFeature} is the OpenLayers Feature that should be rendered to represent the {@link Element}.
+ *
+ * Often not all elements need to be rendered to the map.
+ * For example, the feature should only be created if the element is has a position (could be optional).
+ * {@link CreatableElement} is the immutable JSON object that satisfies this requirement.
  */
-export abstract class ElementRenderer<Element extends object> {
-    abstract createElement(element: Element): void;
+export abstract class ElementRenderer<
+    Element extends object,
+    ElementFeature extends Feature<any>,
+    CreatableElement extends Element,
+    SupportedChangeProperties extends ReadonlySet<keyof CreatableElement>
+> {
+    /**
+     * @returns wether a feature for {@link element} should be created. It also acts as a type guard.
+     */
+    abstract canBeCreated(element: Element): element is CreatableElement;
+
+    /**
+     * This should be called if a new element is added.
+     */
+    public createElement(element: Element) {
+        if (!this.canBeCreated(element)) {
+            return;
+        }
+        this.createFeature(element);
+    }
+
+    /**
+     * Adds a new feature representing the {@link element } to the map.
+     */
+    abstract createFeature(element: CreatableElement): void;
+
     /**
      * Delete the rendered element (if it exists)
      */
-    abstract deleteElement(element: Element): void;
+    public deleteElement(element: Element): void {
+        const elementFeature = this.getElementFeature(element);
+        if (!elementFeature) {
+            return;
+        }
+        this.deleteFeature(element, elementFeature);
+    }
 
     /**
-     * The properties of {@link Element} for which custom changes can be handled
+     * Delete the {@link elementFeature} representing the {@link element} from the map.
      */
-    abstract readonly supportedChangeProperties: ReadonlyArray<keyof Element>;
-    /**
-     * This method is guaranteed to only be called if all properties that are different between the two elements are in {@link supportedChangeProperties}
-     * It should update the rendered element to reflect these new properties
-     */
-    abstract customizedChangeElement(
-        oldElement: Element,
-        newElement: Element,
-        changedProperties: Set<keyof Element>
+    abstract deleteFeature(
+        element: Element,
+        elementFeature: ElementFeature
     ): void;
 
     /**
-     * This function updates the rendered element to reflect new properties.
+     * The properties of {@link CreatableElement} for which custom changes can be handled in {@link changeFeature}.
+     */
+    abstract readonly supportedChangeProperties: SupportedChangeProperties;
+    /**
+     * This method is guaranteed to only be called if only properties in {@link supportedChangeProperties} are different between the two elements
+     * @param changedProperties The properties that have changed between the {@link oldElement } and the {@link newElement }
+     * @param elementFeature The openLayers feature that should be updated to reflect the changes
+     */
+    abstract changeFeature(
+        oldElement: Element,
+        newElement: CreatableElement,
+        changedProperties: SupportedChangeProperties,
+        elementFeature: ElementFeature
+    ): void;
+
+    /**
+     * This should be called if an element is changed.
      *
-     * The best way to do this is mostly to update the already rendered element directly.
-     * Because this mostly requires extra code and is not feasible to do for all elements,
-     * the properties that are supported to be updated this way are saved in {@link supportedChangeProperties} and
-     * implemented in {@link customizedChangeElement}.
-     * To still guarantee that the element is updated, we deleted the old rendered element and create a new one,
-     * if another than a {@link supportedChangeProperties} has been changed.
+     * The best way to reflect the changes on the feature this is mostly to update the already created feature directly.
+     * But because this requires extra code for each changed property it is not feasible to do for all properties.
+     * The properties that are supported to be updated this way are saved in {@link supportedChangeProperties} and the changes are handled in {@link changeFeature}.
+     * If any other property has changed, we deleted the old feature and create a new one instead.
      */
     public changeElement(oldElement: Element, newElement: Element): void {
-        const properties = [
-            // there could be optional properties that are only in one element
-            ...Object.keys(oldElement),
-            ...Object.keys(newElement),
-        ] as (keyof Element)[];
-        const changedProperties = new Set<keyof Element>();
-        // add the changed properties to the Set
-        for (const property of properties) {
-            if (oldElement[property] !== newElement[property]) {
-                changedProperties.add(property);
-            }
+        const changedProperties = generateChangedProperties(
+            oldElement,
+            newElement
+        );
+        if (!this.allPropertiesAreSupported(changedProperties)) {
+            this.deleteElement(oldElement);
+            this.createElement(newElement);
+            return;
         }
-        for (const changedProperty of changedProperties) {
-            if (!this.supportedChangeProperties.includes(changedProperty)) {
-                this.deleteElement(oldElement);
-                this.createElement(newElement);
-                return;
-            }
+
+        const elementFeature = this.getElementFeature(oldElement);
+        if (!elementFeature) {
+            // If the element is not yet rendered on the map - we have to create it first
+            this.createElement(newElement);
+            return;
         }
-        this.customizedChangeElement(oldElement, newElement, changedProperties);
+        if (!this.canBeCreated(newElement)) {
+            // If the element is not valid anymore - we have to delete it
+            this.deleteElement(oldElement);
+            return;
+        }
+        this.changeFeature(
+            oldElement,
+            newElement,
+            changedProperties,
+            elementFeature
+        );
     }
+
+    private allPropertiesAreSupported(
+        // ReadonlySet<keyof Element> doesn't work here, because ts seems to not consider CreatableElement to be a subtype of Element...
+        changedProperties: ReadonlySet<any>
+    ): changedProperties is SupportedChangeProperties {
+        for (const changedProperty of changedProperties) {
+            if (!this.supportedChangeProperties.has(changedProperty)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    abstract getElementFeature(element: Element): ElementFeature | undefined;
 }

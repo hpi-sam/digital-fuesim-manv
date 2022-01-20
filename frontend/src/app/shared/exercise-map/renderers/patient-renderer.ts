@@ -1,17 +1,26 @@
 import type { Patient } from 'digital-fuesim-manv-shared';
 import { Feature } from 'ol';
 import Point from 'ol/geom/Point';
-import type Geometry from 'ol/geom/Geometry';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
+import type { Position } from 'digital-fuesim-manv-shared/dist/models/utils';
 import { ElementRenderer } from './element-renderer';
 import { MovementAnimator } from './movement-animator';
 import { TranslateHelper } from './translate-helper';
 import { ImageStyleHelper } from './get-image-style-function';
 
-export class PatientRenderer extends ElementRenderer<Patient> {
+type CreatablePatient = Patient & { position: Position };
+type PatientFeature = Feature<Point>;
+type SupportedChangeProperties = ReadonlySet<'position'>;
+
+export class PatientRenderer extends ElementRenderer<
+    Patient,
+    PatientFeature,
+    CreatablePatient,
+    SupportedChangeProperties
+> {
     /**
      * The height of the image in pixels that should be used at {@link normalZoom } zoom
      */
@@ -28,22 +37,23 @@ export class PatientRenderer extends ElementRenderer<Patient> {
 
     constructor(
         private readonly olMap: OlMap,
-        private readonly patientLayer: VectorLayer<VectorSource<Geometry>>,
+        private readonly patientLayer: VectorLayer<VectorSource<Point>>,
         private readonly apiService: ApiService
     ) {
         super();
         this.patientLayer.setStyle((feature, resolution) =>
             this.imageStyleHelper.getStyle(
-                feature as Feature<Geometry>,
+                feature as PatientFeature,
                 resolution
             )
         );
     }
 
-    public createElement(patient: Patient): void {
-        if (!patient.position) {
-            return;
-        }
+    canBeCreated(patient: Patient): patient is CreatablePatient {
+        return !!patient.position;
+    }
+
+    createFeature(patient: CreatablePatient): void {
         const patientFeature = new Feature(
             new Point([patient.position.x, patient.position.y])
         );
@@ -61,45 +71,29 @@ export class PatientRenderer extends ElementRenderer<Patient> {
         });
     }
 
-    public deleteElement(patient: Patient): void {
-        const patientFeature = this.getPatientFeature(patient);
-        if (!patientFeature) {
-            return;
-        }
+    deleteFeature(patient: Patient, patientFeature: PatientFeature): void {
         this.patientLayer.getSource().removeFeature(patientFeature);
         this.movementAnimator.stopMovementAnimation(patientFeature);
     }
 
-    readonly supportedChangeProperties = ['position'] as const;
-    customizedChangeElement(
+    readonly supportedChangeProperties = new Set(['position'] as const);
+    changeFeature(
         oldPatient: Patient,
-        newPatient: Patient,
-        changedProperties: Set<keyof Patient>
+        newPatient: CreatablePatient,
+        changedProperties: SupportedChangeProperties,
+        patientFeature: PatientFeature
     ): void {
-        const newPosition = newPatient.position;
-        const patientFeature = this.getPatientFeature(oldPatient);
-        if (!newPosition) {
-            // the patient is not visible on the map
-            this.deleteElement(oldPatient);
-            return;
-        }
-        if (!patientFeature) {
-            // the patient is not yet rendered
-            this.createElement(newPatient);
-            return;
-        }
         if (changedProperties.has('position')) {
             this.movementAnimator.animateFeatureMovement(patientFeature, [
-                newPosition.x,
-                newPosition.y,
+                newPatient.position.x,
+                newPatient.position.y,
             ]);
         }
-        // TODO: handle other properties
     }
 
-    private getPatientFeature(patient: Patient) {
+    getElementFeature(patient: Patient) {
         return this.patientLayer.getSource().getFeatureById(patient.id) as
-            | Feature<Point>
+            | PatientFeature
             | undefined;
     }
 }
