@@ -1,34 +1,45 @@
-import { UserReadableIdGenerator } from "./user-readable-id-generator"
+import { UserReadableIdGenerator } from './user-readable-id-generator';
 
 describe('user-readable-id-generator', () => {
     const generatedIds = new Array<string>();
-    beforeEach(() => {
-        for(let i=0; i<1000; i++){
+    beforeAll(() => {
+        for (let i = 0; i < 10_000; i++) {
             generatedIds.push(UserReadableIdGenerator.generateId());
         }
     });
 
-    it('should be in bounds', () => {
-        generatedIds.forEach((id) => {
-            const intId = parseInt(id, 10)
-            expect(intId > 0);
-            expect(intId < 100000);
-        })
+    describe('valid ids', () => {
+        it('should be in bounds', () => {
+            generatedIds.forEach((id) => {
+                const intId = parseInt(id);
+                expect(intId).toBeGreaterThanOrEqual(0);
+                expect(intId).toBeLessThan(1_000_000);
+            });
+        });
+
+        it('should not generate an already existing id', () => {
+            generatedIds.forEach((currentId) => {
+                const count = generatedIds.filter(
+                    (id) => id === currentId
+                ).length;
+                expect(count).toBe(1);
+            });
+        });
     });
 
-    it('should not generate an already existing id', () => {
-        for (let id of generatedIds){
+    describe('bounds', () => {
+        it('should fail when no id is left', () => {
+            // We already have the maximum amount of ids in our collection
+            expect(() => {
+                UserReadableIdGenerator.generateId();
+            }).toThrow(RangeError);
+        });
 
-            generatedIds.forEach
-        }
-        generatedIds.forEach((currentId) => {
-            let count = 0;
-            generatedIds.forEach((id) => {
-                if (currentId === id){
-                    count++;
-                }
-            })
-            expect(count === 1);
-        })
-    })
-})
+        it('should allow another id after freeing', () => {
+            UserReadableIdGenerator.freeId(generatedIds[0]);
+            expect(() => {
+                UserReadableIdGenerator.generateId();
+            }).not.toThrow(RangeError);
+        });
+    });
+});
