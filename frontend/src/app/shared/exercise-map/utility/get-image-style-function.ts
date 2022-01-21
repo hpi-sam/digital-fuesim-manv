@@ -25,7 +25,6 @@ export class ImageStyleHelper {
             // this is a workaround to force openLayers to rasterize an svg image
             // this gives a massive performance boost
             // See https://github.com/openlayers/openlayers/issues/11133#issuecomment-638987210
-            // This also seems to exclude transparent areas from the icons/features hitbox
             color: 'white',
         }),
     });
