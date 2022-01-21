@@ -22,9 +22,10 @@ import type { Feature } from 'ol';
 import type Geometry from 'ol/geom/Geometry';
 import { ApiService } from 'src/app/core/api.service';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { PatientRenderer } from './renderers/patient-renderer';
+import type Point from 'ol/geom/Point';
+import { PatientFeatureManager } from './feature-managers/patient-feature-manager';
 import { handleChanges } from './utility/handle-changes';
-import type { ElementRenderer } from './renderers/element-renderer';
+import type { FeatureManager } from './feature-managers/feature-manager';
 
 @Component({
     selector: 'app-exercise-map',
@@ -100,6 +101,13 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 this.olMap!.hasFeatureAtPixel(event.pixel) ? 'pointer' : ''
             );
         });
+        // TODO:
+        // translateInteraction.on('translatestart', () => {
+        //     this.setCursorStyle('grabbing');
+        // });
+        // translateInteraction.on('translateend', () => {
+        //     this.setCursorStyle('');
+        // });
 
         // These event don't propagate to anything else bz default. We therefore propagate it manually to the specific features.
         const translateEvents = [
@@ -114,20 +122,20 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 });
             });
         }
-        // Renderers
-        const patientRenderer = new PatientRenderer(
+        // FeatureManagers
+        const patientFeatureManager = new PatientFeatureManager(
             this.olMap,
             patientLayer,
             this.apiService
         );
-        this.registerRenderer(
-            patientRenderer,
+        this.registerFeatureManager(
+            patientFeatureManager,
             this.store.select(selectPatients)
         );
     }
 
-    private registerRenderer<Element extends object>(
-        renderer: ElementRenderer<Element, any, any, any>,
+    private registerFeatureManager<Element extends object>(
+        featureManager: FeatureManager<Element, any, any, any>,
         elementDictionary$: Observable<{ [id: UUID]: Element }>
     ) {
         elementDictionary$
@@ -138,10 +146,13 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                     handleChanges(
                         oldElementDictionary,
                         newElementDictionary,
-                        (element) => renderer.createElement(element),
-                        (element) => renderer.deleteElement(element),
+                        (element) => featureManager.onElementCreated(element),
+                        (element) => featureManager.onElementDeleted(element),
                         (oldElement, newElement) =>
-                            renderer.changeElement(oldElement, newElement)
+                            featureManager.onElementChanged(
+                                oldElement,
+                                newElement
+                            )
                     );
                 });
             });

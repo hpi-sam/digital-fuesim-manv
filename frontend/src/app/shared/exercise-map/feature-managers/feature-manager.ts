@@ -11,7 +11,7 @@ import { generateChangedProperties } from '../utility/generate-changed-propertie
  * For example, the feature should only be created if the element is has a position (could be optional).
  * {@link CreatableElement} is the immutable JSON object that satisfies this requirement.
  */
-export abstract class ElementRenderer<
+export abstract class FeatureManager<
     Element extends object,
     ElementFeature extends Feature<any>,
     CreatableElement extends Element,
@@ -25,7 +25,7 @@ export abstract class ElementRenderer<
     /**
      * This should be called if a new element is added.
      */
-    public createElement(element: Element) {
+    public onElementCreated(element: Element) {
         if (!this.canBeCreated(element)) {
             return;
         }
@@ -40,7 +40,7 @@ export abstract class ElementRenderer<
     /**
      * Delete the rendered element (if it exists)
      */
-    public deleteElement(element: Element): void {
+    public onElementDeleted(element: Element): void {
         const elementFeature = this.getElementFeature(element);
         if (!elementFeature) {
             return;
@@ -80,37 +80,36 @@ export abstract class ElementRenderer<
      * The properties that are supported to be updated this way are saved in {@link supportedChangeProperties} and the changes are handled in {@link changeFeature}.
      * If any other property has changed, we deleted the old feature and create a new one instead.
      */
-    public changeElement(oldElement: Element, newElement: Element): void {
+    public onElementChanged(oldElement: Element, newElement: Element): void {
+        if (!this.canBeCreated(newElement)) {
+            // the newElement is not valid anymore - we have to delete it
+            this.onElementDeleted(oldElement);
+            return;
+        }
+        const elementFeature = this.getElementFeature(oldElement);
+        if (!elementFeature) {
+            // If the element is not yet rendered on the map - we have to create it first
+            this.onElementCreated(newElement);
+            return;
+        }
         const changedProperties = generateChangedProperties(
             oldElement,
             newElement
         );
-        if (!this.allPropertiesAreSupported(changedProperties)) {
-            this.deleteElement(oldElement);
-            this.createElement(newElement);
+        if (this.areAllPropertiesSupported(changedProperties)) {
+            this.changeFeature(
+                oldElement,
+                newElement,
+                changedProperties,
+                elementFeature
+            );
             return;
         }
-
-        const elementFeature = this.getElementFeature(oldElement);
-        if (!elementFeature) {
-            // If the element is not yet rendered on the map - we have to create it first
-            this.createElement(newElement);
-            return;
-        }
-        if (!this.canBeCreated(newElement)) {
-            // If the element is not valid anymore - we have to delete it
-            this.deleteElement(oldElement);
-            return;
-        }
-        this.changeFeature(
-            oldElement,
-            newElement,
-            changedProperties,
-            elementFeature
-        );
+        this.onElementDeleted(oldElement);
+        this.onElementCreated(newElement);
     }
 
-    private allPropertiesAreSupported(
+    private areAllPropertiesSupported(
         // ReadonlySet<keyof Element> doesn't work here, because ts seems to not consider CreatableElement to be a subtype of Element...
         changedProperties: ReadonlySet<any>
     ): changedProperties is SupportedChangeProperties {
