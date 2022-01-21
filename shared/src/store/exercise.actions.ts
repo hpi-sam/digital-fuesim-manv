@@ -1,6 +1,14 @@
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
-import { UUID, Viewport, uuidValidationOptions, Patient } from '..';
+import {
+    UUID,
+    Viewport,
+    uuidValidationOptions,
+    Patient,
+    Vehicle,
+    Personell,
+    Material,
+} from '..';
 import { Position } from '../models/utils';
 import type { Immutable } from '../utils/immutability';
 
@@ -62,6 +70,78 @@ export namespace ExerciseActions {
         readonly type = '[Patient] Remove patient';
         @IsUUID(4, uuidValidationOptions)
         public patientId!: UUID;
+    }
+
+    export class AddVehicle implements Action {
+        readonly type = '[Vehicle] Add vehicle';
+        @ValidateNested()
+        @Type(() => Vehicle)
+        public vehicle!: Vehicle;
+    }
+
+    export class MoveVehicle implements Action {
+        readonly type = '[Vehicle] Move vehicle';
+
+        @IsUUID(4, uuidValidationOptions)
+        public vehicleId!: UUID;
+
+        @ValidateNested()
+        @Type(() => Position)
+        public position!: Position;
+    }
+
+    export class RemoveVehicle implements Action {
+        readonly type = '[Vehicle] Remove vehicle';
+        @IsUUID(4, uuidValidationOptions)
+        public vehicleId!: UUID;
+    }
+
+    export class AddPersonell implements Action {
+        readonly type = '[Personell] Add personell';
+        @ValidateNested()
+        @Type(() => Personell)
+        public personell!: Personell;
+    }
+
+    export class MovePersonell implements Action {
+        readonly type = '[Personell] Move personell';
+
+        @IsUUID(4, uuidValidationOptions)
+        public personellId!: UUID;
+
+        @ValidateNested()
+        @Type(() => Position)
+        public position!: Position;
+    }
+
+    export class RemovePersonell implements Action {
+        readonly type = '[Personell] Remove personell';
+        @IsUUID(4, uuidValidationOptions)
+        public personellId!: UUID;
+    }
+
+    export class AddMaterial implements Action {
+        readonly type = '[Material] Add material';
+        @ValidateNested()
+        @Type(() => Material)
+        public material!: Material;
+    }
+
+    export class MoveMaterial implements Action {
+        readonly type = '[Material] Move material';
+
+        @IsUUID(4, uuidValidationOptions)
+        public materialId!: UUID;
+
+        @ValidateNested()
+        @Type(() => Position)
+        public position!: Position;
+    }
+
+    export class RemoveMaterial implements Action {
+        readonly type = '[Material] Remove material';
+        @IsUUID(4, uuidValidationOptions)
+        public materialId!: UUID;
     }
 }
 
