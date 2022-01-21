@@ -49,7 +49,7 @@ export abstract class CommonFeatureManager<
             /**
              * The height of the image in pixels that should be used at {@link normalZoom } zoom
              */
-            imageHeight: 80;
+            imageHeight: number;
             imageUrl: string;
         },
         private readonly proposeMovementAction: (
