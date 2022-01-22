@@ -33,7 +33,9 @@ export class ApiService {
     private readonly socket: Socket<
         ServerToClientEvents,
         ClientToServerEvents
-    > = io(`ws://${this.host}:${this.websocketPort}`);
+    > = io(`ws://${this.host}:${this.websocketPort}`, {
+        transports: ['websocket'],
+    });
 
     private readonly optimisticActionHandler = new OptimisticActionHandler<
         ExerciseAction,

@@ -20,6 +20,7 @@ export class ExerciseWebsocketServer {
             cors: {
                 origin: '*',
             },
+            // transports: ['websocket'],
         });
 
         this.exerciseServer.listen(port);
