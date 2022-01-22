@@ -21,6 +21,10 @@ describe('user-readable-id-generator', () => {
             const uniqueIds = new Set(generatedIds);
             expect(uniqueIds.size).toBe(generatedIds.length);
         });
+
+        it('should return ids of a uniform size', () => {
+            expect(generatedIds.every((id) => id.length === 6)).toBe(true);
+        });
     });
 
     describe('bounds', () => {

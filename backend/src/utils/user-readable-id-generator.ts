@@ -15,7 +15,7 @@ export class UserReadableIdGenerator {
         }
         let newId: string | undefined;
         do {
-            newId = this.createExerciseId().toString();
+            newId = this.createExerciseId().toString().padStart(6, '0');
             if (UserReadableIdGenerator.generatedIds.has(newId)) {
                 newId = undefined;
             }
