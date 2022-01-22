@@ -8,7 +8,11 @@ import { ApiService } from './core/api.service';
     styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-    public exerciseId = 'abcdefghijk';
+    public exerciseId = '';
+
+    public clientName = '';
+
+    public isTrainer = false;
 
     constructor(public readonly apiService: ApiService) {}
 
@@ -34,13 +38,15 @@ export class AppComponent {
         }
     }
 
-    public keepAddingPatients = true;
     public joinExercise() {
-        this.apiService.joinExercise(this.exerciseId);
-        // setInterval(() => {
-        //     if (this.keepAddingPatients) {
-        //         this.addPatient();
-        //     }
-        // }, 1000);
+        this.apiService.joinExercise(
+            this.exerciseId,
+            this.clientName,
+            this.isTrainer ? 'trainer' : 'participant'
+        );
+    }
+
+    public async createExercise() {
+        this.exerciseId = (await this.apiService.createExercise()).exerciseId;
     }
 }

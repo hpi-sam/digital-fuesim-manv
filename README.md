@@ -71,6 +71,7 @@ In the `diff` folder you can see the changes between the baseline and the compar
 ## Styleguide
 
 -   names are never unique, ids are
+-   private properties that may be used with getters/setters (and only those!) start with one leading underscore (`_`)
 
 # Architecture
 

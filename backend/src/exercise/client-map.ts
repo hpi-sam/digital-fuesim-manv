@@ -1,4 +1,4 @@
 import type { ExerciseSocket } from '../exercise-server';
-import type { Client } from './clients';
+import type { ClientWrapper } from './client-wrapper';
 
-export const clientMap = new Map<ExerciseSocket, Client>();
+export const clientMap = new Map<ExerciseSocket, ClientWrapper>();

@@ -6,25 +6,61 @@
             else joinedTemplate
         "
     >
-        <input [(ngModel)]="exerciseId" type="text" />
-        <button (click)="joinExercise()" class="btn btn-primary">
-            Join Exercise
-        </button>
+        <div>
+            <div class="form-group">
+                <label class="form-label">Public Name:</label>
+                <input
+                    class="form-control"
+                    [(ngModel)]="clientName"
+                    type="text"
+                    id="publicName"
+                />
+            </div>
+            <div class="form-check">
+                <input
+                    class="form-check-input"
+                    [(ngModel)]="isTrainer"
+                    type="checkbox"
+                    id="isTrainer"
+                />
+                <label class="form-check-label"> Be a trainer? </label>
+            </div>
+            <button
+                (click)="createExercise()"
+                class="btn btn-primary me-3"
+                id="create"
+            >
+                Create Exercise
+            </button>
+        </div>
+        <br />
+        <div>
+            <div class="form-group">
+                <label class="form-label">Exercise Id:</label>
+                <input
+                    class="form-control"
+                    [(ngModel)]="exerciseId"
+                    type="text"
+                    id="exerciseId"
+                />
+            </div>
+            <button (click)="joinExercise()" class="btn btn-primary" id="join">
+                Join Exercise
+            </button>
+        </div>
     </div>
 
     <ng-template #joinedTemplate>
         <div>
             <app-patients-list></app-patients-list>
 
-            <button (click)="addPatient()" class="btn btn-primary">
+            <button
+                (click)="addPatient()"
+                class="btn btn-primary"
+                id="addPatient"
+            >
                 Add Patient
             </button>
         </div>
     </ng-template>
-    <button
-        (click)="keepAddingPatients = !keepAddingPatients"
-        class="btn btn-primary"
-    >
-        Toggle adding patients
-    </button>
 </div>
