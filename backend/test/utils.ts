@@ -9,7 +9,13 @@ import request from 'supertest';
 import { FuesimServer } from '../src/fuesim-server';
 
 export type HttpMethod =
-    'delete' | 'get' | 'head' | 'options' | 'patch' | 'post' | 'put';
+    | 'delete'
+    | 'get'
+    | 'head'
+    | 'options'
+    | 'patch'
+    | 'post'
+    | 'put';
 
 // Some helper types
 /**
@@ -71,7 +77,12 @@ export class WebsocketClient {
 class TestEnvironment {
     public server: FuesimServer = FuesimServer.create();
 
-    public async httpRequest(method: HttpMethod, url: string): request.Test {
+    // `request.Test` extends `Promise<Response>`, therefore eslint wants the async keyword here.
+    // The problem is that `Promise<request.Test>` not the same is as `request.Test` (but `Promise<T>` is equal to `Promise<Promise<T>>`).
+    // The async keyword makes sure that everything returned is a Promise by wrapping it in a Promise.
+    // In this case it would make the return type `Promise<request.Test>` which is incorrect.
+    // eslint-disable-next-line @typescript-eslint/promise-function-async
+    public httpRequest(method: HttpMethod, url: string): request.Test {
         return request(this.server.httpServer.httpServer)[method](url);
     }
 
