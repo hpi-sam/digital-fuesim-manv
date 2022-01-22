@@ -7,6 +7,7 @@ import { io } from 'socket.io-client';
 import type { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import request from 'supertest';
 import { FuesimServer } from '../src/fuesim-server';
+import { ExerciseCreationResponse } from './http-exercise.spec';
 
 export type HttpMethod =
     | 'delete'
@@ -118,4 +119,12 @@ export const createTestEnvironment = (): TestEnvironment => {
     });
 
     return environment;
+};
+
+export async function createExercise(environment: TestEnvironment): Promise<string> {
+    const response = await environment
+        .httpRequest('post', '/api/exercise')
+        .expect(201);
+
+    return (response.body as ExerciseCreationResponse).exerciseId;
 };

@@ -1,20 +1,11 @@
 import assert from 'node:assert';
-import type { ExerciseCreationResponse } from './http-exercise.spec';
-import { createTestEnvironment } from './utils';
+import { createExercise, createTestEnvironment } from './utils';
 
 describe('join exercise', () => {
     const environment = createTestEnvironment();
 
-    const createExercise = async (): Promise<string> => {
-        const response = await environment
-            .httpRequest('post', '/api/exercise')
-            .expect(201);
-
-        return (response.body as ExerciseCreationResponse).exerciseId;
-    };
-
     it('adds the joining client to the state', async () => {
-        const exerciseId = await createExercise();
+        const exerciseId = await createExercise(environment);
 
         await environment.withWebsocket(async (clientSocket) => {
             const clientName = 'someRandomName';
@@ -44,8 +35,8 @@ describe('join exercise', () => {
     });
 
     it('ignores clients joining other exercises', async () => {
-        const firstExerciseId = await createExercise();
-        const secondExerciseId = await createExercise();
+        const firstExerciseId = await createExercise(environment);
+        const secondExerciseId = await createExercise(environment);
 
         await environment.withWebsocket(async (firstClientSocket) => {
             const firstClientName = 'someRandomName';
@@ -80,7 +71,7 @@ describe('join exercise', () => {
     });
 
     it('sends a message to existing clients when another client is joining the exercises', async () => {
-        const exerciseId = await createExercise();
+        const exerciseId = await createExercise(environment);
 
         await environment.withWebsocket(async (firstClientSocket) => {
             const firstClientName = 'someRandomName';

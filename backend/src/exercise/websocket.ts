@@ -37,6 +37,12 @@ export class ExerciseWebsocketServer {
         registerGetStateHandler(this.exerciseServer, client);
         registerProposeActionHandler(this.exerciseServer, client);
         registerJoinExerciseHandler(this.exerciseServer, client);
+
+        // Register disconnect handler
+        client.on('disconnect', () => {
+            clientMap.get(client)!.leaveExercise();
+            clientMap.delete(client);
+        });
     }
 
     public close(): void {
