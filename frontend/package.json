@@ -12,6 +12,7 @@
         "watch": "ng build --watch --configuration development",
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,css,sccs,html,angular}\"",
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,css,sccs,html,angular}\"",
+        "test": "jest --runInBand --coverage --verbose",
         "test:watch": "jest --runInBand --verbose --watch"
     },
     "private": true,
@@ -44,7 +45,7 @@
         "@angular-eslint/eslint-plugin-template": "13.0.1",
         "@angular-eslint/schematics": "13.0.1",
         "@angular-eslint/template-parser": "13.0.1",
-        "@angular/cli": "~13.1.2",
+        "@angular/cli": "~13.1.4",
         "@angular/compiler-cli": "~13.1.1",
         "@types/jest": "^27.4.0",
         "@types/lodash-es": "^4.17.5",
