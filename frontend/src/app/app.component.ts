@@ -52,10 +52,7 @@ export class AppComponent {
         // }, 1000);
     }
 
-    public createExercise() {
-        const request = this.apiService.createExercise();
-        request.subscribe((response) => {
-            this.exerciseId = response.exerciseId;
-        });
+    public async createExercise() {
+        this.exerciseId = (await this.apiService.createExercise()).exerciseId;
     }
 }

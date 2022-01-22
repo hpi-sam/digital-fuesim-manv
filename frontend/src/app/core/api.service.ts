@@ -10,7 +10,7 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
-import { BehaviorSubject, first } from 'rxjs';
+import { BehaviorSubject, first, lastValueFrom } from 'rxjs';
 import type { Role } from 'digital-fuesim-manv-shared';
 import type { AppState } from '../state/app.state';
 import {
@@ -60,8 +60,6 @@ export class ApiService {
         private readonly store: Store<AppState>,
         private readonly httpClient: HttpClient
     ) {
-        this.socket.on('connect', () => {});
-        this.socket.on('disconnect', () => {});
         this.socket.on('performAction', (action: ExerciseAction) => {
             this.optimisticActionHandler.performAction(action);
         });
@@ -138,7 +136,7 @@ export class ApiService {
         return response;
     }
 
-    public createExercise() {
-        return this.httpClient.post<ExerciseId>(`${this.httpBase}/api/exercise`, {});
+    public async createExercise() {
+        return lastValueFrom(this.httpClient.post<ExerciseId>(`${this.httpBase}/api/exercise`, {}));
     }
 }

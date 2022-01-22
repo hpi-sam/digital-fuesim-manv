@@ -18,12 +18,8 @@ describe('user-readable-id-generator', () => {
         });
 
         it('should not generate an already existing id', () => {
-            generatedIds.forEach((currentId) => {
-                const count = generatedIds.filter(
-                    (id) => id === currentId
-                ).length;
-                expect(count).toBe(1);
-            });
+            const uniqueIds = new Set(generatedIds);
+            expect(uniqueIds.size).toBe(generatedIds.length);
         });
     });
 
