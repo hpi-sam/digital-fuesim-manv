@@ -7,18 +7,18 @@ import type {
     ExerciseState,
     ServerToClientEvents,
     SocketResponse,
+    Role,
 } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import { BehaviorSubject, first, lastValueFrom } from 'rxjs';
-import type { Role } from 'digital-fuesim-manv-shared';
+import { HttpClient } from '@angular/common/http';
 import type { AppState } from '../state/app.state';
 import {
     applyServerAction,
     setExerciseState,
 } from '../state/exercise/exercise.actions';
 import { OptimisticActionHandler } from './optimistic-action-handler';
-import { HttpClient } from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root',
@@ -137,6 +137,11 @@ export class ApiService {
     }
 
     public async createExercise() {
-        return lastValueFrom(this.httpClient.post<ExerciseId>(`${this.httpBase}/api/exercise`, {}));
+        return lastValueFrom(
+            this.httpClient.post<ExerciseId>(
+                `${this.httpBase}/api/exercise`,
+                {}
+            )
+        );
     }
 }

@@ -1,4 +1,4 @@
-import { ExerciseId } from 'digital-fuesim-manv-shared';
+import type { ExerciseId } from 'digital-fuesim-manv-shared';
 import { UserReadableIdGenerator } from '../../../utils/user-readable-id-generator';
 import { exerciseMap } from '../../exercise-map';
 import { ExerciseWrapper } from '../../exercise-wrapper';

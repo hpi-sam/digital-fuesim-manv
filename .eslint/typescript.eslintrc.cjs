@@ -279,7 +279,7 @@ module.exports = {
             {
                 selector: 'default',
                 format: ['camelCase'],
-                leadingUnderscore: 'allowSingle',
+                leadingUnderscore: 'allow',
                 trailingUnderscore: 'forbid',
             },
             {
@@ -351,7 +351,8 @@ module.exports = {
         '@typescript-eslint/no-duplicate-imports': 'warn',
         '@typescript-eslint/no-empty-function': 'warn',
         '@typescript-eslint/no-implied-eval': 'warn',
-        '@typescript-eslint/no-invalid-this': 'warn',
+        // TODO: temprarely disable because of an runtime error: "TypeError: rules.FunctionExpression is not a function"
+        // '@typescript-eslint/no-invalid-this': 'warn',
         '@typescript-eslint/no-loop-func': 'warn',
         '@typescript-eslint/no-loss-of-precision': 'warn',
         '@typescript-eslint/no-redeclare': 'warn',

@@ -1,4 +1,3 @@
-import type { Server as HttpServer } from 'node:http';
 import express from 'express';
 import { ExerciseWebsocketServer } from './exercise/websocket';
 import { ExerciseHttpServer } from './exercise/http-server';

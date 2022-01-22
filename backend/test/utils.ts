@@ -1,20 +1,15 @@
-import {
+import type {
     ClientToServerEvents,
     ServerToClientEvents,
 } from 'digital-fuesim-manv-shared';
-import { io, Socket } from 'socket.io-client';
-import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import type { Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
+import type { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import request from 'supertest';
 import { FuesimServer } from '../src/fuesim-server';
 
 export type HttpMethod =
-    | 'get'
-    | 'patch'
-    | 'post'
-    | 'put'
-    | 'delete'
-    | 'options'
-    | 'head';
+    'delete' | 'get' | 'head' | 'options' | 'patch' | 'post' | 'put';
 
 // Some helper types
 /**
@@ -60,7 +55,7 @@ export class WebsocketClient {
         this.socket.on(event, callback as any);
     }
 
-    private callCounter: Map<string, number> = new Map();
+    private readonly callCounter: Map<string, number> = new Map();
 
     public spyOn(event: keyof ServerToClientEvents): void {
         this.on(event, () =>
@@ -76,7 +71,7 @@ export class WebsocketClient {
 class TestEnvironment {
     public server: FuesimServer = FuesimServer.create();
 
-    public httpRequest(method: HttpMethod, url: string): request.Test {
+    public async httpRequest(method: HttpMethod, url: string): request.Test {
         return request(this.server.httpServer.httpServer)[method](url);
     }
 
@@ -90,7 +85,7 @@ class TestEnvironment {
         // TODO: This should not be hard coded
         let clientSocket:
             | Socket<DefaultEventsMap, DefaultEventsMap>
-            | undefined = undefined;
+            | undefined;
         try {
             clientSocket = io('ws://localhost:3200');
             const websocketClient = new WebsocketClient(clientSocket);

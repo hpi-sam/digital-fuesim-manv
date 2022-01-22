@@ -11,32 +11,23 @@ describe('The landing page', () => {
         cy.visit('/');
     });
 
-    it('can join an exercise', () => {
-        cy.visit('/');
-        cy.get('.container').should('not.contain', 'Add');
-        cy.contains('Join').click();
-        cy.get('.container').should('contain', 'Add');
-    });
+    // TODO: we would have to create a new exercise first https://github.com/hpi-sam/digital-fuesim-manv/issues/24 (use fixtures)
+    // it('can join an exercise', () => {
+    //     cy.visit('/');
+    //     cy.get('.container').should('not.contain', 'Add');
+    //     cy.contains('Join').click();
+    //     cy.get('.container').should('contain', 'Add');
+    // });
 
     it('can create an exercise', () => {
-        cy.visit('/')
-        cy.get('#exerciseId').should('equal', '')
-        cy.contains('Create').click()
-        cy.get('#exerciseId').should('not.equal', '')
-    })
-
-    // it('can add new patients', () => {
-    //     cy.visit('/');
-    //     cy.contains('Join').click();
-    //     cy.get('.container').should('contain', '0');
-    //     cy.contains('Add').click();
-    //     cy.get('.container').should('contain', '1');
-    //     cy.contains('Add').click();
-    //     cy.get('.container').should('contain', '2');
-    // });
+        cy.visit('/');
+        cy.get('#exerciseId').should('have.value', '');
+        cy.contains('Create').click();
+        cy.get('#exerciseId').should('not.have.value', '');
+    });
 
     it('is possible to make visual regression tests (for e.g. a canvas)', () => {
         cy.visit('/');
-        cy.get('.container').compareSnapshot('landing page', 0.1);
+        cy.get('.container').compareSnapshot('landing-page', 0.1);
     });
 });

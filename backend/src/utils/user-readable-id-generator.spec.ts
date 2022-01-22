@@ -11,7 +11,7 @@ describe('user-readable-id-generator', () => {
     describe('valid ids', () => {
         it('should be in bounds', () => {
             generatedIds.forEach((id) => {
-                const intId = parseInt(id);
+                const intId = Number.parseInt(id);
                 expect(intId).toBeGreaterThanOrEqual(0);
                 expect(intId).toBeLessThan(1_000_000);
             });

@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { ExerciseCreationResponse } from './http-exercise.spec';
+import type { ExerciseCreationResponse } from './http-exercise.spec';
 import { createTestEnvironment } from './utils';
 
 describe('join exercise', () => {

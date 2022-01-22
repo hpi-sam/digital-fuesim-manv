@@ -1,5 +1,5 @@
-import type * as core from 'express-serve-static-core';
 import { createServer } from 'node:http';
+import type * as core from 'express-serve-static-core';
 import { Server } from 'socket.io';
 import type { ExerciseSocket, ExerciseServer } from '../exercise-server';
 import { clientMap } from './client-map';

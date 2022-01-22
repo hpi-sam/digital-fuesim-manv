@@ -1,13 +1,13 @@
+import type { Server as HttpServer } from 'node:http';
 import cors from 'cors';
 import type * as core from 'express-serve-static-core';
-import type { Server as HttpServer } from 'node:http';
 import { postExercise } from './http-handler/api/exercise';
 
 export class ExerciseHttpServer {
     public readonly httpServer: HttpServer;
     constructor(app: core.Express, port: number) {
         // TODO: Temporary allow all
-        app.use(cors())
+        app.use(cors());
         app.post('/api/exercise', (req, res) => {
             const result = postExercise();
             res.statusCode = 201;

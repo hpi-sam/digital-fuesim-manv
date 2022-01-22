@@ -1,5 +1,5 @@
 export class UserReadableIdGenerator {
-    private static generatedIds = new Set<string>();
+    private static readonly generatedIds = new Set<string>();
 
     private static createExerciseId(): number {
         return Math.floor(Math.random() * 1_000_000);
@@ -13,7 +13,7 @@ export class UserReadableIdGenerator {
         if (this.generatedIds.size >= 10_000) {
             throw new RangeError('Cannot generate more than 10000 ids.');
         }
-        let newId: string | undefined = undefined;
+        let newId: string | undefined;
         do {
             newId = this.createExerciseId().toString();
             if (UserReadableIdGenerator.generatedIds.has(newId)) {
