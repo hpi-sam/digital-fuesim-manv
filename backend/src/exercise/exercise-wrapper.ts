@@ -4,6 +4,7 @@ import {
     generateExercise,
 } from 'digital-fuesim-manv-shared';
 import type { ClientWrapper } from './client-wrapper';
+import { exerciseMap } from './exercise-map';
 
 export class ExerciseWrapper {
     private readonly clients: ClientWrapper[] = [];
@@ -11,6 +12,8 @@ export class ExerciseWrapper {
     private currentState = generateExercise();
 
     private readonly stateHistory: ExerciseState[] = [];
+
+    constructor(private readonly exerciseId: string) {}
 
     public getStateSnapshot(): ExerciseState {
         return this.currentState;
@@ -47,5 +50,10 @@ export class ExerciseWrapper {
     private setState(newExerciseState: ExerciseState): void {
         this.stateHistory.push(this.currentState);
         this.currentState = newExerciseState;
+    }
+
+    public deleteExercise() {
+        this.clients.forEach((client) => client.disconnect());
+        exerciseMap.delete(this.exerciseId);
     }
 }
