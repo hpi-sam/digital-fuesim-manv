@@ -92,7 +92,7 @@ class TestEnvironment {
      * @param closure a function that gets a connected websocket client as its argument and should resolve after all operations are finished
      */
     public async withWebsocket(
-        closure: (websocketClient: WebsocketClient) => Promise<void>
+        closure: (websocketClient: WebsocketClient) => Promise<any>
     ): Promise<void> {
         // TODO: This should not be hard coded
         let clientSocket:

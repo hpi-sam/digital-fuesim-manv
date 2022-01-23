@@ -21,22 +21,22 @@ describe('disconnect socket', () => {
             let state = await outerSocket.emit('getState');
             expect(state.success).toBe(true);
             assert(state.success);
-            const previousKeys = Object.keys(state.payload.clients);
+            const previousClientIds = Object.keys(state.payload.clients);
 
-            await environment.withWebsocket(async (innerSocket) => {
-                await innerSocket.emit(
+            await environment.withWebsocket(async (innerSocket) =>
+                innerSocket.emit(
                     'joinExercise',
                     exerciseId,
                     innerName,
                     'participant'
-                );
-            });
+                )
+            );
 
             state = await outerSocket.emit('getState');
             expect(state.success).toBe(true);
             assert(state.success);
-            const afterKeys = Object.keys(state.payload.clients);
-            expect(afterKeys).toStrictEqual(previousKeys);
+            const afterClientIds = Object.keys(state.payload.clients);
+            expect(afterClientIds).toStrictEqual(previousClientIds);
         });
     });
 });
