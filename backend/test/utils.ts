@@ -2,6 +2,7 @@ import type {
     ClientToServerEvents,
     ServerToClientEvents,
 } from 'digital-fuesim-manv-shared';
+import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import type { DefaultEventsMap } from 'socket.io/dist/typed-events';
@@ -99,7 +100,9 @@ class TestEnvironment {
             | Socket<DefaultEventsMap, DefaultEventsMap>
             | undefined;
         try {
-            clientSocket = io('ws://localhost:3200');
+            clientSocket = io('ws://localhost:3200', {
+                transports: socketIoTransports,
+            });
             const websocketClient = new WebsocketClient(clientSocket);
             await closure(websocketClient);
         } finally {

@@ -1,6 +1,7 @@
 import { createServer } from 'node:http';
 import type * as core from 'express-serve-static-core';
 import { Server } from 'socket.io';
+import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { ExerciseSocket, ExerciseServer } from '../exercise-server';
 import { clientMap } from './client-map';
 import { ClientWrapper } from './client-wrapper';
@@ -20,7 +21,7 @@ export class ExerciseWebsocketServer {
             cors: {
                 origin: '*',
             },
-            // transports: ['websocket'],
+            transports: socketIoTransports,
         });
 
         this.exerciseServer.listen(port);
