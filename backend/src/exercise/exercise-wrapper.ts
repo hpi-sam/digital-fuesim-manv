@@ -7,7 +7,7 @@ import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
 
 export class ExerciseWrapper {
-    private readonly clients: ClientWrapper[] = [];
+    private readonly clients = new Set<ClientWrapper>();
 
     private currentState = generateExercise();
 
@@ -35,7 +35,21 @@ export class ExerciseWrapper {
         this.reduce(addClientAction);
         this.emitAction(addClientAction);
         // Only after all this add the client in order to not send the action adding itself to it
-        this.clients.push(clientWrapper);
+        this.clients.add(clientWrapper);
+    }
+
+    public removeClient(clientWrapper: ClientWrapper) {
+        if (!this.clients.has(clientWrapper)) {
+            // clientWrapper not part of this exercise
+            return;
+        }
+        const removeClientAction: ExerciseAction = {
+            type: '[Client] Remove client',
+            clientId: clientWrapper.client!.id,
+        };
+        this.reduce(removeClientAction);
+        this.clients.delete(clientWrapper);
+        this.emitAction(removeClientAction);
     }
 
     /**

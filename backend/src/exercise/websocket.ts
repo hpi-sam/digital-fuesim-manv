@@ -1,6 +1,7 @@
 import { createServer } from 'node:http';
 import type * as core from 'express-serve-static-core';
 import { Server } from 'socket.io';
+import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { ExerciseSocket, ExerciseServer } from '../exercise-server';
 import { clientMap } from './client-map';
 import { ClientWrapper } from './client-wrapper';
@@ -20,6 +21,7 @@ export class ExerciseWebsocketServer {
             cors: {
                 origin: '*',
             },
+            transports: socketIoTransports,
         });
 
         this.exerciseServer.listen(port);
@@ -37,6 +39,12 @@ export class ExerciseWebsocketServer {
         registerGetStateHandler(this.exerciseServer, client);
         registerProposeActionHandler(this.exerciseServer, client);
         registerJoinExerciseHandler(this.exerciseServer, client);
+
+        // Register disconnect handler
+        client.on('disconnect', () => {
+            clientMap.get(client)!.leaveExercise();
+            clientMap.delete(client);
+        });
     }
 
     public close(): void {

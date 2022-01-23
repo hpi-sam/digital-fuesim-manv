@@ -2,12 +2,13 @@ import type {
     ClientToServerEvents,
     ServerToClientEvents,
 } from 'digital-fuesim-manv-shared';
+import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import type { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import request from 'supertest';
 import { FuesimServer } from '../src/fuesim-server';
-import { ExerciseCreationResponse } from './http-exercise.spec';
+import type { ExerciseCreationResponse } from './http-exercise.spec';
 
 export type HttpMethod =
     | 'delete'
@@ -92,14 +93,16 @@ class TestEnvironment {
      * @param closure a function that gets a connected websocket client as its argument and should resolve after all operations are finished
      */
     public async withWebsocket(
-        closure: (websocketClient: WebsocketClient) => Promise<void>
+        closure: (websocketClient: WebsocketClient) => Promise<any>
     ): Promise<void> {
         // TODO: This should not be hard coded
         let clientSocket:
             | Socket<DefaultEventsMap, DefaultEventsMap>
             | undefined;
         try {
-            clientSocket = io('ws://localhost:3200');
+            clientSocket = io('ws://localhost:3200', {
+                transports: socketIoTransports,
+            });
             const websocketClient = new WebsocketClient(clientSocket);
             await closure(websocketClient);
         } finally {
@@ -121,10 +124,12 @@ export const createTestEnvironment = (): TestEnvironment => {
     return environment;
 };
 
-export async function createExercise(environment: TestEnvironment): Promise<string> {
+export async function createExercise(
+    environment: TestEnvironment
+): Promise<string> {
     const response = await environment
         .httpRequest('post', '/api/exercise')
         .expect(201);
 
     return (response.body as ExerciseCreationResponse).exerciseId;
-};
+}

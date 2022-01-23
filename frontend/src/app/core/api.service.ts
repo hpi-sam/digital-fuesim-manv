@@ -7,7 +7,9 @@ import type {
     ExerciseState,
     ServerToClientEvents,
     SocketResponse,
-    Role,
+    Role} from 'digital-fuesim-manv-shared';
+import {
+    socketIoTransports,
 } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
@@ -33,7 +35,9 @@ export class ApiService {
     private readonly socket: Socket<
         ServerToClientEvents,
         ClientToServerEvents
-    > = io(`ws://${this.host}:${this.websocketPort}`);
+    > = io(`ws://${this.host}:${this.websocketPort}`, {
+        transports: socketIoTransports,
+    });
 
     private readonly optimisticActionHandler = new OptimisticActionHandler<
         ExerciseAction,
