@@ -26,12 +26,10 @@ describe('exercise', () => {
 
         it('fails when no ids are left', async () => {
             for (let i = 0; i < 10_000; i++) {
-                await environment
-                    .httpRequest('post', '/api/exercise')
-                    .expect(201);
+                UserReadableIdGenerator.generateId()
             }
             await environment.httpRequest('post', '/api/exercise').expect(503);
-        }, 10000);
+        });
     });
 
     describe('DELETE /api/exercise/:exerciseId', () => {
