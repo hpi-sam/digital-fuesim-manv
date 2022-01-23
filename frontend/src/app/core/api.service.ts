@@ -7,10 +7,9 @@ import type {
     ExerciseState,
     ServerToClientEvents,
     SocketResponse,
-    Role} from 'digital-fuesim-manv-shared';
-import {
-    socketIoTransports,
+    Role,
 } from 'digital-fuesim-manv-shared';
+import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import { BehaviorSubject, first, lastValueFrom } from 'rxjs';

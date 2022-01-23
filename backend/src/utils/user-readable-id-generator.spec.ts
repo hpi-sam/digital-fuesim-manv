@@ -1,8 +1,10 @@
 import { UserReadableIdGenerator } from './user-readable-id-generator';
 
 describe('user-readable-id-generator', () => {
-    const generatedIds = new Array<string>();
-    beforeAll(() => {
+    let generatedIds = new Array<string>();
+    beforeEach(() => {
+        UserReadableIdGenerator.freeAll();
+        generatedIds = new Array<string>();
         for (let i = 0; i < 10_000; i++) {
             generatedIds.push(UserReadableIdGenerator.generateId());
         }

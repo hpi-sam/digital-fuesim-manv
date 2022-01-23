@@ -1,7 +1,7 @@
 import type { Server as HttpServer } from 'node:http';
 import cors from 'cors';
 import type * as core from 'express-serve-static-core';
-import { postExercise } from './http-handler/api/exercise';
+import { deleteExercise, postExercise } from './http-handler/api/exercise';
 
 export class ExerciseHttpServer {
     public readonly httpServer: HttpServer;
@@ -9,9 +9,15 @@ export class ExerciseHttpServer {
         // TODO: Temporary allow all
         app.use(cors());
         app.post('/api/exercise', (req, res) => {
-            const result = postExercise();
-            res.statusCode = 201;
-            res.send(result);
+            const response = postExercise();
+            res.statusCode = response.statusCode;
+            res.send(response.body);
+        });
+
+        app.delete('/api/exercise/:exerciseId', (req, res) => {
+            const response = deleteExercise(req.params.exerciseId);
+            res.statusCode = response.statusCode;
+            res.send(response.body);
         });
 
         this.httpServer = app.listen(port);

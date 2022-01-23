@@ -53,4 +53,8 @@ export class ClientWrapper {
     public emitAction(action: ExerciseAction) {
         this.socket.emit('performAction', action);
     }
+
+    public disconnect() {
+        this.socket.disconnect();
+    }
 }

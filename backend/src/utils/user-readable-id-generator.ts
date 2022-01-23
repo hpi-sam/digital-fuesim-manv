@@ -31,4 +31,11 @@ export class UserReadableIdGenerator {
     public static freeId(id: string) {
         this.generatedIds.delete(id);
     }
+
+    /**
+     * Frees the allocation of every currently allocated id
+     */
+    public static freeAll() {
+        this.generatedIds.clear();
+    }
 }
