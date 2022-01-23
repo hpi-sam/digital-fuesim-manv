@@ -1,6 +1,6 @@
 export interface HttpResponse<T extends object | undefined = undefined> {
     statusCode: number;
-    body: T | HttpErrorMessage;
+    body: HttpErrorMessage | T;
 }
 
 interface HttpErrorMessage {

@@ -1,1 +1,1 @@
-export const socketIoTransports: ['websocket'] = ['websocket']
+export const socketIoTransports: ['websocket'] = ['websocket'];
