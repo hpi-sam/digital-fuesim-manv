@@ -4,8 +4,8 @@
  * @returns a Set of all the properties that different between the two objects
  */
 export function generateChangedProperties<
-    T extends Readonly<{ [key in string]?: any }>
->(oldElement: T, newElement: T): Set<keyof T> {
+    Element extends Readonly<{ [key in string]?: any }>
+>(oldElement: Element, newElement: Element): Set<keyof Element> {
     const properties = [
         // there could be optional properties that are only in one element
         ...Object.keys(oldElement),
