@@ -20,11 +20,6 @@ export abstract class FeatureManager<
     }
 
     /**
-     * Adds a new feature representing the {@link element } to the map.
-     */
-    abstract createFeature(element: Element): void;
-
-    /**
      * Delete the rendered element (if it exists)
      */
     public onElementDeleted(element: Element): void {
@@ -34,30 +29,6 @@ export abstract class FeatureManager<
         }
         this.deleteFeature(element, elementFeature);
     }
-
-    /**
-     * Delete the {@link elementFeature} representing the {@link element} from the map.
-     */
-    abstract deleteFeature(
-        element: Element,
-        elementFeature: ElementFeature
-    ): void;
-
-    /**
-     * The properties of {@link CreatableElement} for which custom changes can be handled in {@link changeFeature}.
-     */
-    abstract readonly supportedChangeProperties: SupportedChangeProperties;
-    /**
-     * This method is guaranteed to only be called if only properties in {@link supportedChangeProperties} are different between the two elements
-     * @param changedProperties The properties that have changed between the {@link oldElement } and the {@link newElement }
-     * @param elementFeature The openLayers feature that should be updated to reflect the changes
-     */
-    abstract changeFeature(
-        oldElement: Element,
-        newElement: Element,
-        changedProperties: SupportedChangeProperties,
-        elementFeature: ElementFeature
-    ): void;
 
     /**
      * This should be called if an element is changed.
@@ -91,9 +62,39 @@ export abstract class FeatureManager<
         this.onElementCreated(newElement);
     }
 
+    /**
+     * Adds a new feature representing the {@link element } to the map.
+     */
+    abstract createFeature(element: Element): void;
+
+    /**
+     * Delete the {@link elementFeature} representing the {@link element} from the map.
+     */
+    abstract deleteFeature(
+        element: Element,
+        elementFeature: ElementFeature
+    ): void;
+
+    /**
+     * The properties of {@link Element} for which custom changes can be handled in {@link changeFeature}.
+     */
+    abstract readonly supportedChangeProperties: SupportedChangeProperties;
+    /**
+     * This method is guaranteed to only be called if only properties in {@link supportedChangeProperties} are different between the two elements
+     * @param changedProperties The properties that have changed between the {@link oldElement } and the {@link newElement }
+     * @param elementFeature The openLayers feature that should be updated to reflect the changes
+     */
+    abstract changeFeature(
+        oldElement: Element,
+        newElement: Element,
+        changedProperties: SupportedChangeProperties,
+        elementFeature: ElementFeature
+    ): void;
+
+    abstract getElementFeature(element: Element): ElementFeature | undefined;
+
     private areAllPropertiesSupported(
-        // ReadonlySet<keyof Element> doesn't work here, because ts seems to not consider CreatableElement to be a subtype of Element...
-        changedProperties: ReadonlySet<any>
+        changedProperties: ReadonlySet<keyof Element>
     ): changedProperties is SupportedChangeProperties {
         for (const changedProperty of changedProperties) {
             if (!this.supportedChangeProperties.has(changedProperty)) {
@@ -102,6 +103,4 @@ export abstract class FeatureManager<
         }
         return true;
     }
-
-    abstract getElementFeature(element: Element): ElementFeature | undefined;
 }
