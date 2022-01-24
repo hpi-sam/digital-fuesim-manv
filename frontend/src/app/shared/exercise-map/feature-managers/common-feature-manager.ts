@@ -22,16 +22,8 @@ type SupportedChangeProperties = ReadonlySet<'position'>;
  * Find a good compromise between composition, inheritance (there is no multi-inheritance in JS, but you can overwrite methods and call the previous one via `super.foo()`), decorators and mixins.
  */
 export abstract class CommonFeatureManager<
-    Element extends Readonly<{ id: UUID; position?: Position }>,
-    CreatableElement extends Element & { position: Position } = Element & {
-        position: Position;
-    }
-> extends FeatureManager<
-    Element,
-    ElementFeature,
-    CreatableElement,
-    SupportedChangeProperties
-> {
+    Element extends Readonly<{ id: UUID; position: Position }>
+> extends FeatureManager<Element, ElementFeature, SupportedChangeProperties> {
     private readonly movementAnimator = new MovementAnimator(
         this.olMap,
         this.layer
@@ -66,11 +58,7 @@ export abstract class CommonFeatureManager<
         );
     }
 
-    canBeCreated(element: Element): element is CreatableElement {
-        return !!element.position;
-    }
-
-    createFeature(element: CreatableElement): void {
+    createFeature(element: Element): void {
         const elementFeature = new Feature(
             new Point([element.position.x, element.position.y])
         );
@@ -89,7 +77,7 @@ export abstract class CommonFeatureManager<
     readonly supportedChangeProperties = new Set(['position'] as const);
     changeFeature(
         oldElement: Element,
-        newElement: CreatableElement,
+        newElement: Element,
         changedProperties: SupportedChangeProperties,
         patientFeature: ElementFeature
     ): void {
