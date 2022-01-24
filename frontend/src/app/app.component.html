@@ -51,53 +51,6 @@
     </div>
 
     <ng-template #joinedTemplate>
-        <div>
-            <app-exercise-map></app-exercise-map>
-
-            <button
-                (click)="addPatient()"
-                class="btn btn-primary"
-                id="addPatient"
-            >
-                Add Patient
-            </button>
-            <button
-                (click)="addMultiple(20, 'addPatient')"
-                class="btn btn-primary"
-            >
-                Add 20 Patients
-            </button>
-            {{ numberOfPatients$ | async }}
-            <button (click)="addVehicle()" class="btn btn-primary">
-                Add Vehicle
-            </button>
-            <button
-                (click)="addMultiple(20, 'addVehicle')"
-                class="btn btn-primary"
-            >
-                Add 20 Vehicles
-            </button>
-            {{ numberOfVehicles$ | async }}
-            <button (click)="addPersonell()" class="btn btn-primary">
-                Add Personell
-            </button>
-            <button
-                (click)="addMultiple(20, 'addPersonell')"
-                class="btn btn-primary"
-            >
-                Add 20 Personell
-            </button>
-            {{ numberOfPersonell$ | async }}
-            <button (click)="addMaterial()" class="btn btn-primary">
-                Add Material
-            </button>
-            <button
-                (click)="addMultiple(20, 'addMaterial')"
-                class="btn btn-primary"
-            >
-                Add 20 Materials (optimistic)
-            </button>
-            {{ numberOfMaterials$ | async }}
-        </div>
+        <app-trainer-map-editor></app-trainer-map-editor>
     </ng-template>
 </div>
