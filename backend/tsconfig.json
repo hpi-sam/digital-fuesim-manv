@@ -15,6 +15,6 @@
         "types": ["jest", "node"]
     },
     "references": [],
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "test/**/*"],
     "exclude": ["node_modules"]
 }

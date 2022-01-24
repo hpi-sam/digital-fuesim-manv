@@ -8,6 +8,7 @@ import {
     Vehicle,
     Personell,
     Material,
+    Client,
 } from '..';
 import { Position } from '../models/utils';
 import type { Immutable } from '../utils/immutability';
@@ -142,6 +143,20 @@ export namespace ExerciseActions {
         readonly type = '[Material] Remove material';
         @IsUUID(4, uuidValidationOptions)
         public materialId!: UUID;
+    }
+
+    // TODO: Only the server should be able to propose these actions
+    export class AddClient implements Action {
+        readonly type = '[Client] Add client';
+        @ValidateNested()
+        @Type(() => Client)
+        public client!: Client;
+    }
+
+    export class RemoveClient implements Action {
+        readonly type = '[Client] Remove client';
+        @IsUUID(4, uuidValidationOptions)
+        public clientId!: UUID;
     }
 }
 

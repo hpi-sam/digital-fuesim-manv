@@ -11,4 +11,6 @@ export default {
     moduleDirectories: ['node_modules', 'src'],
     testEnvironment: 'node',
     testRegex: '\\.spec\\.ts$',
+    // For the time being, as tests are split up in `npm run test`, the coverage should reside here.
+    coverageReporters: ['text', 'text-summary', 'json', 'lcov', 'cobertura'],
 };

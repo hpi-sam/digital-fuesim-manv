@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -16,6 +17,7 @@ import { ExerciseMapModule } from './shared/exercise-map/exercise-map.module';
     imports: [
         CommonModule,
         BrowserModule,
+        HttpClientModule,
         FormsModule,
         AppRoutingModule,
         StoreModule.forRoot<AppState>(appReducers),
