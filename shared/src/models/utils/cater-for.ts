@@ -1,5 +1,8 @@
-import { IsNumber, IsString, Min } from 'class-validator';
+import { IsIn, IsNumber, Min } from 'class-validator';
 import { getCreate } from './get-create';
+
+const logicalOperatorOptions = ['and', 'or'] as const;
+type LogicalOperator = typeof logicalOperatorOptions[number];
 
 export class CanCaterFor {
     /**
@@ -30,9 +33,8 @@ export class CanCaterFor {
     @Min(0)
     public readonly green: number;
 
-    // TODO: Use a better validator
-    @IsString()
-    public readonly logicalOperator: 'and' | 'or';
+    @IsIn(logicalOperatorOptions)
+    public readonly logicalOperator: LogicalOperator;
 
     /**
      * @deprecated Use {@link create} instead
@@ -41,7 +43,7 @@ export class CanCaterFor {
         red: number,
         yellow: number,
         green: number,
-        logicalOperator: 'and' | 'or'
+        logicalOperator: LogicalOperator
     ) {
         this.red = red;
         this.yellow = yellow;
