@@ -15,7 +15,11 @@ export class ImageStyleHelper {
         /**
          * The size in pixels that the longitude (y) image style of the feature should have at {@link normalZoom } zoom
          */
-        private readonly normalizedImageHeight: number
+        private readonly normalizedImageHeight: number,
+        /**
+         * Wether vectorImages under {@link imageUrl} should be rasterized (provides a big performance boost, but lowers the quality of the images)
+         */
+        private readonly rasterizeVectorImages: boolean
     ) {}
 
     // for performance reasons we reuse this style for each feature
@@ -25,7 +29,7 @@ export class ImageStyleHelper {
             // this is a workaround to force openLayers to rasterize an svg image
             // this gives a massive performance boost
             // See https://github.com/openlayers/openlayers/issues/11133#issuecomment-638987210
-            color: 'white',
+            color: this.rasterizeVectorImages ? 'white' : undefined,
         }),
     });
 

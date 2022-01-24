@@ -31,7 +31,8 @@ export abstract class CommonFeatureManager<
     private readonly translateHelper = new TranslateHelper();
     private readonly imageStyleHelper = new ImageStyleHelper(
         this.imageOptions.imageUrl,
-        this.imageOptions.imageHeight
+        this.imageOptions.imageHeight,
+        true
     );
 
     constructor(
