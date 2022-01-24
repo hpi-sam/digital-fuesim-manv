@@ -2,11 +2,6 @@ import type { Immutable } from 'digital-fuesim-manv-shared';
 
 /**
  * Compares two immutable dictionaries and calls the correct handler for each element that is different between the two dictionaries.
- * @param oldDictionary
- * @param newDictionary
- * @param createHandler
- * @param deleteHandler
- * @param changeHandler
  */
 export function handleChanges<
     T extends object,
