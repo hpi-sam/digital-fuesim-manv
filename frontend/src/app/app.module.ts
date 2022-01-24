@@ -10,9 +10,10 @@ import { AppComponent } from './app.component';
 import type { AppState } from './state/app.state';
 import { appReducers } from './state/app.reducer';
 import { ExerciseMapModule } from './shared/exercise-map/exercise-map.module';
+import { TrainerMapEditorComponent } from './shared/trainer-map-editor/trainer-map-editor.component';
 
 @NgModule({
-    declarations: [AppComponent],
+    declarations: [AppComponent, TrainerMapEditorComponent],
     imports: [
         CommonModule,
         BrowserModule,
