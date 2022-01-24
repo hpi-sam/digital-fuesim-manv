@@ -145,10 +145,7 @@ describe('join exercise', () => {
 
                 expect(trainerPropose.success).toBe(true);
 
-                sleep(2000);
-
-                console.log(trainerSocket.getCalls('performAction'));
-                console.log(participantSocket.getCalls('performAction'));
+                await sleep(5);
 
                 expect(trainerSocket.getTimesCalled('performAction')).toBe(1);
                 expect(participantSocket.getTimesCalled('performAction')).toBe(
@@ -156,7 +153,7 @@ describe('join exercise', () => {
                 );
 
                 // Proposing an action as the participant
-                const participantPropose = await trainerSocket.emit(
+                const participantPropose = await participantSocket.emit(
                     'proposeAction',
                     {
                         type: '[Patient] Add patient',
@@ -166,10 +163,7 @@ describe('join exercise', () => {
 
                 expect(participantPropose.success).toBe(true);
 
-                sleep(2000);
-
-                console.log(trainerSocket.getCalls('performAction'));
-                console.log(participantSocket.getCalls('performAction'));
+                await sleep(5);
 
                 expect(trainerSocket.getTimesCalled('performAction')).toBe(2);
                 expect(participantSocket.getTimesCalled('performAction')).toBe(
