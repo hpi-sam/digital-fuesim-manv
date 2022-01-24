@@ -4,9 +4,12 @@ import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
+import type { WithPosition } from '../../utility/types/with-position';
 import { CommonFeatureManager } from './common-feature-manager';
 
-export class PersonellFeatureManager extends CommonFeatureManager<Personell> {
+export class PersonellFeatureManager extends CommonFeatureManager<
+    WithPosition<Personell>
+> {
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,

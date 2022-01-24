@@ -1,4 +1,4 @@
-import type { AfterViewInit, OnDestroy } from '@angular/core';
+import type { AfterViewInit, OnDestroy, Type } from '@angular/core';
 import {
     ElementRef,
     ViewChild,
@@ -7,34 +7,30 @@ import {
     NgZone,
 } from '@angular/core';
 import OlMap from 'ol/Map';
-import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
-import {
-    selectMaterials,
-    selectPatients,
-    selectPersonell,
-    selectVehicles,
-} from 'src/app/state/exercise/exercise.selectors';
 import type { Observable } from 'rxjs';
 import { pairwise, debounceTime, startWith, Subject, takeUntil } from 'rxjs';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Translate, defaults as defaultInteractions } from 'ol/interaction';
 import type { Feature } from 'ol';
+import { View } from 'ol';
 import type Geometry from 'ol/geom/Geometry';
 import { ApiService } from 'src/app/core/api.service';
-import type { UUID } from 'digital-fuesim-manv-shared';
+import type { Position, UUID } from 'digital-fuesim-manv-shared';
 import type Point from 'ol/geom/Point';
-import type { Options as LayerOptions } from 'ol/layer/BaseVector';
+import { getSelectWithPosition } from 'src/app/state/exercise/exercise.selectors';
+import type { WithPosition } from '../utility/types/with-position';
 import { PatientFeatureManager } from './feature-managers/patient-feature-manager';
 import { handleChanges } from './utility/handle-changes';
 import type { FeatureManager } from './feature-managers/feature-manager';
 import { VehicleFeatureManager } from './feature-managers/vehicle-feature-manager';
 import { PersonellFeatureManager } from './feature-managers/personell-feature-manager';
 import { MaterialFeatureManager } from './feature-managers/material-feature-manager';
+import type { CommonFeatureManager } from './feature-managers/common-feature-manager';
 
 @Component({
     selector: 'app-exercise-map',
@@ -66,44 +62,13 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
 
     private setupMap() {
         // Layers
-        const satellite = new TileLayer({
-            source: new XYZ({
-                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-                // this is server specific - the sever only supports up to zoom level 20
-                maxZoom: 20,
-                // We want to keep the tiles cached if we are zooming in and out fast
-                cacheSize: 1000,
-                attributions: [
-                    // TODO: DO we need this?
-                    // 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-                ],
-            }),
-        });
-
-        const defaultLayerSettings: LayerOptions<VectorSource<Point>> = {
-            // TODO: these two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
-            updateWhileAnimating: true,
-            updateWhileInteracting: true,
-            // TODO: Recommended value: the size of the largest symbol, line width or label.
-            // The value is in pixel -> if we are very zoomed in we might need to increase it
-            renderBuffer: 250,
-        };
-        const patientLayer = new VectorLayer({
-            ...defaultLayerSettings,
-            source: new VectorSource<Point>(),
-        });
-        const vehicleLayer = new VectorLayer({
-            ...defaultLayerSettings,
-            source: new VectorSource<Point>(),
-        });
-        const personellLayer = new VectorLayer({
-            ...defaultLayerSettings,
-            source: new VectorSource<Point>(),
-        });
-        const materialLayer = new VectorLayer({
-            ...defaultLayerSettings,
-            source: new VectorSource<Point>(),
-        });
+        const satelliteLayer = this.createTileLayer(
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+        );
+        const patientLayer = this.createElementLayerTemplate();
+        const vehicleLayer = this.createElementLayerTemplate();
+        const personellLayer = this.createElementLayerTemplate();
+        const materialLayer = this.createElementLayerTemplate();
 
         // Interactions
         const translateInteraction = new Translate({
@@ -114,7 +79,7 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
             interactions: defaultInteractions().extend([translateInteraction]),
             target: this.openLayersContainer.nativeElement,
             layers: [
-                satellite,
+                satelliteLayer,
                 vehicleLayer,
                 patientLayer,
                 personellLayer,
@@ -154,46 +119,47 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
             });
         }
         // FeatureManagers
-        const patientFeatureManager = new PatientFeatureManager(
-            this.olMap,
+        this.createAndRegisterFeatureManager(
+            PatientFeatureManager,
             patientLayer,
-            this.apiService
+            this.store.select(getSelectWithPosition('patients'))
         );
-        this.registerFeatureManager(
-            patientFeatureManager,
-            this.store.select(selectPatients)
-        );
-        const vehicleFeatureManager = new VehicleFeatureManager(
-            this.olMap,
+        this.createAndRegisterFeatureManager(
+            VehicleFeatureManager,
             vehicleLayer,
-            this.apiService
+            this.store.select(getSelectWithPosition('vehicles'))
         );
-        this.registerFeatureManager(
-            vehicleFeatureManager,
-            this.store.select(selectVehicles)
-        );
-        const personellFeatureManager = new PersonellFeatureManager(
-            this.olMap,
+        this.createAndRegisterFeatureManager(
+            PersonellFeatureManager,
             personellLayer,
-            this.apiService
+            this.store.select(getSelectWithPosition('personell'))
         );
-        this.registerFeatureManager(
-            personellFeatureManager,
-            this.store.select(selectPersonell)
-        );
-        const materialFeatureManager = new MaterialFeatureManager(
-            this.olMap,
+        this.createAndRegisterFeatureManager(
+            MaterialFeatureManager,
             materialLayer,
-            this.apiService
-        );
-        this.registerFeatureManager(
-            materialFeatureManager,
-            this.store.select(selectMaterials)
+            this.store.select(getSelectWithPosition('materials'))
         );
     }
 
-    private registerFeatureManager<Element extends object>(
-        featureManager: FeatureManager<Element, any, any, any>,
+    // If the signature of the FeatureManager classes change, the initialisation should be done individually
+    private createAndRegisterFeatureManager<
+        Element extends Readonly<{ id: UUID; position: Position }>
+    >(
+        // `Type` is an utility type from angular, that returns the type of the constructor function
+        featureManagerClass: Type<CommonFeatureManager<Element>>,
+        layer: VectorLayer<VectorSource<Point>>,
+        elementDictionary$: Observable<{ [id: UUID]: Element }>
+    ) {
+        const featureManager = new featureManagerClass(
+            this.olMap!,
+            layer,
+            this.apiService
+        );
+        this.registerFeatureManager(featureManager, elementDictionary$);
+    }
+
+    private registerFeatureManager<Element extends WithPosition<object>>(
+        featureManager: FeatureManager<Element, any, any>,
         elementDictionary$: Observable<{ [id: UUID]: Element }>
     ) {
         elementDictionary$
@@ -225,6 +191,30 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
 
     private setCursorStyle(cursorStyle: string) {
         this.olMap!.getTargetElement().style.cursor = cursorStyle;
+    }
+
+    private createElementLayerTemplate() {
+        return new VectorLayer({
+            // TODO: these two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
+            updateWhileAnimating: true,
+            updateWhileInteracting: true,
+            // TODO: Recommended value: the size of the largest symbol, line width or label.
+            // The value is in pixel -> if we are very zoomed in we might need to increase it
+            renderBuffer: 250,
+            source: new VectorSource<Point>(),
+        });
+    }
+
+    private createTileLayer(url: string, maxZoom = 20) {
+        return new TileLayer({
+            source: new XYZ({
+                url,
+                // this is server specific - the sever only supports up to zoom level 20
+                maxZoom,
+                // We want to keep the tiles cached if we are zooming in and out fast
+                cacheSize: 1000,
+            }),
+        });
     }
 
     ngOnDestroy(): void {

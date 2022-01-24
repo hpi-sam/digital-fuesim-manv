@@ -6,36 +6,23 @@ import { generateChangedProperties } from '../utility/generate-changed-propertie
  *
  * {@link Element} is the immutable JSON object (Patient, Vehicle, etc.)
  * {@link ElementFeature} is the OpenLayers Feature that should be rendered to represent the {@link Element}.
- *
- * Often not all elements need to be rendered to the map.
- * For example, the feature should only be created if the element is has a position (could be optional).
- * {@link CreatableElement} is the immutable JSON object that satisfies this requirement.
  */
 export abstract class FeatureManager<
     Element extends object,
     ElementFeature extends Feature<any>,
-    CreatableElement extends Element,
-    SupportedChangeProperties extends ReadonlySet<keyof CreatableElement>
+    SupportedChangeProperties extends ReadonlySet<keyof Element>
 > {
-    /**
-     * @returns wether a feature for {@link element} should be created. It also acts as a type guard.
-     */
-    abstract canBeCreated(element: Element): element is CreatableElement;
-
     /**
      * This should be called if a new element is added.
      */
     public onElementCreated(element: Element) {
-        if (!this.canBeCreated(element)) {
-            return;
-        }
         this.createFeature(element);
     }
 
     /**
      * Adds a new feature representing the {@link element } to the map.
      */
-    abstract createFeature(element: CreatableElement): void;
+    abstract createFeature(element: Element): void;
 
     /**
      * Delete the rendered element (if it exists)
@@ -67,7 +54,7 @@ export abstract class FeatureManager<
      */
     abstract changeFeature(
         oldElement: Element,
-        newElement: CreatableElement,
+        newElement: Element,
         changedProperties: SupportedChangeProperties,
         elementFeature: ElementFeature
     ): void;
@@ -81,11 +68,6 @@ export abstract class FeatureManager<
      * If any other property has changed, we deleted the old feature and create a new one instead.
      */
     public onElementChanged(oldElement: Element, newElement: Element): void {
-        if (!this.canBeCreated(newElement)) {
-            // the newElement is not valid anymore - we have to delete it
-            this.onElementDeleted(oldElement);
-            return;
-        }
         const elementFeature = this.getElementFeature(oldElement);
         if (!elementFeature) {
             // If the element is not yet rendered on the map - we have to create it first
