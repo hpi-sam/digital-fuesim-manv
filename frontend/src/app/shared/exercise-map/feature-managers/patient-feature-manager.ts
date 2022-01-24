@@ -1,4 +1,4 @@
-import type { Patient, Position } from 'digital-fuesim-manv-shared';
+import type { Patient } from 'digital-fuesim-manv-shared';
 import type Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
