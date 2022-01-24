@@ -40,7 +40,7 @@ export abstract class CommonFeatureManager<
         private readonly layer: VectorLayer<VectorSource<Point>>,
         private readonly imageOptions: {
             /**
-             * The height of the image in pixels that should be used at {@link normalZoom } zoom
+             * The height of the image in pixels that should be used at {@link ImageStyleHelper.normalZoom } zoom
              */
             imageHeight: number;
             imageUrl: string;
