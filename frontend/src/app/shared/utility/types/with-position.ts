@@ -1,3 +1,5 @@
 import type { Position } from 'digital-fuesim-manv-shared';
 
-export type WithPosition<T extends object> = T & { position: Position };
+export type WithPosition<T extends { position?: Position }> = T & {
+    position: Position;
+};

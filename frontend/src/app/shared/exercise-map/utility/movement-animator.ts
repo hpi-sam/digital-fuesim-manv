@@ -9,6 +9,9 @@ import type Point from 'ol/geom/Point';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
 
+/**
+ * Animates the movement of a feature to a new position.
+ */
 export class MovementAnimator {
     /**
      * The time in milliseconds how long the moving animation should take

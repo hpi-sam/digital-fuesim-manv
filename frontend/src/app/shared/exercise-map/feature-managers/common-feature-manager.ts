@@ -17,9 +17,9 @@ type SupportedChangeProperties = ReadonlySet<'position'>;
  * Bundles common functionality for multiple feature managers:
  * * moveable element
  * * image as style
- * TODO: it is expected that in the future less and less functionality will be common class as the feature managers get more customized
+ * TODO: it is expected that in the future less and less functionality will be the same for the different feature managers as they get more customized.
  * - Do not try to make this a class with a monster API. Instead let the classes not extend from this class.
- * Find a good compromise between composition, inheritance (there is no multi-inheritance in JS, but you can overwrite methods and call the previous one via `super.foo()`), decorators and mixins.
+ * Find a good solution/compromise between composition, inheritance (there is no multi-inheritance in JS, but you can overwrite methods and call the previous one via `super.foo()`), decorators and mixins.
  */
 export abstract class CommonFeatureManager<
     Element extends Readonly<{ id: UUID; position: Position }>

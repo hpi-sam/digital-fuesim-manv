@@ -2,7 +2,7 @@ import type { Feature } from 'ol';
 import { generateChangedProperties } from '../utility/generate-changed-properties';
 
 /**
- * Provides an Api to update the rendered the changes to an element (patient, vehicle, etc.)
+ * Provides an Api to update a feature based on changes to an element (patient, vehicle, etc.).
  *
  * {@link Element} is the immutable JSON object (Patient, Vehicle, etc.)
  * {@link ElementFeature} is the OpenLayers Feature that should be rendered to represent the {@link Element}.
@@ -33,8 +33,8 @@ export abstract class FeatureManager<
     /**
      * This should be called if an element is changed.
      *
-     * The best way to reflect the changes on the feature this is mostly to update the already created feature directly.
-     * But because this requires extra code for each changed property it is not feasible to do for all properties.
+     * The best way to reflect the changes on the feature is mostly to update the already created feature directly.
+     * But, because this requires extra code for each changed property, it is not feasible to do for all properties.
      * The properties that are supported to be updated this way are saved in {@link supportedChangeProperties} and the changes are handled in {@link changeFeature}.
      * If any other property has changed, we deleted the old feature and create a new one instead.
      */

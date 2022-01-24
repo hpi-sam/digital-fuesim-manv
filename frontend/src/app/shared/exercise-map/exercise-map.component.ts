@@ -16,9 +16,7 @@ import { pairwise, debounceTime, startWith, Subject, takeUntil } from 'rxjs';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Translate, defaults as defaultInteractions } from 'ol/interaction';
-import type { Feature } from 'ol';
 import { View } from 'ol';
-import type Geometry from 'ol/geom/Geometry';
 import { ApiService } from 'src/app/core/api.service';
 import type { Position, UUID } from 'digital-fuesim-manv-shared';
 import type Point from 'ol/geom/Point';
@@ -31,6 +29,7 @@ import { VehicleFeatureManager } from './feature-managers/vehicle-feature-manage
 import { PersonellFeatureManager } from './feature-managers/personell-feature-manager';
 import { MaterialFeatureManager } from './feature-managers/material-feature-manager';
 import type { CommonFeatureManager } from './feature-managers/common-feature-manager';
+import { TranslateHelper } from './utility/translate-helper';
 
 @Component({
     selector: 'app-exercise-map',
@@ -39,20 +38,18 @@ import type { CommonFeatureManager } from './feature-managers/common-feature-man
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
-    private readonly destroy$ = new Subject<void>();
-
     @ViewChild('openLayersContainer')
     openLayersContainer!: ElementRef<HTMLDivElement>;
 
+    private readonly destroy$ = new Subject<void>();
     private olMap?: OlMap;
+
     constructor(
         private readonly store: Store<AppState>,
         private readonly ngZone: NgZone,
         private readonly apiService: ApiService
     ) {}
 
-    // https://www.openstreetmap.org/#map=19/52.39378/13.13115
-    // https://www.openstreetmap.org/#map=19/52.39377/13.13093
     ngAfterViewInit(): void {
         // run outside angular zone for better performance
         this.ngZone.runOutsideAngular(() => {
@@ -63,12 +60,13 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     private setupMap() {
         // Layers
         const satelliteLayer = this.createTileLayer(
-            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            20
         );
-        const patientLayer = this.createElementLayerTemplate();
-        const vehicleLayer = this.createElementLayerTemplate();
-        const personellLayer = this.createElementLayerTemplate();
-        const materialLayer = this.createElementLayerTemplate();
+        const patientLayer = this.createElementLayer();
+        const vehicleLayer = this.createElementLayer();
+        const personellLayer = this.createElementLayer();
+        const materialLayer = this.createElementLayer();
 
         // Interactions
         const translateInteraction = new Translate({
@@ -104,20 +102,8 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         // translateInteraction.on('translateend', () => {
         //     this.setCursorStyle('');
         // });
+        TranslateHelper.registerTranslateEvents(translateInteraction);
 
-        // These event don't propagate to anything else bz default. We therefore propagate it manually to the specific features.
-        const translateEvents = [
-            'translatestart',
-            'translating',
-            'translateend',
-        ] as const;
-        for (const eventName of translateEvents) {
-            translateInteraction.on(eventName, (event) => {
-                event.features.forEach((feature: Feature<Geometry>) => {
-                    feature.dispatchEvent(event);
-                });
-            });
-        }
         // FeatureManagers
         this.createAndRegisterFeatureManager(
             PatientFeatureManager,
@@ -193,23 +179,27 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         this.olMap!.getTargetElement().style.cursor = cursorStyle;
     }
 
-    private createElementLayerTemplate() {
+    /**
+     * @param renderBuffer The size of the largest symbol, line width or label on the highest zoom level.
+     */
+    private createElementLayer(renderBuffer = 250) {
         return new VectorLayer({
             // TODO: these two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
             updateWhileAnimating: true,
             updateWhileInteracting: true,
-            // TODO: Recommended value: the size of the largest symbol, line width or label.
-            // The value is in pixel -> if we are very zoomed in we might need to increase it
-            renderBuffer: 250,
+            renderBuffer,
             source: new VectorSource<Point>(),
         });
     }
 
-    private createTileLayer(url: string, maxZoom = 20) {
+    /**
+     * @param url the url to the server that serves the tiles. Must include `{x}`, `{y}` or `{-y}` and `{z}`placeholders.
+     * @param maxZoom The maximum `{z}` value the tile server accepts
+     */
+    private createTileLayer(url: string, maxZoom: number) {
         return new TileLayer({
             source: new XYZ({
                 url,
-                // this is server specific - the sever only supports up to zoom level 20
                 maxZoom,
                 // We want to keep the tiles cached if we are zooming in and out fast
                 cacheSize: 1000,
