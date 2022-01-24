@@ -81,6 +81,7 @@ In the `diff` folder you can see the changes between the baseline and the compar
 
 -   names are never unique, ids are
 -   private properties that may be used with getters/setters (and only those!) start with one leading underscore (`_`)
+-   `dependencies` should be used for packages that must be installed when running the app (e.g. `express`), whereas `devDependencies` should be used for packages only required for developing, debugging or testing (e.g. `jest`), which includes all `@types` packages. We try to follow this route even for the frontend and the backend, although it is not important there. See also [this](https://stackoverflow.com/a/22004559) answer on StackOverflow for more information about the differences.
 
 # Architecture
 
