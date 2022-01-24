@@ -73,6 +73,7 @@ In the `diff` folder you can see the changes between the baseline and the compar
 
 -   names are never unique, ids are
 -   private properties that may be used with getters/setters (and only those!) start with one leading underscore (`_`)
+-   Line endings should be Linux-style (`\n`). See [here](https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings) for more information.
 
 # Architecture
 
