@@ -46,11 +46,11 @@ export class AppComponent {
     ) {}
 
     private generateCoordinates() {
-        const xOffset = Math.random() * 100;
+        const xOffset = Math.random() * 300;
         const yOffset = Math.random() * 250;
         return {
-            x: 1461830 + xOffset,
-            y: 6871673 + yOffset,
+            x: 1461700 + xOffset,
+            y: 6871500 + yOffset,
         };
     }
 
@@ -71,7 +71,7 @@ export class AppComponent {
                 type: '[Patient] Add patient',
                 patient,
             },
-            true
+            false
         );
     }
 
@@ -85,7 +85,7 @@ export class AppComponent {
                 type: '[Vehicle] Add vehicle',
                 vehicle,
             },
-            true
+            false
         );
     }
     public async addPersonell() {
@@ -98,7 +98,7 @@ export class AppComponent {
                 type: '[Personell] Add personell',
                 personell,
             },
-            true
+            false
         );
     }
 
