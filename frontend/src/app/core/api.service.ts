@@ -3,13 +3,17 @@ import { Store } from '@ngrx/store';
 import type {
     ClientToServerEvents,
     ExerciseAction,
+    ExerciseId,
     ExerciseState,
     ServerToClientEvents,
     SocketResponse,
+    Role,
 } from 'digital-fuesim-manv-shared';
+import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
-import { BehaviorSubject, first } from 'rxjs';
+import { BehaviorSubject, first, lastValueFrom } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import type { AppState } from '../state/app.state';
 import {
     applyServerAction,
@@ -21,10 +25,18 @@ import { OptimisticActionHandler } from './optimistic-action-handler';
     providedIn: 'root',
 })
 export class ApiService {
+    private readonly host = window.location.host.split(':')[0];
+    private readonly websocketPort = 3200;
+    private readonly httpPort = 3201;
+
+    private readonly httpBase = `http://${this.host}:${this.httpPort}`;
+
     private readonly socket: Socket<
         ServerToClientEvents,
         ClientToServerEvents
-    > = io(`ws://${window.location.host.split(':')[0]}:3200`);
+    > = io(`ws://${this.host}:${this.websocketPort}`, {
+        transports: socketIoTransports,
+    });
 
     private readonly optimisticActionHandler = new OptimisticActionHandler<
         ExerciseAction,
@@ -47,13 +59,10 @@ export class ApiService {
         async (action) => this.sendAction(action)
     );
 
-    constructor(private readonly store: Store<AppState>) {
-        this.socket.on('connect', () => {
-            console.log('Socket connected', this.socket.id);
-        });
-        this.socket.on('disconnect', () => {
-            console.log('Socket disconnected', this.socket.id);
-        });
+    constructor(
+        private readonly store: Store<AppState>,
+        private readonly httpClient: HttpClient
+    ) {
         this.socket.on('performAction', (action: ExerciseAction) => {
             this.optimisticActionHandler.performAction(action);
         });
@@ -67,10 +76,20 @@ export class ApiService {
      * Join an exercise and retrieve its state
      * @returns wether the join was successful
      */
-    public async joinExercise(exerciseId: string): Promise<boolean> {
+    public async joinExercise(
+        exerciseId: string,
+        clientName: string,
+        role: Role
+    ): Promise<boolean> {
         this.hasJoinedExerciseState$.next('joining');
         const joinExercise = await new Promise<SocketResponse>((resolve) => {
-            this.socket.emit('joinExercise', exerciseId, resolve);
+            this.socket.emit(
+                'joinExercise',
+                exerciseId,
+                clientName,
+                role,
+                resolve
+            );
         });
         if (!joinExercise.success) {
             this.hasJoinedExerciseState$.next('not-joined');
@@ -118,5 +137,14 @@ export class ApiService {
         }
         this.store.dispatch(setExerciseState(response.payload));
         return response;
+    }
+
+    public async createExercise() {
+        return lastValueFrom(
+            this.httpClient.post<ExerciseId>(
+                `${this.httpBase}/api/exercise`,
+                {}
+            )
+        );
     }
 }

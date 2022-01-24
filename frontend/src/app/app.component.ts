@@ -25,7 +25,11 @@ const getNumberOf = map((dictionary: object) => Object.keys(dictionary).length);
     styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-    public exerciseId = 'abcdefghijk';
+    public exerciseId = '';
+
+    public clientName = '';
+
+    public isTrainer = false;
 
     public readonly numberOfPatients$ = this.store
         .select(selectPatients)
@@ -135,6 +139,14 @@ export class AppComponent {
     }
 
     public joinExercise() {
-        this.apiService.joinExercise(this.exerciseId);
+        this.apiService.joinExercise(
+            this.exerciseId,
+            this.clientName,
+            this.isTrainer ? 'trainer' : 'participant'
+        );
+    }
+
+    public async createExercise() {
+        this.exerciseId = (await this.apiService.createExercise()).exerciseId;
     }
 }

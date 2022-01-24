@@ -43,9 +43,9 @@ export const registerProposeActionHandler = (
             }
             throw error;
         }
-        // 5. TODO: determine affected clients
+        // 5. TODO: determine affected clients - don't send to clients in other exercises
         // 6. send new state to all affected clients
-        io.emit('performAction', action);
+        exerciseWrapper.emitAction(action);
         // 7. send success response to emitting client
         callback({
             success: true,

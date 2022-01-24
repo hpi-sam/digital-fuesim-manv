@@ -115,4 +115,15 @@ export const exerciseReducerMap: {
         delete draftState.materials[materialId];
         return draftState;
     },
+    '[Client] Add client': (draftState, { client }) => {
+        draftState.clients[client.id] = client;
+        return draftState;
+    },
+    '[Client] Remove client': (draftState, { clientId }) => {
+        if (!draftState.clients[clientId]) {
+            throw new ReducerError(`Client with id ${clientId} does not exist`);
+        }
+        delete draftState.clients[clientId];
+        return draftState;
+    },
 };
