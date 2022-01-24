@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import {
     IsArray,
     IsInt,
-    IsObject,
     IsString,
     IsUUID,
     Min,
@@ -11,26 +10,29 @@ import {
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
 import { defaultPatientCategories } from './data/default-state/patient-templates';
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
-import type {
-    AlarmGroup,
-    Client,
-    Hospital,
-    HospitalPatient,
-    MapImage,
-    Material,
-    Patient,
-    Personnel,
-    TransferPoint,
-    Vehicle,
-    Viewport,
-} from './models';
 import { ExerciseConfiguration } from './models/exercise-configuration';
-import { EocLogEntry, VehicleTemplate, MapImageTemplate } from './models';
 import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuidValidationOptions, uuid } from './utils';
 import { PatientCategory } from './models/patient-category';
 import { ExerciseStatus } from './models/utils/exercise-status';
+import { IsIdObject } from './utils/validators';
+import {
+    Viewport,
+    Vehicle,
+    Personnel,
+    Patient,
+    Material,
+    MapImage,
+    TransferPoint,
+    Hospital,
+    HospitalPatient,
+    AlarmGroup,
+    Client,
+    VehicleTemplate,
+    MapImageTemplate,
+    EocLogEntry,
+} from './models';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -45,30 +47,30 @@ export class ExerciseState {
     public readonly currentTime = 0;
     @IsString()
     public readonly currentStatus: ExerciseStatus = 'notStarted';
-    @IsObject()
+    @IsIdObject(Viewport)
     public readonly viewports: { readonly [key: UUID]: Viewport } = {};
-    @IsObject()
+    @IsIdObject(Vehicle)
     public readonly vehicles: { readonly [key: UUID]: Vehicle } = {};
-    @IsObject()
+    @IsIdObject(Personnel)
     public readonly personnel: { readonly [key: UUID]: Personnel } = {};
-    @IsObject()
+    @IsIdObject(Patient)
     public readonly patients: { readonly [key: UUID]: Patient } = {};
-    @IsObject()
+    @IsIdObject(Material)
     public readonly materials: { readonly [key: UUID]: Material } = {};
-    @IsObject()
+    @IsIdObject(MapImage)
     public readonly mapImages: { readonly [key: UUID]: MapImage } = {};
-    @IsObject()
+    @IsIdObject(TransferPoint)
     public readonly transferPoints: { readonly [key: UUID]: TransferPoint } =
         {};
-    @IsObject()
+    @IsIdObject(Hospital)
     public readonly hospitals: { readonly [key: UUID]: Hospital } = {};
-    @IsObject()
+    @IsIdObject(HospitalPatient, (hospitalPatient) => hospitalPatient.patientId)
     public readonly hospitalPatients: {
         readonly [key: UUID]: HospitalPatient;
     } = {};
-    @IsObject()
+    @IsIdObject(AlarmGroup)
     public readonly alarmGroups: { readonly [key: UUID]: AlarmGroup } = {};
-    @IsObject()
+    @IsIdObject(Client)
     public readonly clients: { readonly [key: UUID]: Client } = {};
     @IsArray()
     @ValidateNested()

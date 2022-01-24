@@ -1,12 +1,7 @@
 import { Type } from 'class-transformer';
-import {
-    IsDefined,
-    IsOptional,
-    IsString,
-    IsUUID,
-    ValidateNested,
-} from 'class-validator';
+import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { uuid, UUID, UUIDSet, uuidValidationOptions } from '../utils';
+import { IsUUIDSet } from '../utils/validators';
 import { CanCaterFor, getCreate, ImageProperties, Position } from './utils';
 
 export class Material {
@@ -19,8 +14,7 @@ export class Material {
     @IsString()
     public readonly vehicleName: string;
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly assignedPatientIds: UUIDSet;
 
     @ValidateNested()

@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import {
-    IsDefined,
     IsNumber,
     IsOptional,
     IsString,
@@ -8,6 +7,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
+import { IsUUIDSet } from '../utils/validators';
 import { getCreate, Position, Transfer } from './utils';
 import { ImageProperties } from './utils/image-properties';
 
@@ -21,8 +21,7 @@ export class Vehicle {
     @IsString()
     public readonly name: string;
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly materialIds: UUIDSet = {};
 
     @IsNumber()
@@ -48,12 +47,10 @@ export class Vehicle {
     @IsOptional()
     public readonly transfer?: Transfer;
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly personnelIds: UUIDSet = {};
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly patientIds: UUIDSet = {};
 
     /**
