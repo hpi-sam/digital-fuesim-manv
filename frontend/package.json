@@ -8,7 +8,7 @@
         "cy:update-snapshots": "cypress-image-diff -u",
         "ng": "ng",
         "start": "ng serve",
-        "build": "ng build",
+        "build": "ng build --ts-config ./tsconfig.build.json",
         "watch": "ng build --watch --configuration development",
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,css,sccs,html,angular}\"",
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,css,sccs,html,angular}\"",

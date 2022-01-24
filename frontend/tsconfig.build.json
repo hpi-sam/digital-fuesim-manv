@@ -2,9 +2,9 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
-        "outDir": "./out-tsc/spec",
+        "outDir": "./dist/out-tsc",
         "types": ["jest"]
     },
-    "files": ["src/test.ts", "src/polyfills.ts"],
-    "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "src/**/*.spec.ts", "test/**/*"]
 }
