@@ -60,14 +60,13 @@ describe('exercise', () => {
 
                 expect(joinExercise.success).toBe(true);
 
-                // TODO: Further specify types in utils in order to remove as any
-                socket.spyOn('disconnect' as any);
+                socket.spyOn('disconnect');
 
                 await environment
                     .httpRequest('delete', `/api/exercise/${exerciseId}`)
                     .expect(204);
 
-                expect(socket.getTimesCalled('disconnect' as any)).toBe(1);
+                expect(socket.getTimesCalled('disconnect')).toBe(1);
             });
         });
     });

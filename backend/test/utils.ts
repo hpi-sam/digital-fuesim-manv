@@ -5,10 +5,11 @@ import type {
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
-import type { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import type { SocketReservedEventsMap } from 'socket.io/dist/socket';
 import request from 'supertest';
 import { FuesimServer } from '../src/fuesim-server';
 import type { ExerciseCreationResponse } from './http-exercise.spec';
+import type { SocketReservedEvents } from './socket-reserved-events';
 
 export type HttpMethod =
     | 'delete'
@@ -34,44 +35,69 @@ type LastElement<T extends any[]> = T extends [...any[], infer R]
  */
 type HeadElement<T extends any[]> = T extends [...infer U, any] ? U : never;
 
-// TODO: Restrict event names to actual events, as in other code
+/**
+ * Merges two objects like
+ * ```ts
+ * type A = { a: 1, b: 2 };
+ * type B = { c: 2 };
+ * type C = MergeIntersection<A & B>; // { a: 1, b: 2, c: 2 }
+ * ```
+ */
+type MergeIntersection<T> = T extends infer U
+    ? { [K in keyof U]: U[K] }
+    : never;
+
+type AllClientToServerEvents = MergeIntersection<
+    ClientToServerEvents & SocketReservedEventsMap
+>;
+
+type AllServerToClientEvents = MergeIntersection<
+    ServerToClientEvents & SocketReservedEvents
+>;
+
+type ExerciseClientSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
+
 export class WebsocketClient {
-    constructor(
-        private readonly socket: Socket<DefaultEventsMap, DefaultEventsMap>
-    ) {}
+    constructor(private readonly socket: ExerciseClientSocket) {}
 
     public async emit<
-        EventKey extends keyof ClientToServerEvents,
-        Event extends ClientToServerEvents[EventKey] = ClientToServerEvents[EventKey],
+        EventKey extends keyof AllClientToServerEvents,
+        Event extends AllClientToServerEvents[EventKey] = AllClientToServerEvents[EventKey],
         EventParameters extends Parameters<Event> = Parameters<Event>,
         // We expect the callback to be the last parameter of the callback`
         EventCallback extends LastElement<EventParameters> = LastElement<EventParameters>,
-        Response extends Parameters<EventCallback>[0] = Parameters<EventCallback>[0]
+        // If there is no callback, the response is just void
+        Response extends EventCallback extends (...a: any[]) => any
+            ? Parameters<EventCallback>[0]
+            : void = EventCallback extends (...a: any[]) => any
+            ? Parameters<EventCallback>[0]
+            : void
     >(
         event: EventKey,
         ...args: HeadElement<Parameters<Event>>
     ): Promise<Response> {
         return new Promise<Response>((resolve) => {
-            this.socket.emit(event, ...args, resolve);
+            // TODO: can you emit a 'disconnect' event?
+            this.socket.emit(event as any, ...args, resolve);
         });
     }
 
     public on<
-        EventKey extends keyof ServerToClientEvents,
-        Callback extends ServerToClientEvents[EventKey] = ServerToClientEvents[EventKey]
+        EventKey extends keyof AllServerToClientEvents,
+        Callback extends AllServerToClientEvents[EventKey] = AllServerToClientEvents[EventKey]
     >(event: EventKey, callback: Callback): void {
         this.socket.on(event, callback as any);
     }
 
     private readonly callCounter: Map<string, number> = new Map();
 
-    public spyOn(event: keyof ServerToClientEvents): void {
+    public spyOn(event: keyof AllServerToClientEvents): void {
         this.on(event, () =>
             this.callCounter.set(event, this.callCounter.get(event) ?? 0 + 1)
         );
     }
 
-    public getTimesCalled(event: keyof ServerToClientEvents): number {
+    public getTimesCalled(event: keyof AllServerToClientEvents): number {
         return this.callCounter.get(event) ?? 0;
     }
 }
@@ -96,9 +122,7 @@ class TestEnvironment {
         closure: (websocketClient: WebsocketClient) => Promise<any>
     ): Promise<void> {
         // TODO: This should not be hard coded
-        let clientSocket:
-            | Socket<DefaultEventsMap, DefaultEventsMap>
-            | undefined;
+        let clientSocket: ExerciseClientSocket | undefined;
         try {
             clientSocket = io('ws://localhost:3200', {
                 transports: socketIoTransports,
