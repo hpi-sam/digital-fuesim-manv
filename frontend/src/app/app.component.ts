@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Patient, uuid } from 'digital-fuesim-manv-shared';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from './core/api.service';
 
 @Component({
@@ -14,7 +15,10 @@ export class AppComponent {
 
     public isTrainer = false;
 
-    constructor(public readonly apiService: ApiService) {}
+    constructor(
+        public readonly apiService: ApiService,
+        private readonly modalService: NgbModal
+    ) {}
 
     // Action
     public async addPatient(
@@ -48,5 +52,20 @@ export class AppComponent {
 
     public async createExercise() {
         this.exerciseId = (await this.apiService.createExercise()).exerciseId;
+    }
+
+    public open(content) {
+        this.modalService
+            .open(content, { ariaLabelledBy: 'modal-basic-title' })
+            .result.then(
+                (result) => {
+                    this.closeResult = `Closed with: ${result}`;
+                },
+                (reason) => {
+                    this.closeResult = `Dismissed ${this.getDismissReason(
+                        reason
+                    )}`;
+                }
+            );
     }
 }
