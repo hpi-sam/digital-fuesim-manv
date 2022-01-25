@@ -35,15 +35,9 @@ jobs:
                       ${{ runner.os }}-build-${{ env.cache-name }}-
                       ${{ runner.os }}-build-
                       ${{ runner.os }}-
-            - name: Install dependencies of shared
+            - name: Setup project
               if: steps.cache-node-modules.outputs.cache-hit != 'true'
-              run: cd shared && npm ci && cd ..
-            - name: Build shared
-              if: steps.cache-node-modules.outputs.cache-hit != 'true'
-              run: cd shared && npm run build && cd ..
-            - name: Install dependencies of frontend and backend
-              if: steps.cache-node-modules.outputs.cache-hit != 'true'
-              run: cd frontend && npm ci && cd ../backend && npm ci && cd ..
+              run: npm run setup:ci
     lint:
         timeout-minutes: 10
         runs-on: ${{ matrix.os }}
