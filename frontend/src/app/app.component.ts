@@ -9,6 +9,7 @@ import { ApiService } from './core/api.service';
     styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+    closeResult = '';
     public exerciseId = '';
 
     public clientName = '';
@@ -54,7 +55,7 @@ export class AppComponent {
         this.exerciseId = (await this.apiService.createExercise()).exerciseId;
     }
 
-    public open(content) {
+    public open(content: any) {
         this.modalService
             .open(content, { ariaLabelledBy: 'modal-basic-title' })
             .result.then(
@@ -67,5 +68,14 @@ export class AppComponent {
                     )}`;
                 }
             );
+    }
+
+    private getDismissReason(reason: any): string {
+        if (reason === ModalDismissReasons.ESC) {
+            return 'by pressing ESC';
+        } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+            return 'by clicking on a backdrop';
+        }
+        return `with: ${reason}`;
     }
 }
