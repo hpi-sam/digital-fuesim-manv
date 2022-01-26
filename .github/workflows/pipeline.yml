@@ -30,11 +30,7 @@ jobs:
                       shared/node_modules
                       frontend/node_modules
                       backend/node_modules
-                  key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
-                  restore-keys: |
-                      ${{ runner.os }}-build-${{ env.cache-name }}-
-                      ${{ runner.os }}-build-
-                      ${{ runner.os }}-
+                  key: ${{ secret.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
             - name: Setup project
               if: steps.cache-node-modules.outputs.cache-hit != 'true'
               run: npm run setup:ci
@@ -65,11 +61,7 @@ jobs:
                       shared/node_modules
                       frontend/node_modules
                       backend/node_modules
-                  key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
-                  restore-keys: |
-                      ${{ runner.os }}-build-${{ env.cache-name }}-
-                      ${{ runner.os }}-build-
-                      ${{ runner.os }}-
+                  key: ${{ secret.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
             - name: Run ESLint
               run: npm run lint
             - name: Run Prettier
@@ -104,10 +96,6 @@ jobs:
                       shared/node_modules
                       frontend/node_modules
                       backend/node_modules
-                  key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
-                  restore-keys: |
-                      ${{ runner.os }}-build-${{ env.cache-name }}-
-                      ${{ runner.os }}-build-
-                      ${{ runner.os }}-
+                  key: ${{ secret.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
             - name: Run Tests
               run: cd ${{ matrix.environment }} && npm run test
