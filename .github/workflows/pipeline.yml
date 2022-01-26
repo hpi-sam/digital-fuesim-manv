@@ -39,8 +39,10 @@ jobs:
               with:
                   path: shared/dist
                   key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/dist/**') }}
+            - name: Build shared
+              run: cd shared && npm run build && cd ..
             - name: Setup project
-              if: steps.cache-node-modules.outputs.cache-hit != 'true' || steps.cache-shared-dist.outputs.cache-hit != 'true'
+              if: steps.cache-node-modules.outputs.cache-hit != 'true'
               run: npm run setup:ci
     lint:
         timeout-minutes: 10
