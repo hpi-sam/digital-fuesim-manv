@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { StoreModule } from '@ngrx/store';
 import { FormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import type { AppState } from './state/app.state';
@@ -25,6 +26,7 @@ import { ClientOverviewComponent } from './components/client-overview/client-ove
         FormsModule,
         AppRoutingModule,
         StoreModule.forRoot<AppState>(appReducers),
+        NgbModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

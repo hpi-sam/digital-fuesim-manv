@@ -47,4 +47,21 @@ export const exerciseReducerMap: {
         delete draftState.clients[clientId];
         return draftState;
     },
+    '[Client] Restrict to viewport': (draftState, { clientId, viewportId }) => {
+        if (!draftState.clients[clientId]) {
+            throw new ReducerError(`Client with id ${clientId} does not exist`);
+        }
+        if (viewportId === undefined) {
+            draftState.clients[clientId].viewRestrictedToViewportId =
+                viewportId;
+            return draftState;
+        }
+        if (!draftState.viewports[viewportId]) {
+            throw new ReducerError(
+                `Viewport with id ${viewportId} does not exist`
+            );
+        }
+        draftState.clients[clientId].viewRestrictedToViewportId = viewportId;
+        return draftState;
+    },
 };
