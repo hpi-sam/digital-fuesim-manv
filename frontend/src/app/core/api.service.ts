@@ -8,6 +8,8 @@ import type {
     ServerToClientEvents,
     SocketResponse,
     Role,
+    UUID,
+    Client,
 } from 'digital-fuesim-manv-shared';
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
@@ -19,6 +21,7 @@ import {
     applyServerAction,
     setExerciseState,
 } from '../state/exercise/exercise.actions';
+import { selectClients } from '../state/exercise/exercise.selectors';
 import { OptimisticActionHandler } from './optimistic-action-handler';
 
 @Injectable({
@@ -37,6 +40,12 @@ export class ApiService {
     > = io(`ws://${this.host}:${this.websocketPort}`, {
         transports: socketIoTransports,
     });
+
+    private ownClient?: Client;
+
+    public get client(): Client | undefined {
+        return this.ownClient;
+    }
 
     private readonly optimisticActionHandler = new OptimisticActionHandler<
         ExerciseAction,
@@ -82,15 +91,17 @@ export class ApiService {
         role: Role
     ): Promise<boolean> {
         this.hasJoinedExerciseState$.next('joining');
-        const joinExercise = await new Promise<SocketResponse>((resolve) => {
-            this.socket.emit(
-                'joinExercise',
-                exerciseId,
-                clientName,
-                role,
-                resolve
-            );
-        });
+        const joinExercise = await new Promise<SocketResponse<UUID>>(
+            (resolve) => {
+                this.socket.emit(
+                    'joinExercise',
+                    exerciseId,
+                    clientName,
+                    role,
+                    resolve
+                );
+            }
+        );
         if (!joinExercise.success) {
             this.hasJoinedExerciseState$.next('not-joined');
             return false;
@@ -100,6 +111,9 @@ export class ApiService {
             this.hasJoinedExerciseState$.next('not-joined');
             return false;
         }
+        this.store.select(selectClients).subscribe((clients) => {
+            this.ownClient = clients[joinExercise.payload];
+        });
         this.hasJoinedExerciseState$.next('joined');
         return true;
     }
