@@ -12,6 +12,7 @@
         "watch": "ng build --watch --configuration development",
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,css,sccs,html,angular}\"",
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,css,sccs,html,angular}\"",
+        "test:ci": "jest --runInBand --coverage --verbose --ci --forceExit",
         "test": "jest --runInBand --coverage --verbose",
         "test:watch": "jest --runInBand --verbose --watch"
     },
