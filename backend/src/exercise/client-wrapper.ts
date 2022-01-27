@@ -1,4 +1,4 @@
-import type { ExerciseAction } from 'digital-fuesim-manv-shared';
+import type { ExerciseAction, UUID } from 'digital-fuesim-manv-shared';
 import { Client } from 'digital-fuesim-manv-shared';
 import type { Role } from 'digital-fuesim-manv-shared/dist/models/utils';
 import type { ExerciseSocket } from '../exercise-server';
@@ -15,20 +15,20 @@ export class ClientWrapper {
     /**
      * @param exerciseId The exercise id to be used for the client.
      * @param clientName The public name of the client.
-     * @returns Whether the exercise exists.
+     * @returns The joined client's id, or undefined when the exercise doesn't exists.
      */
     public joinExercise(
         exerciseId: string,
         clientName: string,
         role: Role
-    ): boolean {
+    ): UUID | undefined {
         if (!exerciseMap.has(exerciseId)) {
-            return false;
+            return undefined;
         }
         this.chosenExercise = exerciseMap.get(exerciseId);
         this.relatedExerciseClient = new Client(clientName, role, undefined);
         this.chosenExercise!.addClient(this);
-        return true;
+        return this.relatedExerciseClient.id;
     }
 
     /**

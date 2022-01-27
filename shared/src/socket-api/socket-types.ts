@@ -1,4 +1,4 @@
-import type { ExerciseState, ExerciseAction } from '..';
+import type { ExerciseState, ExerciseAction, UUID } from '..';
 import type { Role } from '../models/utils';
 
 export interface ServerToClientEvents {
@@ -11,7 +11,7 @@ export interface ClientToServerEvents {
         exerciseId: string,
         clientName: string,
         role: Role,
-        callback: (response: SocketResponse) => void
+        callback: (response: SocketResponse<UUID>) => void
     ) => void;
     proposeAction: (
         action: ExerciseAction,

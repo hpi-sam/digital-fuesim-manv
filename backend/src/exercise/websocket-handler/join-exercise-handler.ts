@@ -14,11 +14,10 @@ export const registerJoinExerciseHandler = (
             role: Role,
             callback
         ): void => {
-            if (
-                !clientMap
-                    .get(client)
-                    ?.joinExercise(exerciseId, clientName, role)
-            ) {
+            const clientId = clientMap
+                .get(client)
+                ?.joinExercise(exerciseId, clientName, role);
+            if (!clientId) {
                 callback({
                     success: false,
                     message: 'The exercise does not exist',
@@ -27,6 +26,7 @@ export const registerJoinExerciseHandler = (
             }
             callback({
                 success: true,
+                payload: clientId,
             });
         }
     );
