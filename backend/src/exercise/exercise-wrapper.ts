@@ -1,4 +1,8 @@
-import type { ExerciseAction, ExerciseState } from 'digital-fuesim-manv-shared';
+import type {
+    ExerciseAction,
+    ExerciseState,
+    Role,
+} from 'digital-fuesim-manv-shared';
 import {
     reduceExerciseState,
     generateExercise,
@@ -13,7 +17,29 @@ export class ExerciseWrapper {
 
     private readonly stateHistory: ExerciseState[] = [];
 
-    constructor(private readonly exerciseId: string) {}
+    constructor(
+        private readonly participantId: string,
+        private readonly trainerId: string
+    ) {}
+
+    /**
+     * Select the role that is applied when using the given id.
+     * @param id The id the client used.
+     * @returns The role of the client, determined by the id.
+     * @throws {@link RangeError} in case the provided {@link id} is not part of this exercise.
+     */
+    public getRoleFromUsedId(id: string): Role {
+        switch (id) {
+            case this.participantId:
+                return 'participant';
+            case this.trainerId:
+                return 'trainer';
+            default:
+                throw new RangeError(
+                    `Incorrect id: ${id} where pid=${this.participantId} and tid=${this.trainerId}`
+                );
+        }
+    }
 
     public getStateSnapshot(): ExerciseState {
         return this.currentState;
@@ -68,6 +94,7 @@ export class ExerciseWrapper {
 
     public deleteExercise() {
         this.clients.forEach((client) => client.disconnect());
-        exerciseMap.delete(this.exerciseId);
+        exerciseMap.delete(this.participantId);
+        exerciseMap.delete(this.trainerId);
     }
 }

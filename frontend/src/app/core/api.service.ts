@@ -3,11 +3,10 @@ import { Store } from '@ngrx/store';
 import type {
     ClientToServerEvents,
     ExerciseAction,
-    ExerciseId,
+    ExerciseIds,
     ExerciseState,
     ServerToClientEvents,
     SocketResponse,
-    Role,
 } from 'digital-fuesim-manv-shared';
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
@@ -78,18 +77,11 @@ export class ApiService {
      */
     public async joinExercise(
         exerciseId: string,
-        clientName: string,
-        role: Role
+        clientName: string
     ): Promise<boolean> {
         this.hasJoinedExerciseState$.next('joining');
         const joinExercise = await new Promise<SocketResponse>((resolve) => {
-            this.socket.emit(
-                'joinExercise',
-                exerciseId,
-                clientName,
-                role,
-                resolve
-            );
+            this.socket.emit('joinExercise', exerciseId, clientName, resolve);
         });
         if (!joinExercise.success) {
             this.hasJoinedExerciseState$.next('not-joined');
@@ -141,7 +133,7 @@ export class ApiService {
 
     public async createExercise() {
         return lastValueFrom(
-            this.httpClient.post<ExerciseId>(
+            this.httpClient.post<ExerciseIds>(
                 `${this.httpBase}/api/exercise`,
                 {}
             )
