@@ -1,10 +1,7 @@
 import { exerciseMap } from '../src/exercise/exercise-map';
 import { UserReadableIdGenerator } from '../src/utils/user-readable-id-generator';
+import type { ExerciseCreationResponse } from './utils';
 import { createExercise, createTestEnvironment } from './utils';
-
-export interface ExerciseCreationResponse {
-    exerciseId: string;
-}
 
 describe('exercise', () => {
     const environment = createTestEnvironment();
@@ -21,7 +18,8 @@ describe('exercise', () => {
 
             const exerciseCreationResponse =
                 response.body as ExerciseCreationResponse;
-            expect(exerciseCreationResponse.exerciseId).toBeDefined();
+            expect(exerciseCreationResponse.participantId).toBeDefined();
+            expect(exerciseCreationResponse.trainerId).toBeDefined();
         });
 
         it('fails when no ids are left', async () => {
@@ -34,7 +32,7 @@ describe('exercise', () => {
 
     describe('DELETE /api/exercise/:exerciseId', () => {
         it('succeeds deleting an exercise', async () => {
-            const exerciseId = await createExercise(environment);
+            const exerciseId = (await createExercise(environment)).trainerId;
             await environment
                 .httpRequest('delete', `/api/exercise/${exerciseId}`)
                 .expect(204);
@@ -48,14 +46,21 @@ describe('exercise', () => {
                 .expect(404);
         });
 
+        it('fails deleting an exercise by its participant id', async () => {
+            const exerciseId = (await createExercise(environment))
+                .participantId;
+            await environment
+                .httpRequest('delete', `/api/exercise/${exerciseId}`)
+                .expect(403);
+        });
+
         it('disconnects clients of the removed exercise', async () => {
-            const exerciseId = await createExercise(environment);
+            const exerciseId = (await createExercise(environment)).trainerId;
             await environment.withWebsocket(async (socket) => {
                 const joinExercise = await socket.emit(
                     'joinExercise',
                     exerciseId,
-                    '',
-                    'participant'
+                    ''
                 );
 
                 expect(joinExercise.success).toBe(true);

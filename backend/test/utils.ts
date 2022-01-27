@@ -1,5 +1,7 @@
 import type {
     ClientToServerEvents,
+    ExerciseAction,
+    ExerciseIds,
     ServerToClientEvents,
 } from 'digital-fuesim-manv-shared';
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
@@ -8,7 +10,6 @@ import { io } from 'socket.io-client';
 import type { SocketReservedEventsMap } from 'socket.io/dist/socket';
 import request from 'supertest';
 import { FuesimServer } from '../src/fuesim-server';
-import type { ExerciseCreationResponse } from './http-exercise.spec';
 import type { SocketReservedEvents } from './socket-reserved-events';
 
 export type HttpMethod =
@@ -19,6 +20,11 @@ export type HttpMethod =
     | 'patch'
     | 'post'
     | 'put';
+
+export interface ExerciseCreationResponse {
+    readonly participantId: string;
+    readonly trainerId: string;
+}
 
 // Some helper types
 /**
@@ -89,16 +95,23 @@ export class WebsocketClient {
         this.socket.on(event, callback as any);
     }
 
-    private readonly callCounter: Map<string, number> = new Map();
+    private readonly calls: Map<string, ExerciseAction[]> = new Map();
 
-    public spyOn(event: keyof AllServerToClientEvents): void {
-        this.on(event, () =>
-            this.callCounter.set(event, this.callCounter.get(event) ?? 0 + 1)
-        );
+    public spyOn(event: keyof ServerToClientEvents): void {
+        this.on(event, (action) => {
+            if (!this.calls.has(event)) {
+                this.calls.set(event, []);
+            }
+            this.calls.get(event)!.push(action);
+        });
     }
 
-    public getTimesCalled(event: keyof AllServerToClientEvents): number {
-        return this.callCounter.get(event) ?? 0;
+    public getTimesCalled(event: keyof ServerToClientEvents): number {
+        return this.getCalls(event).length;
+    }
+
+    public getCalls(event: keyof ServerToClientEvents): ExerciseAction[] {
+        return this.calls.get(event) ?? [];
     }
 }
 
@@ -150,10 +163,15 @@ export const createTestEnvironment = (): TestEnvironment => {
 
 export async function createExercise(
     environment: TestEnvironment
-): Promise<string> {
+): Promise<ExerciseIds> {
     const response = await environment
         .httpRequest('post', '/api/exercise')
         .expect(201);
 
-    return (response.body as ExerciseCreationResponse).exerciseId;
+    return response.body as ExerciseCreationResponse;
+}
+
+export async function sleep(ms: number) {
+    // eslint-disable-next-line no-promise-executor-return
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
