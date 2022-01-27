@@ -82,6 +82,10 @@ describe('OptimisticActionHandler', () => {
         }
     );
 
+    it('should error', () => {
+        expect(true).toEqual(false);
+    });
+
     it('should correctly perform actions', async () => {
         optimisticActionHandler.performAction({
             type: 'addLetter',
