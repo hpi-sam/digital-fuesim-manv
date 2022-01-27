@@ -17,13 +17,14 @@ export class ClientWrapper {
      * @returns Whether the exercise exists.
      */
     public joinExercise(exerciseId: string, clientName: string): boolean {
-        if (!exerciseMap.has(exerciseId)) {
+        const exercise = exerciseMap.get(exerciseId);
+        if (!exercise) {
             return false;
         }
-        this.chosenExercise = exerciseMap.get(exerciseId);
-        const role = this.chosenExercise!.getRoleFromUsedId(exerciseId);
+        this.chosenExercise = exercise;
+        const role = this.chosenExercise.getRoleFromUsedId(exerciseId);
         this.relatedExerciseClient = new Client(clientName, role, undefined);
-        this.chosenExercise!.addClient(this);
+        this.chosenExercise.addClient(this);
         return true;
     }
 

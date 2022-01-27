@@ -122,7 +122,7 @@ describe('join exercise', () => {
                 trainerSocket.spyOn('performAction');
                 participantSocket.spyOn('performAction');
 
-                const patient: Patient = new Patient(
+                const patient = new Patient(
                     {
                         hair: 'brown',
                         eyeColor: 'blue',

@@ -24,10 +24,9 @@ export class ExerciseWrapper {
 
     /**
      * Select the role that is applied when using the given id.
-     *
-     * Throws when the id doesn't match any of this exercise's ids.
      * @param id The id the client used.
      * @returns The role of the client, determined by the id.
+     * @throws {@link RangeError} in case the provided {@link id} is not part of this exercise.
      */
     public getRoleFromUsedId(id: string): Role {
         switch (id) {
@@ -36,7 +35,7 @@ export class ExerciseWrapper {
             case this.trainerId:
                 return 'trainer';
             default:
-                throw new Error(
+                throw new RangeError(
                     `Incorrect id: ${id} where pid=${this.participantId} and tid=${this.trainerId}`
                 );
         }
