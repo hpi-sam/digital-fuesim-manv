@@ -38,7 +38,7 @@ jobs:
                   cache-name: cache-shared-dist
               with:
                   path: shared/dist
-                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/dist/**') }}
+                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
             - name: Setup project
               if: steps.cache-node-modules.outputs.cache-hit != 'true'
               run: npm run setup:ci
@@ -79,7 +79,7 @@ jobs:
                   cache-name: cache-shared-dist
               with:
                   path: shared/dist
-                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/dist/**') }}
+                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
             - name: Run ESLint
               run: npm run lint
             - name: Run Prettier
@@ -122,6 +122,6 @@ jobs:
                   cache-name: cache-shared-dist
               with:
                   path: shared/dist
-                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/dist/**') }}
+                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
             - name: Run Tests
               run: cd ${{ matrix.environment }} && npm run test:ci
