@@ -1,6 +1,5 @@
 import type { ExerciseAction, UUID } from 'digital-fuesim-manv-shared';
 import { Client } from 'digital-fuesim-manv-shared';
-import type { Role } from 'digital-fuesim-manv-shared/dist/models/utils';
 import type { ExerciseSocket } from '../exercise-server';
 import { exerciseMap } from './exercise-map';
 import type { ExerciseWrapper } from './exercise-wrapper';
@@ -19,15 +18,19 @@ export class ClientWrapper {
      */
     public joinExercise(
         exerciseId: string,
-        clientName: string,
-        role: Role
+        clientName: string
     ): UUID | undefined {
-        if (!exerciseMap.has(exerciseId)) {
+        const exercise = exerciseMap.get(exerciseId);
+        if (!exercise) {
             return undefined;
         }
-        this.chosenExercise = exerciseMap.get(exerciseId);
+        this.chosenExercise = exercise;
+        // Although getRoleFromUsedId may throw an error, this should never happen here
+        // as the provided id is guaranteed to be one of the ids of the exercise as the exercise
+        // was fetched with this exact id from the exercise map.
+        const role = this.chosenExercise.getRoleFromUsedId(exerciseId);
         this.relatedExerciseClient = new Client(clientName, role, undefined);
-        this.chosenExercise!.addClient(this);
+        this.chosenExercise.addClient(this);
         return this.relatedExerciseClient.id;
     }
 

@@ -1,4 +1,3 @@
-import type { Role } from 'digital-fuesim-manv-shared';
 import type { ExerciseServer, ExerciseSocket } from '../../exercise-server';
 import { clientMap } from '../client-map';
 
@@ -8,15 +7,10 @@ export const registerJoinExerciseHandler = (
 ) => {
     client.on(
         'joinExercise',
-        (
-            exerciseId: string,
-            clientName: string,
-            role: Role,
-            callback
-        ): void => {
+        (exerciseId: string, clientName: string, callback): void => {
             const clientId = clientMap
                 .get(client)
-                ?.joinExercise(exerciseId, clientName, role);
+                ?.joinExercise(exerciseId, clientName);
             if (!clientId) {
                 callback({
                     success: false,

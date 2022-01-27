@@ -21,7 +21,11 @@ export class AppComponent {
 
     public clientName = '';
 
-    public isTrainer = false;
+    public exerciseHasBeenCreated = false;
+
+    public trainerId = '';
+
+    public participantId = '';
 
     public client?: Client = undefined;
 
@@ -76,8 +80,7 @@ export class AppComponent {
     public async joinExercise() {
         const success = await this.apiService.joinExercise(
             this.exerciseId,
-            this.clientName,
-            this.isTrainer ? 'trainer' : 'participant'
+            this.clientName
         );
         if (!success) {
             return;
@@ -86,7 +89,11 @@ export class AppComponent {
     }
 
     public async createExercise() {
-        this.exerciseId = (await this.apiService.createExercise()).exerciseId;
+        const ids = await this.apiService.createExercise();
+        this.trainerId = ids.trainerId;
+        this.exerciseId = this.trainerId;
+        this.participantId = ids.participantId;
+        this.exerciseHasBeenCreated = true;
     }
 
     public open(content: any) {
