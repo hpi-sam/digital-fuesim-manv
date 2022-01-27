@@ -49,6 +49,7 @@ export class AppComponent {
     public async createExercise() {
         const ids = await this.apiService.createExercise();
         this.trainerId = ids.trainerId;
+        this.exerciseId = this.trainerId;
         this.participantId = ids.participantId;
         this.exerciseHasBeenCreated = true;
     }
