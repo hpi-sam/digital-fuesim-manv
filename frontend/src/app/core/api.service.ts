@@ -40,10 +40,17 @@ export class ApiService {
         transports: socketIoTransports,
     });
 
-    private ownClient?: Client;
+    private ownClientId?: UUID;
 
     public get client(): Client | undefined {
-        return this.ownClient;
+        if (!this.ownClientId) {
+            return undefined;
+        }
+        let client: Client | undefined;
+        this.store.select(selectClients).subscribe((clients) => {
+            client = clients[this.ownClientId!];
+        });
+        return client;
     }
 
     private readonly optimisticActionHandler = new OptimisticActionHandler<
@@ -108,9 +115,7 @@ export class ApiService {
             this.hasJoinedExerciseState$.next('not-joined');
             return false;
         }
-        this.store.select(selectClients).subscribe((clients) => {
-            this.ownClient = clients[joinExercise.payload];
-        });
+        this.ownClientId = joinExercise.payload;
         this.hasJoinedExerciseState$.next('joined');
         return true;
     }
