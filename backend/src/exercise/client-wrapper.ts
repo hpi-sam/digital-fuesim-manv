@@ -22,6 +22,9 @@ export class ClientWrapper {
             return false;
         }
         this.chosenExercise = exercise;
+        // Although getRoleFromUsedId may throw an error, this should never happen here
+        // as the provided id is guaranteed to be one of the ids of the exercise as the exercise
+        // was fetched with this exact id from the exercise map.
         const role = this.chosenExercise.getRoleFromUsedId(exerciseId);
         this.relatedExerciseClient = new Client(clientName, role, undefined);
         this.chosenExercise.addClient(this);
