@@ -12,7 +12,6 @@
         "moduleResolution": "node",
         "declarationMap": true,
         "rootDir": "./src",
-        "composite": true,
         "skipLibCheck": true,
         "types": ["jest"]
     },
