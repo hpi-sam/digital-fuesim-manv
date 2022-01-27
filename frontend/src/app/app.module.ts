@@ -10,9 +10,10 @@ import { AppComponent } from './app.component';
 import type { AppState } from './state/app.state';
 import { PatientsListComponent } from './components/patients-list/patients-list.component';
 import { appReducers } from './state/app.reducer';
+import { JoinExerciseComponent } from './components/join-exercise/join-exercise.component';
 
 @NgModule({
-    declarations: [AppComponent, PatientsListComponent],
+    declarations: [AppComponent, PatientsListComponent, JoinExerciseComponent],
     imports: [
         CommonModule,
         BrowserModule,
