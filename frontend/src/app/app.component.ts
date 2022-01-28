@@ -7,7 +7,7 @@ import {
     uuid,
     Viewport,
 } from 'digital-fuesim-manv-shared';
-import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from './core/api.service';
 import { openClientOverviewModal } from './shared/client-overview/open-client-overview-modal';
 
