@@ -1,22 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { ApiService } from '../../core/api.service';
-import type { AppState } from '../../state/app.state';
+import { ApiService } from 'src/app/core/api.service';
+import type { AppState } from 'src/app/state/app.state';
 import {
     selectClients,
     selectViewports,
-} from '../../state/exercise/exercise.selectors';
+} from 'src/app/state/exercise/exercise.selectors';
 
 @Component({
-    selector: 'app-client-overview',
-    templateUrl: './client-overview.component.html',
-    styleUrls: ['./client-overview.component.scss'],
+    selector: 'app-client-overview-table',
+    templateUrl: './client-overview-table.component.html',
+    styleUrls: ['./client-overview-table.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ClientOverviewComponent {
+export class ClientOverviewTableComponent {
     public readonly clients$ = this.store.select(selectClients);
     public readonly viewports$ = this.store.select(selectViewports);
-    public readonly columnsToDisplay = ['name', 'role'];
+
     constructor(
         private readonly store: Store<AppState>,
         private readonly apiService: ApiService

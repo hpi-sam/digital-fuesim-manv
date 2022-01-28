@@ -9,6 +9,7 @@ import {
 } from 'digital-fuesim-manv-shared';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from './core/api.service';
+import { openClientOverviewModal } from './shared/client-overview/open-client-overview-modal';
 
 @Component({
     selector: 'app-root',
@@ -96,27 +97,7 @@ export class AppComponent {
         this.exerciseHasBeenCreated = true;
     }
 
-    public open(content: any) {
-        this.modalService
-            .open(content, { ariaLabelledBy: 'modal-basic-title' })
-            .result.then(
-                (result) => {
-                    this.closeResult = `Closed with: ${result}`;
-                },
-                (reason) => {
-                    this.closeResult = `Dismissed ${this.getDismissReason(
-                        reason
-                    )}`;
-                }
-            );
-    }
-
-    private getDismissReason(reason: any): string {
-        if (reason === ModalDismissReasons.ESC) {
-            return 'by pressing ESC';
-        } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-            return 'by clicking on a backdrop';
-        }
-        return `with: ${reason}`;
+    public openClientOverview() {
+        openClientOverviewModal(this.modalService, this.exerciseId);
     }
 }

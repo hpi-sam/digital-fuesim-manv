@@ -5,20 +5,15 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { StoreModule } from '@ngrx/store';
 import { FormsModule } from '@angular/forms';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import type { AppState } from './state/app.state';
 import { PatientsListComponent } from './components/patients-list/patients-list.component';
 import { appReducers } from './state/app.reducer';
-import { ClientOverviewComponent } from './components/client-overview/client-overview.component';
+import { ClientOverviewModule } from './shared/client-overview/client-overview.module';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        PatientsListComponent,
-        ClientOverviewComponent,
-    ],
+    declarations: [AppComponent, PatientsListComponent],
     imports: [
         CommonModule,
         BrowserModule,
@@ -26,7 +21,7 @@ import { ClientOverviewComponent } from './components/client-overview/client-ove
         FormsModule,
         AppRoutingModule,
         StoreModule.forRoot<AppState>(appReducers),
-        NgbModule,
+        ClientOverviewModule,
     ],
     providers: [],
     bootstrap: [AppComponent],
