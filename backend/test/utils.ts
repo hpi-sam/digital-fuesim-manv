@@ -1,15 +1,14 @@
 import type {
     ClientToServerEvents,
-    ExerciseAction,
     ExerciseIds,
     ServerToClientEvents,
 } from 'digital-fuesim-manv-shared';
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
-import type { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import request from 'supertest';
 import { FuesimServer } from '../src/fuesim-server';
+import type { SocketReservedEvents } from './socket-reserved-events';
 
 export type HttpMethod =
     | 'delete'
@@ -36,43 +35,65 @@ type LastElement<T extends any[]> = T extends [...any[], infer R]
     : never;
 
 /**
- * Returns all but the last element in an array
+ * Returns an array of all but the last element in an array
+ * ```ts
+ * HeadElements<[1]> // []
+ * HeadElements<[1, string, 3]> // [1, string]
+ * ```
  */
-type HeadElement<T extends any[]> = T extends [...infer U, any] ? U : never;
+type HeadElements<T extends any[]> = T extends [...infer U, any] ? U : never;
 
-// TODO: Restrict event names to actual events, as in other code
+/**
+ * Merges two objects like
+ * ```ts
+ * type A = { a: 1, b: 2 };
+ * type B = { c: 2 };
+ * type C = MergeIntersection<A & B>; // { a: 1, b: 2, c: 2 }
+ * ```
+ */
+type MergeIntersection<T> = T extends infer U
+    ? { [K in keyof U]: U[K] }
+    : never;
+
+type AllServerToClientEvents = MergeIntersection<
+    ServerToClientEvents & SocketReservedEvents
+>;
+
+type ExerciseClientSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
+
 export class WebsocketClient {
-    constructor(
-        private readonly socket: Socket<DefaultEventsMap, DefaultEventsMap>
-    ) {}
+    constructor(private readonly socket: ExerciseClientSocket) {}
 
     public async emit<
         EventKey extends keyof ClientToServerEvents,
         Event extends ClientToServerEvents[EventKey] = ClientToServerEvents[EventKey],
         EventParameters extends Parameters<Event> = Parameters<Event>,
-        // We expect the callback to be the last parameter of the callback`
+        // We expect the callback to be the last parameter
         EventCallback extends LastElement<EventParameters> = LastElement<EventParameters>,
         Response extends Parameters<EventCallback>[0] = Parameters<EventCallback>[0]
     >(
         event: EventKey,
-        ...args: HeadElement<Parameters<Event>>
+        ...args: HeadElements<Parameters<Event>>
     ): Promise<Response> {
         return new Promise<Response>((resolve) => {
-            this.socket.emit(event, ...args, resolve);
+            this.socket.emit(event as any, ...args, resolve);
         });
     }
 
     public on<
-        EventKey extends keyof ServerToClientEvents,
-        Callback extends ServerToClientEvents[EventKey] = ServerToClientEvents[EventKey]
+        EventKey extends keyof AllServerToClientEvents,
+        Callback extends AllServerToClientEvents[EventKey] = AllServerToClientEvents[EventKey]
     >(event: EventKey, callback: Callback): void {
         this.socket.on(event, callback as any);
     }
 
-    private readonly calls: Map<string, ExerciseAction[]> = new Map();
+    private readonly calls: Map<
+        string,
+        Parameters<AllServerToClientEvents[keyof AllServerToClientEvents]>[]
+    > = new Map();
 
-    public spyOn(event: keyof ServerToClientEvents): void {
-        this.on(event, (action) => {
+    public spyOn(event: keyof AllServerToClientEvents): void {
+        this.on(event, (action: any) => {
             if (!this.calls.has(event)) {
                 this.calls.set(event, []);
             }
@@ -80,12 +101,14 @@ export class WebsocketClient {
         });
     }
 
-    public getTimesCalled(event: keyof ServerToClientEvents): number {
+    public getTimesCalled(event: keyof AllServerToClientEvents): number {
         return this.getCalls(event).length;
     }
 
-    public getCalls(event: keyof ServerToClientEvents): ExerciseAction[] {
-        return this.calls.get(event) ?? [];
+    public getCalls<EventKey extends keyof AllServerToClientEvents>(
+        event: EventKey
+    ): Parameters<AllServerToClientEvents[EventKey]>[] {
+        return this.calls.get(event) ?? ([] as any[]);
     }
 }
 
@@ -108,11 +131,9 @@ class TestEnvironment {
     public async withWebsocket(
         closure: (websocketClient: WebsocketClient) => Promise<any>
     ): Promise<void> {
-        // TODO: This should not be hard coded
-        let clientSocket:
-            | Socket<DefaultEventsMap, DefaultEventsMap>
-            | undefined;
+        let clientSocket: ExerciseClientSocket | undefined;
         try {
+            // TODO: The uri should not be hard coded
             clientSocket = io('ws://localhost:3200', {
                 transports: socketIoTransports,
             });
