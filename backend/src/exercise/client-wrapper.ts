@@ -1,4 +1,4 @@
-import type { ExerciseAction } from 'digital-fuesim-manv-shared';
+import type { ExerciseAction, UUID } from 'digital-fuesim-manv-shared';
 import { Client } from 'digital-fuesim-manv-shared';
 import type { ExerciseSocket } from '../exercise-server';
 import { exerciseMap } from './exercise-map';
@@ -14,12 +14,15 @@ export class ClientWrapper {
     /**
      * @param exerciseId The exercise id to be used for the client.
      * @param clientName The public name of the client.
-     * @returns Whether the exercise exists.
+     * @returns The joined client's id, or undefined when the exercise doesn't exists.
      */
-    public joinExercise(exerciseId: string, clientName: string): boolean {
+    public joinExercise(
+        exerciseId: string,
+        clientName: string
+    ): UUID | undefined {
         const exercise = exerciseMap.get(exerciseId);
         if (!exercise) {
-            return false;
+            return undefined;
         }
         this.chosenExercise = exercise;
         // Although getRoleFromUsedId may throw an error, this should never happen here
@@ -28,7 +31,7 @@ export class ClientWrapper {
         const role = this.chosenExercise.getRoleFromUsedId(exerciseId);
         this.relatedExerciseClient = new Client(clientName, role, undefined);
         this.chosenExercise.addClient(this);
-        return true;
+        return this.relatedExerciseClient.id;
     }
 
     /**

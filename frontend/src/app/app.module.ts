@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import type { AppState } from './state/app.state';
 import { PatientsListComponent } from './components/patients-list/patients-list.component';
 import { appReducers } from './state/app.reducer';
+import { ClientOverviewModule } from './shared/client-overview/client-overview.module';
 
 @NgModule({
     declarations: [AppComponent, PatientsListComponent],
@@ -20,6 +21,7 @@ import { appReducers } from './state/app.reducer';
         FormsModule,
         AppRoutingModule,
         StoreModule.forRoot<AppState>(appReducers),
+        ClientOverviewModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

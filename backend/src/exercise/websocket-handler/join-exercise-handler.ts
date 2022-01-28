@@ -8,7 +8,10 @@ export const registerJoinExerciseHandler = (
     client.on(
         'joinExercise',
         (exerciseId: string, clientName: string, callback): void => {
-            if (!clientMap.get(client)?.joinExercise(exerciseId, clientName)) {
+            const clientId = clientMap
+                .get(client)
+                ?.joinExercise(exerciseId, clientName);
+            if (!clientId) {
                 callback({
                     success: false,
                     message: 'The exercise does not exist',
@@ -17,6 +20,7 @@ export const registerJoinExerciseHandler = (
             }
             callback({
                 success: true,
+                payload: clientId,
             });
         }
     );

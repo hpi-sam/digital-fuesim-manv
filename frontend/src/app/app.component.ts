@@ -1,6 +1,15 @@
 import { Component } from '@angular/core';
-import { Patient, uuid } from 'digital-fuesim-manv-shared';
+import type { Client } from 'digital-fuesim-manv-shared';
+import {
+    Patient,
+    Position,
+    Size,
+    uuid,
+    Viewport,
+} from 'digital-fuesim-manv-shared';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from './core/api.service';
+import { openClientOverviewModal } from './shared/client-overview/open-client-overview-modal';
 
 @Component({
     selector: 'app-root',
@@ -8,6 +17,7 @@ import { ApiService } from './core/api.service';
     styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+    closeResult = '';
     public exerciseId = '';
 
     public clientName = '';
@@ -18,7 +28,12 @@ export class AppComponent {
 
     public participantId = '';
 
-    constructor(public readonly apiService: ApiService) {}
+    public client?: Client = undefined;
+
+    constructor(
+        public readonly apiService: ApiService,
+        private readonly modalService: NgbModal
+    ) {}
 
     // Action
     public async addPatient(
@@ -42,8 +57,36 @@ export class AppComponent {
         }
     }
 
-    public joinExercise() {
-        this.apiService.joinExercise(this.exerciseId, this.clientName);
+    private viewportIndex = 0;
+
+    public async addViewport(
+        viewport: Viewport = new Viewport(
+            new Position(0, 0),
+            new Size(0, 0),
+            `Viewport ${this.viewportIndex++}`
+        )
+    ) {
+        const response = await this.apiService.proposeAction(
+            {
+                type: '[Viewport] Add viewport',
+                viewport,
+            },
+            true
+        );
+        if (!response.success) {
+            console.error(response.message);
+        }
+    }
+
+    public async joinExercise() {
+        const success = await this.apiService.joinExercise(
+            this.exerciseId,
+            this.clientName
+        );
+        if (!success) {
+            return;
+        }
+        this.client = this.apiService.client;
     }
 
     public async createExercise() {
@@ -52,5 +95,9 @@ export class AppComponent {
         this.exerciseId = this.trainerId;
         this.participantId = ids.participantId;
         this.exerciseHasBeenCreated = true;
+    }
+
+    public openClientOverview() {
+        openClientOverviewModal(this.modalService, this.exerciseId);
     }
 }
