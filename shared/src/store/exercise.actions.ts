@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, Viewport, uuidValidationOptions, Patient, Client } from '..';
 import type { Immutable } from '../utils/immutability';
 
@@ -70,7 +70,16 @@ export namespace ExerciseActions {
         readonly type = '[Client] Restrict to viewport';
         @IsUUID(4, uuidValidationOptions)
         public clientId!: UUID;
+        @IsUUID(4, uuidValidationOptions)
         public viewportId?: UUID;
+    }
+
+    export class ToggleWaitingRoom implements Action {
+        readonly type = '[Client] Toggle waitingroom';
+        @IsUUID(4, uuidValidationOptions)
+        public clientId!: UUID;
+        @IsBoolean()
+        public shouldBeInWaitingRoom!: boolean;
     }
 }
 

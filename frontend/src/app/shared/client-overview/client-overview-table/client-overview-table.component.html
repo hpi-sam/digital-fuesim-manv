@@ -4,6 +4,7 @@
             <th scope="col">Name</th>
             <th scope="col">Role</th>
             <th scope="col">Viewport</th>
+            <th scope="col">In Waiting Room?</th>
         </tr>
     </thead>
     <tbody>
@@ -48,6 +49,17 @@
                     </button>
                 </div>
                 <ng-template #noViewportId> <i> None </i> </ng-template>
+            </td>
+            <td class="align-middle">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input
+                            type="checkbox"
+                            [checked]="client.value.isInWaitingRoom"
+                            (change)="alterWaitingRoom(client.key, $event)"
+                        />
+                    </label>
+                </div>
             </td>
         </tr>
     </tbody>

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import type { Client } from 'digital-fuesim-manv-shared';
 import {
     Patient,
     Position,
@@ -28,7 +27,9 @@ export class AppComponent {
 
     public participantId = '';
 
-    public client?: Client = undefined;
+    public get client() {
+        return this.apiService.client;
+    }
 
     constructor(
         public readonly apiService: ApiService,
@@ -79,14 +80,7 @@ export class AppComponent {
     }
 
     public async joinExercise() {
-        const success = await this.apiService.joinExercise(
-            this.exerciseId,
-            this.clientName
-        );
-        if (!success) {
-            return;
-        }
-        this.client = this.apiService.client;
+        await this.apiService.joinExercise(this.exerciseId, this.clientName);
     }
 
     public async createExercise() {
