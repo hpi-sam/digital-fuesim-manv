@@ -27,14 +27,14 @@ export const exerciseReducerMap: {
         draftState.patients[patient.id] = patient;
         return draftState;
     },
-    '[Patient] Move patient': (draftState, { patientId, position }) => {
+    '[Patient] Move patient': (draftState, { patientId, targetPosition }) => {
         const patient = draftState.patients[patientId];
         if (!patient) {
             throw new ReducerError(
                 `Patient with id ${patientId} does not exist`
             );
         }
-        patient.position = position;
+        patient.position = targetPosition;
         return draftState;
     },
     '[Patient] Remove patient': (draftState, { patientId }) => {
@@ -50,14 +50,14 @@ export const exerciseReducerMap: {
         draftState.vehicles[vehicle.id] = vehicle;
         return draftState;
     },
-    '[Vehicle] Move vehicle': (draftState, { vehicleId, position }) => {
+    '[Vehicle] Move vehicle': (draftState, { vehicleId, targetPosition }) => {
         const vehicle = draftState.vehicles[vehicleId];
         if (!vehicle) {
             throw new ReducerError(
                 `Vehicle with id ${vehicleId} does not exist`
             );
         }
-        vehicle.position = position;
+        vehicle.position = targetPosition;
         return draftState;
     },
     '[Vehicle] Remove vehicle': (draftState, { vehicleId }) => {
@@ -73,14 +73,17 @@ export const exerciseReducerMap: {
         draftState.personell[personell.id] = personell;
         return draftState;
     },
-    '[Personell] Move personell': (draftState, { personellId, position }) => {
+    '[Personell] Move personell': (
+        draftState,
+        { personellId, targetPosition }
+    ) => {
         const personell = draftState.personell[personellId];
         if (!personell) {
             throw new ReducerError(
                 `Personell with id ${personellId} does not exist`
             );
         }
-        personell.position = position;
+        personell.position = targetPosition;
         return draftState;
     },
     '[Personell] Remove personell': (draftState, { personellId }) => {
@@ -96,14 +99,17 @@ export const exerciseReducerMap: {
         draftState.materials[material.id] = material;
         return draftState;
     },
-    '[Material] Move material': (draftState, { materialId, position }) => {
+    '[Material] Move material': (
+        draftState,
+        { materialId, targetPosition }
+    ) => {
         const material = draftState.materials[materialId];
         if (!material) {
             throw new ReducerError(
                 `Material with id ${materialId} does not exist`
             );
         }
-        material.position = position;
+        material.position = targetPosition;
         return draftState;
     },
     '[Material] Remove material': (draftState, { materialId }) => {

@@ -27,6 +27,7 @@ export class TranslateHelper {
             });
         }
     }
+
     public onTranslateEnd(
         feature: Feature<Point>,
         callback: (newCoordinates: { x: number; y: number }) => void

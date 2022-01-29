@@ -23,6 +23,6 @@ export function getSelectWithPosition<
     return (state: AppState): ElementsWithPosition =>
         pickBy(
             state.exercise[key],
-            (element) => !!element.position
+            (element) => element.position !== undefined
         ) as ElementsWithPosition;
 }

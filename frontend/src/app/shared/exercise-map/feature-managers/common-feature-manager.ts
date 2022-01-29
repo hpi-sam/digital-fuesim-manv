@@ -1,10 +1,9 @@
-import type { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID, Position } from 'digital-fuesim-manv-shared';
 import { Feature } from 'ol';
 import Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import type OlMap from 'ol/Map';
-import type { Position } from 'digital-fuesim-manv-shared/dist/models/utils';
 import { MovementAnimator } from '../utility/movement-animator';
 import { TranslateHelper } from '../utility/translate-helper';
 import { ImageStyleHelper } from '../utility/get-image-style-function';
@@ -40,7 +39,7 @@ export abstract class CommonFeatureManager<
         private readonly layer: VectorLayer<VectorSource<Point>>,
         private readonly imageOptions: {
             /**
-             * The height of the image in pixels that should be used at {@link ImageStyleHelper.normalZoom } zoom
+             * The height of the image in pixels that should be used at {@link ImageStyleHelper.normalZoom} zoom
              */
             imageHeight: number;
             imageUrl: string;

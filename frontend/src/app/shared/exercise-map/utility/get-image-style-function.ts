@@ -14,11 +14,11 @@ export class ImageStyleHelper {
 
     constructor(
         /**
-         * An url to the vector or raster image that should be used as the texture a Feature
+         * An url to the vector or raster image that should be used as the texture of a {@link Feature}
          */
         private readonly imageUrl: string,
         /**
-         * The size in pixels that the longitude (y) image style of the feature should have at {@link normalZoom } zoom
+         * The size in pixels that the longitude (y) image style of the feature should have at {@link normalZoom} zoom
          */
         private readonly normalizedImageHeight: number,
         /**

@@ -30,6 +30,7 @@ import { PersonellFeatureManager } from './feature-managers/personell-feature-ma
 import { MaterialFeatureManager } from './feature-managers/material-feature-manager';
 import type { CommonFeatureManager } from './feature-managers/common-feature-manager';
 import { TranslateHelper } from './utility/translate-helper';
+import { startingPosition } from '../starting-position';
 
 @Component({
     selector: 'app-exercise-map',
@@ -84,7 +85,7 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 materialLayer,
             ],
             view: new View({
-                center: [1461850, 6871673],
+                center: [startingPosition.x, startingPosition.y],
                 zoom: 20,
                 maxZoom: 23,
             }),

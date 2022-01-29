@@ -22,11 +22,11 @@ export class VehicleFeatureManager extends CommonFeatureManager<
                 imageHeight: 200,
                 imageUrl: './assets/vehicle.svg',
             },
-            (newPosition, vehicle) => {
+            (targetPosition, vehicle) => {
                 this.apiService.proposeAction({
                     type: '[Vehicle] Move vehicle',
                     vehicleId: vehicle.id,
-                    position: newPosition,
+                    targetPosition,
                 });
             }
         );

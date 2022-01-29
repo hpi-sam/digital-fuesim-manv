@@ -22,11 +22,11 @@ export class MaterialFeatureManager extends CommonFeatureManager<
                 imageHeight: 40,
                 imageUrl: './assets/material.svg',
             },
-            (newPosition, material) => {
+            (targetPosition, material) => {
                 this.apiService.proposeAction({
                     type: '[Material] Move material',
                     materialId: material.id,
-                    position: newPosition,
+                    targetPosition,
                 });
             }
         );

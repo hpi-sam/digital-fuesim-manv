@@ -22,11 +22,11 @@ export class PatientFeatureManager extends CommonFeatureManager<
                 imageHeight: 80,
                 imageUrl: './assets/patient.svg',
             },
-            (newPosition, patient) => {
+            (targetPosition, patient) => {
                 this.apiService.proposeAction({
                     type: '[Patient] Move patient',
                     patientId: patient.id,
-                    position: newPosition,
+                    targetPosition,
                 });
             }
         );
