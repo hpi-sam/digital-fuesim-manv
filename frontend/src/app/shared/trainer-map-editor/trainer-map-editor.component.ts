@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
+import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
 import {
     Patient,
     uuid,
@@ -30,7 +31,7 @@ import { startingPosition } from '../starting-position';
  */
 export class TrainerMapEditorComponent {
     private readonly getNumberOf = map(
-        (dictionary: object) => Object.keys(dictionary).length
+        (dictionary: ImmutableJsonObject) => Object.keys(dictionary).length
     );
 
     public readonly numberOfPatients$ = this.store

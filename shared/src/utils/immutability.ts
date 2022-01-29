@@ -18,3 +18,18 @@ export type Immutable<T extends object> = {
 export type Mutable<T extends object> = {
     -readonly [K in keyof T]: T[K] extends object ? Mutable<T[K]> : T[K];
 };
+
+/**
+ * An immutable object is an object whose state cannot be modified.
+ * This represents a union of all JSON objects (no Maps, Sets, Functions, ...) that are immutable.
+ * TODO: the type doesn't work yet.
+ */
+export type ImmutableJsonObject = Immutable<JsonObject>;
+
+/**
+ * This represents a union of all JSON objects (no Maps, Sets, Functions, ...).
+ * TODO: the type doesn't work yet.
+ */
+interface JsonObject {
+    [x: string]: any;
+}
