@@ -1,3 +1,4 @@
+import { Position } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import type Geometry from 'ol/geom/Geometry';
 import type Point from 'ol/geom/Point';
@@ -30,7 +31,7 @@ export class TranslateHelper {
 
     public onTranslateEnd(
         feature: Feature<Point>,
-        callback: (newCoordinates: { x: number; y: number }) => void
+        callback: (newCoordinates: Position) => void
     ) {
         // The translateend event is only called on features
         feature.addEventListener('translateend', (event) => {
