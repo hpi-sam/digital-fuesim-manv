@@ -1,4 +1,4 @@
-import { Position } from 'digital-fuesim-manv-shared';
+import type { Position } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import type Geometry from 'ol/geom/Geometry';
 import type Point from 'ol/geom/Point';
