@@ -24,6 +24,9 @@ export interface ExerciseCreationResponse {
     readonly trainerId: string;
 }
 
+export const webserverPort = 13201;
+export const websocketPort = 13200;
+
 // Some helper types
 /**
  * Returns the last element in an array
@@ -113,7 +116,10 @@ export class WebsocketClient {
 }
 
 class TestEnvironment {
-    public server: FuesimServer = FuesimServer.create();
+    public server: FuesimServer = FuesimServer.create(
+        websocketPort,
+        webserverPort
+    );
 
     // `request.Test` extends `Promise<Response>`, therefore eslint wants the async keyword here.
     // The problem is that `Promise<request.Test>` not the same is as `request.Test` (but `Promise<T>` is equal to `Promise<Promise<T>>`).
@@ -134,7 +140,7 @@ class TestEnvironment {
         let clientSocket: ExerciseClientSocket | undefined;
         try {
             // TODO: The uri should not be hard coded
-            clientSocket = io('ws://localhost:3200', {
+            clientSocket = io(`ws://localhost:${websocketPort}`, {
                 transports: socketIoTransports,
             });
             const websocketClient = new WebsocketClient(clientSocket);
@@ -149,7 +155,10 @@ export const createTestEnvironment = (): TestEnvironment => {
     const environment = new TestEnvironment();
     // If this gets too slow, we may look into creating the server only once
     beforeEach(() => {
-        environment.server = FuesimServer.create();
+        if (environment.server) {
+            environment.server.destroy();
+        }
+        environment.server = FuesimServer.create(websocketPort, webserverPort);
     });
     afterEach(() => {
         environment.server.destroy();
