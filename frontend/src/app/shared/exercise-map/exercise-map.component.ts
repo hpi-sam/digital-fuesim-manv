@@ -18,10 +18,15 @@ import VectorSource from 'ol/source/Vector';
 import { Translate, defaults as defaultInteractions } from 'ol/interaction';
 import { View } from 'ol';
 import { ApiService } from 'src/app/core/api.service';
-import type { Position, UUID } from 'digital-fuesim-manv-shared';
+import type {
+    ImmutableJsonObject,
+    Position,
+    UUID,
+} from 'digital-fuesim-manv-shared';
 import type Point from 'ol/geom/Point';
 import { getSelectWithPosition } from 'src/app/state/exercise/exercise.selectors';
 import type { WithPosition } from '../utility/types/with-position';
+import { startingPosition } from '../starting-position';
 import { PatientFeatureManager } from './feature-managers/patient-feature-manager';
 import { handleChanges } from './utility/handle-changes';
 import type { FeatureManager } from './feature-managers/feature-manager';
@@ -30,7 +35,6 @@ import { PersonellFeatureManager } from './feature-managers/personell-feature-ma
 import { MaterialFeatureManager } from './feature-managers/material-feature-manager';
 import type { CommonFeatureManager } from './feature-managers/common-feature-manager';
 import { TranslateHelper } from './utility/translate-helper';
-import { startingPosition } from '../starting-position';
 
 @Component({
     selector: 'app-exercise-map',
@@ -145,7 +149,9 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         this.registerFeatureManager(featureManager, elementDictionary$);
     }
 
-    private registerFeatureManager<Element extends WithPosition<object>>(
+    private registerFeatureManager<
+        Element extends WithPosition<ImmutableJsonObject>
+    >(
         featureManager: FeatureManager<Element, any, any>,
         elementDictionary$: Observable<{ [id: UUID]: Element }>
     ) {

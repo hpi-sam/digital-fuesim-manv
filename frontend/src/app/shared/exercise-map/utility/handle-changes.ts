@@ -1,4 +1,7 @@
-import type { Immutable } from 'digital-fuesim-manv-shared';
+import type {
+    Immutable,
+    ImmutableJsonObject,
+} from 'digital-fuesim-manv-shared';
 
 /**
  * Compares two immutable dictionaries and calls the correct handler for each element that is different between the two dictionaries.
@@ -7,7 +10,7 @@ import type { Immutable } from 'digital-fuesim-manv-shared';
  * @param changeHandler Called for each element that is in both dictionaries and has changed.
  */
 export function handleChanges<
-    T extends object,
+    T extends ImmutableJsonObject,
     ImmutableT extends Immutable<T> = Immutable<T>
 >(
     oldDictionary: Readonly<{ [key: string]: ImmutableT }>,
