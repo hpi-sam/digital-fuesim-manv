@@ -7,6 +7,22 @@
         "
     >
         <div>
+            <button
+                (click)="createExercise()"
+                class="btn btn-primary me-3"
+                id="create"
+            >
+                Create Exercise
+            </button>
+            <div *ngIf="exerciseHasBeenCreated">
+                <p>
+                    You have generated an exercise with the trainer id
+                    {{ trainerId }} and the participant id {{ participantId }}.
+                </p>
+            </div>
+        </div>
+        <br />
+        <div>
             <div class="form-group">
                 <label class="form-label">Public Name:</label>
                 <input
@@ -16,25 +32,6 @@
                     id="publicName"
                 />
             </div>
-            <div class="form-check">
-                <input
-                    class="form-check-input"
-                    [(ngModel)]="isTrainer"
-                    type="checkbox"
-                    id="isTrainer"
-                />
-                <label class="form-check-label"> Be a trainer? </label>
-            </div>
-            <button
-                (click)="createExercise()"
-                class="btn btn-primary me-3"
-                id="create"
-            >
-                Create Exercise
-            </button>
-        </div>
-        <br />
-        <div>
             <div class="form-group">
                 <label class="form-label">Exercise Id:</label>
                 <input
@@ -52,5 +49,8 @@
 
     <ng-template #joinedTemplate>
         <app-trainer-map-editor></app-trainer-map-editor>
+        <button (click)="openClientOverview()" class="btn btn-primary">
+            Client Overview
+        </button>
     </ng-template>
 </div>

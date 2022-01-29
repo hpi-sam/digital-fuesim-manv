@@ -1,5 +1,4 @@
-import type { ExerciseState, ExerciseAction } from '..';
-import type { Role } from '../models/utils';
+import type { ExerciseState, ExerciseAction, UUID } from '..';
 
 export interface ServerToClientEvents {
     performAction: (action: ExerciseAction) => void;
@@ -10,8 +9,7 @@ export interface ClientToServerEvents {
     joinExercise: (
         exerciseId: string,
         clientName: string,
-        role: Role,
-        callback: (response: SocketResponse) => void
+        callback: (response: SocketResponse<UUID>) => void
     ) => void;
     proposeAction: (
         action: ExerciseAction,

@@ -9,5 +9,5 @@ export default {
     transform: {},
     testPathIgnorePatterns: ['<rootDir>/cypress/'],
     preset: 'jest-preset-angular',
-    setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
+    setupFilesAfterEnv: ['<rootDir>/src/test.ts'],
 };
