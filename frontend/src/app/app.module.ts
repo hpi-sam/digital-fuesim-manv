@@ -11,6 +11,7 @@ import type { AppState } from './state/app.state';
 import { appReducers } from './state/app.reducer';
 import { ExerciseMapModule } from './shared/exercise-map/exercise-map.module';
 import { TrainerMapEditorComponent } from './shared/trainer-map-editor/trainer-map-editor.component';
+import { ClientOverviewModule } from './shared/client-overview/client-overview.module';
 
 @NgModule({
     declarations: [AppComponent, TrainerMapEditorComponent],
@@ -22,6 +23,7 @@ import { TrainerMapEditorComponent } from './shared/trainer-map-editor/trainer-m
         AppRoutingModule,
         StoreModule.forRoot<AppState>(appReducers),
         ExerciseMapModule,
+        ClientOverviewModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

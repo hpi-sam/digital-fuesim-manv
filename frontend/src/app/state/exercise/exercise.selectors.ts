@@ -26,3 +26,5 @@ export function getSelectWithPosition<
             (element) => element.position !== undefined
         ) as ElementsWithPosition;
 }
+
+export const selectClients = (state: AppState) => state.exercise.clients;

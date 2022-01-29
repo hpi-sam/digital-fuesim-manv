@@ -1,3 +1,4 @@
-export interface ExerciseId {
-    readonly exerciseId: string;
+export interface ExerciseIds {
+    readonly participantId: string;
+    readonly trainerId: string;
 }

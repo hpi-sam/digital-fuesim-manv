@@ -158,6 +158,13 @@ export namespace ExerciseActions {
         @IsUUID(4, uuidValidationOptions)
         public clientId!: UUID;
     }
+
+    export class RestrictViewToViewport implements Action {
+        readonly type = '[Client] Restrict to viewport';
+        @IsUUID(4, uuidValidationOptions)
+        public clientId!: UUID;
+        public viewportId?: UUID;
+    }
 }
 
 export type ExerciseAction = Immutable<
