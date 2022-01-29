@@ -16,6 +16,7 @@ import {
     selectPersonell,
     selectVehicles,
 } from 'src/app/state/exercise/exercise.selectors';
+import { startingPosition } from '../starting-position';
 
 @Component({
     selector: 'app-trainer-map-editor',
@@ -54,8 +55,8 @@ export class TrainerMapEditorComponent {
         const xOffset = Math.random() * 300;
         const yOffset = Math.random() * 250;
         return {
-            x: 1461700 + xOffset,
-            y: 6871500 + yOffset,
+            x: startingPosition.x + xOffset,
+            y: startingPosition.y + yOffset,
         };
     }
 

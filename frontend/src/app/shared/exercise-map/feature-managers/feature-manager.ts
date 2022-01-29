@@ -63,7 +63,7 @@ export abstract class FeatureManager<
     }
 
     /**
-     * Adds a new feature representing the {@link element } to the map.
+     * Adds a new feature representing the {@link element} to the map.
      */
     abstract createFeature(element: Element): void;
 

@@ -22,11 +22,11 @@ export class PersonellFeatureManager extends CommonFeatureManager<
                 imageHeight: 80,
                 imageUrl: './assets/personell.png',
             },
-            (newPosition, personell) => {
+            (targetPosition, personell) => {
                 this.apiService.proposeAction({
                     type: '[Personell] Move personell',
                     personellId: personell.id,
-                    position: newPosition,
+                    targetPosition,
                 });
             }
         );

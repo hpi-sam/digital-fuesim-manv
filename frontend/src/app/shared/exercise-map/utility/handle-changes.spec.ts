@@ -3,18 +3,16 @@ import { handleChanges } from './handle-changes';
 
 describe('HandleChanges', () => {
     let oldDictionary: Immutable<{ [key: string]: { id: string } }>;
-    let createHandler = jest.fn();
-    let deleteHandler = jest.fn();
-    let changeHandler = jest.fn();
+    const createHandler = jest.fn();
+    const deleteHandler = jest.fn();
+    const changeHandler = jest.fn();
 
     beforeEach(() => {
         oldDictionary = {
             a: { id: 'a' },
             b: { id: 'b' },
         };
-        createHandler = jest.fn();
-        deleteHandler = jest.fn();
-        changeHandler = jest.fn();
+        jest.clearAllMocks();
     });
 
     it('should not call any handler if the dictionaries are equal', () => {

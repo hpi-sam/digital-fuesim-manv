@@ -64,7 +64,7 @@ export namespace ExerciseActions {
 
         @ValidateNested()
         @Type(() => Position)
-        public position!: Position;
+        public targetPosition!: Position;
     }
 
     export class RemovePatient implements Action {
@@ -88,7 +88,7 @@ export namespace ExerciseActions {
 
         @ValidateNested()
         @Type(() => Position)
-        public position!: Position;
+        public targetPosition!: Position;
     }
 
     export class RemoveVehicle implements Action {
@@ -112,7 +112,7 @@ export namespace ExerciseActions {
 
         @ValidateNested()
         @Type(() => Position)
-        public position!: Position;
+        public targetPosition!: Position;
     }
 
     export class RemovePersonell implements Action {
@@ -136,7 +136,7 @@ export namespace ExerciseActions {
 
         @ValidateNested()
         @Type(() => Position)
-        public position!: Position;
+        public targetPosition!: Position;
     }
 
     export class RemoveMaterial implements Action {
