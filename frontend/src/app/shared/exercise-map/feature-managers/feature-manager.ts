@@ -21,7 +21,8 @@ export abstract class FeatureManager<
     }
 
     /**
-     * Delete the rendered element (if it exists)
+     * This should be called if an element is deleted.
+     * It is not necessary to make sure wether the element has been created before or not.
      */
     public onElementDeleted(element: Element): void {
         const elementFeature = this.getElementFeature(element);
@@ -81,7 +82,7 @@ export abstract class FeatureManager<
      */
     abstract readonly supportedChangeProperties: SupportedChangeProperties;
     /**
-     * This method is guaranteed to only be called if only properties in {@link supportedChangeProperties} are different between the two elements
+     * This method must only be called if solely properties in {@link supportedChangeProperties} are different between the two elements
      * @param changedProperties The properties that have changed between the {@link oldElement } and the {@link newElement }
      * @param elementFeature The openLayers feature that should be updated to reflect the changes
      */
