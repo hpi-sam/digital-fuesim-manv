@@ -1,4 +1,7 @@
-import type { Immutable } from 'digital-fuesim-manv-shared';
+import type {
+    Immutable,
+    ImmutableJsonObject,
+} from 'digital-fuesim-manv-shared';
 
 /**
  * This class handels optimistic actions on a state.
@@ -8,8 +11,8 @@ import type { Immutable } from 'digital-fuesim-manv-shared';
  * - if a proposedAction succeeds, the action should be applied to the state via {@link performAction}
  */
 export class OptimisticActionHandler<
-    Action extends object,
-    State extends object,
+    Action extends ImmutableJsonObject,
+    State extends ImmutableJsonObject,
     ServerResponse,
     ImmutableAction extends Immutable<Action> = Immutable<Action>,
     ImmutableState extends Immutable<State> = Immutable<State>
