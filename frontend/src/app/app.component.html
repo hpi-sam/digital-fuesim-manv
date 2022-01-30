@@ -1,69 +1,9 @@
-<div class="container-fluid" id="app-container">
+<app-navbar></app-navbar>
+
+<div class="container">
     <br />
-    <div
-        *ngIf="
-            (apiService.hasJoinedExerciseState$ | async) !== 'joined';
-            else joinedTemplate
-        "
-    >
-        <div>
-            <button
-                (click)="createExercise()"
-                class="btn btn-primary me-3"
-                id="create"
-            >
-                Create Exercise
-            </button>
-            <div *ngIf="exerciseHasBeenCreated">
-                <p>
-                    You have generated an exercise with the trainer id
-                    {{ trainerId }} and the participant id {{ participantId }}.
-                </p>
-            </div>
-        </div>
-        <br />
-        <div>
-            <div class="form-group">
-                <label class="form-label">Public Name:</label>
-                <input
-                    class="form-control"
-                    [(ngModel)]="clientName"
-                    type="text"
-                    id="publicName"
-                />
-            </div>
-            <div class="form-group">
-                <label class="form-label">Exercise Id:</label>
-                <input
-                    class="form-control"
-                    [(ngModel)]="exerciseId"
-                    type="text"
-                    id="exerciseId"
-                />
-            </div>
-            <button (click)="joinExercise()" class="btn btn-primary" id="join">
-                Join Exercise
-            </button>
-        </div>
-    </div>
-
-    <ng-template #joinedTemplate>
-        <ng-container
-            *ngIf="client && !client.isInWaitingRoom; else waitingRoomTemplate"
-        >
-            <app-trainer-map-editor></app-trainer-map-editor>
-            <button
-                *ngIf="client?.role === 'trainer'"
-                (click)="openClientOverview()"
-                class="btn btn-primary"
-            >
-                Client Overview
-            </button>
-        </ng-container>
-    </ng-template>
-
-    <ng-template #waitingRoomTemplate>
-        You are in the waiting room. Wait for a trainer to move you to the
-        exercise.
-    </ng-template>
+    <br />
+    <br />
+    <router-outlet></router-outlet>
+    <br />
 </div>

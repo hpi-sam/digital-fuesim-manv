@@ -1,0 +1,15 @@
+<h2>Exercise: {{ exerciseId }}</h2>
+<!-- TODO: Make distinction between participant id and trainer id -->
+
+<div>
+    <app-patients-list></app-patients-list>
+
+    <button (click)="addPatient()" class="btn btn-primary">Add Patient</button>
+</div>
+<button
+    *ngIf="client.role === 'trainer'"
+    (click)="openClientOverview()"
+    class="btn btn-primary"
+>
+    Open Client Overview
+</button>
