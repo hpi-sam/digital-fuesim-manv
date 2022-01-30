@@ -1,0 +1,26 @@
+<h2>Exercise: {{ exerciseId }}</h2>
+<!-- TODO: Make distinction between participant id and trainer id -->
+
+<ng-container
+    *ngIf="client && !client.isInWaitingRoom; else waitingRoomTemplate"
+>
+    <div>
+        <app-exercise-map
+            *ngIf="client.role === 'participant'; else trainerMapEditor"
+        ></app-exercise-map>
+        <ng-template #trainerMapEditor>
+            <app-trainer-map-editor></app-trainer-map-editor>
+        </ng-template>
+    </div>
+    <button
+        *ngIf="client.role === 'trainer'"
+        (click)="openClientOverview()"
+        class="btn btn-primary"
+    >
+        Open Client Overview
+    </button>
+</ng-container>
+
+<ng-template #waitingRoomTemplate>
+    You are in the waiting room. Wait for a trainer to move you to the exercise.
+</ng-template>
