@@ -23,8 +23,6 @@ import { NavbarComponent } from './feature/navbar/navbar.component';
     ],
     providers: [],
     bootstrap: [AppComponent],
-    exports: [
-      NavbarComponent
-    ],
+    exports: [NavbarComponent],
 })
 export class AppModule {}
