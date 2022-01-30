@@ -1,0 +1,18 @@
+<h2>Exercise: {{ exerciseId }}</h2>
+<!-- TODO: Make distinction between participant id and trainer id -->
+
+<div>
+    <app-exercise-map
+        *ngIf="client.role === 'participant'; else trainerMapEditor"
+    ></app-exercise-map>
+    <ng-template #trainerMapEditor>
+        <app-trainer-map-editor></app-trainer-map-editor>
+    </ng-template>
+</div>
+<button
+    *ngIf="client.role === 'trainer'"
+    (click)="openClientOverview()"
+    class="btn btn-primary"
+>
+    Open Client Overview
+</button>

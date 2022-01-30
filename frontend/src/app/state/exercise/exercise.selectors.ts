@@ -1,5 +1,5 @@
 import { pickBy } from 'lodash-es';
-import type { WithPosition } from 'src/app/shared/utility/types/with-position';
+import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
 import type { AppState } from '../app.state';
 
 export const selectViewports = (state: AppState) => state.exercise.viewports;
