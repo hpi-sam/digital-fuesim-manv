@@ -49,7 +49,11 @@
 
     <ng-template #joinedTemplate>
         <app-trainer-map-editor></app-trainer-map-editor>
-        <button (click)="openClientOverview()" class="btn btn-primary">
+        <button
+            *ngIf="client?.role === 'trainer'"
+            (click)="openClientOverview()"
+            class="btn btn-primary"
+        >
             Client Overview
         </button>
     </ng-template>
