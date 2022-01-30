@@ -17,7 +17,9 @@ describe('join exercise', () => {
                 clientName
             );
 
-            expect(joinExercise).toStrictEqual({ success: true });
+            expect(joinExercise.success).toBe(true);
+            assert(joinExercise.success);
+            expect(joinExercise.payload).toBeDefined();
 
             const getState = await clientSocket.emit('getState');
 

@@ -11,6 +11,7 @@ import type { AppState } from './state/app.state';
 import { PatientsListComponent } from './components/patients-list/patients-list.component';
 import { appReducers } from './state/app.reducer';
 import { JoinExerciseComponent } from './components/join-exercise/join-exercise.component';
+import { ClientOverviewModule } from './shared/client-overview/client-overview.module';
 
 @NgModule({
     declarations: [AppComponent, PatientsListComponent, JoinExerciseComponent],
@@ -21,6 +22,7 @@ import { JoinExerciseComponent } from './components/join-exercise/join-exercise.
         FormsModule,
         AppRoutingModule,
         StoreModule.forRoot<AppState>(appReducers),
+        ClientOverviewModule,
     ],
     providers: [],
     bootstrap: [AppComponent],
