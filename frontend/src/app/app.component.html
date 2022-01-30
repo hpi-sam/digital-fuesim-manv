@@ -1,76 +1,9 @@
+<app-navbar></app-navbar>
+
 <div class="container">
     <br />
-    <div
-        *ngIf="
-            (apiService.hasJoinedExerciseState$ | async) !== 'joined';
-            else joinedTemplate
-        "
-    >
-        <div>
-            <button
-                (click)="createExercise()"
-                class="btn btn-primary me-3"
-                id="create"
-            >
-                Create Exercise
-            </button>
-            <div *ngIf="exerciseHasBeenCreated">
-                <p>
-                    You have generated an exercise with the trainer id
-                    {{ trainerId }} and the participant id {{ participantId }}.
-                </p>
-            </div>
-        </div>
-        <br />
-        <div>
-            <div class="form-group">
-                <label class="form-label">Public Name:</label>
-                <input
-                    class="form-control"
-                    [(ngModel)]="clientName"
-                    type="text"
-                    id="publicName"
-                />
-            </div>
-            <div class="form-group">
-                <label class="form-label">Exercise Id:</label>
-                <input
-                    class="form-control"
-                    [(ngModel)]="exerciseId"
-                    type="text"
-                    id="exerciseId"
-                />
-            </div>
-            <button (click)="joinExercise()" class="btn btn-primary" id="join">
-                Join Exercise
-            </button>
-        </div>
-    </div>
-
-    <ng-template #joinedTemplate>
-        <div>
-            <app-patients-list></app-patients-list>
-
-            <button
-                (click)="addPatient()"
-                class="btn btn-primary"
-                id="addPatient"
-            >
-                Add Patient
-            </button>
-            <button
-                (click)="addViewport()"
-                class="btn btn-primary"
-                id="addViewport"
-            >
-                Add Viewport
-            </button>
-            <ng-container *ngIf="client?.role === 'trainer'">
-                <button class="btn btn-primary" (click)="openClientOverview()">
-                    Open Client Overview
-                </button>
-            </ng-container>
-        </div>
-    </ng-template>
+    <br />
+    <br />
     <router-outlet></router-outlet>
+    <br />
 </div>

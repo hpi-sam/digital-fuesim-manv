@@ -1,10 +1,20 @@
 import { NgModule } from '@angular/core';
 import type { Routes } from '@angular/router';
 import { RouterModule } from '@angular/router';
-import { JoinExerciseComponent } from './components/join-exercise/join-exercise.component';
+import { LandingPageComponent } from './pages/landing-page/landing-page/landing-page.component';
 
 const routes: Routes = [
-    { path: 'join/:exerciseId', component: JoinExerciseComponent },
+    {
+        path: '',
+        component: LandingPageComponent,
+    },
+    {
+        path: 'exercises',
+        loadChildren: async () =>
+            import('./pages/exercises/exercises.module').then(
+                (m) => m.ExercisesModule
+            ),
+    },
 ];
 
 @NgModule({

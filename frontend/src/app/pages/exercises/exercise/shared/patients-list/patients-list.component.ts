@@ -1,5 +1,5 @@
 import type { OnDestroy } from '@angular/core';
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { Subject } from 'rxjs';
@@ -11,7 +11,6 @@ import { selectPatients } from 'src/app/state/exercise/exercise.selectors';
     selector: 'app-patients-list',
     templateUrl: './patients-list.component.html',
     styleUrls: ['./patients-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PatientsListComponent implements OnDestroy {
     private readonly destroy = new Subject<unknown>();
