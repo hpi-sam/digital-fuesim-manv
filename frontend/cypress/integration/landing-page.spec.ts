@@ -28,6 +28,6 @@ describe('The landing page', () => {
 
     it('is possible to make visual regression tests (for e.g. a canvas)', () => {
         cy.visit('/');
-        cy.get('.container').compareSnapshot('landing-page', 0.1);
+        cy.get('#app-container').compareSnapshot('landing-page', 0.1);
     });
 });
