@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid" id="app-container">
     <br />
     <div
         *ngIf="
@@ -48,28 +48,13 @@
     </div>
 
     <ng-template #joinedTemplate>
-        <div>
-            <app-patients-list></app-patients-list>
-
-            <button
-                (click)="addPatient()"
-                class="btn btn-primary"
-                id="addPatient"
-            >
-                Add Patient
-            </button>
-            <button
-                (click)="addViewport()"
-                class="btn btn-primary"
-                id="addViewport"
-            >
-                Add Viewport
-            </button>
-            <ng-container *ngIf="client?.role === 'trainer'">
-                <button class="btn btn-primary" (click)="openClientOverview()">
-                    Open Client Overview
-                </button>
-            </ng-container>
-        </div>
+        <app-trainer-map-editor></app-trainer-map-editor>
+        <button
+            *ngIf="client?.role === 'trainer'"
+            (click)="openClientOverview()"
+            class="btn btn-primary"
+        >
+            Client Overview
+        </button>
     </ng-template>
 </div>

@@ -8,12 +8,13 @@ import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import type { AppState } from './state/app.state';
-import { PatientsListComponent } from './components/patients-list/patients-list.component';
 import { appReducers } from './state/app.reducer';
+import { ExerciseMapModule } from './shared/exercise-map/exercise-map.module';
+import { TrainerMapEditorComponent } from './shared/trainer-map-editor/trainer-map-editor.component';
 import { ClientOverviewModule } from './shared/client-overview/client-overview.module';
 
 @NgModule({
-    declarations: [AppComponent, PatientsListComponent],
+    declarations: [AppComponent, TrainerMapEditorComponent],
     imports: [
         CommonModule,
         BrowserModule,
@@ -21,6 +22,7 @@ import { ClientOverviewModule } from './shared/client-overview/client-overview.m
         FormsModule,
         AppRoutingModule,
         StoreModule.forRoot<AppState>(appReducers),
+        ExerciseMapModule,
         ClientOverviewModule,
     ],
     providers: [],
