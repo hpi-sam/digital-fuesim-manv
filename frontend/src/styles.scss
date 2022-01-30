@@ -1,1 +1,8 @@
 @import '~bootstrap/scss/bootstrap.scss';
+
+// OpenLayers
+
+// Prevent the control buttons from blocking the map
+.ol-control {
+    width: fit-content !important;
+}
