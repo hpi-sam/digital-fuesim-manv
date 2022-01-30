@@ -51,17 +51,17 @@ export abstract class FeatureManager<
             oldElement,
             newElement
         );
-        if (this.areAllPropertiesSupported(changedProperties)) {
-            this.changeFeature(
-                oldElement,
-                newElement,
-                changedProperties,
-                elementFeature
-            );
+        if (!this.areAllPropertiesSupported(changedProperties)) {
+            this.onElementDeleted(oldElement);
+            this.onElementCreated(newElement);
             return;
         }
-        this.onElementDeleted(oldElement);
-        this.onElementCreated(newElement);
+        this.changeFeature(
+            oldElement,
+            newElement,
+            changedProperties,
+            elementFeature
+        );
     }
 
     /**
