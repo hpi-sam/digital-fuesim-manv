@@ -1,11 +1,5 @@
 import type { AfterViewInit, OnDestroy, Type } from '@angular/core';
-import {
-    ElementRef,
-    ViewChild,
-    Component,
-    ChangeDetectionStrategy,
-    NgZone,
-} from '@angular/core';
+import { ElementRef, ViewChild, Component, NgZone } from '@angular/core';
 import OlMap from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
@@ -40,7 +34,6 @@ import { TranslateHelper } from './utility/translate-helper';
     selector: 'app-exercise-map',
     templateUrl: './exercise-map.component.html',
     styleUrls: ['./exercise-map.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     @ViewChild('openLayersContainer')
