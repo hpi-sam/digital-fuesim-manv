@@ -16,6 +16,7 @@
         "experimentalDecorators": true,
         "esModuleInterop": true,
         "moduleResolution": "node",
+        "skipLibCheck": true,
         "importHelpers": true,
         "target": "es2017",
         "module": "es2020",

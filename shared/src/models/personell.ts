@@ -1,12 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
-import {
-    UUID,
-    UUIDSet,
-    uuid,
-    uuidArrayValidationOptions,
-    uuidValidationOptions,
-} from '../utils';
+import type { UUIDSet } from '../utils';
+import { UUID, uuid, uuidValidationOptions } from '../utils';
 import type { PersonellType } from './utils';
 import { Position } from './utils';
 
@@ -20,7 +15,7 @@ export class Personell {
     // TODO
     public personellType: PersonellType;
 
-    @IsUUID(4, uuidArrayValidationOptions) // TODO: does this work on this kind of sets?
+    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     public assignedPatientIds: UUIDSet;
 
     /**
