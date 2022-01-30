@@ -2,9 +2,12 @@
 <!-- TODO: Make distinction between participant id and trainer id -->
 
 <div>
-    <app-patients-list></app-patients-list>
-
-    <button (click)="addPatient()" class="btn btn-primary">Add Patient</button>
+    <app-exercise-map
+        *ngIf="client.role === 'participant'; else trainerMapEditor"
+    ></app-exercise-map>
+    <ng-template #trainerMapEditor>
+        <app-trainer-map-editor></app-trainer-map-editor>
+    </ng-template>
 </div>
 <button
     *ngIf="client.role === 'trainer'"
