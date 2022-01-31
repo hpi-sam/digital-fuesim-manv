@@ -10,9 +10,13 @@ import {
     registerJoinExerciseHandler,
     registerProposeActionHandler,
 } from './websocket-handler';
+import { PerformanceMonitor } from './performance-monitor';
 
 export class ExerciseWebsocketServer {
     public readonly exerciseServer: ExerciseServer;
+
+    private readonly performanceMonitor = new PerformanceMonitor();
+
     public constructor(app: core.Express, port: number) {
         const server = createServer(app);
 
@@ -34,7 +38,13 @@ export class ExerciseWebsocketServer {
     private registerClient(client: ExerciseSocket): void {
         // Add client
         clientMap.set(client, new ClientWrapper(client));
-
+        client.onAny(() => this.performanceMonitor.messageReceived());
+        const originalEmit = client.emit;
+        client.emit = ((...args: any[]) => {
+            // TODO: this doesn't seem to factor in callbacks
+            this.performanceMonitor.messageSend();
+            originalEmit.apply(client, Array.prototype.slice.call(args) as any);
+        }) as any;
         // register handlers
         registerGetStateHandler(this.exerciseServer, client);
         registerProposeActionHandler(this.exerciseServer, client);
