@@ -72,6 +72,16 @@ export class ApiService {
         this.socket.on('performAction', (action: ExerciseAction) => {
             this.optimisticActionHandler.performAction(action);
         });
+
+        setInterval(() => {
+            const nonNullDelays = this.roundtripTimes.filter(
+                (delay) => delay !== null
+            ) as number[];
+            const average =
+                nonNullDelays.reduce((a, b) => a + b, 0) / nonNullDelays.length;
+            // average
+            console.log(`Average roundtrip time: ${Math.round(average)} ms`);
+        }, 5000);
     }
 
     public hasJoinedExerciseState$ = new BehaviorSubject<
@@ -127,9 +137,11 @@ export class ApiService {
      * Proposes an action to the server
      */
     private async sendAction(action: ExerciseAction) {
+        const startTime = Date.now();
         const response = await new Promise<SocketResponse>((resolve) => {
             this.socket.emit('proposeAction', action, resolve);
         });
+        this.addRoundtripTime(Date.now() - startTime);
         return response;
     }
 
@@ -153,5 +165,13 @@ export class ApiService {
                 {}
             )
         );
+    }
+
+    private readonly roundtripTimes = Array.from({
+        length: 8,
+    }).fill(null) as (number | null)[];
+    private addRoundtripTime(roundTripTime: number) {
+        this.roundtripTimes.shift();
+        this.roundtripTimes.push(roundTripTime);
     }
 }
