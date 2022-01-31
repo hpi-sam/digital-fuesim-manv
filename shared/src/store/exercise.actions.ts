@@ -167,7 +167,7 @@ export namespace ExerciseActions {
         public viewportId?: UUID;
     }
 
-    export class ToggleWaitingRoom implements Action {
+    export class SetWaitingRoom implements Action {
         readonly type = '[Client] Set waitingroom';
         @IsUUID(4, uuidValidationOptions)
         public clientId!: UUID;
