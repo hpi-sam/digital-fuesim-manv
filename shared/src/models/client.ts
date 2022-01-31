@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import type { Role } from './utils';
 
@@ -16,9 +16,13 @@ export class Client {
     @IsOptional()
     public viewRestrictedToViewportId?: UUID;
 
+    @IsBoolean()
+    public isInWaitingRoom: boolean;
+
     constructor(name: string, role: Role, viewRestrictedToViewportId?: UUID) {
         this.name = name;
         this.role = role;
         this.viewRestrictedToViewportId = viewRestrictedToViewportId;
+        this.isInWaitingRoom = this.role === 'participant';
     }
 }

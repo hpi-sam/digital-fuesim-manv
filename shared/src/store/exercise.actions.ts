@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
 import {
     UUID,
     Viewport,
@@ -163,7 +163,16 @@ export namespace ExerciseActions {
         readonly type = '[Client] Restrict to viewport';
         @IsUUID(4, uuidValidationOptions)
         public clientId!: UUID;
+        @IsUUID(4, uuidValidationOptions)
         public viewportId?: UUID;
+    }
+
+    export class SetWaitingRoom implements Action {
+        readonly type = '[Client] Set waitingroom';
+        @IsUUID(4, uuidValidationOptions)
+        public clientId!: UUID;
+        @IsBoolean()
+        public shouldBeInWaitingRoom!: boolean;
     }
 }
 
