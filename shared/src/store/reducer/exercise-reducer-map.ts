@@ -149,4 +149,14 @@ export const exerciseReducerMap: {
         draftState.clients[clientId].viewRestrictedToViewportId = viewportId;
         return draftState;
     },
+    '[Client] Set waitingroom': (
+        draftState,
+        { clientId, shouldBeInWaitingRoom }
+    ) => {
+        if (!draftState.clients[clientId]) {
+            throw new ReducerError(`Client with id ${clientId} does not exist`);
+        }
+        draftState.clients[clientId].isInWaitingRoom = shouldBeInWaitingRoom;
+        return draftState;
+    },
 };
