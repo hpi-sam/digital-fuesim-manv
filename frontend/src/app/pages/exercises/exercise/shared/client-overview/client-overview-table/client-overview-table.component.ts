@@ -32,4 +32,15 @@ export class ClientOverviewTableComponent {
             viewportId,
         });
     }
+
+    public async setWaitingRoom(
+        clientId: UUID,
+        shouldBeInWaitingRoom: boolean
+    ) {
+        this.apiService.proposeAction({
+            type: '[Client] Set waitingroom',
+            clientId,
+            shouldBeInWaitingRoom,
+        });
+    }
 }

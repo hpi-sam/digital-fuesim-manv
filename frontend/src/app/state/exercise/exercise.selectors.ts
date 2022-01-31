@@ -1,3 +1,4 @@
+import type { UUID } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
 import type { WithPosition } from 'src/app/shared/utility/types/with-position';
 import type { AppState } from '../app.state';
@@ -28,3 +29,5 @@ export function getSelectWithPosition<
 }
 
 export const selectClients = (state: AppState) => state.exercise.clients;
+export const selectClient = (state: AppState, id: UUID) =>
+    state.exercise.clients[id];
