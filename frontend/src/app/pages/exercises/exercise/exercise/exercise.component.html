@@ -1,5 +1,15 @@
 <h2>Exercise: {{ exerciseId }}</h2>
 <!-- TODO: Make distinction between participant id and trainer id -->
+<div class="form-switch">
+    <label>
+        <input
+            [(ngModel)]="isDummyClient"
+            class="form-check-input"
+            type="checkbox"
+        />
+        This is an automated dummy client.
+    </label>
+</div>
 
 <ng-container
     *ngIf="!(client$ | async)?.isInWaitingRoom; else waitingRoomTemplate"
