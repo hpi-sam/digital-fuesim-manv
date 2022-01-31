@@ -149,7 +149,7 @@ export const exerciseReducerMap: {
         draftState.clients[clientId].viewRestrictedToViewportId = viewportId;
         return draftState;
     },
-    '[Client] Toggle waitingroom': (
+    '[Client] Set waitingroom': (
         draftState,
         { clientId, shouldBeInWaitingRoom }
     ) => {

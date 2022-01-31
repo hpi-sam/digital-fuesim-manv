@@ -2,18 +2,21 @@
 <!-- TODO: Make distinction between participant id and trainer id -->
 
 <ng-container
-    *ngIf="client && !client.isInWaitingRoom; else waitingRoomTemplate"
+    *ngIf="!(client$ | async)?.isInWaitingRoom; else waitingRoomTemplate"
 >
     <div>
         <app-exercise-map
-            *ngIf="client.role === 'participant'; else trainerMapEditor"
+            *ngIf="
+                (client$ | async)?.role === 'participant';
+                else trainerMapEditor
+            "
         ></app-exercise-map>
         <ng-template #trainerMapEditor>
             <app-trainer-map-editor></app-trainer-map-editor>
         </ng-template>
     </div>
     <button
-        *ngIf="client.role === 'trainer'"
+        *ngIf="(client$ | async)?.role === 'trainer'"
         (click)="openClientOverview()"
         class="btn btn-primary"
     >
@@ -22,5 +25,11 @@
 </ng-container>
 
 <ng-template #waitingRoomTemplate>
-    You are in the waiting room. Wait for a trainer to move you to the exercise.
+    <div class="p-5 mb-4 bg-light rounded-3">
+        <p class="lead mb-0">
+            You are in the waiting room. Wait for a trainer to move you to the
+            exercise.
+        </p>
+        <!-- TODO: Add a nice waiting animation to fill the space -->
+    </div>
 </ng-template>

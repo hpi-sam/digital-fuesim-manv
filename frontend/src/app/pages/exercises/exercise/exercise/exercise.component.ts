@@ -2,9 +2,12 @@ import type { OnDestroy, OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Store } from '@ngrx/store';
 import { Patient, uuid } from 'digital-fuesim-manv-shared';
 import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
+import type { AppState } from 'src/app/state/app.state';
+import { selectClient } from 'src/app/state/exercise/exercise.selectors';
 import { openClientOverviewModal } from '../shared/client-overview/open-client-overview-modal';
 
 @Component({
@@ -16,11 +19,12 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     private readonly destroy = new Subject<void>();
     public exerciseId?: string;
 
-    public get client() {
-        return this.apiService.client!;
-    }
+    public client$ = this.store.select((state: AppState) =>
+        selectClient(state, this.apiService.ownClientId!)
+    );
 
     constructor(
+        private readonly store: Store<AppState>,
         private readonly activatedRoute: ActivatedRoute,
         private readonly apiService: ApiService,
         private readonly modalService: NgbModal
