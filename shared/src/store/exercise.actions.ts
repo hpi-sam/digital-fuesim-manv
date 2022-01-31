@@ -168,7 +168,7 @@ export namespace ExerciseActions {
     }
 
     export class ToggleWaitingRoom implements Action {
-        readonly type = '[Client] Toggle waitingroom';
+        readonly type = '[Client] Set waitingroom';
         @IsUUID(4, uuidValidationOptions)
         public clientId!: UUID;
         @IsBoolean()

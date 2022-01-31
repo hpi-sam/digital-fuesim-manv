@@ -33,12 +33,14 @@ export class ClientOverviewTableComponent {
         });
     }
 
-    public async alterWaitingRoom(clientId: UUID, event: Event) {
-        const checked = (event.target! as any).checked;
-        await this.apiService.proposeAction({
-            type: '[Client] Toggle waitingroom',
+    public async setWaitingRoom(
+        clientId: UUID,
+        shouldBeInWaitingRoom: boolean
+    ) {
+        this.apiService.proposeAction({
+            type: '[Client] Set waitingroom',
             clientId,
-            shouldBeInWaitingRoom: checked,
+            shouldBeInWaitingRoom,
         });
     }
 }
