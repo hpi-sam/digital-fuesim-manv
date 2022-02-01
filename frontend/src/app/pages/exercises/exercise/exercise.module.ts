@@ -6,9 +6,10 @@ import { ExerciseComponent } from './exercise/exercise.component';
 import { ClientOverviewModule } from './shared/client-overview/client-overview.module';
 import { ExerciseMapModule } from './shared/exercise-map/exercise-map.module';
 import { TrainerMapEditorComponent } from './shared/trainer-map-editor/trainer-map-editor.component';
+import { TrainerToolbarComponent } from './shared/trainer-toolbar/trainer-toolbar.component';
 
 @NgModule({
-    declarations: [ExerciseComponent, TrainerMapEditorComponent],
+    declarations: [ExerciseComponent, TrainerMapEditorComponent, TrainerToolbarComponent],
     imports: [
         CommonModule,
         FormsModule,

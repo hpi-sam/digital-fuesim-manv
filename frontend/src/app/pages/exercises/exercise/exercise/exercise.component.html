@@ -1,35 +1,44 @@
-<h2>Exercise: {{ exerciseId }}</h2>
-<!-- TODO: Make distinction between participant id and trainer id -->
+<div class="d-flex flex-column" style="height: 100vh">
+    <div class="container">
+        <h2>Exercise: {{ exerciseId }}</h2>
+        <!-- TODO: Make distinction between participant id and trainer id -->
+    </div>
 
-<ng-container
-    *ngIf="!(client$ | async)?.isInWaitingRoom; else waitingRoomTemplate"
->
-    <div>
-        <app-exercise-map
+    <div class="flex-fill">
+        <ng-container
             *ngIf="
-                (client$ | async)?.role === 'participant';
-                else trainerMapEditor
+                !(client$ | async)?.isInWaitingRoom;
+                else waitingRoomTemplate
             "
-        ></app-exercise-map>
-        <ng-template #trainerMapEditor>
-            <app-trainer-map-editor></app-trainer-map-editor>
+        >
+            <div
+                *ngIf="
+                    (client$ | async)?.role === 'participant';
+                    else trainerMapEditor
+                "
+                class="h-100 rounded overflow-hidden"
+            >
+                <app-exercise-map></app-exercise-map>
+            </div>
+
+            <ng-template #trainerMapEditor>
+                <app-trainer-map-editor
+                    *ngIf="exerciseId"
+                    [exerciseId]="exerciseId"
+                ></app-trainer-map-editor>
+            </ng-template>
+        </ng-container>
+        <ng-template #waitingRoomTemplate>
+            <div class="container">
+                <br />
+                <div class="p-5 bg-light rounded-3">
+                    <p class="lead mb-0">
+                        You are in the waiting room. Wait for a trainer to move
+                        you to the exercise.
+                    </p>
+                    <!-- TODO: Add a nice waiting animation to fill the space -->
+                </div>
+            </div>
         </ng-template>
     </div>
-    <button
-        *ngIf="(client$ | async)?.role === 'trainer'"
-        (click)="openClientOverview()"
-        class="btn btn-primary"
-    >
-        Open Client Overview
-    </button>
-</ng-container>
-
-<ng-template #waitingRoomTemplate>
-    <div class="p-5 mb-4 bg-light rounded-3">
-        <p class="lead mb-0">
-            You are in the waiting room. Wait for a trainer to move you to the
-            exercise.
-        </p>
-        <!-- TODO: Add a nice waiting animation to fill the space -->
-    </div>
-</ng-template>
+</div>
