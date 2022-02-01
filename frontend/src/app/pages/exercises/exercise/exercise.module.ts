@@ -9,7 +9,11 @@ import { TrainerMapEditorComponent } from './shared/trainer-map-editor/trainer-m
 import { TrainerToolbarComponent } from './shared/trainer-toolbar/trainer-toolbar.component';
 
 @NgModule({
-    declarations: [ExerciseComponent, TrainerMapEditorComponent, TrainerToolbarComponent],
+    declarations: [
+        ExerciseComponent,
+        TrainerMapEditorComponent,
+        TrainerToolbarComponent,
+    ],
     imports: [
         CommonModule,
         FormsModule,
