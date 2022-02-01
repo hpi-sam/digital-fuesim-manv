@@ -34,18 +34,18 @@ It listens on port `3201` by default.
 ### `ExerciseWebsocketServer`
 
 The websocket server is used for websocket communication using [`socket.io`](https://socket.io/) between the backend and the connected clients.
-It serves the most important role in both storing the exercise state and synchronising it across the clients.
-The handler for incoming messages are defined in [`src/exercise/websocket-handler`](src/exercise/websocket-handler). Each message (as defined in `shared`) gets its own file.
-The handler are registered in [`src/exercise/websocket.ts`](src/exercise/websocket.ts) when the client connects.
+It serves the most important role in both storing the exercise state and synchronizing it across the clients.
+The handlers for incoming messages are defined in [`src/exercise/websocket-handler`](src/exercise/websocket-handler). Each message (as defined in `shared`) gets its own file.
+They are registered in [`src/exercise/websocket.ts`](src/exercise/websocket.ts) when the client connects.
 
 The websocket server listens on port `3200` by default.
 
 ### Storing clients
 
-When a new client connects to the websocket, a [`ClientWrapper`](src/exercise/client-wrapper.ts) gets created for it, where the connection between the socket, the eventual selected exercise and the exercise object representing this client is stored.
+When a new client connects to the websocket, a [`ClientWrapper`](src/exercise/client-wrapper.ts) gets created for it, where the connection between the socket, the eventually selected exercise, and the exercise object representing this client is stored.
 These client wrappers get added to the [`clientMap`](src/exercise/client-map.ts).
 
 ### Storing Exercises
 
-When an exercise gets created an [`ExerciseWrapper`](src/exercise/exercise-wrapper.ts) gets created for it, where the current state, the state history and the set of connected `ClientWrappers` gets stored.
+When an exercise gets created an [`ExerciseWrapper`](src/exercise/exercise-wrapper.ts) gets created for it, where the current state, the state history, and the set of connected `ClientWrappers` gets stored.
 Its main purpose is the `reduce` method, allowing an `ExerciseAction` to be applied to the current state while also storing the old state in the history. For more information on the state management see the [root Readme](../README.md#state-management-and-synchronisation).
