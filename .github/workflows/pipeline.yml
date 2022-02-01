@@ -4,7 +4,7 @@ on: push
 
 jobs:
     build:
-        timeout-minutes: 10
+        timeout-minutes: 5
         runs-on: ${{ matrix.os }}
 
         strategy:
@@ -45,7 +45,7 @@ jobs:
             - name: Build shared
               run: cd shared && npm run build && cd ..
     lint:
-        timeout-minutes: 10
+        timeout-minutes: 2
         runs-on: ${{ matrix.os }}
 
         needs: build
@@ -85,7 +85,7 @@ jobs:
             - name: Run Prettier
               run: npm run prettier:check
     test:
-        timeout-minutes: 10
+        timeout-minutes: 2
         runs-on: ${{ matrix.os }}
 
         needs: build
