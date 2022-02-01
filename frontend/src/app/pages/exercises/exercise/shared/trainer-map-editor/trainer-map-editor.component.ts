@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
 import {
@@ -29,6 +29,8 @@ import { startingPosition } from '../starting-position';
  * TODO: this is mostly a proof of concept, and in no way a final implementation.
  */
 export class TrainerMapEditorComponent {
+    @Input() exerciseId!: string;
+
     private readonly getNumberOf = map(
         (dictionary: ImmutableJsonObject) => Object.keys(dictionary).length
     );

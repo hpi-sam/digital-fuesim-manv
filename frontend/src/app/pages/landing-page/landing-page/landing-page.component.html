@@ -1,45 +1,49 @@
-<div class="p-5 mb-4 bg-light rounded-3">
-    <div class="display-6">Join an exercise</div>
-    <p>Enter the six digit number you received from your trainer.</p>
-    <div class="input-group">
-        <input
-            [(ngModel)]="exerciseId"
-            (keydown.enter)="joinExercise()"
-            class="form-control form-control-lg"
-            placeholder="Exercise id"
-            type="text"
-            id="exerciseId"
-        />
-        <button
-            (click)="joinExercise()"
-            class="btn btn-primary"
-            type="button"
-            id="join"
-        >
-            Join Exercise
-        </button>
-    </div>
-</div>
-<div class="p-5 mb-4 bg-light rounded-3">
-    <div class="display-6">Create a new exercise</div>
+<div class="container">
+    <h1>Digitale FüSim MANV</h1>
     <br />
-    <button
-        (click)="createExercise()"
-        class="btn btn-primary btn-lg mb-3"
-        id="create"
-    >
-        Create Exercise
-    </button>
+    <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="display-6">Join an exercise</div>
+        <p>Enter the six digit number you received from your trainer.</p>
+        <div class="input-group">
+            <input
+                [(ngModel)]="exerciseId"
+                (keydown.enter)="joinExercise()"
+                class="form-control form-control-lg"
+                placeholder="Exercise id"
+                type="text"
+                id="exerciseId"
+            />
+            <button
+                (click)="joinExercise()"
+                class="btn btn-primary"
+                type="button"
+                id="join"
+            >
+                Join Exercise
+            </button>
+        </div>
+    </div>
+    <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="display-6">Create a new exercise</div>
+        <br />
+        <button
+            (click)="createExercise()"
+            class="btn btn-primary btn-lg mb-3"
+            id="create"
+        >
+            Create Exercise
+        </button>
 
-    <p *ngIf="exerciseHasBeenCreated" class="mb-0">
-        You have generated an exercise with the trainer id
-        <span class="font-monospace fw-bolder user-select-all">{{
-            trainerId
-        }}</span>
-        and the participant id
-        <span class="font-monospace fw-bolder user-select-all">{{
-            participantId
-        }}</span
-        >.
-    </p>
+        <p *ngIf="exerciseHasBeenCreated" class="mb-0">
+            You have generated an exercise with the trainer id
+            <span class="font-monospace fw-bolder user-select-all">{{
+                trainerId
+            }}</span>
+            and the participant id
+            <span class="font-monospace fw-bolder user-select-all">{{
+                participantId
+            }}</span
+            >.
+        </p>
+    </div>
 </div>
