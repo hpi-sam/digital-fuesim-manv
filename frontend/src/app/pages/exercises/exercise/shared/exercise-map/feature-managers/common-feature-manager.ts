@@ -1,4 +1,5 @@
 import type { UUID, Position } from 'digital-fuesim-manv-shared';
+import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
 import Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
@@ -7,6 +8,8 @@ import type OlMap from 'ol/Map';
 import { MovementAnimator } from '../utility/movement-animator';
 import { TranslateHelper } from '../utility/translate-helper';
 import { ImageStyleHelper } from '../utility/get-image-style-function';
+import type { OpenPopup } from '../../utility/types/open-popup';
+import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
 import { FeatureManager } from './feature-manager';
 
 type ElementFeature = Feature<Point>;
@@ -15,6 +18,7 @@ type SupportedChangeProperties = ReadonlySet<'position'>;
 /**
  * Bundles common functionality for multiple feature managers:
  * * moveable element
+ * * popup on click
  * * image as style
  * TODO: it is expected that in the future less and less functionality will be the same for the different feature managers as they get more customized.
  * - Do not try to make this a class with a monster API. Instead let the classes not extend from this class.
@@ -47,7 +51,8 @@ export abstract class CommonFeatureManager<
         private readonly proposeMovementAction: (
             newPosition: Position,
             element: Element
-        ) => void
+        ) => void,
+        private readonly openPopup: OpenPopup
     ) {
         super();
         this.layer.setStyle((feature, resolution) =>
@@ -93,5 +98,18 @@ export abstract class CommonFeatureManager<
         return this.layer.getSource().getFeatureById(element.id) as
             | ElementFeature
             | undefined;
+    }
+
+    /**
+     * This method is called when the user clicks on a feature on this layer.
+     * @param feature The feature that was clicked on
+     */
+    public onFeatureClicked(
+        event: MapBrowserEvent<any>,
+        feature: ElementFeature
+    ): void {
+        this.openPopup<VehiclePopupComponent>(VehiclePopupComponent, {
+            vehicleId: feature.getId() as UUID,
+        });
     }
 }
