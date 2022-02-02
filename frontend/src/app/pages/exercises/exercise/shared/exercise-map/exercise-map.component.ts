@@ -1,5 +1,13 @@
-import type { AfterViewInit, OnDestroy, Type } from '@angular/core';
-import { ElementRef, ViewChild, Component, NgZone } from '@angular/core';
+import type { AfterViewInit, EventEmitter, OnDestroy } from '@angular/core';
+import {
+    ElementRef,
+    ApplicationRef,
+    ComponentFactoryResolver,
+    Injector,
+    ViewChild,
+    Component,
+    NgZone,
+} from '@angular/core';
 import OlMap from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
@@ -10,20 +18,17 @@ import { pairwise, debounceTime, startWith, Subject, takeUntil } from 'rxjs';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Translate, defaults as defaultInteractions } from 'ol/interaction';
-import { View } from 'ol';
+import type { Feature } from 'ol';
+import { Overlay, View } from 'ol';
 import { ApiService } from 'src/app/core/api.service';
-import type {
-    ImmutableJsonObject,
-    Position,
-    UUID,
-} from 'digital-fuesim-manv-shared';
+import type { Position, UUID } from 'digital-fuesim-manv-shared';
 import type Point from 'ol/geom/Point';
 import { getSelectWithPosition } from 'src/app/state/exercise/exercise.selectors';
-import type { WithPosition } from '../utility/types/with-position';
+import type { ComponentType } from '@angular/cdk/portal';
+import { DomPortalOutlet, ComponentPortal } from '@angular/cdk/portal';
 import { startingPosition } from '../starting-position';
 import { PatientFeatureManager } from './feature-managers/patient-feature-manager';
 import { handleChanges } from './utility/handle-changes';
-import type { FeatureManager } from './feature-managers/feature-manager';
 import { VehicleFeatureManager } from './feature-managers/vehicle-feature-manager';
 import { PersonellFeatureManager } from './feature-managers/personell-feature-manager';
 import { MaterialFeatureManager } from './feature-managers/material-feature-manager';
@@ -38,17 +43,43 @@ import { TranslateHelper } from './utility/translate-helper';
 export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     @ViewChild('openLayersContainer')
     openLayersContainer!: ElementRef<HTMLDivElement>;
+    @ViewChild('popoverContainer')
+    popoverContainer!: ElementRef<HTMLDivElement>;
 
     private readonly destroy$ = new Subject<void>();
     private olMap?: OlMap;
+    private popupOverlay?: Overlay;
+    /**
+     * key: the layer that is passed to the featureManager, that is saved in the value
+     * ```ts
+     * layerFeatureManagerDictionary.get(layer) === featureManager
+     * // means that:
+     * featureManager.layer === layer
+     * ```
+     */
+    private readonly layerFeatureManagerDictionary = new Map<
+        VectorLayer<VectorSource<Point>>,
+        CommonFeatureManager<any>
+    >();
+    private popoverPortalHost?: DomPortalOutlet;
 
     constructor(
         private readonly store: Store<AppState>,
         private readonly ngZone: NgZone,
-        private readonly apiService: ApiService
+        private readonly apiService: ApiService,
+        // See https://github.com/angular/components/issues/24334 we currently need it for the portal
+        private readonly componentFactoryResolver: ComponentFactoryResolver,
+        private readonly applicationRef: ApplicationRef,
+        private readonly injector: Injector
     ) {}
 
     ngAfterViewInit(): void {
+        this.popoverPortalHost = new DomPortalOutlet(
+            this.popoverContainer.nativeElement,
+            this.componentFactoryResolver,
+            this.applicationRef,
+            this.injector
+        );
         // run outside angular zone for better performance
         this.ngZone.runOutsideAngular(() => {
             this.setupMap();
@@ -65,6 +96,16 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         const vehicleLayer = this.createElementLayer();
         const personellLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
+        this.popupOverlay = new Overlay({
+            element: this.popoverContainer.nativeElement,
+            positioning: 'bottom-center',
+            offset: [0, -20],
+            autoPan: {
+                animation: {
+                    duration: 250,
+                },
+            },
+        });
 
         // Interactions
         const translateInteraction = new Translate({
@@ -81,6 +122,7 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 personellLayer,
                 materialLayer,
             ],
+            overlays: [this.popupOverlay],
             view: new View({
                 center: [startingPosition.x, startingPosition.y],
                 zoom: 20,
@@ -123,31 +165,75 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
             materialLayer,
             this.store.select(getSelectWithPosition('materials'))
         );
+        this.olMap.on('singleclick', (event) => {
+            let hasFeatureAtPixel = false;
+            this.olMap!.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
+                this.layerFeatureManagerDictionary
+                    .get(layer as VectorLayer<VectorSource<Point>>)!
+                    .onFeatureClicked(event, feature as Feature<Point>);
+                hasFeatureAtPixel = true;
+                this.popupOverlay!.setPosition(
+                    (feature as Feature<Point>).getGeometry()?.getCoordinates()
+                );
+                // we only want the top one -> a truthy return breaks this loop
+                return true;
+            });
+            if (!hasFeatureAtPixel) {
+                this.closePopup();
+            }
+        });
+    }
+
+    private openPopup<
+        Component extends {
+            readonly closePopup: EventEmitter<void>;
+        },
+        ComponentClass extends ComponentType<Component> = ComponentType<Component>
+    >(component: ComponentClass, context?: Partial<Component>) {
+        this.popoverPortalHost!.detach();
+        const componentRef = this.popoverPortalHost!.attach(
+            new ComponentPortal(component)
+        );
+        if (context) {
+            for (const key of Object.keys(context)) {
+                (componentRef as any).instance[key] = (context as any)[key];
+            }
+        }
+        componentRef.instance.closePopup
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => this.closePopup());
+        componentRef.changeDetectorRef.detectChanges();
+    }
+
+    public closePopup() {
+        this.popoverPortalHost?.detach();
+        this.popupOverlay!.setPosition(undefined);
     }
 
     // If the signature of the FeatureManager classes change, the initialisation should be done individually
     private createAndRegisterFeatureManager<
         Element extends Readonly<{ id: UUID; position: Position }>
     >(
-        // `Type` is an utility type from angular, that returns the type of the constructor function
-        featureManagerClass: Type<CommonFeatureManager<Element>>,
+        featureManagerClass:
+            | typeof MaterialFeatureManager
+            | typeof PatientFeatureManager
+            | typeof PersonellFeatureManager
+            | typeof VehicleFeatureManager,
         layer: VectorLayer<VectorSource<Point>>,
         elementDictionary$: Observable<{ [id: UUID]: Element }>
     ) {
         const featureManager = new featureManagerClass(
             this.olMap!,
             layer,
+            (component, context) => {
+                this.ngZone.run(() => {
+                    this.openPopup(component, context);
+                });
+            },
             this.apiService
         );
-        this.registerFeatureManager(featureManager, elementDictionary$);
-    }
-
-    private registerFeatureManager<
-        Element extends WithPosition<ImmutableJsonObject>
-    >(
-        featureManager: FeatureManager<Element, any, any>,
-        elementDictionary$: Observable<{ [id: UUID]: Element }>
-    ) {
+        this.layerFeatureManagerDictionary.set(layer, featureManager);
+        // Propagate the changes on an element to the featureManager
         elementDictionary$
             .pipe(
                 // TODO: this is workaround for not emitting synchronously
@@ -163,12 +249,14 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                     handleChanges(
                         oldElementDictionary,
                         newElementDictionary,
-                        (element) => featureManager.onElementCreated(element),
-                        (element) => featureManager.onElementDeleted(element),
+                        (element) =>
+                            featureManager.onElementCreated(element as any),
+                        (element) =>
+                            featureManager.onElementDeleted(element as any),
                         (oldElement, newElement) =>
                             featureManager.onElementChanged(
-                                oldElement,
-                                newElement
+                                oldElement as any,
+                                newElement as any
                             )
                     );
                 });
@@ -211,5 +299,6 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         this.destroy$.next();
         this.olMap?.dispose();
         this.olMap?.setTarget(undefined);
+        this.popoverPortalHost?.dispose();
     }
 }

@@ -5,6 +5,7 @@ import type VectorSource from 'ol/source/Vector';
 import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type { WithPosition } from '../../utility/types/with-position';
+import type { OpenPopup } from '../../utility/types/open-popup';
 import { CommonFeatureManager } from './common-feature-manager';
 
 export class MaterialFeatureManager extends CommonFeatureManager<
@@ -13,7 +14,8 @@ export class MaterialFeatureManager extends CommonFeatureManager<
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        private readonly apiService: ApiService
+        openPopup: OpenPopup,
+        apiService: ApiService
     ) {
         super(
             olMap,
@@ -23,12 +25,13 @@ export class MaterialFeatureManager extends CommonFeatureManager<
                 imageUrl: './assets/material.svg',
             },
             (targetPosition, material) => {
-                this.apiService.proposeAction({
+                apiService.proposeAction({
                     type: '[Material] Move material',
                     materialId: material.id,
                     targetPosition,
                 });
-            }
+            },
+            openPopup
         );
     }
 }
