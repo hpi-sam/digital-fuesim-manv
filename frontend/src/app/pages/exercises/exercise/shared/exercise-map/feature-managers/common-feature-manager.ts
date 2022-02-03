@@ -10,6 +10,7 @@ import { TranslateHelper } from '../utility/translate-helper';
 import { ImageStyleHelper } from '../utility/get-image-style-function';
 import type { OpenPopup } from '../../utility/types/open-popup';
 import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
+import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import { FeatureManager } from './feature-manager';
 
 type ElementFeature = Feature<Point>;
@@ -108,8 +109,23 @@ export abstract class CommonFeatureManager<
         event: MapBrowserEvent<any>,
         feature: ElementFeature
     ): void {
-        this.openPopup<VehiclePopupComponent>(VehiclePopupComponent, {
-            vehicleId: feature.getId() as UUID,
-        });
+        const featureCenter = feature.getGeometry()!.getCoordinates();
+        const { position, positioning } = calculatePopupPositioning(
+            featureCenter,
+            {
+                // TODO: reuse the image constraints
+                width: 250 / this.olMap!.getView().getZoom()!,
+                height: 200 / this.olMap!.getView().getZoom()!,
+            },
+            this.olMap!.getView().getCenter()!
+        );
+        this.openPopup<VehiclePopupComponent>(
+            position,
+            positioning,
+            VehiclePopupComponent,
+            {
+                vehicleId: feature.getId() as UUID,
+            }
+        );
     }
 }
