@@ -9,8 +9,26 @@ import {
 } from 'digital-fuesim-manv-shared';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
+import { PeriodicEventHandler } from './periodic-events/periodic-event-handler';
 
 export class ExerciseWrapper {
+    private lastTick = 0;
+    /**
+     * This function gets called once every second in case the exercise is running.
+     * All periodic actions of the exercise (e.g. status changes for patients) should happen here.
+     */
+    private readonly tick: () => void = async () => {
+        const now = new Date();
+        console.log(`periodic test at ${now.toISOString()}`);
+        console.log(`Diff: ${now.valueOf() - this.lastTick}`);
+        this.lastTick = now.valueOf();
+        // eslint-disable-next-line no-promise-executor-return
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        console.log('after some time');
+    };
+
+    private readonly tickHandler = new PeriodicEventHandler(this.tick, 1000);
+
     private readonly clients = new Set<ClientWrapper>();
 
     private currentState = generateExercise();
@@ -78,6 +96,14 @@ export class ExerciseWrapper {
         this.emitAction(removeClientAction);
     }
 
+    public start() {
+        this.tickHandler.start();
+    }
+
+    public pause() {
+        this.tickHandler.pause();
+    }
+
     /**
      * Applies the action on the current state.
      * @throws Error if the action is not applicable on the current state
@@ -85,6 +111,11 @@ export class ExerciseWrapper {
     public reduce(action: ExerciseAction): void {
         const newState = reduceExerciseState(this.currentState, action);
         this.setState(newState);
+        if (action.type === '[Exercise] Pause') {
+            this.pause();
+        } else if (action.type === '[Exercise] Start') {
+            this.start();
+        }
     }
 
     private setState(newExerciseState: ExerciseState): void {
