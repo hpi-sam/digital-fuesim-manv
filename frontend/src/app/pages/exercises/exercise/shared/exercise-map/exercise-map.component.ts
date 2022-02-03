@@ -27,6 +27,7 @@ import { getSelectWithPosition } from 'src/app/state/exercise/exercise.selectors
 import type { ComponentType } from '@angular/cdk/portal';
 import { DomPortalOutlet, ComponentPortal } from '@angular/cdk/portal';
 import { startingPosition } from '../starting-position';
+import type { Positioning } from '../utility/types/positioning';
 import { PatientFeatureManager } from './feature-managers/patient-feature-manager';
 import { handleChanges } from './utility/handle-changes';
 import { VehicleFeatureManager } from './feature-managers/vehicle-feature-manager';
@@ -34,7 +35,6 @@ import { PersonellFeatureManager } from './feature-managers/personell-feature-ma
 import { MaterialFeatureManager } from './feature-managers/material-feature-manager';
 import type { CommonFeatureManager } from './feature-managers/common-feature-manager';
 import { TranslateHelper } from './utility/translate-helper';
-import { Positioning } from '../utility/types/positioning';
 
 @Component({
     selector: 'app-exercise-map',

@@ -6,6 +6,7 @@ import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type { WithPosition } from '../../utility/types/with-position';
 import type { OpenPopup } from '../../utility/types/open-popup';
+import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
 import { CommonFeatureManager } from './common-feature-manager';
 
 export class PatientFeatureManager extends CommonFeatureManager<
@@ -31,7 +32,13 @@ export class PatientFeatureManager extends CommonFeatureManager<
                     targetPosition,
                 });
             },
-            openPopup
+            openPopup,
+            {
+                component: PatientPopupComponent,
+                height: 110,
+                width: 50,
+                getContext: (feature) => ({ patientId: feature.getId()! }),
+            }
         );
     }
 }
