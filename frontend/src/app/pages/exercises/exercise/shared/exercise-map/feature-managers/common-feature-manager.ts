@@ -9,7 +9,6 @@ import { MovementAnimator } from '../utility/movement-animator';
 import { TranslateHelper } from '../utility/translate-helper';
 import { ImageStyleHelper } from '../utility/get-image-style-function';
 import type { OpenPopup } from '../../utility/types/open-popup';
-import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import { FeatureManager } from './feature-manager';
 
@@ -53,7 +52,14 @@ export abstract class CommonFeatureManager<
             newPosition: Position,
             element: Element
         ) => void,
-        private readonly openPopup: OpenPopup
+        private readonly openPopup: OpenPopup,
+        // TODO: this is just temporary, until we refactor this class
+        private readonly popoverOptions?: {
+            component: any;
+            height: number;
+            width: number;
+            getContext: (feature: ElementFeature) => any;
+        }
     ) {
         super();
         this.layer.setStyle((feature, resolution) =>
@@ -109,23 +115,28 @@ export abstract class CommonFeatureManager<
         event: MapBrowserEvent<any>,
         feature: ElementFeature
     ): void {
+        if (!this.popoverOptions) {
+            return;
+        }
         const featureCenter = feature.getGeometry()!.getCoordinates();
         const { position, positioning } = calculatePopupPositioning(
             featureCenter,
             {
                 // TODO: reuse the image constraints
-                width: 250 / this.olMap!.getView().getZoom()!,
-                height: 200 / this.olMap!.getView().getZoom()!,
+                width:
+                    this.popoverOptions.width /
+                    this.olMap!.getView().getZoom()!,
+                height:
+                    this.popoverOptions.height /
+                    this.olMap!.getView().getZoom()!,
             },
             this.olMap!.getView().getCenter()!
         );
-        this.openPopup<VehiclePopupComponent>(
+        this.openPopup(
             position,
             positioning,
-            VehiclePopupComponent,
-            {
-                vehicleId: feature.getId() as UUID,
-            }
+            this.popoverOptions.component,
+            this.popoverOptions.getContext(feature)
         );
     }
 }

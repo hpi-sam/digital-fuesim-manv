@@ -82,7 +82,7 @@ export class TrainerMapEditorComponent {
 
     public async addVehicle() {
         const vehicle = {
-            ...new Vehicle(uuid(), 1, 'name'),
+            ...new Vehicle(uuid(), 1, `RTW ${Math.round(Math.random() * 100)}`),
             position: this.generateCoordinates(),
         };
         this.apiService.proposeAction(
