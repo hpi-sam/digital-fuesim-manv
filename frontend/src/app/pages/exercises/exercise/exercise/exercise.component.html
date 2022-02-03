@@ -22,6 +22,20 @@
     >
         Open Client Overview
     </button>
+    <button
+        *ngIf="(exercisePausedState$ | async)?.status === 'running'"
+        (click)="pauseExercise()"
+        class="btn btn-primary"
+    >
+        Pause
+    </button>
+    <button
+        *ngIf="(exercisePausedState$ | async)?.status !== 'running'"
+        (click)="startExercise()"
+        class="btn btn-primary"
+    >
+        Start
+    </button>
 </ng-container>
 
 <ng-template #waitingRoomTemplate>

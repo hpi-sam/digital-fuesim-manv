@@ -7,7 +7,10 @@ import { Patient, uuid } from 'digital-fuesim-manv-shared';
 import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectClient } from 'src/app/state/exercise/exercise.selectors';
+import {
+    selectClient,
+    selectLatestStatusHistoryEntry,
+} from 'src/app/state/exercise/exercise.selectors';
 import { openClientOverviewModal } from '../shared/client-overview/open-client-overview-modal';
 
 @Component({
@@ -18,6 +21,10 @@ import { openClientOverviewModal } from '../shared/client-overview/open-client-o
 export class ExerciseComponent implements OnInit, OnDestroy {
     private readonly destroy = new Subject<void>();
     public exerciseId?: string;
+
+    public exercisePausedState$ = this.store.select(
+        selectLatestStatusHistoryEntry
+    );
 
     public client$ = this.store.select((state: AppState) =>
         selectClient(state, this.apiService.ownClientId!)
@@ -62,6 +69,24 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
     public openClientOverview() {
         openClientOverviewModal(this.modalService, this.exerciseId!);
+    }
+
+    public async pauseExercise() {
+        const response = await this.apiService.proposeAction({
+            type: '[Exercise] Pause',
+        });
+        if (!response.success) {
+            console.error(response.message);
+        }
+    }
+
+    public async startExercise() {
+        const response = await this.apiService.proposeAction({
+            type: '[Exercise] Start',
+        });
+        if (!response.success) {
+            console.error(response.message);
+        }
     }
 
     ngOnDestroy(): void {
