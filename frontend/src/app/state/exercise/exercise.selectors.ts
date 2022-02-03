@@ -31,3 +31,6 @@ export function getSelectWithPosition<
 export const selectClients = (state: AppState) => state.exercise.clients;
 export const selectClient = (state: AppState, id: UUID) =>
     state.exercise.clients[id];
+
+export const selectLatestStatusHistoryEntry = (state: AppState) =>
+    state.exercise.statusHistory[state.exercise.statusHistory.length - 1];
