@@ -35,7 +35,7 @@ export class ApiService {
         ServerToClientEvents,
         ClientToServerEvents
     > = io(`ws://${this.host}:${this.websocketPort}`, {
-        transports: socketIoTransports,
+        ...socketIoTransports,
     });
 
     private _ownClientId?: UUID;
