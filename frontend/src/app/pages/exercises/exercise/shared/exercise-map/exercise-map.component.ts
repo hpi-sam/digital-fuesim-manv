@@ -34,6 +34,7 @@ import { PersonellFeatureManager } from './feature-managers/personell-feature-ma
 import { MaterialFeatureManager } from './feature-managers/material-feature-manager';
 import type { CommonFeatureManager } from './feature-managers/common-feature-manager';
 import { TranslateHelper } from './utility/translate-helper';
+import { Positioning } from '../utility/types/positioning';
 
 @Component({
     selector: 'app-exercise-map',
@@ -98,13 +99,6 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         const materialLayer = this.createElementLayer();
         this.popupOverlay = new Overlay({
             element: this.popoverContainer.nativeElement,
-            positioning: 'bottom-center',
-            offset: [0, -20],
-            autoPan: {
-                animation: {
-                    duration: 250,
-                },
-            },
         });
 
         // Interactions
@@ -165,22 +159,31 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
             materialLayer,
             this.store.select(getSelectWithPosition('materials'))
         );
+        // Popup
         this.olMap.on('singleclick', (event) => {
-            let hasFeatureAtPixel = false;
             this.olMap!.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
                 this.layerFeatureManagerDictionary
                     .get(layer as VectorLayer<VectorSource<Point>>)!
                     .onFeatureClicked(event, feature as Feature<Point>);
-                hasFeatureAtPixel = true;
-                this.popupOverlay!.setPosition(
-                    (feature as Feature<Point>).getGeometry()?.getCoordinates()
-                );
                 // we only want the top one -> a truthy return breaks this loop
                 return true;
             });
-            if (!hasFeatureAtPixel) {
+            if (!this.olMap!.hasFeatureAtPixel(event.pixel)) {
                 this.closePopup();
             }
+        });
+        // Automatically close the popup
+        translateInteraction.on('translating', (event) => {
+            if (
+                event.coordinate[0] === event.startCoordinate[0] &&
+                event.coordinate[1] === event.startCoordinate[1]
+            ) {
+                return;
+            }
+            this.closePopup();
+        });
+        this.olMap.getView().on(['change:resolution', 'change:center'], () => {
+            this.closePopup();
         });
     }
 
@@ -189,7 +192,12 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
             readonly closePopup: EventEmitter<void>;
         },
         ComponentClass extends ComponentType<Component> = ComponentType<Component>
-    >(component: ComponentClass, context?: Partial<Component>) {
+    >(
+        position: number[],
+        positioning: Positioning,
+        component: ComponentClass,
+        context?: Partial<Component>
+    ) {
         this.popoverPortalHost!.detach();
         const componentRef = this.popoverPortalHost!.attach(
             new ComponentPortal(component)
@@ -203,6 +211,8 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(() => this.closePopup());
         componentRef.changeDetectorRef.detectChanges();
+        this.popupOverlay!.setPosition(position);
+        this.popupOverlay!.setPositioning(positioning);
     }
 
     public closePopup() {
@@ -225,9 +235,9 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         const featureManager = new featureManagerClass(
             this.olMap!,
             layer,
-            (component, context) => {
+            (position, positioning, component, context) => {
                 this.ngZone.run(() => {
-                    this.openPopup(component, context);
+                    this.openPopup(position, positioning, component, context);
                 });
             },
             this.apiService
