@@ -1,15 +1,15 @@
 <div class="modal-header">
-    <h4 class="modal-title">Join exercise {{ exerciseId }}</h4>
+    <h4 class="modal-title">Übung beitreten {{ exerciseId }}</h4>
     <button type="button" class="btn-close" (click)="close()"></button>
 </div>
 <div class="modal-body">
     <div class="form-group">
-        <label class="form-label">Public Name:</label>
+        <label class="form-label">Anzeigename:</label>
         <input class="form-control" [(ngModel)]="clientName" type="text" />
     </div>
     <br />
 
     <button (click)="joinExercise()" class="btn btn-primary">
-        Join Exercise
+        Übung beitreten
     </button>
 </div>
