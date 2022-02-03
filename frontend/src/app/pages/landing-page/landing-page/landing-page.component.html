@@ -2,14 +2,14 @@
     <h1>Digitale FüSim MANV</h1>
     <br />
     <div class="p-5 mb-4 bg-light rounded-3">
-        <div class="display-6">Join an exercise</div>
-        <p>Enter the six digit number you received from your trainer.</p>
+        <div class="display-6">Übung beitreten</div>
+        <p>Bitte geben Sie hier ihre von der Übungsleitung erhaltene Übungs-ID ein!</p>
         <div class="input-group">
             <input
                 [(ngModel)]="exerciseId"
                 (keydown.enter)="joinExercise()"
                 class="form-control form-control-lg"
-                placeholder="Exercise id"
+                placeholder="Übungs-ID"
                 type="text"
                 id="exerciseId"
             />
@@ -19,31 +19,31 @@
                 type="button"
                 id="join"
             >
-                Join Exercise
+                Übung beitreten
             </button>
         </div>
     </div>
     <div class="p-5 mb-4 bg-light rounded-3">
-        <div class="display-6">Create a new exercise</div>
+        <div class="display-6">Neue Übung erstellen</div>
         <br />
         <button
             (click)="createExercise()"
             class="btn btn-primary btn-lg mb-3"
             id="create"
         >
-            Create Exercise
+            Übung erstellen
         </button>
 
         <p *ngIf="exerciseHasBeenCreated" class="mb-0">
-            You have generated an exercise with the trainer id
+            Sie haben eine Übung mit der Übungsleitungs-ID:
             <span class="font-monospace fw-bolder user-select-all">{{
                 trainerId
             }}</span>
-            and the participant id
+            und der Teilnehmer-ID:
             <span class="font-monospace fw-bolder user-select-all">{{
                 participantId
-            }}</span
-            >.
+            }}</span>
+            erstellt.
         </p>
     </div>
 </div>
