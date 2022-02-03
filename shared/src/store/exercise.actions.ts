@@ -174,6 +174,14 @@ export namespace ExerciseActions {
         @IsBoolean()
         public shouldBeInWaitingRoom!: boolean;
     }
+
+    export class PauseExercise implements Action {
+        readonly type = '[Exercise] Pause';
+    }
+
+    export class StartExercise implements Action {
+        readonly type = '[Exercise] Start';
+    }
 }
 
 export type ExerciseAction = Immutable<
