@@ -17,13 +17,13 @@ export class ExerciseWrapper {
      * This function gets called once every second in case the exercise is running.
      * All periodic actions of the exercise (e.g. status changes for patients) should happen here.
      */
-    private readonly tick: () => void = async () => {
+    private readonly tick = async () => {
         const now = new Date();
         console.log(`periodic test at ${now.toISOString()}`);
         console.log(`Diff: ${now.valueOf() - this.lastTick}`);
         this.lastTick = now.valueOf();
         // eslint-disable-next-line no-promise-executor-return
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 9800));
         console.log('after some time');
     };
 
