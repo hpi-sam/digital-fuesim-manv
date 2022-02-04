@@ -4,16 +4,14 @@ export async function withExercise(
     callback: (ids: ExerciseIds) => Promise<void>
 ) {
     cy.request<ExerciseIds>('POST', 'http://locahost:3201/api/exercise').then(
-        async (x) => {
-            const ids = x.body;
-            try {
-                await callback(ids);
-            } finally {
+        async (response) => {
+            const ids = response.body;
+            callback(ids).finally(() => {
                 cy.request(
                     'DELETE',
                     `http://locahost:3201/api/exercise/${ids.trainerId}`
                 );
-            }
+            });
         }
     );
 }
