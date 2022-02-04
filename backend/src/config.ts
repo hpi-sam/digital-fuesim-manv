@@ -47,8 +47,16 @@ export class Config {
         this._httpPort = converted;
     }
 
-    public static initialize() {
-        this.setWebsocketPort(process.env.DFM_WEBSOCKET_PORT ?? '3200');
-        this.setHttpPort(process.env.DFM_HTTP_PORT ?? '3201');
+    public static initialize(testing: boolean = false) {
+        this.setWebsocketPort(
+            (testing ? process.env.DFM_WEBSOCKET_PORT_TESTING : undefined) ??
+                process.env.DFM_WEBSOCKET_PORT ??
+                '3200'
+        );
+        this.setHttpPort(
+            (testing ? process.env.DFM_HTTP_PORT_TESTING : undefined) ??
+                process.env.DFM_HTTP_PORT ??
+                '3201'
+        );
     }
 }
