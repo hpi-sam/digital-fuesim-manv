@@ -20,6 +20,13 @@ export const registerProposeActionHandler = (
             });
             return;
         }
+        // If the action contains a timestamp, refresh it to the current server time.
+        if (
+            (action as any).timestamp !== undefined &&
+            typeof (action as any).timestamp === 'number'
+        ) {
+            (action as any).timestamp = Date.now();
+        }
         // 2. TODO: validate user permissions
         // 3. Get matching exercise wrapper
         const exerciseWrapper = clientMap.get(client)?.exercise;

@@ -160,17 +160,20 @@ export const exerciseReducerMap: {
         draftState.clients[clientId].isInWaitingRoom = shouldBeInWaitingRoom;
         return draftState;
     },
-    '[Exercise] Pause': (draftState) => {
-        const statusHistoryEntry = new StatusHistoryEntry('paused', new Date());
+    '[Exercise] Pause': (draftState, { timestamp }) => {
+        const statusHistoryEntry = new StatusHistoryEntry(
+            'paused',
+            new Date(timestamp)
+        );
 
         draftState.statusHistory.push(statusHistoryEntry);
 
         return draftState;
     },
-    '[Exercise] Start': (draftState) => {
+    '[Exercise] Start': (draftState, { timestamp }) => {
         const statusHistoryEntry = new StatusHistoryEntry(
             'running',
-            new Date()
+            new Date(timestamp)
         );
 
         draftState.statusHistory.push(statusHistoryEntry);

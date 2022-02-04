@@ -74,6 +74,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     public async pauseExercise() {
         const response = await this.apiService.proposeAction({
             type: '[Exercise] Pause',
+            timestamp: Date.now(),
         });
         if (!response.success) {
             console.error(response.message);
@@ -83,6 +84,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     public async startExercise() {
         const response = await this.apiService.proposeAction({
             type: '[Exercise] Start',
+            timestamp: Date.now(),
         });
         if (!response.success) {
             console.error(response.message);
