@@ -27,6 +27,7 @@ export class ExerciseWrapper {
         console.log('after some time');
     };
 
+    // Call the tick every 1000 ms
     private readonly tickHandler = new PeriodicEventHandler(this.tick, 1000);
 
     private readonly clients = new Set<ClientWrapper>();
