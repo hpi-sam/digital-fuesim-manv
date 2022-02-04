@@ -1,10 +1,10 @@
 <div class="modal-header">
-    <h4 class="modal-title">Übung beitreten {{ exerciseId }}</h4>
+    <h4 class="modal-title">Übung {{ exerciseId }} beitreten</h4>
     <button type="button" class="btn-close" (click)="close()"></button>
 </div>
 <div class="modal-body">
     <div class="form-group">
-        <label class="form-label">Anzeigename:</label>
+        <label class="form-label">Name:</label>
         <input class="form-control" [(ngModel)]="clientName" type="text" />
     </div>
     <br />
