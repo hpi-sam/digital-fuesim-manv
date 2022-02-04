@@ -21,6 +21,7 @@
         "class-validator": "^0.13.2",
         "cors": "^2.8.5",
         "digital-fuesim-manv-shared": "file:../shared",
+        "dotenv": "^16.0.0",
         "express": "^4.17.2",
         "lodash-es": "4.17.21",
         "socket.io": "^4.4.1",
