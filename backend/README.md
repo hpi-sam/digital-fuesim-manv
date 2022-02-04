@@ -8,6 +8,13 @@ The `test` folder on the other hand contains integration/end-to-end tests for th
 The rule of thumb for which test should go where is that if a test file tests the behavior of more than one source file, especially in case it tests the integration of those source files with each other or further parts of the backend, it should go in the `test` folder.
 All other test files, i.e. files that only test the isolated behavior of a single source file, should be named the same as the file they test with the suffix `.spec.ts` instead of `.ts`.
 
+## Environment Variables
+
+A [`.env.example`](.env.example) file is provided, containing the default values for all environment variables (where such defaults exist).
+To use them, copy the file to a new file called `.env` in the same directory. You can adjust the variables there for your own needs. This file is excluded from git to not share any sensitive information one might store in environment variables.
+To use other values during automated tests, you can append `_TESTING` to a variable, which will then be preferred over the non-`_TESTING` variable.
+For a more detailed view please look at the [`Config`](src/config.ts).
+
 ## Components
 
 ### `index.ts`
