@@ -5,17 +5,16 @@ import type VectorSource from 'ol/source/Vector';
 import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type { WithPosition } from '../../utility/types/with-position';
-import type { OpenPopup } from '../../utility/types/open-popup';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
 import { CommonFeatureManager } from './common-feature-manager';
 
 export class PatientFeatureManager extends CommonFeatureManager<
-    WithPosition<Patient>
+    WithPosition<Patient>,
+    PatientPopupComponent
 > {
     constructor(
         olMap: OlMap,
         patientLayer: VectorLayer<VectorSource<Point>>,
-        openPopup: OpenPopup,
         apiService: ApiService
     ) {
         super(
@@ -32,7 +31,6 @@ export class PatientFeatureManager extends CommonFeatureManager<
                     targetPosition,
                 });
             },
-            openPopup,
             {
                 component: PatientPopupComponent,
                 height: 110,
