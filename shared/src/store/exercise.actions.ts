@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsInt, IsUUID, ValidateNested } from 'class-validator';
 import {
     UUID,
     Viewport,
@@ -177,10 +177,14 @@ export namespace ExerciseActions {
 
     export class PauseExercise implements Action {
         readonly type = '[Exercise] Pause';
+        @IsInt()
+        public timestamp!: number;
     }
 
     export class StartExercise implements Action {
         readonly type = '[Exercise] Start';
+        @IsInt()
+        public timestamp!: number;
     }
 }
 
@@ -190,4 +194,9 @@ export type ExerciseAction = Immutable<
 
 interface Action {
     readonly type: `[${string}] ${string}`;
+    /**
+     * This timestamp will be refreshed by the server when receiving the action.
+     * Only use a field with this name in case you want this behavior.
+     */
+    timestamp?: number;
 }
