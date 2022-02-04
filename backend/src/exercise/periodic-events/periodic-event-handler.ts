@@ -1,7 +1,5 @@
-import { setInterval } from 'node:timers';
-
 export class PeriodicEventHandler {
-    private currentTimer?: NodeJS.Timer = undefined;
+    private currentState: 'paused' | 'running' = 'paused';
 
     /**
      *
@@ -14,11 +12,20 @@ export class PeriodicEventHandler {
     ) {}
 
     public start() {
-        this.currentTimer = setInterval(this.tick, this.interval);
+        this.currentState = 'running';
+        this.tickHandler();
     }
 
     public pause() {
-        if (this.currentTimer === undefined) return;
-        clearInterval(this.currentTimer);
+        this.currentState = 'paused';
+    }
+
+    private tickHandler() {
+        setTimeout(() => {
+            this.tick();
+            if (this.currentState === 'running') {
+                this.tickHandler();
+            }
+        }, this.interval);
     }
 }
