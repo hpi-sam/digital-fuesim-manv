@@ -146,7 +146,7 @@ class TestEnvironment {
     }
 
     public constructor() {
-        Config.initialize();
+        Config.initialize(true);
         this.server = FuesimServer.create();
     }
 }
