@@ -5,17 +5,16 @@ import type VectorSource from 'ol/source/Vector';
 import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type { WithPosition } from '../../utility/types/with-position';
-import type { OpenPopup } from '../../utility/types/open-popup';
 import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
 import { CommonFeatureManager } from './common-feature-manager';
 
 export class VehicleFeatureManager extends CommonFeatureManager<
-    WithPosition<Vehicle>
+    WithPosition<Vehicle>,
+    VehiclePopupComponent
 > {
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        openPopup: OpenPopup,
         apiService: ApiService
     ) {
         super(
@@ -32,7 +31,6 @@ export class VehicleFeatureManager extends CommonFeatureManager<
                     targetPosition,
                 });
             },
-            openPopup,
             {
                 component: VehiclePopupComponent,
                 height: 150,

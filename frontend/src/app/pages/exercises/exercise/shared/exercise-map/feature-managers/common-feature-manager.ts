@@ -5,11 +5,16 @@ import Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import type OlMap from 'ol/Map';
+import { Subject } from 'rxjs';
+import type { ComponentType } from '@angular/cdk/portal';
 import { MovementAnimator } from '../utility/movement-animator';
 import { TranslateHelper } from '../utility/translate-helper';
 import { ImageStyleHelper } from '../utility/get-image-style-function';
-import type { OpenPopup } from '../../utility/types/open-popup';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
+import type {
+    OpenPopupOptions,
+    PopupComponent,
+} from '../utility/popup-manager';
 import { FeatureManager } from './feature-manager';
 
 type ElementFeature = Feature<Point>;
@@ -25,7 +30,8 @@ type SupportedChangeProperties = ReadonlySet<'position'>;
  * Find a good solution/compromise between composition, inheritance (there is no multi-inheritance in JS, but you can overwrite methods and call the previous one via `super.foo()`), decorators and mixins.
  */
 export abstract class CommonFeatureManager<
-    Element extends Readonly<{ id: UUID; position: Position }>
+    Element extends Readonly<{ id: UUID; position: Position }>,
+    ElementPopupComponent extends PopupComponent | undefined = undefined
 > extends FeatureManager<Element, ElementFeature, SupportedChangeProperties> {
     private readonly movementAnimator = new MovementAnimator(
         this.olMap,
@@ -37,6 +43,13 @@ export abstract class CommonFeatureManager<
         this.imageOptions.imageHeight,
         true
     );
+    /**
+     * When this method emits a popup should be shown.
+     */
+    public readonly openPopup$ = new Subject<
+        // TODO: this is expected only toi emit if ElementPopupComponent is defined
+        OpenPopupOptions<any>
+    >();
 
     constructor(
         private readonly olMap: OlMap,
@@ -52,14 +65,15 @@ export abstract class CommonFeatureManager<
             newPosition: Position,
             element: Element
         ) => void,
-        private readonly openPopup: OpenPopup,
-        // TODO: this is just temporary, until we refactor this class
-        private readonly popoverOptions?: {
-            component: any;
-            height: number;
-            width: number;
-            getContext: (feature: ElementFeature) => any;
-        }
+        // TODO: this is just temporary, until we refactor the feature manager classes
+        private readonly popoverOptions?: ElementPopupComponent extends PopupComponent
+            ? {
+                  component: ComponentType<ElementPopupComponent>;
+                  height: number;
+                  width: number;
+                  getContext: (feature: ElementFeature) => any;
+              }
+            : undefined
     ) {
         super();
         this.layer.setStyle((feature, resolution) =>
@@ -119,24 +133,22 @@ export abstract class CommonFeatureManager<
             return;
         }
         const featureCenter = feature.getGeometry()!.getCoordinates();
+        const view = this.olMap.getView();
+        const zoom = view.getZoom()!;
         const { position, positioning } = calculatePopupPositioning(
             featureCenter,
             {
                 // TODO: reuse the image constraints
-                width:
-                    this.popoverOptions.width /
-                    this.olMap!.getView().getZoom()!,
-                height:
-                    this.popoverOptions.height /
-                    this.olMap!.getView().getZoom()!,
+                width: this.popoverOptions.width / zoom,
+                height: this.popoverOptions.height / zoom,
             },
-            this.olMap!.getView().getCenter()!
+            view.getCenter()!
         );
-        this.openPopup(
+        this.openPopup$.next({
             position,
             positioning,
-            this.popoverOptions.component,
-            this.popoverOptions.getContext(feature)
-        );
+            component: this.popoverOptions.component as any,
+            context: this.popoverOptions.getContext(feature),
+        });
     }
 }

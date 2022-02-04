@@ -4,13 +4,14 @@ import { Store } from '@ngrx/store';
 import type { Patient, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
+import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({
     selector: 'app-patient-popup',
     templateUrl: './patient-popup.component.html',
     styleUrls: ['./patient-popup.component.scss'],
 })
-export class PatientPopupComponent implements OnInit {
+export class PatientPopupComponent implements PopupComponent, OnInit {
     // These properties are only set after OnInit
     public patientId!: UUID;
 
