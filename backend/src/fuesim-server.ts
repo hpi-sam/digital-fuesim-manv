@@ -1,11 +1,15 @@
 import express from 'express';
 import { ExerciseWebsocketServer } from './exercise/websocket';
 import { ExerciseHttpServer } from './exercise/http-server';
+import { Config } from './config';
 
 export class FuesimServer {
     private static _singleInstance?: FuesimServer;
 
-    static create(websocketPort: number = 3200, httpPort: number = 3201) {
+    static create(
+        websocketPort: number = Config.websocketPort,
+        httpPort: number = Config.httpPort
+    ) {
         if (this._singleInstance) {
             this._singleInstance.destroy();
         }
