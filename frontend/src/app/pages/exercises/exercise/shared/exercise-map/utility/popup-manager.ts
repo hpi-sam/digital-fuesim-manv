@@ -6,13 +6,19 @@ import type {
     EventEmitter,
     Injector,
 } from '@angular/core';
+import { isEqual } from 'lodash-es';
 import type { Overlay } from 'ol';
 import { Subject, takeUntil } from 'rxjs';
 import type { Positioning } from '../../utility/types/positioning';
 
+/**
+ * A class that manages the creation and destruction of a single popup with freely customizable content
+ * that should appear on the {@link popupOverlay}.
+ */
 export class PopupManager {
     private readonly destroy$ = new Subject<void>();
     private readonly popoverPortalHost: DomPortalOutlet;
+    private currentlyOpenPopupOptions?: OpenPopupOptions<any>;
 
     constructor(
         private readonly popupOverlay: Overlay,
@@ -29,9 +35,22 @@ export class PopupManager {
         );
     }
 
-    public openPopup<Component extends PopupComponent>(
+    /**
+     * Toggles the popup with the given options.
+     * If a popup is already open, it will be closed.
+     * If the given options are different from the currently open popup, the new popup will be opened.
+     * If the given options are the same as the currently open popup, the popup will be closed.
+     * @param options The options to use for the popup.
+     */
+    public togglePopup<Component extends PopupComponent>(
         options: OpenPopupOptions<Component>
     ) {
+        if (isEqual(this.currentlyOpenPopupOptions, options)) {
+            // All the openPopup buttons should be toggles
+            this.closePopup();
+            return;
+        }
+        this.currentlyOpenPopupOptions = options;
         this.popoverPortalHost!.detach();
         const componentRef = this.popoverPortalHost!.attach(
             new ComponentPortal(options.component)
@@ -52,6 +71,7 @@ export class PopupManager {
     }
 
     public closePopup() {
+        this.currentlyOpenPopupOptions = undefined;
         this.popoverPortalHost?.detach();
         this.popupOverlay.setPosition(undefined);
     }

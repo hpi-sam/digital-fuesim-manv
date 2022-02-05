@@ -63,7 +63,7 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 this.popupManager!.closePopup();
                 return;
             }
-            this.popupManager!.openPopup(options);
+            this.popupManager!.togglePopup(options);
         });
     }
 

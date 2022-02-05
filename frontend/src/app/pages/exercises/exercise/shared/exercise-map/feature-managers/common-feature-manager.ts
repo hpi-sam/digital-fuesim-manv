@@ -44,9 +44,9 @@ export abstract class CommonFeatureManager<
         true
     );
     /**
-     * When this method emits a popup should be shown.
+     * When this method emits a popup with the specified options should be toggled.
      */
-    public readonly openPopup$ = new Subject<
+    public readonly togglePopup$ = new Subject<
         // TODO: this is expected only toi emit if ElementPopupComponent is defined
         OpenPopupOptions<any>
     >();
@@ -123,6 +123,7 @@ export abstract class CommonFeatureManager<
 
     /**
      * This method is called when the user clicks on a feature on this layer.
+     * @param event The click event that triggered the call
      * @param feature The feature that was clicked on
      */
     public onFeatureClicked(
@@ -144,7 +145,7 @@ export abstract class CommonFeatureManager<
             },
             view.getCenter()!
         );
-        this.openPopup$.next({
+        this.togglePopup$.next({
             position,
             positioning,
             component: this.popoverOptions.component as any,
