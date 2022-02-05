@@ -5,7 +5,7 @@ import type { Positioning } from '../../utility/types/positioning';
  * @param featureCenter coordinates of the feature to which the popup should belong
  * @param constraints the width and height of the feature
  * @param viewCenter the current coordinates in the center of the view
- * @returns the position and the positioning of the popup
+ * @returns the position and the positioning of the popup so that it is fully visible on the viewport and doesn't overlap with the feature
  */
 export function calculatePopupPositioning(
     featureCenter: number[],
