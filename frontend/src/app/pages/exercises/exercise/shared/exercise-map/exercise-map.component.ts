@@ -49,21 +49,21 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 this.popoverContainer.nativeElement,
                 this.ngZone
             );
-            this.popupManager = new PopupManager(
-                this.olMapManager.popupOverlay,
-                this.componentFactoryResolver,
-                this.applicationRef,
-                this.injector
-            );
-            this.olMapManager.changePopup$
-                .pipe(takeUntil(this.destroy$))
-                .subscribe((options) => {
-                    if (!options) {
-                        this.popupManager!.closePopup();
-                        return;
-                    }
-                    this.popupManager!.openPopup(options);
-                });
+        });
+        this.popupManager = new PopupManager(
+            this.olMapManager!.popupOverlay,
+            this.componentFactoryResolver,
+            this.applicationRef,
+            this.injector
+        );
+        this.olMapManager!.changePopup$.pipe(
+            takeUntil(this.destroy$)
+        ).subscribe((options) => {
+            if (!options) {
+                this.popupManager!.closePopup();
+                return;
+            }
+            this.popupManager!.openPopup(options);
         });
     }
 
