@@ -33,7 +33,8 @@ export class OlMapManager {
 
     public readonly olMap: OlMap;
     /**
-     * Everytime this subject emits, a popup should be shown or closed (if available).
+     * If this subject emits options the specified popup should be toggled.
+     * If it emits undefined the currently open popup should be closed.
      */
     public readonly changePopup$ = new Subject<
         OpenPopupOptions<any> | undefined
@@ -152,7 +153,7 @@ export class OlMapManager {
             layer,
             this.apiService
         );
-        featureManager.openPopup$.subscribe(this.changePopup$);
+        featureManager.togglePopup$.subscribe(this.changePopup$);
         this.layerFeatureManagerDictionary.set(layer, featureManager);
         // Propagate the changes on an element to the featureManager
         elementDictionary$
