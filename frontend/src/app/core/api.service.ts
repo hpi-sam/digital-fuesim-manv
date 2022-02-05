@@ -14,6 +14,7 @@ import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import { BehaviorSubject, first, lastValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 import type { AppState } from '../state/app.state';
 import {
     applyServerAction,
@@ -26,17 +27,18 @@ import { OptimisticActionHandler } from './optimistic-action-handler';
 })
 export class ApiService {
     private readonly host = window.location.host.split(':')[0];
-    private readonly websocketPort = 3200;
-    private readonly httpPort = 3201;
 
-    private readonly httpBase = `http://${this.host}:${this.httpPort}`;
+    private readonly httpBase = `${environment.httpProtocol}://${this.host}:${environment.httpPort}`;
 
     private readonly socket: Socket<
         ServerToClientEvents,
         ClientToServerEvents
-    > = io(`ws://${this.host}:${this.websocketPort}`, {
-        transports: socketIoTransports,
-    });
+    > = io(
+        `${environment.websocketProtocol}://${this.host}:${environment.websocketPort}`,
+        {
+            transports: socketIoTransports,
+        }
+    );
 
     private _ownClientId?: UUID;
 
