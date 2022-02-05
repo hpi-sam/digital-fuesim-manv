@@ -9,10 +9,9 @@ import { AppComponent } from './app.component';
 import type { AppState } from './state/app.state';
 import { appReducers } from './state/app.reducer';
 import { LandingPageModule } from './pages/landing-page/landing-page.module';
-import { NavbarComponent } from './feature/navbar/navbar.component';
 
 @NgModule({
-    declarations: [AppComponent, NavbarComponent],
+    declarations: [AppComponent],
     imports: [
         CommonModule,
         BrowserModule,
@@ -23,6 +22,5 @@ import { NavbarComponent } from './feature/navbar/navbar.component';
     ],
     providers: [],
     bootstrap: [AppComponent],
-    exports: [NavbarComponent],
 })
 export class AppModule {}
