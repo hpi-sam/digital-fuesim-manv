@@ -8,6 +8,13 @@ The `test` folder on the other hand contains integration/end-to-end tests for th
 The rule of thumb for which test should go where is that if a test file tests the behavior of more than one source file, especially in case it tests the integration of those source files with each other or further parts of the backend, it should go in the `test` folder.
 All other test files, i.e. files that only test the isolated behavior of a single source file, should be named the same as the file they test with the suffix `.spec.ts` instead of `.ts`.
 
+## Environment Variables
+
+A [`.env.example`](.env.example) file is provided, containing the default values for all environment variables (where such defaults exist).
+To use them, copy the file to a new file called `.env` in the same directory. You can adjust the variables there for your own needs. This file is excluded from git to not share any sensitive information one might store in environment variables.
+To use other values during automated tests, you can append `_TESTING` to a variable, which will then be preferred over the non-`_TESTING` variable.
+For a more detailed view please look at the [`Config`](src/config.ts).
+
 ## Components
 
 ### `index.ts`
@@ -29,7 +36,7 @@ The communication between those is done using the `HttpResponse` type from [`src
 These worker methods are located in [`src/exercise/http-handler/api`](src/exercise/http-handler/api) and structured in files, where for each major route (e.g. `exercise` or `blobs`) there is a file with multiple methods, one for each allowed HTTP method.
 All routes served by this server should be prefixed by `/api/`.
 
-It listens on port `3201` by default.
+It listens on port `3201` by default (`13201` during tests).
 
 ### `ExerciseWebsocketServer`
 
@@ -38,7 +45,7 @@ It serves the most important role in both storing the exercise state and synchro
 The handlers for incoming messages are defined in [`src/exercise/websocket-handler`](src/exercise/websocket-handler). Each message (as defined in `shared`) gets its own file.
 They are registered in [`src/exercise/websocket.ts`](src/exercise/websocket.ts) when the client connects.
 
-The websocket server listens on port `3200` by default.
+The websocket server listens on port `3200` by default (`13200` during tests).
 
 ### Storing clients
 
