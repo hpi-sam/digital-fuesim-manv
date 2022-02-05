@@ -13,7 +13,11 @@
                 {{ client.value.name }}
             </td>
             <td class="align-middle">
-                {{ client.value.role === 'trainer' ? 'Übungsleiter' : 'Teilnehmer' }}
+                {{
+                    client.value.role === 'trainer'
+                        ? 'Übungsleiter'
+                        : 'Teilnehmer'
+                }}
             </td>
             <!-- Choose the viewport -->
             <td ngbDropdown>
