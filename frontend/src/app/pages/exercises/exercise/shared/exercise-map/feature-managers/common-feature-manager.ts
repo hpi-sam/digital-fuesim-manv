@@ -6,7 +6,7 @@ import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import type OlMap from 'ol/Map';
 import { Subject } from 'rxjs';
-import type { ComponentType } from '@angular/cdk/portal';
+import type { Type } from '@angular/core';
 import { MovementAnimator } from '../utility/movement-animator';
 import { TranslateHelper } from '../utility/translate-helper';
 import { ImageStyleHelper } from '../utility/get-image-style-function';
@@ -68,7 +68,7 @@ export abstract class CommonFeatureManager<
         // TODO: this is just temporary, until we refactor the feature manager classes
         private readonly popoverOptions?: ElementPopupComponent extends PopupComponent
             ? {
-                  component: ComponentType<ElementPopupComponent>;
+                  component: Type<ElementPopupComponent>;
                   height: number;
                   width: number;
                   getContext: (feature: ElementFeature) => any;

@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PortalModule } from '@angular/cdk/portal';
 import { ExerciseMapComponent } from './exercise-map.component';
 import { VehiclePopupComponent } from './shared/vehicle-popup/vehicle-popup.component';
 import { PatientPopupComponent } from './shared/patient-popup/patient-popup.component';
@@ -11,7 +10,7 @@ import { PatientPopupComponent } from './shared/patient-popup/patient-popup.comp
         VehiclePopupComponent,
         PatientPopupComponent,
     ],
-    imports: [CommonModule, PortalModule],
+    imports: [CommonModule],
     exports: [ExerciseMapComponent],
 })
 export class ExerciseMapModule {}
