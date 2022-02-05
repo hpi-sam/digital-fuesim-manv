@@ -1,10 +1,8 @@
-import type { ComponentType } from '@angular/cdk/portal';
-import { ComponentPortal, DomPortalOutlet } from '@angular/cdk/portal';
 import type {
-    ApplicationRef,
-    ComponentFactoryResolver,
+    ComponentRef,
     EventEmitter,
-    Injector,
+    Type,
+    ViewContainerRef,
 } from '@angular/core';
 import { isEqual } from 'lodash-es';
 import type { Overlay } from 'ol';
@@ -17,23 +15,12 @@ import type { Positioning } from '../../utility/types/positioning';
  */
 export class PopupManager {
     private readonly destroy$ = new Subject<void>();
-    private readonly popoverPortalHost: DomPortalOutlet;
     private currentlyOpenPopupOptions?: OpenPopupOptions<any>;
 
     constructor(
         private readonly popupOverlay: Overlay,
-        // See https://github.com/angular/components/issues/24334 we currently need it for the portal
-        private readonly componentFactoryResolver: ComponentFactoryResolver,
-        private readonly applicationRef: ApplicationRef,
-        private readonly injector: Injector
-    ) {
-        this.popoverPortalHost = new DomPortalOutlet(
-            this.popupOverlay.getElement()!,
-            this.componentFactoryResolver,
-            this.applicationRef,
-            this.injector
-        );
-    }
+        private readonly popoverContent: ViewContainerRef
+    ) {}
 
     /**
      * Toggles the popup with the given options.
@@ -51,10 +38,9 @@ export class PopupManager {
             return;
         }
         this.currentlyOpenPopupOptions = options;
-        this.popoverPortalHost!.detach();
-        const componentRef = this.popoverPortalHost!.attach(
-            new ComponentPortal(options.component)
-        );
+        this.popoverContent.clear();
+        const componentRef: ComponentRef<PopupComponent> =
+            this.popoverContent.createComponent(options.component);
         if (options.context) {
             for (const key of Object.keys(options.context)) {
                 (componentRef as any).instance[key] = (options.context as any)[
@@ -72,19 +58,20 @@ export class PopupManager {
 
     public closePopup() {
         this.currentlyOpenPopupOptions = undefined;
-        this.popoverPortalHost?.detach();
+        this.popoverContent.clear();
         this.popupOverlay.setPosition(undefined);
     }
 
     public destroy() {
         this.destroy$.next();
-        this.popoverPortalHost?.dispose();
+        this.popoverContent.clear();
+        this.popupOverlay.setPosition(undefined);
     }
 }
 
 export interface OpenPopupOptions<
     Component extends PopupComponent,
-    ComponentClass extends ComponentType<Component> = ComponentType<Component>
+    ComponentClass extends Type<Component> = Type<Component>
 > {
     position: number[];
     positioning: Positioning;

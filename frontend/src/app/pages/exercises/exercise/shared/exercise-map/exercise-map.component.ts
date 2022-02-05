@@ -1,9 +1,7 @@
 import type { AfterViewInit, OnDestroy } from '@angular/core';
 import {
     ElementRef,
-    ApplicationRef,
-    ComponentFactoryResolver,
-    Injector,
+    ViewContainerRef,
     ViewChild,
     Component,
     NgZone,
@@ -25,6 +23,8 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     openLayersContainer!: ElementRef<HTMLDivElement>;
     @ViewChild('popoverContainer')
     popoverContainer!: ElementRef<HTMLDivElement>;
+    @ViewChild('popoverContent', { read: ViewContainerRef })
+    popoverContent!: ViewContainerRef;
 
     private readonly destroy$ = new Subject<void>();
     private olMapManager?: OlMapManager;
@@ -33,10 +33,7 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     constructor(
         private readonly store: Store<AppState>,
         private readonly ngZone: NgZone,
-        private readonly apiService: ApiService,
-        private readonly componentFactoryResolver: ComponentFactoryResolver,
-        private readonly applicationRef: ApplicationRef,
-        private readonly injector: Injector
+        private readonly apiService: ApiService
     ) {}
 
     ngAfterViewInit(): void {
@@ -50,11 +47,10 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 this.ngZone
             );
         });
+
         this.popupManager = new PopupManager(
             this.olMapManager!.popupOverlay,
-            this.componentFactoryResolver,
-            this.applicationRef,
-            this.injector
+            this.popoverContent
         );
         this.olMapManager!.changePopup$.pipe(
             takeUntil(this.destroy$)
