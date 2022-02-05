@@ -1,0 +1,61 @@
+version: '3'
+services:
+    building:
+        build:
+            context: .
+            dockerfile: docker/building.Dockerfile
+        container_name: digital-fuesim-manv-building
+        volumes:
+            - frontend:/usr/local/app/frontend/dist/digital-fuesim-manv
+            - backend-dist:/usr/local/app/backend/dist
+            - backend-node_modules:/usr/local/app/backend/node_modules
+            - shared-dist:/usr/local/app/shared/dist
+            - shared-node_modules:/usr/local/app/shared/node_modules
+        networks:
+            - backend
+    backend:
+        build:
+            context: .
+            dockerfile: docker/backend.Dockerfile
+        restart: unless-stopped
+        container_name: digital-fuesim-manv-backend
+        volumes:
+            - backend-dist:/usr/local/app/backend/dist
+            - backend-node_modules:/usr/local/app/backend/node_modules
+            - shared-dist:/usr/local/app/shared/dist
+            - shared-node_modules:/usr/local/app/shared/node_modules
+        depends_on:
+            - building
+        networks:
+            - backend
+    frontend:
+        image: nginx:stable
+        restart: unless-stopped
+        container_name: digital-fuesim-manv-frontend
+        volumes:
+            - frontend:/usr/share/nginx/html
+            - ./docker/nginx/conf.d/:/etc/nginx/conf.d/:ro
+            - type: bind
+              source: ./docker/nginx/nginx.conf
+              target: /etc/nginx/nginx.conf
+              read_only: true
+        depends_on:
+            - building
+            - backend
+        ports:
+            - 80:80
+            - 3200:3200
+        networks:
+            - backend
+            - frontend
+networks:
+    backend:
+        # internal: true
+    frontend:
+
+volumes:
+    backend-dist:
+    backend-node_modules:
+    frontend:
+    shared-dist:
+    shared-node_modules:
