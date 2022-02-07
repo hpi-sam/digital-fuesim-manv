@@ -1,13 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
-import {
-    Patient,
-    uuid,
-    Vehicle,
-    Personell,
-    Material,
-} from 'digital-fuesim-manv-shared';
+import { Patient, uuid } from 'digital-fuesim-manv-shared';
 import { map } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -17,6 +11,7 @@ import {
     selectPersonell,
     selectVehicles,
 } from 'src/app/state/exercise/exercise.selectors';
+import { DragElementService } from '../core/drag-element.service';
 import { startingPosition } from '../starting-position';
 
 @Component({
@@ -54,7 +49,8 @@ export class TrainerMapEditorComponent {
 
     constructor(
         public readonly apiService: ApiService,
-        private readonly store: Store<AppState>
+        private readonly store: Store<AppState>,
+        public readonly dragElementService: DragElementService
     ) {}
 
     private generateCoordinates() {

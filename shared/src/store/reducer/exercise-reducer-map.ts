@@ -46,8 +46,12 @@ export const exerciseReducerMap: {
         delete draftState.patients[patientId];
         return draftState;
     },
-    '[Vehicle] Add vehicle': (draftState, { vehicle }) => {
+    '[Vehicle] Add vehicle': (draftState, { vehicle, material, personell }) => {
         draftState.vehicles[vehicle.id] = vehicle;
+        draftState.materials[material.id] = material;
+        for (const person of personell) {
+            draftState.personell[person.id] = person;
+        }
         return draftState;
     },
     '[Vehicle] Move vehicle': (draftState, { vehicleId, targetPosition }) => {
@@ -69,10 +73,6 @@ export const exerciseReducerMap: {
         delete draftState.vehicles[vehicleId];
         return draftState;
     },
-    '[Personell] Add personell': (draftState, { personell }) => {
-        draftState.personell[personell.id] = personell;
-        return draftState;
-    },
     '[Personell] Move personell': (
         draftState,
         { personellId, targetPosition }
@@ -86,19 +86,6 @@ export const exerciseReducerMap: {
         personell.position = targetPosition;
         return draftState;
     },
-    '[Personell] Remove personell': (draftState, { personellId }) => {
-        if (!draftState.personell[personellId]) {
-            throw new ReducerError(
-                `Personell with id ${personellId} does not exist`
-            );
-        }
-        delete draftState.personell[personellId];
-        return draftState;
-    },
-    '[Material] Add material': (draftState, { material }) => {
-        draftState.materials[material.id] = material;
-        return draftState;
-    },
     '[Material] Move material': (
         draftState,
         { materialId, targetPosition }
@@ -110,15 +97,6 @@ export const exerciseReducerMap: {
             );
         }
         material.position = targetPosition;
-        return draftState;
-    },
-    '[Material] Remove material': (draftState, { materialId }) => {
-        if (!draftState.materials[materialId]) {
-            throw new ReducerError(
-                `Material with id ${materialId} does not exist`
-            );
-        }
-        delete draftState.materials[materialId];
         return draftState;
     },
     '[Client] Add client': (draftState, { client }) => {

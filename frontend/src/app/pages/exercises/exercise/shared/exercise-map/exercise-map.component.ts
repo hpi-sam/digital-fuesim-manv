@@ -21,6 +21,7 @@ import type Point from 'ol/geom/Point';
 import { getSelectWithPosition } from 'src/app/state/exercise/exercise.selectors';
 import type { WithPosition } from '../utility/types/with-position';
 import { startingPosition } from '../starting-position';
+import { DragElementService } from '../core/drag-element.service';
 import { PatientFeatureManager } from './feature-managers/patient-feature-manager';
 import { handleChanges } from './utility/handle-changes';
 import type { FeatureManager } from './feature-managers/feature-manager';
@@ -45,7 +46,8 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     constructor(
         private readonly store: Store<AppState>,
         private readonly ngZone: NgZone,
-        private readonly apiService: ApiService
+        private readonly apiService: ApiService,
+        public readonly dragElementService: DragElementService
     ) {}
 
     ngAfterViewInit(): void {
@@ -87,6 +89,8 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 maxZoom: 23,
             }),
         });
+        this.dragElementService.registerMap(this.olMap);
+
         // Cursors
         this.olMap.on('pointermove', (event) => {
             this.setCursorStyle(
@@ -209,6 +213,7 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.destroy$.next();
+        this.dragElementService.unregisterMap();
         this.olMap?.dispose();
         this.olMap?.setTarget(undefined);
     }
