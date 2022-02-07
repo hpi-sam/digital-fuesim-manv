@@ -4,7 +4,10 @@ import type { WithPosition } from 'src/app/shared/utility/types/with-position';
 import type { AppState } from '../app.state';
 
 export const selectViewports = (state: AppState) => state.exercise.viewports;
-
+export const selectVehicleTemplates = (state: AppState) =>
+    state.exercise.vehicleTemplates;
+export const selectPatientTemplates = (state: AppState) =>
+    state.exercise.patientTemplates;
 export const selectPatients = (state: AppState) => state.exercise.patients;
 export const selectVehicles = (state: AppState) => state.exercise.vehicles;
 export const selectPersonell = (state: AppState) => state.exercise.personell;

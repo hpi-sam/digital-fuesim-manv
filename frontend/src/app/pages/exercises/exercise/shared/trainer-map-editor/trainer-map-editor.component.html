@@ -10,21 +10,42 @@
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">
                     <h5>Patienten</h5>
-                    <button
-                        (click)="addPatient()"
-                        class="btn btn-primary me-3"
-                        id="addPatient"
+                    <div
+                        class="overflow-auto w-100"
+                        style="white-space: nowrap"
                     >
-                        Patient hinzufügen
-                    </button>
-                    <button
-                        (click)="addMultiple(20, 'addPatient')"
-                        class="btn btn-primary"
-                    >
-                        20 Patienten hinzufügen
-                    </button>
-                    <br />
-                    {{ numberOfPatients$ | async }}
+                        <div
+                            *ngFor="
+                                let patientTemplate of patientTemplates$ | async
+                            "
+                            class="d-inline-block card text-center"
+                            style="width: 10rem; text-overflow: ellipsis"
+                            (dragstart)="
+                                dragElementService.onDragStart($event, {
+                                    type: 'patient',
+                                    template: patientTemplate
+                                })
+                            "
+                        >
+                            <img
+                                [src]="patientTemplate.imageUrl"
+                                class="card-img-top"
+                                draggable="true"
+                            />
+                            <div class="card-body">
+                                <h5
+                                    class="card-title text-truncate"
+                                    [title]="
+                                        patientTemplate.personalInformation.name
+                                    "
+                                >
+                                    {{
+                                        patientTemplate.personalInformation.name
+                                    }}
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
                 </li>
                 <li class="list-group-item">
                     <h5>Fahrzeuge</h5>
@@ -39,14 +60,14 @@
                             class="d-inline-block card text-center"
                             style="width: 10rem; text-overflow: ellipsis"
                             (dragstart)="
-                                dragElementService.onDragStart(
-                                    $event,
-                                    vehicleTemplate
-                                )
+                                dragElementService.onDragStart($event, {
+                                    type: 'vehicle',
+                                    template: vehicleTemplate
+                                })
                             "
                         >
                             <img
-                                [src]="vehicleTemplate.imgUrl"
+                                [src]="vehicleTemplate.imageUrl"
                                 class="card-img-top"
                                 draggable="true"
                             />
@@ -60,8 +81,6 @@
                             </div>
                         </div>
                     </div>
-                    <br />
-                    {{ numberOfVehicles$ | async }}
                 </li>
             </ul>
         </div>

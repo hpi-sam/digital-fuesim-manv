@@ -1,3 +1,4 @@
+import type { Immutable } from 'immer';
 import type {
     Personell,
     VehicleTemplate,
@@ -9,7 +10,7 @@ import { uuid } from '..';
 import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
 
 export function addVehicle(
-    vehicleTemplate: VehicleTemplate,
+    vehicleTemplate: Immutable<VehicleTemplate>,
     vehiclePosition?: Position
 ): {
     material: Material;
