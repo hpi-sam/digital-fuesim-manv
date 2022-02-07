@@ -1,66 +1,88 @@
 import { calculatePopupPositioning } from './calculate-popup-positioning';
 
+const defaultViewCenter = [2, 2];
+const defaultConstraints = { width: 1, height: 1 };
+
 describe('CalculatePopupPositioning', () => {
-    // beforeAll(() => {
-    //     //coordinate origin is bottom-left
-    //     const viewCenter = [2,2];
-    //     const constraints = {width: 1, height: 1};
-    // });
-    it('popup should be at top, if feature is in bottom half', () => {
-        const viewCenter = [2, 2];
-        const constraints = { width: 1, height: 1 };
-
+    it('returns top popup positioning, if feature is in bottom half', () => {
         expect(
-            calculatePopupPositioning([1, 1], constraints, viewCenter)
-                .positioning
+            calculatePopupPositioning(
+                [1, 1],
+                defaultConstraints,
+                defaultViewCenter
+            ).positioning
         ).toEqual('bottom-center');
 
         expect(
-            calculatePopupPositioning([3, 1], constraints, viewCenter)
-                .positioning
+            calculatePopupPositioning(
+                [3, 1],
+                defaultConstraints,
+                defaultViewCenter
+            ).positioning
         ).toEqual('bottom-center');
     });
 
-    it('popup should be at bottom, if feature is in top half and not close to the sides', () => {
-        const viewCenter = [2, 2];
-        const constraints = { width: 1, height: 1 };
-
+    it('returns bottom popup positioning, if feature is in top half and not close to the sides', () => {
         expect(
-            calculatePopupPositioning([1.5, 3], constraints, viewCenter)
-                .positioning
+            calculatePopupPositioning(
+                [1.5, 3],
+                defaultConstraints,
+                defaultViewCenter
+            ).positioning
         ).toEqual('top-center');
 
         expect(
-            calculatePopupPositioning([2.5, 3], constraints, viewCenter)
-                .positioning
+            calculatePopupPositioning(
+                [2.5, 3],
+                defaultConstraints,
+                defaultViewCenter
+            ).positioning
         ).toEqual('top-center');
     });
 
-    it('popup should be at left or right, if feature is in top half and close to the sides', () => {
-        const viewCenter = [2, 2];
-        const constraints = { width: 1, height: 1 };
-
+    it('returns left or right popup positioning, if feature is in top half and close to the sides', () => {
         expect(
-            calculatePopupPositioning([0.5, 3], constraints, viewCenter)
-                .positioning
+            calculatePopupPositioning(
+                [0.5, 3],
+                defaultConstraints,
+                defaultViewCenter
+            ).positioning
         ).toEqual('center-left');
 
         expect(
-            calculatePopupPositioning([3.5, 3], constraints, viewCenter)
-                .positioning
+            calculatePopupPositioning(
+                [3.5, 3],
+                defaultConstraints,
+                defaultViewCenter
+            ).positioning
         ).toEqual('center-right');
     });
 
-    it('should apply constraints to position', () => {
-        const viewCenter = [2, 2];
-        const constraints = { width: 1, height: 1 };
-
+    it('applies constraints to position', () => {
         expect(
-            calculatePopupPositioning([1, 1], constraints, viewCenter).position
+            calculatePopupPositioning(
+                [1, 1],
+                defaultConstraints,
+                defaultViewCenter
+            ).position
         ).toEqual([1, 1.5]);
 
         expect(
-            calculatePopupPositioning([4, 3], constraints, viewCenter).position
+            calculatePopupPositioning(
+                [4, 3],
+                defaultConstraints,
+                defaultViewCenter
+            ).position
         ).toEqual([3.5, 3]);
+    });
+
+    it('works for different viewCenter and constraints', () => {
+        const positioning = calculatePopupPositioning(
+            [4, 6],
+            { width: 9, height: 5 },
+            [3, 7]
+        );
+        expect(positioning.position).toEqual([4, 8.5]);
+        expect(positioning.positioning).toEqual('bottom-center');
     });
 });
