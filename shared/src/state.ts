@@ -1,3 +1,4 @@
+import { defaultVehicleTemplates } from './default-exercise/vehicle-templates';
 import type {
     Client,
     EocLogEntry,
@@ -40,7 +41,7 @@ class ExerciseStateClass {
     public transferPoints: { [key: UUID]: TransferPoint } = {};
     public clients: { [key: UUID]: Client } = {};
     public patientTemplates: PatientTemplate[] = [];
-    public vehicleTemplates: VehicleTemplate[] = [];
+    public vehicleTemplates: VehicleTemplate[] = defaultVehicleTemplates;
     public imageTemplates: ImageTemplate[] = [];
     public ecoLog: EocLogEntry[] = [];
     public statusHistory: StatusHistoryEntry[] = [];

@@ -35,6 +35,10 @@ export class TrainerMapEditorComponent {
         (dictionary: ImmutableJsonObject) => Object.keys(dictionary).length
     );
 
+    public readonly vehicleTemplates$ = this.store.select(
+        (state) => state.exercise.vehicleTemplates
+    );
+
     public readonly numberOfPatients$ = this.store
         .select(selectPatients)
         .pipe(this.getNumberOf);
@@ -82,60 +86,7 @@ export class TrainerMapEditorComponent {
         );
     }
 
-    public async addVehicle() {
-        const vehicle = {
-            ...new Vehicle(uuid(), 1, 'name'),
-            position: this.generateCoordinates(),
-        };
-        this.apiService.proposeAction(
-            {
-                type: '[Vehicle] Add vehicle',
-                vehicle,
-            },
-            false
-        );
-    }
-    public async addPersonell() {
-        const personell = {
-            ...new Personell(uuid(), 'retSan', {}),
-            position: this.generateCoordinates(),
-        };
-        this.apiService.proposeAction(
-            {
-                type: '[Personell] Add personell',
-                personell,
-            },
-            false
-        );
-    }
-
-    public async addMaterial() {
-        const material = {
-            ...new Material(
-                uuid(),
-                {},
-                {
-                    green: 2,
-                    red: 1,
-                    yellow: 1,
-                    logicalOperator: 'and',
-                }
-            ),
-            position: this.generateCoordinates(),
-        };
-        this.apiService.proposeAction(
-            {
-                type: '[Material] Add material',
-                material,
-            },
-            true
-        );
-    }
-
-    public addMultiple(
-        numberOfElements: number,
-        key: 'addMaterial' | 'addPatient' | 'addPersonell' | 'addVehicle'
-    ) {
+    public addMultiple(numberOfElements: number, key: 'addPatient') {
         for (let i = 0; i < numberOfElements; i++) {
             this[key]();
         }
