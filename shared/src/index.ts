@@ -8,3 +8,4 @@ export * from './state';
 export * from './store';
 export * from './socket-api';
 export * from './http-interfaces';
+export * from './state-helpers';

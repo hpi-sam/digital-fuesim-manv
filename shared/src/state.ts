@@ -1,4 +1,4 @@
-import { defaultVehicleTemplates } from './default-exercise/vehicle-templates';
+import { defaultVehicleTemplates } from './default-state/vehicle-templates';
 import type {
     Client,
     EocLogEntry,

@@ -38,10 +38,17 @@
                             "
                             class="d-inline-block card text-center"
                             style="width: 10rem; text-overflow: ellipsis"
+                            (dragstart)="
+                                dragElementService.onDragStart(
+                                    $event,
+                                    vehicleTemplate
+                                )
+                            "
                         >
                             <img
                                 [src]="vehicleTemplate.imgUrl"
                                 class="card-img-top"
+                                draggable="true"
                             />
                             <div class="card-body">
                                 <h5
