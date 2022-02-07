@@ -1,18 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
-import { Patient, uuid } from 'digital-fuesim-manv-shared';
-import { map } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    selectMaterials,
-    selectPatients,
-    selectPersonell,
-    selectVehicles,
+    selectPatientTemplates,
+    selectVehicleTemplates,
 } from 'src/app/state/exercise/exercise.selectors';
 import { DragElementService } from '../core/drag-element.service';
-import { startingPosition } from '../starting-position';
 
 @Component({
     selector: 'app-trainer-map-editor',
@@ -26,65 +20,17 @@ import { startingPosition } from '../starting-position';
 export class TrainerMapEditorComponent {
     @Input() exerciseId!: string;
 
-    private readonly getNumberOf = map(
-        (dictionary: ImmutableJsonObject) => Object.keys(dictionary).length
-    );
-
     public readonly vehicleTemplates$ = this.store.select(
-        (state) => state.exercise.vehicleTemplates
+        selectVehicleTemplates
     );
 
-    public readonly numberOfPatients$ = this.store
-        .select(selectPatients)
-        .pipe(this.getNumberOf);
-    public readonly numberOfVehicles$ = this.store
-        .select(selectVehicles)
-        .pipe(this.getNumberOf);
-    public readonly numberOfPersonell$ = this.store
-        .select(selectPersonell)
-        .pipe(this.getNumberOf);
-    public readonly numberOfMaterials$ = this.store
-        .select(selectMaterials)
-        .pipe(this.getNumberOf);
+    public readonly patientTemplates$ = this.store.select(
+        selectPatientTemplates
+    );
 
     constructor(
         public readonly apiService: ApiService,
         private readonly store: Store<AppState>,
         public readonly dragElementService: DragElementService
     ) {}
-
-    private generateCoordinates() {
-        const xOffset = Math.random() * 300;
-        const yOffset = Math.random() * 250;
-        return {
-            x: startingPosition.x + xOffset,
-            y: startingPosition.y + yOffset,
-        };
-    }
-
-    public async addPatient() {
-        const patient = {
-            ...new Patient(
-                { hair: 'brown', eyeColor: 'blue', name: 'John Doe', age: 42 },
-                'green',
-                'green',
-                Date.now().toString()
-            ),
-            position: this.generateCoordinates(),
-            vehicleId: uuid(),
-        };
-        this.apiService.proposeAction(
-            {
-                type: '[Patient] Add patient',
-                patient,
-            },
-            false
-        );
-    }
-
-    public addMultiple(numberOfElements: number, key: 'addPatient') {
-        for (let i = 0; i < numberOfElements; i++) {
-            this[key]();
-        }
-    }
 }

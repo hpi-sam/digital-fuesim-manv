@@ -10,7 +10,7 @@ export class VehicleTemplate {
     public name: string;
 
     @IsString()
-    public imgUrl: string;
+    public imageUrl: string;
 
     @IsNumber()
     public patientCapacity: number;
@@ -21,13 +21,13 @@ export class VehicleTemplate {
 
     constructor(
         name: string,
-        imgUrl: string,
+        imageUrl: string,
         patientCapacity: number,
         personnel: PersonellType[],
         material: CanCaterFor
     ) {
         this.name = name;
-        this.imgUrl = imgUrl;
+        this.imageUrl = imageUrl;
         this.patientCapacity = patientCapacity;
         this.personnel = personnel;
         this.material = material;
