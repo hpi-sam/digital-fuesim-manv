@@ -65,7 +65,7 @@ describe('CalculatePopupPositioning', () => {
                 defaultConstraints,
                 defaultViewCenter
             ).position
-        ).toEqual([1, 1.5]);
+        ).toStrictEqual([1, 1.5]);
 
         expect(
             calculatePopupPositioning(
@@ -73,16 +73,15 @@ describe('CalculatePopupPositioning', () => {
                 defaultConstraints,
                 defaultViewCenter
             ).position
-        ).toEqual([3.5, 3]);
+        ).toStrictEqual([3.5, 3]);
     });
 
     it('works for different viewCenter and constraints', () => {
-        const positioning = calculatePopupPositioning(
-            [4, 6],
-            { width: 9, height: 5 },
-            [3, 7]
-        );
-        expect(positioning.position).toEqual([4, 8.5]);
-        expect(positioning.positioning).toEqual('bottom-center');
+        expect(
+            calculatePopupPositioning([4, 6], { width: 9, height: 5 }, [3, 7])
+        ).toStrictEqual({
+            position: [4, 8.5],
+            positioning: 'bottom-center',
+        });
     });
 });

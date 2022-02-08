@@ -43,7 +43,7 @@ export class PopupManager {
             this.popoverContent.createComponent(options.component);
         if (options.context) {
             for (const key of Object.keys(options.context)) {
-                (componentRef as any).instance[key] = (options.context as any)[
+                (componentRef.instance as any)[key] = (options.context as any)[
                     key
                 ];
             }
