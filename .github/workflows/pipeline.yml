@@ -171,4 +171,4 @@ jobs:
               with:
                   start: npm run start:all
                   command: npm run cy:ci
-                  wait-on: 'http://localhost:4200, http://localhost:3201'
+                  wait-on: 'http://localhost:4200/health, http://localhost:3201/api/health'
