@@ -20,21 +20,16 @@ import {
     setExerciseState,
 } from '../state/exercise/exercise.actions';
 import { OptimisticActionHandler } from './optimistic-action-handler';
+import { httpOrigin, websocketOrigin } from './api-origins';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ApiService {
-    private readonly host = window.location.host.split(':')[0];
-    private readonly websocketPort = 3200;
-    private readonly httpPort = 3201;
-
-    private readonly httpBase = `http://${this.host}:${this.httpPort}`;
-
     private readonly socket: Socket<
         ServerToClientEvents,
         ClientToServerEvents
-    > = io(`ws://${this.host}:${this.websocketPort}`, {
+    > = io(websocketOrigin, {
         transports: socketIoTransports,
     });
 
@@ -148,10 +143,7 @@ export class ApiService {
 
     public async createExercise() {
         return lastValueFrom(
-            this.httpClient.post<ExerciseIds>(
-                `${this.httpBase}/api/exercise`,
-                {}
-            )
+            this.httpClient.post<ExerciseIds>(`${httpOrigin}/api/exercise`, {})
         );
     }
 }
