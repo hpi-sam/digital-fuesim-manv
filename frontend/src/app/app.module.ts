@@ -9,9 +9,10 @@ import { AppComponent } from './app.component';
 import type { AppState } from './state/app.state';
 import { appReducers } from './state/app.reducer';
 import { LandingPageModule } from './pages/landing-page/landing-page.module';
+import { HealthPageComponent } from './pages/health/health-page/health-page.component';
 
 @NgModule({
-    declarations: [AppComponent],
+    declarations: [AppComponent, HealthPageComponent],
     imports: [
         CommonModule,
         BrowserModule,
