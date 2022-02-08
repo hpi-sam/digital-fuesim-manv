@@ -9,6 +9,10 @@ export const selectPatients = (state: AppState) => state.exercise.patients;
 export const selectVehicles = (state: AppState) => state.exercise.vehicles;
 export const selectPersonell = (state: AppState) => state.exercise.personell;
 export const selectMaterials = (state: AppState) => state.exercise.materials;
+export const getSelectPatient = (patientId: UUID) => (state: AppState) =>
+    state.exercise.patients[patientId];
+export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
+    state.exercise.vehicles[vehicleId];
 
 /**
  * @returns a selector that returns a dictionary of all elements that have a position

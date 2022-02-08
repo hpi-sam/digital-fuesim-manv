@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import type { UUID, Vehicle } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
+import { getSelectVehicle } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({
@@ -22,8 +23,6 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
     constructor(private readonly store: Store<AppState>) {}
 
     ngOnInit(): void {
-        this.vehicle$ = this.store.select(
-            (state) => state.exercise.vehicles[this.vehicleId]
-        );
+        this.vehicle$ = this.store.select(getSelectVehicle(this.vehicleId));
     }
 }

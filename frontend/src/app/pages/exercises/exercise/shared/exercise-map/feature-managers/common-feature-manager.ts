@@ -44,10 +44,10 @@ export abstract class CommonFeatureManager<
         true
     );
     /**
-     * When this method emits a popup with the specified options should be toggled.
+     * When this method emits, a popup with the specified options should be toggled.
      */
     public readonly togglePopup$ = new Subject<
-        // TODO: this is expected only toi emit if ElementPopupComponent is defined
+        // TODO: this is expected only to emit if ElementPopupComponent is defined
         OpenPopupOptions<any>
     >();
 
