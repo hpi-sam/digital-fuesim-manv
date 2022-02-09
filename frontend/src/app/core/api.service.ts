@@ -30,7 +30,7 @@ export class ApiService {
         ServerToClientEvents,
         ClientToServerEvents
     > = io(websocketOrigin, {
-        transports: socketIoTransports,
+        ...socketIoTransports,
     });
 
     private _ownClientId?: UUID;

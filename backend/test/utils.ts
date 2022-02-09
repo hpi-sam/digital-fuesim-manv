@@ -136,7 +136,7 @@ class TestEnvironment {
         try {
             // TODO: The uri should not be hard coded
             clientSocket = io(`ws://localhost:${Config.websocketPort}`, {
-                transports: socketIoTransports,
+                ...socketIoTransports,
             });
             const websocketClient = new WebsocketClient(clientSocket);
             await closure(websocketClient);
