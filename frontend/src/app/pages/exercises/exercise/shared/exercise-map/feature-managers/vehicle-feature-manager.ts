@@ -5,15 +5,17 @@ import type VectorSource from 'ol/source/Vector';
 import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type { WithPosition } from '../../utility/types/with-position';
+import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
 import { CommonFeatureManager } from './common-feature-manager';
 
 export class VehicleFeatureManager extends CommonFeatureManager<
-    WithPosition<Vehicle>
+    WithPosition<Vehicle>,
+    VehiclePopupComponent
 > {
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        private readonly apiService: ApiService
+        apiService: ApiService
     ) {
         super(
             olMap,
@@ -23,11 +25,17 @@ export class VehicleFeatureManager extends CommonFeatureManager<
                 imageUrl: './assets/vehicle.svg',
             },
             (targetPosition, vehicle) => {
-                this.apiService.proposeAction({
+                apiService.proposeAction({
                     type: '[Vehicle] Move vehicle',
                     vehicleId: vehicle.id,
                     targetPosition,
                 });
+            },
+            {
+                component: VehiclePopupComponent,
+                height: 150,
+                width: 225,
+                getContext: (feature) => ({ vehicleId: feature.getId()! }),
             }
         );
     }
