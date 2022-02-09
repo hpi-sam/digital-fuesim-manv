@@ -33,7 +33,7 @@ export class OlMapManager {
 
     public readonly olMap: OlMap;
     /**
-     * If this subject emits options the specified popup should be toggled.
+     * If this subject emits options, the specified popup should be toggled.
      * If it emits undefined, the currently open popup should be closed.
      */
     public readonly changePopup$ = new Subject<
