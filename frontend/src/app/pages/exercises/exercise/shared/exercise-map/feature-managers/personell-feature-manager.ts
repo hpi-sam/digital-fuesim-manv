@@ -13,7 +13,7 @@ export class PersonellFeatureManager extends CommonFeatureManager<
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        private readonly apiService: ApiService
+        apiService: ApiService
     ) {
         super(
             olMap,
@@ -23,7 +23,7 @@ export class PersonellFeatureManager extends CommonFeatureManager<
                 imageUrl: './assets/personell.png',
             },
             (targetPosition, personell) => {
-                this.apiService.proposeAction({
+                apiService.proposeAction({
                     type: '[Personell] Move personell',
                     personellId: personell.id,
                     targetPosition,
