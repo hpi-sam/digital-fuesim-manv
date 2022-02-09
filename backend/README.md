@@ -23,9 +23,8 @@ When starting, the `index.ts` is executed. It simply creates a `FuesimServer`, w
 
 ### `FuesimServer`
 
-The `FuesimServer` is a singleton responsible for starting and stopping both the webserver (`ExerciseHttpServer`) and the websocket server (`ExerciseWebsocketServer`) parts of the backend.
+The `FuesimServer` is a class responsible for starting and stopping both the webserver (`ExerciseHttpServer`) and the websocket server (`ExerciseWebsocketServer`) parts of the backend.
 Both servers use `express` as the underlying architecture.
-When creating a new `FuesimServer`, the old servers get automatically killed.
 Both servers currently use CORS allow all origins as a temporary solution.
 
 ### `ExerciseHttpServer`
