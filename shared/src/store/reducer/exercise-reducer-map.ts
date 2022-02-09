@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-throw-literal */
 import type { ExerciseAction } from '..';
+import { StatusHistoryEntry } from '../..';
 import type { ReducerFunction } from './reducer-function';
 import { ReducerError } from '.';
 
@@ -135,6 +136,26 @@ export const exerciseReducerMap: {
             throw new ReducerError(`Client with id ${clientId} does not exist`);
         }
         draftState.clients[clientId].isInWaitingRoom = shouldBeInWaitingRoom;
+        return draftState;
+    },
+    '[Exercise] Pause': (draftState, { timestamp }) => {
+        const statusHistoryEntry = new StatusHistoryEntry(
+            'paused',
+            new Date(timestamp)
+        );
+
+        draftState.statusHistory.push(statusHistoryEntry);
+
+        return draftState;
+    },
+    '[Exercise] Start': (draftState, { timestamp }) => {
+        const statusHistoryEntry = new StatusHistoryEntry(
+            'running',
+            new Date(timestamp)
+        );
+
+        draftState.statusHistory.push(statusHistoryEntry);
+
         return draftState;
     },
 };
