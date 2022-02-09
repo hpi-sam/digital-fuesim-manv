@@ -37,7 +37,7 @@ describe('join exercise', () => {
     });
 
     it('fails joining a non-existing exercise', async () => {
-        const id = 'thisExerciseDoesNotExist';
+        const id = '123456';
 
         await environment.withWebsocket(async (socket) => {
             const join = await socket.emit('joinExercise', id, 'Test Client');
