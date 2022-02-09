@@ -22,13 +22,13 @@ export class ExerciseWrapper {
         console.log(`periodic test at ${now.toISOString()}`);
         console.log(`Diff: ${now.valueOf() - this.lastTick}`);
         this.lastTick = now.valueOf();
-        // eslint-disable-next-line no-promise-executor-return
-        await new Promise((resolve) => setTimeout(resolve, 9800));
+        // TODO: Send action containing new state
         console.log('after some time');
     };
 
     // Call the tick every 1000 ms
-    private readonly tickHandler = new PeriodicEventHandler(this.tick, 1000);
+    private const tickInterval = 1000;
+    private readonly tickHandler = new PeriodicEventHandler(this.tick, this.tickInterval);
 
     private readonly clients = new Set<ClientWrapper>();
 
