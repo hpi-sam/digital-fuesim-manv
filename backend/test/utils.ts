@@ -7,6 +7,7 @@ import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import request from 'supertest';
+import { Config } from '../src/config';
 import { FuesimServer } from '../src/fuesim-server';
 import type { SocketReservedEvents } from './socket-reserved-events';
 
@@ -116,10 +117,7 @@ export class WebsocketClient {
 }
 
 class TestEnvironment {
-    public server: FuesimServer = new FuesimServer(
-        websocketPort,
-        webserverPort
-    );
+    public server: FuesimServer;
 
     // `request.Test` extends `Promise<Response>`, therefore eslint wants the async keyword here.
     // The problem is that `Promise<request.Test>` not the same is as `request.Test` (but `Promise<T>` is equal to `Promise<Promise<T>>`).
@@ -139,14 +137,19 @@ class TestEnvironment {
     ): Promise<void> {
         let clientSocket: ExerciseClientSocket | undefined;
         try {
-            clientSocket = io(`ws://localhost:${websocketPort}`, {
-                transports: socketIoTransports,
+            clientSocket = io(`ws://localhost:${Config.websocketPort}`, {
+                ...socketIoTransports,
             });
             const websocketClient = new WebsocketClient(clientSocket);
             await closure(websocketClient);
         } finally {
             clientSocket?.close();
         }
+    }
+
+    public constructor() {
+        Config.initialize(true);
+        this.server = new FuesimServer();
     }
 }
 

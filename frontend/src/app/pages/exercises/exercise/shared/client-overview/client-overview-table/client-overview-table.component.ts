@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
@@ -12,7 +12,6 @@ import {
     selector: 'app-client-overview-table',
     templateUrl: './client-overview-table.component.html',
     styleUrls: ['./client-overview-table.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientOverviewTableComponent {
     public readonly clients$ = this.store.select(selectClients);
@@ -31,6 +30,17 @@ export class ClientOverviewTableComponent {
             type: '[Client] Restrict to viewport',
             clientId,
             viewportId,
+        });
+    }
+
+    public async setWaitingRoom(
+        clientId: UUID,
+        shouldBeInWaitingRoom: boolean
+    ) {
+        this.apiService.proposeAction({
+            type: '[Client] Set waitingroom',
+            clientId,
+            shouldBeInWaitingRoom,
         });
     }
 }
