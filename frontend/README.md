@@ -13,6 +13,12 @@ Run `ng generate component component-name` to generate a new component. You can 
 Or an extension:
 [Angular Schematics (vscode)](https://marketplace.visualstudio.com/items?itemName=cyrilletuzi.angular-schematics).
 
+## Environments
+
+You can build the application with different [application environments](https://angular.io/guide/build).
+
+Keep in mind that it is also possible to add a [proxy](https://angular.io/guide/build#proxying-to-a-backend-server) during development if you want to change e.g. the backend URL.
+
 ## Architecture
 
 For most, the frontend follows the [project file structure dictated by angular](https://angular.io/guide/file-structure).
