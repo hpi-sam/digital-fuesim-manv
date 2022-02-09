@@ -28,7 +28,10 @@ export class ExerciseWrapper {
 
     // Call the tick every 1000 ms
     private readonly tickInterval = 1000;
-    private readonly tickHandler = new PeriodicEventHandler(this.tick, this.tickInterval);
+    private readonly tickHandler = new PeriodicEventHandler(
+        this.tick,
+        this.tickInterval
+    );
 
     private readonly clients = new Set<ClientWrapper>();
 
