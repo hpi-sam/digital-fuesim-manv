@@ -36,6 +36,16 @@ describe('join exercise', () => {
         });
     });
 
+    it('fails joining a non-existing exercise', async () => {
+        const id = '123456';
+
+        await environment.withWebsocket(async (socket) => {
+            const join = await socket.emit('joinExercise', id, 'Test Client');
+
+            expect(join.success).toBe(false);
+        });
+    });
+
     it('ignores clients joining other exercises', async () => {
         const firstExerciseId = (await createExercise(environment)).trainerId;
         const secondExerciseId = (await createExercise(environment)).trainerId;
