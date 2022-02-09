@@ -25,9 +25,6 @@ export interface ExerciseCreationResponse {
     readonly trainerId: string;
 }
 
-export const webserverPort = 13201;
-export const websocketPort = 13200;
-
 // Some helper types
 /**
  * Returns the last element in an array
@@ -158,7 +155,7 @@ export const createTestEnvironment = (): TestEnvironment => {
     // If this gets too slow, we may look into creating the server only once
     beforeEach(() => {
         environment.server?.destroy();
-        environment.server = new FuesimServer(websocketPort, webserverPort);
+        environment.server = new FuesimServer();
     });
     afterEach(() => {
         environment.server.destroy();
