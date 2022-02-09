@@ -56,4 +56,30 @@ describe('propose action', () => {
             expect(propose.success).toBe(false);
         });
     });
+
+    it('succeeds proposing a valid action', async () => {
+        const exerciseIds = await createExercise(environment);
+
+        await environment.withWebsocket(async (socket) => {
+            const join = await socket.emit(
+                'joinExercise',
+                exerciseIds.trainerId,
+                'Name'
+            );
+
+            expect(join.success).toBe(true);
+
+            const propose = await socket.emit('proposeAction', {
+                type: '[Patient] Add patient',
+                patient: new Patient(
+                    { any: 'some info' },
+                    null,
+                    'green',
+                    'now'
+                ),
+            });
+
+            expect(propose.success).toBe(true);
+        });
+    });
 });
