@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
 import {
@@ -23,13 +23,14 @@ import { startingPosition } from '../starting-position';
     selector: 'app-trainer-map-editor',
     templateUrl: './trainer-map-editor.component.html',
     styleUrls: ['./trainer-map-editor.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 /**
  * A wrapper around the map and the map-editor-side-panel (TBD) that provides trainers with the ability to edit the map of an exercise (add/delete/move patients, vehicles, ...).
  * TODO: this is mostly a proof of concept, and in no way a final implementation.
  */
 export class TrainerMapEditorComponent {
+    @Input() exerciseId!: string;
+
     private readonly getNumberOf = map(
         (dictionary: ImmutableJsonObject) => Object.keys(dictionary).length
     );

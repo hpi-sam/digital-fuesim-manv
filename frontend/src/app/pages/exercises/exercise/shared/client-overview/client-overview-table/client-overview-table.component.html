@@ -2,8 +2,9 @@
     <thead>
         <tr>
             <th scope="col">Name</th>
-            <th scope="col">Role</th>
-            <th scope="col">Viewport</th>
+            <th scope="col">Rolle</th>
+            <th scope="col">Einsatzabschnitt</th>
+            <th scope="col">Im Warteraum?</th>
         </tr>
     </thead>
     <tbody>
@@ -12,7 +13,11 @@
                 {{ client.value.name }}
             </td>
             <td class="align-middle">
-                {{ client.value.role }}
+                {{
+                    client.value.role === 'trainer'
+                        ? 'Übungsleiter'
+                        : 'Teilnehmer'
+                }}
             </td>
             <!-- Choose the viewport -->
             <td ngbDropdown>
@@ -47,7 +52,19 @@
                         ></ng-container>
                     </button>
                 </div>
-                <ng-template #noViewportId> <i> None </i> </ng-template>
+                <ng-template #noViewportId>
+                    <i> Nicht zugewiesen </i>
+                </ng-template>
+            </td>
+            <td class="align-middle">
+                <div class="form-switch">
+                    <input
+                        [ngModel]="client.value.isInWaitingRoom"
+                        (ngModelChange)="setWaitingRoom(client.key, $event)"
+                        class="form-check-input"
+                        type="checkbox"
+                    />
+                </div>
             </td>
         </tr>
     </tbody>

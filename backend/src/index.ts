@@ -1,6 +1,6 @@
+import 'dotenv/config';
+import { Config } from './config';
 import { FuesimServer } from './fuesim-server';
 
-export const websocketPort = 3200;
-export const webserverPort = 3201;
-
-new FuesimServer(websocketPort, webserverPort);
+Config.initialize();
+new FuesimServer();
