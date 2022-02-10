@@ -134,9 +134,8 @@ class TestEnvironment {
     ): Promise<void> {
         let clientSocket: ExerciseClientSocket | undefined;
         try {
-            // TODO: The uri should not be hard coded
             clientSocket = io(`ws://localhost:${Config.websocketPort}`, {
-                transports: socketIoTransports,
+                ...socketIoTransports,
             });
             const websocketClient = new WebsocketClient(clientSocket);
             await closure(websocketClient);
@@ -147,7 +146,7 @@ class TestEnvironment {
 
     public constructor() {
         Config.initialize(true);
-        this.server = FuesimServer.create();
+        this.server = new FuesimServer();
     }
 }
 
@@ -155,7 +154,8 @@ export const createTestEnvironment = (): TestEnvironment => {
     const environment = new TestEnvironment();
     // If this gets too slow, we may look into creating the server only once
     beforeEach(() => {
-        environment.server = FuesimServer.create();
+        environment.server?.destroy();
+        environment.server = new FuesimServer();
     });
     afterEach(() => {
         environment.server.destroy();

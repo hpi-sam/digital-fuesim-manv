@@ -13,7 +13,7 @@ export class MaterialFeatureManager extends CommonFeatureManager<
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        private readonly apiService: ApiService
+        apiService: ApiService
     ) {
         super(
             olMap,
@@ -23,7 +23,7 @@ export class MaterialFeatureManager extends CommonFeatureManager<
                 imageUrl: './assets/material.svg',
             },
             (targetPosition, material) => {
-                this.apiService.proposeAction({
+                apiService.proposeAction({
                     type: '[Material] Move material',
                     materialId: material.id,
                     targetPosition,
