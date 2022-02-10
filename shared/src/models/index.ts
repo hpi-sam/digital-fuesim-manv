@@ -1,5 +1,5 @@
 export { Material } from './material';
-export { Patient } from './patient';
+export * from './patient';
 export { Personell } from './personell';
 export { StatusHistoryEntry } from './status-history-entry';
 export { EocLogEntry } from './eoc-log-entry';
