@@ -4,3 +4,8 @@
     (dragover)="dragElementService.onDragOver($event)"
     class="h-100"
 ></div>
+
+<!-- position-relative because openLayers deals with the positioning-->
+<div #popoverContainer class="popover position-relative">
+    <ng-container #popoverContent></ng-container>
+</div>
