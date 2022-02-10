@@ -11,4 +11,4 @@ COPY ./ /usr/local/app/
 RUN npm run setup
 
 # Generate the build of the application
-RUN npm run build
+RUN npm run build:deployment

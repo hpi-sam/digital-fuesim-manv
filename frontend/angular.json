@@ -115,6 +115,27 @@
                             ],
                             "outputHashing": "all"
                         },
+                        "deployment": {
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "500kb",
+                                    "maximumError": "1mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "2kb",
+                                    "maximumError": "4kb"
+                                }
+                            ],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.deployment.ts"
+                                }
+                            ],
+                            "outputHashing": "all"
+                        },
                         "development": {
                             "buildOptimizer": false,
                             "optimization": false,
