@@ -12,6 +12,8 @@ export class PatientFeatureManager extends CommonFeatureManager<
     WithPosition<Patient>,
     PatientPopupComponent
 > {
+    public static normalizedImageHeight = 80;
+
     constructor(
         olMap: OlMap,
         patientLayer: VectorLayer<VectorSource<Point>>,
@@ -21,7 +23,7 @@ export class PatientFeatureManager extends CommonFeatureManager<
             olMap,
             patientLayer,
             {
-                imageHeight: 80,
+                imageHeight: PatientFeatureManager.normalizedImageHeight,
                 imageUrl: './assets/patient.svg',
             },
             (targetPosition, patient) => {

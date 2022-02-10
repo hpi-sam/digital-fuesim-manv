@@ -10,7 +10,7 @@ import Style from 'ol/style/Style';
  *
  */
 export class ImageStyleHelper {
-    private static readonly normalZoom = 23;
+    public static readonly normalZoom = 23;
 
     constructor(
         /**

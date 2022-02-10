@@ -12,6 +12,8 @@ export class VehicleFeatureManager extends CommonFeatureManager<
     WithPosition<Vehicle>,
     VehiclePopupComponent
 > {
+    public static normalizedImageHeight = 200;
+
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
@@ -21,7 +23,7 @@ export class VehicleFeatureManager extends CommonFeatureManager<
             olMap,
             layer,
             {
-                imageHeight: 200,
+                imageHeight: VehicleFeatureManager.normalizedImageHeight,
                 imageUrl: './assets/vehicle.svg',
             },
             (targetPosition, vehicle) => {
