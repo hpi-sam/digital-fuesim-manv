@@ -5,15 +5,17 @@ import type VectorSource from 'ol/source/Vector';
 import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type { WithPosition } from '../../utility/types/with-position';
+import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
 import { CommonFeatureManager } from './common-feature-manager';
 
 export class PatientFeatureManager extends CommonFeatureManager<
-    WithPosition<Patient>
+    WithPosition<Patient>,
+    PatientPopupComponent
 > {
     constructor(
         olMap: OlMap,
         patientLayer: VectorLayer<VectorSource<Point>>,
-        private readonly apiService: ApiService
+        apiService: ApiService
     ) {
         super(
             olMap,
@@ -23,11 +25,17 @@ export class PatientFeatureManager extends CommonFeatureManager<
                 imageUrl: './assets/patient.svg',
             },
             (targetPosition, patient) => {
-                this.apiService.proposeAction({
+                apiService.proposeAction({
                     type: '[Patient] Move patient',
                     patientId: patient.id,
                     targetPosition,
                 });
+            },
+            {
+                component: PatientPopupComponent,
+                height: 110,
+                width: 50,
+                getContext: (feature) => ({ patientId: feature.getId()! }),
             }
         );
     }

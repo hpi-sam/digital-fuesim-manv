@@ -1,0 +1,13 @@
+<ng-container *ngIf="patient$ | async as patient">
+    <h5 class="popover-header">
+        {{ patient.id }}
+        <button
+            (click)="closePopup.emit()"
+            type="button"
+            class="btn-close float-end"
+        ></button>
+    </h5>
+    <div class="popover-body">
+        {{ patient.visibleStatus }}
+    </div>
+</ng-container>

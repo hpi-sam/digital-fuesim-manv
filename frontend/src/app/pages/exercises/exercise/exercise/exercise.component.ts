@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectClient } from 'src/app/state/exercise/exercise.selectors';
+import { getSelectClient } from 'src/app/state/exercise/exercise.selectors';
 
 @Component({
     selector: 'app-exercise',
@@ -16,8 +16,8 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     private readonly destroy = new Subject<void>();
     public exerciseId?: string;
 
-    public client$ = this.store.select((state: AppState) =>
-        selectClient(state, this.apiService.ownClientId!)
+    public client$ = this.store.select(
+        getSelectClient(this.apiService.ownClientId!)
     );
 
     constructor(
