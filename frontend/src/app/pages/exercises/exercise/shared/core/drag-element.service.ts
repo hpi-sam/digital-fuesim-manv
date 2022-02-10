@@ -111,10 +111,13 @@ export class DragElementService {
         switch (transferTemplate.type) {
             case 'vehicle':
                 // get the current coordinates on the map
-                this.apiService.proposeAction({
-                    type: '[Vehicle] Add vehicle',
-                    ...addVehicle(transferTemplate.template, position),
-                });
+                this.apiService.proposeAction(
+                    {
+                        type: '[Vehicle] Add vehicle',
+                        ...addVehicle(transferTemplate.template, position),
+                    },
+                    true
+                );
                 break;
             case 'patient':
                 {
@@ -126,10 +129,13 @@ export class DragElementService {
                     );
                     patient.position = position;
                     // get the current coordinates on the map
-                    this.apiService.proposeAction({
-                        type: '[Patient] Add patient',
-                        patient,
-                    });
+                    this.apiService.proposeAction(
+                        {
+                            type: '[Patient] Add patient',
+                            patient,
+                        },
+                        true
+                    );
                 }
                 break;
             default:
