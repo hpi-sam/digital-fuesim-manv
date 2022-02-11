@@ -110,7 +110,6 @@ export class DragElementService {
         const position = { x, y };
         switch (transferTemplate.type) {
             case 'vehicle':
-                // get the current coordinates on the map
                 this.apiService.proposeAction(
                     {
                         type: '[Vehicle] Add vehicle',
@@ -128,7 +127,6 @@ export class DragElementService {
                         ''
                     );
                     patient.position = position;
-                    // get the current coordinates on the map
                     this.apiService.proposeAction(
                         {
                             type: '[Patient] Add patient',

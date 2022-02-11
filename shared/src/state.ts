@@ -1,5 +1,5 @@
-import { defaultPatientTemplates } from './default-state/patient-templates';
-import { defaultVehicleTemplates } from './default-state/vehicle-templates';
+import { defaultPatientTemplates } from './data/default-state/patient-templates';
+import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
 import type {
     Client,
     EocLogEntry,

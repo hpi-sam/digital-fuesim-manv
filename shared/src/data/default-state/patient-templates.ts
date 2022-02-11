@@ -1,4 +1,4 @@
-import { PatientTemplate } from '..';
+import { PatientTemplate } from '../..';
 
 const greenPatientTemplate = new PatientTemplate(
     {
