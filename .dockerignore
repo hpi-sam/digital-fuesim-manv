@@ -1,0 +1,28 @@
+# There can only be one .dockerignore file in the root
+# So here are all ignores, including those of the subdirectories
+
+## Root
+
+# Ignore everything from .gitignore
+**/node_modules/
+**/dist/
+
+# jest
+**/coverage
+
+# Ignore test files
+**/test
+**/*.spec*
+
+## Backend
+
+backend/.env
+
+## Shared
+
+shared/tsconfig.build.tsbuildinfo
+
+## Frontend
+
+frontend/.angular
+frontend/cypress*
