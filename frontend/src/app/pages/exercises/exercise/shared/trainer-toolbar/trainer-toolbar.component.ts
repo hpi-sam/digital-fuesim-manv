@@ -3,10 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import {
-    selectLatestStatusHistoryEntry,
-    selectParticipantId,
-} from 'src/app/state/exercise/exercise.selectors';
+import { selectLatestStatusHistoryEntry } from 'src/app/state/exercise/exercise.selectors';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 
 @Component({
@@ -20,8 +17,6 @@ export class TrainerToolbarComponent {
     public exercisePausedState$ = this.store.select(
         selectLatestStatusHistoryEntry
     );
-
-    public participantId$ = this.store.select(selectParticipantId);
 
     constructor(
         private readonly store: Store<AppState>,
@@ -51,9 +46,5 @@ export class TrainerToolbarComponent {
         if (!response.success) {
             console.error(response.message);
         }
-    }
-
-    public async copyParticipantIdToClipboard(id: string) {
-        return navigator.clipboard.writeText(id);
     }
 }
