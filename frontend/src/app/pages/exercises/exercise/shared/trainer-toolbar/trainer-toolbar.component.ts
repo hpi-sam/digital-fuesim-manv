@@ -1,5 +1,12 @@
 import { Input, Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Store } from '@ngrx/store';
+import { ApiService } from 'src/app/core/api.service';
+import type { AppState } from 'src/app/state/app.state';
+import {
+    selectLatestStatusHistoryEntry,
+    selectParticipantId,
+} from 'src/app/state/exercise/exercise.selectors';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 
 @Component({
@@ -10,9 +17,43 @@ import { openClientOverviewModal } from '../client-overview/open-client-overview
 export class TrainerToolbarComponent {
     @Input() exerciseId!: string;
 
-    constructor(private readonly modalService: NgbModal) {}
+    public exercisePausedState$ = this.store.select(
+        selectLatestStatusHistoryEntry
+    );
+
+    public participantId$ = this.store.select(selectParticipantId);
+
+    constructor(
+        private readonly store: Store<AppState>,
+        private readonly apiService: ApiService,
+        private readonly modalService: NgbModal
+    ) {}
 
     public openClientOverview() {
         openClientOverviewModal(this.modalService, this.exerciseId!);
+    }
+
+    public async pauseExercise() {
+        const response = await this.apiService.proposeAction({
+            type: '[Exercise] Pause',
+            timestamp: Date.now(),
+        });
+        if (!response.success) {
+            console.error(response.message);
+        }
+    }
+
+    public async startExercise() {
+        const response = await this.apiService.proposeAction({
+            type: '[Exercise] Start',
+            timestamp: Date.now(),
+        });
+        if (!response.success) {
+            console.error(response.message);
+        }
+    }
+
+    public async copyParticipantIdToClipboard(id: string) {
+        return navigator.clipboard.writeText(id);
     }
 }
