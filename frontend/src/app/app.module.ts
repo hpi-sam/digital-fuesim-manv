@@ -10,6 +10,7 @@ import type { AppState } from './state/app.state';
 import { appReducers } from './state/app.reducer';
 import { LandingPageModule } from './pages/landing-page/landing-page.module';
 import { HealthPageComponent } from './pages/health/health-page/health-page.component';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
     declarations: [AppComponent, HealthPageComponent],
@@ -20,6 +21,7 @@ import { HealthPageComponent } from './pages/health/health-page/health-page.comp
         HttpClientModule,
         StoreModule.forRoot<AppState>(appReducers),
         LandingPageModule,
+        SharedModule,
     ],
     providers: [],
     bootstrap: [AppComponent],
