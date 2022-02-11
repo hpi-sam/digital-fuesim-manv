@@ -12,7 +12,7 @@
     <button
         *ngIf="(exercisePausedState$ | async)?.status !== 'running'"
         (click)="startExercise()"
-        class="btn btn-primary"
+        class="btn btn-primary ms-3"
     >
         Start
     </button>
