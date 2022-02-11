@@ -12,16 +12,8 @@
     <button
         *ngIf="(exercisePausedState$ | async)?.status !== 'running'"
         (click)="startExercise()"
-        class="btn btn-primary"
+        class="btn btn-primary ms-3"
     >
         Start
-    </button>
-    <button
-        *ngIf="participantId$ | async; let participantId"
-        (click)="copyParticipantIdToClipboard(participantId)"
-        ngbTooltip="In die Zwischenablage kopieren"
-        class="btn btn-primary"
-    >
-        ID für Übungsteilnehmer: {{ participantId }}
     </button>
 </div>
