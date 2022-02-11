@@ -41,7 +41,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     public shareExercise(exerciseId: string) {
         const url = `${location.origin}/exercises/${exerciseId}`;
         if (navigator.share) {
-            navigator.share({ title: url, url }).catch((error) => {
+            navigator.share({ url }).catch((error) => {
                 if (error.name === 'AbortError') {
                     return;
                 }
@@ -50,7 +50,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
             return;
         }
         navigator.clipboard.writeText(url);
-        // TODO: display a toast #152 informing the user that the id has been copied to the clipboard
+        // TODO: display a toast #152 informing the user that the url has been copied to the clipboard
     }
 
     ngOnDestroy(): void {
