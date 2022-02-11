@@ -16,4 +16,12 @@
     >
         Start
     </button>
+    <button
+        *ngIf="participantId$ | async; let participantId"
+        (click)="copyParticipantIdToClipboard(participantId)"
+        ngbTooltip="In die Zwischenablage kopieren"
+        class="btn btn-primary"
+    >
+        ID für Übungsteilnehmer: {{ participantId }}
+    </button>
 </div>
