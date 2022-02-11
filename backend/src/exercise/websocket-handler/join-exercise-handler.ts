@@ -5,17 +5,23 @@ export const registerJoinExerciseHandler = (
     io: ExerciseServer,
     client: ExerciseSocket
 ) => {
-    client.on('joinExercise', (exerciseId: string, callback): void => {
-        console.log(exerciseId);
-        if (!clientMap.get(client)?.joinExercise(exerciseId)) {
+    client.on(
+        'joinExercise',
+        (exerciseId: string, clientName: string, callback): void => {
+            const clientId = clientMap
+                .get(client)
+                ?.joinExercise(exerciseId, clientName);
+            if (!clientId) {
+                callback({
+                    success: false,
+                    message: 'The exercise does not exist',
+                });
+                return;
+            }
             callback({
-                success: false,
-                message: 'The exercise does not exist',
+                success: true,
+                payload: clientId,
             });
-            return;
         }
-        callback({
-            success: true,
-        });
-    });
+    );
 };

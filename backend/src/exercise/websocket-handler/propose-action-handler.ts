@@ -20,6 +20,10 @@ export const registerProposeActionHandler = (
             });
             return;
         }
+        // If the action contains a timestamp, refresh it to the current server time.
+        if ((action as any).timestamp !== undefined) {
+            (action as any).timestamp = Date.now();
+        }
         // 2. TODO: validate user permissions
         // 3. Get matching exercise wrapper
         const exerciseWrapper = clientMap.get(client)?.exercise;
@@ -43,9 +47,9 @@ export const registerProposeActionHandler = (
             }
             throw error;
         }
-        // 5. TODO: determine affected clients
+        // 5. TODO: determine affected clients - don't send to clients in other exercises
         // 6. send new state to all affected clients
-        io.emit('performAction', action);
+        exerciseWrapper.emitAction(action);
         // 7. send success response to emitting client
         callback({
             success: true,

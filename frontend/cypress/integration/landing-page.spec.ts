@@ -11,25 +11,24 @@ describe('The landing page', () => {
         cy.visit('/');
     });
 
-    it('can join an exercise', () => {
-        cy.visit('/');
-        cy.get('.container').should('not.contain', 'Add');
-        cy.contains('Join').click();
-        cy.get('.container').should('contain', 'Add');
-    });
-
-    // it('can add new patients', () => {
+    // TODO: we would have to create a new exercise first https://github.com/hpi-sam/digital-fuesim-manv/issues/24 (use fixtures)
+    // it('can join an exercise', () => {
     //     cy.visit('/');
+    //     cy.get('.container').should('not.contain', 'Add');
     //     cy.contains('Join').click();
-    //     cy.get('.container').should('contain', '0');
-    //     cy.contains('Add').click();
-    //     cy.get('.container').should('contain', '1');
-    //     cy.contains('Add').click();
-    //     cy.get('.container').should('contain', '2');
+    //     cy.get('.container').should('contain', 'Add');
     // });
 
-    it('is possible to make visual regression tests (for e.g. a canvas)', () => {
+    it('can create an exercise', () => {
         cy.visit('/');
-        cy.get('.container').compareSnapshot('landing page', 0.1);
+        cy.get('#exerciseId').should('have.value', '');
+        cy.get('#create').click();
+        cy.get('#exerciseId').should('not.have.value', '');
     });
+
+    // TODO: Re-enable when mixed fonts are fixed.
+    // it('is possible to make visual regression tests (for e.g. a canvas)', () => {
+    //     cy.visit('/');
+    //     cy.get('app-landing-page').compareSnapshot('landing-page', 0.1);
+    // });
 });

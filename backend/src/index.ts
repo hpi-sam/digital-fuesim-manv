@@ -1,18 +1,8 @@
-import { createServer } from 'node:http';
-import express from 'express';
-import { Server } from 'socket.io';
-import type { ExerciseServer } from './exercise-server';
-import { setupWebsocket } from './exercise/websocket';
+import 'dotenv/config';
+import { Config } from './config';
+import { FuesimServer } from './fuesim-server';
 
-const app = express();
+Config.initialize();
 
-const httpServer = createServer(app);
-
-const io: ExerciseServer = new Server(httpServer, {
-    // TODO: this is only a temporary solution to make this work
-    cors: {
-        origin: '*',
-    },
-});
-
-setupWebsocket(io);
+// eslint-disable-next-line no-new
+new FuesimServer();

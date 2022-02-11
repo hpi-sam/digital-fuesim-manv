@@ -1,33 +1,53 @@
+import { createServer } from 'node:http';
+import type * as core from 'express-serve-static-core';
+import { Server } from 'socket.io';
+import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { ExerciseSocket, ExerciseServer } from '../exercise-server';
 import { clientMap } from './client-map';
-import { Client } from './clients';
-import { exerciseMap } from './exercise-map';
-import { ExerciseWrapper } from './exercise-wrapper';
+import { ClientWrapper } from './client-wrapper';
 import {
     registerGetStateHandler,
     registerJoinExerciseHandler,
     registerProposeActionHandler,
 } from './websocket-handler';
 
-export const setupWebsocket = (io: ExerciseServer): void => {
-    const port = 3200;
+export class ExerciseWebsocketServer {
+    public readonly exerciseServer: ExerciseServer;
+    public constructor(app: core.Express, port: number) {
+        const server = createServer(app);
 
-    io.listen(port);
+        this.exerciseServer = new Server(server, {
+            // TODO: this is only a temporary solution to make this work
+            cors: {
+                origin: '*',
+            },
+            ...socketIoTransports,
+        });
 
-    io.on('connection', (socket) => {
-        console.log('a user connected');
-        registerClient(socket);
-    });
+        this.exerciseServer.listen(port);
 
-    const exerciseWrapper = new ExerciseWrapper();
-    exerciseMap.set('abcdefghijk', exerciseWrapper);
-    const registerClient = (client: ExerciseSocket): void => {
+        this.exerciseServer.on('connection', (socket) => {
+            this.registerClient(socket);
+        });
+    }
+
+    private registerClient(client: ExerciseSocket): void {
         // Add client
-        clientMap.set(client, new Client(client));
+        clientMap.set(client, new ClientWrapper(client));
 
         // register handlers
-        registerGetStateHandler(io, client);
-        registerProposeActionHandler(io, client);
-        registerJoinExerciseHandler(io, client);
-    };
-};
+        registerGetStateHandler(this.exerciseServer, client);
+        registerProposeActionHandler(this.exerciseServer, client);
+        registerJoinExerciseHandler(this.exerciseServer, client);
+
+        // Register disconnect handler
+        client.on('disconnect', () => {
+            clientMap.get(client)!.leaveExercise();
+            clientMap.delete(client);
+        });
+    }
+
+    public close(): void {
+        this.exerciseServer.close();
+    }
+}

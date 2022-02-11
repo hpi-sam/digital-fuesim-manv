@@ -1,0 +1,21 @@
+<div class="modal-header">
+    <h4 class="modal-title">Übung {{ exerciseId }} beitreten</h4>
+    <button type="button" class="btn-close" (click)="close()"></button>
+</div>
+<div class="modal-body">
+    <div class="form-group">
+        <label class="form-label">Name:</label>
+        <input
+            [(ngModel)]="clientName"
+            (keydown.enter)="joinExercise()"
+            class="form-control"
+            [appAutofocus]="true"
+            type="text"
+        />
+    </div>
+    <br />
+
+    <button (click)="joinExercise()" class="btn btn-primary">
+        Übung beitreten
+    </button>
+</div>
