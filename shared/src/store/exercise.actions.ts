@@ -1,6 +1,22 @@
 import { Type } from 'class-transformer';
-import { IsUUID, ValidateNested } from 'class-validator';
-import { UUID, Viewport, uuidValidationOptions, Patient } from '..';
+import {
+    IsBoolean,
+    IsInt,
+    IsString,
+    IsUUID,
+    ValidateNested,
+} from 'class-validator';
+import {
+    UUID,
+    Viewport,
+    uuidValidationOptions,
+    Patient,
+    Vehicle,
+    Personell,
+    Material,
+    Client,
+} from '..';
+import { Position } from '../models/utils';
 import type { Immutable } from '../utils/immutability';
 
 /**
@@ -46,10 +62,141 @@ export namespace ExerciseActions {
         public patient!: Patient;
     }
 
+    export class MovePatient implements Action {
+        readonly type = '[Patient] Move patient';
+
+        @IsUUID(4, uuidValidationOptions)
+        public patientId!: UUID;
+
+        @ValidateNested()
+        @Type(() => Position)
+        public targetPosition!: Position;
+    }
+
     export class RemovePatient implements Action {
         readonly type = '[Patient] Remove patient';
         @IsUUID(4, uuidValidationOptions)
         public patientId!: UUID;
+    }
+
+    export class AddVehicle implements Action {
+        readonly type = '[Vehicle] Add vehicle';
+        @ValidateNested()
+        @Type(() => Vehicle)
+        public vehicle!: Vehicle;
+    }
+
+    export class MoveVehicle implements Action {
+        readonly type = '[Vehicle] Move vehicle';
+
+        @IsUUID(4, uuidValidationOptions)
+        public vehicleId!: UUID;
+
+        @ValidateNested()
+        @Type(() => Position)
+        public targetPosition!: Position;
+    }
+
+    export class RemoveVehicle implements Action {
+        readonly type = '[Vehicle] Remove vehicle';
+        @IsUUID(4, uuidValidationOptions)
+        public vehicleId!: UUID;
+    }
+
+    export class AddPersonell implements Action {
+        readonly type = '[Personell] Add personell';
+        @ValidateNested()
+        @Type(() => Personell)
+        public personell!: Personell;
+    }
+
+    export class MovePersonell implements Action {
+        readonly type = '[Personell] Move personell';
+
+        @IsUUID(4, uuidValidationOptions)
+        public personellId!: UUID;
+
+        @ValidateNested()
+        @Type(() => Position)
+        public targetPosition!: Position;
+    }
+
+    export class RemovePersonell implements Action {
+        readonly type = '[Personell] Remove personell';
+        @IsUUID(4, uuidValidationOptions)
+        public personellId!: UUID;
+    }
+
+    export class AddMaterial implements Action {
+        readonly type = '[Material] Add material';
+        @ValidateNested()
+        @Type(() => Material)
+        public material!: Material;
+    }
+
+    export class MoveMaterial implements Action {
+        readonly type = '[Material] Move material';
+
+        @IsUUID(4, uuidValidationOptions)
+        public materialId!: UUID;
+
+        @ValidateNested()
+        @Type(() => Position)
+        public targetPosition!: Position;
+    }
+
+    export class RemoveMaterial implements Action {
+        readonly type = '[Material] Remove material';
+        @IsUUID(4, uuidValidationOptions)
+        public materialId!: UUID;
+    }
+
+    // TODO: Only the server should be able to propose these actions
+    export class AddClient implements Action {
+        readonly type = '[Client] Add client';
+        @ValidateNested()
+        @Type(() => Client)
+        public client!: Client;
+    }
+
+    export class RemoveClient implements Action {
+        readonly type = '[Client] Remove client';
+        @IsUUID(4, uuidValidationOptions)
+        public clientId!: UUID;
+    }
+
+    export class RestrictViewToViewport implements Action {
+        readonly type = '[Client] Restrict to viewport';
+        @IsUUID(4, uuidValidationOptions)
+        public clientId!: UUID;
+        @IsUUID(4, uuidValidationOptions)
+        public viewportId?: UUID;
+    }
+
+    export class SetWaitingRoom implements Action {
+        readonly type = '[Client] Set waitingroom';
+        @IsUUID(4, uuidValidationOptions)
+        public clientId!: UUID;
+        @IsBoolean()
+        public shouldBeInWaitingRoom!: boolean;
+    }
+
+    export class PauseExercise implements Action {
+        readonly type = '[Exercise] Pause';
+        @IsInt()
+        public timestamp!: number;
+    }
+
+    export class StartExercise implements Action {
+        readonly type = '[Exercise] Start';
+        @IsInt()
+        public timestamp!: number;
+    }
+
+    export class SetParticipantId implements Action {
+        readonly type = `[Exercise] Set Participant Id`;
+        @IsString()
+        public participantId!: string;
     }
 }
 
@@ -59,4 +206,9 @@ export type ExerciseAction = Immutable<
 
 interface Action {
     readonly type: `[${string}] ${string}`;
+    /**
+     * This timestamp will be refreshed by the server when receiving the action.
+     * Only use a field with this name in case you want this behavior.
+     */
+    timestamp?: number;
 }

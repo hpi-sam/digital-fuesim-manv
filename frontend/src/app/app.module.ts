@@ -3,21 +3,25 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { StoreModule } from '@ngrx/store';
-import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import type { AppState } from './state/app.state';
-import { PatientsListComponent } from './components/patients-list/patients-list.component';
 import { appReducers } from './state/app.reducer';
+import { LandingPageModule } from './pages/landing-page/landing-page.module';
+import { HealthPageComponent } from './pages/health/health-page/health-page.component';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
-    declarations: [AppComponent, PatientsListComponent],
+    declarations: [AppComponent, HealthPageComponent],
     imports: [
         CommonModule,
         BrowserModule,
-        FormsModule,
         AppRoutingModule,
+        HttpClientModule,
         StoreModule.forRoot<AppState>(appReducers),
+        LandingPageModule,
+        SharedModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

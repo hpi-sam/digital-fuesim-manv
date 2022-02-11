@@ -6,13 +6,8 @@ import {
     IsUUID,
     ValidateNested,
 } from 'class-validator';
-import {
-    uuid,
-    uuidArrayValidationOptions,
-    uuidValidationOptions,
-    UUID,
-    UUIDSet,
-} from '../utils';
+import type { UUIDSet } from '../utils';
+import { uuid, uuidValidationOptions, UUID } from '../utils';
 import { Position } from './utils';
 import type { Transfer } from './utils';
 
@@ -45,10 +40,10 @@ export class Vehicle {
     // @IsOptional()
     public transfer?: Transfer;
 
-    @IsUUID(4, uuidArrayValidationOptions) // TODO: does this work on this kind of sets?
+    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     public personellIds: UUIDSet = {};
 
-    @IsUUID(4, uuidArrayValidationOptions) // TODO: does this work on this kind of sets?
+    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     public patientIds: UUIDSet = {};
 
     constructor(materialId: UUID, patientCapacity: number, name: string) {

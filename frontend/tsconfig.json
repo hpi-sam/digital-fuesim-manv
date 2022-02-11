@@ -16,6 +16,7 @@
         "experimentalDecorators": true,
         "esModuleInterop": true,
         "moduleResolution": "node",
+        "skipLibCheck": true,
         "importHelpers": true,
         "target": "es2017",
         "module": "es2020",
@@ -23,6 +24,8 @@
         // needed for https://github.com/typescript-eslint/typescript-eslint/issues/2559#issuecomment-692882427
         "emitDecoratorMetadata": true
     },
+    // this fixes jest globals in .spec.ts being overwritten by cypress globals
+    "include": ["src"],
     "angularCompilerOptions": {
         "enableI18nLegacyMessageIdFormat": false,
         "strictInjectionParameters": true,

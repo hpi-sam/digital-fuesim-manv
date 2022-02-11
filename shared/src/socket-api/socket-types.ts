@@ -1,13 +1,15 @@
-import type { ExerciseState, ExerciseAction } from '..';
+import type { ExerciseState, ExerciseAction, UUID } from '..';
 
 export interface ServerToClientEvents {
     performAction: (action: ExerciseAction) => void;
 }
 
+// The last argument is always expected to be the callback function. (To be able to use it in advanced typings)
 export interface ClientToServerEvents {
     joinExercise: (
         exerciseId: string,
-        callback: (response: SocketResponse) => void
+        clientName: string,
+        callback: (response: SocketResponse<UUID>) => void
     ) => void;
     proposeAction: (
         action: ExerciseAction,
