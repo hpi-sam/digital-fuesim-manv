@@ -7,6 +7,7 @@
         <label class="form-label">Name:</label>
         <input
             [(ngModel)]="clientName"
+            (keydown.enter)="joinExercise()"
             class="form-control"
             [appAutofocus]="true"
             type="text"
