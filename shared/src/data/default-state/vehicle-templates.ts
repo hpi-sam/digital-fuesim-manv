@@ -1,4 +1,4 @@
-import { VehicleTemplate } from '..';
+import { VehicleTemplate } from '../..';
 
 const rtwVehicleTemplate = new VehicleTemplate(
     'RTW',
