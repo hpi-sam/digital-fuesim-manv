@@ -9,6 +9,10 @@ import type {
 import { uuid } from '..';
 import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
 
+/**
+ * @returns a vehicle with personell and materials to be added to the map
+ */
+// Be aware that `uuid()` is nondeterministic and can not be used in a reducer function.
 export function addVehicle(
     vehicleTemplate: Immutable<VehicleTemplate>,
     vehiclePosition?: Position
