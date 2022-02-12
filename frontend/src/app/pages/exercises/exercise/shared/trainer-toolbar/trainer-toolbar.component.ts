@@ -47,4 +47,8 @@ export class TrainerToolbarComponent {
             console.error(response.message);
         }
     }
+
+    public async deleteExercise() {
+        return this.apiService.deleteExercise(this.exerciseId);
+    }
 }
