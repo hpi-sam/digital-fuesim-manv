@@ -11,6 +11,7 @@ import { appReducers } from './state/app.reducer';
 import { LandingPageModule } from './pages/landing-page/landing-page.module';
 import { HealthPageComponent } from './pages/health/health-page/health-page.component';
 import { SharedModule } from './shared/shared.module';
+import { ConfirmationModalModule } from './core/confirmation-modal/confirmation-modal.module';
 
 @NgModule({
     declarations: [AppComponent, HealthPageComponent],
@@ -22,6 +23,7 @@ import { SharedModule } from './shared/shared.module';
         StoreModule.forRoot<AppState>(appReducers),
         LandingPageModule,
         SharedModule,
+        ConfirmationModalModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

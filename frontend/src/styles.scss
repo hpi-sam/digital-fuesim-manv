@@ -1,5 +1,13 @@
 @import '~bootstrap/scss/bootstrap.scss';
 
+// These classes are automatically applied by angular on validated inputs
+.ng-valid {
+    @extend .is-valid;
+}
+.ng-invalid {
+    @extend .is-invalid;
+}
+
 // OpenLayers
 
 // Prevent the control buttons from blocking the map
