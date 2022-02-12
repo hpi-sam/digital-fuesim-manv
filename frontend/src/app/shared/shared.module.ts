@@ -5,8 +5,16 @@ import { DisplayValidationComponent } from './validators/display-validation/disp
 import { ExactMatchValidatorDirective } from './validators/exact-match-validator.directive';
 
 @NgModule({
-    declarations: [AutofocusDirective, DisplayValidationComponent, ExactMatchValidatorDirective],
+    declarations: [
+        AutofocusDirective,
+        DisplayValidationComponent,
+        ExactMatchValidatorDirective,
+    ],
     imports: [CommonModule],
-    exports: [AutofocusDirective, DisplayValidationComponent, ExactMatchValidatorDirective],
+    exports: [
+        AutofocusDirective,
+        DisplayValidationComponent,
+        ExactMatchValidatorDirective,
+    ],
 })
 export class SharedModule {}
