@@ -27,6 +27,12 @@ If you are using [vscode](https://code.visualstudio.com/), you can run the [task
 2. Open another terminal in `/frontend` and run `npm run start`
 3. Open another terminal in `/backend` and run `npm run start`
 
+## Starting for deployment (using docker)
+
+To start the app for deployment purposes you can use docker.
+It is required to have `docker` and `docker-compose` installed.
+Just run `docker-compose up -d` in the root directory, and the server will start listening using nginx on port `80` for the frontend and the api and on port `3200` for the websockets.
+
 ## Before you commit
 
 -   We are using [git lfs](https://git-lfs.github.com/). You can see the file types that currently use git lfs in [.gitattributes](.gitattributes). If you add another binary (or very large) file type to the repository you should add it there too.
