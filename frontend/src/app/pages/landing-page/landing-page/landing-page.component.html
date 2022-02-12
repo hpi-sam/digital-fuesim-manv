@@ -10,6 +10,7 @@
         <div class="input-group">
             <input
                 [(ngModel)]="exerciseId"
+                [appAutofocus]="true"
                 (keydown.enter)="joinExercise()"
                 class="form-control form-control-lg"
                 placeholder="Übungs-ID"
