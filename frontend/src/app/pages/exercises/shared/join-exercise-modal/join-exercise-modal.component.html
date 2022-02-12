@@ -5,7 +5,13 @@
 <div class="modal-body">
     <div class="form-group">
         <label class="form-label">Name:</label>
-        <input class="form-control" [(ngModel)]="clientName" type="text" />
+        <input
+            [(ngModel)]="clientName"
+            (keydown.enter)="joinExercise()"
+            class="form-control"
+            [appAutofocus]="true"
+            type="text"
+        />
     </div>
     <br />
 

@@ -1,21 +1,34 @@
-<div class="p-2 d-flex flex-column" style="height: 100vh">
-    <div class="container">
-        <h2>Übung: {{ exerciseId }}</h2>
-        <!-- TODO: Make distinction between participant id and trainer id -->
+<div
+    *ngIf="client$ | async as client"
+    class="p-2 d-flex flex-column"
+    style="height: 100vh"
+>
+    <div *ngIf="participantId$ | async as participantId" class="container">
+        <h2>
+            Übung:
+            <span class="font-monospace fw-bold user-select-all">{{
+                participantId
+            }}</span>
+            <button
+                (click)="shareExercise(participantId)"
+                class="btn btn-light ms-3"
+            >
+                Teile für Teilnehmer
+            </button>
+            <button
+                *ngIf="client.role === 'trainer'"
+                (click)="shareExercise(exerciseId!)"
+                class="btn btn-outline-warning ms-3"
+            >
+                Teile für Leiter
+            </button>
+        </h2>
     </div>
 
     <div class="flex-fill">
-        <ng-container
-            *ngIf="
-                !(client$ | async)?.isInWaitingRoom;
-                else waitingRoomTemplate
-            "
-        >
+        <ng-container *ngIf="!client.isInWaitingRoom; else waitingRoomTemplate">
             <div
-                *ngIf="
-                    (client$ | async)?.role === 'participant';
-                    else trainerMapEditor
-                "
+                *ngIf="client.role === 'participant'; else trainerMapEditor"
                 class="h-100 rounded overflow-hidden"
             >
                 <app-exercise-map></app-exercise-map>
