@@ -31,7 +31,7 @@ If you are using [vscode](https://code.visualstudio.com/), you can run the [task
 
 To start the app for deployment purposes you can use docker.
 It is required to have `docker` and `docker-compose` installed.
-Just run `docker-compose up -d` in the root directory, and the server will start listening using nginx on port `80` for the frontend and the api and on port `3200` for the websockets.
+Just run `docker-compose up -d` in the root directory, and the server will start listening using nginx on port `80` for all services (frontend, api, websockets).
 
 ## Before you commit
 
