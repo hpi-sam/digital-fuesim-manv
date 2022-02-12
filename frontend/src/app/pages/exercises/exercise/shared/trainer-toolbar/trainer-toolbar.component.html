@@ -2,4 +2,18 @@
     <button (click)="openClientOverview()" class="btn btn-primary">
         Teilnehmerübersicht
     </button>
+    <button
+        *ngIf="(exercisePausedState$ | async)?.status === 'running'"
+        (click)="pauseExercise()"
+        class="btn btn-primary"
+    >
+        Pause
+    </button>
+    <button
+        *ngIf="(exercisePausedState$ | async)?.status !== 'running'"
+        (click)="startExercise()"
+        class="btn btn-primary ms-3"
+    >
+        Start
+    </button>
 </div>

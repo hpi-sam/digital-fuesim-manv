@@ -42,7 +42,12 @@ export class ExerciseWrapper {
     constructor(
         private readonly participantId: string,
         private readonly trainerId: string
-    ) {}
+    ) {
+        this.reduce({
+            type: '[Exercise] Set Participant Id',
+            participantId,
+        });
+    }
 
     /**
      * Select the role that is applied when using the given id.

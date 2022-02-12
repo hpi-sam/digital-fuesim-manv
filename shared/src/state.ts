@@ -46,4 +46,5 @@ class ExerciseStateClass {
     public imageTemplates: ImageTemplate[] = [];
     public ecoLog: EocLogEntry[] = [];
     public statusHistory: StatusHistoryEntry[] = [];
+    public participantId = '';
 }
