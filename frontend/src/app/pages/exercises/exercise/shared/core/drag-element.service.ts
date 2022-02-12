@@ -36,6 +36,9 @@ export class DragElementService {
         this.olMap = undefined;
     }
 
+    /**
+     * This should be called in the dragStart handler of the template in the sidebar
+     */
     public onDragStart(event: DragEvent, transferTemplate: TransferTemplate) {
         // Create the drag image
         const dragImage = new Image();
@@ -45,7 +48,7 @@ export class DragElementService {
             this.normalizedImageHeights[transferTemplate.type] *
             // One higher zoom level means to double the height of the image
             Math.pow(2, zoom - ImageStyleHelper.normalZoom) *
-            // For some reason we need this additional factor to make it work...
+            // For some reason we need this additional factor to make it work - determined via best effort guess
             2.3;
         const width = height * (dragImage.width / dragImage.height);
         // We need a container, because styles on an image element are ignored per API specification (image is interpreted as a bitmap)
@@ -92,16 +95,21 @@ export class DragElementService {
         return container;
     }
 
+    /**
+     * This should be called in the drop handler of the map
+     */
     public onDrop(event: DragEvent) {
         event.preventDefault();
         const transferTemplateString = event.dataTransfer?.getData(
             this.dragElementKey
         );
         if (!transferTemplateString) {
+            // TODO: display message that this is not a valid element to drop on the map
             return;
         }
+        event.preventDefault();
         const transferTemplate: TransferTemplate = JSON.parse(
-            transferTemplateString!
+            transferTemplateString
         );
         const [x, y] = this.olMap!.getCoordinateFromPixel([
             event.offsetX,
@@ -141,6 +149,9 @@ export class DragElementService {
         }
     }
 
+    /**
+     * This should be called in the dragover handler of the map
+     */
     public onDragOver(event: DragEvent) {
         event.preventDefault();
         event.stopPropagation();

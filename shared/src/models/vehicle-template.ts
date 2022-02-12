@@ -1,4 +1,4 @@
-import { IsNumber, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsNumber, IsString, IsUUID } from 'class-validator';
 import type { CanCaterFor, PersonellType } from '..';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 
@@ -15,6 +15,7 @@ export class VehicleTemplate {
     @IsNumber()
     public patientCapacity: number;
 
+    @IsArray()
     public personnel: PersonellType[];
 
     public material: CanCaterFor;
