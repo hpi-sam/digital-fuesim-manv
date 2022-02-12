@@ -44,4 +44,50 @@ describe('user-readable-id-generator', () => {
             }).not.toThrow(RangeError);
         });
     });
+
+    describe('different length', () => {
+        beforeEach(() => {
+            UserReadableIdGenerator.freeId(generatedIds[0]);
+        });
+
+        it('succeeds creating an id longer than 6', () => {
+            expect(UserReadableIdGenerator.generateId(8).length).toBe(8);
+            UserReadableIdGenerator.freeId(generatedIds[1]);
+            expect(UserReadableIdGenerator.generateId(50).length).toBe(50);
+        });
+
+        it('fails creating an id shorter than 6', () => {
+            expect(() => {
+                UserReadableIdGenerator.generateId(5);
+            }).toThrow(RangeError);
+        });
+
+        it('fails creating an id longer than 50', () => {
+            expect(() => {
+                UserReadableIdGenerator.generateId(52);
+            }).toThrow(RangeError);
+        });
+
+        it('fails creating an id with non-integer length', () => {
+            expect(() => {
+                UserReadableIdGenerator.generateId(7.45);
+            }).toThrow(TypeError);
+        });
+
+        it('succeeds freeing a longer id', () => {
+            const id = UserReadableIdGenerator.generateId(8);
+
+            // We now have the maximum amount of ids in our collection
+            expect(() => {
+                UserReadableIdGenerator.generateId();
+            }).toThrow(RangeError);
+
+            UserReadableIdGenerator.freeId(id);
+
+            // After freeing there should be one available again.
+            expect(() => {
+                UserReadableIdGenerator.generateId();
+            }).not.toThrow(RangeError);
+        });
+    });
 });
