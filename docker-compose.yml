@@ -50,7 +50,7 @@ services:
             - frontend
 networks:
     backend:
-        # internal: true
+        internal: true
     frontend:
 
 volumes:
