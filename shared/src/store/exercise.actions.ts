@@ -1,8 +1,14 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsUUID, ValidateNested } from 'class-validator';
-import type { Personell } from '..';
+import {
+    IsArray,
+    IsBoolean,
+    IsInt,
+    IsUUID,
+    ValidateNested,
+} from 'class-validator';
 import {
     UUID,
+    Personell,
     Viewport,
     uuidValidationOptions,
     Patient,
@@ -83,6 +89,9 @@ export namespace ExerciseActions {
         @Type(() => Material)
         public material!: Material;
 
+        @IsArray()
+        @ValidateNested({ each: true })
+        @Type(() => Personell)
         public personell!: Personell[];
     }
 
