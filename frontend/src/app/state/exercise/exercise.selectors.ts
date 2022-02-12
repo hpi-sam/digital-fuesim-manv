@@ -41,3 +41,6 @@ export const getSelectClient = (clientId: UUID) => (state: AppState) =>
 
 export const selectLatestStatusHistoryEntry = (state: AppState) =>
     state.exercise.statusHistory[state.exercise.statusHistory.length - 1];
+
+export const selectParticipantId = (state: AppState) =>
+    state.exercise.participantId;

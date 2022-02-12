@@ -158,4 +158,8 @@ export const exerciseReducerMap: {
 
         return draftState;
     },
+    '[Exercise] Set Participant Id': (draftState, { participantId }) => {
+        draftState.participantId = participantId;
+        return draftState;
+    },
 };

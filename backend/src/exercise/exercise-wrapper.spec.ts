@@ -35,6 +35,7 @@ describe('exercise wrapper', () => {
             const client = clientMap.values().next().value;
 
             const reduceSpy = jest.spyOn(ExerciseWrapper.prototype, 'reduce');
+            reduceSpy.mockClear();
             exercise.removeClient(client);
 
             expect(reduceSpy).not.toHaveBeenCalled();
