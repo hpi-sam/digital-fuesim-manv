@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsUUID, ValidateNested } from 'class-validator';
+import {
+    IsBoolean,
+    IsInt,
+    IsString,
+    IsUUID,
+    ValidateNested,
+} from 'class-validator';
 import {
     UUID,
     Viewport,
@@ -185,6 +191,12 @@ export namespace ExerciseActions {
         readonly type = '[Exercise] Start';
         @IsInt()
         public timestamp!: number;
+    }
+
+    export class SetParticipantId implements Action {
+        readonly type = `[Exercise] Set Participant Id`;
+        @IsString()
+        public participantId!: string;
     }
 }
 
