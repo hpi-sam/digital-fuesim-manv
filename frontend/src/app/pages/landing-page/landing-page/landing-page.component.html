@@ -19,7 +19,7 @@
                 class="form-control form-control-lg"
                 placeholder="Übungs-ID"
                 type="text"
-                id="exerciseId"
+                data-cy="exerciseIdInput"
                 #exerciseIdInput="ngModel"
             />
             <button
@@ -27,7 +27,7 @@
                 [disabled]="exerciseIdInput.invalid"
                 class="btn btn-primary"
                 type="button"
-                id="join"
+                data-cy="joinExerciseButton"
             >
                 Übung beitreten
             </button>
@@ -42,7 +42,7 @@
         <button
             (click)="createExercise()"
             class="btn btn-primary btn-lg mb-3"
-            id="create"
+            data-cy="createExerciseButton"
         >
             Übung erstellen
         </button>
