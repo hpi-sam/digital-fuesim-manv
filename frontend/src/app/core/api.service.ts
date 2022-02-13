@@ -26,18 +26,37 @@ import { httpOrigin, websocketOrigin } from './api-origins';
     providedIn: 'root',
 })
 export class ApiService {
-    private readonly socket: Socket<
-        ServerToClientEvents,
-        ClientToServerEvents
-    > = io(websocketOrigin, {
-        ...socketIoTransports,
-    });
+    private _socket?: Socket<ServerToClientEvents, ClientToServerEvents>;
+
+    private get socket() {
+        if (!this._socket) {
+            this._socket = io(websocketOrigin, {
+                ...socketIoTransports,
+            });
+        }
+        return this._socket;
+    }
 
     /**
-     * Reconnect the socket.
+     * Connect (or reconnect) the socket
      */
-    public reconnect() {
+    private connectSocket() {
         this.socket.connect();
+    }
+
+    /**
+     * Disconnect the socket
+     */
+    private disconnectSocket() {
+        this.socket.disconnect();
+    }
+
+    /**
+     * Leave the current exercise
+     */
+    public leaveExercise() {
+        this.disconnectSocket();
+        this._ownClientId = undefined;
     }
 
     private _ownClientId?: UUID;
@@ -89,6 +108,7 @@ export class ApiService {
         clientName: string
     ): Promise<boolean> {
         this.hasJoinedExerciseState$.next('joining');
+        this.connectSocket();
         const joinExercise = await new Promise<SocketResponse<UUID>>(
             (resolve) => {
                 this.socket.emit(
