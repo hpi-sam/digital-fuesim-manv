@@ -19,7 +19,7 @@ export class ConfirmationModalComponent implements OnDestroy {
      * Emits when the modal closes
      * true - the action has been confirmed
      * false - the action has been dismissed
-     * null - the modal has been closed (cross/click on background)
+     * null - the modal has been closed (cross/click on background/Esc)
      */
     public confirmation$ = new Subject<boolean | null>();
 

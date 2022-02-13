@@ -1,10 +1,7 @@
 import { Directive, Input } from '@angular/core';
-import type {
-    AbstractControl,
-    ValidationErrors,
-    Validator,
-} from '@angular/forms';
+import type { AbstractControl, Validator } from '@angular/forms';
 import { NG_VALIDATORS } from '@angular/forms';
+import { CustomValidators } from './custom-validators';
 
 @Directive({
     selector: '[appExactMatchValidator]',
@@ -22,10 +19,8 @@ export class ExactMatchValidatorDirective implements Validator {
      */
     @Input() appExactMatchValidator!: string;
 
-    validate(control: AbstractControl): ValidationErrors | null {
+    validate(control: AbstractControl) {
         const stringToMatch = this.appExactMatchValidator;
-        return stringToMatch !== control.value
-            ? { exactMatch: { value: control.value, stringToMatch } }
-            : null;
+        return CustomValidators.exactMatchValidator(stringToMatch)(control);
     }
 }
