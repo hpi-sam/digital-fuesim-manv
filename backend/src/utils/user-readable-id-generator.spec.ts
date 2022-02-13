@@ -62,18 +62,6 @@ describe('user-readable-id-generator', () => {
             }).toThrow(RangeError);
         });
 
-        it('fails creating an id longer than 50', () => {
-            expect(() => {
-                UserReadableIdGenerator.generateId(52);
-            }).toThrow(RangeError);
-        });
-
-        it('fails creating an id with non-integer length', () => {
-            expect(() => {
-                UserReadableIdGenerator.generateId(7.45);
-            }).toThrow(TypeError);
-        });
-
         it('succeeds freeing a longer id', () => {
             const id = UserReadableIdGenerator.generateId(8);
 
