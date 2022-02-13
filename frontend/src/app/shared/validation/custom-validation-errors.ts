@@ -27,6 +27,7 @@ interface AngularValidationErrors {
 }
 
 // Utility types
+// See https://stackoverflow.com/a/50375286/12698757
 type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
     k: infer I
 ) => void
