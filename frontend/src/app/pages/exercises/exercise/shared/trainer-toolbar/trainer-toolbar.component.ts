@@ -53,6 +53,7 @@ export class TrainerToolbarComponent {
     public async deleteExercise() {
         // TODO: Ask for confirmation
         await this.apiService.deleteExercise(this.exerciseId);
+        this.apiService.reconnect();
         // TODO: display success message
         this.router.navigate(['/']);
     }

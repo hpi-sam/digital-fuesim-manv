@@ -33,6 +33,13 @@ export class ApiService {
         ...socketIoTransports,
     });
 
+    /**
+     * Reconnect the socket.
+     */
+    public reconnect() {
+        this.socket.connect();
+    }
+
     private _ownClientId?: UUID;
 
     public get ownClientId() {
