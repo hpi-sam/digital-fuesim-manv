@@ -1,7 +1,4 @@
-<div
-    *ngIf="errors && (ngModelInput.dirty || ngModelInput.touched)"
-    class="mt-2 text-danger"
->
+<div *ngIf="errors && ngModelInput.dirty" class="mt-2 text-danger">
     <div *ngIf="errors['required']">Diese Eingabe ist erforderlich.</div>
     <div *ngIf="errors['minlength'] as minLengthError">
         Die Eingabe muss mindestens {{ minLengthError.requiredLength }} Zeichen
