@@ -9,8 +9,8 @@ import { Subject } from 'rxjs';
     styleUrls: ['./confirmation-modal.component.scss'],
 })
 export class ConfirmationModalComponent implements OnDestroy {
-    public title = '???';
-    public description = '???';
+    public title = '';
+    public description = '';
     /**
      * If defined the user has to type in the specified string to be able to confirm the action
      */
