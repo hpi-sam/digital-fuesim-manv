@@ -7,10 +7,11 @@ import { environment } from './environments/environment';
 if (environment.production) {
     enableProdMode();
     // WORKAROUND for immer.js esm (see https://github.com/immerjs/immer/issues/557)
-    window.process = {
-        ...window.process,
+    // Use `as any` as node typings are not available here
+    (window as any).process = {
+        ...(window as any).process,
         env: {
-            ...window.process.env,
+            ...(window as any).process.env,
             NODE_ENV: 'production',
         },
     };
