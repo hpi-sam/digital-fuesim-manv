@@ -18,8 +18,8 @@ type CustomValidationError = ReturnType<CustomValidatorFn>;
  */
 interface AngularValidationErrors {
     pattern: { requiredPattern: string; actualValue: string };
-    minLength: { actualLength: number; requiredLength: number };
-    maxLength: { actualLength: number; requiredLength: number };
+    minlength: { actualLength: number; requiredLength: number };
+    maxlength: { actualLength: number; requiredLength: number };
     email: true;
     min: { actual: number; min: number };
     max: { actual: number; max: number };
