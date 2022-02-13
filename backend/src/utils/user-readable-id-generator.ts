@@ -7,15 +7,12 @@ export class UserReadableIdGenerator {
 
     /**
      * Generates and blocks a new id
-     * @param length The desired length of the output. Defaults to 6. Must be an integer. Must be in [6, 50].
+     * @param length The desired length of the output. Defaults to 6. Should be an integer. Must be at least 6.
      * @returns A random integer string (decimal) in [0, 10^{@link length})
      */
     public static generateId(length: number = 6): string {
-        if (!Number.isInteger(length)) {
-            throw new TypeError('length must be an integer.');
-        }
-        if (length < 6 || length > 50) {
-            throw new RangeError('length must be in [6, 50].');
+        if (length < 6) {
+            throw new RangeError('length must be at least 6.');
         }
         if (this.generatedIds.size >= 10_000) {
             throw new RangeError('Cannot generate more than 10000 ids.');
