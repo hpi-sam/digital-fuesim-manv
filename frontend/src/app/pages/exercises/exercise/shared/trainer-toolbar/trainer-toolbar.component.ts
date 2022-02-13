@@ -1,4 +1,5 @@
 import { Input, Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { ApiService } from 'src/app/core/api.service';
@@ -21,7 +22,8 @@ export class TrainerToolbarComponent {
     constructor(
         private readonly store: Store<AppState>,
         private readonly apiService: ApiService,
-        private readonly modalService: NgbModal
+        private readonly modalService: NgbModal,
+        private readonly router: Router
     ) {}
 
     public openClientOverview() {
@@ -46,5 +48,12 @@ export class TrainerToolbarComponent {
         if (!response.success) {
             console.error(response.message);
         }
+    }
+
+    public async deleteExercise() {
+        // TODO: Ask for confirmation
+        await this.apiService.deleteExercise(this.exerciseId);
+        // TODO: display success message
+        this.router.navigate(['/']);
     }
 }

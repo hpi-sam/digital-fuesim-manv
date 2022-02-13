@@ -146,4 +146,13 @@ export class ApiService {
             this.httpClient.post<ExerciseIds>(`${httpOrigin}/api/exercise`, {})
         );
     }
+
+    public async deleteExercise(trainerId: string) {
+        return lastValueFrom(
+            this.httpClient.delete<undefined>(
+                `${httpOrigin}/api/exercise/${trainerId}`,
+                {}
+            )
+        );
+    }
 }
