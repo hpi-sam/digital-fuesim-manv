@@ -8,4 +8,10 @@ export namespace CustomValidators {
                 ? { exactMatch: { value: control.value, stringToMatch } }
                 : null;
     }
+    export function onlyNumbersValidator() {
+        return (control: AbstractControl) =>
+            /^\d*$/u.test(control.value)
+                ? null
+                : { onlyNumbers: true as const };
+    }
 }

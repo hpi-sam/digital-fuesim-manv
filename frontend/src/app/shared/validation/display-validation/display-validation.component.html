@@ -1,12 +1,12 @@
 <div *ngIf="errors" class="mt-2 text-danger">
     <div *ngIf="errors['required']">Diese Eingabe ist erforderlich.</div>
-    <div *ngIf="errors['minLength'] as minLengthError">
+    <div *ngIf="errors['minlength'] as minLengthError">
         Die Eingabe muss mindestens {{ minLengthError.requiredLength }} Zeichen
         lang sein. Es fehlen noch
         {{ minLengthError.requiredLength - minLengthError.actualLength }}
         Zeichen.
     </div>
-    <div *ngIf="errors['maxLength'] as maxLengthError">
+    <div *ngIf="errors['maxlength'] as maxLengthError">
         Die Eingabe darf höchstens {{ maxLengthError.requiredLength }} Zeichen
         lang sein. Es sind
         {{ maxLengthError.actualLength - maxLengthError.requiredLength }}
@@ -25,6 +25,9 @@
     </div>
     <div *ngIf="errors['max'] as maxError">
         Die Eingabe darf höchstens {{ maxError.max }} sein.
+    </div>
+    <div *ngIf="errors['onlyNumbers'] as maxError">
+        Die Eingabe darf nur Zahlen enthalten.
     </div>
     <div *ngIf="errors['exactMatch'] as exactMatchError">
         Die Eingabe entspricht nicht

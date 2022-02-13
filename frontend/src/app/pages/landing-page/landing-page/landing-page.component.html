@@ -12,13 +12,18 @@
                 [(ngModel)]="exerciseId"
                 [appAutofocus]="true"
                 (keydown.enter)="joinExercise()"
+                [minlength]="6"
+                [maxlength]="8"
+                [appOnlyNumbersValidator]="true"
                 class="form-control form-control-lg"
                 placeholder="Übungs-ID"
                 type="text"
                 id="exerciseId"
+                #exerciseIdInput="ngModel"
             />
             <button
                 (click)="joinExercise()"
+                [disabled]="exerciseIdInput.invalid"
                 class="btn btn-primary"
                 type="button"
                 id="join"
@@ -26,6 +31,9 @@
                 Übung beitreten
             </button>
         </div>
+        <app-display-validation
+            [ngModelInput]="exerciseIdInput"
+        ></app-display-validation>
     </div>
     <div class="p-5 mb-4 bg-light rounded-3">
         <div class="display-6">Neue Übung erstellen</div>
