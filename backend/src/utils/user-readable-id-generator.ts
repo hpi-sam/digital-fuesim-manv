@@ -1,21 +1,27 @@
 export class UserReadableIdGenerator {
     private static readonly generatedIds = new Set<string>();
 
-    private static createExerciseId(): number {
-        return Math.floor(Math.random() * 1_000_000);
+    private static createRandomInteger(maximum: number): number {
+        return Math.floor(Math.random() * maximum);
     }
 
     /**
      * Generates and blocks a new id
-     * @returns A random integer string (decimal) in [0, 1_000_000)
+     * @param length The desired length of the output. Defaults to 6. Should be an integer. Must be at least 6.
+     * @returns A random integer string (decimal) in [0, 10^{@link length})
      */
-    public static generateId(): string {
+    public static generateId(length: number = 6): string {
+        if (length < 6) {
+            throw new RangeError('length must be at least 6.');
+        }
         if (this.generatedIds.size >= 10_000) {
             throw new RangeError('Cannot generate more than 10000 ids.');
         }
         let newId: string | undefined;
         do {
-            newId = this.createExerciseId().toString().padStart(6, '0');
+            newId = this.createRandomInteger(10 ** length)
+                .toString()
+                .padStart(length, '0');
             if (UserReadableIdGenerator.generatedIds.has(newId)) {
                 newId = undefined;
             }
