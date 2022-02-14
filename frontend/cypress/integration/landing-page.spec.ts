@@ -21,9 +21,9 @@ describe('The landing page', () => {
 
     it('can create an exercise', () => {
         cy.visit('/');
-        cy.get('#exerciseId').should('have.value', '');
-        cy.get('#create').click();
-        cy.get('#exerciseId').should('not.have.value', '');
+        cy.get('[data-cy=exerciseIdInput]').should('have.value', '');
+        cy.get('[data-cy=createExerciseButton]').click();
+        cy.get('[data-cy=exerciseIdInput]').should('not.have.value', '');
     });
 
     // TODO: Re-enable when mixed fonts are fixed.
