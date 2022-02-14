@@ -1,3 +1,4 @@
+// TODO: This is a workaround to be able to use this function in the jest tests not setup for angular.
 export function logToStringPipeTransform(logValue: any): string | null {
     switch (typeof logValue) {
         case 'boolean':
