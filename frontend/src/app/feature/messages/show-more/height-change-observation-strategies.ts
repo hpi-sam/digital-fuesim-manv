@@ -10,8 +10,8 @@ export interface HeightChangeObservationStrategies {
     mutationObserver: boolean;
     /**
      * Check every {@link polling} ms if the scrollHeight of the content has changed
-     *  {@link polling} is the specified number that must be > 0
-     * disabled if the value is false
+     * number - the polling interval in ms
+     * false - disable polling
      */
     polling: number | false;
 }

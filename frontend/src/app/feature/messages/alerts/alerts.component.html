@@ -14,7 +14,7 @@
     <div
         *ngFor="
             let message of messages | slice: 0:3;
-            trackBy: 'id' | appTrackByProperty
+            trackBy: 'id' | appTrackByProperty: messages
         "
         (mouseenter)="message.timer?.pause()"
         (mouseleave)="message.timer?.start()"

@@ -87,7 +87,7 @@ export class AppTrackByPropertyPipe implements PipeTransform {
      *
      */
     public transform<
-        Items extends any[] = any[],
+        Items extends readonly any[] = readonly any[],
         Item = Items[0],
         FirstLevelPropertyName extends number | string = keyof Item &
             (number | string),
@@ -110,7 +110,9 @@ export class AppTrackByPropertyPipe implements PipeTransform {
                 typeof item === 'object'
                     ? item === null
                         ? null
-                        : objectToHash(item)
+                        : // a collision would just mean that angular will use either of the two parts in the dom to render one of the collided items.
+                          // This should! only result in a small performance loss.
+                          objectToHash(item)
                     : item;
         }
         if (Array.isArray(propertyNames)) {
