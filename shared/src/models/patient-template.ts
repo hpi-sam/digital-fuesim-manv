@@ -1,15 +1,33 @@
-import { IsUUID, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import type { PatientStatus } from '..';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import type { Patient } from './patient';
+import { PersonalInformation } from './utils/personal-information';
 
 export class PatientTemplate {
     @IsUUID(4, uuidValidationOptions)
     public id: UUID = uuid();
 
-    @ValidateNested() // TODO: Does this work on Exclude?
-    public patientProperties: Exclude<Patient, 'id'>;
+    @ValidateNested()
+    @Type(() => PersonalInformation)
+    public personalInformation: PersonalInformation;
 
-    constructor(patientProperties: Exclude<Patient, 'id'>) {
-        this.patientProperties = patientProperties;
+    public visibleStatus: PatientStatus | null;
+
+    public realStatus: PatientStatus;
+
+    @IsString()
+    public imageUrl: string;
+
+    constructor(
+        personalInformation: PersonalInformation,
+        visibleStatus: PatientStatus | null,
+        realStatus: PatientStatus,
+        imageUrl: string
+    ) {
+        this.personalInformation = personalInformation;
+        this.visibleStatus = visibleStatus;
+        this.realStatus = realStatus;
+        this.imageUrl = imageUrl;
     }
 }
