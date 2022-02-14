@@ -134,12 +134,14 @@ describe('join exercise', () => {
                 trainerSocket.spyOn('performAction');
                 participantSocket.spyOn('performAction');
 
+                const patient = generateDummyPatient();
+
                 // Proposing an action as the trainer
                 const trainerPropose = await trainerSocket.emit(
                     'proposeAction',
                     {
                         type: '[Patient] Add patient',
-                        patient: generateDummyPatient(),
+                        patient,
                     }
                 );
 
@@ -156,8 +158,12 @@ describe('join exercise', () => {
                 const participantPropose = await participantSocket.emit(
                     'proposeAction',
                     {
-                        type: '[Patient] Add patient',
-                        patient: generateDummyPatient(),
+                        type: '[Patient] Move patient',
+                        patientId: patient.id,
+                        targetPosition: {
+                            x: 0,
+                            y: 0,
+                        },
                     }
                 );
 
