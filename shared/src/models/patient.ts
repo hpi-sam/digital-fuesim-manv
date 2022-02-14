@@ -3,13 +3,15 @@ import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import type { PatientStatus } from './utils';
 import { Position } from './utils';
+import { PersonalInformation } from './utils/personal-information';
 
 export class Patient {
     @IsUUID(4, uuidValidationOptions)
     public id: UUID = uuid();
 
-    // TODO: any can't be validated
-    public personalInformation: any;
+    @ValidateNested()
+    @Type(() => PersonalInformation)
+    public personalInformation: PersonalInformation;
 
     // TODO
     public visibleStatus: PatientStatus | null;
@@ -22,7 +24,7 @@ export class Patient {
 
     constructor(
         // TODO: Specify patient data (e.g. injuries, name, etc.)
-        personalInformation: any,
+        personalInformation: PersonalInformation,
         visibleStatus: PatientStatus | null,
         realStatus: PatientStatus,
         nextPhaseChange: string

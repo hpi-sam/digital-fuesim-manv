@@ -10,6 +10,7 @@ import { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
+import { DragElementService } from '../core/drag-element.service';
 import { OlMapManager } from './utility/ol-map-manager';
 import { PopupManager } from './utility/popup-manager';
 
@@ -33,7 +34,8 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     constructor(
         private readonly store: Store<AppState>,
         private readonly ngZone: NgZone,
-        private readonly apiService: ApiService
+        private readonly apiService: ApiService,
+        public readonly dragElementService: DragElementService
     ) {}
 
     ngAfterViewInit(): void {
@@ -46,8 +48,8 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 this.popoverContainer.nativeElement,
                 this.ngZone
             );
+            this.dragElementService.registerMap(this.olMapManager.olMap);
         });
-
         this.popupManager = new PopupManager(
             this.olMapManager!.popupOverlay,
             this.popoverContent
@@ -65,7 +67,6 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.destroy$.next();
-        this.olMapManager?.destroy();
-        this.popupManager?.destroy();
+        this.dragElementService.unregisterMap();
     }
 }
