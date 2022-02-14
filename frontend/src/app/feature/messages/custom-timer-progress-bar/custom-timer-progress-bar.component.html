@@ -1,0 +1,7 @@
+<div class="progress w-100" style="height: 0.3rem">
+    <div
+        [@addProgress]="animationParams$ | async"
+        style="width: 0"
+        [class]="'progress-bar ' + (color ? 'bg-' + color : '')"
+    ></div>
+</div>

@@ -1,0 +1,55 @@
+<div
+    *ngIf="messageService.alertMessages$ | async as messages"
+    style="
+        bottom: 0;
+        left: 0;
+        right: 0;
+        position: fixed;
+        z-index: 10000;
+        opacity: 0.95;
+    "
+    class="container"
+>
+    <!-- Show the 3 newest alerts -->
+    <div
+        *ngFor="
+            let message of messages | slice: 0:3;
+            trackBy: 'id' | appTrackByProperty
+        "
+        (mouseenter)="message.timer?.pause()"
+        (mouseleave)="message.timer?.start()"
+        @fade
+        [ngClass]="
+            'alert alert-' + message.config.color + ' alert-dismissible show'
+        "
+    >
+        <app-custom-timer-progress-bar
+            *ngIf="message.timer"
+            [timer]="message.timer"
+            [color]="message.config.color"
+            style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 2;
+                color: inherit;
+                width: 100%;
+            "
+        ></app-custom-timer-progress-bar>
+        <h4 class="alert-heading">
+            <!-- TODO: Display an icon according to the color -->
+            {{ message.config.title }}
+            <span
+                *ngIf="message.amount > 1"
+                class="ms-2 badge badge-secondary"
+                >{{ message.amount }}</span
+            >
+        </h4>
+        <button
+            type="button"
+            class="btn-close"
+            (click)="messageService.removeMessage(message.id, 'alert')"
+        ></button>
+        <app-message-body [message]="message"></app-message-body>
+    </div>
+</div>
