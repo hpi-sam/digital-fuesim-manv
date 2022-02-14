@@ -1,5 +1,6 @@
 import type { ExerciseAction } from 'digital-fuesim-manv-shared';
 import {
+    exerciseRightsMap,
     ReducerError,
     validateExerciseAction,
 } from 'digital-fuesim-manv-shared';
@@ -11,6 +12,12 @@ export const registerProposeActionHandler = (
     client: ExerciseSocket
 ) => {
     client.on('proposeAction', (action: ExerciseAction, callback): void => {
+        const clientWrapper = clientMap.get(client);
+        if (!clientWrapper) {
+            // There is no client. Skip.
+            console.error('Got an action from missing client');
+            return;
+        }
         // 1. validate json
         const errors = validateExerciseAction(action);
         if (errors.length > 0) {
@@ -25,8 +32,20 @@ export const registerProposeActionHandler = (
             (action as any).timestamp = Date.now();
         }
         // 2. TODO: validate user permissions
+        // 2.1. validate role
+        if (
+            (clientWrapper.client?.role === 'participant' &&
+                exerciseRightsMap[action.type] !== 'participant') ||
+            exerciseRightsMap[action.type] === 'server'
+        ) {
+            callback({
+                success: false,
+                message: 'No sufficient rights',
+            });
+            return;
+        }
         // 3. Get matching exercise wrapper
-        const exerciseWrapper = clientMap.get(client)?.exercise;
+        const exerciseWrapper = clientWrapper.exercise;
         if (!exerciseWrapper) {
             callback({
                 success: false,
