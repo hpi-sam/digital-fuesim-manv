@@ -4,18 +4,21 @@ import type {
     CanDeactivate,
     RouterStateSnapshot,
 } from '@angular/router';
+import { ApiService } from 'src/app/core/api.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class LeaveExerciseGuard implements CanDeactivate<unknown> {
+    constructor(private readonly apiService: ApiService) {}
+
     canDeactivate(
         component: unknown,
         currentRoute: ActivatedRouteSnapshot,
         currentState: RouterStateSnapshot,
         nextState?: RouterStateSnapshot
     ) {
-        // TODO: leave the exercise (with the id `currentRoute.params['exerciseId']`)
+        this.apiService.leaveExercise();
         return true;
     }
 }
