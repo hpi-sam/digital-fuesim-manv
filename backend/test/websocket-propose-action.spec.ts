@@ -1,4 +1,4 @@
-import { Patient, uuid } from 'digital-fuesim-manv-shared';
+import { generateDummyPatient, uuid } from 'digital-fuesim-manv-shared';
 import { createExercise, createTestEnvironment } from './utils';
 
 describe('propose action', () => {
@@ -8,7 +8,7 @@ describe('propose action', () => {
         await environment.withWebsocket(async (socket) => {
             const proposeAction = await socket.emit('proposeAction', {
                 type: '[Patient] Add patient',
-                patient: new Patient({}, null, 'black', ''),
+                patient: generateDummyPatient(),
             });
 
             expect(proposeAction.success).toBe(false);
@@ -71,12 +71,7 @@ describe('propose action', () => {
 
             const propose = await socket.emit('proposeAction', {
                 type: '[Patient] Add patient',
-                patient: new Patient(
-                    { any: 'some info' },
-                    null,
-                    'green',
-                    'now'
-                ),
+                patient: generateDummyPatient(),
             });
 
             expect(propose.success).toBe(true);

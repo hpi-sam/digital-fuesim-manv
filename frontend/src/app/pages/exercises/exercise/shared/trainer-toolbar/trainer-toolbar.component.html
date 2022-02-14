@@ -5,7 +5,7 @@
     <button
         *ngIf="(exercisePausedState$ | async)?.status === 'running'"
         (click)="pauseExercise()"
-        class="btn btn-primary"
+        class="btn btn-primary ms-3"
     >
         Pause
     </button>

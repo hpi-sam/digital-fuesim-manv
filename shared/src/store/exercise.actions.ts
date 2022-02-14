@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+    IsArray,
     IsBoolean,
     IsInt,
     IsString,
@@ -8,13 +9,13 @@ import {
 } from 'class-validator';
 import {
     UUID,
+    Personell,
     Viewport,
     uuidValidationOptions,
     Patient,
     Vehicle,
-    Personell,
-    Material,
     Client,
+    Material,
 } from '..';
 import { Position } from '../models/utils';
 import type { Immutable } from '../utils/immutability';
@@ -84,6 +85,15 @@ export namespace ExerciseActions {
         @ValidateNested()
         @Type(() => Vehicle)
         public vehicle!: Vehicle;
+
+        @ValidateNested()
+        @Type(() => Material)
+        public material!: Material;
+
+        @IsArray()
+        @ValidateNested({ each: true })
+        @Type(() => Personell)
+        public personell!: Personell[];
     }
 
     export class MoveVehicle implements Action {
@@ -103,13 +113,6 @@ export namespace ExerciseActions {
         public vehicleId!: UUID;
     }
 
-    export class AddPersonell implements Action {
-        readonly type = '[Personell] Add personell';
-        @ValidateNested()
-        @Type(() => Personell)
-        public personell!: Personell;
-    }
-
     export class MovePersonell implements Action {
         readonly type = '[Personell] Move personell';
 
@@ -121,19 +124,6 @@ export namespace ExerciseActions {
         public targetPosition!: Position;
     }
 
-    export class RemovePersonell implements Action {
-        readonly type = '[Personell] Remove personell';
-        @IsUUID(4, uuidValidationOptions)
-        public personellId!: UUID;
-    }
-
-    export class AddMaterial implements Action {
-        readonly type = '[Material] Add material';
-        @ValidateNested()
-        @Type(() => Material)
-        public material!: Material;
-    }
-
     export class MoveMaterial implements Action {
         readonly type = '[Material] Move material';
 
@@ -143,12 +133,6 @@ export namespace ExerciseActions {
         @ValidateNested()
         @Type(() => Position)
         public targetPosition!: Position;
-    }
-
-    export class RemoveMaterial implements Action {
-        readonly type = '[Material] Remove material';
-        @IsUUID(4, uuidValidationOptions)
-        public materialId!: UUID;
     }
 
     // TODO: Only the server should be able to propose these actions
