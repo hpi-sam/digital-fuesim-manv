@@ -57,7 +57,7 @@ describe('propose action', () => {
         });
     });
 
-    it('succeeds proposing a valid action', async () => {
+    it('succeeds proposing a valid action with sufficient rights', async () => {
         const exerciseIds = await createExercise(environment);
 
         await environment.withWebsocket(async (socket) => {
@@ -75,6 +75,27 @@ describe('propose action', () => {
             });
 
             expect(propose.success).toBe(true);
+        });
+    });
+
+    it('fails proposing a valid action with unsufficient rights', async () => {
+        const exerciseIds = await createExercise(environment);
+
+        await environment.withWebsocket(async (socket) => {
+            const join = await socket.emit(
+                'joinExercise',
+                exerciseIds.participantId,
+                'Name'
+            );
+
+            expect(join.success).toBe(true);
+
+            const propose = await socket.emit('proposeAction', {
+                type: '[Patient] Add patient',
+                patient: generateDummyPatient(),
+            });
+
+            expect(propose.success).toBe(false);
         });
     });
 });
