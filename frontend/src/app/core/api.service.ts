@@ -21,6 +21,7 @@ import {
 } from '../state/exercise/exercise.actions';
 import { OptimisticActionHandler } from './optimistic-action-handler';
 import { httpOrigin, websocketOrigin } from './api-origins';
+import { MessageService } from './messages/message.service';
 
 @Injectable({
     providedIn: 'root',
@@ -88,10 +89,22 @@ export class ApiService {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly httpClient: HttpClient
+        private readonly httpClient: HttpClient,
+        private readonly messageService: MessageService
     ) {
         this.socket.on('performAction', (action: ExerciseAction) => {
             this.optimisticActionHandler.performAction(action);
+        });
+        this.socket.on('disconnect', (reason) => {
+            if (reason === 'io client disconnect') {
+                return;
+            }
+            this.messageService.postMessage({
+                title: 'Die Verbindung zum Server wurde unterbrochen',
+                body: 'Laden Sie die Seite neu, um die Verbindung wieder herzustellen',
+                color: 'danger',
+                logValue: reason,
+            });
         });
     }
 
@@ -152,6 +165,13 @@ export class ApiService {
         const response = await new Promise<SocketResponse>((resolve) => {
             this.socket.emit('proposeAction', action, resolve);
         });
+        if (!response.success) {
+            this.messageService.postMessage({
+                title: 'Fehler beim Senden der Aktion',
+                color: 'danger',
+                logValue: response.message,
+            });
+        }
         return response;
     }
 
@@ -162,6 +182,11 @@ export class ApiService {
             }
         );
         if (!response.success) {
+            this.messageService.postMessage({
+                title: 'Fehler beim herunterladen der Übung',
+                color: 'danger',
+                logValue: response.message,
+            });
             return response;
         }
         this.store.dispatch(setExerciseState(response.payload));
