@@ -2,7 +2,8 @@ import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID, Vehicle } from 'digital-fuesim-manv-shared';
-import { combineLatest, map, Observable, switchMap } from 'rxjs';
+import type { Observable } from 'rxjs';
+import { combineLatest, map, switchMap } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
