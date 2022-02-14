@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { ApiService } from 'src/app/core/api.service';
+import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectLatestStatusHistoryEntry } from 'src/app/state/exercise/exercise.selectors';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
@@ -23,7 +24,8 @@ export class TrainerToolbarComponent {
         private readonly store: Store<AppState>,
         private readonly apiService: ApiService,
         private readonly modalService: NgbModal,
-        private readonly router: Router
+        private readonly router: Router,
+        private readonly confirmationModalService: ConfirmationModalService
     ) {}
 
     public openClientOverview() {
@@ -51,7 +53,15 @@ export class TrainerToolbarComponent {
     }
 
     public async deleteExercise() {
-        // TODO: Ask for confirmation
+        const deletionConfirmed = await this.confirmationModalService.confirm({
+            title: 'Übung löschen',
+            description:
+                'Möchten Sie die Übung wirklich unwiederbringlich löschen?',
+            confirmationString: this.exerciseId,
+        });
+        if (!deletionConfirmed) {
+            return;
+        }
         await this.apiService.deleteExercise(this.exerciseId);
         // TODO: display success message
         this.router.navigate(['/']);
