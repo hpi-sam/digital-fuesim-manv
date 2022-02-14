@@ -44,7 +44,6 @@ services:
             - backend
         ports:
             - 80:80
-            - 3200:3200
         networks:
             - backend
             - frontend
