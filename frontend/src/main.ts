@@ -11,7 +11,7 @@ if (environment.production) {
     (window as any).process = {
         ...(window as any).process,
         env: {
-            ...(window as any).process.env,
+            ...((window as any).process?.env ?? {}),
             NODE_ENV: 'production',
         },
     };
