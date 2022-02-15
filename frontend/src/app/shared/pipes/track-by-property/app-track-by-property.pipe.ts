@@ -2,7 +2,6 @@ import type { PipeTransform, TrackByFunction } from '@angular/core';
 import { Pipe } from '@angular/core';
 import { get } from 'lodash-es';
 import { objectToHash } from './object-to-hash';
-import { trackByPropertyPipeTransform } from './track-by-property-pipe-transform';
 
 /**
  * An Angular pipe that makes it more convenient to use the [trackByFunction](https://angular.io/api/common/NgForOf#ngForTrackBy) to improve performance of the `*ngFor` structural directive.
