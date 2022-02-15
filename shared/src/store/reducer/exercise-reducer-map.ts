@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-throw-literal */
+import _ from 'lodash';
 import type { ExerciseAction } from '..';
 import { imageSizeToPosition, StatusHistoryEntry } from '../..';
 import type { ReducerFunction } from './reducer-function';
+import { calculateTreatments } from './calculate-treatments';
 import { ReducerError } from '.';
 
 /**
@@ -25,7 +27,8 @@ export const exerciseReducerMap: {
         return draftState;
     },
     '[Patient] Add patient': (draftState, { patient }) => {
-        draftState.patients[patient.id] = patient;
+        draftState.patients[patient.id] = _.cloneDeep(patient);
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Patient] Move patient': (draftState, { patientId, targetPosition }) => {
@@ -36,6 +39,7 @@ export const exerciseReducerMap: {
             );
         }
         patient.position = targetPosition;
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Patient] Remove patient': (draftState, { patientId }) => {
@@ -45,6 +49,7 @@ export const exerciseReducerMap: {
             );
         }
         delete draftState.patients[patientId];
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Vehicle] Add vehicle': (draftState, { vehicle, material, personell }) => {
@@ -103,6 +108,7 @@ export const exerciseReducerMap: {
             x,
             y: unloadPosition.y,
         };
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Vehicle] Remove vehicle': (draftState, { vehicleId }) => {
@@ -125,6 +131,7 @@ export const exerciseReducerMap: {
             );
         }
         personell.position = targetPosition;
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Material] Move material': (
@@ -138,6 +145,7 @@ export const exerciseReducerMap: {
             );
         }
         material.position = targetPosition;
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Client] Add client': (draftState, { client }) => {
