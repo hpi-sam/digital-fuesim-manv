@@ -99,12 +99,16 @@ export class ApiService {
             if (reason === 'io client disconnect') {
                 return;
             }
-            this.messageService.postMessage({
-                title: 'Die Verbindung zum Server wurde unterbrochen',
-                body: 'Laden Sie die Seite neu, um die Verbindung wieder herzustellen',
-                color: 'danger',
-                logValue: reason,
-            });
+            this.messageService.postMessage(
+                {
+                    title: 'Die Verbindung zum Server wurde unterbrochen',
+                    body: 'Laden Sie die Seite neu, um die Verbindung wieder herzustellen.',
+                    color: 'danger',
+                    logValue: reason,
+                },
+                'alert',
+                null
+            );
         });
     }
 
