@@ -25,10 +25,11 @@ export class CustomTimer {
         if (this.isPaused) {
             return this.timeUntilCallbackIfNotPaused;
         }
-        return (
+        return Math.max(
             this.startIntervalDate +
-            this.timeUntilCallbackIfNotPaused -
-            Date.now()
+                this.timeUntilCallbackIfNotPaused -
+                Date.now(),
+            0
         );
     }
 
