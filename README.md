@@ -99,6 +99,7 @@ In the `diff` folder you can see the changes between the baseline and the compar
      * @throws myError when something goes wrong
      */
     ```
+-   You should use the keyword `TODO` to mark things that need to be done later. Whether an issue should be created is an individual decision.
 
 # Architecture
 
