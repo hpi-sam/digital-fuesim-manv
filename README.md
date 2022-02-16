@@ -88,14 +88,27 @@ In the `diff` folder you can see the changes between the baseline and the compar
 -   names are never unique, ids are
 -   private properties that may be used with getters/setters (and only those!) start with one leading underscore (`_`)
 -   `dependencies` should be used for packages that must be installed when running the app (e.g. `express`), whereas `devDependencies` should be used for packages only required for developing, debugging, building, or testing (e.g. `jest`), which includes all `@types` packages. We try to follow this route even for the frontend and the backend, although it is not important there. See also [this](https://stackoverflow.com/a/22004559) answer on StackOverflow for more information about the differences.
+-   Use JSDoc features for further documentation because editors like VSCode can display them better.
+    -   Be aware that JSDoc comments must always go above the Decorator of the class/component/function/variable etc..
+    ```ts
+    /**
+     * Here is a description of the class/function/variable/etc.
+     *
+     * @param myParam a description of the parameter
+     * @returns a nice variable that is bigger than {@link myVariable}
+     * @throws myError when something goes wrong
+     */
+    ```
 
 # Architecture
 
 This repository is a monorepo that consists of the following packages:
 
 -   [frontend](./frontend) the browser-based client application ([Angular](https://angular.io/))
--   [backend](./backend) the server-side application (NodeJs)
+-   [backend](./backend) the server-side application ([NodeJs](https://nodejs.org/))
 -   [shared](./shared) the shared code that is used by both frontend and backend
+
+Each package has it's own README.md file with additional documentation. Please check them out before you start working on the project.
 
 One server can host multiple _exercises_. Mutiple clients can join an exercise. A client can only join one exercise at a time.
 
