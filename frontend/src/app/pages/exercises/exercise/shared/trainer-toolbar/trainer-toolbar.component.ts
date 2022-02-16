@@ -35,23 +35,17 @@ export class TrainerToolbarComponent {
     }
 
     public async pauseExercise() {
-        const response = await this.apiService.proposeAction({
+        this.apiService.proposeAction({
             type: '[Exercise] Pause',
             timestamp: Date.now(),
         });
-        if (!response.success) {
-            console.error(response.message);
-        }
     }
 
     public async startExercise() {
-        const response = await this.apiService.proposeAction({
+        this.apiService.proposeAction({
             type: '[Exercise] Start',
             timestamp: Date.now(),
         });
-        if (!response.success) {
-            console.error(response.message);
-        }
     }
 
     public async deleteExercise() {
@@ -64,15 +58,23 @@ export class TrainerToolbarComponent {
         if (!deletionConfirmed) {
             return;
         }
-        const deleteResponse = this.apiService.deleteExercise(this.exerciseId);
-        // If we get disconnected by the server an error would be displayed
+        // If we get disconnected by the server during the deletion a disconnect error would be displayed
         this.apiService.leaveExercise();
-        await deleteResponse;
-        this.messageService.postMessage({
-            title: 'Übung erfolgreich gelöscht',
-            color: 'success',
-        });
-
-        this.router.navigate(['/']);
+        this.apiService.deleteExercise(this.exerciseId).then(
+            (response) => {
+                this.messageService.postMessage({
+                    title: 'Übung erfolgreich gelöscht',
+                    color: 'success',
+                });
+                this.router.navigate(['/']);
+            },
+            (error) => {
+                this.messageService.postMessage({
+                    title: 'Fehler beim Löschen der Übung',
+                    color: 'danger',
+                    logValue: error,
+                });
+            }
+        );
     }
 }

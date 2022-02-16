@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
+import { MessageService } from 'src/app/core/messages/message.service';
 
 @Component({
     selector: 'app-join-exercise-modal',
@@ -20,7 +21,8 @@ export class JoinExerciseModalComponent implements OnDestroy {
 
     constructor(
         private readonly apiService: ApiService,
-        private readonly activeModal: NgbActiveModal
+        private readonly activeModal: NgbActiveModal,
+        private readonly messageService: MessageService
     ) {}
 
     public async joinExercise() {
@@ -30,8 +32,10 @@ export class JoinExerciseModalComponent implements OnDestroy {
         );
         this.exerciseJoined$.next(successfullyJoined);
         if (!successfullyJoined) {
-            // TODO: display this via a toast
-            console.error('Could not join the exercise');
+            this.messageService.postMessage({
+                title: 'Fehler beim Beitreten der Übung',
+                color: 'danger',
+            });
         }
         this.activeModal.close();
     }

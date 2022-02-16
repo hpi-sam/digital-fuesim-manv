@@ -140,6 +140,7 @@ export class ApiService {
             }
         );
         if (!joinExercise.success) {
+            console.error(joinExercise.message);
             return false;
         }
         const stateSynchronized = await this.synchronizeState();
@@ -175,6 +176,7 @@ export class ApiService {
                 color: 'danger',
                 logValue: response.message,
             });
+            console.error(response.message);
         }
         return response;
     }
@@ -187,10 +189,11 @@ export class ApiService {
         );
         if (!response.success) {
             this.messageService.postMessage({
-                title: 'Fehler beim herunterladen der Übung',
+                title: 'Fehler beim Herunterladen der Übung',
                 color: 'danger',
                 logValue: response.message,
             });
+            console.error(response.message);
             return response;
         }
         this.store.dispatch(setExerciseState(response.payload));
