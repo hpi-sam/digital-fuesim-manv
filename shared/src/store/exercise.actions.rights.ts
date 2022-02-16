@@ -1,11 +1,11 @@
-import type { ExerciseAction, Role } from '..';
+import type { Client, ExerciseAction, ExerciseState, Role } from '..';
 
 /**
  * Assign a minimum role to each action.
  * It is participant < trainer < server
  */
-export const exerciseRightsMap: {
-    [Action in ExerciseAction as Action['type']]: Role | 'server';
+const exerciseRightsMap: {
+    [ActionType in ExerciseAction['type']]: Role | 'server';
 } = {
     '[Client] Add client': 'server',
     '[Client] Remove client': 'server',
@@ -25,3 +25,27 @@ export const exerciseRightsMap: {
     '[Viewport] Add viewport': 'trainer',
     '[Viewport] Remove viewport': 'trainer',
 };
+
+/**
+ *
+ * @param client The {@link Client} that proposed the {@link action}.
+ * @param action The {@link ExerciseAction} that got proposed.
+ * @param state The current {@link ExerciseState} before the {@link action} gets applied.
+ * @returns true when the {@link action} can be applied, false otherwise.
+ */
+export function validatePermissions(
+    client: Client,
+    action: ExerciseAction,
+    state: ExerciseState
+) {
+    // Check role permissions
+    if (
+        (client.role === 'participant' &&
+            exerciseRightsMap[action.type] !== 'participant') ||
+        exerciseRightsMap[action.type] === 'server'
+    ) {
+        return false;
+    }
+    // TODO: Validate e.g. only actions in own viewport
+    return true;
+}
