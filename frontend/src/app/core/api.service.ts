@@ -12,7 +12,7 @@ import type {
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
-import { BehaviorSubject, first, lastValueFrom } from 'rxjs';
+import { first, lastValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import type { AppState } from '../state/app.state';
 import {
@@ -66,6 +66,13 @@ export class ApiService {
         return this._ownClientId;
     }
 
+    /**
+     * Wether the client is currently joined to an exercise
+     */
+    public get isJoined() {
+        return !!this._ownClientId;
+    }
+
     private readonly optimisticActionHandler = new OptimisticActionHandler<
         ExerciseAction,
         ExerciseState,
@@ -96,6 +103,7 @@ export class ApiService {
             this.optimisticActionHandler.performAction(action);
         });
         this.socket.on('disconnect', (reason) => {
+            this._ownClientId = undefined;
             if (reason === 'io client disconnect') {
                 return;
             }
@@ -112,10 +120,6 @@ export class ApiService {
         });
     }
 
-    public hasJoinedExerciseState$ = new BehaviorSubject<
-        'joined' | 'joining' | 'not-joined'
-    >('not-joined');
-
     /**
      * Join an exercise and retrieve its state
      * @returns wether the join was successful
@@ -124,7 +128,6 @@ export class ApiService {
         exerciseId: string,
         clientName: string
     ): Promise<boolean> {
-        this.hasJoinedExerciseState$.next('joining');
         this.connectSocket();
         const joinExercise = await new Promise<SocketResponse<UUID>>(
             (resolve) => {
@@ -137,16 +140,13 @@ export class ApiService {
             }
         );
         if (!joinExercise.success) {
-            this.hasJoinedExerciseState$.next('not-joined');
             return false;
         }
         const stateSynchronized = await this.synchronizeState();
         if (!stateSynchronized.success) {
-            this.hasJoinedExerciseState$.next('not-joined');
             return false;
         }
         this._ownClientId = joinExercise.payload;
-        this.hasJoinedExerciseState$.next('joined');
         return true;
     }
 
