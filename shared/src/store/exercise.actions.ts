@@ -113,6 +113,12 @@ export namespace ExerciseActions {
         public vehicleId!: UUID;
     }
 
+    export class UnloadVehicle implements Action {
+        readonly type = '[Vehicle] Unload vehicle';
+        @IsUUID(4, uuidValidationOptions)
+        public vehicleId!: UUID;
+    }
+
     export class MovePersonell implements Action {
         readonly type = '[Personell] Move personell';
 
