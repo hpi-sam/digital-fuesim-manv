@@ -1,8 +1,8 @@
 import type { ExerciseAction } from 'digital-fuesim-manv-shared';
 import {
-    exerciseRightsMap,
     ReducerError,
     validateExerciseAction,
+    validatePermissions,
 } from 'digital-fuesim-manv-shared';
 import type { ExerciseServer, ExerciseSocket } from '../../exercise-server';
 import { clientMap } from '../client-map';
@@ -31,25 +31,33 @@ export const registerProposeActionHandler = (
         if ((action as any).timestamp !== undefined) {
             (action as any).timestamp = Date.now();
         }
-        // 2. TODO: validate user permissions
-        // 2.1. validate role
-        if (
-            (clientWrapper.client?.role === 'participant' &&
-                exerciseRightsMap[action.type] !== 'participant') ||
-            exerciseRightsMap[action.type] === 'server'
-        ) {
-            callback({
-                success: false,
-                message: 'No sufficient rights',
-            });
-            return;
-        }
-        // 3. Get matching exercise wrapper
+        // 2. Get matching exercise wrapper & client wrapper
         const exerciseWrapper = clientWrapper.exercise;
         if (!exerciseWrapper) {
             callback({
                 success: false,
                 message: 'No exercise selected',
+            });
+            return;
+        }
+        if (!clientWrapper.client) {
+            callback({
+                success: false,
+                message: 'No client selected',
+            });
+            return;
+        }
+        // 3. TODO: validate user permissions
+        if (
+            !validatePermissions(
+                clientWrapper.client,
+                action,
+                exerciseWrapper.getStateSnapshot()
+            )
+        ) {
+            callback({
+                success: false,
+                message: 'No sufficient rights',
             });
             return;
         }
