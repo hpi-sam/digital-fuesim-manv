@@ -24,18 +24,27 @@ export class LandingPageComponent {
     ) {}
 
     public async createExercise() {
-        const ids = await this.apiService.createExercise();
+        this.apiService
+            .createExercise()
+            .then((ids) => {
+                this.trainerId = ids.trainerId;
+                this.exerciseId = this.trainerId;
+                this.participantId = ids.participantId;
+                this.exerciseHasBeenCreated = true;
 
-        this.trainerId = ids.trainerId;
-        this.exerciseId = this.trainerId;
-        this.participantId = ids.participantId;
-        this.exerciseHasBeenCreated = true;
-
-        this.messageService.postMessage({
-            title: 'Übung erstellt',
-            body: 'Sie können nun der Übung beitreten.',
-            color: 'success',
-        });
+                this.messageService.postMessage({
+                    title: 'Übung erstellt',
+                    body: 'Sie können nun der Übung beitreten.',
+                    color: 'success',
+                });
+            })
+            .catch((error) => {
+                this.messageService.postMessage({
+                    title: 'Fehler beim Erstellen der Übung',
+                    color: 'danger',
+                    logValue: error.message,
+                });
+            });
     }
 
     public joinExercise() {
