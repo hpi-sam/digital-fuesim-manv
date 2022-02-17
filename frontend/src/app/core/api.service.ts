@@ -67,7 +67,7 @@ export class ApiService {
     }
 
     /**
-     * Wether the client is currently joined to an exercise
+     * Whether the client is currently joined to an exercise
      */
     public get isJoined() {
         return !!this._ownClientId;
