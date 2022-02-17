@@ -82,14 +82,25 @@ export const exerciseReducerMap: {
         const personnel = Object.keys(vehicle.personellIds).map(
             (personnelId) => draftState.personell[personnelId]
         );
+        const patients = Object.keys(vehicle.patientIds).map(
+            (patientId) => draftState.patients[patientId]
+        );
         // TODO: save in the elements themselves
         const vehicleImageWidth = 200;
         const vehicleWidthInPosition = imageSizeToPosition(vehicleImageWidth);
         const numberOfMaterial = 1;
         const space =
-            vehicleWidthInPosition / (personnel.length + numberOfMaterial + 1);
+            vehicleWidthInPosition /
+            (personnel.length + numberOfMaterial + patients.length + 1);
         let x = unloadPosition.x - vehicleWidthInPosition / 2;
-
+        for (const patient of patients) {
+            x += space;
+            patient.position ??= {
+                x,
+                y: unloadPosition.y,
+            };
+            delete vehicle.patientIds[patient.id];
+        }
         for (const person of personnel) {
             x += space;
             // TODO: only if the person is not in transfer
