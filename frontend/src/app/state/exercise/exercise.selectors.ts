@@ -11,7 +11,11 @@ export const selectPatientTemplates = (state: AppState) =>
 export const selectPatients = (state: AppState) => state.exercise.patients;
 export const selectVehicles = (state: AppState) => state.exercise.vehicles;
 export const selectPersonell = (state: AppState) => state.exercise.personell;
+export const getSelectPersonell = (personnelId: UUID) => (state: AppState) =>
+    state.exercise.personell[personnelId];
 export const selectMaterials = (state: AppState) => state.exercise.materials;
+export const getSelectMaterial = (materialId: UUID) => (state: AppState) =>
+    state.exercise.materials[materialId];
 export const getSelectPatient = (patientId: UUID) => (state: AppState) =>
     state.exercise.patients[patientId];
 export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
