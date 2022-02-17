@@ -105,6 +105,50 @@ export const exerciseReducerMap: {
         };
         return draftState;
     },
+    '[Vehicle] Load vehicle': (
+        draftState,
+        { vehicleId, elementToBeLoadedId, elementToBeLoadedType }
+    ) => {
+        const vehicle = draftState.vehicles[vehicleId];
+        if (!vehicle) {
+            throw new ReducerError(
+                `Vehicle with id ${vehicleId} does not exist`
+            );
+        }
+        switch (elementToBeLoadedType) {
+            case 'material': {
+                const material = draftState.materials[elementToBeLoadedId];
+                if (!material) {
+                    throw new ReducerError(
+                        `Material with id ${elementToBeLoadedId} does not exist`
+                    );
+                }
+                if (vehicle.materialId !== material.id) {
+                    throw new ReducerError(
+                        `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
+                    );
+                }
+                material.position = undefined;
+                break;
+            }
+            case 'personell': {
+                const personnel = draftState.personell[elementToBeLoadedId];
+                if (!personnel) {
+                    throw new ReducerError(
+                        `Personnel with id ${elementToBeLoadedId} does not exist`
+                    );
+                }
+                if (!vehicle.personellIds[elementToBeLoadedId]) {
+                    throw new ReducerError(
+                        `Personnel with id ${personnel.id} is not assignable to the vehicle with id ${vehicle.id}`
+                    );
+                }
+                personnel.position = undefined;
+                break;
+            }
+        }
+        return draftState;
+    },
     '[Vehicle] Remove vehicle': (draftState, { vehicleId }) => {
         if (!draftState.vehicles[vehicleId]) {
             throw new ReducerError(
