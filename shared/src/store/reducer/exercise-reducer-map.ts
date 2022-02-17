@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-throw-literal */
 import type { ExerciseAction } from '..';
-import { StatusHistoryEntry } from '../..';
+import { imageSizeToPosition, StatusHistoryEntry } from '../..';
 import type { ReducerFunction } from './reducer-function';
 import { ReducerError } from '.';
 
@@ -63,6 +63,46 @@ export const exerciseReducerMap: {
             );
         }
         vehicle.position = targetPosition;
+        return draftState;
+    },
+    '[Vehicle] Unload vehicle': (draftState, { vehicleId }) => {
+        const vehicle = draftState.vehicles[vehicleId];
+        if (!vehicle) {
+            throw new ReducerError(
+                `Vehicle with id ${vehicleId} does not exist`
+            );
+        }
+        const unloadPosition = vehicle.position;
+        if (!unloadPosition) {
+            throw new ReducerError(
+                `Vehicle with id ${vehicleId} is currently in transfer`
+            );
+        }
+        const material = draftState.materials[vehicle.materialId];
+        const personnel = Object.keys(vehicle.personellIds).map(
+            (personnelId) => draftState.personell[personnelId]
+        );
+        // TODO: save in the elements themselves
+        const vehicleImageWidth = 200;
+        const vehicleWidthInPosition = imageSizeToPosition(vehicleImageWidth);
+        const numberOfMaterial = 1;
+        const space =
+            vehicleWidthInPosition / (personnel.length + numberOfMaterial + 1);
+        let x = unloadPosition.x - vehicleWidthInPosition / 2;
+
+        for (const person of personnel) {
+            x += space;
+            // TODO: only if the person is not in transfer
+            person.position ??= {
+                x,
+                y: unloadPosition.y,
+            };
+        }
+        x += space;
+        material.position ??= {
+            x,
+            y: unloadPosition.y,
+        };
         return draftState;
     },
     '[Vehicle] Remove vehicle': (draftState, { vehicleId }) => {
