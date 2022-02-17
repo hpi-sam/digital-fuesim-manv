@@ -6,7 +6,7 @@ import type {
     RouterStateSnapshot,
 } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { MessageService } from 'src/app/core/messages/message.service';
+import { ApiService } from 'src/app/core/api.service';
 import { tryToJoinExercise } from '../shared/join-exercise-modal/try-to-join-exercise';
 
 @Injectable({
@@ -16,26 +16,23 @@ export class JoinExerciseGuard implements CanActivate {
     constructor(
         private readonly ngbModalService: NgbModal,
         private readonly router: Router,
-        private readonly messageService: MessageService
+        private readonly apiService: ApiService
     ) {}
 
     async canActivate(
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ) {
+        if (this.apiService.isJoined) {
+            return true;
+        }
         const successfullyJoined = await tryToJoinExercise(
             this.ngbModalService,
             route.params['exerciseId']
         );
         if (!successfullyJoined) {
-            this.messageService.postMessage({
-                title: 'Fehler beim Beitreten der Übung',
-                body: 'Die Übung konnte nicht erfolgreich betreten werden.',
-                color: 'warning',
-            });
             this.router.navigate(['/']);
         }
-        // TODO: check if the user is already in the exercise
         return successfullyJoined;
     }
 }
