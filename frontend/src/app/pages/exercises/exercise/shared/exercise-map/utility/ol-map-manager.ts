@@ -149,6 +149,7 @@ export class OlMapManager {
         elementDictionary$: Observable<{ [id: UUID]: Element }>
     ) {
         const featureManager = new featureManagerClass(
+            this.store,
             this.olMap!,
             layer,
             this.apiService
