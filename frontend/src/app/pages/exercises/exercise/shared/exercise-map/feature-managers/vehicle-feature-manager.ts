@@ -6,6 +6,8 @@ import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
+import type { Feature } from 'ol';
+import type { TranslateEvent } from 'ol/interaction/Translate';
 import type { WithPosition } from '../../utility/types/with-position';
 import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
 import { CommonFeatureManager } from './common-feature-manager';
@@ -20,7 +22,7 @@ export class VehicleFeatureManager extends CommonFeatureManager<
         store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        apiService: ApiService
+        private readonly apiService: ApiService
     ) {
         super(
             store,
@@ -44,5 +46,42 @@ export class VehicleFeatureManager extends CommonFeatureManager<
                 getContext: (feature) => ({ vehicleId: feature.getId()! }),
             }
         );
+    }
+
+    public override onFeatureDrop(
+        dropEvent: TranslateEvent,
+        droppedFeature: Feature<any>,
+        droppedOnFeature: Feature<Point>
+    ) {
+        const droppedElement = this.getElementFromFeature(droppedFeature);
+        const droppedOnVehicle = this.getElementFromFeature(
+            droppedOnFeature
+        ) as {
+            type: 'vehicle';
+            value: Vehicle;
+        };
+        if (!droppedElement || !droppedOnVehicle) {
+            console.error('Could not find element for the features');
+            return false;
+        }
+        if (
+            (droppedElement.type === 'personell' &&
+                droppedOnVehicle.value.personellIds[droppedElement.value.id]) ||
+            (droppedElement.type === 'material' &&
+                droppedOnVehicle.value.materialId === droppedElement.value.id)
+        ) {
+            // TODO: user feedback (e.g. toast)
+            this.apiService.proposeAction(
+                {
+                    type: '[Vehicle] Load vehicle',
+                    vehicleId: droppedOnVehicle.value.id,
+                    elementToBeLoadedId: droppedElement.value.id,
+                    elementToBeLoadedType: droppedElement.type,
+                },
+                true
+            );
+            return true;
+        }
+        return false;
     }
 }

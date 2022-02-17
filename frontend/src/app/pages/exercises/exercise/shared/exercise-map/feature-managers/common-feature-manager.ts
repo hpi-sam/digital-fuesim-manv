@@ -10,6 +10,7 @@ import type { Type } from '@angular/core';
 import type { AppState } from 'src/app/state/app.state';
 import type { Store } from '@ngrx/store';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import type { TranslateEvent } from 'ol/interaction/Translate';
 import { MovementAnimator } from '../utility/movement-animator';
 import { TranslateHelper } from '../utility/translate-helper';
 import { ImageStyleHelper } from '../utility/get-image-style-function';
@@ -198,5 +199,20 @@ export abstract class CommonFeatureManager<
             component: this.popoverOptions.component as any,
             context: this.popoverOptions.getContext(feature),
         });
+    }
+
+    /**
+     * The standard implementation is to ignore these events. You don't need to call the super method in the override.
+     * @param dropEvent The drop event that triggered the call
+     * @param droppedFeature is dropped on {@link droppedOnFeature}
+     * @param droppedOnFeature is the feature that {@link droppedFeature} is dropped on
+     * @returns wether the event should not propagate further (to the features behind {@link droppedOnFeature}).
+     */
+    public onFeatureDrop(
+        dropEvent: TranslateEvent,
+        droppedFeature: Feature<any>,
+        droppedOnFeature: ElementFeature
+    ): boolean {
+        return false;
     }
 }
