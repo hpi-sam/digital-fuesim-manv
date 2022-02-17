@@ -146,6 +146,20 @@ export const exerciseReducerMap: {
                 personnel.position = undefined;
                 break;
             }
+            case 'patient': {
+                const patient = draftState.patients[elementToBeLoadedId];
+                if (!patient) {
+                    throw new ReducerError(
+                        `Patient with id ${elementToBeLoadedId} does not exist`
+                    );
+                }
+                vehicle.patientIds[elementToBeLoadedId] = true;
+                patient.position = undefined;
+                draftState.materials[vehicle.materialId].position = undefined;
+                Object.keys(vehicle.personellIds).forEach((personnelId) => {
+                    draftState.personell[personnelId].position = undefined;
+                });
+            }
         }
         return draftState;
     },

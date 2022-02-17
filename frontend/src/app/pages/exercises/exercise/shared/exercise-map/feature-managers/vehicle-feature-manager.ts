@@ -68,7 +68,11 @@ export class VehicleFeatureManager extends CommonFeatureManager<
             (droppedElement.type === 'personell' &&
                 droppedOnVehicle.value.personellIds[droppedElement.value.id]) ||
             (droppedElement.type === 'material' &&
-                droppedOnVehicle.value.materialId === droppedElement.value.id)
+                droppedOnVehicle.value.materialId ===
+                    droppedElement.value.id) ||
+            (droppedElement.type === 'patient' &&
+                Object.keys(droppedOnVehicle.value.patientIds).length <
+                    droppedOnVehicle.value.patientCapacity)
         ) {
             // TODO: user feedback (e.g. toast)
             this.apiService.proposeAction(

@@ -124,7 +124,7 @@ export namespace ExerciseActions {
         @IsUUID(4, uuidValidationOptions)
         public vehicleId!: UUID;
 
-        public elementToBeLoadedType!: 'material' | 'personell';
+        public elementToBeLoadedType!: 'material' | 'patient' | 'personell';
 
         @IsUUID(4, uuidValidationOptions)
         public elementToBeLoadedId!: UUID;
