@@ -1,23 +1,28 @@
 import { Injectable } from '@angular/core';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
-import { BehaviorSubject } from 'rxjs';
-import { CustomTimer } from './custom-timer';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import type { MessageConfig } from './message';
 import { Message } from './message';
 
 @Injectable({ providedIn: 'root' })
 export class MessageService {
+    /**
+     * the newest message is at the end of the array
+     */
     private toastMessages: ReadonlyArray<Message> = [];
     /**
      * A list of messages that should be displayed as toast
-     * old -> new
+     * the newest message is at the end of the array
      */
     public readonly toastMessages$ = new BehaviorSubject(this.toastMessages);
+    /**
+     * the newest message is at the end of the array
+     */
     private alertMessages: ReadonlyArray<Message> = [];
     /**
      * A list of messages that should be displayed as alerts
-     * new -> old
+     * the newest message is at the end of the array
      */
     public alertMessages$ = new BehaviorSubject(this.toastMessages);
     private readonly defaultTimeout = 5 * 1000;
@@ -39,44 +44,30 @@ export class MessageService {
         const messages = [
             ...(type === 'toast' ? this.toastMessages : this.alertMessages),
         ];
-        let newestMessage: Message | undefined =
-            type === 'toast' ? messages[messages.length - 1] : messages[0];
+        // Set/update the newest message
+        let newestMessage: Message | undefined = messages[messages.length - 1];
         if (!newestMessage || !isEqual(newestMessage.config, config)) {
-            newestMessage = new Message(config);
-            if (type === 'toast') {
-                messages.push(newestMessage);
-            } else {
-                messages.unshift(newestMessage);
-            }
+            newestMessage = new Message(config, timeout);
+            firstValueFrom(newestMessage.destroyed$).then(() => {
+                this.removeDestroyedMessage(newestMessage!.id, type);
+            });
+            messages.push(newestMessage);
         } else {
             newestMessage.amount++;
-        }
-        if (timeout === null) {
-            newestMessage.timer?.destroy();
-            newestMessage.timer = undefined;
-        } else if (
-            !newestMessage.timer ||
-            newestMessage.timer.getTimeLeft() < timeout
-        ) {
-            const wasPaused = newestMessage.timer?.isPaused;
-            newestMessage.timer?.destroy();
-            newestMessage.timer = new CustomTimer(
-                () => this.removeMessage(newestMessage!.id, type),
-                timeout
-            );
-            if (wasPaused) {
-                newestMessage.timer.pause();
-            }
+            newestMessage.increaseDestroyTimeout(timeout);
         }
         this.setMessages(messages, type);
         return newestMessage;
     }
 
-    public removeMessage(id: UUID, type: MessageType) {
+    /**
+     * Removes a destroyed message from the list of messages
+     */
+    private removeDestroyedMessage(id: UUID, type: MessageType) {
         const messages = [
             ...(type === 'toast' ? this.toastMessages : this.alertMessages),
         ];
-        const index = messages.findIndex((m) => m.id === id);
+        const index = messages.findIndex((message) => message.id === id);
         if (index < 0) {
             console.error(`Cannot remove message ${id} - Unknown id!`);
             return;
