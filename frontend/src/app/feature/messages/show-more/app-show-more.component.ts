@@ -159,7 +159,6 @@ export class AppShowMoreComponent
             this.wrapper.nativeElement.scrollHeight <=
             this.wrapper.nativeElement.clientHeight;
         this.changeDetectorRef.markForCheck();
-        console.log('updateState', this.fitsIn);
     }
 
     ngOnDestroy() {
