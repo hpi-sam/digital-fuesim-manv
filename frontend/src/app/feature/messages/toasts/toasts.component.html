@@ -12,15 +12,16 @@
                 let message of messages | slice: 0:5;
                 trackBy: 'id' | appTrackByProperty: messages
             "
-            (mouseenter)="message.timer?.pause()"
-            (mouseleave)="message.timer?.start()"
+            (mouseenter)="message.destroyTimer?.pause()"
+            (mouseleave)="message.destroyTimer?.start()"
+            (click)="message.increaseDestroyTimeout(null)"
             class="toast show position-relative mb-3"
             style="min-width: 200px"
             @fade
         >
             <app-custom-timer-progress-bar
-                *ngIf="message.timer"
-                [timer]="message.timer"
+                *ngIf="message.destroyTimer"
+                [timer]="message.destroyTimer"
                 [color]="message.config.color"
             ></app-custom-timer-progress-bar>
             <div class="toast-header">
@@ -36,7 +37,7 @@
                 <button
                     type="button"
                     class="ms-2 mb-1 btn-close"
-                    (click)="messageService.removeMessage(message.id, 'toast')"
+                    (click)="message.destroy()"
                 ></button>
             </div>
             <div

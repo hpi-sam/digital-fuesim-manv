@@ -10,22 +10,23 @@
     "
     class="container"
 >
-    <!-- Show the 3 newest alerts -->
+    <!-- Show the 5 newest alerts, the newest should appear on the bottom -->
     <div
         *ngFor="
-            let message of messages | slice: 0:3;
+            let message of messages | slice: -5;
             trackBy: 'id' | appTrackByProperty: messages
         "
-        (mouseenter)="message.timer?.pause()"
-        (mouseleave)="message.timer?.start()"
+        (mouseenter)="message.destroyTimer?.pause()"
+        (mouseleave)="message.destroyTimer?.start()"
+        (click)="message.increaseDestroyTimeout(null)"
         @fade
         [ngClass]="
             'alert alert-' + message.config.color + ' alert-dismissible show'
         "
     >
         <app-custom-timer-progress-bar
-            *ngIf="message.timer"
-            [timer]="message.timer"
+            *ngIf="message.destroyTimer"
+            [timer]="message.destroyTimer"
             [color]="message.config.color"
             style="
                 position: absolute;
@@ -48,7 +49,7 @@
         <button
             type="button"
             class="btn-close"
-            (click)="messageService.removeMessage(message.id, 'alert')"
+            (click)="message.destroy()"
         ></button>
         <app-message-body [message]="message"></app-message-body>
     </div>
