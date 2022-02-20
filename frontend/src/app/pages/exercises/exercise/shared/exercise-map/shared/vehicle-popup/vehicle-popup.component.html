@@ -8,9 +8,22 @@
         ></button>
     </h5>
     <div class="popover-body">
-        Verfügbare Patientenplätze:
-        {{ vehicle.patientCapacity - (vehicle.patientIds | keyvalue).length }}
+        <div>
+            Verfügbare Patientenplätze:
+            {{
+                vehicle.patientCapacity - (vehicle.patientIds | keyvalue).length
+            }}
+            <br />
+            Verfügbares Material: 1
+        </div>
         <br />
-        Verfügbares Material: 1
+
+        <button
+            (click)="unloadVehicle()"
+            [disabled]="vehicleIsCompletelyUnloaded$ | async"
+            class="btn btn-primary"
+        >
+            Alle aussteigen
+        </button>
     </div>
 </ng-container>
