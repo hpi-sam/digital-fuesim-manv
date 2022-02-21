@@ -69,10 +69,9 @@ export class TrainerToolbarComponent {
                 this.router.navigate(['/']);
             },
             (error) => {
-                this.messageService.postMessage({
+                this.messageService.postError({
                     title: 'Fehler beim Löschen der Übung',
-                    color: 'danger',
-                    logValue: error,
+                    error,
                 });
             }
         );

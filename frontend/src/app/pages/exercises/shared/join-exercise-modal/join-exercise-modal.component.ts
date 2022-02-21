@@ -32,9 +32,8 @@ export class JoinExerciseModalComponent implements OnDestroy {
         );
         this.exerciseJoined$.next(successfullyJoined);
         if (!successfullyJoined) {
-            this.messageService.postMessage({
+            this.messageService.postError({
                 title: 'Fehler beim Beitreten der Übung',
-                color: 'danger',
             });
         }
         this.activeModal.close();

@@ -42,7 +42,12 @@ export class ApiService {
      * Connect (or reconnect) the socket
      */
     private connectSocket() {
-        this.socket.connect();
+        this.socket.connect().on('connect_error', (error) => {
+            this.messageService.postError({
+                title: 'Fehler beim Verbinden zum Server',
+                error,
+            });
+        });
     }
 
     /**
@@ -107,12 +112,11 @@ export class ApiService {
             if (reason === 'io client disconnect') {
                 return;
             }
-            this.messageService.postMessage(
+            this.messageService.postError(
                 {
                     title: 'Die Verbindung zum Server wurde unterbrochen',
                     body: 'Laden Sie die Seite neu, um die Verbindung wieder herzustellen.',
-                    color: 'danger',
-                    logValue: reason,
+                    error: reason,
                 },
                 'alert',
                 null
@@ -140,7 +144,10 @@ export class ApiService {
             }
         );
         if (!joinExercise.success) {
-            console.error(joinExercise.message);
+            this.messageService.postError({
+                title: 'Fehler beim beitreten der Übung',
+                error: joinExercise.message,
+            });
             return false;
         }
         const stateSynchronized = await this.synchronizeState();
@@ -171,12 +178,10 @@ export class ApiService {
             this.socket.emit('proposeAction', action, resolve);
         });
         if (!response.success) {
-            this.messageService.postMessage({
+            this.messageService.postError({
                 title: 'Fehler beim Senden der Aktion',
-                color: 'danger',
-                logValue: response.message,
+                error: response.message,
             });
-            console.error(response.message);
         }
         return response;
     }
@@ -188,12 +193,10 @@ export class ApiService {
             }
         );
         if (!response.success) {
-            this.messageService.postMessage({
+            this.messageService.postError({
                 title: 'Fehler beim Herunterladen der Übung',
-                color: 'danger',
-                logValue: response.message,
+                error: response.message,
             });
-            console.error(response.message);
             return response;
         }
         this.store.dispatch(setExerciseState(response.payload));

@@ -32,17 +32,19 @@ export class LandingPageComponent {
                 this.participantId = ids.participantId;
                 this.exerciseHasBeenCreated = true;
 
-                this.messageService.postMessage({
-                    title: 'Übung erstellt',
-                    body: 'Sie können nun der Übung beitreten.',
-                    color: 'success',
-                });
+                this.messageService.postMessage(
+                    {
+                        title: 'Übung erstellt',
+                        body: 'Sie können nun der Übung beitreten.',
+                        color: 'success',
+                    },
+                    'toast'
+                );
             })
             .catch((error) => {
-                this.messageService.postMessage({
+                this.messageService.postError({
                     title: 'Fehler beim Erstellen der Übung',
-                    color: 'danger',
-                    logValue: error.message,
+                    error: error.message,
                 });
             });
     }
