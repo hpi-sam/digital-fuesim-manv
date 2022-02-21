@@ -47,7 +47,10 @@ export class ExerciseComponent implements OnInit, OnDestroy {
                 if (error.name === 'AbortError') {
                     return;
                 }
-                console.error(error, url);
+                this.messageService.postError({
+                    title: 'Fehler beim Teilen der Übung',
+                    error: { error, url },
+                });
             });
             return;
         }
