@@ -1,7 +1,7 @@
 <div class="progress w-100" style="height: 0.3rem">
     <div
         [@addProgress]="animationParams$ | async"
-        style="width: 0"
+        style="width: 0; --bs-bg-opacity: 0.5"
         [class]="'progress-bar ' + (color ? 'bg-' + color : '')"
     ></div>
 </div>
