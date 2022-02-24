@@ -47,7 +47,7 @@ export const registerProposeActionHandler = (
             });
             return;
         }
-        // 3. TODO: validate user permissions
+        // 3. validate user permissions
         if (
             !validatePermissions(
                 clientWrapper.client,
