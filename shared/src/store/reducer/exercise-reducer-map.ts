@@ -164,6 +164,11 @@ export const exerciseReducerMap: {
                         `Patient with id ${elementToBeLoadedId} does not exist`
                     );
                 }
+                if(Object.keys(vehicle.patientIds).length >= vehicle.patientCapacity){
+                    throw new ReducerError(
+                        `Vehicle with id ${vehicle.id} is already full`
+                    );
+                }
                 vehicle.patientIds[elementToBeLoadedId] = true;
                 patient.position = undefined;
                 draftState.materials[vehicle.materialId].position = undefined;
