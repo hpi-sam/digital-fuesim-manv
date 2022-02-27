@@ -1,11 +1,11 @@
 # Use official node image as the base image, important to be on debian based for apt-get
-FROM node:16-bullseye
+FROM node:16-bullseye-slim
 
 # Add the source code to app
 COPY ./ /usr/local/app/
 
 # install nginx
-RUN apt-get update && apt-get upgrade -y && apt-get install nginx -y
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get upgrade -y && apt-get install nginx -y
 
 WORKDIR /usr/local/app
 
@@ -30,8 +30,7 @@ RUN chmod +x /docker-entrypoint.sh
 #needed for npm run start:once in docker-entrypoint.sh
 WORKDIR /usr/local/app/backend
 
-#nginx ports
+#nginx port
 EXPOSE 80:80
-EXPOSE 443:443
 
 CMD [ "/bin/bash", "-c", "/docker-entrypoint.sh" ]
