@@ -27,26 +27,29 @@ const specificThreshold = 0.5;
  */
 const generalThreshold = 5;
 
+/*
+* Checks wether patient can be catered for by catering and assigns the patient to catering. Returns true if succesfull, false otherwise
+*/
 function caterFor(
     catering: Material | Personell,
     catersFor: CatersFor,
     patient: Patient
 ) {
-    const color = patient.visibleStatus ?? 'yellow'; // Treat not pretriaged patients as yellow.
+    const status = patient.visibleStatus ?? 'yellow'; // Treat not pretriaged patients as yellow.
     if (
-        (color === 'red' && catering.canCaterFor.red - catersFor.red <= 0) ||
-        (color === 'yellow' &&
-            catering.canCaterFor.yellow - catersFor.yellow <= 0) ||
-        (color === 'green' && catering.canCaterFor.green - catersFor.green <= 0)
+        (status === 'red' && catering.canCaterFor.red <= catersFor.red) ||
+        (status === 'yellow' &&
+            catering.canCaterFor.yellow <= catersFor.yellow) ||
+        (status === 'green' && catering.canCaterFor.green <= catersFor.green)
     ) {
-        // Capacity for the color of the patient is no longer there.
+        // Capacity for the status of the patient is no longer there.
         return false;
     }
     if (
         catering.canCaterFor.logicalOperator === 'or' &&
-        ((color === 'red' && catersFor.yellow + catersFor.green > 0) ||
-            (color === 'yellow' && catersFor.red + catersFor.green > 0) ||
-            (color === 'green' && catersFor.yellow + catersFor.red > 0))
+        ((status === 'red' && (catersFor.yellow > 0 || catersFor.green > 0)) ||
+            (status === 'yellow' && (catersFor.red > 0 || catersFor.green > 0)) ||
+            (status === 'green' && (catersFor.yellow > 0 || catersFor.red > 0)))
     ) {
         // We are already treating someone of another category and cannot treat multiple categories.
         return false;
@@ -56,7 +59,7 @@ function caterFor(
         [patient.id]: true,
     };
 
-    switch (color) {
+    switch (status) {
         case 'red':
             catersFor.red++;
             break;
@@ -128,29 +131,43 @@ function calculateCatering(
     if (distances[0][0] <= specificThreshold) {
         caterFor(catering, catersFor, distances[0][1]);
     }
-    const distancesByColor = groupBy(
+    const distancesByStatus = groupBy(
         distances,
         (item) => item[1].visibleStatus ?? 'yellow' // Treat untriaged patients as yellow
     );
-    distancesByColor.red
+
+    const reds = distancesByStatus.red
         ?.sort((a, b) => a[0] - b[0])
         .map((x) => x[1])
-        .forEach((patient) => {
-            caterFor(catering, catersFor, patient);
-        });
-    distancesByColor.yellow
+
+    const yellows = distancesByStatus.yellow
         ?.sort((a, b) => a[0] - b[0])
         .map((x) => x[1])
-        .forEach((patient) => {
-            caterFor(catering, catersFor, patient);
-        });
-    distancesByColor.green
+
+    const greens = distancesByStatus.green
         ?.sort((a, b) => a[0] - b[0])
         .map((x) => x[1])
-        .forEach((patient) => {
-            caterFor(catering, catersFor, patient);
-        });
+
+    for(const patient of reds){
+        if (!caterFor(catering, catersFor, patient)){
+            break;
+        }
+    }
+
+    for(const patient of yellows){
+        if (!caterFor(catering, catersFor, patient)){
+            break;
+        }
+    }
+
+    for(const patient of greens){
+        if (!caterFor(catering, catersFor, patient)){
+            break;
+        }
+    }
+
 }
+
 
 // Source: https://stackoverflow.com/a/62765924
 const groupBy = <T, K extends keyof any>(list: T[], getKey: (item: T) => K) =>
