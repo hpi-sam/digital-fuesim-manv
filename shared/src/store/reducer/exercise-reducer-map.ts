@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-throw-literal */
-import _ from 'lodash';
+import {cloneDeep} from 'lodash-es';
 import type { ExerciseAction } from '..';
 import { imageSizeToPosition, StatusHistoryEntry } from '../..';
 import type { ReducerFunction } from './reducer-function';
@@ -27,7 +27,7 @@ export const exerciseReducerMap: {
         return draftState;
     },
     '[Patient] Add patient': (draftState, { patient }) => {
-        draftState.patients[patient.id] = _.cloneDeep(patient);
+        draftState.patients[patient.id] = cloneDeep(patient);
         calculateTreatments(draftState);
         return draftState;
     },
