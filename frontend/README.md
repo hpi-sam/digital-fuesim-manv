@@ -23,7 +23,7 @@ Keep in mind that it is also possible to add a [proxy](https://angular.io/guide/
 
 ### CSS
 
--   We are using [bootstrap](https://getbootstrap.com) as a style framework. https://getbootstrap.com/docs/5.0/extend/approach/#summary
+-   We are using [bootstrap](https://getbootstrap.com) as a style framework.
 -   Where should I put my CSS? (Guideline)
     1. Use bootstrap classes whenever possible (look at the [utility classes](https://getbootstrap.com/docs/5.0/utilities/api/)).
     2. If you can reuse the styling, add a class to the [style.scss](./src/styles.scss) (or the component's-`.scss` if it's only used there).
@@ -80,12 +80,16 @@ In `src/app` and every descending folder the following guidelines apply:
     -   singleton-services and route guards that can be used by all other Angular elements that are direct or indirect children of the `core`'s parent-folder
 -   `/shared`:
     -   utility Angular elements as well as classes, functions, types, etc. that (can) have multiple instances and can be used by all other Angular elements that are direct or indirect children of the `shared`'s parent-folder
-    -   every folder with Angular components, pipes, or directives in a `shared`-folder should have it's own module, that exports these Angular elements
+    -   every folder with Angular components, pipes, or directives in a `shared`-folder should have its own module, that exports these Angular elements
 -   `/features`
     -   here are components/pipes/directives that should only be used in the `/pages`-folder at the same level (in opposite to `/shared` no nested folders)
 -   `/pages`:
     -   in here all Angular elements and utilities located that are only used according to the route (-> lazy loading)
 
+Commonly used exercise-[selectors](https://ngrx.io/guide/store/selectors) should go in [./src/app/state/exercise/exercise.selectors.ts](./src/app/state/exercise/exercise.selectors.ts).
+
 You can assume that the Store has the current exercise state if you are in `src/app/pages/exercises/exercise`. We use [route guards](https://angular.io/guide/router-tutorial-toh#canactivate-requiring-authentication) for this.
 
--   By default we don't use `ChangeDetectionStrategy.OnPush` because it makes the code more complicated and increases the skill level needed to work with the code while providing a mostly negligible performance benefit.
+If you want to modify the exercise state do not do it via [reducers](https://ngrx.io/guide/store/reducers) in the store, but propose an action (optimistically) via the [ApiService](.\src\app\core\api.service.ts). The action will automatically be applied to the store.
+
+By default, we don't use `ChangeDetectionStrategy.OnPush` because it makes the code more complicated and increases the skill level needed to work with the code while providing a mostly negligible performance benefit.

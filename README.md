@@ -31,7 +31,7 @@ If you are using [vscode](https://code.visualstudio.com/), you can run the [task
 
 To start the app for deployment purposes you can use docker.
 It is required to have [`docker`](https://www.docker.com/) and [`docker-compose`](https://docs.docker.com/compose/) installed.
-Just run `docker-compose up -d` in the root directory, and the server will start listening using nginx on port `80` for all services (frontend, api, websockets).
+Just run `docker-compose up -d` in the root directory, and the server will start listening using Nginx on port `80` for all services (frontend, API, WebSockets).
 
 ## Before you commit
 
@@ -89,7 +89,7 @@ In the `diff` folder you can see the changes between the baseline and the compar
 -   private properties that may be used with getters/setters (and only those!) start with one leading underscore (`_`)
 -   `dependencies` should be used for packages that must be installed when running the app (e.g. `express`), whereas `devDependencies` should be used for packages only required for developing, debugging, building, or testing (e.g. `jest`), which includes all `@types` packages. We try to follow this route even for the frontend and the backend, although it is not important there. See also [this](https://stackoverflow.com/a/22004559) answer on StackOverflow for more information about the differences.
 -   Use JSDoc features for further documentation because editors like VSCode can display them better.
-    -   Be aware that JSDoc comments must always go above the Decorator of the class/component/function/variable etc..
+    -   Be aware that JSDoc comments must always go above the Decorator of the class/component/function/variable etc.
     ```ts
     /**
      * Here is a description of the class/function/variable/etc.
@@ -109,13 +109,13 @@ This repository is a monorepo that consists of the following packages:
 -   [backend](./backend) the server-side application ([NodeJs](https://nodejs.org/))
 -   [shared](./shared) the shared code that is used by both frontend and backend
 
-Each package has it's own README.md file with additional documentation. Please check them out before you start working on the project.
+Each package has its own `README.md` file with additional documentation. Please check them out before you start working on the project.
 
-One server can host multiple _exercises_. Mutiple clients can join an exercise. A client can only join one exercise at a time.
+One server can host multiple _exercises_. Multiple clients can join an exercise. A client can only join one exercise at a time.
 
-## State management and synchronisation
+## State management and synchronization
 
-This is a realtime application.
+This is a real-time application.
 
 Each client is connected to the server via a [websocket connection](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API). This means you can send and listen for events over a two-way communication channel.
 Via [socket.io](https://socket.io/docs) it is also possible to make use of a more classic request-response API via [acknowledgments](https://socket.io/docs/v4/emitting-events/#acknowledgements).
@@ -177,7 +177,7 @@ A blob should only be downloaded on demand (lazy) and cached.
 ### Synchronisation
 
 1. A client gets a snapshot of the state from the server via `getState`.
-2. Any time an action is applied on the server, it is sent to all clients via `performAction` and applied to them too. Due to the maintained packet ordering via a websocket and the fact that the synchronisation of the state in the backend works synchronously, it is impossible for a client to receive actions out of order or receive actions already included in the state received by `getState`.
+2. Any time an action is applied on the server, it is sent to all clients via `performAction` and applied to them too. Due to the maintained packet ordering via a WebSocket and the fact that the synchronization of the state in the backend works synchronously, it is impossible for a client to receive actions out of order or receive actions already included in the state received by `getState`.
 3. A client can propose an action to the server via `proposeAction`.
 4. If the proposal was accepted, the action is applied on the server and sent to all clients via `performAction`.
 5. The server responds to a proposal with a response that indicates a success or rejection via an [acknowledgment](https://socket.io/docs/v4/emitting-events/#acknowledgements). A successful response is always sent after the `performAction` was broadcasted.
