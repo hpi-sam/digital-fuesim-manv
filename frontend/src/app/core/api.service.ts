@@ -126,6 +126,7 @@ export class ApiService {
 
     /**
      * Join an exercise and retrieve its state
+     * Displays an error message if the join failed
      * @returns wether the join was successful
      */
     public async joinExercise(
@@ -145,7 +146,7 @@ export class ApiService {
         );
         if (!joinExercise.success) {
             this.messageService.postError({
-                title: 'Fehler beim beitreten der Übung',
+                title: 'Fehler beim Beitreten der Übung',
                 error: joinExercise.message,
             });
             return false;
