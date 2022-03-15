@@ -166,6 +166,15 @@ jobs:
               with:
                   path: shared/dist
                   key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
+            - name: Cache Cypress binary
+              uses: actions/cache@v2
+              id: cache-cypress
+              with:
+                  path: ~/.cache/Cypress
+                  key: cypress-${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
+            - name: Install Cypress
+              if: steps.cache-cypress.outputs.cache-hit != 'true'
+              run: npm run cy:install
             - name: Run Cypress
               uses: cypress-io/github-action@v2
               with:
