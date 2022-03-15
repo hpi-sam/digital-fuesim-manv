@@ -8,24 +8,12 @@ The (internal) project-board is [here](https://github.com/orgs/hpi-sam/projects/
 
 ## Installation
 
-### Option 1 (Normal install):
-
 1. Make sure to have [git lfs](https://git-lfs.github.com/) installed.
 2. Install [NodeJs](https://nodejs.org/) (at least version 16.x) (if you need different node versions on your machine we recommend [nvm](https://github.com/nvm-sh/nvm) or [nvm for windows](https://github.com/coreybutler/nvm-windows))
 3. [npm](https://www.npmjs.com/) should already come with NodeJs - if not install it
 4. Clone this repository
 5. Run `npm run setup` from the root folder
 6. (Optional) We have a list of recommended [vscode](https://code.visualstudio.com/) extensions. We strongly recommend you to use them if you are developing. You can see them via [the `@recommended` filter in the extensions panel](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
-
-### Option 2 (via Docker):
-
-1. Install Docker (https://docs.docker.com/get-docker/) and docker-compose (https://docs.docker.com/compose/install/) (optional, but easier, until we publish a container)
-2. Clone this repo (and if needed unpack it).
-3. Be with your command line in the root folder of this project
-4. Build and Run container:
-    1. Run `docker-compose up -d`
-    2. Without docker-compose you need to build the container with `docker build -f docker/Dockerfile -t digital-fuesim-manv .` after that `docker run -p 80:80 digital-fuesim-manv`
-
 
 ## Starting for development
 
