@@ -1,3 +1,4 @@
+import { groupBy } from 'lodash-es';
 import type {
     ExerciseState,
     Material,
@@ -27,9 +28,10 @@ const specificThreshold = 0.5;
  */
 const generalThreshold = 5;
 
-/*
-* Checks wether patient can be catered for by catering and assigns the patient to catering. Returns true if succesfull, false otherwise
-*/
+/**
+ * Tries to assign the {@link patient} to {@link catering} (side effect).
+ * @returns Whether the patient can be catered for by {@link catering}.
+ */
 function caterFor(
     catering: Material | Personell,
     catersFor: CatersFor,
@@ -48,16 +50,14 @@ function caterFor(
     if (
         catering.canCaterFor.logicalOperator === 'or' &&
         ((status === 'red' && (catersFor.yellow > 0 || catersFor.green > 0)) ||
-            (status === 'yellow' && (catersFor.red > 0 || catersFor.green > 0)) ||
+            (status === 'yellow' &&
+                (catersFor.red > 0 || catersFor.green > 0)) ||
             (status === 'green' && (catersFor.yellow > 0 || catersFor.red > 0)))
     ) {
         // We are already treating someone of another category and cannot treat multiple categories.
         return false;
     }
-    catering.assignedPatientIds = {
-        ...catering.assignedPatientIds,
-        [patient.id]: true,
-    };
+    catering.assignedPatientIds[patient.id] = true;
 
     switch (status) {
         case 'red':
@@ -95,7 +95,7 @@ export function calculateTreatments(state: Mutable<ExerciseState>) {
         // Don't treat anyone. No one (alive) is there.
         return;
     }
-    // Currently, it is ignored whether a patient is already treated
+    // We ignore whether a patient is already treated
     // and the patient is just added to the list of treated patients.
     personnels.forEach((personnel) => {
         calculateCatering(personnel, patients);
@@ -115,66 +115,63 @@ function calculateCatering(
         green: 0,
     };
     const distances = patients
-        .map(
-            (patient) =>
-                [
-                    calculateDistance(catering.position!, patient.position!),
-                    patient,
-                ] as [number, Patient]
-        )
-        .filter((distance) => distance[0] <= generalThreshold)
-        .sort((a, b) => a[0] - b[0]);
+        .map((patient) => ({
+            distance: calculateDistance(catering.position!, patient.position!),
+            patient,
+        }))
+        .filter(({ distance }) => distance <= generalThreshold)
+        .sort(
+            ({ distance: distanceA }, { distance: distanceB }) =>
+                distanceA - distanceB
+        );
     if (distances.length === 0) {
         // No patients in the radius.
         return;
     }
-    if (distances[0][0] <= specificThreshold) {
-        caterFor(catering, catersFor, distances[0][1]);
+    if (distances[0].distance <= specificThreshold) {
+        caterFor(catering, catersFor, distances[0].patient);
     }
     const distancesByStatus = groupBy(
         distances,
-        (item) => item[1].visibleStatus ?? 'yellow' // Treat untriaged patients as yellow
+        ({ patient }) => patient.visibleStatus ?? 'yellow' // Treat untriaged patients as yellow
     );
 
-    const reds = distancesByStatus.red
-        ?.sort((a, b) => a[0] - b[0])
-        .map((x) => x[1])
+    const redPatients = distancesByStatus.red
+        ?.sort(
+            ({ distance: distanceA }, { distance: distanceB }) =>
+                distanceA - distanceB
+        )
+        .map(({ patient }) => patient);
 
-    const yellows = distancesByStatus.yellow
-        ?.sort((a, b) => a[0] - b[0])
-        .map((x) => x[1])
+    const yellowPatients = distancesByStatus.yellow
+        ?.sort(
+            ({ distance: distanceA }, { distance: distanceB }) =>
+                distanceA - distanceB
+        )
+        .map(({ patient }) => patient);
 
-    const greens = distancesByStatus.green
-        ?.sort((a, b) => a[0] - b[0])
-        .map((x) => x[1])
+    const greenPatients = distancesByStatus.green
+        ?.sort(
+            ({ distance: distanceA }, { distance: distanceB }) =>
+                distanceA - distanceB
+        )
+        .map(({ patient }) => patient);
 
-    for(const patient of reds){
-        if (!caterFor(catering, catersFor, patient)){
+    for (const patient of redPatients) {
+        if (!caterFor(catering, catersFor, patient)) {
             break;
         }
     }
 
-    for(const patient of yellows){
-        if (!caterFor(catering, catersFor, patient)){
+    for (const patient of yellowPatients) {
+        if (!caterFor(catering, catersFor, patient)) {
             break;
         }
     }
 
-    for(const patient of greens){
-        if (!caterFor(catering, catersFor, patient)){
+    for (const patient of greenPatients) {
+        if (!caterFor(catering, catersFor, patient)) {
             break;
         }
     }
-
 }
-
-
-// Source: https://stackoverflow.com/a/62765924
-const groupBy = <T, K extends keyof any>(list: T[], getKey: (item: T) => K) =>
-    list.reduce((previous, currentItem) => {
-        const group = getKey(currentItem);
-        if (!previous[group]) previous[group] = [];
-        previous[group].push(currentItem);
-        return previous;
-        // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style, @typescript-eslint/prefer-reduce-type-parameter
-    }, {} as Record<K, T[]>);
