@@ -23,7 +23,7 @@ Keep in mind that it is also possible to add a [proxy](https://angular.io/guide/
 
 ### CSS
 
--   We are using [bootstrap](https://getbootstrap.com) as a style framework.
+-   We are using [Bootstrap](https://getbootstrap.com) as a style framework.
 -   Where should I put my CSS? (Guideline)
     1. Use Bootstrap classes whenever possible (look at the [utility classes](https://getbootstrap.com/docs/5.0/utilities/api/)).
     2. If you can reuse the styling, add a class to the [style.scss](./src/styles.scss) (or the component's-`.scss` if it's only used there).
@@ -39,7 +39,7 @@ Keep in mind that it is also possible to add a [proxy](https://angular.io/guide/
 
     1. structural directive (e.g. `*ngIf`)
     2. template reference (e.g. `#myId`)
-    3. inputs (e.g. `[myInput]`)
+    3. Component inputs (e.g. `[myInput]`)
     4. two way binding/banana in the box (e.g. `[(myBanana)]`)
     5. Outputs (e.g. `(onChange)`)
     6. Directives (e.g. `[myDirective]`, `[class.my_class]`, `[ngStyle]`, `[attr.myAttr]`)
