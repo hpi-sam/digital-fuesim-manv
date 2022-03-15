@@ -37,7 +37,7 @@ You need to have [`docker`](https://www.docker.com/) installed.
 
 ### Without docker-compose:
 1. You need to build the container with `docker build -f docker/Dockerfile -t digital-fuesim-manv .` (in the root directory).
-2. Execute `docker run -p 80:80 digital-fuesim-manv`.
+2. Execute `docker run -p -d 80:80 digital-fuesim-manv`.
 
 The server will start listening using nginx on port `80` for all services (frontend, api, websockets).
 

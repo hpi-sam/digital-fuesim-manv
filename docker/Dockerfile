@@ -1,12 +1,13 @@
 # Use official node image as the base image, important to be on debian based for apt-get
 FROM node:16-bullseye-slim
 
-# Add the source code to app
-COPY ./ /usr/local/app/
-
 # install nginx
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get upgrade -y && apt-get install nginx -y
 
+# add the source code to app
+COPY ./ /usr/local/app/
+
+# set workdir
 WORKDIR /usr/local/app
 
 # setup and install all the dependencies
