@@ -26,9 +26,9 @@ Keep in mind that it is also possible to add a [proxy](https://angular.io/guide/
 -   We are using [Bootstrap](https://getbootstrap.com) as a style framework.
 -   Where should I put my CSS? (Guideline)
     1. Use Bootstrap classes whenever possible (look at the [utility classes](https://getbootstrap.com/docs/5.0/utilities/api/)).
-    2. If you can reuse the styling, add a class to the [style.scss](./src/styles.scss) (or the component's-`.scss` if it's only used there).
+    2. If you can reuse the styling, add a class to the [style.scss](./src/styles.scss) (or the components SCSS if it's only used there).
     3. If the styling is custom and only applicable to one specific element, use inline CSS.
-    4. If the inline styling is very big, complicated, or makes use of any SCSS or advanced CSS not applicable to inline styles, put it into the component's SCSS file.
+    4. If the inline styling is very big, complicated, or makes use of any SCSS or advanced CSS not applicable to inline styles, put it into the components SCSS file.
     -   See also [Bootstraps best practices](https://getbootstrap.com/docs/5.0/extend/approach/#summary).
 
 ### Templates
@@ -37,15 +37,15 @@ Keep in mind that it is also possible to add a [proxy](https://angular.io/guide/
 
     -   As long as eslint doesn't have [a lint rule for it](https://github.com/angular-eslint/angular-eslint/pull/605) it is just encouraged to use the following order of attributes.
 
-    1. structural directive (e.g. `*ngIf`)
-    2. template reference (e.g. `#myId`)
+    1. Structural directive (e.g. `*ngIf`)
+    2. Template reference (e.g. `#myId`)
     3. Component inputs (e.g. `[myInput]`)
-    4. two way binding/banana in the box (e.g. `[(myBanana)]`)
+    4. Two way binding/banana in the box (e.g. `[(myBanana)]`)
     5. Outputs (e.g. `(onChange)`)
     6. Directives (e.g. `[myDirective]`, `[class.my_class]`, `[ngStyle]`, `[attr.myAttr]`)
     7. `class` attribute
     8. `style` attribute
-    9. other attributes (e.g. `href`, `type`)
+    9. Other attributes (e.g. `href`, `type`)
 
 ## Libraries
 
@@ -90,6 +90,5 @@ Commonly used exercise-[selectors](https://ngrx.io/guide/store/selectors) should
 
 You can assume that the Store has the current exercise state if you are in `src/app/pages/exercises/exercise`. We use [route guards](https://angular.io/guide/router-tutorial-toh#canactivate-requiring-authentication) for this.
 
-If you want to modify the exercise state do not do it via [reducers](https://ngrx.io/guide/store/reducers) in the store, but propose an action (optimistically) via the [ApiService](.\src\app\core\api.service.ts). The action will automatically be applied to the store.
-
+If you want to modify the exercise state do not do it via [reducers](https://ngrx.io/guide/store/reducers) in the store, but propose an action (optimistically) via the [ApiService](./src/app/core/api.service.ts). The action will automatically be applied to the store.
 By default, we don't use `ChangeDetectionStrategy.OnPush` because it makes the code more complicated and increases the skill level needed to work with the code while providing a mostly negligible performance benefit.
