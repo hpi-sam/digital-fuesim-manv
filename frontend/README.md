@@ -25,11 +25,11 @@ Keep in mind that it is also possible to add a [proxy](https://angular.io/guide/
 
 -   We are using [bootstrap](https://getbootstrap.com) as a style framework.
 -   Where should I put my CSS? (Guideline)
-    1. Use bootstrap classes whenever possible (look at the [utility classes](https://getbootstrap.com/docs/5.0/utilities/api/)).
+    1. Use Bootstrap classes whenever possible (look at the [utility classes](https://getbootstrap.com/docs/5.0/utilities/api/)).
     2. If you can reuse the styling, add a class to the [style.scss](./src/styles.scss) (or the component's-`.scss` if it's only used there).
     3. If the styling is custom and only applicable to one specific element, use inline CSS.
     4. If the inline styling is very big, complicated, or makes use of any SCSS or advanced CSS not applicable to inline styles, put it into the component's SCSS file.
-    -   See also [bootstraps best practices](https://getbootstrap.com/docs/5.0/extend/approach/#summary).
+    -   See also [Bootstraps best practices](https://getbootstrap.com/docs/5.0/extend/approach/#summary).
 
 ### Templates
 
@@ -49,7 +49,7 @@ Keep in mind that it is also possible to add a [proxy](https://angular.io/guide/
 
 ## Libraries
 
--   [bootstrap](https://getbootstrap.com) - A styling framework
+-   [Bootstrap](https://getbootstrap.com) - A styling framework
     -   [Documentation](https://getbootstrap.com/docs)
     -   [Cheatsheet](https://getbootstrap.com/docs/5.1/examples/cheatsheet/)
 -   [ngBootstrap](https://ng-bootstrap.github.io/) - Angular components for bootstrap
