@@ -3,6 +3,7 @@ import type {
     ExerciseState,
     Material,
     Patient,
+    PatientStatus,
     Personell,
     Position,
 } from '../..';
@@ -133,7 +134,17 @@ function calculateCatering(
     if (distances[0].distance <= specificThreshold) {
         caterFor(catering, catersFor, distances[0].patient);
     }
-    const distancesByStatus = groupBy(
+    // The typings of groupBy are not correct (group keys could be missing if there are no such elements in the array)
+    const distancesByStatus: Partial<
+        // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+        Record<
+            PatientStatus,
+            {
+                distance: number;
+                patient: Patient;
+            }[]
+        >
+    > = groupBy(
         distances,
         ({ patient }) => patient.visibleStatus ?? 'yellow' // Treat untriaged patients as yellow
     );
