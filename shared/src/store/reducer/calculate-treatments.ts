@@ -79,7 +79,9 @@ export function calculateTreatments(state: Mutable<ExerciseState>) {
     const personnels = Object.values(state.personell).filter(
         (personnel) => personnel.position !== undefined
     );
-    const materials = Object.values(state.materials);
+    const materials = Object.values(state.materials).filter(
+        (material) => material.position !== undefined
+    );
     // Unassign all patients as we are calculating everything from scratch.
     personnels.forEach((personnel) => {
         personnel.assignedPatientIds = {};
@@ -136,26 +138,29 @@ function calculateCatering(
         ({ patient }) => patient.visibleStatus ?? 'yellow' // Treat untriaged patients as yellow
     );
 
-    const redPatients = distancesByStatus.red
-        ?.sort(
-            ({ distance: distanceA }, { distance: distanceB }) =>
-                distanceA - distanceB
-        )
-        .map(({ patient }) => patient);
+    const redPatients =
+        distancesByStatus.red
+            ?.sort(
+                ({ distance: distanceA }, { distance: distanceB }) =>
+                    distanceA - distanceB
+            )
+            .map(({ patient }) => patient) ?? [];
 
-    const yellowPatients = distancesByStatus.yellow
-        ?.sort(
-            ({ distance: distanceA }, { distance: distanceB }) =>
-                distanceA - distanceB
-        )
-        .map(({ patient }) => patient);
+    const yellowPatients =
+        distancesByStatus.yellow
+            ?.sort(
+                ({ distance: distanceA }, { distance: distanceB }) =>
+                    distanceA - distanceB
+            )
+            .map(({ patient }) => patient) ?? [];
 
-    const greenPatients = distancesByStatus.green
-        ?.sort(
-            ({ distance: distanceA }, { distance: distanceB }) =>
-                distanceA - distanceB
-        )
-        .map(({ patient }) => patient);
+    const greenPatients =
+        distancesByStatus.green
+            ?.sort(
+                ({ distance: distanceA }, { distance: distanceB }) =>
+                    distanceA - distanceB
+            )
+            .map(({ patient }) => patient) ?? [];
 
     for (const patient of redPatients) {
         if (!caterFor(catering, catersFor, patient)) {
