@@ -4,6 +4,7 @@
     "type": "module",
     "scripts": {
         "cy:open": "cypress open",
+        "cy:install": "cypress install",
         "cy:run": "cypress run",
         "cy:update-snapshots": "cypress-image-diff -u",
         "ng": "ng",
