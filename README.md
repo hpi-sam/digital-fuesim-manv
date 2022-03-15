@@ -42,8 +42,9 @@ If you are using [vscode](https://code.visualstudio.com/), you can run the [task
 ## Starting for deployment (using docker)
 
 To start the app for deployment purposes you can use docker.
-It is required to have [`docker`](https://www.docker.com/) and [`docker-compose`](https://docs.docker.com/compose/) installed.
+It is required to have [`docker`](https://www.docker.com/) and [`docker-compose`](https://docs.docker.com/compose/) (optional) installed.
 Just run `docker-compose up -d` in the root directory, and the server will start listening using nginx on port `80` for all services (frontend, api, websockets).
+Without docker-compose you need to build the container with `docker build -f docker/Dockerfile -t digital-fuesim-manv .` (in the root directory) after that execute `docker run -p 80:80 digital-fuesim-manv`.
 
 ## Before you commit
 
