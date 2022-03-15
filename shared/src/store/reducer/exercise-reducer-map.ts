@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-throw-literal */
-import {cloneDeep} from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
 import type { ExerciseAction } from '..';
 import { imageSizeToPosition, StatusHistoryEntry } from '../..';
 import type { ReducerFunction } from './reducer-function';
