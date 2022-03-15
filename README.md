@@ -32,10 +32,12 @@ If you are using [vscode](https://code.visualstudio.com/), you can run the [task
 You need to have [`docker`](https://www.docker.com/) installed.
 
 ### With docker-compose (recommended):
+
 1. [`docker-compose`](https://docs.docker.com/compose/) needs to be installed.
 2. Run `docker-compose up -d` in the root directory.
 
 ### Without docker-compose:
+
 1. You need to build the container with `docker build -f docker/Dockerfile -t digital-fuesim-manv .` (in the root directory).
 2. Execute `docker run -p -d 80:80 digital-fuesim-manv`.
 
