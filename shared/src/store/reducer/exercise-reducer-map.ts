@@ -2,6 +2,7 @@
 import { cloneDeep } from 'lodash-es';
 import type { ExerciseAction } from '..';
 import { imageSizeToPosition, StatusHistoryEntry } from '../..';
+import { getStatus } from '../../models/utils';
 import type { ReducerFunction } from './reducer-function';
 import { calculateTreatments } from './calculate-treatments';
 import { ReducerError } from '.';
@@ -27,6 +28,25 @@ export const exerciseReducerMap: {
         return draftState;
     },
     '[Patient] Add patient': (draftState, { patient }) => {
+        const availableHealthStateIds = Object.keys(patient.healthStates);
+        Object.values(patient.healthStates).forEach((healthState) => {
+            healthState.nextStateConditions.forEach((nextStateCondition) => {
+                if (
+                    !availableHealthStateIds.includes(
+                        nextStateCondition.matchingHealthStateId
+                    )
+                ) {
+                    throw new ReducerError(
+                        `HealthState with id ${nextStateCondition.matchingHealthStateId} does not exist`
+                    );
+                }
+            });
+        });
+        if (!availableHealthStateIds.includes(patient.currentHealthStateId)) {
+            throw new ReducerError(
+                `HealthState with id ${patient.currentHealthStateId} does not exist`
+            );
+        }
         draftState.patients[patient.id] = cloneDeep(patient);
         calculateTreatments(draftState);
         return draftState;
@@ -281,6 +301,17 @@ export const exerciseReducerMap: {
 
         draftState.statusHistory.push(statusHistoryEntry);
 
+        return draftState;
+    },
+    '[Exercise] Tick': (draftState, { patientUpdates }) => {
+        patientUpdates.forEach((patientUpdate) => {
+            const currentPatient = draftState.patients[patientUpdate.id];
+            currentPatient.currentHealthStateId = patientUpdate.nextStateId;
+            currentPatient.health = patientUpdate.nextHealthPoints;
+            currentPatient.stateTime = patientUpdate.nextStateTime;
+            // TODO: Update the visibleStatus accordingly only if it should be revealed
+            currentPatient.realStatus = getStatus(currentPatient.health);
+        });
         return draftState;
     },
     '[Exercise] Set Participant Id': (draftState, { participantId }) => {
