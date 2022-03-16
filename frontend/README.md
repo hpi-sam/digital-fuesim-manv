@@ -77,14 +77,14 @@ In [src/app/state](./src/app/state) are all actions, reducers, selectors and sta
 In `src/app` and every descending folder the following guidelines apply:
 
 -   `/core`:
-    -   singleton-services and route guards that can be used by all other Angular elements that are direct or indirect children of the `core`'s parent-folder
+    -   Singleton-services and route guards that can be used by all other Angular elements that are direct or indirect children of the `core`'s parent-folder
 -   `/shared`:
-    -   utility Angular elements as well as classes, functions, types, etc. that (can) have multiple instances and can be used by all other Angular elements that are direct or indirect children of the `shared`'s parent-folder
-    -   every folder with Angular components, pipes, or directives in a `shared`-folder should have its own module, that exports these Angular elements
+    -   Utility Angular elements as well as classes, functions, types, etc. that (can) have multiple instances and can be used by all other Angular elements that are direct or indirect children of the `shared`'s parent-folder
+    -   Every folder with Angular components, pipes, or directives in a `shared`-folder should have its own module, that exports these Angular elements
 -   `/features`
-    -   here are components/pipes/directives that should only be used in the `/pages`-folder at the same level (in opposite to `/shared` no nested folders)
+    -   Components/pipes/directives that should only be used in the `/pages`-folder at the same level (in opposite to `/shared` no nested folders)
 -   `/pages`:
-    -   in here all Angular elements and utilities located that are only used according to the route (-> lazy loading)
+    -   All Angular elements and utilities that are only used according to the route (-> lazy loading)
 
 Commonly used exercise-[selectors](https://ngrx.io/guide/store/selectors) should go in [./src/app/state/exercise/exercise.selectors.ts](./src/app/state/exercise/exercise.selectors.ts).
 
