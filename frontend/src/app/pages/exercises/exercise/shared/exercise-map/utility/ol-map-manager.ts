@@ -134,6 +134,7 @@ export class OlMapManager {
         );
 
         this.registerPopupTriggers(translateInteraction);
+        this.registerDropHandler(translateInteraction);
     }
 
     // If the signature of the FeatureManager classes change, the initialisation should be done individually
@@ -149,7 +150,8 @@ export class OlMapManager {
         elementDictionary$: Observable<{ [id: UUID]: Element }>
     ) {
         const featureManager = new featureManagerClass(
-            this.olMap!,
+            this.store,
+            this.olMap,
             layer,
             this.apiService
         );
@@ -187,7 +189,7 @@ export class OlMapManager {
 
     private registerPopupTriggers(translateInteraction: Translate) {
         this.olMap.on('singleclick', (event) => {
-            this.olMap!.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
+            this.olMap.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
                 this.layerFeatureManagerDictionary
                     .get(layer as VectorLayer<VectorSource<Point>>)!
                     .onFeatureClicked(event, feature as Feature<Point>);
@@ -211,6 +213,22 @@ export class OlMapManager {
         });
         this.olMap.getView().on(['change:resolution', 'change:center'], () => {
             this.changePopup$.next(undefined);
+        });
+    }
+
+    private registerDropHandler(translateInteraction: Translate) {
+        translateInteraction.on('translateend', (event) => {
+            const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
+            this.olMap.forEachFeatureAtPixel(pixel, (feature, layer) =>
+                // we stop propagating the event as soon as the onFeatureDropped function returns true
+                this.layerFeatureManagerDictionary
+                    .get(layer as VectorLayer<VectorSource<Point>>)!
+                    .onFeatureDrop(
+                        event,
+                        event.features.getArray()[0] as Feature<Point>,
+                        feature as Feature<Point>
+                    )
+            );
         });
     }
 

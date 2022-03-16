@@ -12,13 +12,14 @@ import type {
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
-import { BehaviorSubject, first, lastValueFrom } from 'rxjs';
+import { BehaviorSubject, lastValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import type { AppState } from '../state/app.state';
 import {
     applyServerAction,
     setExerciseState,
 } from '../state/exercise/exercise.actions';
+import { getStateSnapshot } from '../state/get-state-snapshot';
 import { OptimisticActionHandler } from './optimistic-action-handler';
 import { httpOrigin, websocketOrigin } from './api-origins';
 
@@ -71,16 +72,7 @@ export class ApiService {
         SocketResponse
     >(
         (exercise) => this.store.dispatch(setExerciseState(exercise)),
-        () => {
-            // There is sadly currently no other way to get the state synchronously...
-            let currentState: ExerciseState;
-            // "Subscribing to Store will always be guaranteed to be synchronous" - https://github.com/ngrx/platform/issues/227#issuecomment-431682349
-            this.store
-                .select((state) => state.exercise)
-                .pipe(first())
-                .subscribe((s) => (currentState = s));
-            return currentState!;
-        },
+        () => getStateSnapshot(this.store).exercise,
         (action) => this.store.dispatch(applyServerAction(action)),
         // sendAction needs access to this.socket
         async (action) => this.sendAction(action)

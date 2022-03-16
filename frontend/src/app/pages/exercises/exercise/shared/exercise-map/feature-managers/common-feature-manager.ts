@@ -7,6 +7,10 @@ import type VectorSource from 'ol/source/Vector';
 import type OlMap from 'ol/Map';
 import { Subject } from 'rxjs';
 import type { Type } from '@angular/core';
+import type { AppState } from 'src/app/state/app.state';
+import type { Store } from '@ngrx/store';
+import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import type { TranslateEvent } from 'ol/interaction/Translate';
 import { MovementAnimator } from '../utility/movement-animator';
 import { TranslateHelper } from '../utility/translate-helper';
 import { ImageStyleHelper } from '../utility/get-image-style-function';
@@ -52,6 +56,7 @@ export abstract class CommonFeatureManager<
     >();
 
     constructor(
+        protected readonly store: Store<AppState>,
         private readonly olMap: OlMap,
         private readonly layer: VectorLayer<VectorSource<Point>>,
         private readonly imageOptions: {
@@ -115,10 +120,53 @@ export abstract class CommonFeatureManager<
         }
     }
 
-    getElementFeature(element: Element) {
+    getFeatureFromElement(element: Element) {
         return this.layer.getSource().getFeatureById(element.id) as
             | ElementFeature
             | undefined;
+    }
+
+    protected getElementFromFeature(feature: Feature<any>) {
+        const id = feature.getId() as UUID;
+        const exerciseState = getStateSnapshot(this.store).exercise;
+        // We expect the id to be globally unique
+        if (exerciseState.materials[id]) {
+            return {
+                type: 'material',
+                value: exerciseState.materials[id],
+            } as const;
+        }
+        if (exerciseState.patients[id]) {
+            return {
+                type: 'patient',
+                value: exerciseState.patients[id],
+            } as const;
+        }
+        if (exerciseState.vehicles[id]) {
+            return {
+                type: 'vehicle',
+                value: exerciseState.vehicles[id],
+            } as const;
+        }
+        if (exerciseState.personell[id]) {
+            return {
+                type: 'personell',
+                value: exerciseState.personell[id],
+            } as const;
+        }
+        if (exerciseState.images[id]) {
+            return {
+                type: 'image',
+                value: exerciseState.images[id],
+            } as const;
+        }
+        if (exerciseState.viewports[id]) {
+            return {
+                type: 'viewport',
+                value: exerciseState.viewports[id],
+            } as const;
+        }
+        return undefined;
     }
 
     /**
@@ -151,5 +199,20 @@ export abstract class CommonFeatureManager<
             component: this.popoverOptions.component as any,
             context: this.popoverOptions.getContext(feature),
         });
+    }
+
+    /**
+     * The standard implementation is to ignore these events. You don't need to call the super method in the override.
+     * @param dropEvent The drop event that triggered the call
+     * @param droppedFeature is dropped on {@link droppedOnFeature}
+     * @param droppedOnFeature is the feature that {@link droppedFeature} is dropped on
+     * @returns wether the event should not propagate further (to the features behind {@link droppedOnFeature}).
+     */
+    public onFeatureDrop(
+        dropEvent: TranslateEvent,
+        droppedFeature: Feature<any>,
+        droppedOnFeature: ElementFeature
+    ): boolean {
+        return false;
     }
 }
