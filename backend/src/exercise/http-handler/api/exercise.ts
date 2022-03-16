@@ -9,7 +9,7 @@ export function postExercise(): HttpResponse<ExerciseIds> {
     let newTrainerId: string | undefined;
     try {
         newParticipantId = UserReadableIdGenerator.generateId();
-        newTrainerId = UserReadableIdGenerator.generateId();
+        newTrainerId = UserReadableIdGenerator.generateId(8);
         const newExercise = new ExerciseWrapper(newParticipantId, newTrainerId);
         exerciseMap.set(newParticipantId, newExercise);
         exerciseMap.set(newTrainerId, newExercise);

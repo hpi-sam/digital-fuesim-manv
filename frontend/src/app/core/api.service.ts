@@ -8,7 +8,6 @@ import type {
     ServerToClientEvents,
     SocketResponse,
     UUID,
-    Client,
 } from 'digital-fuesim-manv-shared';
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
@@ -20,37 +19,50 @@ import {
     applyServerAction,
     setExerciseState,
 } from '../state/exercise/exercise.actions';
-import { selectClients } from '../state/exercise/exercise.selectors';
 import { OptimisticActionHandler } from './optimistic-action-handler';
+import { httpOrigin, websocketOrigin } from './api-origins';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ApiService {
-    private readonly host = window.location.host.split(':')[0];
-    private readonly websocketPort = 3200;
-    private readonly httpPort = 3201;
+    private _socket?: Socket<ServerToClientEvents, ClientToServerEvents>;
 
-    private readonly httpBase = `http://${this.host}:${this.httpPort}`;
-
-    private readonly socket: Socket<
-        ServerToClientEvents,
-        ClientToServerEvents
-    > = io(`ws://${this.host}:${this.websocketPort}`, {
-        transports: socketIoTransports,
-    });
-
-    private ownClientId?: UUID;
-
-    public get client(): Client | undefined {
-        if (!this.ownClientId) {
-            return undefined;
+    private get socket() {
+        if (!this._socket) {
+            this._socket = io(websocketOrigin, {
+                ...socketIoTransports,
+            });
         }
-        let client: Client | undefined;
-        this.store.select(selectClients).subscribe((clients) => {
-            client = clients[this.ownClientId!];
-        });
-        return client;
+        return this._socket;
+    }
+
+    /**
+     * Connect (or reconnect) the socket
+     */
+    private connectSocket() {
+        this.socket.connect();
+    }
+
+    /**
+     * Disconnect the socket
+     */
+    private disconnectSocket() {
+        this.socket.disconnect();
+    }
+
+    /**
+     * Leave the current exercise
+     */
+    public leaveExercise() {
+        this.disconnectSocket();
+        this._ownClientId = undefined;
+    }
+
+    private _ownClientId?: UUID;
+
+    public get ownClientId() {
+        return this._ownClientId;
     }
 
     private readonly optimisticActionHandler = new OptimisticActionHandler<
@@ -96,6 +108,7 @@ export class ApiService {
         clientName: string
     ): Promise<boolean> {
         this.hasJoinedExerciseState$.next('joining');
+        this.connectSocket();
         const joinExercise = await new Promise<SocketResponse<UUID>>(
             (resolve) => {
                 this.socket.emit(
@@ -115,7 +128,7 @@ export class ApiService {
             this.hasJoinedExerciseState$.next('not-joined');
             return false;
         }
-        this.ownClientId = joinExercise.payload;
+        this._ownClientId = joinExercise.payload;
         this.hasJoinedExerciseState$.next('joined');
         return true;
     }
@@ -157,8 +170,14 @@ export class ApiService {
 
     public async createExercise() {
         return lastValueFrom(
-            this.httpClient.post<ExerciseIds>(
-                `${this.httpBase}/api/exercise`,
+            this.httpClient.post<ExerciseIds>(`${httpOrigin}/api/exercise`, {})
+        );
+    }
+
+    public async deleteExercise(trainerId: string) {
+        return lastValueFrom(
+            this.httpClient.delete<undefined>(
+                `${httpOrigin}/api/exercise/${trainerId}`,
                 {}
             )
         );

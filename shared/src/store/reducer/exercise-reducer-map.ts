@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-throw-literal */
 import type { ExerciseAction } from '..';
+import { imageSizeToPosition, StatusHistoryEntry } from '../..';
 import type { ReducerFunction } from './reducer-function';
 import { ReducerError } from '.';
 
@@ -46,8 +47,12 @@ export const exerciseReducerMap: {
         delete draftState.patients[patientId];
         return draftState;
     },
-    '[Vehicle] Add vehicle': (draftState, { vehicle }) => {
+    '[Vehicle] Add vehicle': (draftState, { vehicle, material, personell }) => {
         draftState.vehicles[vehicle.id] = vehicle;
+        draftState.materials[material.id] = material;
+        for (const person of personell) {
+            draftState.personell[person.id] = person;
+        }
         return draftState;
     },
     '[Vehicle] Move vehicle': (draftState, { vehicleId, targetPosition }) => {
@@ -60,6 +65,46 @@ export const exerciseReducerMap: {
         vehicle.position = targetPosition;
         return draftState;
     },
+    '[Vehicle] Unload vehicle': (draftState, { vehicleId }) => {
+        const vehicle = draftState.vehicles[vehicleId];
+        if (!vehicle) {
+            throw new ReducerError(
+                `Vehicle with id ${vehicleId} does not exist`
+            );
+        }
+        const unloadPosition = vehicle.position;
+        if (!unloadPosition) {
+            throw new ReducerError(
+                `Vehicle with id ${vehicleId} is currently in transfer`
+            );
+        }
+        const material = draftState.materials[vehicle.materialId];
+        const personnel = Object.keys(vehicle.personellIds).map(
+            (personnelId) => draftState.personell[personnelId]
+        );
+        // TODO: save in the elements themselves
+        const vehicleImageWidth = 200;
+        const vehicleWidthInPosition = imageSizeToPosition(vehicleImageWidth);
+        const numberOfMaterial = 1;
+        const space =
+            vehicleWidthInPosition / (personnel.length + numberOfMaterial + 1);
+        let x = unloadPosition.x - vehicleWidthInPosition / 2;
+
+        for (const person of personnel) {
+            x += space;
+            // TODO: only if the person is not in transfer
+            person.position ??= {
+                x,
+                y: unloadPosition.y,
+            };
+        }
+        x += space;
+        material.position ??= {
+            x,
+            y: unloadPosition.y,
+        };
+        return draftState;
+    },
     '[Vehicle] Remove vehicle': (draftState, { vehicleId }) => {
         if (!draftState.vehicles[vehicleId]) {
             throw new ReducerError(
@@ -67,10 +112,6 @@ export const exerciseReducerMap: {
             );
         }
         delete draftState.vehicles[vehicleId];
-        return draftState;
-    },
-    '[Personell] Add personell': (draftState, { personell }) => {
-        draftState.personell[personell.id] = personell;
         return draftState;
     },
     '[Personell] Move personell': (
@@ -86,19 +127,6 @@ export const exerciseReducerMap: {
         personell.position = targetPosition;
         return draftState;
     },
-    '[Personell] Remove personell': (draftState, { personellId }) => {
-        if (!draftState.personell[personellId]) {
-            throw new ReducerError(
-                `Personell with id ${personellId} does not exist`
-            );
-        }
-        delete draftState.personell[personellId];
-        return draftState;
-    },
-    '[Material] Add material': (draftState, { material }) => {
-        draftState.materials[material.id] = material;
-        return draftState;
-    },
     '[Material] Move material': (
         draftState,
         { materialId, targetPosition }
@@ -110,15 +138,6 @@ export const exerciseReducerMap: {
             );
         }
         material.position = targetPosition;
-        return draftState;
-    },
-    '[Material] Remove material': (draftState, { materialId }) => {
-        if (!draftState.materials[materialId]) {
-            throw new ReducerError(
-                `Material with id ${materialId} does not exist`
-            );
-        }
-        delete draftState.materials[materialId];
         return draftState;
     },
     '[Client] Add client': (draftState, { client }) => {
@@ -147,6 +166,40 @@ export const exerciseReducerMap: {
             );
         }
         draftState.clients[clientId].viewRestrictedToViewportId = viewportId;
+        return draftState;
+    },
+    '[Client] Set waitingroom': (
+        draftState,
+        { clientId, shouldBeInWaitingRoom }
+    ) => {
+        if (!draftState.clients[clientId]) {
+            throw new ReducerError(`Client with id ${clientId} does not exist`);
+        }
+        draftState.clients[clientId].isInWaitingRoom = shouldBeInWaitingRoom;
+        return draftState;
+    },
+    '[Exercise] Pause': (draftState, { timestamp }) => {
+        const statusHistoryEntry = new StatusHistoryEntry(
+            'paused',
+            new Date(timestamp)
+        );
+
+        draftState.statusHistory.push(statusHistoryEntry);
+
+        return draftState;
+    },
+    '[Exercise] Start': (draftState, { timestamp }) => {
+        const statusHistoryEntry = new StatusHistoryEntry(
+            'running',
+            new Date(timestamp)
+        );
+
+        draftState.statusHistory.push(statusHistoryEntry);
+
+        return draftState;
+    },
+    '[Exercise] Set Participant Id': (draftState, { participantId }) => {
+        draftState.participantId = participantId;
         return draftState;
     },
 };

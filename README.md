@@ -27,6 +27,22 @@ If you are using [vscode](https://code.visualstudio.com/), you can run the [task
 2. Open another terminal in `/frontend` and run `npm run start`
 3. Open another terminal in `/backend` and run `npm run start`
 
+## Starting for deployment (using docker)
+
+You need to have [`docker`](https://www.docker.com/) installed.
+
+### With docker-compose (recommended):
+
+1. [`docker-compose`](https://docs.docker.com/compose/) needs to be installed.
+2. Run `docker-compose up -d` in the root directory.
+
+### Without docker-compose:
+
+1. You need to build the container with `docker build -f docker/Dockerfile -t digital-fuesim-manv .` (in the root directory).
+2. Execute `docker run -p -d 80:80 digital-fuesim-manv`.
+
+The server will start listening using nginx on port `80` for all services (frontend, api, websockets).
+
 ## Before you commit
 
 -   We are using [git lfs](https://git-lfs.github.com/). You can see the file types that currently use git lfs in [.gitattributes](.gitattributes). If you add another binary (or very large) file type to the repository you should add it there too.

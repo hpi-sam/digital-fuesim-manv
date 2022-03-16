@@ -1,29 +1,29 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { StoreModule } from '@ngrx/store';
-import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import type { AppState } from './state/app.state';
 import { appReducers } from './state/app.reducer';
-import { ExerciseMapModule } from './shared/exercise-map/exercise-map.module';
-import { TrainerMapEditorComponent } from './shared/trainer-map-editor/trainer-map-editor.component';
-import { ClientOverviewModule } from './shared/client-overview/client-overview.module';
+import { LandingPageModule } from './pages/landing-page/landing-page.module';
+import { HealthPageComponent } from './pages/health/health-page/health-page.component';
+import { SharedModule } from './shared/shared.module';
+import { ConfirmationModalModule } from './core/confirmation-modal/confirmation-modal.module';
 
 @NgModule({
-    declarations: [AppComponent, TrainerMapEditorComponent],
+    declarations: [AppComponent, HealthPageComponent],
     imports: [
         CommonModule,
         BrowserModule,
-        HttpClientModule,
-        FormsModule,
         AppRoutingModule,
+        HttpClientModule,
         StoreModule.forRoot<AppState>(appReducers),
-        ExerciseMapModule,
-        ClientOverviewModule,
+        LandingPageModule,
+        SharedModule,
+        ConfirmationModalModule,
     ],
     providers: [],
     bootstrap: [AppComponent],
