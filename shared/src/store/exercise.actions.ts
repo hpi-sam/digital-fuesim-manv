@@ -1,14 +1,21 @@
 import { Type } from 'class-transformer';
-import { IsUUID, ValidateNested } from 'class-validator';
+import {
+    IsArray,
+    IsBoolean,
+    IsInt,
+    IsString,
+    IsUUID,
+    ValidateNested,
+} from 'class-validator';
 import {
     UUID,
+    Personell,
     Viewport,
     uuidValidationOptions,
     Patient,
     Vehicle,
-    Personell,
-    Material,
     Client,
+    Material,
 } from '..';
 import { Position } from '../models/utils';
 import type { Immutable } from '../utils/immutability';
@@ -78,6 +85,15 @@ export namespace ExerciseActions {
         @ValidateNested()
         @Type(() => Vehicle)
         public vehicle!: Vehicle;
+
+        @ValidateNested()
+        @Type(() => Material)
+        public material!: Material;
+
+        @IsArray()
+        @ValidateNested({ each: true })
+        @Type(() => Personell)
+        public personell!: Personell[];
     }
 
     export class MoveVehicle implements Action {
@@ -97,11 +113,10 @@ export namespace ExerciseActions {
         public vehicleId!: UUID;
     }
 
-    export class AddPersonell implements Action {
-        readonly type = '[Personell] Add personell';
-        @ValidateNested()
-        @Type(() => Personell)
-        public personell!: Personell;
+    export class UnloadVehicle implements Action {
+        readonly type = '[Vehicle] Unload vehicle';
+        @IsUUID(4, uuidValidationOptions)
+        public vehicleId!: UUID;
     }
 
     export class MovePersonell implements Action {
@@ -115,19 +130,6 @@ export namespace ExerciseActions {
         public targetPosition!: Position;
     }
 
-    export class RemovePersonell implements Action {
-        readonly type = '[Personell] Remove personell';
-        @IsUUID(4, uuidValidationOptions)
-        public personellId!: UUID;
-    }
-
-    export class AddMaterial implements Action {
-        readonly type = '[Material] Add material';
-        @ValidateNested()
-        @Type(() => Material)
-        public material!: Material;
-    }
-
     export class MoveMaterial implements Action {
         readonly type = '[Material] Move material';
 
@@ -137,12 +139,6 @@ export namespace ExerciseActions {
         @ValidateNested()
         @Type(() => Position)
         public targetPosition!: Position;
-    }
-
-    export class RemoveMaterial implements Action {
-        readonly type = '[Material] Remove material';
-        @IsUUID(4, uuidValidationOptions)
-        public materialId!: UUID;
     }
 
     // TODO: Only the server should be able to propose these actions
@@ -163,7 +159,34 @@ export namespace ExerciseActions {
         readonly type = '[Client] Restrict to viewport';
         @IsUUID(4, uuidValidationOptions)
         public clientId!: UUID;
+        @IsUUID(4, uuidValidationOptions)
         public viewportId?: UUID;
+    }
+
+    export class SetWaitingRoom implements Action {
+        readonly type = '[Client] Set waitingroom';
+        @IsUUID(4, uuidValidationOptions)
+        public clientId!: UUID;
+        @IsBoolean()
+        public shouldBeInWaitingRoom!: boolean;
+    }
+
+    export class PauseExercise implements Action {
+        readonly type = '[Exercise] Pause';
+        @IsInt()
+        public timestamp!: number;
+    }
+
+    export class StartExercise implements Action {
+        readonly type = '[Exercise] Start';
+        @IsInt()
+        public timestamp!: number;
+    }
+
+    export class SetParticipantId implements Action {
+        readonly type = `[Exercise] Set Participant Id`;
+        @IsString()
+        public participantId!: string;
     }
 }
 
@@ -173,4 +196,9 @@ export type ExerciseAction = Immutable<
 
 interface Action {
     readonly type: `[${string}] ${string}`;
+    /**
+     * This timestamp will be refreshed by the server when receiving the action.
+     * Only use a field with this name in case you want this behavior.
+     */
+    timestamp?: number;
 }

@@ -1,0 +1,71 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Rolle</th>
+            <th scope="col">Einsatzabschnitt</th>
+            <th scope="col">Im Warteraum?</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let client of clients$ | async | keyvalue">
+            <td class="align-middle">
+                {{ client.value.name }}
+            </td>
+            <td class="align-middle">
+                {{
+                    client.value.role === 'trainer'
+                        ? 'Übungsleiter'
+                        : 'Teilnehmer'
+                }}
+            </td>
+            <!-- Choose the viewport -->
+            <td ngbDropdown>
+                <button
+                    class="btn btn-outline-primary btn-sm"
+                    ngbDropdownToggle
+                >
+                    <ng-container
+                        *ngIf="
+                            client.value
+                                .viewRestrictedToViewportId as viewportId;
+                            else noViewportId
+                        "
+                    >
+                        {{ (viewports$ | async)?.[viewportId]?.name }}
+                    </ng-container>
+                </button>
+                <div ngbDropdownMenu>
+                    <button
+                        *ngFor="let viewport of viewports$ | async | keyvalue"
+                        ngbDropdownItem
+                        (click)="restrictToViewport(client.key, viewport.key)"
+                    >
+                        {{ viewport.value.name }}
+                    </button>
+                    <button
+                        ngbDropdownItem
+                        (click)="restrictToViewport(client.key, undefined)"
+                    >
+                        <ng-container
+                            [ngTemplateOutlet]="noViewportId"
+                        ></ng-container>
+                    </button>
+                </div>
+                <ng-template #noViewportId>
+                    <i> Nicht zugewiesen </i>
+                </ng-template>
+            </td>
+            <td class="align-middle">
+                <div class="form-switch">
+                    <input
+                        [ngModel]="client.value.isInWaitingRoom"
+                        (ngModelChange)="setWaitingRoom(client.key, $event)"
+                        class="form-check-input"
+                        type="checkbox"
+                    />
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

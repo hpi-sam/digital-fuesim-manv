@@ -1,27 +1,20 @@
 import express from 'express';
 import { ExerciseWebsocketServer } from './exercise/websocket';
 import { ExerciseHttpServer } from './exercise/http-server';
+import { Config } from './config';
 
 export class FuesimServer {
-    private static _singleInstance?: FuesimServer;
-
-    static create(websocketPort: number = 3200, httpPort: number = 3201) {
-        if (this._singleInstance) {
-            this._singleInstance.destroy();
-        }
-        const app = express();
-
-        const websocketServer = new ExerciseWebsocketServer(app, websocketPort);
-        const httpServer = new ExerciseHttpServer(app, httpPort);
-
-        this._singleInstance = new FuesimServer(websocketServer, httpServer);
-        return this.singleInstance;
-    }
+    private readonly _httpServer: ExerciseHttpServer;
+    private readonly _websocketServer: ExerciseWebsocketServer;
 
     constructor(
-        private readonly _websocketServer: ExerciseWebsocketServer,
-        private readonly _httpServer: ExerciseHttpServer
-    ) {}
+        websocketPort: number = Config.websocketPort,
+        httpPort: number = Config.httpPort
+    ) {
+        const app = express();
+        this._websocketServer = new ExerciseWebsocketServer(app, websocketPort);
+        this._httpServer = new ExerciseHttpServer(app, httpPort);
+    }
 
     public get websocketServer(): ExerciseWebsocketServer {
         return this._websocketServer;
@@ -29,13 +22,6 @@ export class FuesimServer {
 
     public get httpServer(): ExerciseHttpServer {
         return this._httpServer;
-    }
-
-    public static get singleInstance(): FuesimServer {
-        if (!this._singleInstance) {
-            this._singleInstance = this.create();
-        }
-        return this._singleInstance;
     }
 
     public destroy() {

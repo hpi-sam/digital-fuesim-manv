@@ -1,6 +1,6 @@
-import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsArray, IsNumber, IsString, IsUUID } from 'class-validator';
+import type { CanCaterFor, PersonellType } from '..';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import type { Vehicle } from './vehicle';
 
 export class VehicleTemplate {
     @IsUUID(4, uuidValidationOptions)
@@ -9,11 +9,28 @@ export class VehicleTemplate {
     @IsString()
     public name: string;
 
-    @ValidateNested() // TODO: Does this work on Exclude?
-    public vehicleProperties: Exclude<Vehicle, 'id'>;
+    @IsString()
+    public imageUrl: string;
 
-    constructor(name: string, vehicleProperties: Exclude<Vehicle, 'id'>) {
+    @IsNumber()
+    public patientCapacity: number;
+
+    @IsArray()
+    public personnel: PersonellType[];
+
+    public material: CanCaterFor;
+
+    constructor(
+        name: string,
+        imageUrl: string,
+        patientCapacity: number,
+        personnel: PersonellType[],
+        material: CanCaterFor
+    ) {
         this.name = name;
-        this.vehicleProperties = vehicleProperties;
+        this.imageUrl = imageUrl;
+        this.patientCapacity = patientCapacity;
+        this.personnel = personnel;
+        this.material = material;
     }
 }
