@@ -59,6 +59,7 @@ function caterFor(
         return false;
     }
     catering.assignedPatientIds[patient.id] = true;
+    patient.isBeingTreated = true;
 
     switch (status) {
         case 'red':
@@ -94,6 +95,9 @@ export function calculateTreatments(state: Mutable<ExerciseState>) {
         (patient) =>
             patient.position !== undefined && patient.visibleStatus !== 'black'
     );
+    patients.forEach((patient) => {
+        patient.isBeingTreated = false;
+    });
     if (patients.length === 0) {
         // Don't treat anyone. No one (alive) is there.
         return;

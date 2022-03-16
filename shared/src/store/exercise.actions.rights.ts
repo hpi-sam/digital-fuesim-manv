@@ -14,6 +14,7 @@ const exerciseRightsMap: {
     '[Exercise] Pause': 'trainer',
     '[Exercise] Set Participant Id': 'server',
     '[Exercise] Start': 'trainer',
+    '[Exercise] Tick': 'server',
     '[Material] Move material': 'participant',
     '[Patient] Add patient': 'trainer',
     '[Patient] Move patient': 'participant',

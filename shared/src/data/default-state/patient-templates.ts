@@ -1,4 +1,9 @@
-import { PatientTemplate } from '../..';
+import { FunctionParameters, PatientHealthState, PatientTemplate } from '../..';
+
+const defaultHealthState = new PatientHealthState(
+    new FunctionParameters(-10_000, 0, 0, 0),
+    []
+);
 
 const greenPatientTemplate = new PatientTemplate(
     {
@@ -11,7 +16,8 @@ const greenPatientTemplate = new PatientTemplate(
     },
     'green',
     'green',
-    '/assets/patient.svg'
+    '/assets/patient.svg',
+    { [defaultHealthState.id]: defaultHealthState }
 );
 
 const yellowPatientTemplate = new PatientTemplate(
@@ -25,7 +31,8 @@ const yellowPatientTemplate = new PatientTemplate(
     },
     'yellow',
     'yellow',
-    '/assets/patient.svg'
+    '/assets/patient.svg',
+    { [defaultHealthState.id]: defaultHealthState }
 );
 
 const redPatientTemplate = new PatientTemplate(
@@ -39,7 +46,8 @@ const redPatientTemplate = new PatientTemplate(
     },
     'red',
     'red',
-    '/assets/patient.svg'
+    '/assets/patient.svg',
+    { [defaultHealthState.id]: defaultHealthState }
 );
 
 const blackPatientTemplate = new PatientTemplate(
@@ -53,7 +61,8 @@ const blackPatientTemplate = new PatientTemplate(
     },
     'black',
     'black',
-    '/assets/patient.svg'
+    '/assets/patient.svg',
+    { [defaultHealthState.id]: defaultHealthState }
 );
 
 export const defaultPatientTemplates: PatientTemplate[] = [
