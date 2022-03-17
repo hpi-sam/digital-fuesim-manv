@@ -3,7 +3,7 @@ import { MessageService } from 'src/app/core/messages/message.service';
 import { fade } from '../animations/fade';
 
 /**
- * This component should one used once in the application. The toasts are positioned independently from the occurrence of the component
+ * This component should only be used once in the application. The toasts are positioned independently from the occurrence of the component
  * absolute to the viewport
  */
 @Component({

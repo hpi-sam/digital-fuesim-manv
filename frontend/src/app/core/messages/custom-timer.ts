@@ -15,7 +15,7 @@ export class CustomTimer {
      * Emits the current state of the timer (start/stop)
      */
     public readonly state$ = this._state$.asObservable();
-    public isPaused = false;
+    private isPaused = false;
 
     constructor(public readonly callback: () => void, public time: number) {
         this.timeUntilCallbackIfNotPaused = time;

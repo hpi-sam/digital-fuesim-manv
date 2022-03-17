@@ -1,4 +1,4 @@
-// TODO: This is a workaround to be able to use this function in the jest tests not setup for angular.
+// TODO: This is a workaround to be able to test this function in the jest tests which are not setup for angular (via e.g. jest-preset-angular) and can therefore not parse angular pipes.
 export function logToStringPipeTransform(logValue: any): string | null {
     switch (typeof logValue) {
         case 'boolean':

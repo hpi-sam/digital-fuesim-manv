@@ -75,7 +75,7 @@ export class ApiService {
      * Whether the client is currently joined to an exercise
      */
     public get isJoined() {
-        return !!this._ownClientId;
+        return this._ownClientId !== undefined;
     }
 
     private readonly optimisticActionHandler = new OptimisticActionHandler<
@@ -195,7 +195,7 @@ export class ApiService {
         );
         if (!response.success) {
             this.messageService.postError({
-                title: 'Fehler beim Herunterladen der Übung',
+                title: 'Fehler beim Laden der Übung',
                 error: response.message,
             });
             return response;

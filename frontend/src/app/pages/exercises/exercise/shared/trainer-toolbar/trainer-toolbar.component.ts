@@ -60,20 +60,24 @@ export class TrainerToolbarComponent {
         }
         // If we get disconnected by the server during the deletion a disconnect error would be displayed
         this.apiService.leaveExercise();
-        this.apiService.deleteExercise(this.exerciseId).then(
-            (response) => {
-                this.messageService.postMessage({
-                    title: 'Übung erfolgreich gelöscht',
-                    color: 'success',
-                });
+        this.apiService
+            .deleteExercise(this.exerciseId)
+            .then(
+                (response) => {
+                    this.messageService.postMessage({
+                        title: 'Übung erfolgreich gelöscht',
+                        color: 'success',
+                    });
+                },
+                (error) => {
+                    this.messageService.postError({
+                        title: 'Fehler beim Löschen der Übung',
+                        error,
+                    });
+                }
+            )
+            .finally(() => {
                 this.router.navigate(['/']);
-            },
-            (error) => {
-                this.messageService.postError({
-                    title: 'Fehler beim Löschen der Übung',
-                    error,
-                });
-            }
-        );
+            });
     }
 }

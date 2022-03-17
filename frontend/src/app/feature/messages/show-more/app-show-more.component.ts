@@ -10,13 +10,8 @@ import {
 } from '@angular/core';
 import { HeightChangeObservationStrategies } from './height-change-observation-strategies';
 
-@Component({
-    selector: 'app-show-more',
-    templateUrl: './app-show-more.component.html',
-    styleUrls: ['./app-show-more.component.scss'],
-})
 /**
- * Automatically determents wether the content passed via ng-content is larger than the provided defaultHeight
+ * Automatically determents whether the content passed via ng-content is larger than the provided defaultHeight
  * and only shows a part that is at max {@link defaultHeight} high with the option to show all
  *
  * @example
@@ -40,6 +35,11 @@ import { HeightChangeObservationStrategies } from './height-change-observation-s
  *  </app-show-more>
  *```
  */
+@Component({
+    selector: 'app-show-more',
+    templateUrl: './app-show-more.component.html',
+    styleUrls: ['./app-show-more.component.scss'],
+})
 export class AppShowMoreComponent
     implements OnChanges, AfterViewInit, OnDestroy
 {
