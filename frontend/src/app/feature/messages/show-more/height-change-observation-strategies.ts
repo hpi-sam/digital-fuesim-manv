@@ -1,6 +1,6 @@
 export interface HeightChangeObservationStrategies {
     /**
-     * Observe wether the content dimensions have been resized (e.g. window or an outer container got resized)
+     * Observe whether the content dimensions have been resized (e.g. window or an outer container got resized)
      */
     resizeObserver: boolean;
     /**

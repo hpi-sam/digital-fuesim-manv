@@ -67,7 +67,7 @@ export class MessageService {
     }
 
     /**
-     * @param message the message that should be posted, multiple similar messages get stacked
+     * @param config the message that should be posted, multiple similar messages get stacked
      * @param type `toasts` are small messages displayed at the top-right, `alerts` are very prominently displayed at the bottom-center
      * @param timeout After which time should the message automatically disappear? (The message can always be closed manually by the user)
      * null: never
@@ -122,8 +122,7 @@ export class MessageService {
         if (type === 'alert') {
             this.alertMessages = newMessages;
             this.alertMessages$.next(newMessages);
-        }
-        if (type === 'toast') {
+        } else {
             this.toastMessages = newMessages;
             this.toastMessages$.next(newMessages);
         }

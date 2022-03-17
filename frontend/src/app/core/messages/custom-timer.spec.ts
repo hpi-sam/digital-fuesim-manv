@@ -9,11 +9,6 @@ describe('CustomTimer', () => {
         timer.destroy();
     });
 
-    it('should be created', () => {
-        timer = new CustomTimer(() => 1, 1000);
-        expect(timer).toBeTruthy();
-    });
-
     it('calls the callback after the time is over', () => {
         const time = 1000;
         const callback = jest.fn();
