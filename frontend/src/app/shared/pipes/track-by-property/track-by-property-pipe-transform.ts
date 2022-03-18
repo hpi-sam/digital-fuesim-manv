@@ -4,7 +4,7 @@ import { objectToHash } from './object-to-hash';
 
 // TODO: This is a workaround to be able to test this function in the jest tests which are not setup for angular (via e.g. jest-preset-angular) and can therefore not parse angular pipes.
 export function trackByPropertyPipeTransform<
-    Items extends any[] = any[],
+    Items extends ReadonlyArray<any> = ReadonlyArray<any>,
     Item = Items[0],
     FirstLevelPropertyName extends number | string = keyof Item &
         (number | string),
