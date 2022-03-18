@@ -22,6 +22,7 @@ const exerciseRightsMap: {
     '[Vehicle] Add vehicle': 'trainer',
     '[Vehicle] Move vehicle': 'participant',
     '[Vehicle] Remove vehicle': 'trainer',
+    '[Vehicle] Load vehicle': 'participant',
     '[Vehicle] Unload vehicle': 'participant',
     '[Viewport] Add viewport': 'trainer',
     '[Viewport] Remove viewport': 'trainer',

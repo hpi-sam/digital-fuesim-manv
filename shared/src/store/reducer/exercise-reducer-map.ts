@@ -82,14 +82,25 @@ export const exerciseReducerMap: {
         const personnel = Object.keys(vehicle.personellIds).map(
             (personnelId) => draftState.personell[personnelId]
         );
+        const patients = Object.keys(vehicle.patientIds).map(
+            (patientId) => draftState.patients[patientId]
+        );
         // TODO: save in the elements themselves
         const vehicleImageWidth = 200;
         const vehicleWidthInPosition = imageSizeToPosition(vehicleImageWidth);
         const numberOfMaterial = 1;
         const space =
-            vehicleWidthInPosition / (personnel.length + numberOfMaterial + 1);
+            vehicleWidthInPosition /
+            (personnel.length + numberOfMaterial + patients.length + 1);
         let x = unloadPosition.x - vehicleWidthInPosition / 2;
-
+        for (const patient of patients) {
+            x += space;
+            patient.position ??= {
+                x,
+                y: unloadPosition.y,
+            };
+            delete vehicle.patientIds[patient.id];
+        }
         for (const person of personnel) {
             x += space;
             // TODO: only if the person is not in transfer
@@ -103,6 +114,72 @@ export const exerciseReducerMap: {
             x,
             y: unloadPosition.y,
         };
+        return draftState;
+    },
+    '[Vehicle] Load vehicle': (
+        draftState,
+        { vehicleId, elementToBeLoadedId, elementToBeLoadedType }
+    ) => {
+        const vehicle = draftState.vehicles[vehicleId];
+        if (!vehicle) {
+            throw new ReducerError(
+                `Vehicle with id ${vehicleId} does not exist`
+            );
+        }
+        switch (elementToBeLoadedType) {
+            case 'material': {
+                const material = draftState.materials[elementToBeLoadedId];
+                if (!material) {
+                    throw new ReducerError(
+                        `Material with id ${elementToBeLoadedId} does not exist`
+                    );
+                }
+                if (vehicle.materialId !== material.id) {
+                    throw new ReducerError(
+                        `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
+                    );
+                }
+                material.position = undefined;
+                break;
+            }
+            case 'personell': {
+                const personnel = draftState.personell[elementToBeLoadedId];
+                if (!personnel) {
+                    throw new ReducerError(
+                        `Personnel with id ${elementToBeLoadedId} does not exist`
+                    );
+                }
+                if (!vehicle.personellIds[elementToBeLoadedId]) {
+                    throw new ReducerError(
+                        `Personnel with id ${personnel.id} is not assignable to the vehicle with id ${vehicle.id}`
+                    );
+                }
+                personnel.position = undefined;
+                break;
+            }
+            case 'patient': {
+                const patient = draftState.patients[elementToBeLoadedId];
+                if (!patient) {
+                    throw new ReducerError(
+                        `Patient with id ${elementToBeLoadedId} does not exist`
+                    );
+                }
+                if (
+                    Object.keys(vehicle.patientIds).length >=
+                    vehicle.patientCapacity
+                ) {
+                    throw new ReducerError(
+                        `Vehicle with id ${vehicle.id} is already full`
+                    );
+                }
+                vehicle.patientIds[elementToBeLoadedId] = true;
+                patient.position = undefined;
+                draftState.materials[vehicle.materialId].position = undefined;
+                Object.keys(vehicle.personellIds).forEach((personnelId) => {
+                    draftState.personell[personnelId].position = undefined;
+                });
+            }
+        }
         return draftState;
     },
     '[Vehicle] Remove vehicle': (draftState, { vehicleId }) => {
