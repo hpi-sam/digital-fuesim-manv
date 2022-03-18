@@ -6,7 +6,7 @@
         class="position-absolute pt-1 pe-1"
         style="top: 0; right: 0; width: max-content; z-index: 10000"
     >
-        <!-- Show the 5 newest toasts -->
+        <!-- Show the 5 oldest toasts, the newest should appear at the bottom -->
         <div
             *ngFor="
                 let message of messages | slice: 0:5;
