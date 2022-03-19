@@ -65,7 +65,7 @@ describe('AppTrackByPropertyPipe', () => {
         );
     });
 
-    it("returns a function that tracks by the item value and doesn't confuse strings with objects", () => {
+    it('returns a function that tracks by the item value and does not confuse strings with objects', () => {
         const compareFn = trackByPropertyPipeTransform('$value');
         expect(compareFn(2, { a: [1, 2, 3], b: 2 })).not.toEqual(
             compareFn(2, '{ a: [1, 2, 3], b: 2 }')
