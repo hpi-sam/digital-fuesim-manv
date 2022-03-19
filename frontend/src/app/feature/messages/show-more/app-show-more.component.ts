@@ -11,7 +11,7 @@ import {
 import { HeightChangeObservationStrategies } from './height-change-observation-strategies';
 
 /**
- * Automatically determents whether the content passed via ng-content is larger than the provided defaultHeight
+ * Automatically determines whether the content passed via ng-content is larger than the provided defaultHeight
  * and only shows a part that is at max {@link defaultHeight} high with the option to show all
  *
  * @example
