@@ -9,7 +9,11 @@ import type { Mutable } from '../../utils';
 import { uuid } from '../../utils';
 import { calculateTreatments } from './calculate-treatments';
 
+// TODO: https://github.com/hpi-sam/digital-fuesim-manv/issues/212
+
 const emptyState = generateExercise();
+
+let patientCounter = 1;
 
 function generatePatient(
     visibleStatus: PatientStatus,
@@ -22,7 +26,7 @@ function generatePatient(
                 'none',
                 'nothing',
                 'today',
-                23 + Math.floor(Math.random() * (99 + 1)),
+                Math.abs(Math.sin((patientCounter++) ** 2 * 99)) * 100,
                 'male'
             ),
             visibleStatus,
@@ -40,6 +44,11 @@ function generateMaterial() {
     return { ...new Material(uuid(), {}, new CanCaterFor(1, 2, 3, 'or')) };
 }
 
+/**
+ * Perform {@link mutateBeforeState} and then call `calculateTreatments`
+ * @param mutateBeforeState A function that may be called on the default state before calling to `calculateTreatments`.
+ * @returns The state before and after calling `calculateTreatments`
+ */
 function setupStateAndApplyTreatments(
     mutateBeforeState?: (state: Mutable<ExerciseState>) => void
 ) {
@@ -58,83 +67,99 @@ function setupStateAndApplyTreatments(
 
 describe('calculate treatment', () => {
     it('does nothing when there is nothing', () => {
-        const states = setupStateAndApplyTreatments();
-        expect(states.newState).toStrictEqual(states.beforeState);
+        const { beforeState, newState } = setupStateAndApplyTreatments();
+        expect(newState).toStrictEqual(beforeState);
     });
 
     it('does nothing when there is only personnel in vehicle', () => {
-        const states = setupStateAndApplyTreatments((state) => {
-            const person = generatePersonnel();
-            state.personell[person.id] = person;
-        });
-        expect(states.newState).toStrictEqual(states.beforeState);
+        const { beforeState, newState } = setupStateAndApplyTreatments(
+            (state) => {
+                const person = generatePersonnel();
+                state.personell[person.id] = person;
+            }
+        );
+        expect(newState).toStrictEqual(beforeState);
     });
 
     it('does nothing when there is only personnel outside vehicle', () => {
-        const states = setupStateAndApplyTreatments((state) => {
-            const person = generatePersonnel();
-            person.position = { ...new Position(0, 0) };
-            state.personell[person.id] = person;
-        });
-        expect(states.newState).toStrictEqual(states.beforeState);
+        const { beforeState, newState } = setupStateAndApplyTreatments(
+            (state) => {
+                const person = generatePersonnel();
+                person.position = { ...new Position(0, 0) };
+                state.personell[person.id] = person;
+            }
+        );
+        expect(newState).toStrictEqual(beforeState);
     });
 
     it('does nothing when there is only material in vehicle', () => {
-        const states = setupStateAndApplyTreatments((state) => {
-            const material = generateMaterial();
-            state.materials[material.id] = material;
-        });
-        expect(states.newState).toStrictEqual(states.beforeState);
+        const { beforeState, newState } = setupStateAndApplyTreatments(
+            (state) => {
+                const material = generateMaterial();
+                state.materials[material.id] = material;
+            }
+        );
+        expect(newState).toStrictEqual(beforeState);
     });
 
     it('does nothing when there is only material outside vehicle', () => {
-        const states = setupStateAndApplyTreatments((state) => {
-            const material = generateMaterial();
-            material.position = { ...new Position(0, 0) };
-            state.materials[material.id] = material;
-        });
-        expect(states.newState).toStrictEqual(states.beforeState);
+        const { beforeState, newState } = setupStateAndApplyTreatments(
+            (state) => {
+                const material = generateMaterial();
+                material.position = { ...new Position(0, 0) };
+                state.materials[material.id] = material;
+            }
+        );
+        expect(newState).toStrictEqual(beforeState);
     });
 
     it('does nothing when there are only non-dead patients', () => {
-        const states = setupStateAndApplyTreatments((state) => {
-            const patient = generatePatient('green', 'green');
-            state.patients[patient.id] = patient;
-        });
-        expect(states.newState).toStrictEqual(states.beforeState);
+        const { beforeState, newState } = setupStateAndApplyTreatments(
+            (state) => {
+                const patient = generatePatient('green', 'green');
+                state.patients[patient.id] = patient;
+            }
+        );
+        expect(newState).toStrictEqual(beforeState);
     });
 
     it('does nothing when there are only dead patients', () => {
-        const states = setupStateAndApplyTreatments((state) => {
-            const patient = generatePatient('black', 'black');
-            patient.position = { ...new Position(0, 0) };
-            state.patients[patient.id] = patient;
-        });
-        expect(states.newState).toStrictEqual(states.beforeState);
+        const { beforeState, newState } = setupStateAndApplyTreatments(
+            (state) => {
+                const patient = generatePatient('black', 'black');
+                patient.position = { ...new Position(0, 0) };
+                state.patients[patient.id] = patient;
+            }
+        );
+        expect(newState).toStrictEqual(beforeState);
     });
 
-    it('does nothing when there is personnel in a vehicle', () => {
-        const states = setupStateAndApplyTreatments((state) => {
-            const patient = generatePatient('green', 'green');
-            patient.position = { ...new Position(0, 0) };
-            state.patients[patient.id] = patient;
+    it('does nothing when all personnel is in a vehicle', () => {
+        const { beforeState, newState } = setupStateAndApplyTreatments(
+            (state) => {
+                const patient = generatePatient('green', 'green');
+                patient.position = { ...new Position(0, 0) };
+                state.patients[patient.id] = patient;
 
-            const person = generatePersonnel();
-            state.personell[person.id] = person;
-        });
-        expect(states.newState).toStrictEqual(states.beforeState);
+                const person = generatePersonnel();
+                state.personell[person.id] = person;
+            }
+        );
+        expect(newState).toStrictEqual(beforeState);
     });
 
-    it('does nothing when there is material in a vehicle', () => {
-        const states = setupStateAndApplyTreatments((state) => {
-            const patient = generatePatient('green', 'green');
-            patient.position = { ...new Position(0, 0) };
-            state.patients[patient.id] = patient;
+    it('does nothing when all material is in a vehicle', () => {
+        const { beforeState, newState } = setupStateAndApplyTreatments(
+            (state) => {
+                const patient = generatePatient('green', 'green');
+                patient.position = { ...new Position(0, 0) };
+                state.patients[patient.id] = patient;
 
-            const material = generateMaterial();
-            state.materials[material.id] = material;
-        });
-        expect(states.newState).toStrictEqual(states.beforeState);
+                const material = generateMaterial();
+                state.materials[material.id] = material;
+            }
+        );
+        expect(newState).toStrictEqual(beforeState);
     });
 
     it('treats the nearest patient within the specificThreshold, regardless of status', () => {
@@ -143,38 +168,40 @@ describe('calculate treatment', () => {
             greenPatient: '',
             redPatient: '',
         };
-        const states = setupStateAndApplyTreatments((state) => {
-            const greenPatient = generatePatient('green', 'green');
-            const redPatient = generatePatient('red', 'red');
-            greenPatient.position = { ...new Position(0, 0) };
-            redPatient.position = { ...new Position(2, 2) };
-            const material = generateMaterial();
-            material.position = { ...new Position(0, 0) };
+        const { beforeState, newState } = setupStateAndApplyTreatments(
+            (state) => {
+                const greenPatient = generatePatient('green', 'green');
+                const redPatient = generatePatient('red', 'red');
+                greenPatient.position = { ...new Position(0, 0) };
+                redPatient.position = { ...new Position(2, 2) };
+                const material = generateMaterial();
+                material.position = { ...new Position(0, 0) };
 
-            ids.material = material.id;
-            ids.greenPatient = greenPatient.id;
-            ids.redPatient = redPatient.id;
-            state.patients[greenPatient.id] = greenPatient;
-            state.patients[redPatient.id] = redPatient;
-            state.materials[material.id] = material;
-        });
+                ids.material = material.id;
+                ids.greenPatient = greenPatient.id;
+                ids.redPatient = redPatient.id;
+                state.patients[greenPatient.id] = greenPatient;
+                state.patients[redPatient.id] = redPatient;
+                state.materials[material.id] = material;
+            }
+        );
         expect(
-            states.newState.materials[ids.material].assignedPatientIds
+            newState.materials[ids.material].assignedPatientIds
         ).toStrictEqual({
             [ids.greenPatient]: true,
         });
         // Only the assignedPatientIds should differ, therefore ignore them
         const should = {
-            ...states.newState,
+            ...newState,
             materials: {
-                ...states.newState.materials,
+                ...newState.materials,
                 [ids.material]: {
-                    ...states.newState.materials[ids.material],
+                    ...newState.materials[ids.material],
                     assignedPatientIds: {},
                 },
             },
         };
-        expect(should).toStrictEqual(states.beforeState);
+        expect(should).toStrictEqual(beforeState);
     });
 
     it('treats the patient with worse status within the generalThreshold, regardless of distance', () => {
@@ -183,38 +210,40 @@ describe('calculate treatment', () => {
             greenPatient: '',
             redPatient: '',
         };
-        const states = setupStateAndApplyTreatments((state) => {
-            const greenPatient = generatePatient('green', 'green');
-            const redPatient = generatePatient('red', 'red');
-            greenPatient.position = { ...new Position(-1, -1) };
-            redPatient.position = { ...new Position(2, 2) };
-            const material = generateMaterial();
-            material.position = { ...new Position(0, 0) };
+        const { beforeState, newState } = setupStateAndApplyTreatments(
+            (state) => {
+                const greenPatient = generatePatient('green', 'green');
+                const redPatient = generatePatient('red', 'red');
+                greenPatient.position = { ...new Position(-1, -1) };
+                redPatient.position = { ...new Position(2, 2) };
+                const material = generateMaterial();
+                material.position = { ...new Position(0, 0) };
 
-            ids.material = material.id;
-            ids.greenPatient = greenPatient.id;
-            ids.redPatient = redPatient.id;
-            state.patients[greenPatient.id] = greenPatient;
-            state.patients[redPatient.id] = redPatient;
-            state.materials[material.id] = material;
-        });
+                ids.material = material.id;
+                ids.greenPatient = greenPatient.id;
+                ids.redPatient = redPatient.id;
+                state.patients[greenPatient.id] = greenPatient;
+                state.patients[redPatient.id] = redPatient;
+                state.materials[material.id] = material;
+            }
+        );
         expect(
-            states.newState.materials[ids.material].assignedPatientIds
+            newState.materials[ids.material].assignedPatientIds
         ).toStrictEqual({
             [ids.redPatient]: true,
         });
         // Only the assignedPatientIds should differ, therefore ignore them
         const should = {
-            ...states.newState,
+            ...newState,
             materials: {
-                ...states.newState.materials,
+                ...newState.materials,
                 [ids.material]: {
-                    ...states.newState.materials[ids.material],
+                    ...newState.materials[ids.material],
                     assignedPatientIds: {},
                 },
             },
         };
-        expect(should).toStrictEqual(states.beforeState);
+        expect(should).toStrictEqual(beforeState);
     });
 
     it('treats no patients when all are out of reach', () => {
@@ -223,29 +252,31 @@ describe('calculate treatment', () => {
             greenPatient: '',
             redPatient: '',
         };
-        const states = setupStateAndApplyTreatments((state) => {
-            const greenPatient = generatePatient('green', 'green');
-            const redPatient = generatePatient('red', 'red');
-            greenPatient.position = { ...new Position(-10, -10) };
-            redPatient.position = { ...new Position(20, 20) };
-            const material = generateMaterial();
-            material.position = { ...new Position(0, 0) };
+        const { beforeState, newState } = setupStateAndApplyTreatments(
+            (state) => {
+                const greenPatient = generatePatient('green', 'green');
+                const redPatient = generatePatient('red', 'red');
+                greenPatient.position = { ...new Position(-10, -10) };
+                redPatient.position = { ...new Position(20, 20) };
+                const material = generateMaterial();
+                material.position = { ...new Position(0, 0) };
 
-            ids.material = material.id;
-            ids.greenPatient = greenPatient.id;
-            ids.redPatient = redPatient.id;
-            state.patients[greenPatient.id] = greenPatient;
-            state.patients[redPatient.id] = redPatient;
-            state.materials[material.id] = material;
-        });
+                ids.material = material.id;
+                ids.greenPatient = greenPatient.id;
+                ids.redPatient = redPatient.id;
+                state.patients[greenPatient.id] = greenPatient;
+                state.patients[redPatient.id] = redPatient;
+                state.materials[material.id] = material;
+            }
+        );
         expect(
-            states.newState.materials[ids.material].assignedPatientIds
+            newState.materials[ids.material].assignedPatientIds
         ).toStrictEqual({});
         // Only the assignedPatientIds should differ, therefore ignore them
         const should = {
-            ...states.newState,
+            ...newState,
         };
-        expect(should).toStrictEqual(states.beforeState);
+        expect(should).toStrictEqual(beforeState);
     });
 
     it('treats both patients when there is capacity', () => {
@@ -254,39 +285,41 @@ describe('calculate treatment', () => {
             greenPatient: '',
             redPatient: '',
         };
-        const states = setupStateAndApplyTreatments((state) => {
-            const greenPatient = generatePatient('green', 'green');
-            const redPatient = generatePatient('red', 'red');
-            greenPatient.position = { ...new Position(-1, -1) };
-            redPatient.position = { ...new Position(2, 2) };
-            const material = generateMaterial();
-            material.canCaterFor = { ...new CanCaterFor(1, 0, 1, 'and') };
-            material.position = { ...new Position(0, 0) };
+        const { beforeState, newState } = setupStateAndApplyTreatments(
+            (state) => {
+                const greenPatient = generatePatient('green', 'green');
+                const redPatient = generatePatient('red', 'red');
+                greenPatient.position = { ...new Position(-1, -1) };
+                redPatient.position = { ...new Position(2, 2) };
+                const material = generateMaterial();
+                material.canCaterFor = { ...new CanCaterFor(1, 0, 1, 'and') };
+                material.position = { ...new Position(0, 0) };
 
-            ids.material = material.id;
-            ids.greenPatient = greenPatient.id;
-            ids.redPatient = redPatient.id;
-            state.patients[greenPatient.id] = greenPatient;
-            state.patients[redPatient.id] = redPatient;
-            state.materials[material.id] = material;
-        });
+                ids.material = material.id;
+                ids.greenPatient = greenPatient.id;
+                ids.redPatient = redPatient.id;
+                state.patients[greenPatient.id] = greenPatient;
+                state.patients[redPatient.id] = redPatient;
+                state.materials[material.id] = material;
+            }
+        );
         expect(
-            states.newState.materials[ids.material].assignedPatientIds
+            newState.materials[ids.material].assignedPatientIds
         ).toStrictEqual({
             [ids.redPatient]: true,
             [ids.greenPatient]: true,
         });
         // Only the assignedPatientIds should differ, therefore ignore them
         const should = {
-            ...states.newState,
+            ...newState,
             materials: {
-                ...states.newState.materials,
+                ...newState.materials,
                 [ids.material]: {
-                    ...states.newState.materials[ids.material],
+                    ...newState.materials[ids.material],
                     assignedPatientIds: {},
                 },
             },
         };
-        expect(should).toStrictEqual(states.beforeState);
+        expect(should).toStrictEqual(beforeState);
     });
 });
