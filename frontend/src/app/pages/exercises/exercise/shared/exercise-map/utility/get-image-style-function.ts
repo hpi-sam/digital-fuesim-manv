@@ -22,7 +22,7 @@ export class ImageStyleHelper {
          */
         private readonly normalizedImageHeight: number,
         /**
-         * Wether vectorImages under {@link imageUrl} should be rasterized (provides a big performance boost, but lowers the quality of the image)
+         * Whether vectorImages under {@link imageUrl} should be rasterized (provides a big performance boost, but lowers the quality of the image)
          */
         private readonly rasterizeVectorImages: boolean
     ) {}
