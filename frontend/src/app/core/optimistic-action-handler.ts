@@ -33,7 +33,7 @@ export class OptimisticActionHandler<
     private performActionQueue: ImmutableAction[] = [];
 
     /**
-     * Wether we are waiting for the response to an optimistic action
+     * Whether we are waiting for the response to an optimistic action
      */
     private isWaiting = false;
 
