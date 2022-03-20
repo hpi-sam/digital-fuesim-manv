@@ -29,10 +29,6 @@ export class JoinExerciseModalComponent implements OnDestroy {
             this.clientName
         );
         this.exerciseJoined$.next(successfullyJoined);
-        if (!successfullyJoined) {
-            // TODO: display this via a toast
-            console.error('Could not join the exercise');
-        }
         this.activeModal.close();
     }
 
