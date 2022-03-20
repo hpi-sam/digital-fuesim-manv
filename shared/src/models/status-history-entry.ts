@@ -1,4 +1,4 @@
-import { IsDate, IsUUID } from 'class-validator';
+import { Allow, IsDate, IsUUID } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
 
 export class StatusHistoryEntry {
@@ -6,6 +6,7 @@ export class StatusHistoryEntry {
     public id: UUID = uuid();
 
     // TODO
+    @Allow()
     public status: 'paused' | 'running';
 
     /**

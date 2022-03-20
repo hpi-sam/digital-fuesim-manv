@@ -1,6 +1,12 @@
-import { IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
+import {
+    Allow,
+    IsBoolean,
+    IsOptional,
+    IsString,
+    IsUUID,
+} from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import type { Role } from './utils';
+import { Role } from './utils';
 
 export class Client {
     @IsUUID(4, uuidValidationOptions)
@@ -10,6 +16,7 @@ export class Client {
     public name: string;
 
     // TODO
+    @Allow()
     public role: Role;
 
     @IsUUID(4, uuidValidationOptions)
