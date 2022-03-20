@@ -5,13 +5,49 @@ import { CanCaterFor, Position } from '../../models/utils';
 import { PersonalInformation } from '../../models/utils/personal-information';
 import type { ExerciseState } from '../../state';
 import { generateExercise } from '../../state';
-import type { Mutable } from '../../utils';
+import type { Mutable, UUID, UUIDSet } from '../../utils';
 import { uuid } from '../../utils';
 import { calculateTreatments } from './calculate-treatments';
 
 // TODO: https://github.com/hpi-sam/digital-fuesim-manv/issues/212
 
 const emptyState = generateExercise();
+
+interface Catering {
+    /**
+     * The id of the material or personnel catering
+     */
+    catererId: UUID;
+    catererType: 'materials' | 'personell';
+    /**
+     * All patients treated by {@link catererId}
+     */
+    patientIds: UUID[];
+}
+
+function assertCatering(
+    beforeState: ExerciseState,
+    newState: ExerciseState,
+    caterings: Catering[]
+) {
+    const shouldState = produce(newState, (draftState) => {
+        caterings.forEach((catering) => {
+            const expectedAssignedPatients: UUIDSet = {};
+            catering.patientIds.forEach((patientId) => {
+                expectedAssignedPatients[patientId] = true;
+            });
+            expect(
+                newState[catering.catererType][catering.catererId]
+                    .assignedPatientIds
+            ).toStrictEqual(expectedAssignedPatients);
+            draftState[catering.catererType][
+                catering.catererId
+            ].assignedPatientIds = {};
+        });
+        return draftState;
+    });
+    expect(shouldState).toStrictEqual(beforeState);
+}
 
 let patientCounter = 1;
 
@@ -185,23 +221,13 @@ describe('calculate treatment', () => {
                 state.materials[material.id] = material;
             }
         );
-        expect(
-            newState.materials[ids.material].assignedPatientIds
-        ).toStrictEqual({
-            [ids.greenPatient]: true,
-        });
-        // Only the assignedPatientIds should differ, therefore ignore them
-        const should = {
-            ...newState,
-            materials: {
-                ...newState.materials,
-                [ids.material]: {
-                    ...newState.materials[ids.material],
-                    assignedPatientIds: {},
-                },
+        assertCatering(beforeState, newState, [
+            {
+                catererId: ids.material,
+                catererType: 'materials',
+                patientIds: [ids.greenPatient],
             },
-        };
-        expect(should).toStrictEqual(beforeState);
+        ]);
     });
 
     it('treats the patient with worse status within the generalThreshold, regardless of distance', () => {
@@ -227,23 +253,13 @@ describe('calculate treatment', () => {
                 state.materials[material.id] = material;
             }
         );
-        expect(
-            newState.materials[ids.material].assignedPatientIds
-        ).toStrictEqual({
-            [ids.redPatient]: true,
-        });
-        // Only the assignedPatientIds should differ, therefore ignore them
-        const should = {
-            ...newState,
-            materials: {
-                ...newState.materials,
-                [ids.material]: {
-                    ...newState.materials[ids.material],
-                    assignedPatientIds: {},
-                },
+        assertCatering(beforeState, newState, [
+            {
+                catererId: ids.material,
+                catererType: 'materials',
+                patientIds: [ids.redPatient],
             },
-        };
-        expect(should).toStrictEqual(beforeState);
+        ]);
     });
 
     it('treats no patients when all are out of reach', () => {
@@ -269,14 +285,7 @@ describe('calculate treatment', () => {
                 state.materials[material.id] = material;
             }
         );
-        expect(
-            newState.materials[ids.material].assignedPatientIds
-        ).toStrictEqual({});
-        // Only the assignedPatientIds should differ, therefore ignore them
-        const should = {
-            ...newState,
-        };
-        expect(should).toStrictEqual(beforeState);
+        assertCatering(beforeState, newState, []);
     });
 
     it('treats both patients when there is capacity', () => {
@@ -303,23 +312,12 @@ describe('calculate treatment', () => {
                 state.materials[material.id] = material;
             }
         );
-        expect(
-            newState.materials[ids.material].assignedPatientIds
-        ).toStrictEqual({
-            [ids.redPatient]: true,
-            [ids.greenPatient]: true,
-        });
-        // Only the assignedPatientIds should differ, therefore ignore them
-        const should = {
-            ...newState,
-            materials: {
-                ...newState.materials,
-                [ids.material]: {
-                    ...newState.materials[ids.material],
-                    assignedPatientIds: {},
-                },
+        assertCatering(beforeState, newState, [
+            {
+                catererId: ids.material,
+                catererType: 'materials',
+                patientIds: [ids.redPatient, ids.greenPatient],
             },
-        };
-        expect(should).toStrictEqual(beforeState);
+        ]);
     });
 });
