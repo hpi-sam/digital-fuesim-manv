@@ -1,12 +1,14 @@
 import { Type } from 'class-transformer';
 import {
+    Allow,
     IsArray,
     IsNumber,
     IsString,
     IsUUID,
     ValidateNested,
 } from 'class-validator';
-import type { CanCaterFor, PersonellType } from '..';
+import { CanCaterFor } from '..';
+import type { PersonellType } from '..';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { ImageProperties } from './utils/image-properties';
 
@@ -27,6 +29,7 @@ export class VehicleTemplate {
     @IsArray()
     public personnel: PersonellType[];
 
+    @Allow()
     public material: CanCaterFor;
 
     constructor(

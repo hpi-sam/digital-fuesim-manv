@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+    Allow,
     IsBoolean,
     IsNumber,
     IsOptional,
@@ -10,9 +11,9 @@ import {
 } from 'class-validator';
 import type { Immutable } from '../utils';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import type { PatientStatus } from './utils';
 import {
     Position,
+    PatientStatus,
     HealthPoints,
     ImageProperties,
     healthPointsDefaults,
@@ -29,9 +30,11 @@ export class Patient {
     public personalInformation: PersonalInformation;
 
     // TODO
+    @Allow()
     public visibleStatus: PatientStatus | null;
 
     // TODO
+    @Allow()
     public realStatus: PatientStatus;
 
     @ValidateNested()
