@@ -53,9 +53,10 @@ let patientCounter = 1;
 
 function generatePatient(
     visibleStatus: PatientStatus,
-    actualStatus: PatientStatus
+    actualStatus: PatientStatus,
+    position?: Position
 ) {
-    return {
+    const patient = {
         ...new Patient(
             new PersonalInformation(
                 'John Doe',
@@ -70,14 +71,28 @@ function generatePatient(
             ''
         ),
     };
+    if (position) {
+        patient.position = { ...position };
+    }
+    return patient;
 }
 
-function generatePersonnel() {
-    return { ...new Personell(uuid(), 'notSan', {}) };
+function generatePersonnel(position?: Position) {
+    const personnel = { ...new Personell(uuid(), 'notSan', {}) };
+    if (position) {
+        personnel.position = { ...position };
+    }
+    return personnel;
 }
 
-function generateMaterial() {
-    return { ...new Material(uuid(), {}, new CanCaterFor(1, 2, 3, 'or')) };
+function generateMaterial(position?: Position) {
+    const material = {
+        ...new Material(uuid(), {}, new CanCaterFor(1, 2, 3, 'or')),
+    };
+    if (position) {
+        material.position = { ...position };
+    }
+    return material;
 }
 
 /**
@@ -120,8 +135,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only personnel outside vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const person = generatePersonnel();
-                person.position = { ...new Position(0, 0) };
+                const person = generatePersonnel(new Position(0, 0));
                 state.personell[person.id] = person;
             }
         );
@@ -141,8 +155,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only material outside vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const material = generateMaterial();
-                material.position = { ...new Position(0, 0) };
+                const material = generateMaterial(new Position(0, 0));
                 state.materials[material.id] = material;
             }
         );
@@ -152,8 +165,16 @@ describe('calculate treatment', () => {
     it('does nothing when there are only non-dead patients', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const patient = generatePatient('green', 'green');
-                state.patients[patient.id] = patient;
+                (['green', 'yellow', 'red'] as PatientStatus[]).forEach(
+                    (color) => {
+                        const patient = generatePatient(
+                            color,
+                            color,
+                            new Position(0, 0)
+                        );
+                        state.patients[patient.id] = patient;
+                    }
+                );
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -162,8 +183,11 @@ describe('calculate treatment', () => {
     it('does nothing when there are only dead patients', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const patient = generatePatient('black', 'black');
-                patient.position = { ...new Position(0, 0) };
+                const patient = generatePatient(
+                    'black',
+                    'black',
+                    new Position(0, 0)
+                );
                 state.patients[patient.id] = patient;
             }
         );
@@ -173,8 +197,11 @@ describe('calculate treatment', () => {
     it('does nothing when all personnel is in a vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const patient = generatePatient('green', 'green');
-                patient.position = { ...new Position(0, 0) };
+                const patient = generatePatient(
+                    'green',
+                    'green',
+                    new Position(0, 0)
+                );
                 state.patients[patient.id] = patient;
 
                 const person = generatePersonnel();
@@ -187,8 +214,11 @@ describe('calculate treatment', () => {
     it('does nothing when all material is in a vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const patient = generatePatient('green', 'green');
-                patient.position = { ...new Position(0, 0) };
+                const patient = generatePatient(
+                    'green',
+                    'green',
+                    new Position(0, 0)
+                );
                 state.patients[patient.id] = patient;
 
                 const material = generateMaterial();
@@ -206,12 +236,17 @@ describe('calculate treatment', () => {
         };
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const greenPatient = generatePatient('green', 'green');
-                const redPatient = generatePatient('red', 'red');
-                greenPatient.position = { ...new Position(0, 0) };
-                redPatient.position = { ...new Position(2, 2) };
-                const material = generateMaterial();
-                material.position = { ...new Position(0, 0) };
+                const greenPatient = generatePatient(
+                    'green',
+                    'green',
+                    new Position(0, 0)
+                );
+                const redPatient = generatePatient(
+                    'red',
+                    'red',
+                    new Position(2, 2)
+                );
+                const material = generateMaterial(new Position(0, 0));
 
                 ids.material = material.id;
                 ids.greenPatient = greenPatient.id;
@@ -238,12 +273,17 @@ describe('calculate treatment', () => {
         };
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const greenPatient = generatePatient('green', 'green');
-                const redPatient = generatePatient('red', 'red');
-                greenPatient.position = { ...new Position(-1, -1) };
-                redPatient.position = { ...new Position(2, 2) };
-                const material = generateMaterial();
-                material.position = { ...new Position(0, 0) };
+                const greenPatient = generatePatient(
+                    'green',
+                    'green',
+                    new Position(-1, -1)
+                );
+                const redPatient = generatePatient(
+                    'red',
+                    'red',
+                    new Position(2, 2)
+                );
+                const material = generateMaterial(new Position(0, 0));
 
                 ids.material = material.id;
                 ids.greenPatient = greenPatient.id;
@@ -270,12 +310,17 @@ describe('calculate treatment', () => {
         };
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const greenPatient = generatePatient('green', 'green');
-                const redPatient = generatePatient('red', 'red');
-                greenPatient.position = { ...new Position(-10, -10) };
-                redPatient.position = { ...new Position(20, 20) };
-                const material = generateMaterial();
-                material.position = { ...new Position(0, 0) };
+                const greenPatient = generatePatient(
+                    'green',
+                    'green',
+                    new Position(-10, -10)
+                );
+                const redPatient = generatePatient(
+                    'red',
+                    'red',
+                    new Position(20, 20)
+                );
+                const material = generateMaterial(new Position(0, 0));
 
                 ids.material = material.id;
                 ids.greenPatient = greenPatient.id;
@@ -296,13 +341,18 @@ describe('calculate treatment', () => {
         };
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const greenPatient = generatePatient('green', 'green');
-                const redPatient = generatePatient('red', 'red');
-                greenPatient.position = { ...new Position(-1, -1) };
-                redPatient.position = { ...new Position(2, 2) };
-                const material = generateMaterial();
+                const greenPatient = generatePatient(
+                    'green',
+                    'green',
+                    new Position(-1, -1)
+                );
+                const redPatient = generatePatient(
+                    'red',
+                    'red',
+                    new Position(2, 2)
+                );
+                const material = generateMaterial(new Position(0, 0));
                 material.canCaterFor = { ...new CanCaterFor(1, 0, 1, 'and') };
-                material.position = { ...new Position(0, 0) };
 
                 ids.material = material.id;
                 ids.greenPatient = greenPatient.id;
