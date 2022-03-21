@@ -7,9 +7,9 @@ import type OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import type { WithPosition } from '../../utility/types/with-position';
-import { CommonFeatureManager } from './common-feature-manager';
+import { ElementFeatureManager } from './element-feature-manager';
 
-export class PersonellFeatureManager extends CommonFeatureManager<
+export class PersonellFeatureManager extends ElementFeatureManager<
     WithPosition<Personell>
 > {
     constructor(

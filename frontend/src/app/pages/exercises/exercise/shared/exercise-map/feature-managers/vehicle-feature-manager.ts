@@ -10,11 +10,11 @@ import type { Feature } from 'ol';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type { WithPosition } from '../../utility/types/with-position';
 import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
-import { CommonFeatureManager } from './common-feature-manager';
+import { withPopup } from '../utility/with-popup';
+import { ElementFeatureManager } from './element-feature-manager';
 
-export class VehicleFeatureManager extends CommonFeatureManager<
-    WithPosition<Vehicle>,
-    VehiclePopupComponent
+class VehicleFeatureManagerBase extends ElementFeatureManager<
+    WithPosition<Vehicle>
 > {
     public static normalizedImageHeight = 200;
 
@@ -29,7 +29,7 @@ export class VehicleFeatureManager extends CommonFeatureManager<
             olMap,
             layer,
             {
-                imageHeight: VehicleFeatureManager.normalizedImageHeight,
+                imageHeight: VehicleFeatureManagerBase.normalizedImageHeight,
                 imageUrl: './assets/vehicle.svg',
             },
             (targetPosition, vehicle) => {
@@ -38,12 +38,6 @@ export class VehicleFeatureManager extends CommonFeatureManager<
                     vehicleId: vehicle.id,
                     targetPosition,
                 });
-            },
-            {
-                component: VehiclePopupComponent,
-                height: 150,
-                width: 225,
-                getContext: (feature) => ({ vehicleId: feature.getId()! }),
             }
         );
     }
@@ -89,3 +83,11 @@ export class VehicleFeatureManager extends CommonFeatureManager<
         return false;
     }
 }
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const VehicleFeatureManager = withPopup(VehicleFeatureManagerBase, {
+    component: VehiclePopupComponent,
+    height: 150,
+    width: 225,
+    getContext: (feature) => ({ vehicleId: feature.getId()! }),
+});
