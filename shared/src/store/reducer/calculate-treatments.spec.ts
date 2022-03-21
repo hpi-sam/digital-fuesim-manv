@@ -63,6 +63,7 @@ function generatePatient(
                 'none',
                 'nothing',
                 'today',
+                // A deterministic random value
                 Math.abs(Math.sin((patientCounter++) ** 2 * 99)) * 100,
                 'male'
             ),
