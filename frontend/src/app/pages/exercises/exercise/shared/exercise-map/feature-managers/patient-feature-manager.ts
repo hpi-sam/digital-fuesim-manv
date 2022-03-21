@@ -8,11 +8,11 @@ import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import type { WithPosition } from '../../utility/types/with-position';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
-import { CommonFeatureManager } from './common-feature-manager';
+import { withPopup } from '../utility/with-popup';
+import { ElementFeatureManager } from './element-feature-manager';
 
-export class PatientFeatureManager extends CommonFeatureManager<
-    WithPosition<Patient>,
-    PatientPopupComponent
+export class PatientFeatureManagerBase extends ElementFeatureManager<
+    WithPosition<Patient>
 > {
     public static normalizedImageHeight = 80;
 
@@ -36,13 +36,15 @@ export class PatientFeatureManager extends CommonFeatureManager<
                     patientId: patient.id,
                     targetPosition,
                 });
-            },
-            {
-                component: PatientPopupComponent,
-                height: 110,
-                width: 50,
-                getContext: (feature) => ({ patientId: feature.getId()! }),
             }
         );
     }
 }
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const PatientFeatureManager = withPopup(PatientFeatureManagerBase, {
+    component: PatientPopupComponent,
+    height: 110,
+    width: 50,
+    getContext: (feature) => ({ patientId: feature.getId()! }),
+});

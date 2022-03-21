@@ -8,7 +8,7 @@ import { generateChangedProperties } from '../utility/generate-changed-propertie
  * {@link Element} is the immutable JSON object (Patient, Vehicle, etc.)
  * {@link ElementFeature} is the OpenLayers Feature that should be rendered to represent the {@link Element}.
  */
-export abstract class FeatureManager<
+export abstract class ElementManager<
     Element extends ImmutableJsonObject,
     ElementFeature extends Feature<any>,
     SupportedChangeProperties extends ReadonlySet<keyof Element>
