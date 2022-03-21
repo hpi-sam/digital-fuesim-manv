@@ -15,8 +15,8 @@
         "watch": "tsc -p tsconfig.build.json --watch",
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,html}\"",
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,html}\"",
-        "test:ci": "jest --runInBand --coverage --verbose --ci",
-        "test": "jest --runInBand --coverage --verbose",
+        "test:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose --ci",
+        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose",
         "test:watch": "jest --runInBand --verbose --watch"
     },
     "private": true,
@@ -34,6 +34,7 @@
     },
     "devDependencies": {
         "@types/jest": "^27.4.0",
+        "@types/lodash-es": "^4.17.6",
         "@types/uuid": "^8.3.4",
         "@types/validator": "^13.7.1",
         "@typescript-eslint/eslint-plugin": "5.10.2",
