@@ -2,17 +2,23 @@ import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
 import type { Type } from '@angular/core';
 import { Subject } from 'rxjs';
-import type { ElementFeatureManager } from '../feature-managers/element-feature-manager';
+import type { Constructor } from 'digital-fuesim-manv-shared';
+import type {
+    ElementFeatureManager,
+    PositionableElement,
+} from '../feature-managers/element-feature-manager';
 import type { OpenPopupOptions, PopupComponent } from './popup-manager';
 import { calculatePopupPositioning } from './calculate-popup-positioning';
-
-type Constructor<T = any> = new (...args: any[]) => T;
 
 /**
  * A mixin that adds the ability to open a popup to an element feature manager.
  */
 export function withPopup<
-    BaseType extends Constructor<ElementFeatureManager<any>>
+    // It is necessary to specify this type explicitly,
+    // because otherwise there are type errors if the Element is a superset
+    // of { id: UUID, position: Position, image: ImageProperties }
+    Element extends PositionableElement,
+    BaseType extends Constructor<ElementFeatureManager<Element>>
 >(
     baseClass: BaseType,
     popoverOptions: {

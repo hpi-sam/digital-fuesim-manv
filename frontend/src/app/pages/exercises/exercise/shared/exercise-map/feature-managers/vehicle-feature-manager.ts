@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import type { Vehicle } from 'digital-fuesim-manv-shared';
 import type Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
@@ -74,13 +75,16 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const VehicleFeatureManager = withPopup(
-    withElementImageStyle<WithPosition<Vehicle>>(VehicleFeatureManagerBase),
-    {
-        component: VehiclePopupComponent,
-        height: 150,
-        width: 225,
-        getContext: (feature) => ({ vehicleId: feature.getId()! }),
-    }
-);
+const VehicleFeatureManagerWithImageStyle = withElementImageStyle<
+    WithPosition<Vehicle>
+>(VehicleFeatureManagerBase);
+
+export const VehicleFeatureManager = withPopup<
+    WithPosition<Vehicle>,
+    typeof VehicleFeatureManagerWithImageStyle
+>(VehicleFeatureManagerWithImageStyle, {
+    component: VehiclePopupComponent,
+    height: 150,
+    width: 225,
+    getContext: (feature) => ({ vehicleId: feature.getId()! }),
+});

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import type { Patient } from 'digital-fuesim-manv-shared';
 import type Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
@@ -31,14 +32,16 @@ class PatientFeatureManagerBase extends ElementFeatureManager<
     }
 }
 
-// TODO: withPopup doesn't seem to return the correct type
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const PatientFeatureManager = withPopup(
-    withElementImageStyle<WithPosition<Patient>>(PatientFeatureManagerBase),
-    {
-        component: PatientPopupComponent,
-        height: 110,
-        width: 50,
-        getContext: (feature) => ({ patientId: feature.getId()! }),
-    }
-);
+const PatientFeatureManagerWithImageStyle = withElementImageStyle<
+    WithPosition<Patient>
+>(PatientFeatureManagerBase);
+
+export const PatientFeatureManager = withPopup<
+    WithPosition<Patient>,
+    typeof PatientFeatureManagerWithImageStyle
+>(PatientFeatureManagerWithImageStyle, {
+    component: PatientPopupComponent,
+    height: 110,
+    width: 50,
+    getContext: (feature) => ({ patientId: feature.getId()! }),
+});
