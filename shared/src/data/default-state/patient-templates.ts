@@ -1,4 +1,11 @@
 import { PatientTemplate } from '../..';
+import type { ImageProperties } from '../../models/utils';
+
+const defaultImage: ImageProperties = {
+    url: '/assets/patient.svg',
+    height: 80,
+    aspectRatio: 1,
+};
 
 const greenPatientTemplate = new PatientTemplate(
     {
@@ -11,7 +18,7 @@ const greenPatientTemplate = new PatientTemplate(
     },
     'green',
     'green',
-    '/assets/patient.svg'
+    defaultImage
 );
 
 const yellowPatientTemplate = new PatientTemplate(
@@ -25,7 +32,7 @@ const yellowPatientTemplate = new PatientTemplate(
     },
     'yellow',
     'yellow',
-    '/assets/patient.svg'
+    defaultImage
 );
 
 const redPatientTemplate = new PatientTemplate(
@@ -39,7 +46,7 @@ const redPatientTemplate = new PatientTemplate(
     },
     'red',
     'red',
-    '/assets/patient.svg'
+    defaultImage
 );
 
 const blackPatientTemplate = new PatientTemplate(
@@ -53,7 +60,7 @@ const blackPatientTemplate = new PatientTemplate(
     },
     'black',
     'black',
-    '/assets/patient.svg'
+    defaultImage
 );
 
 export const defaultPatientTemplates: PatientTemplate[] = [

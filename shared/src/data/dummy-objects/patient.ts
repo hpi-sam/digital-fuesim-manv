@@ -7,6 +7,7 @@ export function generateDummyPatient(): Patient {
         template.personalInformation,
         template.visibleStatus,
         template.realStatus,
-        ''
+        '',
+        template.image
     );
 }

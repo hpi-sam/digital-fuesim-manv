@@ -11,7 +11,6 @@ import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import { MovementAnimator } from '../utility/movement-animator';
 import { TranslateHelper } from '../utility/translate-helper';
-import { ImageStyleHelper } from '../utility/get-image-style-function';
 import type { FeatureManager } from '../utility/feature-manager';
 import { ElementManager } from './element-manager';
 
@@ -37,35 +36,17 @@ export abstract class ElementFeatureManager<Element extends PositionableElement>
         this.layer
     );
     private readonly translateHelper = new TranslateHelper();
-    private readonly imageStyleHelper = new ImageStyleHelper(
-        this.imageOptions.imageUrl,
-        this.imageOptions.imageHeight,
-        true
-    );
 
     constructor(
         protected readonly store: Store<AppState>,
         protected readonly olMap: OlMap,
-        private readonly layer: VectorLayer<VectorSource<Point>>,
-        private readonly imageOptions: {
-            /**
-             * The height of the image in pixels that should be used at {@link ImageStyleHelper.normalZoom} zoom
-             */
-            imageHeight: number;
-            imageUrl: string;
-        },
+        protected readonly layer: VectorLayer<VectorSource<Point>>,
         private readonly proposeMovementAction: (
             newPosition: Position,
             element: Element
         ) => void
     ) {
         super();
-        this.layer.setStyle((feature, resolution) =>
-            this.imageStyleHelper.getStyle(
-                feature as ElementFeature,
-                resolution
-            )
-        );
     }
 
     createFeature(element: Element): void {
@@ -112,37 +93,37 @@ export abstract class ElementFeatureManager<Element extends PositionableElement>
         if (exerciseState.materials[id]) {
             return {
                 type: 'material',
-                value: exerciseState.materials[id],
+                value: exerciseState.materials[id] as unknown as Element,
             } as const;
         }
         if (exerciseState.patients[id]) {
             return {
                 type: 'patient',
-                value: exerciseState.patients[id],
+                value: exerciseState.patients[id] as unknown as Element,
             } as const;
         }
         if (exerciseState.vehicles[id]) {
             return {
                 type: 'vehicle',
-                value: exerciseState.vehicles[id],
+                value: exerciseState.vehicles[id] as unknown as Element,
             } as const;
         }
         if (exerciseState.personell[id]) {
             return {
                 type: 'personell',
-                value: exerciseState.personell[id],
+                value: exerciseState.personell[id] as unknown as Element,
             } as const;
         }
         if (exerciseState.images[id]) {
             return {
                 type: 'image',
-                value: exerciseState.images[id],
+                value: exerciseState.images[id] as unknown as Element,
             } as const;
         }
         if (exerciseState.viewports[id]) {
             return {
                 type: 'viewport',
-                value: exerciseState.viewports[id],
+                value: exerciseState.viewports[id] as unknown as Element,
             } as const;
         }
         return undefined;

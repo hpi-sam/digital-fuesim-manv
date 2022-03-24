@@ -10,6 +10,7 @@ import type { UUIDSet } from '../utils';
 import { uuid, uuidValidationOptions, UUID } from '../utils';
 import { Position } from './utils';
 import type { Transfer } from './utils';
+import { ImageProperties } from './utils/image-properties';
 
 export class Vehicle {
     @IsUUID(4, uuidValidationOptions)
@@ -32,6 +33,10 @@ export class Vehicle {
     @IsOptional()
     public position?: Position;
 
+    @ValidateNested()
+    @Type(() => ImageProperties)
+    public image: ImageProperties;
+
     /**
      * Exclusive-or to {@link position}
      */
@@ -46,9 +51,15 @@ export class Vehicle {
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     public patientIds: UUIDSet = {};
 
-    constructor(materialId: UUID, patientCapacity: number, name: string) {
+    constructor(
+        materialId: UUID,
+        patientCapacity: number,
+        name: string,
+        image: ImageProperties
+    ) {
         this.materialId = materialId;
         this.patientCapacity = patientCapacity;
         this.name = name;
+        this.image = image;
     }
 }

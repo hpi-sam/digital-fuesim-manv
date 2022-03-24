@@ -7,9 +7,10 @@ import type OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import type { WithPosition } from '../../utility/types/with-position';
+import { withElementImageStyle } from '../utility/with-element-image-style';
 import { ElementFeatureManager } from './element-feature-manager';
 
-export class MaterialFeatureManager extends ElementFeatureManager<
+class BaseMaterialFeatureManager extends ElementFeatureManager<
     WithPosition<Material>
 > {
     constructor(
@@ -18,21 +19,17 @@ export class MaterialFeatureManager extends ElementFeatureManager<
         layer: VectorLayer<VectorSource<Point>>,
         apiService: ApiService
     ) {
-        super(
-            store,
-            olMap,
-            layer,
-            {
-                imageHeight: 40,
-                imageUrl: './assets/material.svg',
-            },
-            (targetPosition, material) => {
-                apiService.proposeAction({
-                    type: '[Material] Move material',
-                    materialId: material.id,
-                    targetPosition,
-                });
-            }
-        );
+        super(store, olMap, layer, (targetPosition, material) => {
+            apiService.proposeAction({
+                type: '[Material] Move material',
+                materialId: material.id,
+                targetPosition,
+            });
+        });
     }
 }
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const MaterialFeatureManager = withElementImageStyle<
+    WithPosition<Material>
+>(BaseMaterialFeatureManager);

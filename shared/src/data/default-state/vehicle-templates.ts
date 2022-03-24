@@ -1,8 +1,15 @@
 import { VehicleTemplate } from '../..';
+import type { ImageProperties } from '../../models/utils/image-properties';
+
+const defaultImage: ImageProperties = {
+    url: '/assets/vehicle.svg',
+    height: 200,
+    aspectRatio: 1,
+};
 
 const rtwVehicleTemplate = new VehicleTemplate(
     'RTW',
-    '/assets/vehicle.svg',
+    defaultImage,
     2,
     ['notSan', 'retSan'],
     {
@@ -15,7 +22,7 @@ const rtwVehicleTemplate = new VehicleTemplate(
 
 const gwSanVehicleTemplate = new VehicleTemplate(
     'GW-San',
-    '/assets/vehicle.svg',
+    defaultImage,
     2,
     ['notSan', 'retSan', 'retSan', 'retSan'],
     {
@@ -28,7 +35,7 @@ const gwSanVehicleTemplate = new VehicleTemplate(
 
 const nefVehicleTemplate = new VehicleTemplate(
     'NEF',
-    '/assets/vehicle.svg',
+    defaultImage,
     2,
     ['notarzt', 'notSan'],
     {
@@ -41,7 +48,7 @@ const nefVehicleTemplate = new VehicleTemplate(
 
 const hubschrauberVehicleTemplate = new VehicleTemplate(
     'Hubschrauber',
-    '/assets/vehicle.svg',
+    defaultImage,
     1,
     ['notarzt', 'notSan'],
     {

@@ -90,9 +90,9 @@ export const exerciseReducerMap: {
         const patients = Object.keys(vehicle.patientIds).map(
             (patientId) => draftState.patients[patientId]
         );
-        // TODO: save in the elements themselves
-        const vehicleImageWidth = 200;
-        const vehicleWidthInPosition = imageSizeToPosition(vehicleImageWidth);
+        const vehicleWidthInPosition = imageSizeToPosition(
+            vehicle.image.aspectRatio * vehicle.image.height
+        );
         const numberOfMaterial = 1;
         const space =
             vehicleWidthInPosition /
