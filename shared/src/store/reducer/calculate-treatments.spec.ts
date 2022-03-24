@@ -1,8 +1,8 @@
 import { produce } from 'immer';
+import { defaultPatientTemplates } from '../../data';
 import { Material, Patient, Personell } from '../../models';
 import type { PatientStatus } from '../../models/utils';
 import { CanCaterFor, Position } from '../../models/utils';
-import { PersonalInformation } from '../../models/utils/personal-information';
 import type { ExerciseState } from '../../state';
 import { generateExercise } from '../../state';
 import type { Mutable, UUID, UUIDSet } from '../../utils';
@@ -49,27 +49,19 @@ function assertCatering(
     expect(shouldState).toStrictEqual(beforeState);
 }
 
-let patientCounter = 1;
-
 function generatePatient(
     visibleStatus: PatientStatus,
     actualStatus: PatientStatus,
     position?: Position
 ) {
+    const template = defaultPatientTemplates[0];
     const patient = {
         ...new Patient(
-            new PersonalInformation(
-                'John Doe',
-                'none',
-                'nothing',
-                'today',
-                // A deterministic random value
-                Math.abs(Math.sin((patientCounter++) ** 2 * 99)) * 100,
-                'male'
-            ),
+            template.personalInformation,
             visibleStatus,
             actualStatus,
-            ''
+            '',
+            template.image
         ),
     };
     if (position) {
