@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import type { PatientStatus } from './utils';
-import { Position } from './utils';
+import { Position, ImageProperties } from './utils';
 import { PersonalInformation } from './utils/personal-information';
 
 export class Patient {
@@ -22,17 +22,23 @@ export class Patient {
     // TODO: this was Date
     public nextPhaseChange: string;
 
+    @ValidateNested()
+    @Type(() => ImageProperties)
+    public image: ImageProperties;
+
     constructor(
         // TODO: Specify patient data (e.g. injuries, name, etc.)
         personalInformation: PersonalInformation,
         visibleStatus: PatientStatus | null,
         realStatus: PatientStatus,
-        nextPhaseChange: string
+        nextPhaseChange: string,
+        image: ImageProperties
     ) {
         this.personalInformation = personalInformation;
         this.visibleStatus = visibleStatus;
         this.realStatus = realStatus;
         this.nextPhaseChange = nextPhaseChange;
+        this.image = image;
     }
 
     /**

@@ -3,7 +3,7 @@ import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import type { UUIDSet } from '../utils';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import type { PersonellType } from './utils';
-import { CanCaterFor, Position } from './utils';
+import { CanCaterFor, Position, ImageProperties } from './utils';
 
 export class Personell {
     @IsUUID(4, uuidValidationOptions)
@@ -21,6 +21,14 @@ export class Personell {
     @ValidateNested()
     @Type(() => CanCaterFor)
     public canCaterFor: CanCaterFor;
+
+    @ValidateNested()
+    @Type(() => ImageProperties)
+    public image: ImageProperties = {
+        url: './assets/personell.png',
+        height: 80,
+        aspectRatio: 1,
+    };
 
     /**
      * if undefined, is in vehicle with {@link vehicleId}

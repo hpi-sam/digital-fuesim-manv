@@ -4,12 +4,9 @@ import type {
     PatientTemplate,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
-import { Patient, addVehicle } from 'digital-fuesim-manv-shared';
+import { Patient, normalZoom, addVehicle } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
-import { ImageStyleHelper } from '../exercise-map/utility/get-image-style-function';
-import { VehicleFeatureManager } from '../exercise-map/feature-managers/vehicle-feature-manager';
-import { PatientFeatureManager } from '../exercise-map/feature-managers/patient-feature-manager';
 
 @Injectable({
     providedIn: 'root',
@@ -20,11 +17,6 @@ import { PatientFeatureManager } from '../exercise-map/feature-managers/patient-
 export class DragElementService {
     private olMap?: OlMap;
     private readonly dragElementKey = 'createElement';
-
-    private readonly normalizedImageHeights = {
-        vehicle: VehicleFeatureManager.normalizedImageHeight,
-        patient: PatientFeatureManager.normalizedImageHeight,
-    };
 
     constructor(private readonly apiService: ApiService) {}
 
@@ -42,18 +34,27 @@ export class DragElementService {
     public onDragStart(event: DragEvent, transferTemplate: TransferTemplate) {
         // Create the drag image
         const dragImage = new Image();
-        dragImage.src = transferTemplate.template.imageUrl;
+        const imageProperties = transferTemplate.template.image;
+        dragImage.src = imageProperties.url;
         const zoom = this.olMap!.getView().getZoom()!;
-        const height =
-            this.normalizedImageHeights[transferTemplate.type] *
-            // One higher zoom level means to double the height of the image
-            Math.pow(2, zoom - ImageStyleHelper.normalZoom) *
+        const zoomFactor = // One higher zoom level means to double the height of the image
+            Math.pow(2, zoom - normalZoom) *
             // For some reason we need this additional factor to make it work - determined via best effort guess
+            // Changing the scale of the image in OpenLayers does have an influence on the number here. So maybe something to do with a cache.
             2.3;
-        const width = height * (dragImage.width / dragImage.height);
         // We need a container, because styles on an image element are ignored per API specification (image is interpreted as a bitmap)
-        const container = this.createDragImageContainer(dragImage, height);
-        event.dataTransfer?.setDragImage(container, width / 2, height / 2);
+        const container = this.createDragImageContainer(
+            dragImage,
+            zoomFactor * imageProperties.height
+        );
+        event.dataTransfer?.setDragImage(
+            container,
+            (zoomFactor *
+                imageProperties.aspectRatio *
+                imageProperties.height) /
+                2,
+            (zoomFactor * imageProperties.height) / 2
+        );
         // This seems to be optional...
         event.dataTransfer!.dropEffect = 'copy';
         event.dataTransfer!.effectAllowed = 'copy';
@@ -132,7 +133,8 @@ export class DragElementService {
                         transferTemplate.template.personalInformation,
                         transferTemplate.template.visibleStatus,
                         transferTemplate.template.realStatus,
-                        ''
+                        '',
+                        transferTemplate.template.image
                     );
                     patient.position = position;
                     this.apiService.proposeAction(
