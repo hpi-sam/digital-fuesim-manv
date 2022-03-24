@@ -90,5 +90,19 @@ Commonly used exercise-[selectors](https://ngrx.io/guide/store/selectors) should
 
 You can assume that the Store has the current exercise state if you are in `src/app/pages/exercises/exercise`. We use [route guards](https://angular.io/guide/router-tutorial-toh#canactivate-requiring-authentication) for this.
 
-If you want to modify the exercise state do not do it via [reducers](https://ngrx.io/guide/store/reducers) in the store, but propose an action (optimistically) via the [ApiService](./src/app/core/api.service.ts). The action will automatically be applied to the store.
-By default, we don't use `ChangeDetectionStrategy.OnPush` because it makes the code more complicated and increases the skill level needed to work with the code while providing a mostly negligible performance benefit.
+If you want to modify the exercise state, do not do it via [reducers](https://ngrx.io/guide/store/reducers) in the store, but propose an action (optimistically) via the [ApiService](./src/app/core/api.service.ts). The action will automatically be applied to the store.
+By default, we don't use `ChangeDetectionStrategy.OnPush` because it complicates the code and increases the skill level needed to work with the code while providing a mostly negligible performance benefit.
+
+### Exercise map
+
+You can find the exercise map in [src/app/pages/exercises/exercise/shared/exercise-map](src/app/pages/exercises/exercise/shared/exercise-map).
+
+-   `element`: The data that represents a `Material`, `Personnel`, `Vehicle`, etc. that is saved in the state.
+-   `feature`: The OpenLayers feature representing an element and is rendered on the map canvas.
+
+The [ExerciseMapComponent](src/app/pages/exercises/exercise/shared/exercise-map/exercise-map.component.ts) is the Angular component that provides the canvas on which the map should be rendered.
+
+The [OlMapManager](src/app/pages/exercises/exercise/shared/exercise-map/utility/ol-map-manager.ts) manages all the OpenLayers stuff and renders the map on the canvas.
+The map consists of different layers. Each layer only displays one kind of element. How an element in this layer should be rendered and what interactions are possible is defined in the [specific ElementFeatureManagers](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers).
+They all inherit from [ElementFeatureManager](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers/element-feature-manager.ts) and make sometimes use of Mixins to add additional functionality.
+They have a custom API that allows reacting to changes in an element ([ElementManager](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers/element-manager.ts)) and an API that allows for interaction with other elements via the OlMapManager ([FeatureManager](src/app/pages/exercises/exercise/shared/exercise-map/utility/feature-manager.ts)).
