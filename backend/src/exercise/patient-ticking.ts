@@ -8,6 +8,9 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import { healthPointsDefaults } from 'digital-fuesim-manv-shared';
 
+/**
+ * The count of assigned personnel and material that cater for a {@link Patient}.
+ */
 type Catering = { [key in PersonellType | 'material']: number };
 
 const patientTickInterval = 1000;
@@ -33,7 +36,7 @@ interface PatientTickResult {
 
 /**
  * Apply the patient tick to the {@link state}
- * @param state The {@link ExerciseState} to apply the patient tick to
+ * @param state The {@link ExerciseState} the patient tick should be applied on later
  * @returns An array of {@link PatientTickResult}s to apply to the {@link state} in a reducer
  */
 export function patientTick(state: ExerciseState): PatientTickResult[] {
@@ -60,7 +63,7 @@ export function patientTick(state: ExerciseState): PatientTickResult[] {
  * Find catering personnel/material for a {@link patient}
  * @param state The {@link ExerciseState} to use
  * @param patient The {@link Patient} to find associated material and personnel for
- * @returns An object containing the count of assigned personnel/material to the {@link patient} that cater for it.
+ * @returns An object containing the count of assigned personnel and material that cater for the {@link patient}.
  */
 function getDedicatedResources(
     state: ExerciseState,
