@@ -1,15 +1,13 @@
-import type {
-    Position,
-    ImageProperties,
-    UUID,
-    Constructor,
-} from 'digital-fuesim-manv-shared';
+import type { ImageProperties, Constructor } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import type Point from 'ol/geom/Point';
 import Icon from 'ol/style/Icon';
 import Style from 'ol/style/Style';
-import type { ElementFeatureManager } from '../feature-managers/element-feature-manager';
+import type {
+    ElementFeatureManager,
+    PositionableElement,
+} from '../feature-managers/element-feature-manager';
 
 /**
  * A mixin that styles the feature with the image of the element.
@@ -20,9 +18,7 @@ export function withElementImageStyle<
     // It is necessary to specify this type explicitly,
     // because otherwise there are type errors if the Element is a superset
     // of { id: UUID, position: Position, image: ImageProperties }
-    Element extends {
-        id: UUID;
-        position: Position;
+    Element extends PositionableElement & {
         image: ImageProperties;
     },
     BaseType extends Constructor<ElementFeatureManager<Element>> = Constructor<

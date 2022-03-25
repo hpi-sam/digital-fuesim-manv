@@ -1,8 +1,8 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsInt, IsPositive, IsString } from 'class-validator';
 
 export class ImageProperties {
     /**
-     * An url of a local file or a remote url that points to the image to be displayed.
+     * A data URI or URL pointing to a local or remote image.
      *
      * Supported image types are: jpg, jpeg, png, svg. (Others are not tested)
      * @example '/assets/image.svg'
@@ -15,7 +15,8 @@ export class ImageProperties {
      *
      * If there should be, e.g., children-patients and adult-patients they could share the same image, but with different heights.
      */
-    @IsNumber()
+    @IsInt()
+    @IsPositive()
     public height: number;
 
     /**
@@ -25,7 +26,7 @@ export class ImageProperties {
      *
      * If the image is the same, their aspect ratios must be the same too.
      */
-    @IsNumber()
+    @IsPositive()
     public aspectRatio: number;
 
     public constructor(url: string, height: number, aspectRatio: number) {
