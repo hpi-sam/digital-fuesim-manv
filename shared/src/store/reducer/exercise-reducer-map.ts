@@ -28,13 +28,21 @@ export const exerciseReducerMap: {
         return draftState;
     },
     '[Patient] Add patient': (draftState, { patient }) => {
-        const availableHealthStateIds = Object.keys(patient.healthStates);
+        if (
+            Object.entries(patient.healthStates).some(
+                ([id, healthState]) => healthState.id !== id
+            )
+        ) {
+            throw new ReducerError(
+                "Not all health state's ids match their key id"
+            );
+        }
         Object.values(patient.healthStates).forEach((healthState) => {
             healthState.nextStateConditions.forEach((nextStateCondition) => {
                 if (
-                    !availableHealthStateIds.includes(
+                    patient.healthStates[
                         nextStateCondition.matchingHealthStateId
-                    )
+                    ] === undefined
                 ) {
                     throw new ReducerError(
                         `HealthState with id ${nextStateCondition.matchingHealthStateId} does not exist`
@@ -42,7 +50,7 @@ export const exerciseReducerMap: {
                 }
             });
         });
-        if (!availableHealthStateIds.includes(patient.currentHealthStateId)) {
+        if (patient.healthStates[patient.currentHealthStateId] === undefined) {
             throw new ReducerError(
                 `HealthState with id ${patient.currentHealthStateId} does not exist`
             );
