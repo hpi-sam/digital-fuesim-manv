@@ -84,6 +84,56 @@ jobs:
               run: npm run lint
             - name: Run Prettier
               run: npm run prettier:check
+    dependencies:
+        timeout-minutes: 10
+        runs-on: ${{ matrix.os }}
+
+        needs: build
+
+        continue-on-error: true
+
+        strategy:
+            matrix:
+                os: [ubuntu-latest]
+            fail-fast: false
+
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: '16'
+            - name: Cache node modules
+              uses: actions/cache@v2
+              id: cache-node-modules
+              env:
+                  cache-name: cache-node-modules
+              with:
+                  path: |
+                      node_modules
+                      shared/node_modules
+                      frontend/node_modules
+                      backend/node_modules
+                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
+            - name: Cache shared/dist
+              uses: actions/cache@v2
+              id: cache-shared-dist
+              env:
+                  cache-name: cache-shared-dist
+              with:
+                  path: shared/dist
+                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
+            - name: Audit root
+              if: always()
+              run: npm audit
+            - name: Audit shared
+              if: always()
+              run: cd shared; npm audit; cd ..
+            - name: Audit frontend
+              if: always()
+              run: cd frontend; npm audit; cd ..
+            - name: Audit backend
+              if: always()
+              run: cd backend; npm audit; cd ..
     test:
         timeout-minutes: 2
         runs-on: ${{ matrix.os }}

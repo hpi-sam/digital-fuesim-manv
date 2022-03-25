@@ -11,3 +11,4 @@ export { Image } from './image';
 export { Client } from './client';
 export { ImageTemplate } from './image-template';
 export { PatientTemplate } from './patient-template';
+export * from './patient-health-state';

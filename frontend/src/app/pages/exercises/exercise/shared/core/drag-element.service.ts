@@ -133,7 +133,8 @@ export class DragElementService {
                         transferTemplate.template.personalInformation,
                         transferTemplate.template.visibleStatus,
                         transferTemplate.template.realStatus,
-                        '',
+                        transferTemplate.template.healthStates,
+                        Object.keys(transferTemplate.template.healthStates)[0],
                         transferTemplate.template.image
                     );
                     patient.position = position;

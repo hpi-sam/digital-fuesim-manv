@@ -1,6 +1,12 @@
 import { produce } from 'immer';
 import { defaultPatientTemplates } from '../../data';
-import { Material, Patient, Personell } from '../../models';
+import {
+    FunctionParameters,
+    Material,
+    Patient,
+    PatientHealthState,
+    Personell,
+} from '../../models';
 import type { PatientStatus } from '../../models/utils';
 import { CanCaterFor, Position } from '../../models/utils';
 import type { ExerciseState } from '../../state';
@@ -44,6 +50,13 @@ function assertCatering(
                 catering.catererId
             ].assignedPatientIds = {};
         });
+        const patientIds = caterings.flatMap((catering) => catering.patientIds);
+        patientIds.forEach((patientId) => {
+            expect(newState.patients[patientId].isBeingTreated).toStrictEqual(
+                true
+            );
+            draftState.patients[patientId].isBeingTreated = false;
+        });
         return draftState;
     });
     expect(shouldState).toStrictEqual(beforeState);
@@ -53,17 +66,25 @@ function generatePatient(
     visibleStatus: PatientStatus,
     actualStatus: PatientStatus,
     position?: Position
-) {
+): Mutable<Patient> {
     const template = defaultPatientTemplates[0];
+    const healthState = {
+        ...new PatientHealthState(
+            { ...new FunctionParameters(-10_000, 0, 0, 0) },
+            []
+        ),
+    };
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const patient = {
         ...new Patient(
             template.personalInformation,
             visibleStatus,
             actualStatus,
-            '',
+            { [healthState.id]: healthState },
+            healthState.id,
             template.image
         ),
-    };
+    } as Mutable<Patient>;
     if (position) {
         patient.position = { ...position };
     }
