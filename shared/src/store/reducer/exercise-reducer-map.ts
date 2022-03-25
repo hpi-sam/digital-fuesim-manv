@@ -317,9 +317,12 @@ export const exerciseReducerMap: {
             currentPatient.currentHealthStateId = patientUpdate.nextStateId;
             currentPatient.health = patientUpdate.nextHealthPoints;
             currentPatient.stateTime = patientUpdate.nextStateTime;
-            // TODO: Update the visibleStatus accordingly only if it should be revealed
             currentPatient.realStatus = getStatus(currentPatient.health);
+            if (currentPatient.visibleStatus !== null) {
+                currentPatient.visibleStatus = currentPatient.realStatus;
+            }
         });
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Exercise] Set Participant Id': (draftState, { participantId }) => {

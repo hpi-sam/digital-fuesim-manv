@@ -18,7 +18,10 @@ export class ExerciseWrapper {
      * All periodic actions of the exercise (e.g. status changes for patients) should happen here.
      */
     private readonly tick = async () => {
-        const patientUpdates = patientTick(this.getStateSnapshot());
+        const patientUpdates = patientTick(
+            this.getStateSnapshot(),
+            this.tickInterval
+        );
         const updateAction: ExerciseAction = {
             type: '[Exercise] Tick',
             patientUpdates,

@@ -6,14 +6,12 @@ import type {
     PersonellType,
     UUID,
 } from 'digital-fuesim-manv-shared';
-import { healthPointsDefaults } from 'digital-fuesim-manv-shared';
+import { healthPointsDefaults, isAlive } from 'digital-fuesim-manv-shared';
 
 /**
  * The count of assigned personnel and material that cater for a {@link Patient}.
  */
 type Catering = { [key in PersonellType | 'material']: number };
-
-const patientTickInterval = 1000;
 
 interface PatientTickResult {
     /**
@@ -37,26 +35,34 @@ interface PatientTickResult {
 /**
  * Apply the patient tick to the {@link state}
  * @param state The {@link ExerciseState} the patient tick should be applied on later
+ * @param patientTickInterval The interval in ms between calls to this function
  * @returns An array of {@link PatientTickResult}s to apply to the {@link state} in a reducer
  */
-export function patientTick(state: ExerciseState): PatientTickResult[] {
-    return Object.values(state.patients).map((patient) => {
-        const nextHealthPoints = getNextPatientHealthPoints(
-            patient,
-            getDedicatedResources(state, patient)
-        );
-        const nextStateId = getNextStateId(patient);
-        const nextStateTime =
-            nextStateId === patient.currentHealthStateId
-                ? patient.stateTime + patientTickInterval * patient.timeSpeed
-                : 0;
-        return {
-            id: patient.id,
-            nextHealthPoints,
-            nextStateId,
-            nextStateTime,
-        };
-    });
+export function patientTick(
+    state: ExerciseState,
+    patientTickInterval: number
+): PatientTickResult[] {
+    return Object.values(state.patients)
+        .filter((patient) => isAlive(patient.health))
+        .map((patient) => {
+            const nextHealthPoints = getNextPatientHealthPoints(
+                patient,
+                getDedicatedResources(state, patient),
+                patientTickInterval
+            );
+            const nextStateId = getNextStateId(patient);
+            const nextStateTime =
+                nextStateId === patient.currentHealthStateId
+                    ? patient.stateTime +
+                      patientTickInterval * patient.timeSpeed
+                    : 0;
+            return {
+                id: patient.id,
+                nextHealthPoints,
+                nextStateId,
+                nextStateTime,
+            };
+        });
 }
 
 /**
@@ -107,14 +113,15 @@ function getDedicatedResources(
  * Calculate the next {@link HealthPoints} for the {@link patient}.
  * @param patient The {@link Patient} to calculate the {@link HealthPoints} for.
  * @param treatedBy The count of personnel/material catering for the {@link patient}.
+ * @param patientTickInterval The time in ms between calls to this function.
  * @returns The next {@link HealthPoints} for the {@link patient}
  */
 // This is a heuristic and doesn't have to be 100% correct - the players don't see the healthPoints but only the color
 // This function could be as complex as we want it to be (Math.sin to get something periodic, higher polynoms...)
-// should be called every patientTickInterval
 function getNextPatientHealthPoints(
     patient: Immutable<Patient>,
-    treatedBy: Catering
+    treatedBy: Catering,
+    patientTickInterval: number
 ): HealthPoints {
     let material = treatedBy.material;
     const notarzt = treatedBy.notarzt;
