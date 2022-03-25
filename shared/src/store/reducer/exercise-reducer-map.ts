@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-throw-literal */
+import { cloneDeep } from 'lodash-es';
 import type { ExerciseAction } from '..';
 import { imageSizeToPosition, StatusHistoryEntry } from '../..';
+import { getStatus } from '../../models/utils';
 import type { ReducerFunction } from './reducer-function';
+import { calculateTreatments } from './calculate-treatments';
 import { ReducerError } from '.';
 
 /**
@@ -25,7 +28,35 @@ export const exerciseReducerMap: {
         return draftState;
     },
     '[Patient] Add patient': (draftState, { patient }) => {
-        draftState.patients[patient.id] = patient;
+        if (
+            Object.entries(patient.healthStates).some(
+                ([id, healthState]) => healthState.id !== id
+            )
+        ) {
+            throw new ReducerError(
+                "Not all health state's ids match their key id"
+            );
+        }
+        Object.values(patient.healthStates).forEach((healthState) => {
+            healthState.nextStateConditions.forEach((nextStateCondition) => {
+                if (
+                    patient.healthStates[
+                        nextStateCondition.matchingHealthStateId
+                    ] === undefined
+                ) {
+                    throw new ReducerError(
+                        `HealthState with id ${nextStateCondition.matchingHealthStateId} does not exist`
+                    );
+                }
+            });
+        });
+        if (patient.healthStates[patient.currentHealthStateId] === undefined) {
+            throw new ReducerError(
+                `HealthState with id ${patient.currentHealthStateId} does not exist`
+            );
+        }
+        draftState.patients[patient.id] = cloneDeep(patient);
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Patient] Move patient': (draftState, { patientId, targetPosition }) => {
@@ -36,6 +67,7 @@ export const exerciseReducerMap: {
             );
         }
         patient.position = targetPosition;
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Patient] Remove patient': (draftState, { patientId }) => {
@@ -45,6 +77,7 @@ export const exerciseReducerMap: {
             );
         }
         delete draftState.patients[patientId];
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Vehicle] Add vehicle': (draftState, { vehicle, material, personell }) => {
@@ -82,14 +115,25 @@ export const exerciseReducerMap: {
         const personnel = Object.keys(vehicle.personellIds).map(
             (personnelId) => draftState.personell[personnelId]
         );
+        const patients = Object.keys(vehicle.patientIds).map(
+            (patientId) => draftState.patients[patientId]
+        );
         // TODO: save in the elements themselves
         const vehicleImageWidth = 200;
         const vehicleWidthInPosition = imageSizeToPosition(vehicleImageWidth);
         const numberOfMaterial = 1;
         const space =
-            vehicleWidthInPosition / (personnel.length + numberOfMaterial + 1);
+            vehicleWidthInPosition /
+            (personnel.length + numberOfMaterial + patients.length + 1);
         let x = unloadPosition.x - vehicleWidthInPosition / 2;
-
+        for (const patient of patients) {
+            x += space;
+            patient.position ??= {
+                x,
+                y: unloadPosition.y,
+            };
+            delete vehicle.patientIds[patient.id];
+        }
         for (const person of personnel) {
             x += space;
             // TODO: only if the person is not in transfer
@@ -103,6 +147,73 @@ export const exerciseReducerMap: {
             x,
             y: unloadPosition.y,
         };
+        calculateTreatments(draftState);
+        return draftState;
+    },
+    '[Vehicle] Load vehicle': (
+        draftState,
+        { vehicleId, elementToBeLoadedId, elementToBeLoadedType }
+    ) => {
+        const vehicle = draftState.vehicles[vehicleId];
+        if (!vehicle) {
+            throw new ReducerError(
+                `Vehicle with id ${vehicleId} does not exist`
+            );
+        }
+        switch (elementToBeLoadedType) {
+            case 'material': {
+                const material = draftState.materials[elementToBeLoadedId];
+                if (!material) {
+                    throw new ReducerError(
+                        `Material with id ${elementToBeLoadedId} does not exist`
+                    );
+                }
+                if (vehicle.materialId !== material.id) {
+                    throw new ReducerError(
+                        `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
+                    );
+                }
+                material.position = undefined;
+                break;
+            }
+            case 'personell': {
+                const personnel = draftState.personell[elementToBeLoadedId];
+                if (!personnel) {
+                    throw new ReducerError(
+                        `Personnel with id ${elementToBeLoadedId} does not exist`
+                    );
+                }
+                if (!vehicle.personellIds[elementToBeLoadedId]) {
+                    throw new ReducerError(
+                        `Personnel with id ${personnel.id} is not assignable to the vehicle with id ${vehicle.id}`
+                    );
+                }
+                personnel.position = undefined;
+                break;
+            }
+            case 'patient': {
+                const patient = draftState.patients[elementToBeLoadedId];
+                if (!patient) {
+                    throw new ReducerError(
+                        `Patient with id ${elementToBeLoadedId} does not exist`
+                    );
+                }
+                if (
+                    Object.keys(vehicle.patientIds).length >=
+                    vehicle.patientCapacity
+                ) {
+                    throw new ReducerError(
+                        `Vehicle with id ${vehicle.id} is already full`
+                    );
+                }
+                vehicle.patientIds[elementToBeLoadedId] = true;
+                patient.position = undefined;
+                draftState.materials[vehicle.materialId].position = undefined;
+                Object.keys(vehicle.personellIds).forEach((personnelId) => {
+                    draftState.personell[personnelId].position = undefined;
+                });
+            }
+        }
         return draftState;
     },
     '[Vehicle] Remove vehicle': (draftState, { vehicleId }) => {
@@ -125,6 +236,7 @@ export const exerciseReducerMap: {
             );
         }
         personell.position = targetPosition;
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Material] Move material': (
@@ -138,6 +250,7 @@ export const exerciseReducerMap: {
             );
         }
         material.position = targetPosition;
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Client] Add client': (draftState, { client }) => {
@@ -196,6 +309,20 @@ export const exerciseReducerMap: {
 
         draftState.statusHistory.push(statusHistoryEntry);
 
+        return draftState;
+    },
+    '[Exercise] Tick': (draftState, { patientUpdates }) => {
+        patientUpdates.forEach((patientUpdate) => {
+            const currentPatient = draftState.patients[patientUpdate.id];
+            currentPatient.currentHealthStateId = patientUpdate.nextStateId;
+            currentPatient.health = patientUpdate.nextHealthPoints;
+            currentPatient.stateTime = patientUpdate.nextStateTime;
+            currentPatient.realStatus = getStatus(currentPatient.health);
+            if (currentPatient.visibleStatus !== null) {
+                currentPatient.visibleStatus = currentPatient.realStatus;
+            }
+        });
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Exercise] Set Participant Id': (draftState, { participantId }) => {

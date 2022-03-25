@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { ApiService } from 'src/app/core/api.service';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
+import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectLatestStatusHistoryEntry } from 'src/app/state/exercise/exercise.selectors';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
@@ -25,7 +26,8 @@ export class TrainerToolbarComponent {
         private readonly apiService: ApiService,
         private readonly modalService: NgbModal,
         private readonly router: Router,
-        private readonly confirmationModalService: ConfirmationModalService
+        private readonly confirmationModalService: ConfirmationModalService,
+        private readonly messageService: MessageService
     ) {}
 
     public openClientOverview() {
@@ -33,23 +35,17 @@ export class TrainerToolbarComponent {
     }
 
     public async pauseExercise() {
-        const response = await this.apiService.proposeAction({
+        this.apiService.proposeAction({
             type: '[Exercise] Pause',
             timestamp: Date.now(),
         });
-        if (!response.success) {
-            console.error(response.message);
-        }
     }
 
     public async startExercise() {
-        const response = await this.apiService.proposeAction({
+        this.apiService.proposeAction({
             type: '[Exercise] Start',
             timestamp: Date.now(),
         });
-        if (!response.success) {
-            console.error(response.message);
-        }
     }
 
     public async deleteExercise() {
@@ -62,8 +58,26 @@ export class TrainerToolbarComponent {
         if (!deletionConfirmed) {
             return;
         }
-        await this.apiService.deleteExercise(this.exerciseId);
-        // TODO: display success message
-        this.router.navigate(['/']);
+        // If we get disconnected by the server during the deletion a disconnect error would be displayed
+        this.apiService.leaveExercise();
+        this.apiService
+            .deleteExercise(this.exerciseId)
+            .then(
+                (response) => {
+                    this.messageService.postMessage({
+                        title: 'Übung erfolgreich gelöscht',
+                        color: 'success',
+                    });
+                },
+                (error) => {
+                    this.messageService.postError({
+                        title: 'Fehler beim Löschen der Übung',
+                        error,
+                    });
+                }
+            )
+            .finally(() => {
+                this.router.navigate(['/']);
+            });
     }
 }

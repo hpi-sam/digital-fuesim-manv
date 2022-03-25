@@ -19,6 +19,7 @@ import {
 } from '..';
 import { Position } from '../models/utils';
 import type { Immutable } from '../utils/immutability';
+import { PatientUpdate } from '../utils/patient-updates';
 
 /**
  *  These actions are interfaces for immutable JSON objects used to update the store in the frontend and are send to the backend to apply the changes there too.
@@ -119,6 +120,17 @@ export namespace ExerciseActions {
         public vehicleId!: UUID;
     }
 
+    export class LoadVehicle implements Action {
+        readonly type = '[Vehicle] Load vehicle';
+        @IsUUID(4, uuidValidationOptions)
+        public vehicleId!: UUID;
+
+        public elementToBeLoadedType!: 'material' | 'patient' | 'personell';
+
+        @IsUUID(4, uuidValidationOptions)
+        public elementToBeLoadedId!: UUID;
+    }
+
     export class MovePersonell implements Action {
         readonly type = '[Personell] Move personell';
 
@@ -181,6 +193,14 @@ export namespace ExerciseActions {
         readonly type = '[Exercise] Start';
         @IsInt()
         public timestamp!: number;
+    }
+
+    export class ExerciseTick implements Action {
+        readonly type = '[Exercise] Tick';
+
+        @ValidateNested()
+        @Type(() => PatientUpdate)
+        public patientUpdates!: PatientUpdate[];
     }
 
     export class SetParticipantId implements Action {

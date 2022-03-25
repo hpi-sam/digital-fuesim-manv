@@ -1,12 +1,6 @@
 import type { Immutable } from 'immer';
-import type {
-    Personell,
-    VehicleTemplate,
-    Material,
-    Vehicle,
-    Position,
-} from '..';
-import { uuid } from '..';
+import type { VehicleTemplate, Material, Vehicle, Position } from '..';
+import { Personell, uuid } from '..';
 import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
 
 /**
@@ -31,12 +25,7 @@ export function addVehicle(
     };
     const personell: Personell[] = [];
     for (const personellType of vehicleTemplate.personnel) {
-        const newPersonell: Personell = {
-            id: uuid(),
-            assignedPatientIds: {},
-            personellType,
-            vehicleId,
-        };
+        const newPersonell = new Personell(vehicleId, personellType, {});
         personell.push(newPersonell);
     }
 
