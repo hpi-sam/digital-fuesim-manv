@@ -19,6 +19,7 @@ import {
 } from '..';
 import { Position } from '../models/utils';
 import type { Immutable } from '../utils/immutability';
+import { PatientUpdate } from '../utils/patient-updates';
 
 /**
  *  These actions are interfaces for immutable JSON objects used to update the store in the frontend and are send to the backend to apply the changes there too.
@@ -192,6 +193,14 @@ export namespace ExerciseActions {
         readonly type = '[Exercise] Start';
         @IsInt()
         public timestamp!: number;
+    }
+
+    export class ExerciseTick implements Action {
+        readonly type = '[Exercise] Tick';
+
+        @ValidateNested()
+        @Type(() => PatientUpdate)
+        public patientUpdates!: PatientUpdate[];
     }
 
     export class SetParticipantId implements Action {
