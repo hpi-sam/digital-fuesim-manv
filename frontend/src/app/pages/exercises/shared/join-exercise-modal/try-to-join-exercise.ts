@@ -2,6 +2,9 @@ import type { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { firstValueFrom } from 'rxjs';
 import { JoinExerciseModalComponent } from './join-exercise-modal.component';
 
+/**
+ * @returns Whether the exercise was successfully joined.
+ */
 export async function tryToJoinExercise(
     ngbModalService: NgbModal,
     exerciseId: string

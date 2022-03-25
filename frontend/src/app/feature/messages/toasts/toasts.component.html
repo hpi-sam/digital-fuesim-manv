@@ -1,0 +1,51 @@
+<div
+    *ngIf="messageService.toastMessages$ | async as messages"
+    class="position-relative"
+>
+    <div
+        class="position-absolute pt-1 pe-1"
+        style="top: 0; right: 0; width: max-content; z-index: 10000"
+    >
+        <!-- Show the 5 oldest toasts, the newest should appear at the bottom -->
+        <div
+            *ngFor="
+                let message of messages | slice: 0:5;
+                trackBy: 'id' | appTrackByProperty: messages
+            "
+            (mouseenter)="message.destroyTimer?.pause()"
+            (mouseleave)="message.destroyTimer?.start()"
+            (click)="message.increaseDestroyTimeout(null)"
+            class="toast show position-relative mb-3"
+            style="min-width: 200px"
+            @fade
+        >
+            <app-custom-timer-progress-bar
+                *ngIf="message.destroyTimer"
+                [timer]="message.destroyTimer"
+                [color]="message.config.color"
+            ></app-custom-timer-progress-bar>
+            <div class="toast-header">
+                <strong [class]="'me-auto text-' + message.config.color">
+                    <!-- TODO: Display an icon according to the color -->
+                    {{ message.config.title }}
+                </strong>
+                <span
+                    *ngIf="message.amount > 1"
+                    class="ms-2 badge bg-secondary"
+                    >{{ message.amount }}</span
+                >
+                <button
+                    type="button"
+                    class="ms-2 mb-1 btn-close"
+                    (click)="message.destroy()"
+                ></button>
+            </div>
+            <div
+                *ngIf="message.config.body || message.config.logValue"
+                class="toast-body"
+            >
+                <app-message-body [message]="message"></app-message-body>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,9 +1,19 @@
 import { Type } from 'class-transformer';
-import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
+import {
+    IsBoolean,
+    IsNumber,
+    IsOptional,
+    IsUUID,
+    Max,
+    Min,
+    ValidateNested,
+} from 'class-validator';
+import type { Immutable } from '../utils';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import type { PatientStatus } from './utils';
-import { Position } from './utils';
+import { Position, HealthPoints, healthPointsDefaults } from './utils';
 import { PersonalInformation } from './utils/personal-information';
+import type { PatientHealthState } from '.';
 
 export class Patient {
     @IsUUID(4, uuidValidationOptions)
@@ -19,20 +29,19 @@ export class Patient {
     // TODO
     public realStatus: PatientStatus;
 
-    // TODO: this was Date
-    public nextPhaseChange: string;
-
     constructor(
         // TODO: Specify patient data (e.g. injuries, name, etc.)
         personalInformation: PersonalInformation,
         visibleStatus: PatientStatus | null,
         realStatus: PatientStatus,
-        nextPhaseChange: string
+        healthStates: Immutable<{ [stateId: UUID]: PatientHealthState }>,
+        currentHealthStateId: UUID
     ) {
         this.personalInformation = personalInformation;
         this.visibleStatus = visibleStatus;
         this.realStatus = realStatus;
-        this.nextPhaseChange = nextPhaseChange;
+        this.healthStates = healthStates;
+        this.currentHealthStateId = currentHealthStateId;
     }
 
     /**
@@ -48,4 +57,37 @@ export class Patient {
     @IsUUID(4, uuidValidationOptions)
     @IsOptional()
     public vehicleId?: UUID;
+
+    /**
+     * The time the patient already is in the current state
+     */
+    @IsNumber()
+    stateTime = 0;
+
+    healthStates: Immutable<{ [stateId: UUID]: PatientHealthState }> = {};
+
+    /**
+     * The id of the current health state in {@link healthStates}
+     */
+    @IsUUID(4, uuidValidationOptions)
+    currentHealthStateId: UUID;
+    /**
+     * See {@link HealthPoints} for context of this property.
+     */
+    @IsNumber()
+    @Max(healthPointsDefaults.max)
+    @Min(healthPointsDefaults.min)
+    health: HealthPoints = healthPointsDefaults.max;
+    /**
+     * Wether the patient is currently being treated by a personnel
+     */
+    @IsBoolean()
+    isBeingTreated = false;
+    /**
+     * The speed with which the patients healthStatus changes
+     * if it is 0.5 every patient changes half as fast (slow motion)
+     */
+    @IsNumber()
+    @Min(0)
+    timeSpeed = 1;
 }

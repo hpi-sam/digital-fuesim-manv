@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
+import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectClient,
@@ -27,7 +28,8 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     constructor(
         private readonly store: Store<AppState>,
         private readonly activatedRoute: ActivatedRoute,
-        private readonly apiService: ApiService
+        private readonly apiService: ApiService,
+        private readonly messageService: MessageService
     ) {}
 
     ngOnInit(): void {
@@ -45,12 +47,20 @@ export class ExerciseComponent implements OnInit, OnDestroy {
                 if (error.name === 'AbortError') {
                     return;
                 }
-                console.error(error, url);
+                this.messageService.postError({
+                    title: 'Fehler beim Teilen der Übung',
+                    error: { error, url },
+                });
             });
             return;
         }
         navigator.clipboard.writeText(url);
-        // TODO: display a toast #152 informing the user that the url has been copied to the clipboard
+
+        this.messageService.postMessage({
+            title: 'Link wurde in die Zwischenablage kopiert',
+            body: 'Sie können ihn nun teilen.',
+            color: 'info',
+        });
     }
 
     ngOnDestroy(): void {
