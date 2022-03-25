@@ -1,7 +1,7 @@
 import { FunctionParameters, PatientHealthState, PatientTemplate } from '../..';
 
 const defaultHealthState = new PatientHealthState(
-    new FunctionParameters(-10_000, 0, 0, 0),
+    new FunctionParameters(-1_000, 2_000, 1_000, 500),
     []
 );
 
