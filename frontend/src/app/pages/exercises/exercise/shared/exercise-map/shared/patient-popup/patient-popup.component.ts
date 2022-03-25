@@ -1,7 +1,7 @@
 import type { OnInit } from '@angular/core';
 import { EventEmitter, Output, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { Patient, UUID } from 'digital-fuesim-manv-shared';
+import type { Immutable, Patient, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
 import { getSelectPatient } from 'src/app/state/exercise/exercise.selectors';
@@ -18,7 +18,7 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
 
     @Output() readonly closePopup = new EventEmitter<void>();
 
-    public patient$?: Observable<Patient>;
+    public patient$?: Observable<Immutable<Patient>>;
 
     constructor(private readonly store: Store<AppState>) {}
 

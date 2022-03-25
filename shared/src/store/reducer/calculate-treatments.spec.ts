@@ -1,5 +1,11 @@
 import { produce } from 'immer';
-import { Material, Patient, Personell } from '../../models';
+import {
+    FunctionParameters,
+    Material,
+    Patient,
+    PatientHealthState,
+    Personell,
+} from '../../models';
 import type { PatientStatus } from '../../models/utils';
 import { CanCaterFor, Position } from '../../models/utils';
 import { PersonalInformation } from '../../models/utils/personal-information';
@@ -44,6 +50,13 @@ function assertCatering(
                 catering.catererId
             ].assignedPatientIds = {};
         });
+        const patientIds = caterings.flatMap((catering) => catering.patientIds);
+        patientIds.forEach((patientId) => {
+            expect(newState.patients[patientId].isBeingTreated).toStrictEqual(
+                true
+            );
+            draftState.patients[patientId].isBeingTreated = false;
+        });
         return draftState;
     });
     expect(shouldState).toStrictEqual(beforeState);
@@ -55,7 +68,14 @@ function generatePatient(
     visibleStatus: PatientStatus,
     actualStatus: PatientStatus,
     position?: Position
-) {
+): Mutable<Patient> {
+    const healthState = {
+        ...new PatientHealthState(
+            { ...new FunctionParameters(-10_000, 0, 0, 0) },
+            []
+        ),
+    };
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const patient = {
         ...new Patient(
             new PersonalInformation(
@@ -69,9 +89,10 @@ function generatePatient(
             ),
             visibleStatus,
             actualStatus,
-            ''
+            { [healthState.id]: healthState },
+            healthState.id
         ),
-    };
+    } as Mutable<Patient>;
     if (position) {
         patient.position = { ...position };
     }
