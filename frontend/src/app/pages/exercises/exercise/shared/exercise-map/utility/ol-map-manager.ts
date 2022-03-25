@@ -1,4 +1,4 @@
-import type { UUID } from 'digital-fuesim-manv-shared';
+import type { ImmutableJsonObject, UUID } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
 import type Point from 'ol/geom/Point';
@@ -9,24 +9,28 @@ import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import type { Observable } from 'rxjs';
 import { debounceTime, startWith, Subject, pairwise, takeUntil } from 'rxjs';
-import { getSelectWithPosition } from 'src/app/state/exercise/exercise.selectors';
+import {
+    getSelectWithPosition,
+    selectCateringLines,
+} from 'src/app/state/exercise/exercise.selectors';
 import OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import type { ApiService } from 'src/app/core/api.service';
 import type { NgZone } from '@angular/core';
+import type Geometry from 'ol/geom/Geometry';
+import type LineString from 'ol/geom/LineString';
 import { startingPosition } from '../../starting-position';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
 import { PersonellFeatureManager } from '../feature-managers/personell-feature-manager';
 import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
-import type {
-    ElementFeatureManager,
-    PositionableElement,
-} from '../feature-managers/element-feature-manager';
+import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
+import type { ElementManager } from '../feature-managers/element-manager';
 import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
+import type { FeatureManager } from './feature-manager';
 
 /**
  * This class should run outside the Angular zone for performance reasons.
@@ -52,8 +56,8 @@ export class OlMapManager {
      * ```
      */
     private readonly layerFeatureManagerDictionary = new Map<
-        VectorLayer<VectorSource<Point>>,
-        ElementFeatureManager<any>
+        VectorLayer<VectorSource<Geometry>>,
+        FeatureManager<any>
     >();
 
     constructor(
@@ -72,6 +76,7 @@ export class OlMapManager {
         const vehicleLayer = this.createElementLayer();
         const personellLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
+        const cateringLinesLayer = this.createElementLayer<LineString>();
         this.popupOverlay = new Overlay({
             element: this.popoverContainer,
         });
@@ -87,6 +92,7 @@ export class OlMapManager {
             target: this.openLayersContainer,
             layers: [
                 satelliteLayer,
+                cateringLinesLayer,
                 vehicleLayer,
                 patientLayer,
                 personellLayer,
@@ -115,51 +121,85 @@ export class OlMapManager {
         // });
 
         // FeatureManagers
-        this.createAndRegisterFeatureManager(
-            PatientFeatureManager,
-            patientLayer,
+        this.registerElementManager(
+            this.registerFeatureManager(
+                new PatientFeatureManager(
+                    store,
+                    this.olMap,
+                    patientLayer,
+                    this.apiService
+                ),
+                patientLayer
+            ),
             this.store.select(getSelectWithPosition('patients'))
         ).togglePopup$.subscribe(this.changePopup$);
-        this.createAndRegisterFeatureManager(
-            VehicleFeatureManager,
-            vehicleLayer,
+
+        this.registerElementManager(
+            this.registerFeatureManager(
+                new VehicleFeatureManager(
+                    store,
+                    this.olMap,
+                    vehicleLayer,
+                    this.apiService
+                ),
+                vehicleLayer
+            ),
             this.store.select(getSelectWithPosition('vehicles'))
         ).togglePopup$.subscribe(this.changePopup$);
-        this.createAndRegisterFeatureManager(
-            PersonellFeatureManager,
-            personellLayer,
+
+        this.registerElementManager(
+            this.registerFeatureManager(
+                new PersonellFeatureManager(
+                    store,
+                    this.olMap,
+                    patientLayer,
+                    this.apiService
+                ),
+                personellLayer
+            ),
             this.store.select(getSelectWithPosition('personell'))
         );
-        this.createAndRegisterFeatureManager(
-            MaterialFeatureManager,
-            materialLayer,
+
+        this.registerElementManager(
+            this.registerFeatureManager(
+                new MaterialFeatureManager(
+                    store,
+                    this.olMap,
+                    patientLayer,
+                    this.apiService
+                ),
+                materialLayer
+            ),
             this.store.select(getSelectWithPosition('materials'))
+        );
+
+        this.registerElementManager(
+            this.registerFeatureManager(
+                new CateringLinesFeatureManager(cateringLinesLayer),
+                cateringLinesLayer
+            ),
+            this.store.select(selectCateringLines)
         );
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
     }
 
-    // If the signature of the ElementManager classes change, the initialisation should be done individually
-    private createAndRegisterFeatureManager<
-        Element extends PositionableElement,
-        ElementManagerClass extends
-            | typeof MaterialFeatureManager
-            | typeof PatientFeatureManager
-            | typeof PersonellFeatureManager
-            | typeof VehicleFeatureManager
-    >(
-        featureManagerClass: ElementManagerClass,
-        layer: VectorLayer<VectorSource<Point>>,
-        elementDictionary$: Observable<{ [id: UUID]: Element }>
-    ): InstanceType<ElementManagerClass> {
-        const featureManager = new featureManagerClass(
-            this.store,
-            this.olMap,
-            layer,
-            this.apiService
-        ) as InstanceType<ElementManagerClass>;
+    private registerFeatureManager<T extends FeatureManager<any>>(
+        featureManager: T,
+        layer: VectorLayer<VectorSource<Geometry>>
+    ): T {
         this.layerFeatureManagerDictionary.set(layer, featureManager);
+        return featureManager;
+    }
+
+    private registerElementManager<
+        Element extends ImmutableJsonObject,
+        T extends ElementManager<any, any, any>
+    >(
+        elementManager: T,
+        elementDictionary$: Observable<{ [id: UUID]: Element }>
+    ): T {
         // Propagate the changes on an element to the featureManager
         elementDictionary$
             .pipe(
@@ -177,18 +217,18 @@ export class OlMapManager {
                         oldElementDictionary,
                         newElementDictionary,
                         (element) =>
-                            featureManager.onElementCreated(element as any),
+                            elementManager.onElementCreated(element as any),
                         (element) =>
-                            featureManager.onElementDeleted(element as any),
+                            elementManager.onElementDeleted(element as any),
                         (oldElement, newElement) =>
-                            featureManager.onElementChanged(
+                            elementManager.onElementChanged(
                                 oldElement as any,
                                 newElement as any
                             )
                     );
                 });
             });
-        return featureManager;
+        return elementManager;
     }
 
     private registerPopupTriggers(translateInteraction: Translate) {
@@ -243,13 +283,15 @@ export class OlMapManager {
     /**
      * @param renderBuffer The size of the largest symbol, line width or label on the highest zoom level.
      */
-    private createElementLayer(renderBuffer = 250) {
+    private createElementLayer<LayerGeometry extends Geometry = Point>(
+        renderBuffer = 250
+    ) {
         return new VectorLayer({
             // These two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
             updateWhileAnimating: true,
             updateWhileInteracting: true,
             renderBuffer,
-            source: new VectorSource<Point>(),
+            source: new VectorSource<LayerGeometry>(),
         });
     }
 
