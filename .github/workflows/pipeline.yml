@@ -124,16 +124,16 @@ jobs:
                   key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
             - name: Audit root
               if: always()
-              run: npm audit || echo "Some dummy output to make the job pass"
+              run: npm audit
             - name: Audit shared
               if: always()
-              run: cd shared; npm audit || echo "Some dummy output to make the job pass"; cd ..
+              run: cd shared; npm audit; cd ..
             - name: Audit frontend
               if: always()
-              run: cd frontend; npm audit || echo "Some dummy output to make the job pass"; cd ..
+              run: cd frontend; npm audit; cd ..
             - name: Audit backend
               if: always()
-              run: cd backend; npm audit || echo "Some dummy output to make the job pass"; cd ..
+              run: cd backend; npm audit; cd ..
     test:
         timeout-minutes: 2
         runs-on: ${{ matrix.os }}
