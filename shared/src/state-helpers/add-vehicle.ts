@@ -1,6 +1,6 @@
 import type { Immutable } from 'immer';
-import type { VehicleTemplate, Material, Vehicle, Position } from '..';
-import { Personell, uuid } from '..';
+import type { VehicleTemplate, Vehicle, Position } from '..';
+import { Personell, uuid, Material } from '..';
 import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
 
 /**
@@ -15,13 +15,9 @@ export function addVehicle(
     personell: Personell[];
     vehicle: Vehicle;
 } {
-    const materialId = uuid();
     const vehicleId = uuid();
     const material: Material = {
-        id: materialId,
-        assignedPatientIds: {},
-        canCaterFor: vehicleTemplate.material,
-        vehicleId,
+        ...new Material(vehicleId, {}, vehicleTemplate.material),
     };
     const personell: Personell[] = [];
     for (const personellType of vehicleTemplate.personnel) {
@@ -31,9 +27,10 @@ export function addVehicle(
 
     const vehicle: Vehicle = {
         id: vehicleId,
-        materialId,
+        materialId: material.id,
         name: vehicleTemplate.name,
         patientCapacity: vehicleTemplate.patientCapacity,
+        image: vehicleTemplate.image,
         patientIds: {},
         personellIds: arrayToUUIDSet(personell.map((p) => p.id)),
         position: vehiclePosition,

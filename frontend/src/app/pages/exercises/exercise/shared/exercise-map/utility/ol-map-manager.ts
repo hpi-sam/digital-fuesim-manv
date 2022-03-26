@@ -1,4 +1,4 @@
-import type { UUID, Position } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
 import type Point from 'ol/geom/Point';
@@ -20,7 +20,10 @@ import { MaterialFeatureManager } from '../feature-managers/material-feature-man
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
 import { PersonellFeatureManager } from '../feature-managers/personell-feature-manager';
 import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
-import type { CommonFeatureManager } from '../feature-managers/common-feature-manager';
+import type {
+    ElementFeatureManager,
+    PositionableElement,
+} from '../feature-managers/element-feature-manager';
 import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
@@ -50,7 +53,7 @@ export class OlMapManager {
      */
     private readonly layerFeatureManagerDictionary = new Map<
         VectorLayer<VectorSource<Point>>,
-        CommonFeatureManager<any, any>
+        ElementFeatureManager<any>
     >();
 
     constructor(
@@ -116,12 +119,12 @@ export class OlMapManager {
             PatientFeatureManager,
             patientLayer,
             this.store.select(getSelectWithPosition('patients'))
-        );
+        ).togglePopup$.subscribe(this.changePopup$);
         this.createAndRegisterFeatureManager(
             VehicleFeatureManager,
             vehicleLayer,
             this.store.select(getSelectWithPosition('vehicles'))
-        );
+        ).togglePopup$.subscribe(this.changePopup$);
         this.createAndRegisterFeatureManager(
             PersonellFeatureManager,
             personellLayer,
@@ -137,25 +140,25 @@ export class OlMapManager {
         this.registerDropHandler(translateInteraction);
     }
 
-    // If the signature of the FeatureManager classes change, the initialisation should be done individually
+    // If the signature of the ElementManager classes change, the initialisation should be done individually
     private createAndRegisterFeatureManager<
-        Element extends Readonly<{ id: UUID; position: Position }>
-    >(
-        featureManagerClass:
+        Element extends PositionableElement,
+        ElementManagerClass extends
             | typeof MaterialFeatureManager
             | typeof PatientFeatureManager
             | typeof PersonellFeatureManager
-            | typeof VehicleFeatureManager,
+            | typeof VehicleFeatureManager
+    >(
+        featureManagerClass: ElementManagerClass,
         layer: VectorLayer<VectorSource<Point>>,
         elementDictionary$: Observable<{ [id: UUID]: Element }>
-    ) {
+    ): InstanceType<ElementManagerClass> {
         const featureManager = new featureManagerClass(
             this.store,
             this.olMap,
             layer,
             this.apiService
-        );
-        featureManager.togglePopup$.subscribe(this.changePopup$);
+        ) as InstanceType<ElementManagerClass>;
         this.layerFeatureManagerDictionary.set(layer, featureManager);
         // Propagate the changes on an element to the featureManager
         elementDictionary$
@@ -185,6 +188,7 @@ export class OlMapManager {
                     );
                 });
             });
+        return featureManager;
     }
 
     private registerPopupTriggers(translateInteraction: Translate) {

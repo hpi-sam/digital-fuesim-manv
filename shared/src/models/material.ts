@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import type { UUIDSet } from '../utils';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
-import { CanCaterFor, Position } from './utils';
+import { CanCaterFor, ImageProperties, Position } from './utils';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
@@ -25,6 +25,14 @@ export class Material {
     @Type(() => Position)
     @IsOptional()
     public position?: Position;
+
+    @ValidateNested()
+    @Type(() => ImageProperties)
+    public image: ImageProperties = {
+        url: './assets/material.svg',
+        height: 40,
+        aspectRatio: 1,
+    };
 
     constructor(
         vehicleId: UUID,
