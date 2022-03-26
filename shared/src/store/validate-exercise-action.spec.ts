@@ -1,5 +1,5 @@
-import { Viewport } from '..';
 import type { Position } from '../models/utils';
+import { Viewport } from '../models';
 import type { ExerciseAction } from '.';
 import { validateExerciseAction } from '.';
 

@@ -1,6 +1,9 @@
 import type { Immutable } from 'immer';
-import type { VehicleTemplate, Vehicle, Position } from '..';
-import { Personell, uuid, Material } from '..';
+import type { Vehicle, VehicleTemplate } from '../models';
+import { Material, Personell } from '../models';
+import type { Position } from '../models/utils';
+import { uuid } from '../utils';
+
 import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
 
 /**

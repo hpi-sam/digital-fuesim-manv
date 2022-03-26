@@ -1,10 +1,10 @@
 import { Type } from 'class-transformer';
 import { IsNotIn, IsString, IsUUID, ValidateNested } from 'class-validator';
-import { PatientStatus } from '..';
-import type { PatientHealthState } from '..';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { PatientStatus } from './utils';
 import { ImageProperties } from './utils/image-properties';
 import { PersonalInformation } from './utils/personal-information';
+import type { PatientHealthState } from '.';
 
 export class PatientTemplate {
     @IsUUID(4, uuidValidationOptions)
