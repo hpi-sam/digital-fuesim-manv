@@ -7,9 +7,10 @@ import type OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import type { WithPosition } from '../../utility/types/with-position';
-import { CommonFeatureManager } from './common-feature-manager';
+import { withElementImageStyle } from '../utility/with-element-image-style';
+import { ElementFeatureManager } from './element-feature-manager';
 
-export class PersonellFeatureManager extends CommonFeatureManager<
+class BasePersonellFeatureManager extends ElementFeatureManager<
     WithPosition<Personell>
 > {
     constructor(
@@ -18,21 +19,17 @@ export class PersonellFeatureManager extends CommonFeatureManager<
         layer: VectorLayer<VectorSource<Point>>,
         apiService: ApiService
     ) {
-        super(
-            store,
-            olMap,
-            layer,
-            {
-                imageHeight: 80,
-                imageUrl: './assets/personell.png',
-            },
-            (targetPosition, personell) => {
-                apiService.proposeAction({
-                    type: '[Personell] Move personell',
-                    personellId: personell.id,
-                    targetPosition,
-                });
-            }
-        );
+        super(store, olMap, layer, (targetPosition, personell) => {
+            apiService.proposeAction({
+                type: '[Personell] Move personell',
+                personellId: personell.id,
+                targetPosition,
+            });
+        });
     }
 }
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const PersonellFeatureManager = withElementImageStyle<
+    WithPosition<Personell>
+>(BasePersonellFeatureManager);

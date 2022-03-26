@@ -11,7 +11,12 @@ import {
 import type { Immutable } from '../utils';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import type { PatientStatus } from './utils';
-import { Position, HealthPoints, healthPointsDefaults } from './utils';
+import {
+    Position,
+    HealthPoints,
+    ImageProperties,
+    healthPointsDefaults,
+} from './utils';
 import { PersonalInformation } from './utils/personal-information';
 import type { PatientHealthState } from '.';
 
@@ -29,19 +34,25 @@ export class Patient {
     // TODO
     public realStatus: PatientStatus;
 
+    @ValidateNested()
+    @Type(() => ImageProperties)
+    public image: ImageProperties;
+
     constructor(
         // TODO: Specify patient data (e.g. injuries, name, etc.)
         personalInformation: PersonalInformation,
         visibleStatus: PatientStatus | null,
         realStatus: PatientStatus,
         healthStates: Immutable<{ [stateId: UUID]: PatientHealthState }>,
-        currentHealthStateId: UUID
+        currentHealthStateId: UUID,
+        image: ImageProperties
     ) {
         this.personalInformation = personalInformation;
         this.visibleStatus = visibleStatus;
         this.realStatus = realStatus;
         this.healthStates = healthStates;
         this.currentHealthStateId = currentHealthStateId;
+        this.image = image;
     }
 
     /**

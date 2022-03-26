@@ -1,4 +1,11 @@
+import type { ImageProperties } from '../../models/utils';
 import { FunctionParameters, PatientHealthState, PatientTemplate } from '../..';
+
+const defaultImage: ImageProperties = {
+    url: '/assets/patient.svg',
+    height: 80,
+    aspectRatio: 1,
+};
 
 const defaultHealthState = new PatientHealthState(
     new FunctionParameters(-1_000, 2_000, 1_000, 500),
@@ -16,8 +23,8 @@ const greenPatientTemplate = new PatientTemplate(
     },
     'green',
     'green',
-    '/assets/patient.svg',
-    { [defaultHealthState.id]: defaultHealthState }
+    { [defaultHealthState.id]: defaultHealthState },
+    defaultImage
 );
 
 const yellowPatientTemplate = new PatientTemplate(
@@ -31,8 +38,8 @@ const yellowPatientTemplate = new PatientTemplate(
     },
     'yellow',
     'yellow',
-    '/assets/patient.svg',
-    { [defaultHealthState.id]: defaultHealthState }
+    { [defaultHealthState.id]: defaultHealthState },
+    defaultImage
 );
 
 const redPatientTemplate = new PatientTemplate(
@@ -46,8 +53,8 @@ const redPatientTemplate = new PatientTemplate(
     },
     'red',
     'red',
-    '/assets/patient.svg',
-    { [defaultHealthState.id]: defaultHealthState }
+    { [defaultHealthState.id]: defaultHealthState },
+    defaultImage
 );
 
 const blackPatientTemplate = new PatientTemplate(
@@ -61,8 +68,8 @@ const blackPatientTemplate = new PatientTemplate(
     },
     'black',
     'black',
-    '/assets/patient.svg',
-    { [defaultHealthState.id]: defaultHealthState }
+    { [defaultHealthState.id]: defaultHealthState },
+    defaultImage
 );
 
 export const defaultPatientTemplates: PatientTemplate[] = [
