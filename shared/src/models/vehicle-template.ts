@@ -6,9 +6,9 @@ import {
     IsUUID,
     ValidateNested,
 } from 'class-validator';
-import { CanCaterFor } from '..';
-import type { PersonellType } from '..';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
+import type { PersonellType } from './utils';
+import { CanCaterFor } from './utils';
 import { ImageProperties } from './utils/image-properties';
 
 export class VehicleTemplate {

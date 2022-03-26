@@ -8,16 +8,15 @@ import {
     ValidateNested,
 } from 'class-validator';
 import {
-    UUID,
-    Personell,
-    Viewport,
-    uuidValidationOptions,
-    Patient,
-    Vehicle,
     Client,
     Material,
-} from '..';
+    Patient,
+    Personell,
+    Vehicle,
+    Viewport,
+} from '../models';
 import { Position } from '../models/utils';
+import { UUID, uuidValidationOptions } from '../utils';
 import type { Immutable } from '../utils/immutability';
 import { PatientUpdate } from '../utils/patient-updates';
 
