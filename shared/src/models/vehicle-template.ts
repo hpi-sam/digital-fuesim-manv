@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import {
-    Allow,
     IsArray,
     IsNumber,
     IsString,
@@ -29,7 +28,8 @@ export class VehicleTemplate {
     @IsArray()
     public personnel: PersonellType[];
 
-    @Allow()
+    @ValidateNested()
+    @Type(() => CanCaterFor)
     public material: CanCaterFor;
 
     constructor(

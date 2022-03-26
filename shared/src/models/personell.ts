@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { Allow, IsOptional, IsUUID, ValidateNested } from 'class-validator';
+import {
+    IsDefined,
+    IsOptional,
+    IsString,
+    IsUUID,
+    ValidateNested,
+} from 'class-validator';
 import { UUID, UUIDSet, uuid, uuidValidationOptions } from '../utils';
 import { CanCaterFor, Position, ImageProperties, PersonellType } from './utils';
 
@@ -11,11 +17,11 @@ export class Personell {
     public vehicleId: UUID;
 
     // TODO
-    @Allow()
+    @IsString()
     public personellType: PersonellType;
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @Allow()
+    @IsDefined()
     public assignedPatientIds: UUIDSet;
 
     @ValidateNested()

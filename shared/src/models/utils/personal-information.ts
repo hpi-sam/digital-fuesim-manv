@@ -1,4 +1,4 @@
-import { Allow, IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class PersonalInformation {
     @IsString()
@@ -16,7 +16,7 @@ export class PersonalInformation {
     @IsNumber()
     age: number;
 
-    @Allow()
+    @IsString()
     sex: 'female' | 'male';
 
     constructor(

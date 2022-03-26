@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { Allow, IsUUID, ValidateNested } from 'class-validator';
+import { IsNotIn, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { PatientStatus } from '..';
 import type { PatientHealthState } from '..';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
@@ -14,10 +14,10 @@ export class PatientTemplate {
     @Type(() => PersonalInformation)
     public personalInformation: PersonalInformation;
 
-    @Allow()
+    @IsNotIn([undefined])
     public visibleStatus: PatientStatus | null;
 
-    @Allow()
+    @IsString()
     public realStatus: PatientStatus;
 
     @ValidateNested()

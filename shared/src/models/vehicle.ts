@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import {
-    Allow,
+    IsDefined,
     IsNumber,
     IsOptional,
     IsString,
@@ -45,11 +45,11 @@ export class Vehicle {
     public transfer?: Transfer;
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @Allow()
+    @IsDefined()
     public personellIds: UUIDSet = {};
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @Allow()
+    @IsDefined()
     public patientIds: UUIDSet = {};
 
     constructor(

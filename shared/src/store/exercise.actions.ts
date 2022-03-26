@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import {
-    Allow,
     IsArray,
     IsBoolean,
     IsInt,
@@ -46,7 +45,7 @@ import { PatientUpdate } from '../utils/patient-updates';
 // eslint-disable-next-line @typescript-eslint/no-namespace -- TLDR: it is easier to write
 export namespace ExerciseActions {
     export class AddViewport implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Viewport] Add viewport';
         @ValidateNested()
         @Type(() => Viewport)
@@ -54,14 +53,14 @@ export namespace ExerciseActions {
     }
 
     export class RemoveViewport implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Viewport] Remove viewport';
         @IsUUID(4, uuidValidationOptions)
         public viewportId!: UUID;
     }
 
     export class AddPatient implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Patient] Add patient';
         @ValidateNested()
         @Type(() => Patient)
@@ -69,7 +68,7 @@ export namespace ExerciseActions {
     }
 
     export class MovePatient implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Patient] Move patient';
 
         @IsUUID(4, uuidValidationOptions)
@@ -81,14 +80,14 @@ export namespace ExerciseActions {
     }
 
     export class RemovePatient implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Patient] Remove patient';
         @IsUUID(4, uuidValidationOptions)
         public patientId!: UUID;
     }
 
     export class AddVehicle implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Vehicle] Add vehicle';
         @ValidateNested()
         @Type(() => Vehicle)
@@ -105,7 +104,7 @@ export namespace ExerciseActions {
     }
 
     export class MoveVehicle implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Vehicle] Move vehicle';
 
         @IsUUID(4, uuidValidationOptions)
@@ -117,26 +116,26 @@ export namespace ExerciseActions {
     }
 
     export class RemoveVehicle implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Vehicle] Remove vehicle';
         @IsUUID(4, uuidValidationOptions)
         public vehicleId!: UUID;
     }
 
     export class UnloadVehicle implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Vehicle] Unload vehicle';
         @IsUUID(4, uuidValidationOptions)
         public vehicleId!: UUID;
     }
 
     export class LoadVehicle implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Vehicle] Load vehicle';
         @IsUUID(4, uuidValidationOptions)
         public vehicleId!: UUID;
 
-        @Allow()
+        @IsString()
         public elementToBeLoadedType!: 'material' | 'patient' | 'personell';
 
         @IsUUID(4, uuidValidationOptions)
@@ -144,7 +143,7 @@ export namespace ExerciseActions {
     }
 
     export class MovePersonell implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Personell] Move personell';
 
         @IsUUID(4, uuidValidationOptions)
@@ -156,7 +155,7 @@ export namespace ExerciseActions {
     }
 
     export class MoveMaterial implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Material] Move material';
 
         @IsUUID(4, uuidValidationOptions)
@@ -169,7 +168,7 @@ export namespace ExerciseActions {
 
     // TODO: Only the server should be able to propose these actions
     export class AddClient implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Client] Add client';
         @ValidateNested()
         @Type(() => Client)
@@ -177,14 +176,14 @@ export namespace ExerciseActions {
     }
 
     export class RemoveClient implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Client] Remove client';
         @IsUUID(4, uuidValidationOptions)
         public clientId!: UUID;
     }
 
     export class RestrictViewToViewport implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Client] Restrict to viewport';
         @IsUUID(4, uuidValidationOptions)
         public clientId!: UUID;
@@ -193,7 +192,7 @@ export namespace ExerciseActions {
     }
 
     export class SetWaitingRoom implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Client] Set waitingroom';
         @IsUUID(4, uuidValidationOptions)
         public clientId!: UUID;
@@ -202,14 +201,14 @@ export namespace ExerciseActions {
     }
 
     export class PauseExercise implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Exercise] Pause';
         @IsInt()
         public timestamp!: number;
     }
 
     export class StartExercise implements Action {
-        @Allow()
+        @IsString()
         readonly type = '[Exercise] Start';
         @IsInt()
         public timestamp!: number;
@@ -224,7 +223,7 @@ export namespace ExerciseActions {
     }
 
     export class SetParticipantId implements Action {
-        @Allow()
+        @IsString()
         readonly type = `[Exercise] Set Participant Id`;
         @IsString()
         public participantId!: string;
