@@ -248,8 +248,7 @@ jobs:
 
         needs: [test, cypress]
 
-        # TODO: Commented out to test it in the PR
-        # if: github.ref == 'refs/heads/dev'
+        if: github.ref == 'refs/heads/dev'
 
         strategy:
             matrix:
