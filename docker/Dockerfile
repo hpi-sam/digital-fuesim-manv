@@ -1,8 +1,11 @@
 # Use official node image as the base image, important to be on debian based for apt-get
 FROM node:16-bullseye-slim
 
+# Disable interactive frontend to prevent install dialogues
+ARG DEBIAN_FRONTEND=noninteractive
+
 # install nginx
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get upgrade -y && apt-get install nginx -y
+RUN apt-get update && apt-get upgrade -y && apt-get install nginx -y
 
 # add the source code to app
 COPY ./ /usr/local/app/
