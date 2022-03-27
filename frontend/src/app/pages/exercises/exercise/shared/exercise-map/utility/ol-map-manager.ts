@@ -92,8 +92,8 @@ export class OlMapManager {
             target: this.openLayersContainer,
             layers: [
                 satelliteLayer,
-                cateringLinesLayer,
                 vehicleLayer,
+                cateringLinesLayer,
                 patientLayer,
                 personellLayer,
                 materialLayer,

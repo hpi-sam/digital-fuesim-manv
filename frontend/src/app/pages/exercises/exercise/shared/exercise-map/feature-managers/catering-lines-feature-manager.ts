@@ -29,12 +29,32 @@ export class CateringLinesFeatureManager
         super();
     }
 
-    private readonly style = new Style({
-        stroke: new Stroke({
-            color: '#0dcaf0',
-            width: 2,
-        }),
-    });
+    private cachedStyle?: {
+        currentZoom: number;
+        style: Style;
+    };
+
+    /**
+     *
+     * @param feature The feature that should be styled
+     * @param currentZoom This is for some reason also called `resolution` in the ol typings
+     * @returns The style that should be used for the feature
+     */
+    // This function should be as efficient as possible, because it is called per feature on each rendered frame
+    private getStyle(feature: Feature<LineString>, currentZoom: number) {
+        if (this.cachedStyle?.currentZoom !== currentZoom) {
+            this.cachedStyle = {
+                currentZoom,
+                style: new Style({
+                    stroke: new Stroke({
+                        color: '#0dcaf0',
+                        width: 0.1 / currentZoom,
+                    }),
+                }),
+            };
+        }
+        return this.cachedStyle.style;
+    }
 
     createFeature(element: CateringLine): void {
         const feature = new Feature(
@@ -43,7 +63,9 @@ export class CateringLinesFeatureManager
                 [element.patientPosition.x, element.patientPosition.y],
             ])
         );
-        feature.setStyle(this.style);
+        feature.setStyle((thisFeature, currentZoom) =>
+            this.getStyle(thisFeature as Feature<LineString>, currentZoom)
+        );
         feature.setId(element.id);
         this.layer.getSource().addFeature(feature);
     }
