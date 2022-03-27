@@ -1,10 +1,11 @@
 version: '3'
 services:
     digital-fuesim-manv:
-        image: digital-fuesim-manv
-        build:
-            context: .
-            dockerfile: docker/Dockerfile
+        image: digitalfuesimmanv/dfm
+        # Use this to build the container for yourself:
+        # build:
+        #     context: .
+        #     dockerfile: docker/Dockerfile
         restart: unless-stopped
         container_name: digital-fuesim-manv
         ports:
