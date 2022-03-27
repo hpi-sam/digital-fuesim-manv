@@ -31,17 +31,27 @@ If you are using [vscode](https://code.visualstudio.com/), you can run the [task
 
 You need to have [`docker`](https://www.docker.com/) installed.
 
-### With docker-compose (recommended):
+### With docker-compose (recommended)
 
 1. [`docker-compose`](https://docs.docker.com/compose/) needs to be installed.
 2. Run `docker-compose up -d` in the root directory.
 
-### Without docker-compose:
+### Without docker-compose
 
-1. You need to build the container with `docker build -f docker/Dockerfile -t digital-fuesim-manv .` (in the root directory).
-2. Execute `docker run -p -d 80:80 digital-fuesim-manv`.
+1. Execute `docker run -p -d 80:80 digitalfuesimmanv/dfm`.
 
 The server will start listening using nginx on port `80` for all services (frontend, API, WebSockets).
+
+### Building the container from scratch
+
+#### Option 1
+
+1. Uncomment the build section of [the docker-compose file](./docker-compose.yml).
+2. Run `docker-compose build`
+
+#### Option 2
+
+1. Run `docker build -f docker/Dockerfile -t digital-fuesim-manv .`
 
 ## Before you commit
 
