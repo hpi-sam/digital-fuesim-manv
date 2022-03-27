@@ -44,12 +44,12 @@ The server will start listening using nginx on port `80` for all services (front
 
 ### Building the container from scratch
 
-#### Either
+#### Option 1
 
 1. Uncomment the build section of [the docker-compose file](./docker-compose.yml).
 2. Run `docker-compose build`
 
-#### or
+#### Option 2
 
 1. Run `docker build -f docker/Dockerfile -t digital-fuesim-manv .`
 
