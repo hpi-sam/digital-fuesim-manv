@@ -1,6 +1,7 @@
 import type {
     ClientToServerEvents,
     ExerciseIds,
+    MergeIntersection,
     ServerToClientEvents,
 } from 'digital-fuesim-manv-shared';
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
@@ -43,18 +44,6 @@ type LastElement<T extends any[]> = T extends [...any[], infer R]
  * ```
  */
 type HeadElements<T extends any[]> = T extends [...infer U, any] ? U : never;
-
-/**
- * Merges two objects like
- * ```ts
- * type A = { a: 1, b: 2 };
- * type B = { c: 2 };
- * type C = MergeIntersection<A & B>; // { a: 1, b: 2, c: 2 }
- * ```
- */
-type MergeIntersection<T> = T extends infer U
-    ? { [K in keyof U]: U[K] }
-    : never;
 
 type AllServerToClientEvents = MergeIntersection<
     ServerToClientEvents & SocketReservedEvents
