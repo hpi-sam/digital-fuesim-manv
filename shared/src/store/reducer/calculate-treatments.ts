@@ -1,12 +1,7 @@
 import { groupBy } from 'lodash-es';
-import type {
-    ExerciseState,
-    Material,
-    Patient,
-    PatientStatus,
-    Personell,
-    Position,
-} from '../..';
+import type { Material, Patient, Personell } from '../../models';
+import type { PatientStatus, Position } from '../../models/utils';
+import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils/immutability';
 
 function calculateDistance(a: Position, b: Position) {
