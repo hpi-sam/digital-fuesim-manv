@@ -1,4 +1,4 @@
-import { VehicleTemplate } from '../..';
+import { VehicleTemplate } from '../../models';
 import type { ImageProperties } from '../../models/utils/image-properties';
 
 const defaultImage: ImageProperties = {

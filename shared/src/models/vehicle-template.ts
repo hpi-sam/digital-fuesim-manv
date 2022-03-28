@@ -6,8 +6,9 @@ import {
     IsUUID,
     ValidateNested,
 } from 'class-validator';
-import type { CanCaterFor, PersonellType } from '..';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
+import type { PersonellType } from './utils';
+import { CanCaterFor } from './utils';
 import { ImageProperties } from './utils/image-properties';
 
 export class VehicleTemplate {
@@ -27,6 +28,8 @@ export class VehicleTemplate {
     @IsArray()
     public personnel: PersonellType[];
 
+    @ValidateNested()
+    @Type(() => CanCaterFor)
     public material: CanCaterFor;
 
     constructor(

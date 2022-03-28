@@ -1,15 +1,14 @@
 import { Type } from 'class-transformer';
 import {
+    IsDefined,
     IsNumber,
     IsOptional,
     IsString,
     IsUUID,
     ValidateNested,
 } from 'class-validator';
-import type { UUIDSet } from '../utils';
-import { uuid, uuidValidationOptions, UUID } from '../utils';
-import { Position } from './utils';
-import type { Transfer } from './utils';
+import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
+import { Position, Transfer } from './utils';
 import { ImageProperties } from './utils/image-properties';
 
 export class Vehicle {
@@ -40,15 +39,17 @@ export class Vehicle {
     /**
      * Exclusive-or to {@link position}
      */
-    // @ValidateNested()
-    // @Type(() => Transfer)
-    // @IsOptional()
+    @ValidateNested()
+    @Type(() => Transfer)
+    @IsOptional()
     public transfer?: Transfer;
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
+    @IsDefined()
     public personellIds: UUIDSet = {};
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
+    @IsDefined()
     public patientIds: UUIDSet = {};
 
     constructor(
