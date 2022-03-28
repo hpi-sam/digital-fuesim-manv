@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsDefined, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { Position } from './utils';
 
@@ -12,6 +12,7 @@ export class TransferPoint {
     public position: Position;
 
     // TODO
+    @IsDefined()
     public reachableTransferPoints: {
         [key: UUID]: {
             duration: number;

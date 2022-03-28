@@ -1,4 +1,7 @@
-import type { Client, ExerciseAction, ExerciseState, Role } from '..';
+import type { Client } from '../models';
+import type { Role } from '../models/utils';
+import type { ExerciseState } from '../state';
+import type { ExerciseAction } from './exercise.actions';
 
 /**
  * Assign a minimum role to each action.

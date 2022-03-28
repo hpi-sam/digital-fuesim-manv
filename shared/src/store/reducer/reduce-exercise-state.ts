@@ -1,6 +1,6 @@
 import { produce } from 'immer';
-import type { ExerciseAction } from '..';
-import type { ExerciseState } from '../..';
+import type { ExerciseState } from '../../state';
+import type { ExerciseAction } from '../exercise.actions';
 import { exerciseReducerMap } from './exercise-reducer-map';
 
 /**

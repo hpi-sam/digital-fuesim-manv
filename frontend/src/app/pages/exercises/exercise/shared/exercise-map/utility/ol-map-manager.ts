@@ -1,4 +1,8 @@
-import type { UUID } from 'digital-fuesim-manv-shared';
+import type {
+    ImmutableJsonObject,
+    MergeIntersection,
+    UUID,
+} from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
 import type Point from 'ol/geom/Point';
@@ -9,24 +13,28 @@ import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import type { Observable } from 'rxjs';
 import { debounceTime, startWith, Subject, pairwise, takeUntil } from 'rxjs';
-import { getSelectWithPosition } from 'src/app/state/exercise/exercise.selectors';
+import {
+    getSelectWithPosition,
+    selectCateringLines,
+} from 'src/app/state/exercise/exercise.selectors';
 import OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import type { ApiService } from 'src/app/core/api.service';
 import type { NgZone } from '@angular/core';
+import type Geometry from 'ol/geom/Geometry';
+import type LineString from 'ol/geom/LineString';
 import { startingPosition } from '../../starting-position';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
 import { PersonellFeatureManager } from '../feature-managers/personell-feature-manager';
 import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
-import type {
-    ElementFeatureManager,
-    PositionableElement,
-} from '../feature-managers/element-feature-manager';
+import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
+import type { ElementManager } from '../feature-managers/element-manager';
 import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
+import type { FeatureManager } from './feature-manager';
 
 /**
  * This class should run outside the Angular zone for performance reasons.
@@ -52,8 +60,8 @@ export class OlMapManager {
      * ```
      */
     private readonly layerFeatureManagerDictionary = new Map<
-        VectorLayer<VectorSource<Point>>,
-        ElementFeatureManager<any>
+        VectorLayer<VectorSource<Geometry>>,
+        FeatureManager<any>
     >();
 
     constructor(
@@ -72,6 +80,7 @@ export class OlMapManager {
         const vehicleLayer = this.createElementLayer();
         const personellLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
+        const cateringLinesLayer = this.createElementLayer<LineString>();
         this.popupOverlay = new Overlay({
             element: this.popoverContainer,
         });
@@ -88,6 +97,7 @@ export class OlMapManager {
             layers: [
                 satelliteLayer,
                 vehicleLayer,
+                cateringLinesLayer,
                 patientLayer,
                 personellLayer,
                 materialLayer,
@@ -115,51 +125,68 @@ export class OlMapManager {
         // });
 
         // FeatureManagers
-        this.createAndRegisterFeatureManager(
-            PatientFeatureManager,
-            patientLayer,
+        this.registerFeatureElementManager(
+            new PatientFeatureManager(
+                store,
+                this.olMap,
+                patientLayer,
+                this.apiService
+            ),
             this.store.select(getSelectWithPosition('patients'))
         ).togglePopup$.subscribe(this.changePopup$);
-        this.createAndRegisterFeatureManager(
-            VehicleFeatureManager,
-            vehicleLayer,
+
+        this.registerFeatureElementManager(
+            new VehicleFeatureManager(
+                store,
+                this.olMap,
+                vehicleLayer,
+                this.apiService
+            ),
             this.store.select(getSelectWithPosition('vehicles'))
         ).togglePopup$.subscribe(this.changePopup$);
-        this.createAndRegisterFeatureManager(
-            PersonellFeatureManager,
-            personellLayer,
+
+        this.registerFeatureElementManager(
+            new PersonellFeatureManager(
+                store,
+                this.olMap,
+                personellLayer,
+                this.apiService
+            ),
             this.store.select(getSelectWithPosition('personell'))
         );
-        this.createAndRegisterFeatureManager(
-            MaterialFeatureManager,
-            materialLayer,
+
+        this.registerFeatureElementManager(
+            new MaterialFeatureManager(
+                store,
+                this.olMap,
+                materialLayer,
+                this.apiService
+            ),
             this.store.select(getSelectWithPosition('materials'))
+        );
+
+        this.registerFeatureElementManager(
+            new CateringLinesFeatureManager(cateringLinesLayer),
+            this.store.select(selectCateringLines)
         );
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
     }
 
-    // If the signature of the ElementManager classes change, the initialisation should be done individually
-    private createAndRegisterFeatureManager<
-        Element extends PositionableElement,
-        ElementManagerClass extends
-            | typeof MaterialFeatureManager
-            | typeof PatientFeatureManager
-            | typeof PersonellFeatureManager
-            | typeof VehicleFeatureManager
+    private registerFeatureElementManager<
+        Element extends ImmutableJsonObject,
+        T extends MergeIntersection<
+            ElementManager<Element, any, any> & FeatureManager<any>
+        >
     >(
-        featureManagerClass: ElementManagerClass,
-        layer: VectorLayer<VectorSource<Point>>,
+        featureManager: T,
         elementDictionary$: Observable<{ [id: UUID]: Element }>
-    ): InstanceType<ElementManagerClass> {
-        const featureManager = new featureManagerClass(
-            this.store,
-            this.olMap,
-            layer,
-            this.apiService
-        ) as InstanceType<ElementManagerClass>;
-        this.layerFeatureManagerDictionary.set(layer, featureManager);
+    ) {
+        this.layerFeatureManagerDictionary.set(
+            featureManager.layer,
+            featureManager
+        );
         // Propagate the changes on an element to the featureManager
         elementDictionary$
             .pipe(
@@ -176,14 +203,12 @@ export class OlMapManager {
                     handleChanges(
                         oldElementDictionary,
                         newElementDictionary,
-                        (element) =>
-                            featureManager.onElementCreated(element as any),
-                        (element) =>
-                            featureManager.onElementDeleted(element as any),
+                        (element) => featureManager.onElementCreated(element),
+                        (element) => featureManager.onElementDeleted(element),
                         (oldElement, newElement) =>
                             featureManager.onElementChanged(
-                                oldElement as any,
-                                newElement as any
+                                oldElement,
+                                newElement
                             )
                     );
                 });
@@ -243,13 +268,15 @@ export class OlMapManager {
     /**
      * @param renderBuffer The size of the largest symbol, line width or label on the highest zoom level.
      */
-    private createElementLayer(renderBuffer = 250) {
+    private createElementLayer<LayerGeometry extends Geometry = Point>(
+        renderBuffer = 250
+    ) {
         return new VectorLayer({
             // These two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
             updateWhileAnimating: true,
             updateWhileInteracting: true,
             renderBuffer,
-            source: new VectorSource<Point>(),
+            source: new VectorSource<LayerGeometry>(),
         });
     }
 
