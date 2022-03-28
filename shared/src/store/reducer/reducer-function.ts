@@ -1,5 +1,6 @@
-import type { ExerciseAction } from '..';
-import type { Mutable, ExerciseState } from '../..';
+import type { ExerciseState } from '../../state';
+import type { Mutable } from '../../utils';
+import type { ExerciseAction } from '../exercise.actions';
 
 /**
  * A pure function that applies the action on the provided state.

@@ -15,6 +15,8 @@ export class PersonalInformation {
 
     @IsNumber()
     age: number;
+
+    @IsString()
     sex: 'female' | 'male';
 
     constructor(
