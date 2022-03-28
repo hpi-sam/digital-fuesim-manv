@@ -23,9 +23,7 @@ export class CateringLinesFeatureManager
         'patientPosition',
     ] as const);
 
-    constructor(
-        protected readonly layer: VectorLayer<VectorSource<LineString>>
-    ) {
+    constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {
         super();
     }
 

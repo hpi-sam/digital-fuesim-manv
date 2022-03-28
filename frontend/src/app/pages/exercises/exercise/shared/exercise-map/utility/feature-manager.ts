@@ -1,10 +1,15 @@
 import type { Feature, MapBrowserEvent } from 'ol';
+import type Geometry from 'ol/geom/Geometry';
 import type { TranslateEvent } from 'ol/interaction/Translate';
+import type VectorLayer from 'ol/layer/Vector';
+import type VectorSource from 'ol/source/Vector';
 
 /**
  * The Api to interact with a feature
  */
 export interface FeatureManager<ElementFeature extends Feature<any>> {
+    readonly layer: VectorLayer<VectorSource<Geometry>>;
+
     /**
      * This method is called when the user clicks on a feature on this layer.
      * @param event The click event that triggered the call

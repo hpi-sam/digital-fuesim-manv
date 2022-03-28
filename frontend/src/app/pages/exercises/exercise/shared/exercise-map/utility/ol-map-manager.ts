@@ -1,4 +1,8 @@
-import type { ImmutableJsonObject, UUID } from 'digital-fuesim-manv-shared';
+import type {
+    ImmutableJsonObject,
+    MergeIntersection,
+    UUID,
+} from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
 import type Point from 'ol/geom/Point';
@@ -121,63 +125,48 @@ export class OlMapManager {
         // });
 
         // FeatureManagers
-        this.registerElementManager(
-            this.registerFeatureManager(
-                new PatientFeatureManager(
-                    store,
-                    this.olMap,
-                    patientLayer,
-                    this.apiService
-                ),
-                patientLayer
+        this.registerFeatureElementManager(
+            new PatientFeatureManager(
+                store,
+                this.olMap,
+                patientLayer,
+                this.apiService
             ),
             this.store.select(getSelectWithPosition('patients'))
         ).togglePopup$.subscribe(this.changePopup$);
 
-        this.registerElementManager(
-            this.registerFeatureManager(
-                new VehicleFeatureManager(
-                    store,
-                    this.olMap,
-                    vehicleLayer,
-                    this.apiService
-                ),
-                vehicleLayer
+        this.registerFeatureElementManager(
+            new VehicleFeatureManager(
+                store,
+                this.olMap,
+                vehicleLayer,
+                this.apiService
             ),
             this.store.select(getSelectWithPosition('vehicles'))
         ).togglePopup$.subscribe(this.changePopup$);
 
-        this.registerElementManager(
-            this.registerFeatureManager(
-                new PersonellFeatureManager(
-                    store,
-                    this.olMap,
-                    patientLayer,
-                    this.apiService
-                ),
-                personellLayer
+        this.registerFeatureElementManager(
+            new PersonellFeatureManager(
+                store,
+                this.olMap,
+                personellLayer,
+                this.apiService
             ),
             this.store.select(getSelectWithPosition('personell'))
         );
 
-        this.registerElementManager(
-            this.registerFeatureManager(
-                new MaterialFeatureManager(
-                    store,
-                    this.olMap,
-                    patientLayer,
-                    this.apiService
-                ),
-                materialLayer
+        this.registerFeatureElementManager(
+            new MaterialFeatureManager(
+                store,
+                this.olMap,
+                materialLayer,
+                this.apiService
             ),
             this.store.select(getSelectWithPosition('materials'))
         );
 
-        this.registerElementManager(
-            this.registerFeatureManager(
-                new CateringLinesFeatureManager(cateringLinesLayer),
-                cateringLinesLayer
-            ),
+        this.registerFeatureElementManager(
+            new CateringLinesFeatureManager(cateringLinesLayer),
             this.store.select(selectCateringLines)
         );
 
@@ -185,21 +174,19 @@ export class OlMapManager {
         this.registerDropHandler(translateInteraction);
     }
 
-    private registerFeatureManager<T extends FeatureManager<any>>(
-        featureManager: T,
-        layer: VectorLayer<VectorSource<Geometry>>
-    ): T {
-        this.layerFeatureManagerDictionary.set(layer, featureManager);
-        return featureManager;
-    }
-
-    private registerElementManager<
+    private registerFeatureElementManager<
         Element extends ImmutableJsonObject,
-        T extends ElementManager<any, any, any>
+        T extends MergeIntersection<
+            ElementManager<Element, any, any> & FeatureManager<any>
+        >
     >(
-        elementManager: T,
+        featureManager: T,
         elementDictionary$: Observable<{ [id: UUID]: Element }>
-    ): T {
+    ) {
+        this.layerFeatureManagerDictionary.set(
+            featureManager.layer,
+            featureManager
+        );
         // Propagate the changes on an element to the featureManager
         elementDictionary$
             .pipe(
@@ -216,19 +203,17 @@ export class OlMapManager {
                     handleChanges(
                         oldElementDictionary,
                         newElementDictionary,
-                        (element) =>
-                            elementManager.onElementCreated(element as any),
-                        (element) =>
-                            elementManager.onElementDeleted(element as any),
+                        (element) => featureManager.onElementCreated(element),
+                        (element) => featureManager.onElementDeleted(element),
                         (oldElement, newElement) =>
-                            elementManager.onElementChanged(
-                                oldElement as any,
-                                newElement as any
+                            featureManager.onElementChanged(
+                                oldElement,
+                                newElement
                             )
                     );
                 });
             });
-        return elementManager;
+        return featureManager;
     }
 
     private registerPopupTriggers(translateInteraction: Translate) {

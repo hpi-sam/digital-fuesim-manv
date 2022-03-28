@@ -40,7 +40,7 @@ export abstract class ElementFeatureManager<Element extends PositionableElement>
     constructor(
         protected readonly store: Store<AppState>,
         protected readonly olMap: OlMap,
-        protected readonly layer: VectorLayer<VectorSource<Point>>,
+        public readonly layer: VectorLayer<VectorSource<Point>>,
         private readonly proposeMovementAction: (
             newPosition: Position,
             element: Element
