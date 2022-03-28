@@ -1,16 +1,16 @@
-import { IsNumber } from 'class-validator';
+import { IsPositive } from 'class-validator';
 
 export class Size {
     /**
      * The width in meters.
      */
-    @IsNumber()
+    @IsPositive()
     public width: number;
 
     /**
      * The height in meters.
      */
-    @IsNumber()
+    @IsPositive()
     public height: number;
 
     public constructor(width: number, height: number) {

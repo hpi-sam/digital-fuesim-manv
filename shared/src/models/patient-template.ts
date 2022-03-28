@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsNotIn, IsString, IsUUID, ValidateNested } from 'class-validator';
+import {
+    IsDefined,
+    IsNotIn,
+    IsString,
+    IsUUID,
+    ValidateNested,
+} from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { PatientStatus } from './utils';
 import { ImageProperties } from './utils/image-properties';
@@ -24,6 +30,7 @@ export class PatientTemplate {
     @Type(() => ImageProperties)
     public image: ImageProperties;
 
+    @IsDefined()
     public healthStates: { [stateId: UUID]: PatientHealthState } = {};
 
     constructor(
