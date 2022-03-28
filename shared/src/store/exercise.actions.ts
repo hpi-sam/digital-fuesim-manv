@@ -3,6 +3,7 @@ import {
     IsArray,
     IsBoolean,
     IsInt,
+    IsOptional,
     IsString,
     IsUUID,
     ValidateNested,
@@ -187,6 +188,7 @@ export namespace ExerciseActions {
         @IsUUID(4, uuidValidationOptions)
         public clientId!: UUID;
         @IsUUID(4, uuidValidationOptions)
+        @IsOptional()
         public viewportId?: UUID;
     }
 
