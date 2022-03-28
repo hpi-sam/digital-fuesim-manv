@@ -1,6 +1,8 @@
+import { createSelector } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
 import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
+import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { AppState } from '../app.state';
 
 export const selectViewports = (state: AppState) => state.exercise.viewports;
@@ -48,3 +50,32 @@ export const selectLatestStatusHistoryEntry = (state: AppState) =>
 
 export const selectParticipantId = (state: AppState) =>
     state.exercise.participantId;
+
+// TODO: only use the material and personnel in the current viewport
+export const selectCateringLines = createSelector(
+    selectMaterials,
+    selectPersonell,
+    selectPatients,
+    (materials, personell, patients) =>
+        [...Object.values(materials), ...Object.values(personell)]
+            .flatMap((element) => {
+                if (element.position === undefined) {
+                    return [];
+                }
+                return Object.keys(element.assignedPatientIds)
+                    .map((patientId) => patients[patientId])
+                    .filter((patient) => patient.position !== undefined)
+                    .map((patient) => ({
+                        id: `${element.id}:${patient.id}` as const,
+                        catererPosition: element.position!,
+                        patientPosition: patient.position!,
+                    }));
+            })
+            .reduce<{ [id: string]: CateringLine }>(
+                (cateringLinesObject, cateringLine) => {
+                    cateringLinesObject[cateringLine.id] = cateringLine;
+                    return cateringLinesObject;
+                },
+                {}
+            )
+);

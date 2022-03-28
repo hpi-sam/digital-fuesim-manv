@@ -16,4 +16,6 @@ export default {
     moduleNameMapper: {
         '^(\\.{1,2}/.*)\\.js$': '$1',
     },
+    // See here: https://github.com/nestjs/nest/issues/1305#issuecomment-488337778
+    setupFiles: ['./src/index.ts'],
 };

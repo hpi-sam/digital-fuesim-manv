@@ -1,4 +1,6 @@
-import type { ExerciseState, ExerciseAction, UUID } from '..';
+import type { ExerciseState } from '../state';
+import type { ExerciseAction } from '../store';
+import type { UUID } from '../utils';
 
 export interface ServerToClientEvents {
     performAction: (action: ExerciseAction) => void;

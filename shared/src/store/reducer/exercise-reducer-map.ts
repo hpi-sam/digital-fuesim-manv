@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-throw-literal */
 import { cloneDeep } from 'lodash-es';
-import type { ExerciseAction } from '..';
-import { imageSizeToPosition, StatusHistoryEntry } from '../..';
 import { getStatus } from '../../models/utils';
+import type { ExerciseAction } from '../exercise.actions';
+import { imageSizeToPosition } from '../../state-helpers';
+import { StatusHistoryEntry } from '../../models';
 import type { ReducerFunction } from './reducer-function';
 import { calculateTreatments } from './calculate-treatments';
 import { ReducerError } from '.';
