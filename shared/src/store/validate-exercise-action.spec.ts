@@ -20,8 +20,8 @@ describe('validateExerciseAction', () => {
                         y: 0,
                     },
                     {
-                        height: 0,
-                        width: 0,
+                        height: 1,
+                        width: 1,
                     },
                     ''
                 ),
@@ -73,8 +73,8 @@ describe('validateExerciseAction', () => {
                     id: 'b02c7756-ea52-427f-9fc3-0e163799544d',
                     name: '',
                     size: {
-                        height: 0,
-                        width: 0,
+                        height: 1,
+                        width: 1,
                     },
                     topLeft: {
                         // this is of type string instead of number
@@ -95,8 +95,8 @@ describe('validateExerciseAction', () => {
                     id: 'b02c7756-ea52-427f-9fc3-0e163799544d',
                     name: '',
                     size: {
-                        height: 0,
-                        width: 0,
+                        height: 1,
+                        width: 1,
                     },
                     topLeft: {
                         x: 0,
@@ -114,8 +114,8 @@ describe('validateExerciseAction', () => {
                     id: 'b02c7756-ea52-427f-9fc3-0e163799544d',
                     name: '',
                     size: {
-                        height: 0,
-                        width: 0,
+                        height: 1,
+                        width: 1,
                     },
                     topLeft: {
                         x: 0,
