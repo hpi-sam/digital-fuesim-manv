@@ -1,5 +1,9 @@
+import {
+    FunctionParameters,
+    PatientHealthState,
+    PatientTemplate,
+} from '../../models';
 import type { ImageProperties } from '../../models/utils';
-import { FunctionParameters, PatientHealthState, PatientTemplate } from '../..';
 
 const defaultImage: ImageProperties = {
     url: '/assets/patient.svg',

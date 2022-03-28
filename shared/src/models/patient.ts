@@ -1,18 +1,20 @@
 import { Type } from 'class-transformer';
 import {
     IsBoolean,
+    IsDefined,
+    IsNotIn,
     IsNumber,
     IsOptional,
+    IsString,
     IsUUID,
     Max,
     Min,
     ValidateNested,
 } from 'class-validator';
-import type { Immutable } from '../utils';
-import { UUID, uuid, uuidValidationOptions } from '../utils';
-import type { PatientStatus } from './utils';
+import { Immutable, UUID, uuid, uuidValidationOptions } from '../utils';
 import {
     Position,
+    PatientStatus,
     HealthPoints,
     ImageProperties,
     healthPointsDefaults,
@@ -29,9 +31,11 @@ export class Patient {
     public personalInformation: PersonalInformation;
 
     // TODO
+    @IsNotIn([undefined])
     public visibleStatus: PatientStatus | null;
 
     // TODO
+    @IsString()
     public realStatus: PatientStatus;
 
     @ValidateNested()
@@ -75,6 +79,7 @@ export class Patient {
     @IsNumber()
     stateTime = 0;
 
+    @IsDefined()
     healthStates: Immutable<{ [stateId: UUID]: PatientHealthState }> = {};
 
     /**

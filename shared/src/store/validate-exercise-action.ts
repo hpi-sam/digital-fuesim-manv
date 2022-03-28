@@ -1,8 +1,14 @@
 import { plainToInstance } from 'class-transformer';
-import type { ValidationError } from 'class-validator';
+import type { ValidationError, ValidatorOptions } from 'class-validator';
 import { validateSync } from 'class-validator';
 import type { ExerciseAction } from '.';
 import { ExerciseActions } from '.';
+
+const defaultValidateOptions: ValidatorOptions = {
+    forbidUnknownValues: true,
+    forbidNonWhitelisted: true,
+    whitelist: true,
+};
 
 /**
  *
@@ -24,7 +30,10 @@ export function validateExerciseAction(
     }
 
     // This works - no idea about the type error though...
-    return validateSync(plainToInstance(actionClass as any, action));
+    return validateSync(
+        plainToInstance(actionClass as any, action),
+        defaultValidateOptions
+    );
 }
 
 type ExerciseActionClassesDictionary = {

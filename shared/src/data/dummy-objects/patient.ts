@@ -1,5 +1,4 @@
-import { Patient } from '../..';
-import { FunctionParameters, PatientHealthState } from '../../models';
+import { FunctionParameters, Patient, PatientHealthState } from '../../models';
 import { defaultPatientTemplates } from '../default-state/patient-templates';
 
 export function generateDummyPatient(): Patient {

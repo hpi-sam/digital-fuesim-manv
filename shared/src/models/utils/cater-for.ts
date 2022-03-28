@@ -1,4 +1,4 @@
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CanCaterFor {
     @IsNumber()
@@ -11,6 +11,7 @@ export class CanCaterFor {
     public green: number;
 
     // TODO
+    @IsString()
     public logicalOperator: 'and' | 'or';
 
     public constructor(
