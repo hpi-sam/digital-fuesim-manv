@@ -66,7 +66,7 @@ export const selectCateringLines = createSelector(
                     .map((patientId) => patients[patientId])
                     .filter((patient) => patient.position !== undefined)
                     .map((patient) => ({
-                        id: element.id + patient.id,
+                        id: `${element.id}:${patient.id}` as const,
                         catererPosition: element.position!,
                         patientPosition: patient.position!,
                     }));
