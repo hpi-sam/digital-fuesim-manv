@@ -80,7 +80,6 @@ export class CateringLinesFeatureManager
         newElement: CateringLine,
         changedProperties: ReadonlySet<keyof CateringLine>,
         elementFeature: Feature<LineString>
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
     ): void {
         // Rendering the line again is expensive, so we only do it if we must
         if (
