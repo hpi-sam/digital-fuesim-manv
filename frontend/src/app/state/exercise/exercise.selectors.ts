@@ -12,9 +12,9 @@ export const selectPatientTemplates = (state: AppState) =>
     state.exercise.patientTemplates;
 export const selectPatients = (state: AppState) => state.exercise.patients;
 export const selectVehicles = (state: AppState) => state.exercise.vehicles;
-export const selectPersonell = (state: AppState) => state.exercise.personell;
-export const getSelectPersonell = (personnelId: UUID) => (state: AppState) =>
-    state.exercise.personell[personnelId];
+export const selectPersonnel = (state: AppState) => state.exercise.personnel;
+export const getSelectPersonnel = (personnelId: UUID) => (state: AppState) =>
+    state.exercise.personnel[personnelId];
 export const selectMaterials = (state: AppState) => state.exercise.materials;
 export const getSelectMaterial = (materialId: UUID) => (state: AppState) =>
     state.exercise.materials[materialId];
@@ -28,7 +28,7 @@ export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
  */
 // TODO: probably also include that the position is in a viewport in the future
 export function getSelectWithPosition<
-    Key extends 'materials' | 'patients' | 'personell' | 'vehicles',
+    Key extends 'materials' | 'patients' | 'personnel' | 'vehicles',
     Elements extends AppState['exercise'][Key] = AppState['exercise'][Key],
     ElementsWithPosition extends {
         [Id in keyof Elements]: WithPosition<Elements[Id]>;
@@ -54,10 +54,10 @@ export const selectParticipantId = (state: AppState) =>
 // TODO: only use the material and personnel in the current viewport
 export const selectCateringLines = createSelector(
     selectMaterials,
-    selectPersonell,
+    selectPersonnel,
     selectPatients,
-    (materials, personell, patients) =>
-        [...Object.values(materials), ...Object.values(personell)]
+    (materials, personnel, patients) =>
+        [...Object.values(materials), ...Object.values(personnel)]
             .flatMap((element) => {
                 if (element.position === undefined) {
                     return [];

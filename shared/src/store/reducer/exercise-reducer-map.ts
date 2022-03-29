@@ -81,11 +81,11 @@ export const exerciseReducerMap: {
         calculateTreatments(draftState);
         return draftState;
     },
-    '[Vehicle] Add vehicle': (draftState, { vehicle, material, personell }) => {
+    '[Vehicle] Add vehicle': (draftState, { vehicle, material, personnel }) => {
         draftState.vehicles[vehicle.id] = vehicle;
         draftState.materials[material.id] = material;
-        for (const person of personell) {
-            draftState.personell[person.id] = person;
+        for (const person of personnel) {
+            draftState.personnel[person.id] = person;
         }
         return draftState;
     },
@@ -113,8 +113,8 @@ export const exerciseReducerMap: {
             );
         }
         const material = draftState.materials[vehicle.materialId];
-        const personnel = Object.keys(vehicle.personellIds).map(
-            (personnelId) => draftState.personell[personnelId]
+        const personnel = Object.keys(vehicle.personnelIds).map(
+            (personnelId) => draftState.personnel[personnelId]
         );
         const patients = Object.keys(vehicle.patientIds).map(
             (patientId) => draftState.patients[patientId]
@@ -177,14 +177,14 @@ export const exerciseReducerMap: {
                 material.position = undefined;
                 break;
             }
-            case 'personell': {
-                const personnel = draftState.personell[elementToBeLoadedId];
+            case 'personnel': {
+                const personnel = draftState.personnel[elementToBeLoadedId];
                 if (!personnel) {
                     throw new ReducerError(
                         `Personnel with id ${elementToBeLoadedId} does not exist`
                     );
                 }
-                if (!vehicle.personellIds[elementToBeLoadedId]) {
+                if (!vehicle.personnelIds[elementToBeLoadedId]) {
                     throw new ReducerError(
                         `Personnel with id ${personnel.id} is not assignable to the vehicle with id ${vehicle.id}`
                     );
@@ -210,8 +210,8 @@ export const exerciseReducerMap: {
                 vehicle.patientIds[elementToBeLoadedId] = true;
                 patient.position = undefined;
                 draftState.materials[vehicle.materialId].position = undefined;
-                Object.keys(vehicle.personellIds).forEach((personnelId) => {
-                    draftState.personell[personnelId].position = undefined;
+                Object.keys(vehicle.personnelIds).forEach((personnelId) => {
+                    draftState.personnel[personnelId].position = undefined;
                 });
             }
         }
@@ -226,17 +226,17 @@ export const exerciseReducerMap: {
         delete draftState.vehicles[vehicleId];
         return draftState;
     },
-    '[Personell] Move personell': (
+    '[Personnel] Move personnel': (
         draftState,
-        { personellId, targetPosition }
+        { personnelId, targetPosition }
     ) => {
-        const personell = draftState.personell[personellId];
-        if (!personell) {
+        const personnel = draftState.personnel[personnelId];
+        if (!personnel) {
             throw new ReducerError(
-                `Personell with id ${personellId} does not exist`
+                `Personnel with id ${personnelId} does not exist`
             );
         }
-        personell.position = targetPosition;
+        personnel.position = targetPosition;
         calculateTreatments(draftState);
         return draftState;
     },

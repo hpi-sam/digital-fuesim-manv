@@ -5,7 +5,7 @@ import {
     Material,
     Patient,
     PatientHealthState,
-    Personell,
+    Personnel,
 } from '../../models';
 import type { PatientStatus } from '../../models/utils';
 import { CanCaterFor, Position } from '../../models/utils';
@@ -24,7 +24,7 @@ interface Catering {
      * The id of the material or personnel catering
      */
     catererId: UUID;
-    catererType: 'materials' | 'personell';
+    catererType: 'materials' | 'personnel';
     /**
      * All patients treated by {@link catererId}
      */
@@ -92,7 +92,7 @@ function generatePatient(
 }
 
 function generatePersonnel(position?: Position) {
-    const personnel = { ...new Personell(uuid(), 'notSan', {}) };
+    const personnel = { ...new Personnel(uuid(), 'notSan', {}) };
     if (position) {
         personnel.position = { ...position };
     }
@@ -140,7 +140,7 @@ describe('calculate treatment', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
                 const person = generatePersonnel();
-                state.personell[person.id] = person;
+                state.personnel[person.id] = person;
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -150,7 +150,7 @@ describe('calculate treatment', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
                 const person = generatePersonnel(new Position(0, 0));
-                state.personell[person.id] = person;
+                state.personnel[person.id] = person;
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -219,7 +219,7 @@ describe('calculate treatment', () => {
                 state.patients[patient.id] = patient;
 
                 const person = generatePersonnel();
-                state.personell[person.id] = person;
+                state.personnel[person.id] = person;
             }
         );
         expect(newState).toStrictEqual(beforeState);

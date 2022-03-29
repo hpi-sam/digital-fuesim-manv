@@ -8,7 +8,7 @@ import type {
     Material,
     Patient,
     PatientTemplate,
-    Personell,
+    Personnel,
     StatusHistoryEntry,
     TransferPoint,
     Vehicle,
@@ -35,7 +35,7 @@ class ExerciseStateClass {
     public id = uuid();
     public viewports: { [key: UUID]: Viewport } = {};
     public vehicles: { [key: UUID]: Vehicle } = {};
-    public personell: { [key: UUID]: Personell } = {};
+    public personnel: { [key: UUID]: Personnel } = {};
     public patients: { [key: UUID]: Patient } = {};
     public materials: { [key: UUID]: Material } = {};
     public images: { [key: UUID]: Image } = {};

@@ -22,7 +22,7 @@ const exerciseRightsMap: {
     '[Patient] Add patient': 'trainer',
     '[Patient] Move patient': 'participant',
     '[Patient] Remove patient': 'trainer',
-    '[Personell] Move personell': 'participant',
+    '[Personnel] Move personnel': 'participant',
     '[Vehicle] Add vehicle': 'trainer',
     '[Vehicle] Move vehicle': 'participant',
     '[Vehicle] Remove vehicle': 'trainer',

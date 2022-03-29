@@ -7,7 +7,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import type { PersonellType } from './utils';
+import type { PersonnelType } from './utils';
 import { CanCaterFor } from './utils';
 import { ImageProperties } from './utils/image-properties';
 
@@ -26,7 +26,7 @@ export class VehicleTemplate {
     public patientCapacity: number;
 
     @IsArray()
-    public personnel: PersonellType[];
+    public personnel: PersonnelType[];
 
     @ValidateNested()
     @Type(() => CanCaterFor)
@@ -36,7 +36,7 @@ export class VehicleTemplate {
         name: string,
         image: ImageProperties,
         patientCapacity: number,
-        personnel: PersonellType[],
+        personnel: PersonnelType[],
         material: CanCaterFor
     ) {
         this.name = name;
