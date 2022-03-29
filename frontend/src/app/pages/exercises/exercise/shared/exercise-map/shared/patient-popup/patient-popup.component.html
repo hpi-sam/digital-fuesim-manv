@@ -43,14 +43,13 @@
                 <tr>
                     <th scope="col">Geburtsdatum</th>
                     <td class="font-monospace">
-                        {{ patient.personalInformation.birthdate
-                        }}{{ currentYear - patient.personalInformation.age }}
+                        {{ patient.personalInformation.birthdate }}
                     </td>
                 </tr>
                 <tr>
                     <th scope="col">Adresse</th>
                     <td class="font-monospace">
-                        {{ patient.personalInformation.adress }}
+                        {{ patient.personalInformation.address }}
                     </td>
                 </tr>
                 <tr *ngIf="(client$ | async)?.role === 'trainer'">
