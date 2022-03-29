@@ -7,9 +7,9 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { UUID, UUIDSet, uuid, uuidValidationOptions } from '../utils';
-import { CanCaterFor, Position, ImageProperties, PersonellType } from './utils';
+import { CanCaterFor, Position, ImageProperties, PersonnelType } from './utils';
 
-export class Personell {
+export class Personnel {
     @IsUUID(4, uuidValidationOptions)
     public id: UUID = uuid();
 
@@ -18,7 +18,7 @@ export class Personell {
 
     // TODO
     @IsString()
-    public personellType: PersonellType;
+    public personnelType: PersonnelType;
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     @IsDefined()
@@ -31,7 +31,7 @@ export class Personell {
     @ValidateNested()
     @Type(() => ImageProperties)
     public image: ImageProperties = {
-        url: './assets/personell.png',
+        url: './assets/personnel.png',
         height: 80,
         aspectRatio: 1,
     };
@@ -46,12 +46,12 @@ export class Personell {
 
     constructor(
         vehicleId: UUID,
-        personellType: PersonellType,
+        personnelType: PersonnelType,
         assignedPatientIds: UUIDSet,
         canCaterFor: CanCaterFor = new CanCaterFor(1, 1, 4, 'or')
     ) {
         this.vehicleId = vehicleId;
-        this.personellType = personellType;
+        this.personnelType = personnelType;
         this.assignedPatientIds = assignedPatientIds;
         this.canCaterFor = canCaterFor;
     }

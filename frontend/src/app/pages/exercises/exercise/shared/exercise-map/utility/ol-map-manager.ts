@@ -27,7 +27,7 @@ import type LineString from 'ol/geom/LineString';
 import { startingPosition } from '../../starting-position';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
-import { PersonellFeatureManager } from '../feature-managers/personell-feature-manager';
+import { PersonnelFeatureManager } from '../feature-managers/personnel-feature-manager';
 import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
 import type { ElementManager } from '../feature-managers/element-manager';
@@ -78,7 +78,7 @@ export class OlMapManager {
         );
         const patientLayer = this.createElementLayer();
         const vehicleLayer = this.createElementLayer();
-        const personellLayer = this.createElementLayer();
+        const personnelLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
         const cateringLinesLayer = this.createElementLayer<LineString>();
         this.popupOverlay = new Overlay({
@@ -87,7 +87,7 @@ export class OlMapManager {
 
         // Interactions
         const translateInteraction = new Translate({
-            layers: [patientLayer, vehicleLayer, personellLayer, materialLayer],
+            layers: [patientLayer, vehicleLayer, personnelLayer, materialLayer],
         });
         TranslateHelper.registerTranslateEvents(translateInteraction);
 
@@ -99,7 +99,7 @@ export class OlMapManager {
                 vehicleLayer,
                 cateringLinesLayer,
                 patientLayer,
-                personellLayer,
+                personnelLayer,
                 materialLayer,
             ],
             overlays: [this.popupOverlay],
@@ -146,13 +146,13 @@ export class OlMapManager {
         ).togglePopup$.subscribe(this.changePopup$);
 
         this.registerFeatureElementManager(
-            new PersonellFeatureManager(
+            new PersonnelFeatureManager(
                 store,
                 this.olMap,
-                personellLayer,
+                personnelLayer,
                 this.apiService
             ),
-            this.store.select(getSelectWithPosition('personell'))
+            this.store.select(getSelectWithPosition('personnel'))
         );
 
         this.registerFeatureElementManager(

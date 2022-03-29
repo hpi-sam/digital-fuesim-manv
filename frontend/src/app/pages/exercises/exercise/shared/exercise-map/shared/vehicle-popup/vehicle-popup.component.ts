@@ -9,7 +9,7 @@ import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectMaterial,
     getSelectPatient,
-    getSelectPersonell,
+    getSelectPersonnel,
     getSelectVehicle,
 } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
@@ -41,9 +41,9 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                     .select(getSelectMaterial(vehicle.materialId))
                     .pipe(map((material) => material.position === undefined));
                 const personnelIsInVehicle$ = Object.keys(
-                    vehicle.personellIds
+                    vehicle.personnelIds
                 ).map((personnelId) =>
-                    this.store.select(getSelectPersonell(personnelId)).pipe(
+                    this.store.select(getSelectPersonnel(personnelId)).pipe(
                         // TODO: only if the person is not in transfer
                         map((personnel) => personnel.position === undefined)
                     )

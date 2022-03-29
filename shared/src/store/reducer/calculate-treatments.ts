@@ -1,5 +1,5 @@
 import { groupBy } from 'lodash-es';
-import type { Material, Patient, Personell } from '../../models';
+import type { Material, Patient, Personnel } from '../../models';
 import type { PatientStatus, Position } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils/immutability';
@@ -29,7 +29,7 @@ const generalThreshold = 5;
  * @returns Whether the patient can be catered for by {@link catering}.
  */
 function caterFor(
-    catering: Material | Personell,
+    catering: Material | Personnel,
     catersFor: CatersFor,
     patient: Patient
 ) {
@@ -73,7 +73,7 @@ function caterFor(
 }
 
 export function calculateTreatments(state: Mutable<ExerciseState>) {
-    const personnels = Object.values(state.personell).filter(
+    const personnels = Object.values(state.personnel).filter(
         (personnel) => personnel.position !== undefined
     );
     const materials = Object.values(state.materials).filter(
@@ -108,7 +108,7 @@ export function calculateTreatments(state: Mutable<ExerciseState>) {
 }
 
 function calculateCatering(
-    catering: Material | Personell,
+    catering: Material | Personnel,
     patients: Patient[]
 ) {
     const catersFor: CatersFor = {

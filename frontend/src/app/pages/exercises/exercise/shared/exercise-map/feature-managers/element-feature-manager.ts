@@ -108,10 +108,10 @@ export abstract class ElementFeatureManager<Element extends PositionableElement>
                 value: exerciseState.vehicles[id] as unknown as Element,
             } as const;
         }
-        if (exerciseState.personell[id]) {
+        if (exerciseState.personnel[id]) {
             return {
-                type: 'personell',
-                value: exerciseState.personell[id] as unknown as Element,
+                type: 'personnel',
+                value: exerciseState.personnel[id] as unknown as Element,
             } as const;
         }
         if (exerciseState.images[id]) {

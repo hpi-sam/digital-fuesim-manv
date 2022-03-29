@@ -3,7 +3,7 @@ import type {
     HealthPoints,
     Immutable,
     Patient,
-    PersonellType,
+    PersonnelType,
     UUID,
 } from 'digital-fuesim-manv-shared';
 import { healthPointsDefaults, isAlive } from 'digital-fuesim-manv-shared';
@@ -11,7 +11,7 @@ import { healthPointsDefaults, isAlive } from 'digital-fuesim-manv-shared';
 /**
  * The count of assigned personnel and material that cater for a {@link Patient}.
  */
-type Catering = { [key in PersonellType | 'material']: number };
+type Catering = { [key in PersonnelType | 'material']: number };
 
 interface PatientTickResult {
     /**
@@ -87,18 +87,18 @@ function getDedicatedResources(
     const material = Object.values(state.materials).filter((thisMaterial) =>
         Object.keys(thisMaterial.assignedPatientIds).includes(patient.id)
     ).length;
-    const treatingPersonnel = Object.values(state.personell).filter(
+    const treatingPersonnel = Object.values(state.personnel).filter(
         (thisPersonnel) =>
             Object.keys(thisPersonnel.assignedPatientIds).includes(patient.id)
     );
     const notarzt = treatingPersonnel.filter(
-        (thisPersonnel) => thisPersonnel.personellType === 'notarzt'
+        (thisPersonnel) => thisPersonnel.personnelType === 'notarzt'
     ).length;
     const notSan = treatingPersonnel.filter(
-        (thisPersonnel) => thisPersonnel.personellType === 'notSan'
+        (thisPersonnel) => thisPersonnel.personnelType === 'notSan'
     ).length;
     const retSan = treatingPersonnel.filter(
-        (thisPersonnel) => thisPersonnel.personellType === 'retSan'
+        (thisPersonnel) => thisPersonnel.personnelType === 'retSan'
     ).length;
     return {
         firefighter: 0,
