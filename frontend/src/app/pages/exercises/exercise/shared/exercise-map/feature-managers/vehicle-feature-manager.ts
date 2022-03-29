@@ -50,8 +50,8 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
             return false;
         }
         if (
-            (droppedElement.type === 'personell' &&
-                droppedOnVehicle.value.personellIds[droppedElement.value.id]) ||
+            (droppedElement.type === 'personnel' &&
+                droppedOnVehicle.value.personnelIds[droppedElement.value.id]) ||
             (droppedElement.type === 'material' &&
                 droppedOnVehicle.value.materialId ===
                     droppedElement.value.id) ||

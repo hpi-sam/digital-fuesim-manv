@@ -1,13 +1,13 @@
 import type { Immutable } from 'immer';
 import type { Vehicle, VehicleTemplate } from '../models';
-import { Material, Personell } from '../models';
+import { Material, Personnel } from '../models';
 import type { Position } from '../models/utils';
 import { uuid } from '../utils';
 
 import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
 
 /**
- * @returns a vehicle with personell and materials to be added to the map
+ * @returns a vehicle with personnel and materials to be added to the map
  */
 // Be aware that `uuid()` is nondeterministic and cannot be used in a reducer function.
 export function addVehicle(
@@ -15,17 +15,17 @@ export function addVehicle(
     vehiclePosition?: Position
 ): {
     material: Material;
-    personell: Personell[];
+    personnel: Personnel[];
     vehicle: Vehicle;
 } {
     const vehicleId = uuid();
     const material: Material = {
         ...new Material(vehicleId, {}, vehicleTemplate.material),
     };
-    const personell: Personell[] = [];
-    for (const personellType of vehicleTemplate.personnel) {
-        const newPersonell = new Personell(vehicleId, personellType, {});
-        personell.push(newPersonell);
+    const personnel: Personnel[] = [];
+    for (const personnelType of vehicleTemplate.personnel) {
+        const newPersonnel = new Personnel(vehicleId, personnelType, {});
+        personnel.push(newPersonnel);
     }
 
     const vehicle: Vehicle = {
@@ -35,12 +35,12 @@ export function addVehicle(
         patientCapacity: vehicleTemplate.patientCapacity,
         image: vehicleTemplate.image,
         patientIds: {},
-        personellIds: arrayToUUIDSet(personell.map((p) => p.id)),
+        personnelIds: arrayToUUIDSet(personnel.map((p) => p.id)),
         position: vehiclePosition,
     };
     return {
         material,
-        personell,
+        personnel,
         vehicle,
     };
 }

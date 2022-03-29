@@ -12,7 +12,7 @@ import {
     Client,
     Material,
     Patient,
-    Personell,
+    Personnel,
     Vehicle,
     Viewport,
 } from '../models';
@@ -99,8 +99,8 @@ export namespace ExerciseActions {
 
         @IsArray()
         @ValidateNested({ each: true })
-        @Type(() => Personell)
-        public personell!: Personell[];
+        @Type(() => Personnel)
+        public personnel!: Personnel[];
     }
 
     export class MoveVehicle implements Action {
@@ -136,18 +136,18 @@ export namespace ExerciseActions {
         public vehicleId!: UUID;
 
         @IsString()
-        public elementToBeLoadedType!: 'material' | 'patient' | 'personell';
+        public elementToBeLoadedType!: 'material' | 'patient' | 'personnel';
 
         @IsUUID(4, uuidValidationOptions)
         public elementToBeLoadedId!: UUID;
     }
 
-    export class MovePersonell implements Action {
+    export class MovePersonnel implements Action {
         @IsString()
-        readonly type = '[Personell] Move personell';
+        readonly type = '[Personnel] Move personnel';
 
         @IsUUID(4, uuidValidationOptions)
-        public personellId!: UUID;
+        public personnelId!: UUID;
 
         @ValidateNested()
         @Type(() => Position)

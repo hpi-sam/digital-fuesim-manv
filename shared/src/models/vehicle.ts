@@ -46,7 +46,7 @@ export class Vehicle {
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     @IsDefined()
-    public personellIds: UUIDSet = {};
+    public personnelIds: UUIDSet = {};
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     @IsDefined()
