@@ -1,4 +1,4 @@
-import type { Personell } from 'digital-fuesim-manv-shared';
+import type { Personnel } from 'digital-fuesim-manv-shared';
 import type Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
@@ -10,8 +10,8 @@ import type { WithPosition } from '../../utility/types/with-position';
 import { withElementImageStyle } from '../utility/with-element-image-style';
 import { ElementFeatureManager } from './element-feature-manager';
 
-class BasePersonellFeatureManager extends ElementFeatureManager<
-    WithPosition<Personell>
+class BasePersonnelFeatureManager extends ElementFeatureManager<
+    WithPosition<Personnel>
 > {
     constructor(
         store: Store<AppState>,
@@ -19,10 +19,10 @@ class BasePersonellFeatureManager extends ElementFeatureManager<
         layer: VectorLayer<VectorSource<Point>>,
         apiService: ApiService
     ) {
-        super(store, olMap, layer, (targetPosition, personell) => {
+        super(store, olMap, layer, (targetPosition, personnel) => {
             apiService.proposeAction({
-                type: '[Personell] Move personell',
-                personellId: personell.id,
+                type: '[Personnel] Move personnel',
+                personnelId: personnel.id,
                 targetPosition,
             });
         });
@@ -30,6 +30,6 @@ class BasePersonellFeatureManager extends ElementFeatureManager<
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const PersonellFeatureManager = withElementImageStyle<
-    WithPosition<Personell>
->(BasePersonellFeatureManager);
+export const PersonnelFeatureManager = withElementImageStyle<
+    WithPosition<Personnel>
+>(BasePersonnelFeatureManager);
