@@ -6,9 +6,11 @@ export class PersonalInformation {
     @IsString()
     biometry: string;
     @IsString()
-    adress: string;
+    address: string;
     /**
      * Without year
+     * @example
+     * `24.02.`
      */
     @IsString()
     birthdate: string;
@@ -16,20 +18,24 @@ export class PersonalInformation {
     @IsNumber()
     age: number;
 
+    /**
+     * @example
+     * 'männlich' | 'weiblich' | 'unbestimmt'
+     */
     @IsString()
-    sex: 'female' | 'male';
+    sex: string;
 
     constructor(
         name: string,
         biometry: string,
-        adress: string,
+        address: string,
         birthdate: string,
         age: number,
-        sex: 'female' | 'male'
+        sex: string
     ) {
         this.name = name;
         this.biometry = biometry;
-        this.adress = adress;
+        this.address = address;
         this.birthdate = birthdate;
         this.age = age;
         this.sex = sex;

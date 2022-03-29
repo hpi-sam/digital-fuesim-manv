@@ -18,12 +18,12 @@ const defaultHealthState = new PatientHealthState(
 
 const greenPatientTemplate = new PatientTemplate(
     {
-        sex: 'male',
+        sex: 'männlich',
         name: 'Max Mustermann',
         birthdate: '1.4.',
         biometry: '150cm, Glatze, große Brille',
         age: 18,
-        adress: 'Musterstr. 1, 90768 Musterstadt',
+        address: 'Musterstr. 1, 90768 Musterstadt',
     },
     'green',
     'green',
@@ -33,12 +33,12 @@ const greenPatientTemplate = new PatientTemplate(
 
 const yellowPatientTemplate = new PatientTemplate(
     {
-        sex: 'male',
+        sex: 'männlich',
         name: 'Walter Falter',
         birthdate: '7.3.',
         biometry: 'blaue Augen, weiße Haare, 174cm',
         age: 73,
-        adress: 'Pappelstr. 69, 97537 Eschenburg',
+        address: 'Pappelstr. 69, 97537 Eschenburg',
     },
     'yellow',
     'yellow',
@@ -48,12 +48,12 @@ const yellowPatientTemplate = new PatientTemplate(
 
 const redPatientTemplate = new PatientTemplate(
     {
-        sex: 'female',
+        sex: 'weiblich',
         name: 'Maria Kohler',
         birthdate: '2.12.',
         biometry: 'grüne Augen, graue Haare, 167cm',
         age: 80,
-        adress: 'Hannibal Str. 85, 12345 Hinterstadt',
+        address: 'Hannibal Str. 85, 12345 Hinterstadt',
     },
     'red',
     'red',
@@ -63,12 +63,12 @@ const redPatientTemplate = new PatientTemplate(
 
 const blackPatientTemplate = new PatientTemplate(
     {
-        sex: 'male',
+        sex: 'männlich',
         name: 'John Doe',
         birthdate: '8.1.',
         biometry: 'kurze Haare, 186cm',
         age: 23,
-        adress: 'Am Musterbahnhof 5, 10010 Musterdorf',
+        address: 'Am Musterbahnhof 5, 10010 Musterdorf',
     },
     'black',
     'black',
