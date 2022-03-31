@@ -1,5 +1,8 @@
-import type { ExerciseState, Viewport, UUID } from '../..';
-import { uuid, generateExercise } from '../..';
+import type { ExerciseState } from '../../state';
+import { generateExercise } from '../../state';
+import type { UUID } from '../../utils';
+import { uuid } from '../../utils';
+import type { Viewport } from '../../models';
 import { reduceExerciseState } from './reduce-exercise-state';
 import { ReducerError } from '.';
 

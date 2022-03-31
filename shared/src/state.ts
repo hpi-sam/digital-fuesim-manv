@@ -1,3 +1,5 @@
+import { defaultPatientTemplates } from './data/default-state/patient-templates';
+import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
 import type {
     Client,
     EocLogEntry,
@@ -6,7 +8,7 @@ import type {
     Material,
     Patient,
     PatientTemplate,
-    Personell,
+    Personnel,
     StatusHistoryEntry,
     TransferPoint,
     Vehicle,
@@ -33,14 +35,14 @@ class ExerciseStateClass {
     public id = uuid();
     public viewports: { [key: UUID]: Viewport } = {};
     public vehicles: { [key: UUID]: Vehicle } = {};
-    public personell: { [key: UUID]: Personell } = {};
+    public personnel: { [key: UUID]: Personnel } = {};
     public patients: { [key: UUID]: Patient } = {};
     public materials: { [key: UUID]: Material } = {};
     public images: { [key: UUID]: Image } = {};
     public transferPoints: { [key: UUID]: TransferPoint } = {};
     public clients: { [key: UUID]: Client } = {};
-    public patientTemplates: PatientTemplate[] = [];
-    public vehicleTemplates: VehicleTemplate[] = [];
+    public patientTemplates: PatientTemplate[] = defaultPatientTemplates;
+    public vehicleTemplates: VehicleTemplate[] = defaultVehicleTemplates;
     public imageTemplates: ImageTemplate[] = [];
     public ecoLog: EocLogEntry[] = [];
     public statusHistory: StatusHistoryEntry[] = [];

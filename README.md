@@ -27,6 +27,32 @@ If you are using [vscode](https://code.visualstudio.com/), you can run the [task
 2. Open another terminal in `/frontend` and run `npm run start`
 3. Open another terminal in `/backend` and run `npm run start`
 
+## Starting for deployment (using docker)
+
+You need to have [`docker`](https://www.docker.com/) installed.
+
+### With docker-compose (recommended)
+
+1. [`docker-compose`](https://docs.docker.com/compose/) needs to be installed.
+2. Run `docker-compose up -d` in the root directory.
+
+### Without docker-compose
+
+1. Execute `docker run -p -d 80:80 digitalfuesimmanv/dfm`.
+
+The server will start listening using nginx on port `80` for all services (frontend, API, WebSockets).
+
+### Building the container from scratch
+
+#### Option 1
+
+1. Uncomment the build section of [the docker-compose file](./docker-compose.yml).
+2. Run `docker-compose build`
+
+#### Option 2
+
+1. Run `docker build -f docker/Dockerfile -t digital-fuesim-manv .`
+
 ## Before you commit
 
 -   We are using [git lfs](https://git-lfs.github.com/). You can see the file types that currently use git lfs in [.gitattributes](.gitattributes). If you add another binary (or very large) file type to the repository you should add it there too.
@@ -82,22 +108,36 @@ In the `diff` folder you can see the changes between the baseline and the compar
 -   names are never unique, ids are
 -   private properties that may be used with getters/setters (and only those!) start with one leading underscore (`_`)
 -   `dependencies` should be used for packages that must be installed when running the app (e.g. `express`), whereas `devDependencies` should be used for packages only required for developing, debugging, building, or testing (e.g. `jest`), which includes all `@types` packages. We try to follow this route even for the frontend and the backend, although it is not important there. See also [this](https://stackoverflow.com/a/22004559) answer on StackOverflow for more information about the differences.
+-   Use JSDoc features for further documentation because editors like VSCode can display them better.
+    -   Be aware that JSDoc comments must always go above the Decorator of the class/component/function/variable etc.
+    ```ts
+    /**
+     * Here is a description of the class/function/variable/etc.
+     *
+     * @param myParam a description of the parameter
+     * @returns a nice variable that is bigger than {@link myVariable}
+     * @throws myError when something goes wrong
+     */
+    ```
+-   You should use the keyword `TODO` to mark things that need to be done later. Whether an issue should be created is an individual decision.
 
 # Architecture
 
 This repository is a monorepo that consists of the following packages:
 
 -   [frontend](./frontend) the browser-based client application ([Angular](https://angular.io/))
--   [backend](./backend) the server-side application (NodeJs)
+-   [backend](./backend) the server-side application ([NodeJs](https://nodejs.org/))
 -   [shared](./shared) the shared code that is used by both frontend and backend
 
-One server can host multiple _exercises_. Mutiple clients can join an exercise. A client can only join one exercise at a time.
+Each package has its own `README.md` file with additional documentation. Please check them out before you start working on the project.
 
-## State management and synchronisation
+One server can host multiple _exercises_. Multiple clients can join an exercise. A client can only join one exercise at a time.
 
-This is a realtime application.
+## State management and synchronization
 
-Each client is connected to the server via a [websocket connection](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API). This means you can send and listen for events over a two-way communication channel.
+This is a real-time application.
+
+Each client is connected to the server via a [WebSocket connection](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API). This means you can send and listen for events over a two-way communication channel.
 Via [socket.io](https://socket.io/docs) it is also possible to make use of a more classic request-response API via [acknowledgments](https://socket.io/docs/v4/emitting-events/#acknowledgements).
 
 ### State, actions and reducers
@@ -157,7 +197,7 @@ A blob should only be downloaded on demand (lazy) and cached.
 ### Synchronisation
 
 1. A client gets a snapshot of the state from the server via `getState`.
-2. Any time an action is applied on the server, it is sent to all clients via `performAction` and applied to them too. Due to the maintained packet ordering via a websocket and the fact that the synchronisation of the state in the backend works synchronously, it is impossible for a client to receive actions out of order or receive actions already included in the state received by `getState`.
+2. Any time an action is applied on the server, it is sent to all clients via `performAction` and applied to them too. Due to the maintained packet ordering via a WebSocket and the fact that the synchronization of the state in the backend works synchronously, it is impossible for a client to receive actions out of order or receive actions already included in the state received by `getState`.
 3. A client can propose an action to the server via `proposeAction`.
 4. If the proposal was accepted, the action is applied on the server and sent to all clients via `performAction`.
 5. The server responds to a proposal with a response that indicates a success or rejection via an [acknowledgment](https://socket.io/docs/v4/emitting-events/#acknowledgements). A successful response is always sent after the `performAction` was broadcasted.

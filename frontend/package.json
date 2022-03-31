@@ -4,11 +4,13 @@
     "type": "module",
     "scripts": {
         "cy:open": "cypress open",
+        "cy:install": "cypress install",
         "cy:run": "cypress run",
         "cy:update-snapshots": "cypress-image-diff -u",
         "ng": "ng",
         "start": "ng serve",
         "build": "ng build",
+        "build:deployment": "ng build --configuration deployment",
         "watch": "ng build --watch --configuration development",
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,css,sccs,html,angular}\"",
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,css,sccs,html,angular}\"",
@@ -64,6 +66,7 @@
         "eslint-plugin-rxjs-angular": "^2.0.0",
         "eslint-plugin-unicorn": "^40.1.0",
         "jest": "^27.4.7",
+        "lodash": "^4.17.21",
         "ts-jest": "^27.1.3",
         "typescript": "~4.5.5"
     }

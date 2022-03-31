@@ -1,6 +1,6 @@
 export { Material } from './material';
 export { Patient } from './patient';
-export { Personell } from './personell';
+export { Personnel } from './personnel';
 export { StatusHistoryEntry } from './status-history-entry';
 export { EocLogEntry } from './eoc-log-entry';
 export { VehicleTemplate } from './vehicle-template';
@@ -11,3 +11,4 @@ export { Image } from './image';
 export { Client } from './client';
 export { ImageTemplate } from './image-template';
 export { PatientTemplate } from './patient-template';
+export * from './patient-health-state';

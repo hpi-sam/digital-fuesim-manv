@@ -9,21 +9,25 @@ import {
 } from 'digital-fuesim-manv-shared';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
+import { patientTick } from './patient-ticking';
 import { PeriodicEventHandler } from './periodic-events/periodic-event-handler';
 
 export class ExerciseWrapper {
-    private lastTick = 0;
     /**
      * This function gets called once every second in case the exercise is running.
      * All periodic actions of the exercise (e.g. status changes for patients) should happen here.
      */
     private readonly tick = async () => {
-        const now = new Date();
-        console.log(`periodic test at ${now.toISOString()}`);
-        console.log(`Diff: ${now.valueOf() - this.lastTick}`);
-        this.lastTick = now.valueOf();
-        // TODO: Send action containing new state
-        console.log('after some time');
+        const patientUpdates = patientTick(
+            this.getStateSnapshot(),
+            this.tickInterval
+        );
+        const updateAction: ExerciseAction = {
+            type: '[Exercise] Tick',
+            patientUpdates,
+        };
+        this.reduce(updateAction);
+        this.emitAction(updateAction);
     };
 
     // Call the tick every 1000 ms

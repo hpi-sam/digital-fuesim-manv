@@ -1,6 +1,18 @@
 <ng-container *ngIf="patient$ | async as patient">
     <h5 class="popover-header">
-        {{ patient.id }}
+        {{ patient.personalInformation.name }}
+        <span
+            *ngIf="patient.visibleStatus !== null"
+            [ngStyle]="{ 'background-color': patient.visibleStatus }"
+            [class.text-dark]="patient.visibleStatus === 'yellow'"
+            class="badge rounded-pill font-monospace"
+        >
+            {{
+                (client$ | async)?.role === 'trainer'
+                    ? (patient.health / healthPointsDefaults.max | percent)
+                    : 'gesichtet'
+            }}
+        </span>
         <button
             (click)="closePopup.emit()"
             type="button"
@@ -8,6 +20,45 @@
         ></button>
     </h5>
     <div class="popover-body">
-        {{ patient.visibleStatus }}
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th scope="col">Alter</th>
+                    <td class="font-monospace">
+                        {{ patient.personalInformation.age }}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="col">Geschlecht</th>
+                    <td class="font-monospace">
+                        {{ patient.personalInformation.sex }}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="col">Biometrie</th>
+                    <td class="font-monospace">
+                        {{ patient.personalInformation.biometry }}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="col">Geburtsdatum</th>
+                    <td class="font-monospace">
+                        {{ patient.personalInformation.birthdate }}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="col">Adresse</th>
+                    <td class="font-monospace">
+                        {{ patient.personalInformation.address }}
+                    </td>
+                </tr>
+                <tr *ngIf="(client$ | async)?.role === 'trainer'">
+                    <th scope="col">Verletzungs-Geschwindigkeit:</th>
+                    <td class="font-monospace">
+                        &times;{{ patient.timeSpeed }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </ng-container>

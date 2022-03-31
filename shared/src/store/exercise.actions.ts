@@ -1,23 +1,25 @@
 import { Type } from 'class-transformer';
 import {
+    IsArray,
     IsBoolean,
     IsInt,
+    IsOptional,
     IsString,
     IsUUID,
     ValidateNested,
 } from 'class-validator';
 import {
-    UUID,
-    Viewport,
-    uuidValidationOptions,
-    Patient,
-    Vehicle,
-    Personell,
-    Material,
     Client,
-} from '..';
+    Material,
+    Patient,
+    Personnel,
+    Vehicle,
+    Viewport,
+} from '../models';
 import { Position } from '../models/utils';
+import { UUID, uuidValidationOptions } from '../utils';
 import type { Immutable } from '../utils/immutability';
+import { PatientUpdate } from '../utils/patient-updates';
 
 /**
  *  These actions are interfaces for immutable JSON objects used to update the store in the frontend and are send to the backend to apply the changes there too.
@@ -43,6 +45,7 @@ import type { Immutable } from '../utils/immutability';
 // eslint-disable-next-line @typescript-eslint/no-namespace -- TLDR: it is easier to write
 export namespace ExerciseActions {
     export class AddViewport implements Action {
+        @IsString()
         readonly type = '[Viewport] Add viewport';
         @ValidateNested()
         @Type(() => Viewport)
@@ -50,12 +53,14 @@ export namespace ExerciseActions {
     }
 
     export class RemoveViewport implements Action {
+        @IsString()
         readonly type = '[Viewport] Remove viewport';
         @IsUUID(4, uuidValidationOptions)
         public viewportId!: UUID;
     }
 
     export class AddPatient implements Action {
+        @IsString()
         readonly type = '[Patient] Add patient';
         @ValidateNested()
         @Type(() => Patient)
@@ -63,6 +68,7 @@ export namespace ExerciseActions {
     }
 
     export class MovePatient implements Action {
+        @IsString()
         readonly type = '[Patient] Move patient';
 
         @IsUUID(4, uuidValidationOptions)
@@ -74,19 +80,31 @@ export namespace ExerciseActions {
     }
 
     export class RemovePatient implements Action {
+        @IsString()
         readonly type = '[Patient] Remove patient';
         @IsUUID(4, uuidValidationOptions)
         public patientId!: UUID;
     }
 
     export class AddVehicle implements Action {
+        @IsString()
         readonly type = '[Vehicle] Add vehicle';
         @ValidateNested()
         @Type(() => Vehicle)
         public vehicle!: Vehicle;
+
+        @ValidateNested()
+        @Type(() => Material)
+        public material!: Material;
+
+        @IsArray()
+        @ValidateNested({ each: true })
+        @Type(() => Personnel)
+        public personnel!: Personnel[];
     }
 
     export class MoveVehicle implements Action {
+        @IsString()
         readonly type = '[Vehicle] Move vehicle';
 
         @IsUUID(4, uuidValidationOptions)
@@ -98,43 +116,46 @@ export namespace ExerciseActions {
     }
 
     export class RemoveVehicle implements Action {
+        @IsString()
         readonly type = '[Vehicle] Remove vehicle';
         @IsUUID(4, uuidValidationOptions)
         public vehicleId!: UUID;
     }
 
-    export class AddPersonell implements Action {
-        readonly type = '[Personell] Add personell';
-        @ValidateNested()
-        @Type(() => Personell)
-        public personell!: Personell;
+    export class UnloadVehicle implements Action {
+        @IsString()
+        readonly type = '[Vehicle] Unload vehicle';
+        @IsUUID(4, uuidValidationOptions)
+        public vehicleId!: UUID;
     }
 
-    export class MovePersonell implements Action {
-        readonly type = '[Personell] Move personell';
+    export class LoadVehicle implements Action {
+        @IsString()
+        readonly type = '[Vehicle] Load vehicle';
+        @IsUUID(4, uuidValidationOptions)
+        public vehicleId!: UUID;
+
+        @IsString()
+        public elementToBeLoadedType!: 'material' | 'patient' | 'personnel';
 
         @IsUUID(4, uuidValidationOptions)
-        public personellId!: UUID;
+        public elementToBeLoadedId!: UUID;
+    }
+
+    export class MovePersonnel implements Action {
+        @IsString()
+        readonly type = '[Personnel] Move personnel';
+
+        @IsUUID(4, uuidValidationOptions)
+        public personnelId!: UUID;
 
         @ValidateNested()
         @Type(() => Position)
         public targetPosition!: Position;
     }
 
-    export class RemovePersonell implements Action {
-        readonly type = '[Personell] Remove personell';
-        @IsUUID(4, uuidValidationOptions)
-        public personellId!: UUID;
-    }
-
-    export class AddMaterial implements Action {
-        readonly type = '[Material] Add material';
-        @ValidateNested()
-        @Type(() => Material)
-        public material!: Material;
-    }
-
     export class MoveMaterial implements Action {
+        @IsString()
         readonly type = '[Material] Move material';
 
         @IsUUID(4, uuidValidationOptions)
@@ -145,14 +166,9 @@ export namespace ExerciseActions {
         public targetPosition!: Position;
     }
 
-    export class RemoveMaterial implements Action {
-        readonly type = '[Material] Remove material';
-        @IsUUID(4, uuidValidationOptions)
-        public materialId!: UUID;
-    }
-
     // TODO: Only the server should be able to propose these actions
     export class AddClient implements Action {
+        @IsString()
         readonly type = '[Client] Add client';
         @ValidateNested()
         @Type(() => Client)
@@ -160,20 +176,24 @@ export namespace ExerciseActions {
     }
 
     export class RemoveClient implements Action {
+        @IsString()
         readonly type = '[Client] Remove client';
         @IsUUID(4, uuidValidationOptions)
         public clientId!: UUID;
     }
 
     export class RestrictViewToViewport implements Action {
+        @IsString()
         readonly type = '[Client] Restrict to viewport';
         @IsUUID(4, uuidValidationOptions)
         public clientId!: UUID;
         @IsUUID(4, uuidValidationOptions)
+        @IsOptional()
         public viewportId?: UUID;
     }
 
     export class SetWaitingRoom implements Action {
+        @IsString()
         readonly type = '[Client] Set waitingroom';
         @IsUUID(4, uuidValidationOptions)
         public clientId!: UUID;
@@ -182,18 +202,29 @@ export namespace ExerciseActions {
     }
 
     export class PauseExercise implements Action {
+        @IsString()
         readonly type = '[Exercise] Pause';
         @IsInt()
         public timestamp!: number;
     }
 
     export class StartExercise implements Action {
+        @IsString()
         readonly type = '[Exercise] Start';
         @IsInt()
         public timestamp!: number;
     }
 
+    export class ExerciseTick implements Action {
+        readonly type = '[Exercise] Tick';
+
+        @ValidateNested()
+        @Type(() => PatientUpdate)
+        public patientUpdates!: PatientUpdate[];
+    }
+
     export class SetParticipantId implements Action {
+        @IsString()
         readonly type = `[Exercise] Set Participant Id`;
         @IsString()
         public participantId!: string;

@@ -1,15 +1,49 @@
-import { IsUUID, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+    IsDefined,
+    IsNotIn,
+    IsString,
+    IsUUID,
+    ValidateNested,
+} from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import type { Patient } from './patient';
+import { PatientStatus } from './utils';
+import { ImageProperties } from './utils/image-properties';
+import { PersonalInformation } from './utils/personal-information';
+import type { PatientHealthState } from '.';
 
 export class PatientTemplate {
     @IsUUID(4, uuidValidationOptions)
     public id: UUID = uuid();
 
-    @ValidateNested() // TODO: Does this work on Exclude?
-    public patientProperties: Exclude<Patient, 'id'>;
+    @ValidateNested()
+    @Type(() => PersonalInformation)
+    public personalInformation: PersonalInformation;
 
-    constructor(patientProperties: Exclude<Patient, 'id'>) {
-        this.patientProperties = patientProperties;
+    @IsNotIn([undefined])
+    public visibleStatus: PatientStatus | null;
+
+    @IsString()
+    public realStatus: PatientStatus;
+
+    @ValidateNested()
+    @Type(() => ImageProperties)
+    public image: ImageProperties;
+
+    @IsDefined()
+    public healthStates: { [stateId: UUID]: PatientHealthState } = {};
+
+    constructor(
+        personalInformation: PersonalInformation,
+        visibleStatus: PatientStatus | null,
+        realStatus: PatientStatus,
+        healthStates: { [stateId: UUID]: PatientHealthState },
+        image: ImageProperties
+    ) {
+        this.personalInformation = personalInformation;
+        this.visibleStatus = visibleStatus;
+        this.realStatus = realStatus;
+        this.image = image;
+        this.healthStates = healthStates;
     }
 }

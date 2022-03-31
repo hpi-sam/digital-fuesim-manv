@@ -8,7 +8,7 @@ import { generateChangedProperties } from '../utility/generate-changed-propertie
  * {@link Element} is the immutable JSON object (Patient, Vehicle, etc.)
  * {@link ElementFeature} is the OpenLayers Feature that should be rendered to represent the {@link Element}.
  */
-export abstract class FeatureManager<
+export abstract class ElementManager<
     Element extends ImmutableJsonObject,
     ElementFeature extends Feature<any>,
     SupportedChangeProperties extends ReadonlySet<keyof Element>
@@ -25,7 +25,7 @@ export abstract class FeatureManager<
      * It is not necessary to make sure wether the element has been created before or not.
      */
     public onElementDeleted(element: Element): void {
-        const elementFeature = this.getElementFeature(element);
+        const elementFeature = this.getFeatureFromElement(element);
         if (!elementFeature) {
             return;
         }
@@ -41,7 +41,7 @@ export abstract class FeatureManager<
      * If any other property has changed, we deleted the old feature and create a new one instead.
      */
     public onElementChanged(oldElement: Element, newElement: Element): void {
-        const elementFeature = this.getElementFeature(oldElement);
+        const elementFeature = this.getFeatureFromElement(oldElement);
         if (!elementFeature) {
             // If the element is not yet rendered on the map - we have to create it first
             this.onElementCreated(newElement);
@@ -93,7 +93,9 @@ export abstract class FeatureManager<
         elementFeature: ElementFeature
     ): void;
 
-    abstract getElementFeature(element: Element): ElementFeature | undefined;
+    abstract getFeatureFromElement(
+        element: Element
+    ): ElementFeature | undefined;
 
     private areAllPropertiesSupported(
         changedProperties: ReadonlySet<keyof Element>

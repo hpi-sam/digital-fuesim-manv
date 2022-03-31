@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { Patient } from 'digital-fuesim-manv-shared';
+import { generateDummyPatient } from 'digital-fuesim-manv-shared';
 import { createExercise, createTestEnvironment, sleep } from './utils';
 
 describe('join exercise', () => {
@@ -134,17 +134,7 @@ describe('join exercise', () => {
                 trainerSocket.spyOn('performAction');
                 participantSocket.spyOn('performAction');
 
-                const patient = new Patient(
-                    {
-                        hair: 'brown',
-                        eyeColor: 'blue',
-                        name: 'John Doe',
-                        age: 42,
-                    },
-                    'green',
-                    'green',
-                    Date.now().toString()
-                );
+                const patient = generateDummyPatient();
 
                 // Proposing an action as the trainer
                 const trainerPropose = await trainerSocket.emit(
@@ -168,8 +158,12 @@ describe('join exercise', () => {
                 const participantPropose = await participantSocket.emit(
                     'proposeAction',
                     {
-                        type: '[Patient] Add patient',
-                        patient,
+                        type: '[Patient] Move patient',
+                        patientId: patient.id,
+                        targetPosition: {
+                            x: 0,
+                            y: 0,
+                        },
                     }
                 );
 

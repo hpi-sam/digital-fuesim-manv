@@ -4,8 +4,10 @@
     "type": "module",
     "scripts": {
         "build": "cd shared && npm run build && cd .. && concurrently \"cd frontend && npm run build\" \"cd backend && npm run build\"",
+        "build:deployment": "cd shared && npm run build && cd .. && cd frontend && npm run build:deployment && cd ../backend && npm run build",
         "start:all": "(cd frontend && npm run start) & (cd backend && npm run start)",
         "cy:ci": "cd frontend && npm run cy:run",
+        "cy:install": "cd frontend && npm run cy:install",
         "install:all": "npm i && concurrently \"cd shared && npm i\" \"cd frontend && npm i\" \"cd backend && npm i\"",
         "setup": "npm i && cd shared && npm i && npm run build && cd .. && concurrently \"cd frontend && npm i\" \"cd backend && npm i\"",
         "setup:ci": "npm ci && cd shared && npm ci && npm run build && cd ../frontend && npm ci && cd ../backend && npm ci",
@@ -25,7 +27,7 @@
     },
     "devDependencies": {
         "concurrently": "^7.0.0",
-        "prettier": "^2.5.1",
-        "jest": "^27.4.7"
+        "jest": "^27.4.7",
+        "prettier": "^2.5.1"
     }
 }

@@ -1,8 +1,7 @@
 import { Type } from 'class-transformer';
-import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
-import type { UUIDSet } from '../utils';
-import { uuid, UUID, uuidValidationOptions } from '../utils';
-import { CanCaterFor, Position } from './utils';
+import { IsDefined, IsOptional, IsUUID, ValidateNested } from 'class-validator';
+import { uuid, UUID, UUIDSet, uuidValidationOptions } from '../utils';
+import { CanCaterFor, ImageProperties, Position } from './utils';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
@@ -12,6 +11,7 @@ export class Material {
     public vehicleId: UUID;
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
+    @IsDefined()
     public assignedPatientIds: UUIDSet;
 
     @ValidateNested()
@@ -25,6 +25,14 @@ export class Material {
     @Type(() => Position)
     @IsOptional()
     public position?: Position;
+
+    @ValidateNested()
+    @Type(() => ImageProperties)
+    public image: ImageProperties = {
+        url: './assets/material.svg',
+        height: 40,
+        aspectRatio: 1,
+    };
 
     constructor(
         vehicleId: UUID,
