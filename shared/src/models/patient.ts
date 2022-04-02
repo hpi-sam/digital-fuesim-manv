@@ -49,7 +49,8 @@ export class Patient {
         realStatus: PatientStatus,
         healthStates: Immutable<{ [stateId: UUID]: PatientHealthState }>,
         currentHealthStateId: UUID,
-        image: ImageProperties
+        image: ImageProperties,
+        health: HealthPoints
     ) {
         this.personalInformation = personalInformation;
         this.visibleStatus = visibleStatus;
@@ -57,6 +58,7 @@ export class Patient {
         this.healthStates = healthStates;
         this.currentHealthStateId = currentHealthStateId;
         this.image = image;
+        this.health = health;
     }
 
     /**
@@ -93,7 +95,7 @@ export class Patient {
     @IsNumber()
     @Max(healthPointsDefaults.max)
     @Min(healthPointsDefaults.min)
-    health: HealthPoints = healthPointsDefaults.max;
+    health: HealthPoints;
     /**
      * Wether the patient is currently being treated by a personnel
      */

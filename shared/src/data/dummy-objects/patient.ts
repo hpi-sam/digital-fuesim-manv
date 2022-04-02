@@ -1,4 +1,5 @@
 import { FunctionParameters, Patient, PatientHealthState } from '../../models';
+import { healthPointsDefaults } from '../../models/utils';
 import { defaultPatientTemplates } from '../default-state/patient-templates';
 
 export function generateDummyPatient(): Patient {
@@ -13,6 +14,7 @@ export function generateDummyPatient(): Patient {
         template.realStatus,
         { [healthState.id]: healthState },
         healthState.id,
-        template.image
+        template.image,
+        healthPointsDefaults.max
     );
 }

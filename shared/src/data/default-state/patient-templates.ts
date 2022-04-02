@@ -4,6 +4,7 @@ import {
     PatientTemplate,
 } from '../../models';
 import type { ImageProperties } from '../../models/utils';
+import { healthPointsDefaults } from '../../models/utils';
 
 const defaultImage: ImageProperties = {
     url: '/assets/patient.svg',
@@ -28,7 +29,8 @@ const greenPatientTemplate = new PatientTemplate(
     'green',
     'green',
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage
+    defaultImage,
+    healthPointsDefaults.greenMax
 );
 
 const yellowPatientTemplate = new PatientTemplate(
@@ -43,7 +45,8 @@ const yellowPatientTemplate = new PatientTemplate(
     'yellow',
     'yellow',
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage
+    defaultImage,
+    healthPointsDefaults.yellowMax
 );
 
 const redPatientTemplate = new PatientTemplate(
@@ -58,7 +61,8 @@ const redPatientTemplate = new PatientTemplate(
     'red',
     'red',
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage
+    defaultImage,
+    healthPointsDefaults.redMax
 );
 
 const blackPatientTemplate = new PatientTemplate(
@@ -73,7 +77,8 @@ const blackPatientTemplate = new PatientTemplate(
     'black',
     'black',
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage
+    defaultImage,
+    healthPointsDefaults.blackMax
 );
 
 export const defaultPatientTemplates: PatientTemplate[] = [

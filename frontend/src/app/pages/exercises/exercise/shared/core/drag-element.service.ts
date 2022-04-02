@@ -135,7 +135,8 @@ export class DragElementService {
                         transferTemplate.template.realStatus,
                         transferTemplate.template.healthStates,
                         Object.keys(transferTemplate.template.healthStates)[0],
-                        transferTemplate.template.image
+                        transferTemplate.template.image,
+                        transferTemplate.template.health
                     );
                     patient.position = position;
                     this.apiService.proposeAction(

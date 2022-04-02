@@ -7,7 +7,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { PatientStatus } from './utils';
+import { HealthPoints, IsValidHealthPoint, PatientStatus } from './utils';
 import { ImageProperties } from './utils/image-properties';
 import { PersonalInformation } from './utils/personal-information';
 import type { PatientHealthState } from '.';
@@ -33,17 +33,22 @@ export class PatientTemplate {
     @IsDefined()
     public healthStates: { [stateId: UUID]: PatientHealthState } = {};
 
+    @IsValidHealthPoint()
+    public health: HealthPoints;
+
     constructor(
         personalInformation: PersonalInformation,
         visibleStatus: PatientStatus | null,
         realStatus: PatientStatus,
         healthStates: { [stateId: UUID]: PatientHealthState },
-        image: ImageProperties
+        image: ImageProperties,
+        health: HealthPoints
     ) {
         this.personalInformation = personalInformation;
         this.visibleStatus = visibleStatus;
         this.realStatus = realStatus;
         this.image = image;
         this.healthStates = healthStates;
+        this.health = health;
     }
 }

@@ -8,7 +8,11 @@ import {
     Personnel,
 } from '../../models';
 import type { PatientStatus } from '../../models/utils';
-import { CanCaterFor, Position } from '../../models/utils';
+import {
+    CanCaterFor,
+    healthPointsDefaults,
+    Position,
+} from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import { generateExercise } from '../../state';
 import type { Mutable, UUID, UUIDSet } from '../../utils';
@@ -82,7 +86,8 @@ function generatePatient(
             actualStatus,
             { [healthState.id]: healthState },
             healthState.id,
-            template.image
+            template.image,
+            healthPointsDefaults.max
         ),
     } as Mutable<Patient>;
     if (position) {
