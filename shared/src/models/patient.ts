@@ -18,8 +18,10 @@ import {
     HealthPoints,
     ImageProperties,
     healthPointsDefaults,
+    getStatus,
 } from './utils';
 import { PersonalInformation } from './utils/personal-information';
+import type { PatientTemplate } from './patient-template';
 import type { PatientHealthState } from '.';
 
 export class Patient {
@@ -108,4 +110,17 @@ export class Patient {
     @IsNumber()
     @Min(0)
     timeSpeed = 1;
+
+    static fromTemplate(template: Immutable<PatientTemplate>): Patient {
+        const status = getStatus(template.health);
+        return new Patient(
+            template.personalInformation,
+            template.isPreTriaged ? status : null,
+            status,
+            template.healthStates,
+            template.startingHealthStateId,
+            template.image,
+            template.health
+        );
+    }
 }

@@ -26,11 +26,11 @@ const greenPatientTemplate = new PatientTemplate(
         age: 18,
         address: 'Musterstr. 1, 90768 Musterstadt',
     },
-    'green',
-    'green',
+    true,
     { [defaultHealthState.id]: defaultHealthState },
     defaultImage,
-    healthPointsDefaults.greenMax
+    healthPointsDefaults.greenMax,
+    defaultHealthState.id
 );
 
 const yellowPatientTemplate = new PatientTemplate(
@@ -42,11 +42,11 @@ const yellowPatientTemplate = new PatientTemplate(
         age: 73,
         address: 'Pappelstr. 69, 97537 Eschenburg',
     },
-    'yellow',
-    'yellow',
+    true,
     { [defaultHealthState.id]: defaultHealthState },
     defaultImage,
-    healthPointsDefaults.yellowMax
+    healthPointsDefaults.yellowMax,
+    defaultHealthState.id
 );
 
 const redPatientTemplate = new PatientTemplate(
@@ -58,11 +58,11 @@ const redPatientTemplate = new PatientTemplate(
         age: 80,
         address: 'Hannibal Str. 85, 12345 Hinterstadt',
     },
-    'red',
-    'red',
+    true,
     { [defaultHealthState.id]: defaultHealthState },
     defaultImage,
-    healthPointsDefaults.redMax
+    healthPointsDefaults.redMax,
+    defaultHealthState.id
 );
 
 const blackPatientTemplate = new PatientTemplate(
@@ -74,11 +74,11 @@ const blackPatientTemplate = new PatientTemplate(
         age: 23,
         address: 'Am Musterbahnhof 5, 10010 Musterdorf',
     },
-    'black',
-    'black',
+    true,
     { [defaultHealthState.id]: defaultHealthState },
     defaultImage,
-    healthPointsDefaults.blackMax
+    healthPointsDefaults.blackMax,
+    defaultHealthState.id
 );
 
 export const defaultPatientTemplates: PatientTemplate[] = [

@@ -1,13 +1,7 @@
 import { Type } from 'class-transformer';
-import {
-    IsDefined,
-    IsNotIn,
-    IsString,
-    IsUUID,
-    ValidateNested,
-} from 'class-validator';
+import { IsBoolean, IsDefined, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { HealthPoints, IsValidHealthPoint, PatientStatus } from './utils';
+import { HealthPoints, IsValidHealthPoint } from './utils';
 import { ImageProperties } from './utils/image-properties';
 import { PersonalInformation } from './utils/personal-information';
 import type { PatientHealthState } from '.';
@@ -20,35 +14,35 @@ export class PatientTemplate {
     @Type(() => PersonalInformation)
     public personalInformation: PersonalInformation;
 
-    @IsNotIn([undefined])
-    public visibleStatus: PatientStatus | null;
-
-    @IsString()
-    public realStatus: PatientStatus;
+    @IsBoolean()
+    public isPreTriaged: boolean;
 
     @ValidateNested()
     @Type(() => ImageProperties)
     public image: ImageProperties;
 
     @IsDefined()
-    public healthStates: { [stateId: UUID]: PatientHealthState } = {};
+    public healthStates: { [stateId: UUID]: PatientHealthState };
+
+    @IsUUID(4, uuidValidationOptions)
+    public startingHealthStateId: UUID;
 
     @IsValidHealthPoint()
     public health: HealthPoints;
 
     constructor(
         personalInformation: PersonalInformation,
-        visibleStatus: PatientStatus | null,
-        realStatus: PatientStatus,
+        isPreTriaged: boolean,
         healthStates: { [stateId: UUID]: PatientHealthState },
         image: ImageProperties,
-        health: HealthPoints
+        health: HealthPoints,
+        startingHealthStateId: UUID
     ) {
         this.personalInformation = personalInformation;
-        this.visibleStatus = visibleStatus;
-        this.realStatus = realStatus;
+        this.isPreTriaged = isPreTriaged;
         this.image = image;
         this.healthStates = healthStates;
         this.health = health;
+        this.startingHealthStateId = startingHealthStateId;
     }
 }
