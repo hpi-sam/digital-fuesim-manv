@@ -3,7 +3,6 @@ import type { Feature } from 'ol';
 import type Geometry from 'ol/geom/Geometry';
 import type Point from 'ol/geom/Point';
 import type { Translate } from 'ol/interaction';
-import { translate } from 'ol/transform';
 
 /**
  * Translates (moves) a feature to a new position.
