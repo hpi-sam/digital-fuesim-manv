@@ -14,6 +14,11 @@ import { PeriodicEventHandler } from './periodic-events/periodic-event-handler';
 
 export class ExerciseWrapper {
     private tickCounter = 0;
+
+    /**
+     * How many ticks have to pass until treatments get recalculated (e.g. with {@link tickInterval} === 1000 and {@link refreshTreatmentInterval} === 60 every minute)
+     */
+    private readonly refreshTreatmentInterval = 20;
     /**
      * This function gets called once every second in case the exercise is running.
      * All periodic actions of the exercise (e.g. status changes for patients) should happen here.
@@ -26,7 +31,8 @@ export class ExerciseWrapper {
         const updateAction: ExerciseAction = {
             type: '[Exercise] Tick',
             patientUpdates,
-            refreshTreatments: this.tickCounter % 60 === 0, // refresh every 60 seconds
+            refreshTreatments:
+                this.tickCounter % this.refreshTreatmentInterval === 0, // refresh every 60 seconds
         };
         this.reduce(updateAction);
         this.emitAction(updateAction);
