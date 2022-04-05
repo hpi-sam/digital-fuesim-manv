@@ -31,8 +31,11 @@ export class ExerciseWrapper {
         const updateAction: ExerciseAction = {
             type: '[Exercise] Tick',
             patientUpdates,
+            /**
+             * refresh every {@link refreshTreatmentInterval} * {@link tickInterval} ms seconds
+             */
             refreshTreatments:
-                this.tickCounter % this.refreshTreatmentInterval === 0, // refresh every 60 seconds
+                this.tickCounter % this.refreshTreatmentInterval === 0,
         };
         this.reduce(updateAction);
         this.emitAction(updateAction);
