@@ -1,12 +1,7 @@
 import { produce } from 'immer';
-import { defaultPatientTemplates } from '../../data';
-import {
-    FunctionParameters,
-    Material,
-    Patient,
-    PatientHealthState,
-    Personnel,
-} from '../../models';
+import { generateDummyPatient } from '../../data';
+import type { Patient } from '../../models';
+import { Material, Personnel } from '../../models';
 import type { PatientStatus } from '../../models/utils';
 import { CanCaterFor, Position } from '../../models/utils';
 import type { ExerciseState } from '../../state';
@@ -64,27 +59,12 @@ function assertCatering(
 
 function generatePatient(
     visibleStatus: PatientStatus,
-    actualStatus: PatientStatus,
+    realStatus: PatientStatus,
     position?: Position
 ): Mutable<Patient> {
-    const template = defaultPatientTemplates[0];
-    const healthState = {
-        ...new PatientHealthState(
-            { ...new FunctionParameters(-10_000, 0, 0, 0) },
-            []
-        ),
-    };
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const patient = {
-        ...new Patient(
-            template.personalInformation,
-            visibleStatus,
-            actualStatus,
-            { [healthState.id]: healthState },
-            healthState.id,
-            template.image
-        ),
-    } as Mutable<Patient>;
+    const patient = generateDummyPatient() as Mutable<Patient>;
+    patient.visibleStatus = visibleStatus;
+    patient.realStatus = realStatus;
     if (position) {
         patient.position = { ...position };
     }

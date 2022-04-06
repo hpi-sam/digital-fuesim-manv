@@ -129,13 +129,8 @@ export class DragElementService {
                 break;
             case 'patient':
                 {
-                    const patient = new Patient(
-                        transferTemplate.template.personalInformation,
-                        transferTemplate.template.visibleStatus,
-                        transferTemplate.template.realStatus,
-                        transferTemplate.template.healthStates,
-                        Object.keys(transferTemplate.template.healthStates)[0],
-                        transferTemplate.template.image
+                    const patient = Patient.fromTemplate(
+                        transferTemplate.template
                     );
                     patient.position = position;
                     this.apiService.proposeAction(
