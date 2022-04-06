@@ -7,12 +7,7 @@ export function generateDummyPatient(): Patient {
         new FunctionParameters(-10_000, 0, 0, 0),
         []
     );
-    return new Patient(
-        template.personalInformation,
-        template.visibleStatus,
-        template.realStatus,
-        { [healthState.id]: healthState },
-        healthState.id,
-        template.image
-    );
+    template.healthStates = { [healthState.id]: healthState };
+    template.startingHealthStateId = healthState.id;
+    return Patient.fromTemplate(template);
 }
