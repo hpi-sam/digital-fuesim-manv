@@ -312,7 +312,7 @@ export const exerciseReducerMap: {
 
         return draftState;
     },
-    '[Exercise] Tick': (draftState, { patientUpdates }) => {
+    '[Exercise] Tick': (draftState, { patientUpdates, refreshTreatments }) => {
         patientUpdates.forEach((patientUpdate) => {
             const currentPatient = draftState.patients[patientUpdate.id];
             currentPatient.currentHealthStateId = patientUpdate.nextStateId;
@@ -323,7 +323,9 @@ export const exerciseReducerMap: {
                 currentPatient.visibleStatus = currentPatient.realStatus;
             }
         });
-        calculateTreatments(draftState);
+        if (refreshTreatments) {
+            calculateTreatments(draftState);
+        }
         return draftState;
     },
     '[Exercise] Set Participant Id': (draftState, { participantId }) => {
