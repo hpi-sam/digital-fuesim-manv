@@ -33,10 +33,20 @@ export class TranslateHelper {
         feature: Feature<Point>,
         callback: (newCoordinates: Position) => void
     ) {
-        // The translateend event is only called on features
-        feature.addEventListener('translateend', (event) => {
+        let startPosition: Position | undefined;
+        // These events are only called on features
+        feature.addEventListener('translatestart', (event) => {
             const [x, y] = feature.getGeometry()!.getCoordinates();
-            callback({ x, y });
+            startPosition = { x, y };
+        });
+        feature.addEventListener('translateend', (event) => {
+            // The start and end coordinates in the event are the mouse coordinates and not the feature coordinates.
+            const [x, y] = feature.getGeometry()!.getCoordinates();
+            if (startPosition?.x !== x || startPosition?.y !== y) {
+                // Only call the callback if the feature has moved.
+                callback({ x, y });
+            }
+            startPosition = undefined;
         });
     }
 
