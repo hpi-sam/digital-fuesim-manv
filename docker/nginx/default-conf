@@ -6,7 +6,7 @@ server {
     # Frontend
     location / {
         alias   /usr/local/app/frontend/dist/digital-fuesim-manv/;
-        index  index.html;
+        try_files $uri $uri/ /index.html;
     }
 
     # API
