@@ -31,7 +31,7 @@ export class Personnel {
     @ValidateNested()
     @Type(() => ImageProperties)
     public image: ImageProperties = {
-        url: './assets/personnel.png',
+        url: './assets/personnel.svg',
         height: 80,
         aspectRatio: 1,
     };

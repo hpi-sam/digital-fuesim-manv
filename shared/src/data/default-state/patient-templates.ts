@@ -11,6 +11,18 @@ const defaultImage: ImageProperties = {
     aspectRatio: 1,
 };
 
+const defaultMaleImage: ImageProperties = {
+    url: '/assets/male_patient.svg',
+    height: 80,
+    aspectRatio: 1,
+};
+
+const defaultFemaleImage: ImageProperties = {
+    url: '/assets/female_patient.svg',
+    height: 80,
+    aspectRatio: 1,
+};
+
 const defaultHealthState = new PatientHealthState(
     new FunctionParameters(-1_000, 2_000, 1_000, 500),
     []
@@ -28,7 +40,7 @@ const greenPatientTemplate = new PatientTemplate(
     'green',
     'green',
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage
+    defaultMaleImage
 );
 
 const yellowPatientTemplate = new PatientTemplate(
@@ -43,7 +55,7 @@ const yellowPatientTemplate = new PatientTemplate(
     'yellow',
     'yellow',
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage
+    defaultMaleImage
 );
 
 const redPatientTemplate = new PatientTemplate(
@@ -58,7 +70,7 @@ const redPatientTemplate = new PatientTemplate(
     'red',
     'red',
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage
+    defaultFemaleImage
 );
 
 const blackPatientTemplate = new PatientTemplate(
@@ -73,7 +85,7 @@ const blackPatientTemplate = new PatientTemplate(
     'black',
     'black',
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage
+    defaultMaleImage
 );
 
 export const defaultPatientTemplates: PatientTemplate[] = [
