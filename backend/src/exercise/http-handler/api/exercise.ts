@@ -33,6 +33,14 @@ export function postExercise(): HttpResponse<ExerciseIds> {
     }
 }
 
+export function getExercise(exerciseId: string): HttpResponse {
+    const exerciseExists = exerciseMap.has(exerciseId);
+    return {
+        statusCode: exerciseExists ? 200 : 404,
+        body: undefined,
+    };
+}
+
 export function deleteExercise(exerciseId: string): HttpResponse {
     const exerciseWrapper = exerciseMap.get(exerciseId);
     if (exerciseWrapper === undefined) {

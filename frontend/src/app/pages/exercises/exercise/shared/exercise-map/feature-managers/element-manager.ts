@@ -11,7 +11,11 @@ import { generateChangedProperties } from '../utility/generate-changed-propertie
 export abstract class ElementManager<
     Element extends ImmutableJsonObject,
     ElementFeature extends Feature<any>,
-    SupportedChangeProperties extends ReadonlySet<keyof Element>
+    UnsupportedChangeProperties extends ReadonlySet<keyof Element>,
+    SupportedChangeProperties extends Exclude<
+        ReadonlySet<keyof Element>,
+        UnsupportedChangeProperties
+    > = Exclude<ReadonlySet<keyof Element>, UnsupportedChangeProperties>
 > {
     /**
      * This should be called if a new element is added.
@@ -35,10 +39,9 @@ export abstract class ElementManager<
     /**
      * This should be called if an element is changed.
      *
-     * The best way to reflect the changes on the feature is mostly to update the already created feature directly.
+     * The best way to reflect the changes on the feature is mostly to update the already created feature directly. This is done in {@link changeFeature}.
      * But, because this requires extra code for each changed property, it is not feasible to do for all properties.
-     * The properties that are supported to be updated this way are saved in {@link supportedChangeProperties} and the changes are handled in {@link changeFeature}.
-     * If any other property has changed, we deleted the old feature and create a new one instead.
+     * If any property in {@link unsupportedChangeProperties} has changed, we deleted the old feature and create a new one instead.
      */
     public onElementChanged(oldElement: Element, newElement: Element): void {
         const elementFeature = this.getFeatureFromElement(oldElement);
@@ -78,12 +81,12 @@ export abstract class ElementManager<
     ): void;
 
     /**
-     * The properties of {@link Element} for which custom changes can be handled in {@link changeFeature}.
+     * The properties of {@link Element} for which custom changes cannot be handled in {@link changeFeature}.
      */
-    abstract readonly supportedChangeProperties: SupportedChangeProperties;
+    abstract readonly unsupportedChangeProperties: UnsupportedChangeProperties;
     /**
-     * This method must only be called if solely properties in {@link supportedChangeProperties} are different between the two elements
-     * @param changedProperties The properties that have changed between the {@link oldElement } and the {@link newElement }
+     * This method must only be called if no properties in {@link unsupportedChangeProperties} are different between the two elements
+     * @param changedProperties The properties that have changed between the {@link oldElement} and the {@link newElement}
      * @param elementFeature The openLayers feature that should be updated to reflect the changes
      */
     abstract changeFeature(
@@ -101,7 +104,7 @@ export abstract class ElementManager<
         changedProperties: ReadonlySet<keyof Element>
     ): changedProperties is SupportedChangeProperties {
         for (const changedProperty of changedProperties) {
-            if (!this.supportedChangeProperties.has(changedProperty)) {
+            if (this.unsupportedChangeProperties.has(changedProperty)) {
                 return false;
             }
         }

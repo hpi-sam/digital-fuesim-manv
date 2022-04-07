@@ -221,6 +221,9 @@ export namespace ExerciseActions {
         @ValidateNested()
         @Type(() => PatientUpdate)
         public patientUpdates!: PatientUpdate[];
+
+        @IsBoolean()
+        public refreshTreatments!: boolean;
     }
 
     export class SetParticipantId implements Action {
