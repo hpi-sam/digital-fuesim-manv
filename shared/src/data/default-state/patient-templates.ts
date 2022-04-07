@@ -6,12 +6,6 @@ import {
 import type { ImageProperties } from '../../models/utils';
 import { healthPointsDefaults } from '../../models/utils';
 
-const defaultImage: ImageProperties = {
-    url: '/assets/patient.svg',
-    height: 80,
-    aspectRatio: 1,
-};
-
 const defaultMaleImage: ImageProperties = {
     url: '/assets/male_patient.svg',
     height: 80,

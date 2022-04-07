@@ -1,12 +1,6 @@
 import { VehicleTemplate } from '../../models';
 import type { ImageProperties } from '../../models/utils/image-properties';
 
-const defaultImage: ImageProperties = {
-    url: '/assets/rtw_vehicle.png',
-    height: 100,
-    aspectRatio: 3693/1670,
-};
-
 const rtwImage: ImageProperties = {
     url: '/assets/rtw_vehicle.png',
     height: 100,
@@ -105,6 +99,7 @@ const hubschrauberVehicleTemplate = new VehicleTemplate(
 
 export const defaultVehicleTemplates: VehicleTemplate[] = [
     rtwVehicleTemplate,
+    ktwVehicleTemplate,
     gwSanVehicleTemplate,
     nefVehicleTemplate,
     hubschrauberVehicleTemplate,
