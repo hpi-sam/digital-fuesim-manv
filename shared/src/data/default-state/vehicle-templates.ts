@@ -27,8 +27,8 @@ const nefImage: ImageProperties = {
 
 const hubschrauberImage: ImageProperties = {
     url: '/assets/hubschrauber_vehicle.svg',
-    height: 150,
-    aspectRatio: 469 / 341,
+    height: 300,
+    aspectRatio: 310 / 130,
 };
 
 const rtwVehicleTemplate = new VehicleTemplate(
