@@ -26,7 +26,7 @@ const nefImage: ImageProperties = {
 };
 
 const hubschrauberImage: ImageProperties = {
-    url: '/assets/hubschrauber_vehicle.png',
+    url: '/assets/hubschrauber_vehicle.svg',
     height: 150,
     aspectRatio: 469 / 341,
 };
