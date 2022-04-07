@@ -15,7 +15,6 @@ import type { FeatureManager } from '../utility/feature-manager';
 import { ElementManager } from './element-manager';
 
 type ElementFeature = Feature<Point>;
-type SupportedChangeProperties = ReadonlySet<'position'>;
 export type PositionableElement = Immutable<{
     id: UUID;
     position: Position;
@@ -28,7 +27,7 @@ export type PositionableElement = Immutable<{
  * * manages the default interactions of the element
  */
 export abstract class ElementFeatureManager<Element extends PositionableElement>
-    extends ElementManager<Element, ElementFeature, SupportedChangeProperties>
+    extends ElementManager<Element, ElementFeature, ReadonlySet<keyof Element>>
     implements FeatureManager<ElementFeature>
 {
     private readonly movementAnimator = new MovementAnimator(
@@ -49,6 +48,9 @@ export abstract class ElementFeatureManager<Element extends PositionableElement>
         super();
     }
 
+    override unsupportedChangeProperties: ReadonlySet<keyof Element> = new Set(
+        [] as const
+    );
     createFeature(element: Element): void {
         const elementFeature = new Feature(
             new Point([element.position.x, element.position.y])
@@ -65,11 +67,11 @@ export abstract class ElementFeatureManager<Element extends PositionableElement>
         this.movementAnimator.stopMovementAnimation(elementFeature);
     }
 
-    readonly supportedChangeProperties = new Set(['position'] as const);
     changeFeature(
         oldElement: Element,
         newElement: Element,
-        changedProperties: SupportedChangeProperties,
+        // It is too much work to correctly type this param with {@link unsupportedChangeProperties}
+        changedProperties: ReadonlySet<keyof Element>,
         patientFeature: ElementFeature
     ): void {
         if (changedProperties.has('position')) {

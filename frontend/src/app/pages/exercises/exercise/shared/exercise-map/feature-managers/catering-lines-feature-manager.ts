@@ -18,10 +18,7 @@ export class CateringLinesFeatureManager
     >
     implements FeatureManager<Feature<LineString>>
 {
-    readonly supportedChangeProperties = new Set([
-        'catererPosition',
-        'patientPosition',
-    ] as const);
+    readonly unsupportedChangeProperties = new Set(['id'] as const);
 
     constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {
         super();

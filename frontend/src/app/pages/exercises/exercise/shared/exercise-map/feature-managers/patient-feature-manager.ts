@@ -30,6 +30,8 @@ class PatientFeatureManagerBase extends ElementFeatureManager<
             });
         });
     }
+
+    override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 }
 
 const PatientFeatureManagerWithImageStyle = withElementImageStyle<
