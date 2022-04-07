@@ -27,6 +27,8 @@ class BaseMaterialFeatureManager extends ElementFeatureManager<
             });
         });
     }
+
+    override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

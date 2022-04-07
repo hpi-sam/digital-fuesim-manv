@@ -73,6 +73,8 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
         }
         return false;
     }
+
+    override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 }
 
 const VehicleFeatureManagerWithImageStyle = withElementImageStyle<
