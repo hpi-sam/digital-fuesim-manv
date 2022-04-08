@@ -222,4 +222,4 @@ If you need to read from the state to change it, you should do this inside the a
 
 ## Licenses and Attributions
 
-- License information about used images can be found [here](frontend/src/assets/image_sources.md). All images are licensed under their original license.
+-   License information about used images can be found [here](frontend/src/assets/image_sources.md). All images are licensed under their original license.
