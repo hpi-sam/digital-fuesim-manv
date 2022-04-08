@@ -30,7 +30,7 @@ Florian Greiz 23 <br>
 
 [personnel.svg](personnel.svg):<br>
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited) <br>
-and (Fry1989) <br>
+and Fry1989 <br>
 <https://commons.wikimedia.org/wiki/File:MUTCD_RS-094.svg> (edited) <br><br>
 
 [rtw_vehicle.png](rtw_vehicle.png): <br>
