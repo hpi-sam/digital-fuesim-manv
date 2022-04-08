@@ -1,15 +1,52 @@
 import { VehicleTemplate } from '../../models';
 import type { ImageProperties } from '../../models/utils/image-properties';
 
-const defaultImage: ImageProperties = {
-    url: '/assets/vehicle.svg',
-    height: 200,
-    aspectRatio: 1,
+const rtwImage: ImageProperties = {
+    url: '/assets/rtw_vehicle.png',
+    height: 100,
+    aspectRatio: 3693 / 1670,
+};
+
+const ktwImage: ImageProperties = {
+    url: '/assets/ktw_vehicle.png',
+    height: 100,
+    aspectRatio: 5046 / 2465,
+};
+
+const gwSanImage: ImageProperties = {
+    url: '/assets/gwsan_vehicle.png',
+    height: 120,
+    aspectRatio: 5000 / 2474,
+};
+
+const nefImage: ImageProperties = {
+    url: '/assets/nef_vehicle.png',
+    height: 70,
+    aspectRatio: 4455 / 1847,
+};
+
+const hubschrauberImage: ImageProperties = {
+    url: '/assets/hubschrauber_vehicle.svg',
+    height: 300,
+    aspectRatio: 310 / 130,
 };
 
 const rtwVehicleTemplate = new VehicleTemplate(
     'RTW',
-    defaultImage,
+    rtwImage,
+    2,
+    ['notSan', 'retSan'],
+    {
+        logicalOperator: 'or',
+        green: 2,
+        yellow: 1,
+        red: 1,
+    }
+);
+
+const ktwVehicleTemplate = new VehicleTemplate(
+    'KTW',
+    ktwImage,
     2,
     ['notSan', 'retSan'],
     {
@@ -22,8 +59,8 @@ const rtwVehicleTemplate = new VehicleTemplate(
 
 const gwSanVehicleTemplate = new VehicleTemplate(
     'GW-San',
-    defaultImage,
-    2,
+    gwSanImage,
+    0,
     ['notSan', 'retSan', 'retSan', 'retSan'],
     {
         logicalOperator: 'and',
@@ -35,8 +72,8 @@ const gwSanVehicleTemplate = new VehicleTemplate(
 
 const nefVehicleTemplate = new VehicleTemplate(
     'NEF',
-    defaultImage,
-    2,
+    nefImage,
+    0,
     ['notarzt', 'notSan'],
     {
         logicalOperator: 'or',
@@ -48,7 +85,7 @@ const nefVehicleTemplate = new VehicleTemplate(
 
 const hubschrauberVehicleTemplate = new VehicleTemplate(
     'Hubschrauber',
-    defaultImage,
+    hubschrauberImage,
     1,
     ['notarzt', 'notSan'],
     {
@@ -61,6 +98,7 @@ const hubschrauberVehicleTemplate = new VehicleTemplate(
 
 export const defaultVehicleTemplates: VehicleTemplate[] = [
     rtwVehicleTemplate,
+    ktwVehicleTemplate,
     gwSanVehicleTemplate,
     nefVehicleTemplate,
     hubschrauberVehicleTemplate,

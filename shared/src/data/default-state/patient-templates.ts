@@ -6,8 +6,14 @@ import {
 import type { ImageProperties } from '../../models/utils';
 import { healthPointsDefaults } from '../../models/utils';
 
-const defaultImage: ImageProperties = {
-    url: '/assets/patient.svg',
+const defaultMaleImage: ImageProperties = {
+    url: '/assets/male_patient.svg',
+    height: 80,
+    aspectRatio: 1,
+};
+
+const defaultFemaleImage: ImageProperties = {
+    url: '/assets/female_patient.svg',
     height: 80,
     aspectRatio: 1,
 };
@@ -28,7 +34,7 @@ const greenPatientTemplate = new PatientTemplate(
     },
     true,
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage,
+    defaultMaleImage,
     healthPointsDefaults.greenMax,
     defaultHealthState.id
 );
@@ -44,7 +50,7 @@ const yellowPatientTemplate = new PatientTemplate(
     },
     true,
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage,
+    defaultMaleImage,
     healthPointsDefaults.yellowMax,
     defaultHealthState.id
 );
@@ -60,7 +66,7 @@ const redPatientTemplate = new PatientTemplate(
     },
     true,
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage,
+    defaultFemaleImage,
     healthPointsDefaults.redMax,
     defaultHealthState.id
 );
@@ -76,7 +82,7 @@ const blackPatientTemplate = new PatientTemplate(
     },
     true,
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage,
+    defaultMaleImage,
     healthPointsDefaults.blackMax,
     defaultHealthState.id
 );
