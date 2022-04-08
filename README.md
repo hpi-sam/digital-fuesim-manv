@@ -219,3 +219,7 @@ If you need to read from the state to change it, you should do this inside the a
 
 -   Do _not_ save a very large JS primitve (a large string like a base64 encoded image) in a part of the state that is often modified (like the root). This primitive would be copied on each change. Instead, the primitive should be saved as part of a separate object. This makes use of the performance benefits of shallow copies.
 -   Currently, every client maintains the whole state, and every action is sent to all clients. There is no way to only subscribe to a part of the state and only receive updates for that part.
+
+## Licenses and Attributions
+
+- License information about used images can be found [here](frontend/src/assets/image_sources.md). All images are licensed under their original license.
