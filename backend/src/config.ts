@@ -13,23 +13,26 @@ export class Config {
         return this._httpPort!;
     }
 
-    private static createIntegerValidator() {
+    private static createTCPPortValidator() {
         return makeValidator((x) => {
             const int = Number.parseInt(x);
             if (!Number.isInteger(int)) {
-                throw new TypeError('Expected an integer');
+                throw new TypeError('Expected a valid port number');
+            }
+            if (!(int >= 0 && int < 2 ** 16)) {
+                throw new TypeError('Expected a valid port number');
             }
             return int;
         });
     }
 
     private static parseVariables() {
-        const integerValidator = this.createIntegerValidator();
+        const tcpPortValidator = this.createTCPPortValidator();
         return cleanEnv(process.env, {
-            DFM_WEBSOCKET_PORT: integerValidator({ default: 3200 }),
-            DFM_WEBSOCKET_PORT_TESTING: integerValidator({ default: 13200 }),
-            DFM_HTTP_PORT: integerValidator({ default: 3201 }),
-            DFM_HTTP_PORT_TESTING: integerValidator({ default: 13201 }),
+            DFM_WEBSOCKET_PORT: tcpPortValidator({ default: 3200 }),
+            DFM_WEBSOCKET_PORT_TESTING: tcpPortValidator({ default: 13200 }),
+            DFM_HTTP_PORT: tcpPortValidator({ default: 3201 }),
+            DFM_HTTP_PORT_TESTING: tcpPortValidator({ default: 13201 }),
         });
     }
 
