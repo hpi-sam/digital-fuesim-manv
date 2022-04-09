@@ -24,7 +24,7 @@ export function withElementImageStyle<
     BaseType extends Constructor<ElementFeatureManager<Element>> = Constructor<
         ElementFeatureManager<Element>
     >
->(baseClass: BaseType, rasterizeVectorImages = true) {
+>(baseClass: BaseType) {
     return class WithElementImageStyle extends baseClass {
         /**
          * For performance reasons we share and reuse this style for each element with the same imageProperties
@@ -32,6 +32,10 @@ export function withElementImageStyle<
          */
         // This cache is not expected to get very big, so we don't need to invalidate parts of it
         private readonly styleCache = new Map<string, Style>();
+        /**
+         * If the zoom is higher than this value vector images will be rasterized to improve performance
+         */
+        private readonly rasterizeZoomThreshold = 0.1;
 
         /**
          *
@@ -41,8 +45,10 @@ export function withElementImageStyle<
          */
         // This function should be as efficient as possible, because it is called per feature on each rendered frame
         private getStyle(feature: Feature<Point>, currentZoom: number) {
+            const rasterizeVectorImage =
+                currentZoom > this.rasterizeZoomThreshold;
             const element = this.getElementFromFeature(feature)!.value;
-            const key = JSON.stringify(element.image);
+            const key = JSON.stringify(element.image) + rasterizeVectorImage;
             if (!this.styleCache.has(key)) {
                 this.styleCache.set(
                     key,
@@ -52,7 +58,7 @@ export function withElementImageStyle<
                             // this is a workaround to force openLayers to rasterize an svg image
                             // this gives a massive performance boost
                             // See https://github.com/openlayers/openlayers/issues/11133#issuecomment-638987210
-                            color: rasterizeVectorImages ? 'white' : undefined,
+                            color: rasterizeVectorImage ? 'white' : undefined,
                         }),
                     })
                 );
