@@ -1,17 +1,23 @@
 import type { CustomValidators } from './custom-validators';
+import type { ExerciseExistsError } from './exercise-exists-validator.directive';
 
 /**
  * A strongly typed version of the ValidationErrors interface.
  */
 export type CustomValidationErrors = Partial<
     UnionToIntersection<
-        AngularValidationErrors | Exclude<CustomValidationError, null>
+        | AngularValidationErrors
+        | Exclude<CustomValidationError, null>
+        // These errors are not saved in CustomValidators
+        | ExerciseExistsError
     >
 >;
 
 type CustomValidator = typeof CustomValidators[keyof typeof CustomValidators];
 type CustomValidatorFn = ReturnType<CustomValidator>;
-type CustomValidationError = ReturnType<CustomValidatorFn>;
+type CustomValidationError = ReturnType<CustomValidatorFn> extends Promise<any>
+    ? Awaited<ReturnType<CustomValidatorFn>>
+    : ReturnType<CustomValidatorFn>;
 
 /**
  * The error types of the custom validation errors already implemented by angular

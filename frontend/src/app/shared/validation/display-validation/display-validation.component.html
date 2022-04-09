@@ -34,4 +34,9 @@
         <span class="font-monospace">{{ exactMatchError.stringToMatch }}</span
         >.
     </div>
+    <div *ngIf="errors['exerciseExists'] as exerciseExistsError">
+        Es existiert keine Übung mit der Id
+        <span class="font-monospace">{{ exerciseExistsError.id }}</span
+        >.
+    </div>
 </div>

@@ -1,4 +1,4 @@
-import { Directive, Input } from '@angular/core';
+import { Directive } from '@angular/core';
 import type { AbstractControl, Validator } from '@angular/forms';
 import { NG_VALIDATORS } from '@angular/forms';
 import { CustomValidators } from './custom-validators';
@@ -14,11 +14,6 @@ import { CustomValidators } from './custom-validators';
     ],
 })
 export class OnlyNumbersValidatorDirective implements Validator {
-    /**
-     * The string to match
-     */
-    @Input() appOnlyNumbersValidator!: true;
-
     validate(control: AbstractControl) {
         return CustomValidators.onlyNumbersValidator()(control);
     }
