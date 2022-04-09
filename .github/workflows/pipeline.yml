@@ -84,6 +84,7 @@ jobs:
             - name: Run ESLint
               run: npm run lint
             - name: Run Prettier
+              if: always()
               run: npm run prettier:check
 
     dependencies:
