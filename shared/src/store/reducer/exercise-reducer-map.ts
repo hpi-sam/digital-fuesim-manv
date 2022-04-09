@@ -215,6 +215,7 @@ export const exerciseReducerMap: {
                 });
             }
         }
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Vehicle] Remove vehicle': (draftState, { vehicleId }) => {
