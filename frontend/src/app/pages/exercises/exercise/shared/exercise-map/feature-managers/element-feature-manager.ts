@@ -56,14 +56,14 @@ export abstract class ElementFeatureManager<Element extends PositionableElement>
             new Point([element.position.x, element.position.y])
         );
         elementFeature.setId(element.id);
-        this.layer.getSource().addFeature(elementFeature);
+        this.layer.getSource()!.addFeature(elementFeature);
         this.translateHelper.onTranslateEnd(elementFeature, (newPosition) => {
             this.proposeMovementAction(newPosition, element);
         });
     }
 
     deleteFeature(element: Element, elementFeature: ElementFeature): void {
-        this.layer.getSource().removeFeature(elementFeature);
+        this.layer.getSource()!.removeFeature(elementFeature);
         this.movementAnimator.stopMovementAnimation(elementFeature);
     }
 
@@ -82,10 +82,8 @@ export abstract class ElementFeatureManager<Element extends PositionableElement>
         }
     }
 
-    getFeatureFromElement(element: Element) {
-        return this.layer.getSource().getFeatureById(element.id) as
-            | ElementFeature
-            | undefined;
+    getFeatureFromElement(element: Element): ElementFeature | undefined {
+        return this.layer.getSource()!.getFeatureById(element.id) ?? undefined;
     }
 
     protected getElementFromFeature(feature: Feature<any>) {
