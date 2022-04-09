@@ -37,6 +37,8 @@ All routes served by this server should be prefixed by `/api/`.
 
 It listens on port `3201` by default (`13201` during tests).
 
+The OpenAPI definition of this API can be found at [`../docs/swagger.yml`](../docs/swagger.yml).
+
 ### `ExerciseWebsocketServer`
 
 The websocket server is used for websocket communication using [`socket.io`](https://socket.io/) between the backend and the connected clients.

@@ -3,8 +3,6 @@ info:
     title: Digital Fuesim MANV HTTP API
     description: HTTP API of the digital-fuesim-manv project
     version: 0.0.0
-servers:
-    - url: https://someserver/
 paths:
     /api/health:
         get:
