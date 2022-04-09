@@ -52,7 +52,7 @@ export class Vehicle {
     @IsDefined()
     public patientIds: UUIDSet = {};
 
-    constructor(
+    private constructor(
         materialId: UUID,
         patientCapacity: number,
         name: string,
@@ -62,5 +62,14 @@ export class Vehicle {
         this.patientCapacity = patientCapacity;
         this.name = name;
         this.image = image;
+    }
+
+    static create(
+        materialId: UUID,
+        patientCapacity: number,
+        name: string,
+        image: ImageProperties
+    ) {
+        return { ...new Vehicle(materialId, patientCapacity, name, image) };
     }
 }

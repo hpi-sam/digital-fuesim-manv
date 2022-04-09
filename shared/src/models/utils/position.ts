@@ -7,8 +7,12 @@ export class Position {
     @IsNumber()
     public y: number;
 
-    public constructor(x: number, y: number) {
+    private constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
+    }
+
+    static create(x: number, y: number) {
+        return { ...new Position(x, y) };
     }
 }

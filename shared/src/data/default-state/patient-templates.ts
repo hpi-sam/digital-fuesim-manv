@@ -18,12 +18,12 @@ const defaultFemaleImage: ImageProperties = {
     aspectRatio: 1,
 };
 
-const defaultHealthState = new PatientHealthState(
-    new FunctionParameters(-1_000, 2_000, 1_000, 500),
+const defaultHealthState = PatientHealthState.create(
+    FunctionParameters.create(-1_000, 2_000, 1_000, 500),
     []
 );
 
-const greenPatientTemplate = new PatientTemplate(
+const greenPatientTemplate = PatientTemplate.create(
     {
         sex: 'männlich',
         name: 'Max Mustermann',
@@ -39,7 +39,7 @@ const greenPatientTemplate = new PatientTemplate(
     defaultHealthState.id
 );
 
-const yellowPatientTemplate = new PatientTemplate(
+const yellowPatientTemplate = PatientTemplate.create(
     {
         sex: 'männlich',
         name: 'Walter Falter',
@@ -55,7 +55,7 @@ const yellowPatientTemplate = new PatientTemplate(
     defaultHealthState.id
 );
 
-const redPatientTemplate = new PatientTemplate(
+const redPatientTemplate = PatientTemplate.create(
     {
         sex: 'weiblich',
         name: 'Maria Kohler',
@@ -71,7 +71,7 @@ const redPatientTemplate = new PatientTemplate(
     defaultHealthState.id
 );
 
-const blackPatientTemplate = new PatientTemplate(
+const blackPatientTemplate = PatientTemplate.create(
     {
         sex: 'männlich',
         name: 'John Doe',

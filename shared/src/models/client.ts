@@ -20,10 +20,18 @@ export class Client {
     @IsBoolean()
     public isInWaitingRoom: boolean;
 
-    constructor(name: string, role: Role, viewRestrictedToViewportId?: UUID) {
+    private constructor(
+        name: string,
+        role: Role,
+        viewRestrictedToViewportId?: UUID
+    ) {
         this.name = name;
         this.role = role;
         this.viewRestrictedToViewportId = viewRestrictedToViewportId;
         this.isInWaitingRoom = this.role === 'participant';
+    }
+
+    static create(name: string, role: Role, viewRestrictedToViewportId?: UUID) {
+        return { ...new Client(name, role, viewRestrictedToViewportId) };
     }
 }

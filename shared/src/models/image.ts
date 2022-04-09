@@ -18,9 +18,13 @@ export class Image {
     @IsUUID(4, uuidValidationOptions)
     public blobId: UUID;
 
-    constructor(topLeft: Position, size: Size, blobId: UUID) {
+    private constructor(topLeft: Position, size: Size, blobId: UUID) {
         this.topLeft = topLeft;
         this.size = size;
         this.blobId = blobId;
+    }
+
+    static create(topLeft: Position, size: Size, blobId: UUID) {
+        return { ...new Image(topLeft, size, blobId) };
     }
 }

@@ -30,7 +30,7 @@ export class PatientTemplate {
     @IsValidHealthPoint()
     public health: HealthPoints;
 
-    constructor(
+    private constructor(
         personalInformation: PersonalInformation,
         isPreTriaged: boolean,
         healthStates: { [stateId: UUID]: PatientHealthState },
@@ -44,5 +44,25 @@ export class PatientTemplate {
         this.healthStates = healthStates;
         this.health = health;
         this.startingHealthStateId = startingHealthStateId;
+    }
+
+    static create(
+        personalInformation: PersonalInformation,
+        isPreTriaged: boolean,
+        healthStates: { [stateId: UUID]: PatientHealthState },
+        image: ImageProperties,
+        health: HealthPoints,
+        startingHealthStateId: UUID
+    ) {
+        return {
+            ...new PatientTemplate(
+                personalInformation,
+                isPreTriaged,
+                healthStates,
+                image,
+                health,
+                startingHealthStateId
+            ),
+        };
     }
 }

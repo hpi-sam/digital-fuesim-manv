@@ -23,7 +23,7 @@ export class EocLogEntry {
     @IsUUID(4, uuidValidationOptions)
     public clientId: UUID;
 
-    constructor(
+    private constructor(
         timestamp: Date,
         exerciseTimestamp: Date,
         message: string,
@@ -33,5 +33,16 @@ export class EocLogEntry {
         this.exerciseTimestamp = exerciseTimestamp;
         this.message = message;
         this.clientId = clientId;
+    }
+
+    static create(
+        timestamp: Date,
+        exerciseTimestamp: Date,
+        message: string,
+        clientId: UUID
+    ) {
+        return {
+            ...new EocLogEntry(timestamp, exerciseTimestamp, message, clientId),
+        };
     }
 }

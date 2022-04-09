@@ -294,7 +294,7 @@ export const exerciseReducerMap: {
         return draftState;
     },
     '[Exercise] Pause': (draftState, { timestamp }) => {
-        const statusHistoryEntry = new StatusHistoryEntry(
+        const statusHistoryEntry = StatusHistoryEntry.create(
             'paused',
             new Date(timestamp)
         );
@@ -304,7 +304,7 @@ export const exerciseReducerMap: {
         return draftState;
     },
     '[Exercise] Start': (draftState, { timestamp }) => {
-        const statusHistoryEntry = new StatusHistoryEntry(
+        const statusHistoryEntry = StatusHistoryEntry.create(
             'running',
             new Date(timestamp)
         );

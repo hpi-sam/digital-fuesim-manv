@@ -17,9 +17,13 @@ export class ImageTemplate {
     @Type(() => Size)
     public initialSize: Size;
 
-    constructor(name: string, imageBlobId: UUID, initialSize: Size) {
+    private constructor(name: string, imageBlobId: UUID, initialSize: Size) {
         this.name = name;
         this.imageBlobId = imageBlobId;
         this.initialSize = initialSize;
+    }
+
+    static create(name: string, imageBlobId: UUID, initialSize: Size) {
+        return { ...new ImageTemplate(name, imageBlobId, initialSize) };
     }
 }

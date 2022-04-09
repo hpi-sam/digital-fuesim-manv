@@ -35,7 +35,7 @@ export class FunctionParameters {
     @IsNumber()
     notSanModifier: number;
 
-    constructor(
+    private constructor(
         constantChange: number,
         notarztModifier: number,
         retSanModifier: number,
@@ -45,6 +45,22 @@ export class FunctionParameters {
         this.notarztModifier = notarztModifier;
         this.retSanModifier = retSanModifier;
         this.notSanModifier = notSanModifier;
+    }
+
+    static create(
+        constantChange: number,
+        notarztModifier: number,
+        retSanModifier: number,
+        notSanModifier: number
+    ) {
+        return {
+            ...new FunctionParameters(
+                constantChange,
+                notarztModifier,
+                retSanModifier,
+                notSanModifier
+            ),
+        };
     }
 }
 
@@ -77,7 +93,7 @@ export class ConditionParameters {
     @IsUUID(4, uuidValidationOptions)
     matchingHealthStateId: UUID;
 
-    constructor(
+    private constructor(
         earliestTime: number | undefined,
         latestTime: number | undefined,
         minimumHealth: HealthPoints | undefined,
@@ -91,6 +107,26 @@ export class ConditionParameters {
         this.maximumHealth = maximumHealth;
         this.isBeingTreated = isBeingTreated;
         this.matchingHealthStateId = matchingHealthStateId;
+    }
+
+    static create(
+        earliestTime: number | undefined,
+        latestTime: number | undefined,
+        minimumHealth: HealthPoints | undefined,
+        maximumHealth: HealthPoints | undefined,
+        isBeingTreated: boolean | undefined,
+        matchingHealthStateId: UUID
+    ) {
+        return {
+            ...new ConditionParameters(
+                earliestTime,
+                latestTime,
+                minimumHealth,
+                maximumHealth,
+                isBeingTreated,
+                matchingHealthStateId
+            ),
+        };
     }
 }
 
@@ -110,11 +146,20 @@ export class PatientHealthState {
      */
     nextStateConditions: ConditionParameters[];
 
-    constructor(
+    private constructor(
         functionParameters: FunctionParameters,
         nextStateConditions: ConditionParameters[]
     ) {
         this.functionParameters = functionParameters;
         this.nextStateConditions = nextStateConditions;
+    }
+
+    static create(
+        functionParameters: FunctionParameters,
+        nextStateConditions: ConditionParameters[]
+    ) {
+        return {
+            ...new PatientHealthState(functionParameters, nextStateConditions),
+        };
     }
 }

@@ -18,9 +18,13 @@ export class Viewport {
     @IsString()
     public name: string;
 
-    constructor(topLeft: Position, size: Size, name: string) {
+    private constructor(topLeft: Position, size: Size, name: string) {
         this.topLeft = topLeft;
         this.size = size;
         this.name = name;
+    }
+
+    static create(topLeft: Position, size: Size, name: string) {
+        return { ...new Viewport(topLeft, size, name) };
     }
 }

@@ -44,15 +44,31 @@ export class Personnel {
     @IsOptional()
     public position?: Position;
 
-    constructor(
+    private constructor(
         vehicleId: UUID,
         personnelType: PersonnelType,
         assignedPatientIds: UUIDSet,
-        canCaterFor: CanCaterFor = new CanCaterFor(1, 1, 4, 'or')
+        canCaterFor: CanCaterFor = CanCaterFor.create(1, 1, 4, 'or')
     ) {
         this.vehicleId = vehicleId;
         this.personnelType = personnelType;
         this.assignedPatientIds = assignedPatientIds;
         this.canCaterFor = canCaterFor;
+    }
+
+    static create(
+        vehicleId: UUID,
+        personnelType: PersonnelType,
+        assignedPatientIds: UUIDSet,
+        canCaterFor: CanCaterFor = CanCaterFor.create(1, 1, 4, 'or')
+    ) {
+        return {
+            ...new Personnel(
+                vehicleId,
+                personnelType,
+                assignedPatientIds,
+                canCaterFor
+            ),
+        };
     }
 }

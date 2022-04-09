@@ -32,7 +32,7 @@ export class VehicleTemplate {
     @Type(() => CanCaterFor)
     public material: CanCaterFor;
 
-    constructor(
+    private constructor(
         name: string,
         image: ImageProperties,
         patientCapacity: number,
@@ -44,5 +44,23 @@ export class VehicleTemplate {
         this.patientCapacity = patientCapacity;
         this.personnel = personnel;
         this.material = material;
+    }
+
+    static create(
+        name: string,
+        image: ImageProperties,
+        patientCapacity: number,
+        personnel: PersonnelType[],
+        material: CanCaterFor
+    ) {
+        return {
+            ...new VehicleTemplate(
+                name,
+                image,
+                patientCapacity,
+                personnel,
+                material
+            ),
+        };
     }
 }

@@ -25,7 +25,7 @@ export class PersonalInformation {
     @IsString()
     sex: string;
 
-    constructor(
+    private constructor(
         name: string,
         biometry: string,
         address: string,
@@ -39,5 +39,25 @@ export class PersonalInformation {
         this.birthdate = birthdate;
         this.age = age;
         this.sex = sex;
+    }
+
+    static create(
+        name: string,
+        biometry: string,
+        address: string,
+        birthdate: string,
+        age: number,
+        sex: string
+    ) {
+        return {
+            ...new PersonalInformation(
+                name,
+                biometry,
+                address,
+                birthdate,
+                age,
+                sex
+            ),
+        };
     }
 }

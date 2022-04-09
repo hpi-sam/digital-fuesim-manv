@@ -14,7 +14,7 @@ export class Transfer {
     @IsUUID(4, uuidValidationOptions)
     public targetTransferPointId: UUID;
 
-    public constructor(
+    private constructor(
         endTimeStamp: number,
         startTransferPointId: UUID,
         targetTransferPointId: UUID
@@ -22,5 +22,19 @@ export class Transfer {
         this.endTimeStamp = endTimeStamp;
         this.startTransferPointId = startTransferPointId;
         this.targetTransferPointId = targetTransferPointId;
+    }
+
+    static create(
+        endTimeStamp: number,
+        startTransferPointId: UUID,
+        targetTransferPointId: UUID
+    ) {
+        return {
+            ...new Transfer(
+                endTimeStamp,
+                startTransferPointId,
+                targetTransferPointId
+            ),
+        };
     }
 }

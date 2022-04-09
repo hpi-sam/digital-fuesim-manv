@@ -34,7 +34,7 @@ export class Material {
         aspectRatio: 1,
     };
 
-    constructor(
+    private constructor(
         vehicleId: UUID,
         assignedPatientIds: UUIDSet,
         canCaterFor: CanCaterFor,
@@ -44,5 +44,21 @@ export class Material {
         this.assignedPatientIds = assignedPatientIds;
         this.canCaterFor = canCaterFor;
         this.position = position;
+    }
+
+    static create(
+        vehicleId: UUID,
+        assignedPatientIds: UUIDSet,
+        canCaterFor: CanCaterFor,
+        position?: Position
+    ) {
+        return {
+            ...new Material(
+                vehicleId,
+                assignedPatientIds,
+                canCaterFor,
+                position
+            ),
+        };
     }
 }

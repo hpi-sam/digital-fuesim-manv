@@ -25,7 +25,7 @@ export class TransferPoint {
     @IsString()
     public externalName: string;
 
-    constructor(
+    private constructor(
         position: Position,
         reachableTransferPoints: {
             [key: UUID]: {
@@ -39,5 +39,25 @@ export class TransferPoint {
         this.reachableTransferPoints = reachableTransferPoints;
         this.internalName = internalName;
         this.externalName = externalName;
+    }
+
+    static create(
+        position: Position,
+        reachableTransferPoints: {
+            [key: UUID]: {
+                duration: number;
+            };
+        },
+        internalName: string,
+        externalName: string
+    ) {
+        return {
+            ...new TransferPoint(
+                position,
+                reachableTransferPoints,
+                internalName,
+                externalName
+            ),
+        };
     }
 }

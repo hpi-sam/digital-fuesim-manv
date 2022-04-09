@@ -15,8 +15,12 @@ export class StatusHistoryEntry {
     @IsDate()
     public startTimestamp: Date;
 
-    constructor(status: 'paused' | 'running', startTimestamp: Date) {
+    private constructor(status: 'paused' | 'running', startTimestamp: Date) {
         this.status = status;
         this.startTimestamp = startTimestamp;
+    }
+
+    static create(status: 'paused' | 'running', startTimestamp: Date) {
+        return { ...new StatusHistoryEntry(status, startTimestamp) };
     }
 }

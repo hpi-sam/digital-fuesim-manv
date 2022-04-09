@@ -14,7 +14,7 @@ export class CanCaterFor {
     @IsString()
     public logicalOperator: 'and' | 'or';
 
-    public constructor(
+    private constructor(
         red: number,
         yellow: number,
         green: number,
@@ -24,5 +24,14 @@ export class CanCaterFor {
         this.yellow = yellow;
         this.green = green;
         this.logicalOperator = logicalOperator;
+    }
+
+    static create(
+        red: number,
+        yellow: number,
+        green: number,
+        logicalOperator: 'and' | 'or'
+    ) {
+        return { ...new CanCaterFor(red, yellow, green, logicalOperator) };
     }
 }

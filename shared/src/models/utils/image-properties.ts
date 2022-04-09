@@ -29,9 +29,13 @@ export class ImageProperties {
     @IsPositive()
     public aspectRatio: number;
 
-    public constructor(url: string, height: number, aspectRatio: number) {
+    private constructor(url: string, height: number, aspectRatio: number) {
         this.url = url;
         this.height = height;
         this.aspectRatio = aspectRatio;
+    }
+
+    static create(url: string, height: number, aspectRatio: number) {
+        return { ...new ImageProperties(url, height, aspectRatio) };
     }
 }

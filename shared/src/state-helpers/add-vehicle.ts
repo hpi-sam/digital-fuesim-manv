@@ -20,11 +20,11 @@ export function addVehicle(
 } {
     const vehicleId = uuid();
     const material: Material = {
-        ...new Material(vehicleId, {}, vehicleTemplate.material),
+        ...Material.create(vehicleId, {}, vehicleTemplate.material),
     };
     const personnel: Personnel[] = [];
     for (const personnelType of vehicleTemplate.personnel) {
-        const newPersonnel = new Personnel(vehicleId, personnelType, {});
+        const newPersonnel = Personnel.create(vehicleId, personnelType, {});
         personnel.push(newPersonnel);
     }
 
