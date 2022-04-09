@@ -58,7 +58,7 @@ describe('Exercise Wrapper', () => {
             exercise?.pause();
             exercise = undefined;
         });
-        it('emits tick event in tick', async () => {
+        it('emits tick event in tick (repeated)', async () => {
             const applySpy = jest.spyOn(
                 ExerciseWrapper.prototype,
                 'applyAction'
@@ -66,9 +66,11 @@ describe('Exercise Wrapper', () => {
             const tickInterval = (exercise as any).tickInterval;
 
             applySpy.mockClear();
-            await sleep(tickInterval);
-            expect(applySpy).toHaveBeenCalledTimes(1);
-            const action = applySpy.mock.calls[0][0];
+            await sleep(tickInterval * 2.01);
+            expect(applySpy).toHaveBeenCalledTimes(2);
+            let action = applySpy.mock.calls[0][0];
+            expect(action.type).toBe('[Exercise] Tick');
+            action = applySpy.mock.calls[1][0];
             expect(action.type).toBe('[Exercise] Tick');
         });
     });
