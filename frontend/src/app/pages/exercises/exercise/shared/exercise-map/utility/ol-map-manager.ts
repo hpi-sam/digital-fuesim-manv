@@ -78,7 +78,7 @@ export class OlMapManager {
             20
         );
         const patientLayer = this.createElementLayer();
-        const vehicleLayer = this.createElementLayer();
+        const vehicleLayer = this.createElementLayer(1000);
         const personnelLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
         const cateringLinesLayer = this.createElementLayer<LineString>();
