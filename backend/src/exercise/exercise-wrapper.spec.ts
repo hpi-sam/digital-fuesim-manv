@@ -21,7 +21,10 @@ describe('exercise wrapper', () => {
             await sleep(100);
             const client = clientMap.values().next().value;
 
-            const reduceSpy = jest.spyOn(ExerciseWrapper.prototype, 'reduce');
+            const reduceSpy = jest.spyOn(
+                ExerciseWrapper.prototype,
+                'applyAction'
+            );
             exercise.addClient(client);
 
             expect(reduceSpy).not.toHaveBeenCalled();
@@ -34,7 +37,10 @@ describe('exercise wrapper', () => {
         await environment.withWebsocket(async () => {
             const client = clientMap.values().next().value;
 
-            const reduceSpy = jest.spyOn(ExerciseWrapper.prototype, 'reduce');
+            const reduceSpy = jest.spyOn(
+                ExerciseWrapper.prototype,
+                'applyAction'
+            );
             reduceSpy.mockClear();
             exercise.removeClient(client);
 

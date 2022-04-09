@@ -33,8 +33,7 @@ export class ExerciseWrapper {
                 this.tickCounter % this.refreshTreatmentInterval === 0,
             tickInterval: this.tickInterval,
         };
-        this.reduce(updateAction, { emitterId: 'server' });
-        this.emitAction(updateAction);
+        this.applyAction(updateAction, { emitterId: 'server' });
         this.tickCounter++;
     };
 
@@ -60,7 +59,7 @@ export class ExerciseWrapper {
         private readonly participantId: string,
         private readonly trainerId: string
     ) {
-        this.reduce(
+        this.applyAction(
             {
                 type: '[Exercise] Set Participant Id',
                 participantId,
@@ -93,7 +92,7 @@ export class ExerciseWrapper {
     }
 
     // TODO: To more generic function
-    public emitAction(action: ExerciseAction) {
+    private emitAction(action: ExerciseAction) {
         this.clients.forEach((client) => client.emitAction(action));
     }
 
@@ -106,11 +105,10 @@ export class ExerciseWrapper {
             type: '[Client] Add client',
             client,
         };
-        this.reduce(addClientAction, {
+        this.applyAction(addClientAction, {
             emitterId: client.id,
             emitterName: client.name,
         });
-        this.emitAction(addClientAction);
         // Only after all this add the client in order to not send the action adding itself to it
         this.clients.add(clientWrapper);
     }
@@ -125,12 +123,14 @@ export class ExerciseWrapper {
             type: '[Client] Remove client',
             clientId: client.id,
         };
-        this.reduce(removeClientAction, {
-            emitterId: client.id,
-            emitterName: client.name,
-        });
-        this.clients.delete(clientWrapper);
-        this.emitAction(removeClientAction);
+        this.applyAction(
+            removeClientAction,
+            {
+                emitterId: client.id,
+                emitterName: client.name,
+            },
+            () => this.clients.delete(clientWrapper)
+        );
     }
 
     public start() {
@@ -142,10 +142,27 @@ export class ExerciseWrapper {
     }
 
     /**
+     * Applies and broadcasts the action on the current state.
+     * @param intermediateAction When set is run between reducing the state and broadcasting the action
+     * @throws Error if the action is not applicable on the current state
+     */
+    public applyAction(
+        action: ExerciseAction,
+        emitter: ActionEmitter,
+        intermediateAction?: () => void
+    ): void {
+        this.reduce(action, emitter);
+        if (intermediateAction) {
+            intermediateAction();
+        }
+        this.emitAction(action);
+    }
+
+    /**
      * Applies the action on the current state.
      * @throws Error if the action is not applicable on the current state
      */
-    public reduce(action: ExerciseAction, emitter: ActionEmitter): void {
+    private reduce(action: ExerciseAction, emitter: ActionEmitter): void {
         const newState = reduceExerciseState(this.currentState, action);
         this.setState(newState, action, emitter);
         if (action.type === '[Exercise] Pause') {
