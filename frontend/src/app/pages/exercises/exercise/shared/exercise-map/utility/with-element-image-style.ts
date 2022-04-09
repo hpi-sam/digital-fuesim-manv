@@ -48,7 +48,10 @@ export function withElementImageStyle<
             const rasterizeVectorImage =
                 currentZoom > this.rasterizeZoomThreshold;
             const element = this.getElementFromFeature(feature)!.value;
-            const key = JSON.stringify(element.image) + rasterizeVectorImage;
+            const key = JSON.stringify({
+                image: element.image,
+                rasterizeVectorImage,
+            });
             if (!this.styleCache.has(key)) {
                 this.styleCache.set(
                     key,
