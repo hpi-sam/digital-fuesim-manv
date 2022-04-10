@@ -222,6 +222,15 @@ export class ApiService {
             )
         )
             .then(() => true)
-            .catch(() => false);
+            .catch((error) => {
+                if (error.status === 404) {
+                    return false;
+                }
+                this.messageService.postError({
+                    title: 'Interner Fehler',
+                    error,
+                });
+                throw error;
+            });
     }
 }
