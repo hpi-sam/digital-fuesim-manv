@@ -13,6 +13,7 @@ import { HealthPageComponent } from './pages/health/health-page/health-page.comp
 import { SharedModule } from './shared/shared.module';
 import { ConfirmationModalModule } from './core/confirmation-modal/confirmation-modal.module';
 import { MessagesModule } from './feature/messages/messages.module';
+import { Error404Module } from './pages/error-404/error-404.module';
 
 @NgModule({
     declarations: [AppComponent, HealthPageComponent],
@@ -23,6 +24,7 @@ import { MessagesModule } from './feature/messages/messages.module';
         HttpClientModule,
         StoreModule.forRoot<AppState>(appReducers),
         LandingPageModule,
+        Error404Module,
         SharedModule,
         ConfirmationModalModule,
         MessagesModule,
