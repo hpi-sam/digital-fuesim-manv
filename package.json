@@ -16,7 +16,8 @@
         "lint": "concurrently \"cd shared && npm run lint\" \"cd frontend && npm run lint\" \"cd backend && npm run lint\"",
         "lint:fix": "concurrently \"cd shared && npm run lint:fix\" \"cd frontend && npm run lint:fix\" \"cd backend && npm run lint:fix\"",
         "test:concurrently": "concurrently \"cd shared && npm run test\" \"cd frontend && npm run test\" \"cd backend && npm run test\"",
-        "test": "cd shared && npm run test && cd ../frontend && npm run test && cd ../backend && npm run test"
+        "test": "cd shared && npm run test && cd ../frontend && npm run test && cd ../backend && npm run test",
+        "merge-coverage": "mkdir coverage && cp backend/coverage/coverage-final.json coverage/backend.json && cp frontend/coverage/coverage-final.json coverage/frontend.json && cp shared/coverage/coverage-final.json coverage/shared.json && nyc merge coverage coverage/merged/coverage.json && nyc report -t coverage/merged --report-dir coverage/reports --reporter=html --reporter=cobertura --reporter=text --reporter=text-summary"
     },
     "private": true,
     "engines": {
@@ -25,6 +26,10 @@
     },
     "devDependencies": {
         "concurrently": "^7.1.0",
+        "nyc": "^15.1.0",
         "prettier": "^2.6.2"
+    },
+    "resolutions": {
+        "uuid": ">=7.0.0"
     }
 }
