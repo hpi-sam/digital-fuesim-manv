@@ -1,6 +1,6 @@
 import { IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { Role } from './utils';
+import { getCreate, Role } from './utils';
 
 export class Client {
     @IsUUID(4, uuidValidationOptions)
@@ -20,18 +20,15 @@ export class Client {
     @IsBoolean()
     public isInWaitingRoom: boolean;
 
-    private constructor(
-        name: string,
-        role: Role,
-        viewRestrictedToViewportId?: UUID
-    ) {
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(name: string, role: Role, viewRestrictedToViewportId?: UUID) {
         this.name = name;
         this.role = role;
         this.viewRestrictedToViewportId = viewRestrictedToViewportId;
         this.isInWaitingRoom = this.role === 'participant';
     }
 
-    static create(name: string, role: Role, viewRestrictedToViewportId?: UUID) {
-        return { ...new Client(name, role, viewRestrictedToViewportId) };
-    }
+    static readonly create = getCreate(this);
 }

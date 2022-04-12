@@ -19,6 +19,7 @@ import {
     ImageProperties,
     healthPointsDefaults,
     getStatus,
+    getCreate,
 } from './utils';
 import { PersonalInformation } from './utils/personal-information';
 import type { PatientTemplate } from './patient-template';
@@ -44,7 +45,10 @@ export class Patient {
     @Type(() => ImageProperties)
     public image: ImageProperties;
 
-    private constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         // TODO: Specify patient data (e.g. injuries, name, etc.)
         personalInformation: PersonalInformation,
         visibleStatus: PatientStatus | null,
@@ -124,25 +128,5 @@ export class Patient {
         );
     }
 
-    static create(
-        personalInformation: PersonalInformation,
-        visibleStatus: PatientStatus | null,
-        realStatus: PatientStatus,
-        healthStates: Immutable<{ [stateId: UUID]: PatientHealthState }>,
-        currentHealthStateId: UUID,
-        image: ImageProperties,
-        health: HealthPoints
-    ) {
-        return {
-            ...new Patient(
-                personalInformation,
-                visibleStatus,
-                realStatus,
-                healthStates,
-                currentHealthStateId,
-                image,
-                health
-            ),
-        };
-    }
+    static readonly create = getCreate(this);
 }

@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsDefined, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { uuid, UUID, UUIDSet, uuidValidationOptions } from '../utils';
-import { CanCaterFor, ImageProperties, Position } from './utils';
+import { CanCaterFor, getCreate, ImageProperties, Position } from './utils';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
@@ -34,7 +34,10 @@ export class Material {
         aspectRatio: 1,
     };
 
-    private constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         vehicleId: UUID,
         assignedPatientIds: UUIDSet,
         canCaterFor: CanCaterFor,
@@ -46,19 +49,5 @@ export class Material {
         this.position = position;
     }
 
-    static create(
-        vehicleId: UUID,
-        assignedPatientIds: UUIDSet,
-        canCaterFor: CanCaterFor,
-        position?: Position
-    ) {
-        return {
-            ...new Material(
-                vehicleId,
-                assignedPatientIds,
-                canCaterFor,
-                position
-            ),
-        };
-    }
+    static readonly create = getCreate(this);
 }

@@ -8,7 +8,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
-import { Position, Transfer } from './utils';
+import { getCreate, Position, Transfer } from './utils';
 import { ImageProperties } from './utils/image-properties';
 
 export class Vehicle {
@@ -52,7 +52,10 @@ export class Vehicle {
     @IsDefined()
     public patientIds: UUIDSet = {};
 
-    private constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         materialId: UUID,
         patientCapacity: number,
         name: string,
@@ -64,12 +67,5 @@ export class Vehicle {
         this.image = image;
     }
 
-    static create(
-        materialId: UUID,
-        patientCapacity: number,
-        name: string,
-        image: ImageProperties
-    ) {
-        return { ...new Vehicle(materialId, patientCapacity, name, image) };
-    }
+    static readonly create = getCreate(this);
 }

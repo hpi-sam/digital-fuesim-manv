@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsDefined, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { HealthPoints, IsValidHealthPoint } from './utils';
+import { getCreate, HealthPoints, IsValidHealthPoint } from './utils';
 import { ImageProperties } from './utils/image-properties';
 import { PersonalInformation } from './utils/personal-information';
 import type { PatientHealthState } from '.';
@@ -30,7 +30,10 @@ export class PatientTemplate {
     @IsValidHealthPoint()
     public health: HealthPoints;
 
-    private constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         personalInformation: PersonalInformation,
         isPreTriaged: boolean,
         healthStates: { [stateId: UUID]: PatientHealthState },
@@ -46,23 +49,5 @@ export class PatientTemplate {
         this.startingHealthStateId = startingHealthStateId;
     }
 
-    static create(
-        personalInformation: PersonalInformation,
-        isPreTriaged: boolean,
-        healthStates: { [stateId: UUID]: PatientHealthState },
-        image: ImageProperties,
-        health: HealthPoints,
-        startingHealthStateId: UUID
-    ) {
-        return {
-            ...new PatientTemplate(
-                personalInformation,
-                isPreTriaged,
-                healthStates,
-                image,
-                health,
-                startingHealthStateId
-            ),
-        };
-    }
+    static readonly create = getCreate(this);
 }

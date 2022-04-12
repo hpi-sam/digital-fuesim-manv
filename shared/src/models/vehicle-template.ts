@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import type { PersonnelType } from './utils';
-import { CanCaterFor } from './utils';
+import { CanCaterFor, getCreate } from './utils';
 import { ImageProperties } from './utils/image-properties';
 
 export class VehicleTemplate {
@@ -32,7 +32,10 @@ export class VehicleTemplate {
     @Type(() => CanCaterFor)
     public material: CanCaterFor;
 
-    private constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         name: string,
         image: ImageProperties,
         patientCapacity: number,
@@ -46,21 +49,5 @@ export class VehicleTemplate {
         this.material = material;
     }
 
-    static create(
-        name: string,
-        image: ImageProperties,
-        patientCapacity: number,
-        personnel: PersonnelType[],
-        material: CanCaterFor
-    ) {
-        return {
-            ...new VehicleTemplate(
-                name,
-                image,
-                patientCapacity,
-                personnel,
-                material
-            ),
-        };
-    }
+    static readonly create = getCreate(this);
 }

@@ -1,4 +1,5 @@
 import { IsInt, IsPositive, IsString } from 'class-validator';
+import { getCreate } from './get-create';
 
 export class ImageProperties {
     /**
@@ -29,13 +30,14 @@ export class ImageProperties {
     @IsPositive()
     public aspectRatio: number;
 
-    private constructor(url: string, height: number, aspectRatio: number) {
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(url: string, height: number, aspectRatio: number) {
         this.url = url;
         this.height = height;
         this.aspectRatio = aspectRatio;
     }
 
-    static create(url: string, height: number, aspectRatio: number) {
-        return { ...new ImageProperties(url, height, aspectRatio) };
-    }
+    static readonly create = getCreate(this);
 }

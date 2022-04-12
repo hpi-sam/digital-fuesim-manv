@@ -1,4 +1,5 @@
 import { IsNumber, IsString } from 'class-validator';
+import { getCreate } from './get-create';
 
 export class CanCaterFor {
     @IsNumber()
@@ -14,7 +15,10 @@ export class CanCaterFor {
     @IsString()
     public logicalOperator: 'and' | 'or';
 
-    private constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         red: number,
         yellow: number,
         green: number,
@@ -26,12 +30,5 @@ export class CanCaterFor {
         this.logicalOperator = logicalOperator;
     }
 
-    static create(
-        red: number,
-        yellow: number,
-        green: number,
-        logicalOperator: 'and' | 'or'
-    ) {
-        return { ...new CanCaterFor(red, yellow, green, logicalOperator) };
-    }
+    static readonly create = getCreate(this);
 }

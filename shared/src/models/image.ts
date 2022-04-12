@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
-import { Size, Position } from './utils';
+import { Size, Position, getCreate } from './utils';
 
 export class Image {
     @IsUUID(4, uuidValidationOptions)
@@ -18,13 +18,14 @@ export class Image {
     @IsUUID(4, uuidValidationOptions)
     public blobId: UUID;
 
-    private constructor(topLeft: Position, size: Size, blobId: UUID) {
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(topLeft: Position, size: Size, blobId: UUID) {
         this.topLeft = topLeft;
         this.size = size;
         this.blobId = blobId;
     }
 
-    static create(topLeft: Position, size: Size, blobId: UUID) {
-        return { ...new Image(topLeft, size, blobId) };
-    }
+    static readonly create = getCreate(this);
 }

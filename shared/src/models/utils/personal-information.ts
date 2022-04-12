@@ -1,4 +1,5 @@
 import { IsNumber, IsString } from 'class-validator';
+import { getCreate } from './get-create';
 
 export class PersonalInformation {
     @IsString()
@@ -25,7 +26,10 @@ export class PersonalInformation {
     @IsString()
     sex: string;
 
-    private constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         name: string,
         biometry: string,
         address: string,
@@ -41,23 +45,5 @@ export class PersonalInformation {
         this.sex = sex;
     }
 
-    static create(
-        name: string,
-        biometry: string,
-        address: string,
-        birthdate: string,
-        age: number,
-        sex: string
-    ) {
-        return {
-            ...new PersonalInformation(
-                name,
-                biometry,
-                address,
-                birthdate,
-                age,
-                sex
-            ),
-        };
-    }
+    static readonly create = getCreate(this);
 }

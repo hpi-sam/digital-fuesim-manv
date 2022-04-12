@@ -1,5 +1,6 @@
 import { IsNumber, IsUUID } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
+import { getCreate } from './get-create';
 
 export class Transfer {
     /**
@@ -14,7 +15,10 @@ export class Transfer {
     @IsUUID(4, uuidValidationOptions)
     public targetTransferPointId: UUID;
 
-    private constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         endTimeStamp: number,
         startTransferPointId: UUID,
         targetTransferPointId: UUID
@@ -24,17 +28,5 @@ export class Transfer {
         this.targetTransferPointId = targetTransferPointId;
     }
 
-    static create(
-        endTimeStamp: number,
-        startTransferPointId: UUID,
-        targetTransferPointId: UUID
-    ) {
-        return {
-            ...new Transfer(
-                endTimeStamp,
-                startTransferPointId,
-                targetTransferPointId
-            ),
-        };
-    }
+    static readonly create = getCreate(this);
 }

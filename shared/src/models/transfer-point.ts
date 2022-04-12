@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsDefined, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { Position } from './utils';
+import { getCreate, Position } from './utils';
 
 export class TransferPoint {
     @IsUUID(4, uuidValidationOptions)
@@ -25,7 +25,10 @@ export class TransferPoint {
     @IsString()
     public externalName: string;
 
-    private constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         position: Position,
         reachableTransferPoints: {
             [key: UUID]: {
@@ -41,23 +44,5 @@ export class TransferPoint {
         this.externalName = externalName;
     }
 
-    static create(
-        position: Position,
-        reachableTransferPoints: {
-            [key: UUID]: {
-                duration: number;
-            };
-        },
-        internalName: string,
-        externalName: string
-    ) {
-        return {
-            ...new TransferPoint(
-                position,
-                reachableTransferPoints,
-                internalName,
-                externalName
-            ),
-        };
-    }
+    static readonly create = getCreate(this);
 }

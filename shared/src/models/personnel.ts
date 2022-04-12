@@ -7,7 +7,13 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { UUID, UUIDSet, uuid, uuidValidationOptions } from '../utils';
-import { CanCaterFor, Position, ImageProperties, PersonnelType } from './utils';
+import {
+    CanCaterFor,
+    Position,
+    ImageProperties,
+    PersonnelType,
+    getCreate,
+} from './utils';
 
 export class Personnel {
     @IsUUID(4, uuidValidationOptions)
@@ -44,7 +50,10 @@ export class Personnel {
     @IsOptional()
     public position?: Position;
 
-    private constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         vehicleId: UUID,
         personnelType: PersonnelType,
         assignedPatientIds: UUIDSet,
@@ -56,19 +65,5 @@ export class Personnel {
         this.canCaterFor = canCaterFor;
     }
 
-    static create(
-        vehicleId: UUID,
-        personnelType: PersonnelType,
-        assignedPatientIds: UUIDSet,
-        canCaterFor: CanCaterFor = CanCaterFor.create(1, 1, 4, 'or')
-    ) {
-        return {
-            ...new Personnel(
-                vehicleId,
-                personnelType,
-                assignedPatientIds,
-                canCaterFor
-            ),
-        };
-    }
+    static readonly create = getCreate(this);
 }

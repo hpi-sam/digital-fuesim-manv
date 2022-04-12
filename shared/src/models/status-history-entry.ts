@@ -1,5 +1,6 @@
 import { IsDate, IsString, IsUUID } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
+import { getCreate } from './utils';
 
 export class StatusHistoryEntry {
     @IsUUID(4, uuidValidationOptions)
@@ -15,12 +16,13 @@ export class StatusHistoryEntry {
     @IsDate()
     public startTimestamp: Date;
 
-    private constructor(status: 'paused' | 'running', startTimestamp: Date) {
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(status: 'paused' | 'running', startTimestamp: Date) {
         this.status = status;
         this.startTimestamp = startTimestamp;
     }
 
-    static create(status: 'paused' | 'running', startTimestamp: Date) {
-        return { ...new StatusHistoryEntry(status, startTimestamp) };
-    }
+    static readonly create = getCreate(this);
 }

@@ -1,5 +1,6 @@
 import { IsDate, IsString, IsUUID } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { getCreate } from './utils';
 
 export class EocLogEntry {
     @IsUUID(4, uuidValidationOptions)
@@ -23,7 +24,10 @@ export class EocLogEntry {
     @IsUUID(4, uuidValidationOptions)
     public clientId: UUID;
 
-    private constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         timestamp: Date,
         exerciseTimestamp: Date,
         message: string,
@@ -35,14 +39,5 @@ export class EocLogEntry {
         this.clientId = clientId;
     }
 
-    static create(
-        timestamp: Date,
-        exerciseTimestamp: Date,
-        message: string,
-        clientId: UUID
-    ) {
-        return {
-            ...new EocLogEntry(timestamp, exerciseTimestamp, message, clientId),
-        };
-    }
+    static readonly create = getCreate(this);
 }

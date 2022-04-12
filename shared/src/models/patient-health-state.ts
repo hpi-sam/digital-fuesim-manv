@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
 import type { HealthPoints } from './utils';
-import { IsValidHealthPoint } from './utils';
+import { getCreate, IsValidHealthPoint } from './utils';
 
 /**
  * These parameters determine the increase or decrease of a patients health every second
@@ -35,7 +35,10 @@ export class FunctionParameters {
     @IsNumber()
     notSanModifier: number;
 
-    private constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         constantChange: number,
         notarztModifier: number,
         retSanModifier: number,
@@ -47,21 +50,7 @@ export class FunctionParameters {
         this.notSanModifier = notSanModifier;
     }
 
-    static create(
-        constantChange: number,
-        notarztModifier: number,
-        retSanModifier: number,
-        notSanModifier: number
-    ) {
-        return {
-            ...new FunctionParameters(
-                constantChange,
-                notarztModifier,
-                retSanModifier,
-                notSanModifier
-            ),
-        };
-    }
+    static readonly create = getCreate(this);
 }
 
 /**
@@ -93,7 +82,10 @@ export class ConditionParameters {
     @IsUUID(4, uuidValidationOptions)
     matchingHealthStateId: UUID;
 
-    private constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         earliestTime: number | undefined,
         latestTime: number | undefined,
         minimumHealth: HealthPoints | undefined,
@@ -109,25 +101,7 @@ export class ConditionParameters {
         this.matchingHealthStateId = matchingHealthStateId;
     }
 
-    static create(
-        earliestTime: number | undefined,
-        latestTime: number | undefined,
-        minimumHealth: HealthPoints | undefined,
-        maximumHealth: HealthPoints | undefined,
-        isBeingTreated: boolean | undefined,
-        matchingHealthStateId: UUID
-    ) {
-        return {
-            ...new ConditionParameters(
-                earliestTime,
-                latestTime,
-                minimumHealth,
-                maximumHealth,
-                isBeingTreated,
-                matchingHealthStateId
-            ),
-        };
-    }
+    static readonly create = getCreate(this);
 }
 
 export class PatientHealthState {
@@ -146,7 +120,10 @@ export class PatientHealthState {
      */
     nextStateConditions: ConditionParameters[];
 
-    private constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         functionParameters: FunctionParameters,
         nextStateConditions: ConditionParameters[]
     ) {
@@ -154,12 +131,5 @@ export class PatientHealthState {
         this.nextStateConditions = nextStateConditions;
     }
 
-    static create(
-        functionParameters: FunctionParameters,
-        nextStateConditions: ConditionParameters[]
-    ) {
-        return {
-            ...new PatientHealthState(functionParameters, nextStateConditions),
-        };
-    }
+    static readonly create = getCreate(this);
 }
