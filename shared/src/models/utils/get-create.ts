@@ -3,7 +3,7 @@ import type { Constructor } from '../../utils';
 /**
  * Models must be JSON objects. This means they mustn't have any functions.
  * The `prototype` of a class contains functions (e.g. `constructor`).
- * We still need the constructor to create a new instance of the class with a prototype, to be able to use `class-transformer`.
+ * We still need the constructor to create a new instance of the class with a prototype, to be able to use `class-validator`.
  * We solve this by using a static factory function `create` in the class.
  *
  * @example
@@ -12,7 +12,7 @@ import type { Constructor } from '../../utils';
  *       @IsNumber()
  *       public a: number;
  *       /**
- *        * @_deprecated Use {@link create} instead
+ *        * @deprecated Use {@link create} instead
  *        *_/
  *       constructor(a: number) {
  *           this.a = a;
