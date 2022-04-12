@@ -1,7 +1,6 @@
 import type {
     ExerciseState,
     HealthPoints,
-    Immutable,
     Patient,
     PersonnelType,
     UUID,
@@ -73,7 +72,7 @@ export function patientTick(
  */
 function getDedicatedResources(
     state: ExerciseState,
-    patient: Immutable<Patient>
+    patient: Patient
 ): Catering {
     if (!patient.isBeingTreated) {
         return {
@@ -119,7 +118,7 @@ function getDedicatedResources(
 // This is a heuristic and doesn't have to be 100% correct - the players don't see the healthPoints but only the color
 // This function could be as complex as we want it to be (Math.sin to get something periodic, higher polynoms...)
 function getNextPatientHealthPoints(
-    patient: Immutable<Patient>,
+    patient: Patient,
     treatedBy: Catering,
     patientTickInterval: number
 ): HealthPoints {
@@ -168,7 +167,7 @@ function getNextPatientHealthPoints(
  * @param patient The {@link Patient} to get the next {@link PatientHealthState} id for.
  * @returns The next {@link PatientHealthState} id.
  */
-function getNextStateId(patient: Immutable<Patient>) {
+function getNextStateId(patient: Patient) {
     const currentState = patient.healthStates[patient.currentHealthStateId];
     for (const nextConditions of currentState.nextStateConditions) {
         if (

@@ -1,20 +1,20 @@
 import { IsDate, IsString, IsUUID } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
-import { getCreate } from './utils';
+import { getCreate, ImmutableDate } from './utils';
 
 export class StatusHistoryEntry {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     // TODO
     @IsString()
-    public status: 'paused' | 'running';
+    public readonly status: 'paused' | 'running';
 
     /**
      * The time from which on this status was set.
      */
     @IsDate()
-    public startTimestamp: Date;
+    public readonly startTimestamp: ImmutableDate;
 
     /**
      * @deprecated Use {@link create} instead

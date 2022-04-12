@@ -1,4 +1,4 @@
-import type { UUID, Position, Immutable } from 'digital-fuesim-manv-shared';
+import type { UUID, Position } from 'digital-fuesim-manv-shared';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
 import Point from 'ol/geom/Point';
@@ -15,10 +15,10 @@ import type { FeatureManager } from '../utility/feature-manager';
 import { ElementManager } from './element-manager';
 
 type ElementFeature = Feature<Point>;
-export type PositionableElement = Immutable<{
-    id: UUID;
-    position: Position;
-}>;
+export interface PositionableElement {
+    readonly id: UUID;
+    readonly position: Position;
+}
 
 /**
  * The base class for all element feature managers.

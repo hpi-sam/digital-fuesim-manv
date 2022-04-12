@@ -5,18 +5,18 @@ import { getCreate, Position, Size } from './utils';
 
 export class Viewport {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     @ValidateNested()
     @Type(() => Position)
-    public topLeft: Position;
+    public readonly topLeft: Position;
 
     @ValidateNested()
     @Type(() => Size)
-    public size: Size;
+    public readonly size: Size;
 
     @IsString()
-    public name: string;
+    public readonly name: string;
 
     /**
      * @deprecated Use {@link create} instead

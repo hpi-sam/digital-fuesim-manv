@@ -8,27 +8,29 @@ import type { PatientHealthState } from '.';
 
 export class PatientTemplate {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     @ValidateNested()
     @Type(() => PersonalInformation)
-    public personalInformation: PersonalInformation;
+    public readonly personalInformation: PersonalInformation;
 
     @IsBoolean()
-    public isPreTriaged: boolean;
+    public readonly isPreTriaged: boolean;
 
     @ValidateNested()
     @Type(() => ImageProperties)
-    public image: ImageProperties;
+    public readonly image: ImageProperties;
 
     @IsDefined()
-    public healthStates: { [stateId: UUID]: PatientHealthState };
+    public readonly healthStates: {
+        readonly [stateId: UUID]: PatientHealthState;
+    };
 
     @IsUUID(4, uuidValidationOptions)
-    public startingHealthStateId: UUID;
+    public readonly startingHealthStateId: UUID;
 
     @IsValidHealthPoint()
-    public health: HealthPoints;
+    public readonly health: HealthPoints;
 
     /**
      * @deprecated Use {@link create} instead

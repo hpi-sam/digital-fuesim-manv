@@ -12,7 +12,7 @@ import type { Constructor } from '../../utils';
  *       @IsNumber()
  *       public a: number;
  *       /**
- *        * @deprecated Use {@link create} instead
+ *        * @_deprecated Use {@link create} instead
  *        *_/
  *       constructor(a: number) {
  *           this.a = a;

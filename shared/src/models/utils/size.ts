@@ -6,13 +6,13 @@ export class Size {
      * The width in meters.
      */
     @IsPositive()
-    public width: number;
+    public readonly width: number;
 
     /**
      * The height in meters.
      */
     @IsPositive()
-    public height: number;
+    public readonly height: number;
 
     /**
      * @deprecated Use {@link create} instead

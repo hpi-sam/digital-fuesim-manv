@@ -5,25 +5,25 @@ import { getCreate, Position } from './utils';
 
 export class TransferPoint {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     @ValidateNested()
     @Type(() => Position)
-    public position: Position;
+    public readonly position: Position;
 
     // TODO
     @IsDefined()
-    public reachableTransferPoints: {
-        [key: UUID]: {
-            duration: number;
+    public readonly reachableTransferPoints: {
+        readonly [key: UUID]: {
+            readonly duration: number;
         };
     };
 
     @IsString()
-    public internalName: string;
+    public readonly internalName: string;
 
     @IsString()
-    public externalName: string;
+    public readonly externalName: string;
 
     /**
      * @deprecated Use {@link create} instead

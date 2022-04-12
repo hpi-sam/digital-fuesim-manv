@@ -1,7 +1,7 @@
 import type { OnInit } from '@angular/core';
 import { EventEmitter, Output, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { Immutable, Patient, UUID } from 'digital-fuesim-manv-shared';
+import type { Patient, UUID } from 'digital-fuesim-manv-shared';
 import { healthPointsDefaults } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
@@ -23,7 +23,7 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
 
     @Output() readonly closePopup = new EventEmitter<void>();
 
-    public patient$?: Observable<Immutable<Patient>>;
+    public patient$?: Observable<Patient>;
     public client$ = this.store.select(
         getSelectClient(this.apiService.ownClientId!)
     );

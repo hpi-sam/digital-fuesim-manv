@@ -7,13 +7,13 @@ export class Transfer {
      * The timestamp in exercise time when the transfer will end.
      */
     @IsNumber()
-    public endTimeStamp: number;
+    public readonly endTimeStamp: number;
 
     @IsUUID(4, uuidValidationOptions)
-    public startTransferPointId: UUID;
+    public readonly startTransferPointId: UUID;
 
     @IsUUID(4, uuidValidationOptions)
-    public targetTransferPointId: UUID;
+    public readonly targetTransferPointId: UUID;
 
     /**
      * @deprecated Use {@link create} instead

@@ -3,28 +3,28 @@ import { getCreate } from './get-create';
 
 export class PersonalInformation {
     @IsString()
-    name: string;
+    public readonly name: string;
     @IsString()
-    biometry: string;
+    public readonly biometry: string;
     @IsString()
-    address: string;
+    public readonly address: string;
     /**
      * Without year
      * @example
      * `24.02.`
      */
     @IsString()
-    birthdate: string;
+    public readonly birthdate: string;
 
     @IsNumber()
-    age: number;
+    public readonly age: number;
 
     /**
      * @example
      * 'männlich' | 'weiblich' | 'unbestimmt'
      */
     @IsString()
-    sex: string;
+    public readonly sex: string;
 
     /**
      * @deprecated Use {@link create} instead

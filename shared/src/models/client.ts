@@ -4,21 +4,21 @@ import { getCreate, Role } from './utils';
 
 export class Client {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     @IsString()
-    public name: string;
+    public readonly name: string;
 
     // TODO
     @IsString()
-    public role: Role;
+    public readonly role: Role;
 
     @IsUUID(4, uuidValidationOptions)
     @IsOptional()
-    public viewRestrictedToViewportId?: UUID;
+    public readonly viewRestrictedToViewportId?: UUID;
 
     @IsBoolean()
-    public isInWaitingRoom: boolean;
+    public readonly isInWaitingRoom: boolean;
 
     /**
      * @deprecated Use {@link create} instead

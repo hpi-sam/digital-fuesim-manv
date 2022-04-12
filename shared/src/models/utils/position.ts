@@ -3,10 +3,10 @@ import { getCreate } from './get-create';
 
 export class Position {
     @IsNumber()
-    public x: number;
+    public readonly x: number;
 
     @IsNumber()
-    public y: number;
+    public readonly y: number;
 
     /**
      * @deprecated Use {@link create} instead

@@ -11,7 +11,7 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import { Immutable, UUID, uuid, uuidValidationOptions } from '../utils';
+import { UUID, uuid, uuidValidationOptions } from '../utils';
 import {
     Position,
     PatientStatus,
@@ -27,23 +27,23 @@ import type { PatientHealthState } from '.';
 
 export class Patient {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     @ValidateNested()
     @Type(() => PersonalInformation)
-    public personalInformation: PersonalInformation;
+    public readonly personalInformation: PersonalInformation;
 
     // TODO
     @IsNotIn([undefined])
-    public visibleStatus: PatientStatus | null;
+    public readonly visibleStatus: PatientStatus | null;
 
     // TODO
     @IsString()
-    public realStatus: PatientStatus;
+    public readonly realStatus: PatientStatus;
 
     @ValidateNested()
     @Type(() => ImageProperties)
-    public image: ImageProperties;
+    public readonly image: ImageProperties;
 
     /**
      * @deprecated Use {@link create} instead
@@ -53,7 +53,7 @@ export class Patient {
         personalInformation: PersonalInformation,
         visibleStatus: PatientStatus | null,
         realStatus: PatientStatus,
-        healthStates: Immutable<{ [stateId: UUID]: PatientHealthState }>,
+        healthStates: { readonly [stateId: UUID]: PatientHealthState },
         currentHealthStateId: UUID,
         image: ImageProperties,
         health: HealthPoints
@@ -73,49 +73,51 @@ export class Patient {
     @ValidateNested()
     @Type(() => Position)
     @IsOptional()
-    public position?: Position;
+    public readonly position?: Position;
     /**
      * Exclusive-or to {@link position}
      */
     @IsUUID(4, uuidValidationOptions)
     @IsOptional()
-    public vehicleId?: UUID;
+    public readonly vehicleId?: UUID;
 
     /**
      * The time the patient already is in the current state
      */
     @IsNumber()
-    stateTime = 0;
+    public readonly stateTime: number = 0;
 
     @IsDefined()
-    healthStates: Immutable<{ [stateId: UUID]: PatientHealthState }> = {};
+    public readonly healthStates: {
+        readonly [stateId: UUID]: PatientHealthState;
+    } = {};
 
     /**
      * The id of the current health state in {@link healthStates}
      */
     @IsUUID(4, uuidValidationOptions)
-    currentHealthStateId: UUID;
+    public readonly currentHealthStateId: UUID;
     /**
      * See {@link HealthPoints} for context of this property.
      */
     @IsNumber()
     @Max(healthPointsDefaults.max)
     @Min(healthPointsDefaults.min)
-    health: HealthPoints;
+    public readonly health: HealthPoints;
     /**
      * Wether the patient is currently being treated by a personnel
      */
     @IsBoolean()
-    isBeingTreated = false;
+    public readonly isBeingTreated: boolean = false;
     /**
      * The speed with which the patients healthStatus changes
      * if it is 0.5 every patient changes half as fast (slow motion)
      */
     @IsNumber()
     @Min(0)
-    timeSpeed = 1;
+    public readonly timeSpeed: number = 1;
 
-    static fromTemplate(template: Immutable<PatientTemplate>): Patient {
+    static fromTemplate(template: PatientTemplate): Patient {
         const status = getStatus(template.health);
         return Patient.create(
             template.personalInformation,

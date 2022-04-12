@@ -1,6 +1,5 @@
 import { VehicleTemplate } from '../../models';
 import type { ImageProperties } from '../../models/utils/image-properties';
-import type { Immutable } from '../../utils';
 
 const rtwImage: ImageProperties = {
     url: '/assets/rtw_vehicle.png',
@@ -97,7 +96,7 @@ const hubschrauberVehicleTemplate = VehicleTemplate.create(
     }
 );
 
-export const defaultVehicleTemplates: Immutable<VehicleTemplate[]> = [
+export const defaultVehicleTemplates: readonly VehicleTemplate[] = [
     rtwVehicleTemplate,
     ktwVehicleTemplate,
     gwSanVehicleTemplate,

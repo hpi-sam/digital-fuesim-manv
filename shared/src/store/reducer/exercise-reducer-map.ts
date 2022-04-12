@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-throw-literal */
-import { cloneDeep } from 'lodash-es';
 import { getStatus } from '../../models/utils';
 import type { ExerciseAction } from '../exercise.actions';
 import { imageSizeToPosition } from '../../state-helpers';
 import { StatusHistoryEntry } from '../../models';
+import { cloneDeepMutable } from '../../utils/clone-deep-mutable';
 import type { ReducerFunction } from './reducer-function';
 import { calculateTreatments } from './calculate-treatments';
 import { ReducerError } from '.';
@@ -56,7 +56,7 @@ export const exerciseReducerMap: {
                 `HealthState with id ${patient.currentHealthStateId} does not exist`
             );
         }
-        draftState.patients[patient.id] = cloneDeep(patient);
+        draftState.patients[patient.id] = cloneDeepMutable(patient);
         calculateTreatments(draftState);
         return draftState;
     },

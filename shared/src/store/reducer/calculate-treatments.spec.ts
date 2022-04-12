@@ -4,15 +4,14 @@ import type { Patient } from '../../models';
 import { Material, Personnel } from '../../models';
 import type { PatientStatus } from '../../models/utils';
 import { CanCaterFor, Position } from '../../models/utils';
-import type { ExerciseState } from '../../state';
-import { generateExercise } from '../../state';
+import { ExerciseState } from '../../state';
 import type { Mutable, UUID, UUIDSet } from '../../utils';
-import { uuid } from '../../utils';
+import { uuid, cloneDeepMutable } from '../../utils';
 import { calculateTreatments } from './calculate-treatments';
 
 // TODO: https://github.com/hpi-sam/digital-fuesim-manv/issues/212
 
-const emptyState = generateExercise();
+const emptyState = ExerciseState.create();
 
 interface Catering {
     /**
@@ -33,7 +32,7 @@ function assertCatering(
 ) {
     const shouldState = produce(newState, (draftState) => {
         caterings.forEach((catering) => {
-            const expectedAssignedPatients: UUIDSet = {};
+            const expectedAssignedPatients: Mutable<UUIDSet> = {};
             catering.patientIds.forEach((patientId) => {
                 expectedAssignedPatients[patientId] = true;
             });
@@ -72,7 +71,7 @@ function generatePatient(
 }
 
 function generatePersonnel(position?: Position) {
-    const personnel = Personnel.create(uuid(), 'notSan', {});
+    const personnel = cloneDeepMutable(Personnel.create(uuid(), 'notSan', {}));
     if (position) {
         personnel.position = { ...position };
     }
@@ -80,10 +79,8 @@ function generatePersonnel(position?: Position) {
 }
 
 function generateMaterial(position?: Position) {
-    const material = Material.create(
-        uuid(),
-        {},
-        CanCaterFor.create(1, 2, 3, 'or')
+    const material = cloneDeepMutable(
+        Material.create(uuid(), {}, CanCaterFor.create(1, 2, 3, 'or'))
     );
     if (position) {
         material.position = { ...position };

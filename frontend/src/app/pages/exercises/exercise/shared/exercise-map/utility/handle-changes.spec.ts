@@ -1,8 +1,7 @@
-import type { Immutable } from 'digital-fuesim-manv-shared';
 import { handleChanges } from './handle-changes';
 
 describe('HandleChanges', () => {
-    let oldDictionary: Immutable<{ [key: string]: { id: string } }>;
+    let oldDictionary: { readonly [key: string]: { readonly id: string } };
     const createHandler = jest.fn();
     const deleteHandler = jest.fn();
     const changeHandler = jest.fn();

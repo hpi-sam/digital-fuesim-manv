@@ -13,24 +13,24 @@ import { ImageProperties } from './utils/image-properties';
 
 export class VehicleTemplate {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     @IsString()
-    public name: string;
+    public readonly name: string;
 
     @ValidateNested()
     @Type(() => ImageProperties)
-    public image: ImageProperties;
+    public readonly image: ImageProperties;
 
     @IsNumber()
-    public patientCapacity: number;
+    public readonly patientCapacity: number;
 
     @IsArray()
-    public personnel: PersonnelType[];
+    public readonly personnel: readonly PersonnelType[];
 
     @ValidateNested()
     @Type(() => CanCaterFor)
-    public material: CanCaterFor;
+    public readonly material: CanCaterFor;
 
     /**
      * @deprecated Use {@link create} instead

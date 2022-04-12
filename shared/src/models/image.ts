@@ -5,18 +5,18 @@ import { Size, Position, getCreate } from './utils';
 
 export class Image {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     @ValidateNested()
     @Type(() => Position)
-    public topLeft: Position;
+    public readonly topLeft: Position;
 
     @ValidateNested()
     @Type(() => Size)
-    public size: Size;
+    public readonly size: Size;
 
     @IsUUID(4, uuidValidationOptions)
-    public blobId: UUID;
+    public readonly blobId: UUID;
 
     /**
      * @deprecated Use {@link create} instead

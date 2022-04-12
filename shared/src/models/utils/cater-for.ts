@@ -3,17 +3,17 @@ import { getCreate } from './get-create';
 
 export class CanCaterFor {
     @IsNumber()
-    public red: number;
+    public readonly red: number;
 
     @IsNumber()
-    public yellow: number;
+    public readonly yellow: number;
 
     @IsNumber()
-    public green: number;
+    public readonly green: number;
 
     // TODO
     @IsString()
-    public logicalOperator: 'and' | 'or';
+    public readonly logicalOperator: 'and' | 'or';
 
     /**
      * @deprecated Use {@link create} instead

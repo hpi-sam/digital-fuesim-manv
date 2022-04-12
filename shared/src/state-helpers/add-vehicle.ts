@@ -1,4 +1,3 @@
-import type { Immutable } from 'immer';
 import type { Vehicle, VehicleTemplate } from '../models';
 import { Material, Personnel } from '../models';
 import type { Position } from '../models/utils';
@@ -11,7 +10,7 @@ import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
  */
 // Be aware that `uuid()` is nondeterministic and cannot be used in a reducer function.
 export function addVehicle(
-    vehicleTemplate: Immutable<VehicleTemplate>,
+    vehicleTemplate: VehicleTemplate,
     vehiclePosition?: Position
 ): {
     material: Material;

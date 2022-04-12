@@ -13,16 +13,16 @@ import { ImageProperties } from './utils/image-properties';
 
 export class Vehicle {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     @IsUUID(4, uuidValidationOptions)
-    public materialId: UUID;
+    public readonly materialId: UUID;
 
     @IsNumber()
-    public patientCapacity: number;
+    public readonly patientCapacity: number;
 
     @IsString()
-    public name: string;
+    public readonly name: string;
 
     /**
      * Exclusive-or to {@link transfer}
@@ -30,11 +30,11 @@ export class Vehicle {
     @ValidateNested()
     @Type(() => Position)
     @IsOptional()
-    public position?: Position;
+    public readonly position?: Position;
 
     @ValidateNested()
     @Type(() => ImageProperties)
-    public image: ImageProperties;
+    public readonly image: ImageProperties;
 
     /**
      * Exclusive-or to {@link position}
@@ -42,15 +42,15 @@ export class Vehicle {
     @ValidateNested()
     @Type(() => Transfer)
     @IsOptional()
-    public transfer?: Transfer;
+    public readonly transfer?: Transfer;
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     @IsDefined()
-    public personnelIds: UUIDSet = {};
+    public readonly personnelIds: UUIDSet = {};
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     @IsDefined()
-    public patientIds: UUIDSet = {};
+    public readonly patientIds: UUIDSet = {};
 
     /**
      * @deprecated Use {@link create} instead

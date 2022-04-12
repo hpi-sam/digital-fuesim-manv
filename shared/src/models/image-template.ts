@@ -5,17 +5,17 @@ import { getCreate, Size } from './utils';
 
 export class ImageTemplate {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     @IsString()
-    public name: string;
+    public readonly name: string;
 
     @IsUUID(4, uuidValidationOptions)
-    public imageBlobId: UUID;
+    public readonly imageBlobId: UUID;
 
     @ValidateNested()
     @Type(() => Size)
-    public initialSize: Size;
+    public readonly initialSize: Size;
 
     /**
      * @deprecated Use {@link create} instead
