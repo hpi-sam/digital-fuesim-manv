@@ -1,5 +1,8 @@
 import type { Constructor } from '../../utils';
 
+// @ts-expect-error It is not guaranteed to run in node environment, but if it does we want to check for development mode
+const isDevelopment = process?.env?.NODE_ENV === 'development';
+
 /**
  * Models must be JSON objects. This means they mustn't have any functions.
  * The `prototype` of a class contains functions (e.g. `constructor`).
@@ -24,7 +27,13 @@ import type { Constructor } from '../../utils';
  * @returns a function that creates a new instance of {@link aClass} without a prototype
  */
 export function getCreate<T extends Constructor>(aClass: T) {
-    return (...args: ConstructorParameters<T>): InstanceType<T> => ({
-        ...new aClass(...args),
-    });
+    return (...args: ConstructorParameters<T>): InstanceType<T> => {
+        const instance = {
+            ...new aClass(...args),
+        };
+        if (isDevelopment) {
+            Object.freeze(instance);
+        }
+        return instance;
+    };
 }
