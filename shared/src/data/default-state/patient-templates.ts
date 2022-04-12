@@ -5,6 +5,7 @@ import {
 } from '../../models';
 import type { ImageProperties } from '../../models/utils';
 import { healthPointsDefaults } from '../../models/utils';
+import type { Immutable } from '../../utils';
 
 const defaultMaleImage: ImageProperties = {
     url: '/assets/male_patient.svg',
@@ -87,7 +88,7 @@ const blackPatientTemplate = PatientTemplate.create(
     defaultHealthState.id
 );
 
-export const defaultPatientTemplates: PatientTemplate[] = [
+export const defaultPatientTemplates: Immutable<PatientTemplate[]> = [
     greenPatientTemplate,
     yellowPatientTemplate,
     redPatientTemplate,
