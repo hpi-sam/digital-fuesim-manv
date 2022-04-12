@@ -223,14 +223,13 @@ export class ApiService {
         )
             .then(() => true)
             .catch((error) => {
-                if (error.status === 404) {
-                    return false;
+                if (error.status !== 404) {
+                    this.messageService.postError({
+                        title: 'Interner Fehler',
+                        error,
+                    });
                 }
-                this.messageService.postError({
-                    title: 'Interner Fehler',
-                    error,
-                });
-                throw error;
+                return false;
             });
     }
 }
