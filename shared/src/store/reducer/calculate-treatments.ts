@@ -29,9 +29,9 @@ const generalThreshold = 5;
  * @returns Whether the patient can be catered for by {@link catering}.
  */
 function caterFor(
-    catering: Material | Personnel,
-    catersFor: CatersFor,
-    patient: Patient
+    catering: Mutable<Material> | Mutable<Personnel>,
+    catersFor: Mutable<CatersFor>,
+    patient: Mutable<Patient>
 ) {
     const status = patient.visibleStatus ?? 'yellow'; // Treat not pretriaged patients as yellow.
     if (
@@ -109,7 +109,7 @@ export function calculateTreatments(state: Mutable<ExerciseState>) {
 
 function calculateCatering(
     catering: Material | Personnel,
-    patients: Patient[]
+    patients: Mutable<Patient>[]
 ) {
     const catersFor: CatersFor = {
         red: 0,
@@ -140,7 +140,7 @@ function calculateCatering(
             PatientStatus,
             {
                 distance: number;
-                patient: Patient;
+                patient: Mutable<Patient>;
             }[]
         >
     > = groupBy(

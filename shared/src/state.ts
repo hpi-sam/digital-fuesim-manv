@@ -7,44 +7,39 @@ import type {
     ImageTemplate,
     Material,
     Patient,
-    PatientTemplate,
     Personnel,
     StatusHistoryEntry,
     TransferPoint,
     Vehicle,
-    VehicleTemplate,
     Viewport,
 } from './models';
+import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuid } from './utils';
-import type { Immutable } from './utils/immutability';
 
-// TODO: This is a workaround, because else the following error is thrown when using produce():
-// `[Immer] produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'.Got '[object Object]'`
-// (I have no idea why...)
-export const generateExercise = (): ExerciseState => ({
-    ...new ExerciseStateClass(),
-});
+export class ExerciseState {
+    public readonly id = uuid();
+    public readonly viewports: { readonly [key: UUID]: Viewport } = {};
+    public readonly vehicles: { readonly [key: UUID]: Vehicle } = {};
+    public readonly personnel: { readonly [key: UUID]: Personnel } = {};
+    public readonly patients: { readonly [key: UUID]: Patient } = {};
+    public readonly materials: { readonly [key: UUID]: Material } = {};
+    public readonly images: { readonly [key: UUID]: Image } = {};
+    public readonly transferPoints: { readonly [key: UUID]: TransferPoint } =
+        {};
+    public readonly clients: { readonly [key: UUID]: Client } = {};
+    public readonly patientTemplates = defaultPatientTemplates;
+    public readonly vehicleTemplates = defaultVehicleTemplates;
+    public readonly imageTemplates: readonly ImageTemplate[] = [];
+    public readonly ecoLog: readonly EocLogEntry[] = [];
+    public readonly statusHistory: readonly StatusHistoryEntry[] = [];
+    public readonly participantId: string = '';
 
-/**
- * An immutable object that represents the complete state of an exercise the backend should be aware of.
- */
-export type ExerciseState = Immutable<InstanceType<typeof ExerciseStateClass>>;
+    /**
+     * @deprecated Use {@link create} instead.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-useless-constructor
+    constructor() {}
 
-class ExerciseStateClass {
-    public id = uuid();
-    public viewports: { [key: UUID]: Viewport } = {};
-    public vehicles: { [key: UUID]: Vehicle } = {};
-    public personnel: { [key: UUID]: Personnel } = {};
-    public patients: { [key: UUID]: Patient } = {};
-    public materials: { [key: UUID]: Material } = {};
-    public images: { [key: UUID]: Image } = {};
-    public transferPoints: { [key: UUID]: TransferPoint } = {};
-    public clients: { [key: UUID]: Client } = {};
-    public patientTemplates: PatientTemplate[] = defaultPatientTemplates;
-    public vehicleTemplates: VehicleTemplate[] = defaultVehicleTemplates;
-    public imageTemplates: ImageTemplate[] = [];
-    public ecoLog: EocLogEntry[] = [];
-    public statusHistory: StatusHistoryEntry[] = [];
-    public participantId = '';
+    static readonly create = getCreate(this);
 }

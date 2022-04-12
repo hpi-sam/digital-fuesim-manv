@@ -1,4 +1,3 @@
-import type { ExerciseState } from 'digital-fuesim-manv-shared';
-import { generateExercise } from 'digital-fuesim-manv-shared';
+import { ExerciseState } from 'digital-fuesim-manv-shared';
 
-export const newExercise: ExerciseState = generateExercise();
+export const newExercise: ExerciseState = ExerciseState.create();

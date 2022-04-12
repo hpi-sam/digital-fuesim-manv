@@ -29,7 +29,7 @@ export class ClientWrapper {
         // as the provided id is guaranteed to be one of the ids of the exercise as the exercise
         // was fetched with this exact id from the exercise map.
         const role = this.chosenExercise.getRoleFromUsedId(exerciseId);
-        this.relatedExerciseClient = new Client(clientName, role, undefined);
+        this.relatedExerciseClient = Client.create(clientName, role, undefined);
         this.chosenExercise.addClient(this);
         return this.relatedExerciseClient.id;
     }

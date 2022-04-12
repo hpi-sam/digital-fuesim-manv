@@ -1,22 +1,22 @@
 import { Type } from 'class-transformer';
 import { IsDefined, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { uuid, UUID, UUIDSet, uuidValidationOptions } from '../utils';
-import { CanCaterFor, ImageProperties, Position } from './utils';
+import { CanCaterFor, getCreate, ImageProperties, Position } from './utils';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     @IsUUID(4, uuidValidationOptions)
-    public vehicleId: UUID;
+    public readonly vehicleId: UUID;
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     @IsDefined()
-    public assignedPatientIds: UUIDSet;
+    public readonly assignedPatientIds: UUIDSet;
 
     @ValidateNested()
     @Type(() => CanCaterFor)
-    public canCaterFor: CanCaterFor;
+    public readonly canCaterFor: CanCaterFor;
 
     /**
      * if undefined, is in vehicle with {@link vehicleId}
@@ -24,16 +24,19 @@ export class Material {
     @ValidateNested()
     @Type(() => Position)
     @IsOptional()
-    public position?: Position;
+    public readonly position?: Position;
 
     @ValidateNested()
     @Type(() => ImageProperties)
-    public image: ImageProperties = {
+    public readonly image: ImageProperties = {
         url: './assets/material.svg',
         height: 40,
         aspectRatio: 1,
     };
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(
         vehicleId: UUID,
         assignedPatientIds: UUIDSet,
@@ -45,4 +48,6 @@ export class Material {
         this.canCaterFor = canCaterFor;
         this.position = position;
     }
+
+    static readonly create = getCreate(this);
 }

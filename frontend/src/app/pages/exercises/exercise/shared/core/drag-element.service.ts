@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import type {
-    Immutable,
     PatientTemplate,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
-import { Patient, normalZoom, addVehicle } from 'digital-fuesim-manv-shared';
+import {
+    cloneDeepMutable,
+    Patient,
+    normalZoom,
+    addVehicle,
+} from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 
@@ -129,8 +133,8 @@ export class DragElementService {
                 break;
             case 'patient':
                 {
-                    const patient = Patient.fromTemplate(
-                        transferTemplate.template
+                    const patient = cloneDeepMutable(
+                        Patient.fromTemplate(transferTemplate.template)
                     );
                     patient.position = position;
                     this.apiService.proposeAction(
@@ -159,9 +163,9 @@ export class DragElementService {
 type TransferTemplate =
     | {
           type: 'patient';
-          template: Immutable<PatientTemplate>;
+          template: PatientTemplate;
       }
     | {
           type: 'vehicle';
-          template: Immutable<VehicleTemplate>;
+          template: VehicleTemplate;
       };

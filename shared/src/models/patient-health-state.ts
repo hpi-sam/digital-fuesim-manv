@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
 import type { HealthPoints } from './utils';
-import { IsValidHealthPoint } from './utils';
+import { getCreate, IsValidHealthPoint } from './utils';
 
 /**
  * These parameters determine the increase or decrease of a patients health every second
@@ -18,23 +18,26 @@ export class FunctionParameters {
      * Every second the health points are increased by this value
      */
     @IsNumber()
-    constantChange: number;
+    public readonly constantChange: number;
     /**
      * Every second the health points are increased by this value multiplied by the weighted number of notarzt personnel
      */
     @IsNumber()
-    notarztModifier: number;
+    public readonly notarztModifier: number;
     /**
      * Every second the health points are increased by this value multiplied by the weighted number of retSan personnel
      */
     @IsNumber()
-    retSanModifier: number;
+    public readonly retSanModifier: number;
     /**
      * Every second the health points are increased by this value multiplied by the weighted number of notSan personnel
      */
     @IsNumber()
-    notSanModifier: number;
+    public readonly notSanModifier: number;
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(
         constantChange: number,
         notarztModifier: number,
@@ -46,6 +49,8 @@ export class FunctionParameters {
         this.retSanModifier = retSanModifier;
         this.notSanModifier = notSanModifier;
     }
+
+    static readonly create = getCreate(this);
 }
 
 /**
@@ -58,25 +63,28 @@ export class ConditionParameters {
      */
     @IsOptional()
     @IsNumber()
-    earliestTime: number | undefined;
+    public readonly earliestTime: number | undefined;
     @IsOptional()
     @IsNumber()
-    latestTime: number | undefined;
+    public readonly latestTime: number | undefined;
     @IsOptional()
     @IsValidHealthPoint()
-    minimumHealth: HealthPoints | undefined;
+    public readonly minimumHealth: HealthPoints | undefined;
     @IsOptional()
     @IsValidHealthPoint()
-    maximumHealth: HealthPoints | undefined;
+    public readonly maximumHealth: HealthPoints | undefined;
     @IsOptional()
     @IsBoolean()
-    isBeingTreated: boolean | undefined;
+    public readonly isBeingTreated: boolean | undefined;
     /**
      * The id of the patients healthState to switch to when all the conditions match
      */
     @IsUUID(4, uuidValidationOptions)
-    matchingHealthStateId: UUID;
+    public readonly matchingHealthStateId: UUID;
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(
         earliestTime: number | undefined,
         latestTime: number | undefined,
@@ -92,29 +100,36 @@ export class ConditionParameters {
         this.isBeingTreated = isBeingTreated;
         this.matchingHealthStateId = matchingHealthStateId;
     }
+
+    static readonly create = getCreate(this);
 }
 
 export class PatientHealthState {
     @IsUUID(4, uuidValidationOptions)
-    id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     @Type(() => FunctionParameters)
     @ValidateNested()
-    functionParameters: FunctionParameters;
+    public readonly functionParameters: FunctionParameters;
 
-    @Type(() => ConditionParameters)
-    @ValidateNested({ each: true })
     /**
      * The first matching conditions are selected.
      * When nothing matches, the state is not changed.
      */
-    nextStateConditions: ConditionParameters[];
+    @Type(() => ConditionParameters)
+    @ValidateNested({ each: true })
+    public readonly nextStateConditions: readonly ConditionParameters[];
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(
         functionParameters: FunctionParameters,
-        nextStateConditions: ConditionParameters[]
+        nextStateConditions: readonly ConditionParameters[]
     ) {
         this.functionParameters = functionParameters;
         this.nextStateConditions = nextStateConditions;
     }
+
+    static readonly create = getCreate(this);
 }
