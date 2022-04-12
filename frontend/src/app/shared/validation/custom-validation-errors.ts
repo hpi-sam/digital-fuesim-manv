@@ -1,5 +1,5 @@
 import type { CustomValidators } from './custom-validators';
-import type { ExerciseExistsError } from './exercise-exists-validator.directive';
+import type { ExerciseExistsValidatorError } from './exercise-exists-validator.directive';
 
 /**
  * A strongly typed version of the ValidationErrors interface.
@@ -9,7 +9,7 @@ export type CustomValidationErrors = Partial<
         | AngularValidationErrors
         | Exclude<CustomValidationError, null>
         // These errors are not saved in CustomValidators
-        | ExerciseExistsError
+        | ExerciseExistsValidatorError
     >
 >;
 
