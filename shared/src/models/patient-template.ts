@@ -38,7 +38,7 @@ export class PatientTemplate {
     constructor(
         personalInformation: PersonalInformation,
         isPreTriaged: boolean,
-        healthStates: { [stateId: UUID]: PatientHealthState },
+        healthStates: { readonly [stateId: UUID]: PatientHealthState },
         image: ImageProperties,
         health: HealthPoints,
         startingHealthStateId: UUID

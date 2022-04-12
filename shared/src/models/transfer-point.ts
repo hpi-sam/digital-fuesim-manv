@@ -31,7 +31,7 @@ export class TransferPoint {
     constructor(
         position: Position,
         reachableTransferPoints: {
-            [key: UUID]: {
+            readonly [key: UUID]: {
                 duration: number;
             };
         },

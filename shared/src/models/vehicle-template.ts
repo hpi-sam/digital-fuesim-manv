@@ -39,7 +39,7 @@ export class VehicleTemplate {
         name: string,
         image: ImageProperties,
         patientCapacity: number,
-        personnel: PersonnelType[],
+        personnel: readonly PersonnelType[],
         material: CanCaterFor
     ) {
         this.name = name;

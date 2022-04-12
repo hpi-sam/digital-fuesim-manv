@@ -125,7 +125,7 @@ export class PatientHealthState {
      */
     constructor(
         functionParameters: FunctionParameters,
-        nextStateConditions: ConditionParameters[]
+        nextStateConditions: readonly ConditionParameters[]
     ) {
         this.functionParameters = functionParameters;
         this.nextStateConditions = nextStateConditions;
