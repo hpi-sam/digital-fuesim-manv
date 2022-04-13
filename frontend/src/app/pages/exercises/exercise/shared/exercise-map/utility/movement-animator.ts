@@ -1,4 +1,3 @@
-import type Geometry from 'ol/geom/Geometry';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import type OlMap from 'ol/Map';
@@ -20,7 +19,7 @@ export class MovementAnimator {
 
     constructor(
         private readonly olMap: OlMap,
-        private readonly layer: VectorLayer<VectorSource<Geometry>>
+        private readonly layer: VectorLayer<VectorSource>
     ) {}
 
     /**

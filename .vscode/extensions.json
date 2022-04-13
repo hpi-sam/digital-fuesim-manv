@@ -21,8 +21,9 @@
         "cyrilletuzi.angular-schematics",
         "zignd.html-css-class-completion",
         "mrmlnc.vscode-scss",
-        "rcore.rcore-unused-css-classes"
+        "rcore.rcore-unused-css-classes",
         // backend
+        "Arjun.swagger-viewer"
     ],
     // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
     "unwantedRecommendations": []

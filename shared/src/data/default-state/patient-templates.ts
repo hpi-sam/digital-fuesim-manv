@@ -4,19 +4,26 @@ import {
     PatientTemplate,
 } from '../../models';
 import type { ImageProperties } from '../../models/utils';
+import { healthPointsDefaults } from '../../models/utils';
 
-const defaultImage: ImageProperties = {
-    url: '/assets/patient.svg',
+const defaultMaleImage: ImageProperties = {
+    url: '/assets/male_patient.svg',
     height: 80,
     aspectRatio: 1,
 };
 
-const defaultHealthState = new PatientHealthState(
-    new FunctionParameters(-1_000, 2_000, 1_000, 500),
+const defaultFemaleImage: ImageProperties = {
+    url: '/assets/female_patient.svg',
+    height: 80,
+    aspectRatio: 1,
+};
+
+const defaultHealthState = PatientHealthState.create(
+    FunctionParameters.create(-1_000, 2_000, 1_000, 500),
     []
 );
 
-const greenPatientTemplate = new PatientTemplate(
+const greenPatientTemplate = PatientTemplate.create(
     {
         sex: 'männlich',
         name: 'Max Mustermann',
@@ -25,13 +32,14 @@ const greenPatientTemplate = new PatientTemplate(
         age: 18,
         address: 'Musterstr. 1, 90768 Musterstadt',
     },
-    'green',
-    'green',
+    true,
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage
+    defaultMaleImage,
+    healthPointsDefaults.greenMax,
+    defaultHealthState.id
 );
 
-const yellowPatientTemplate = new PatientTemplate(
+const yellowPatientTemplate = PatientTemplate.create(
     {
         sex: 'männlich',
         name: 'Walter Falter',
@@ -40,13 +48,14 @@ const yellowPatientTemplate = new PatientTemplate(
         age: 73,
         address: 'Pappelstr. 69, 97537 Eschenburg',
     },
-    'yellow',
-    'yellow',
+    true,
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage
+    defaultMaleImage,
+    healthPointsDefaults.yellowMax,
+    defaultHealthState.id
 );
 
-const redPatientTemplate = new PatientTemplate(
+const redPatientTemplate = PatientTemplate.create(
     {
         sex: 'weiblich',
         name: 'Maria Kohler',
@@ -55,13 +64,14 @@ const redPatientTemplate = new PatientTemplate(
         age: 80,
         address: 'Hannibal Str. 85, 12345 Hinterstadt',
     },
-    'red',
-    'red',
+    true,
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage
+    defaultFemaleImage,
+    healthPointsDefaults.redMax,
+    defaultHealthState.id
 );
 
-const blackPatientTemplate = new PatientTemplate(
+const blackPatientTemplate = PatientTemplate.create(
     {
         sex: 'männlich',
         name: 'John Doe',
@@ -70,13 +80,14 @@ const blackPatientTemplate = new PatientTemplate(
         age: 23,
         address: 'Am Musterbahnhof 5, 10010 Musterdorf',
     },
-    'black',
-    'black',
+    true,
     { [defaultHealthState.id]: defaultHealthState },
-    defaultImage
+    defaultMaleImage,
+    healthPointsDefaults.blackMax,
+    defaultHealthState.id
 );
 
-export const defaultPatientTemplates: PatientTemplate[] = [
+export const defaultPatientTemplates: readonly PatientTemplate[] = [
     greenPatientTemplate,
     yellowPatientTemplate,
     redPatientTemplate,

@@ -24,6 +24,7 @@ import type { ApiService } from 'src/app/core/api.service';
 import type { NgZone } from '@angular/core';
 import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
+import { isEqual } from 'lodash-es';
 import { startingPosition } from '../../starting-position';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
@@ -60,7 +61,7 @@ export class OlMapManager {
      * ```
      */
     private readonly layerFeatureManagerDictionary = new Map<
-        VectorLayer<VectorSource<Geometry>>,
+        VectorLayer<VectorSource>,
         FeatureManager<any>
     >();
 
@@ -77,7 +78,7 @@ export class OlMapManager {
             20
         );
         const patientLayer = this.createElementLayer();
-        const vehicleLayer = this.createElementLayer();
+        const vehicleLayer = this.createElementLayer(1000);
         const personnelLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
         const cateringLinesLayer = this.createElementLayer<LineString>();
@@ -89,6 +90,14 @@ export class OlMapManager {
         const translateInteraction = new Translate({
             layers: [patientLayer, vehicleLayer, personnelLayer, materialLayer],
         });
+        // Clicking on an element should not trigger a drag event - use a `singleclick` interaction instead
+        // Be aware that this means that not every `dragstart` event will have an accompanying `dragend` event
+        translateInteraction.on('translateend', (event) => {
+            if (isEqual(event.coordinate, event.startCoordinate)) {
+                event.stopPropagation();
+            }
+        });
+
         TranslateHelper.registerTranslateEvents(translateInteraction);
 
         this.olMap = new OlMap({

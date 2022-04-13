@@ -18,10 +18,7 @@ export class CateringLinesFeatureManager
     >
     implements FeatureManager<Feature<LineString>>
 {
-    readonly supportedChangeProperties = new Set([
-        'catererPosition',
-        'patientPosition',
-    ] as const);
+    readonly unsupportedChangeProperties = new Set(['id'] as const);
 
     constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {
         super();
@@ -65,14 +62,14 @@ export class CateringLinesFeatureManager
             this.getStyle(thisFeature as Feature<LineString>, currentZoom)
         );
         feature.setId(element.id);
-        this.layer.getSource().addFeature(feature);
+        this.layer.getSource()!.addFeature(feature);
     }
 
     deleteFeature(
         element: CateringLine,
         elementFeature: Feature<LineString>
     ): void {
-        this.layer.getSource().removeFeature(elementFeature);
+        this.layer.getSource()!.removeFeature(elementFeature);
     }
 
     changeFeature(
@@ -108,6 +105,6 @@ export class CateringLinesFeatureManager
     }
 
     getFeatureFromElement(element: CateringLine) {
-        return this.layer.getSource().getFeatureById(element.id);
+        return this.layer.getSource()!.getFeatureById(element.id) ?? undefined;
     }
 }

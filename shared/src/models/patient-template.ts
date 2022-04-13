@@ -1,49 +1,55 @@
 import { Type } from 'class-transformer';
-import {
-    IsDefined,
-    IsNotIn,
-    IsString,
-    IsUUID,
-    ValidateNested,
-} from 'class-validator';
+import { IsBoolean, IsDefined, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { PatientStatus } from './utils';
+import { getCreate, HealthPoints, IsValidHealthPoint } from './utils';
 import { ImageProperties } from './utils/image-properties';
 import { PersonalInformation } from './utils/personal-information';
 import type { PatientHealthState } from '.';
 
 export class PatientTemplate {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     @ValidateNested()
     @Type(() => PersonalInformation)
-    public personalInformation: PersonalInformation;
+    public readonly personalInformation: PersonalInformation;
 
-    @IsNotIn([undefined])
-    public visibleStatus: PatientStatus | null;
-
-    @IsString()
-    public realStatus: PatientStatus;
+    @IsBoolean()
+    public readonly isPreTriaged: boolean;
 
     @ValidateNested()
     @Type(() => ImageProperties)
-    public image: ImageProperties;
+    public readonly image: ImageProperties;
 
     @IsDefined()
-    public healthStates: { [stateId: UUID]: PatientHealthState } = {};
+    public readonly healthStates: {
+        readonly [stateId: UUID]: PatientHealthState;
+    };
 
+    @IsUUID(4, uuidValidationOptions)
+    public readonly startingHealthStateId: UUID;
+
+    @IsValidHealthPoint()
+    public readonly health: HealthPoints;
+
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(
         personalInformation: PersonalInformation,
-        visibleStatus: PatientStatus | null,
-        realStatus: PatientStatus,
-        healthStates: { [stateId: UUID]: PatientHealthState },
-        image: ImageProperties
+        isPreTriaged: boolean,
+        healthStates: { readonly [stateId: UUID]: PatientHealthState },
+        image: ImageProperties,
+        health: HealthPoints,
+        startingHealthStateId: UUID
     ) {
         this.personalInformation = personalInformation;
-        this.visibleStatus = visibleStatus;
-        this.realStatus = realStatus;
+        this.isPreTriaged = isPreTriaged;
         this.image = image;
         this.healthStates = healthStates;
+        this.health = health;
+        this.startingHealthStateId = startingHealthStateId;
     }
+
+    static readonly create = getCreate(this);
 }

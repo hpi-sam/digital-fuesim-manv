@@ -5,6 +5,7 @@ import { DisplayValidationComponent } from './validation/display-validation/disp
 import { ExactMatchValidatorDirective } from './validation/exact-match-validator.directive';
 import { OnlyNumbersValidatorDirective } from './validation/only-numbers-validator.directive';
 import { AppTrackByPropertyPipe } from './pipes/track-by-property/app-track-by-property.pipe';
+import { ExerciseExistsValidatorDirective } from './validation/exercise-exists-validator.directive';
 
 @NgModule({
     declarations: [
@@ -13,6 +14,7 @@ import { AppTrackByPropertyPipe } from './pipes/track-by-property/app-track-by-p
         ExactMatchValidatorDirective,
         OnlyNumbersValidatorDirective,
         AppTrackByPropertyPipe,
+        ExerciseExistsValidatorDirective,
     ],
     imports: [CommonModule],
     exports: [
@@ -21,6 +23,7 @@ import { AppTrackByPropertyPipe } from './pipes/track-by-property/app-track-by-p
         ExactMatchValidatorDirective,
         OnlyNumbersValidatorDirective,
         AppTrackByPropertyPipe,
+        ExerciseExistsValidatorDirective,
     ],
 })
 export class SharedModule {}

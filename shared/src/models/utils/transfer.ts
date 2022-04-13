@@ -1,20 +1,24 @@
 import { IsNumber, IsUUID } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
+import { getCreate } from './get-create';
 
 export class Transfer {
     /**
      * The timestamp in exercise time when the transfer will end.
      */
     @IsNumber()
-    public endTimeStamp: number;
+    public readonly endTimeStamp: number;
 
     @IsUUID(4, uuidValidationOptions)
-    public startTransferPointId: UUID;
+    public readonly startTransferPointId: UUID;
 
     @IsUUID(4, uuidValidationOptions)
-    public targetTransferPointId: UUID;
+    public readonly targetTransferPointId: UUID;
 
-    public constructor(
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
         endTimeStamp: number,
         startTransferPointId: UUID,
         targetTransferPointId: UUID
@@ -23,4 +27,6 @@ export class Transfer {
         this.startTransferPointId = startTransferPointId;
         this.targetTransferPointId = targetTransferPointId;
     }
+
+    static readonly create = getCreate(this);
 }

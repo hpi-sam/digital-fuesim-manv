@@ -1,18 +1,17 @@
-import type {
-    ExerciseAction,
-    ExerciseState,
-    Role,
-} from 'digital-fuesim-manv-shared';
-import {
-    reduceExerciseState,
-    generateExercise,
-} from 'digital-fuesim-manv-shared';
+import type { ExerciseAction, Role } from 'digital-fuesim-manv-shared';
+import { reduceExerciseState, ExerciseState } from 'digital-fuesim-manv-shared';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
 import { patientTick } from './patient-ticking';
 import { PeriodicEventHandler } from './periodic-events/periodic-event-handler';
 
 export class ExerciseWrapper {
+    private tickCounter = 0;
+
+    /**
+     * How many ticks have to pass until treatments get recalculated (e.g. with {@link tickInterval} === 1000 and {@link refreshTreatmentInterval} === 60 every minute)
+     */
+    private readonly refreshTreatmentInterval = 20;
     /**
      * This function gets called once every second in case the exercise is running.
      * All periodic actions of the exercise (e.g. status changes for patients) should happen here.
@@ -25,9 +24,15 @@ export class ExerciseWrapper {
         const updateAction: ExerciseAction = {
             type: '[Exercise] Tick',
             patientUpdates,
+            /**
+             * refresh every {@link refreshTreatmentInterval} * {@link tickInterval} ms seconds
+             */
+            refreshTreatments:
+                this.tickCounter % this.refreshTreatmentInterval === 0,
         };
         this.reduce(updateAction);
         this.emitAction(updateAction);
+        this.tickCounter++;
     };
 
     // Call the tick every 1000 ms
@@ -39,7 +44,7 @@ export class ExerciseWrapper {
 
     private readonly clients = new Set<ClientWrapper>();
 
-    private currentState = generateExercise();
+    private currentState = ExerciseState.create();
 
     private readonly stateHistory: ExerciseState[] = [];
 

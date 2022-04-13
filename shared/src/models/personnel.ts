@@ -7,31 +7,37 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { UUID, UUIDSet, uuid, uuidValidationOptions } from '../utils';
-import { CanCaterFor, Position, ImageProperties, PersonnelType } from './utils';
+import {
+    CanCaterFor,
+    Position,
+    ImageProperties,
+    PersonnelType,
+    getCreate,
+} from './utils';
 
 export class Personnel {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     @IsUUID(4, uuidValidationOptions)
-    public vehicleId: UUID;
+    public readonly vehicleId: UUID;
 
     // TODO
     @IsString()
-    public personnelType: PersonnelType;
+    public readonly personnelType: PersonnelType;
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     @IsDefined()
-    public assignedPatientIds: UUIDSet;
+    public readonly assignedPatientIds: UUIDSet;
 
     @ValidateNested()
     @Type(() => CanCaterFor)
-    public canCaterFor: CanCaterFor;
+    public readonly canCaterFor: CanCaterFor;
 
     @ValidateNested()
     @Type(() => ImageProperties)
-    public image: ImageProperties = {
-        url: './assets/personnel.png',
+    public readonly image: ImageProperties = {
+        url: './assets/personnel.svg',
         height: 80,
         aspectRatio: 1,
     };
@@ -42,17 +48,22 @@ export class Personnel {
     @ValidateNested()
     @Type(() => Position)
     @IsOptional()
-    public position?: Position;
+    public readonly position?: Position;
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(
         vehicleId: UUID,
         personnelType: PersonnelType,
         assignedPatientIds: UUIDSet,
-        canCaterFor: CanCaterFor = new CanCaterFor(1, 1, 4, 'or')
+        canCaterFor: CanCaterFor = CanCaterFor.create(1, 1, 4, 'or')
     ) {
         this.vehicleId = vehicleId;
         this.personnelType = personnelType;
         this.assignedPatientIds = assignedPatientIds;
         this.canCaterFor = canCaterFor;
     }
+
+    static readonly create = getCreate(this);
 }

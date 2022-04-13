@@ -1,4 +1,4 @@
-import type { UUID, Position, Immutable } from 'digital-fuesim-manv-shared';
+import type { UUID, Position } from 'digital-fuesim-manv-shared';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
 import Point from 'ol/geom/Point';
@@ -15,11 +15,10 @@ import type { FeatureManager } from '../utility/feature-manager';
 import { ElementManager } from './element-manager';
 
 type ElementFeature = Feature<Point>;
-type SupportedChangeProperties = ReadonlySet<'position'>;
-export type PositionableElement = Immutable<{
-    id: UUID;
-    position: Position;
-}>;
+export interface PositionableElement {
+    readonly id: UUID;
+    readonly position: Position;
+}
 
 /**
  * The base class for all element feature managers.
@@ -28,7 +27,7 @@ export type PositionableElement = Immutable<{
  * * manages the default interactions of the element
  */
 export abstract class ElementFeatureManager<Element extends PositionableElement>
-    extends ElementManager<Element, ElementFeature, SupportedChangeProperties>
+    extends ElementManager<Element, ElementFeature, ReadonlySet<keyof Element>>
     implements FeatureManager<ElementFeature>
 {
     private readonly movementAnimator = new MovementAnimator(
@@ -49,27 +48,30 @@ export abstract class ElementFeatureManager<Element extends PositionableElement>
         super();
     }
 
+    override unsupportedChangeProperties: ReadonlySet<keyof Element> = new Set(
+        [] as const
+    );
     createFeature(element: Element): void {
         const elementFeature = new Feature(
             new Point([element.position.x, element.position.y])
         );
         elementFeature.setId(element.id);
-        this.layer.getSource().addFeature(elementFeature);
+        this.layer.getSource()!.addFeature(elementFeature);
         this.translateHelper.onTranslateEnd(elementFeature, (newPosition) => {
             this.proposeMovementAction(newPosition, element);
         });
     }
 
     deleteFeature(element: Element, elementFeature: ElementFeature): void {
-        this.layer.getSource().removeFeature(elementFeature);
+        this.layer.getSource()!.removeFeature(elementFeature);
         this.movementAnimator.stopMovementAnimation(elementFeature);
     }
 
-    readonly supportedChangeProperties = new Set(['position'] as const);
     changeFeature(
         oldElement: Element,
         newElement: Element,
-        changedProperties: SupportedChangeProperties,
+        // It is too much work to correctly type this param with {@link unsupportedChangeProperties}
+        changedProperties: ReadonlySet<keyof Element>,
         patientFeature: ElementFeature
     ): void {
         if (changedProperties.has('position')) {
@@ -80,10 +82,8 @@ export abstract class ElementFeatureManager<Element extends PositionableElement>
         }
     }
 
-    getFeatureFromElement(element: Element) {
-        return this.layer.getSource().getFeatureById(element.id) as
-            | ElementFeature
-            | undefined;
+    getFeatureFromElement(element: Element): ElementFeature | undefined {
+        return this.layer.getSource()!.getFeatureById(element.id) ?? undefined;
     }
 
     protected getElementFromFeature(feature: Feature<any>) {

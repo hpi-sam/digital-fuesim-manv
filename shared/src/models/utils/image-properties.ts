@@ -1,4 +1,5 @@
 import { IsInt, IsPositive, IsString } from 'class-validator';
+import { getCreate } from './get-create';
 
 export class ImageProperties {
     /**
@@ -8,7 +9,7 @@ export class ImageProperties {
      * @example '/assets/image.svg'
      */
     @IsString()
-    public url: string;
+    public readonly url: string;
 
     /**
      * The height of the image in pixels at the {@link normalZoom}
@@ -17,7 +18,7 @@ export class ImageProperties {
      */
     @IsInt()
     @IsPositive()
-    public height: number;
+    public readonly height: number;
 
     /**
      * {@link aspectRatio} = width / {@link height}
@@ -27,11 +28,16 @@ export class ImageProperties {
      * If the image is the same, their aspect ratios must be the same too.
      */
     @IsPositive()
-    public aspectRatio: number;
+    public readonly aspectRatio: number;
 
-    public constructor(url: string, height: number, aspectRatio: number) {
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(url: string, height: number, aspectRatio: number) {
         this.url = url;
         this.height = height;
         this.aspectRatio = aspectRatio;
     }
+
+    static readonly create = getCreate(this);
 }

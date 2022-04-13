@@ -1,6 +1,5 @@
 import type { Position } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
-import type Geometry from 'ol/geom/Geometry';
 import type Point from 'ol/geom/Point';
 import type { Translate } from 'ol/interaction';
 
@@ -22,7 +21,7 @@ export class TranslateHelper {
         ] as const;
         for (const eventName of translateEvents) {
             translateInteraction.on(eventName, (event) => {
-                event.features.forEach((feature: Feature<Geometry>) => {
+                event.features.forEach((feature: Feature) => {
                     feature.dispatchEvent(event);
                 });
             });
@@ -33,8 +32,8 @@ export class TranslateHelper {
         feature: Feature<Point>,
         callback: (newCoordinates: Position) => void
     ) {
-        // The translateend event is only called on features
         feature.addEventListener('translateend', (event) => {
+            // The end coordinates in the event are the mouse coordinates and not the feature coordinates.
             const [x, y] = feature.getGeometry()!.getCoordinates();
             callback({ x, y });
         });

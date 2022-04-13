@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-throw-literal */
-import { cloneDeep } from 'lodash-es';
 import { getStatus } from '../../models/utils';
 import type { ExerciseAction } from '../exercise.actions';
 import { imageSizeToPosition } from '../../state-helpers';
 import { StatusHistoryEntry } from '../../models';
+import { cloneDeepMutable } from '../../utils/clone-deep-mutable';
 import type { ReducerFunction } from './reducer-function';
 import { calculateTreatments } from './calculate-treatments';
 import { ReducerError } from '.';
@@ -56,7 +56,7 @@ export const exerciseReducerMap: {
                 `HealthState with id ${patient.currentHealthStateId} does not exist`
             );
         }
-        draftState.patients[patient.id] = cloneDeep(patient);
+        draftState.patients[patient.id] = cloneDeepMutable(patient);
         calculateTreatments(draftState);
         return draftState;
     },
@@ -215,6 +215,7 @@ export const exerciseReducerMap: {
                 });
             }
         }
+        calculateTreatments(draftState);
         return draftState;
     },
     '[Vehicle] Remove vehicle': (draftState, { vehicleId }) => {
@@ -293,7 +294,7 @@ export const exerciseReducerMap: {
         return draftState;
     },
     '[Exercise] Pause': (draftState, { timestamp }) => {
-        const statusHistoryEntry = new StatusHistoryEntry(
+        const statusHistoryEntry = StatusHistoryEntry.create(
             'paused',
             new Date(timestamp)
         );
@@ -303,7 +304,7 @@ export const exerciseReducerMap: {
         return draftState;
     },
     '[Exercise] Start': (draftState, { timestamp }) => {
-        const statusHistoryEntry = new StatusHistoryEntry(
+        const statusHistoryEntry = StatusHistoryEntry.create(
             'running',
             new Date(timestamp)
         );
@@ -312,7 +313,7 @@ export const exerciseReducerMap: {
 
         return draftState;
     },
-    '[Exercise] Tick': (draftState, { patientUpdates }) => {
+    '[Exercise] Tick': (draftState, { patientUpdates, refreshTreatments }) => {
         patientUpdates.forEach((patientUpdate) => {
             const currentPatient = draftState.patients[patientUpdate.id];
             currentPatient.currentHealthStateId = patientUpdate.nextStateId;
@@ -323,7 +324,9 @@ export const exerciseReducerMap: {
                 currentPatient.visibleStatus = currentPatient.realStatus;
             }
         });
-        calculateTreatments(draftState);
+        if (refreshTreatments) {
+            calculateTreatments(draftState);
+        }
         return draftState;
     },
     '[Exercise] Set Participant Id': (draftState, { participantId }) => {

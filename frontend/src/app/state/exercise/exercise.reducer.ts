@@ -1,13 +1,12 @@
 import { createReducer, on } from '@ngrx/store';
-import type { ExerciseState } from 'digital-fuesim-manv-shared';
 import {
+    ExerciseState,
     reduceExerciseState,
-    generateExercise,
     ReducerError,
 } from 'digital-fuesim-manv-shared';
 import { applyServerAction, setExerciseState } from './exercise.actions';
 
-export const initialState = generateExercise();
+export const initialState = ExerciseState.create();
 
 export const exerciseReducer = createReducer(
     initialState,

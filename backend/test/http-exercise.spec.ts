@@ -30,6 +30,29 @@ describe('exercise', () => {
         });
     });
 
+    describe('GET /api/exercise/:exerciseId', () => {
+        it('succeeds returning true for participant id', async () => {
+            const participantId = (await createExercise(environment))
+                .participantId;
+            await environment
+                .httpRequest('get', `/api/exercise/${participantId}`)
+                .expect(200);
+        });
+
+        it('succeeds returning true for trainer id', async () => {
+            const trainerId = (await createExercise(environment)).trainerId;
+            await environment
+                .httpRequest('get', `/api/exercise/${trainerId}`)
+                .expect(200);
+        });
+
+        it('succeeds returning false for not existing id', async () => {
+            await environment
+                .httpRequest('get', `/api/exercise/trainerId`)
+                .expect(404);
+        });
+    });
+
     describe('DELETE /api/exercise/:exerciseId', () => {
         it('succeeds deleting an exercise', async () => {
             const exerciseId = (await createExercise(environment)).trainerId;
