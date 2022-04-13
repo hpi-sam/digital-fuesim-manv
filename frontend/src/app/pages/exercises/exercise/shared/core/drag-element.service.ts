@@ -31,7 +31,7 @@ export class DragElementService {
     private transferringTemplate?: TransferTemplate;
 
     /**
-     * Should be called on the mousdown event of the element to be dragged
+     * Should be called on the mousedown event of the element to be dragged
      * @param event the mouse event
      * @param transferTemplate the template to be added
      */
