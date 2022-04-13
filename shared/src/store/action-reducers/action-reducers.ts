@@ -1,5 +1,6 @@
 import { ClientActionReducers } from './client';
 import { ExerciseActionReducers } from './exercise';
+import { MapImagesActionReducers } from './map-images';
 import { MaterialActionReducers } from './material';
 import { PatientActionReducers } from './patient';
 import { PersonnelActionReducers } from './personnel';
@@ -13,6 +14,7 @@ const actionReducers = {
     ...ClientActionReducers,
     ...ExerciseActionReducers,
     ...MaterialActionReducers,
+    ...MapImagesActionReducers,
     ...PatientActionReducers,
     ...PersonnelActionReducers,
     ...VehicleActionReducers,

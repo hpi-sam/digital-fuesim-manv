@@ -80,6 +80,41 @@
                         </div>
                     </div>
                 </li>
+                <li class="list-group-item">
+                    <h5>Bilder</h5>
+                    <div
+                        class="overflow-auto w-100"
+                        style="white-space: nowrap"
+                    >
+                        <div
+                            *ngFor="
+                                let mapImageTemplate of mapImageTemplates$
+                                    | async
+                            "
+                            class="d-inline-block card text-center"
+                            style="width: 10rem; text-overflow: ellipsis"
+                            (mousedown)="
+                                dragElementService.onMouseDown($event, {
+                                    type: 'mapImage',
+                                    template: mapImageTemplate
+                                })
+                            "
+                        >
+                            <img
+                                [src]="mapImageTemplate.image.url"
+                                class="card-img-top"
+                            />
+                            <div class="card-body">
+                                <h5
+                                    class="card-title text-truncate"
+                                    [title]="mapImageTemplate.name"
+                                >
+                                    {{ mapImageTemplate.name }}
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                </li>
             </ul>
         </div>
     </div>

@@ -6,10 +6,13 @@ import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { AppState } from '../app.state';
 
 export const selectViewports = (state: AppState) => state.exercise.viewports;
+export const selectMapImages = (state: AppState) => state.exercise.mapImages;
 export const selectVehicleTemplates = (state: AppState) =>
     state.exercise.vehicleTemplates;
 export const selectPatientTemplates = (state: AppState) =>
     state.exercise.patientTemplates;
+export const selectMapImagesTemplates = (state: AppState) =>
+    state.exercise.mapImageTemplates;
 export const selectPatients = (state: AppState) => state.exercise.patients;
 export const selectVehicles = (state: AppState) => state.exercise.vehicles;
 export const selectPersonnel = (state: AppState) => state.exercise.personnel;

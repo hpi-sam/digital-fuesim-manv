@@ -16,6 +16,7 @@ import { debounceTime, startWith, Subject, pairwise, takeUntil } from 'rxjs';
 import {
     getSelectWithPosition,
     selectCateringLines,
+    selectMapImages,
 } from 'src/app/state/exercise/exercise.selectors';
 import OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
@@ -32,6 +33,7 @@ import { PersonnelFeatureManager } from '../feature-managers/personnel-feature-m
 import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
 import type { ElementManager } from '../feature-managers/element-manager';
+import { MapImageFeatureManager } from '../feature-managers/map-images-feature-manager';
 import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
@@ -172,6 +174,16 @@ export class OlMapManager {
                 this.apiService
             ),
             this.store.select(getSelectWithPosition('materials'))
+        );
+
+        this.registerFeatureElementManager(
+            new MapImageFeatureManager(
+                store,
+                this.olMap,
+                materialLayer,
+                this.apiService
+            ),
+            this.store.select(selectMapImages)
         );
 
         this.registerFeatureElementManager(
