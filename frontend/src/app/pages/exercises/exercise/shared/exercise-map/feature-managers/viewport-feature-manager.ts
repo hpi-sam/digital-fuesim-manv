@@ -1,3 +1,4 @@
+import type { Viewport } from 'digital-fuesim-manv-shared/src/models/viewport';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
 import LineString from 'ol/geom/LineString';
@@ -6,7 +7,7 @@ import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
-import type { Viewport } from 'src/app/shared/types/viewport';
+
 import type { FeatureManager } from '../utility/feature-manager';
 import { ElementManager } from './element-manager';
 
@@ -54,11 +55,11 @@ export class ViewportFeatureManager
     createFeature(element: Viewport): void {
         const feature = new Feature(
             new LineString([
-                [element.bottomLeftCornerPosition.x, element.bottomLeftCornerPosition.y],
-                [element.bottomLeftCornerPosition.x, element.topRightCornerPosition.y],
-                [element.topRightCornerPosition.x, element.topRightCornerPosition.y],
-                [element.topRightCornerPosition.x, element.bottomLeftCornerPosition.y],
-                [element.bottomLeftCornerPosition.x, element.bottomLeftCornerPosition.y],
+                [element.topLeft.x, element.topLeft.y],
+                [element.topLeft.x + element.size.width, element.topLeft.y],
+                [element.topLeft.x + element.size.width, element.topLeft.y - element.size.height],
+                [element.topLeft.x, element.topLeft.y - element.size.height],
+                [element.topLeft.x, element.topLeft.y],
             ])
         );
         feature.setStyle((thisFeature, currentZoom) =>
@@ -81,17 +82,17 @@ export class ViewportFeatureManager
         changedProperties: ReadonlySet<keyof Viewport>,
         elementFeature: Feature<LineString>
     ): void {
-        // Rendering the line again is expensive, so we only do it if we must
+        // Rendering the lines again is expensive, so we only do it if we must
         if (
-            changedProperties.has('bottomLeftCornerPosition') ||
-            changedProperties.has('topRightCornerPosition')
+            changedProperties.has('topLeft') ||
+            changedProperties.has('size')
         ) {
             elementFeature.getGeometry()!.setCoordinates([
-                [newElement.bottomLeftCornerPosition.x, newElement.bottomLeftCornerPosition.y],
-                [newElement.bottomLeftCornerPosition.x, newElement.topRightCornerPosition.y],
-                [newElement.topRightCornerPosition.x, newElement.topRightCornerPosition.y],
-                [newElement.topRightCornerPosition.x, newElement.bottomLeftCornerPosition.y],
-                [newElement.bottomLeftCornerPosition.x, newElement.bottomLeftCornerPosition.y],
+                [newElement.topLeft.x, newElement.topLeft.y],
+                [newElement.topLeft.x + newElement.size.width, newElement.topLeft.y],
+                [newElement.topLeft.x + newElement.size.width, newElement.topLeft.y - newElement.size.height],
+                [newElement.topLeft.x, newElement.topLeft.y - newElement.size.height],
+                [newElement.topLeft.x, newElement.topLeft.y],
             ]);
         }
     }
