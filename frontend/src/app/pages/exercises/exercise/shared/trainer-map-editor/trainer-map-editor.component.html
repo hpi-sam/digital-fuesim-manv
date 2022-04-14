@@ -20,8 +20,8 @@
                             "
                             class="d-inline-block card text-center"
                             style="width: 10rem; text-overflow: ellipsis"
-                            (dragstart)="
-                                dragElementService.onDragStart($event, {
+                            (mousedown)="
+                                dragElementService.onMouseDown($event, {
                                     type: 'patient',
                                     template: patientTemplate
                                 })
@@ -30,7 +30,6 @@
                             <img
                                 [src]="patientTemplate.image.url"
                                 class="card-img-top"
-                                draggable="true"
                             />
                             <div class="card-body">
                                 <h5
@@ -59,8 +58,8 @@
                             "
                             class="d-inline-block card text-center"
                             style="width: 10rem; text-overflow: ellipsis"
-                            (dragstart)="
-                                dragElementService.onDragStart($event, {
+                            (mousedown)="
+                                dragElementService.onMouseDown($event, {
                                     type: 'vehicle',
                                     template: vehicleTemplate
                                 })
@@ -69,7 +68,6 @@
                             <img
                                 [src]="vehicleTemplate.image.url"
                                 class="card-img-top"
-                                draggable="true"
                             />
                             <div class="card-body">
                                 <h5
