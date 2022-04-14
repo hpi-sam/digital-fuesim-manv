@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { getCreate, Position, Size } from './utils';
+import type { ImageProperties } from './utils';
 
 export class Viewport {
     @IsUUID(4, uuidValidationOptions)
@@ -28,4 +29,10 @@ export class Viewport {
     }
 
     static readonly create = getCreate(this);
+
+    static image: ImageProperties = {
+        url: 'assets/material.svg',
+        height: 400,
+        aspectRatio: 134 / 102,
+    }
 }

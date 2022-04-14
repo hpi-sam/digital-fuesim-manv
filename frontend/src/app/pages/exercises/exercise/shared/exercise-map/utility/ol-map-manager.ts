@@ -14,6 +14,7 @@ import XYZ from 'ol/source/XYZ';
 import type { Observable } from 'rxjs';
 import { debounceTime, startWith, Subject, pairwise, takeUntil } from 'rxjs';
 import {
+    getselectViewport,
     getSelectWithPosition,
     selectCateringLines,
 } from 'src/app/state/exercise/exercise.selectors';
@@ -31,6 +32,7 @@ import { PatientFeatureManager } from '../feature-managers/patient-feature-manag
 import { PersonnelFeatureManager } from '../feature-managers/personnel-feature-manager';
 import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
+import { ViewportFeatureManager } from '../feature-managers/viewport-feature-manager';
 import type { ElementManager } from '../feature-managers/element-manager';
 import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
@@ -82,6 +84,7 @@ export class OlMapManager {
         const personnelLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
         const cateringLinesLayer = this.createElementLayer<LineString>();
+        const viewportLayer = this.createElementLayer<LineString>();
         this.popupOverlay = new Overlay({
             element: this.popoverContainer,
         });
@@ -110,6 +113,7 @@ export class OlMapManager {
                 patientLayer,
                 personnelLayer,
                 materialLayer,
+                viewportLayer,
             ],
             overlays: [this.popupOverlay],
             view: new View({
@@ -177,6 +181,11 @@ export class OlMapManager {
         this.registerFeatureElementManager(
             new CateringLinesFeatureManager(cateringLinesLayer),
             this.store.select(selectCateringLines)
+        );
+
+        this.registerFeatureElementManager(
+            new ViewportFeatureManager(viewportLayer),
+            this.store.select(getselectViewport('viewports'))
         );
 
         this.registerPopupTriggers(translateInteraction);

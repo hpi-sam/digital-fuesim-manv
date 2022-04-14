@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core';
 import type {
+    ImageProperties,
     PatientTemplate,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
-import { Patient, normalZoom, addVehicle } from 'digital-fuesim-manv-shared';
+import {
+    Patient,
+    Viewport,
+    normalZoom,
+    addVehicle,
+} from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 
@@ -147,6 +153,20 @@ export class DragElementService {
                     );
                 }
                 break;
+            case 'viewport':
+                    this.apiService.proposeAction(
+                        {
+                            type: '[Viewport] Add viewport',
+                            viewport: Viewport.create(
+                                position,
+                                {width: 700, height: 700},
+                                // TODO: Ask for user input
+                                'Einsatzabschnitt'
+                            ),
+                        },
+                        true
+                    )
+                break;
             default:
                 break;
         }
@@ -178,4 +198,10 @@ type TransferTemplate =
     | {
           type: 'vehicle';
           template: VehicleTemplate;
-      };
+      }
+    | {
+        type: 'viewport';
+        template: {
+            image: ImageProperties;
+        };
+    };

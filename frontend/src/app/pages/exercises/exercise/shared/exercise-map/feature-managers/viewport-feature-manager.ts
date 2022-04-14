@@ -7,7 +7,6 @@ import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
-
 import type { FeatureManager } from '../utility/feature-manager';
 import { ElementManager } from './element-manager';
 
