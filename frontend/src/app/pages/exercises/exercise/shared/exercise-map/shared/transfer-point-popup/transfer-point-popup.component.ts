@@ -1,10 +1,5 @@
 import type { OnInit } from '@angular/core';
-import {
-    Component,
-    ChangeDetectorRef,
-    EventEmitter,
-    Output,
-} from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { TransferPoint, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
