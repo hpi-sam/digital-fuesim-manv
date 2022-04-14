@@ -57,11 +57,14 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         this.olMapManager!.changePopup$.pipe(
             takeUntil(this.destroy$)
         ).subscribe((options) => {
-            if (!options) {
-                this.popupManager!.closePopup();
-                return;
-            }
-            this.popupManager!.togglePopup(options);
+            // Because changePopup$ is coming from outside the angular zone, we need to wrap it in a zone
+            this.ngZone.run(() => {
+                if (!options) {
+                    this.popupManager!.closePopup();
+                    return;
+                }
+                this.popupManager!.togglePopup(options);
+            });
         });
     }
 

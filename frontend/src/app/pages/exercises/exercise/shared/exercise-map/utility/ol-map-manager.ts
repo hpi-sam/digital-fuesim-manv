@@ -151,7 +151,7 @@ export class OlMapManager {
                 this.apiService
             ),
             this.store.select(getSelectWithPosition('transferPoints'))
-        );
+        ).togglePopup$.subscribe(this.changePopup$);
 
         this.registerFeatureElementManager(
             new PatientFeatureManager(

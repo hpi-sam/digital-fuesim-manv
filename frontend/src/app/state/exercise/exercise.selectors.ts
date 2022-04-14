@@ -22,6 +22,9 @@ export const getSelectPatient = (patientId: UUID) => (state: AppState) =>
     state.exercise.patients[patientId];
 export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
     state.exercise.vehicles[vehicleId];
+export const getSelectTransferPoint =
+    (transferPointId: UUID) => (state: AppState) =>
+        state.exercise.transferPoints[transferPointId];
 
 /**
  * @returns a selector that returns a dictionary of all elements that have a position

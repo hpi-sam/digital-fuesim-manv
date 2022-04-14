@@ -350,6 +350,20 @@ export const exerciseReducerMap: {
         transferPoint.position = targetPosition;
         return draftState;
     },
+    '[TransferPoint] Rename TransferPoint': (
+        draftState,
+        { transferPointId, internalName, externalName }
+    ) => {
+        const transferPoint = draftState.transferPoints[transferPointId];
+        if (!transferPoint) {
+            throw new ReducerError(
+                `TransferPoint with id ${transferPointId} does not exist`
+            );
+        }
+        transferPoint.internalName = internalName;
+        transferPoint.externalName = externalName;
+        return draftState;
+    },
     '[TransferPoint] Remove TransferPoint': (
         draftState,
         { transferPointId }

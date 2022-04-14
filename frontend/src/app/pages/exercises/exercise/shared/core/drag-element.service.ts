@@ -160,9 +160,8 @@ export class DragElementService {
                         transferPoint: TransferPoint.create(
                             position,
                             {},
-                            // TODO: Ask for user input
-                            'nach Westen',
-                            'Kreuzung Marienstraße'
+                            '???',
+                            '???'
                         ),
                     },
                     true

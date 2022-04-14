@@ -14,9 +14,11 @@ import Icon from 'ol/style/Icon';
 import OlText from 'ol/style/Text';
 import Fill from 'ol/style/Fill';
 import type { WithPosition } from '../../utility/types/with-position';
+import { withPopup } from '../utility/with-popup';
+import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
 import { ElementFeatureManager } from './element-feature-manager';
 
-export class TransferPointFeatureManager extends ElementFeatureManager<
+class TransferPointFeatureManagerBase extends ElementFeatureManager<
     WithPosition<TransferPoint>
 > {
     constructor(
@@ -103,3 +105,14 @@ export class TransferPointFeatureManager extends ElementFeatureManager<
         'internalName',
     ] as const);
 }
+
+export const TransferPointFeatureManager = withPopup<
+    TransferPoint,
+    typeof TransferPointFeatureManagerBase,
+    TransferPointPopupComponent
+>(TransferPointFeatureManagerBase, {
+    component: TransferPointPopupComponent,
+    height: 150,
+    width: 225,
+    getContext: (feature) => ({ transferPointId: feature.getId() as string }),
+});

@@ -256,6 +256,20 @@ export namespace ExerciseActions {
         public readonly targetPosition!: Position;
     }
 
+    export class RenameTransferPoint implements Action {
+        @IsString()
+        public readonly type = '[TransferPoint] Rename TransferPoint';
+
+        @IsUUID(4, uuidValidationOptions)
+        public readonly transferPointId!: UUID;
+
+        @IsString()
+        public readonly internalName!: string;
+
+        @IsString()
+        public readonly externalName!: string;
+    }
+
     export class RemoveTransferPoint implements Action {
         @IsString()
         public readonly type = '[TransferPoint] Remove TransferPoint';

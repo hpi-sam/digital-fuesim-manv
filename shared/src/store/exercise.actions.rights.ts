@@ -33,6 +33,7 @@ const exerciseRightsMap: {
     '[TransferPoint] Add TransferPoint': 'trainer',
     '[TransferPoint] Remove TransferPoint': 'trainer',
     '[TransferPoint] Move TransferPoint': 'trainer',
+    '[TransferPoint] Rename TransferPoint': 'trainer',
 };
 
 /**
