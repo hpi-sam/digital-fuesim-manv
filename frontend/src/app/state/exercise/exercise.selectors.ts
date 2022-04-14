@@ -28,7 +28,12 @@ export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
  */
 // TODO: probably also include that the position is in a viewport in the future
 export function getSelectWithPosition<
-    Key extends 'materials' | 'patients' | 'personnel' | 'vehicles',
+    Key extends
+        | 'materials'
+        | 'patients'
+        | 'personnel'
+        | 'transferPoints'
+        | 'vehicles',
     Elements extends AppState['exercise'][Key] = AppState['exercise'][Key],
     ElementsWithPosition extends {
         [Id in keyof Elements]: WithPosition<Elements[Id]>;

@@ -1,0 +1,14 @@
+<svg width="134" height="102" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+<!--
+  Made with help of https://stackoverflow.com/questions/32645053/is-it-possible-to-make-svg-circle-fill-color-from-bottom-to-top-based-on-percent
+-->
+ <linearGradient id="middle_bar" x1="0.5" x2="0.5" y1="1" y2="0">
+  <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3"/>
+  <stop offset="38%" stop-color="#ffffff" stop-opacity="0.3"/>
+  <stop offset="38%" stop-color="#0d6efd"/>
+  <stop offset="62%" stop-color="#0d6efd"/>
+  <stop offset="62%" stop-color="#ffffff" stop-opacity="0.3"/>
+  <stop offset="100%" stop-color="#ffffff" stop-opacity="0.3"/>
+ </linearGradient>
+  <ellipse cx="67" cy="51" fill="url(#middle_bar)" id="svg_1" rx="65" ry="50" stroke="#0d6efd" stroke-width="2"/>
+</svg>

@@ -333,4 +333,48 @@ export const exerciseReducerMap: {
         draftState.participantId = participantId;
         return draftState;
     },
+    '[TransferPoint] Add TransferPoint': (draftState, { transferPoint }) => {
+        draftState.transferPoints[transferPoint.id] = transferPoint;
+        return draftState;
+    },
+    '[TransferPoint] Move TransferPoint': (
+        draftState,
+        { transferPointId, targetPosition }
+    ) => {
+        const transferPoint = draftState.transferPoints[transferPointId];
+        if (!transferPoint) {
+            throw new ReducerError(
+                `TransferPoint with id ${transferPointId} does not exist`
+            );
+        }
+        transferPoint.position = targetPosition;
+        return draftState;
+    },
+    '[TransferPoint] Remove TransferPoint': (
+        draftState,
+        { transferPointId }
+    ) => {
+        if (!draftState.transferPoints[transferPointId]) {
+            throw new ReducerError(
+                `TransferPoint with id ${transferPointId} does not exist`
+            );
+        }
+        delete draftState.transferPoints[transferPointId];
+        // TODO: If we can assume that the transfer points are always connect to each other,
+        // we could just iterate over draftState.transferPoints[transferPointId].reachableTransferPoints
+        for (const _transferPointId of Object.keys(draftState.transferPoints)) {
+            const transferPoint = draftState.transferPoints[_transferPointId];
+            for (const connectedTransferPointId of Object.keys(
+                transferPoint.reachableTransferPoints
+            )) {
+                const connectedTransferPoint =
+                    draftState.transferPoints[connectedTransferPointId];
+                delete connectedTransferPoint.reachableTransferPoints[
+                    _transferPointId
+                ];
+            }
+        }
+        // TODO: Remove the vehicles and personnel in transit
+        return draftState;
+    },
 };

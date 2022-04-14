@@ -13,6 +13,7 @@ import {
     Material,
     Patient,
     Personnel,
+    TransferPoint,
     Vehicle,
     Viewport,
 } from '../models';
@@ -233,6 +234,34 @@ export namespace ExerciseActions {
         public readonly type = `[Exercise] Set Participant Id`;
         @IsString()
         public readonly participantId!: string;
+    }
+
+    export class AddTransferPoint implements Action {
+        @IsString()
+        public readonly type = `[TransferPoint] Add TransferPoint`;
+        @ValidateNested()
+        @Type(() => TransferPoint)
+        public readonly transferPoint!: TransferPoint;
+    }
+
+    export class MoveTransferPoint implements Action {
+        @IsString()
+        public readonly type = '[TransferPoint] Move TransferPoint';
+
+        @IsUUID(4, uuidValidationOptions)
+        public readonly transferPointId!: UUID;
+
+        @ValidateNested()
+        @Type(() => Position)
+        public readonly targetPosition!: Position;
+    }
+
+    export class RemoveTransferPoint implements Action {
+        @IsString()
+        public readonly type = '[TransferPoint] Remove TransferPoint';
+
+        @IsUUID(4, uuidValidationOptions)
+        public readonly transferPointId!: UUID;
     }
 }
 

@@ -30,6 +30,9 @@ const exerciseRightsMap: {
     '[Vehicle] Unload vehicle': 'participant',
     '[Viewport] Add viewport': 'trainer',
     '[Viewport] Remove viewport': 'trainer',
+    '[TransferPoint] Add TransferPoint': 'trainer',
+    '[TransferPoint] Remove TransferPoint': 'trainer',
+    '[TransferPoint] Move TransferPoint': 'trainer',
 };
 
 /**
