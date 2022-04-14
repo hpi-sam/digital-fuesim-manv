@@ -1,5 +1,4 @@
-import type { ExerciseState } from '../../state';
-import { generateExercise } from '../../state';
+import { ExerciseState } from '../../state';
 import type { UUID } from '../../utils';
 import { uuid } from '../../utils';
 import type { Viewport } from '../../models';
@@ -33,7 +32,7 @@ describe('exerciseReducer', () => {
     }
 
     beforeEach(() => {
-        state = generateExercise();
+        state = ExerciseState.create();
     });
 
     it('should apply simple actions', () => {

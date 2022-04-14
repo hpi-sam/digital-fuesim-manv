@@ -31,7 +31,7 @@ const hubschrauberImage: ImageProperties = {
     aspectRatio: 310 / 130,
 };
 
-const rtwVehicleTemplate = new VehicleTemplate(
+const rtwVehicleTemplate = VehicleTemplate.create(
     'RTW',
     rtwImage,
     2,
@@ -44,7 +44,7 @@ const rtwVehicleTemplate = new VehicleTemplate(
     }
 );
 
-const ktwVehicleTemplate = new VehicleTemplate(
+const ktwVehicleTemplate = VehicleTemplate.create(
     'KTW',
     ktwImage,
     2,
@@ -57,7 +57,7 @@ const ktwVehicleTemplate = new VehicleTemplate(
     }
 );
 
-const gwSanVehicleTemplate = new VehicleTemplate(
+const gwSanVehicleTemplate = VehicleTemplate.create(
     'GW-San',
     gwSanImage,
     0,
@@ -70,7 +70,7 @@ const gwSanVehicleTemplate = new VehicleTemplate(
     }
 );
 
-const nefVehicleTemplate = new VehicleTemplate(
+const nefVehicleTemplate = VehicleTemplate.create(
     'NEF',
     nefImage,
     0,
@@ -83,7 +83,7 @@ const nefVehicleTemplate = new VehicleTemplate(
     }
 );
 
-const hubschrauberVehicleTemplate = new VehicleTemplate(
+const hubschrauberVehicleTemplate = VehicleTemplate.create(
     'Hubschrauber',
     hubschrauberImage,
     1,
@@ -96,7 +96,7 @@ const hubschrauberVehicleTemplate = new VehicleTemplate(
     }
 );
 
-export const defaultVehicleTemplates: VehicleTemplate[] = [
+export const defaultVehicleTemplates: readonly VehicleTemplate[] = [
     rtwVehicleTemplate,
     ktwVehicleTemplate,
     gwSanVehicleTemplate,

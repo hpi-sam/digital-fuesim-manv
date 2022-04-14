@@ -210,4 +210,26 @@ export class ApiService {
             )
         );
     }
+
+    /**
+     * @param exerciseId the trainerId or participantId of the exercise
+     * @returns wether the exercise exists
+     */
+    public async exerciseExists(exerciseId: string) {
+        return lastValueFrom(
+            this.httpClient.get<null>(
+                `${httpOrigin}/api/exercise/${exerciseId}`
+            )
+        )
+            .then(() => true)
+            .catch((error) => {
+                if (error.status !== 404) {
+                    this.messageService.postError({
+                        title: 'Interner Fehler',
+                        error,
+                    });
+                }
+                return false;
+            });
+    }
 }

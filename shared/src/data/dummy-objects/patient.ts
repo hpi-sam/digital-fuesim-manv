@@ -3,11 +3,13 @@ import { defaultPatientTemplates } from '../default-state/patient-templates';
 
 export function generateDummyPatient(): Patient {
     const template = defaultPatientTemplates[0];
-    const healthState = new PatientHealthState(
-        new FunctionParameters(-10_000, 0, 0, 0),
+    const healthState = PatientHealthState.create(
+        FunctionParameters.create(-10_000, 0, 0, 0),
         []
     );
-    template.healthStates = { [healthState.id]: healthState };
-    template.startingHealthStateId = healthState.id;
-    return Patient.fromTemplate(template);
+    return Patient.fromTemplate({
+        ...template,
+        healthStates: { [healthState.id]: healthState },
+        startingHealthStateId: healthState.id,
+    });
 }

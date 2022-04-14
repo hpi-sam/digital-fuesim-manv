@@ -4,16 +4,16 @@ import { UUID, uuidValidationOptions } from './uuid';
 
 export class PatientUpdate {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID;
+    public readonly id: UUID;
 
     @IsValidHealthPoint()
-    nextHealthPoints: HealthPoints;
+    public readonly nextHealthPoints: HealthPoints;
 
     @IsUUID(4, uuidValidationOptions)
-    nextStateId: UUID;
+    public readonly nextStateId: UUID;
 
     @IsNumber()
-    nextStateTime: number;
+    public readonly nextStateTime: number;
 
     constructor(
         id: UUID,

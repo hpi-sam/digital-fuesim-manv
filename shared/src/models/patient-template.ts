@@ -1,39 +1,44 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsDefined, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { HealthPoints, IsValidHealthPoint } from './utils';
+import { getCreate, HealthPoints, IsValidHealthPoint } from './utils';
 import { ImageProperties } from './utils/image-properties';
 import { PersonalInformation } from './utils/personal-information';
 import type { PatientHealthState } from '.';
 
 export class PatientTemplate {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     @ValidateNested()
     @Type(() => PersonalInformation)
-    public personalInformation: PersonalInformation;
+    public readonly personalInformation: PersonalInformation;
 
     @IsBoolean()
-    public isPreTriaged: boolean;
+    public readonly isPreTriaged: boolean;
 
     @ValidateNested()
     @Type(() => ImageProperties)
-    public image: ImageProperties;
+    public readonly image: ImageProperties;
 
     @IsDefined()
-    public healthStates: { [stateId: UUID]: PatientHealthState };
+    public readonly healthStates: {
+        readonly [stateId: UUID]: PatientHealthState;
+    };
 
     @IsUUID(4, uuidValidationOptions)
-    public startingHealthStateId: UUID;
+    public readonly startingHealthStateId: UUID;
 
     @IsValidHealthPoint()
-    public health: HealthPoints;
+    public readonly health: HealthPoints;
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(
         personalInformation: PersonalInformation,
         isPreTriaged: boolean,
-        healthStates: { [stateId: UUID]: PatientHealthState },
+        healthStates: { readonly [stateId: UUID]: PatientHealthState },
         image: ImageProperties,
         health: HealthPoints,
         startingHealthStateId: UUID
@@ -45,4 +50,6 @@ export class PatientTemplate {
         this.health = health;
         this.startingHealthStateId = startingHealthStateId;
     }
+
+    static readonly create = getCreate(this);
 }

@@ -1,28 +1,32 @@
 import { IsDate, IsString, IsUUID } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { getCreate, ImmutableDate } from './utils';
 
 export class EocLogEntry {
     @IsUUID(4, uuidValidationOptions)
-    public id: UUID = uuid();
+    public readonly id: UUID = uuid();
 
     /**
      * The "real" time
      */
     @IsDate()
-    public timestamp: Date;
+    public readonly timestamp: ImmutableDate;
 
     /**
      * The time in the exercise
      */
     @IsDate()
-    public exerciseTimestamp: Date;
+    public readonly exerciseTimestamp: ImmutableDate;
 
     @IsString()
-    public message: string;
+    public readonly message: string;
 
     @IsUUID(4, uuidValidationOptions)
-    public clientId: UUID;
+    public readonly clientId: UUID;
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(
         timestamp: Date,
         exerciseTimestamp: Date,
@@ -34,4 +38,6 @@ export class EocLogEntry {
         this.message = message;
         this.clientId = clientId;
     }
+
+    static readonly create = getCreate(this);
 }

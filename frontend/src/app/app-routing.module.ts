@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import type { Routes } from '@angular/router';
 import { RouterModule } from '@angular/router';
+import { Error404Component } from './pages/error-404/error-404.component';
 import { HealthPageComponent } from './pages/health/health-page/health-page.component';
 import { LandingPageComponent } from './pages/landing-page/landing-page/landing-page.component';
 
@@ -19,6 +20,11 @@ const routes: Routes = [
     {
         path: 'health',
         component: HealthPageComponent,
+    },
+    {
+        path: '**',
+        component: Error404Component,
+        pathMatch: 'full',
     },
 ];
 

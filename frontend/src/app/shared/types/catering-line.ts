@@ -1,8 +1,8 @@
-import type { Immutable, UUID, Position } from 'digital-fuesim-manv-shared';
+import type { UUID, Position } from 'digital-fuesim-manv-shared';
 
-export type CateringLine = Immutable<{
-    id: `${UUID}:${UUID}`;
+export interface CateringLine {
+    readonly id: `${UUID}:${UUID}`;
 
-    catererPosition: Position;
-    patientPosition: Position;
-}>;
+    readonly catererPosition: Position;
+    readonly patientPosition: Position;
+}

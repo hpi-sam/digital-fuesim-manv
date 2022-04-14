@@ -14,7 +14,7 @@ describe('validateExerciseAction', () => {
         expect(
             validateExerciseAction({
                 type: '[Viewport] Add viewport',
-                viewport: new Viewport(
+                viewport: Viewport.create(
                     {
                         x: 0,
                         y: 0,
