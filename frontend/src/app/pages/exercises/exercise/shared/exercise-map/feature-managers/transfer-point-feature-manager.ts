@@ -18,9 +18,7 @@ import { withPopup } from '../utility/with-popup';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
 import { ElementFeatureManager } from './element-feature-manager';
 
-class TransferPointFeatureManagerBase extends ElementFeatureManager<
-    WithPosition<TransferPoint>
-> {
+class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoint> {
     constructor(
         store: Store<AppState>,
         olMap: OlMap,
@@ -36,11 +34,9 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<
         });
     }
 
-    private cachedStyle?: {
-        currentZoom: number;
-        style: Style;
-    };
+    private readonly styleCache = new Map<string, Style>();
 
+    private previousZoom?: number;
     /**
      *
      * @param feature The feature that should be styled
@@ -49,12 +45,18 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<
      */
     // This function should be as efficient as possible, because it is called per feature on each rendered frame
     private getStyle(feature: Feature<Point>, currentZoom: number) {
-        // TODO: transferPoint.image should be used here
-        if (this.cachedStyle?.currentZoom !== currentZoom) {
-            const element = this.getElementFromFeature(feature);
-            this.cachedStyle = {
-                currentZoom,
-                style: new Style({
+        if (this.previousZoom !== currentZoom) {
+            this.previousZoom = currentZoom;
+            this.styleCache.clear();
+        }
+        const element = this.getElementFromFeature(feature)!.value;
+        const key = JSON.stringify({
+            name: element.internalName,
+        });
+        if (!this.styleCache.has(key)) {
+            this.styleCache.set(
+                key,
+                new Style({
                     image: new Icon({
                         src: TransferPoint.image.url,
                         scale:
@@ -64,16 +66,16 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<
                             102,
                     }),
                     text: new OlText({
-                        text: element?.value.internalName,
+                        text: element.internalName,
                         scale: 0.2 / currentZoom,
                         fill: new Fill({
                             color: '#FEFEFE',
                         }),
                     }),
-                }),
-            };
+                })
+            );
         }
-        return this.cachedStyle.style;
+        return this.styleCache.get(key)!;
     }
 
     public override createFeature(element: WithPosition<TransferPoint>): void {
