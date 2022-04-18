@@ -1,6 +1,6 @@
 import type { Position } from '../models/utils';
 import { Viewport } from '../models';
-import type { ExerciseAction } from '.';
+import type { ExerciseAction } from './action-reducers';
 import { validateExerciseAction } from '.';
 
 describe('validateExerciseAction', () => {

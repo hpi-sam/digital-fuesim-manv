@@ -1,15 +1,13 @@
 import { produce } from 'immer';
-import { generateDummyPatient } from '../../data';
-import type { Patient } from '../../models';
-import { Material, Personnel } from '../../models';
-import type { PatientStatus } from '../../models/utils';
-import { CanCaterFor, Position } from '../../models/utils';
-import { ExerciseState } from '../../state';
-import type { Mutable, UUID, UUIDSet } from '../../utils';
-import { uuid, cloneDeepMutable } from '../../utils';
+import { generateDummyPatient } from '../../../data';
+import type { Patient } from '../../../models';
+import { Material, Personnel } from '../../../models';
+import type { PatientStatus } from '../../../models/utils';
+import { CanCaterFor, Position } from '../../../models/utils';
+import { ExerciseState } from '../../../state';
+import type { Mutable, UUID, UUIDSet } from '../../../utils';
+import { uuid, cloneDeepMutable } from '../../../utils';
 import { calculateTreatments } from './calculate-treatments';
-
-// TODO: https://github.com/hpi-sam/digital-fuesim-manv/issues/212
 
 const emptyState = ExerciseState.create();
 

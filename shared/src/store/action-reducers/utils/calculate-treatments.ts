@@ -1,8 +1,8 @@
 import { groupBy } from 'lodash-es';
-import type { Material, Patient, Personnel } from '../../models';
-import type { PatientStatus, Position } from '../../models/utils';
-import type { ExerciseState } from '../../state';
-import type { Mutable } from '../../utils/immutability';
+import type { Material, Personnel, Patient } from '../../../models';
+import type { Position, PatientStatus } from '../../../models/utils';
+import type { ExerciseState } from '../../../state';
+import type { Mutable } from '../../../utils';
 
 function calculateDistance(a: Position, b: Position) {
     return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);

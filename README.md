@@ -165,15 +165,13 @@ Actions cannot be applied in parallel. The order of actions is important.
 
 It is a bad practice to encode part of the state in the action (or values derived/calculated from it). Instead, you should only read the state in the accompanying reducer.
 
-You can find all exercise actions [here](./shared//src/store/exercise.actions.ts).
-
 #### Reducer
 
 A reducer is a [pure function](https://en.wikipedia.org/wiki/Pure_function) (no side effects!) that takes a state and an action of a specific type and returns a new state where the changes described in the action are applied. A state can only be modified by a reducer.
 
 To be able to apply certain optimizations, it is advisable (but not necessary or guaranteed) that the reducer only changes the references of properties that have been changed.
 
-You can find all exercise reducers [here](./shared/src/store/reduce-exercise-state.ts).
+You can find all exercise actions and reducers [here](./shared/src/store/action-reducers). Please orient yourself on the already implemented actions, and don't forget to register them in [shared/src/store/action-reducers/action-reducers.ts](shared/src/store/action-reducers/action-reducers.ts)
 
 ### Immutability
 
