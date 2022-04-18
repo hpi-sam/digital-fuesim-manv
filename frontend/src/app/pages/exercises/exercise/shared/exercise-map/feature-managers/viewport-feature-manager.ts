@@ -56,7 +56,10 @@ export class ViewportFeatureManager
             new LineString([
                 [element.topLeft.x, element.topLeft.y],
                 [element.topLeft.x + element.size.width, element.topLeft.y],
-                [element.topLeft.x + element.size.width, element.topLeft.y - element.size.height],
+                [
+                    element.topLeft.x + element.size.width,
+                    element.topLeft.y - element.size.height,
+                ],
                 [element.topLeft.x, element.topLeft.y - element.size.height],
                 [element.topLeft.x, element.topLeft.y],
             ])
@@ -82,15 +85,21 @@ export class ViewportFeatureManager
         elementFeature: Feature<LineString>
     ): void {
         // Rendering the lines again is expensive, so we only do it if we must
-        if (
-            changedProperties.has('topLeft') ||
-            changedProperties.has('size')
-        ) {
+        if (changedProperties.has('topLeft') || changedProperties.has('size')) {
             elementFeature.getGeometry()!.setCoordinates([
                 [newElement.topLeft.x, newElement.topLeft.y],
-                [newElement.topLeft.x + newElement.size.width, newElement.topLeft.y],
-                [newElement.topLeft.x + newElement.size.width, newElement.topLeft.y - newElement.size.height],
-                [newElement.topLeft.x, newElement.topLeft.y - newElement.size.height],
+                [
+                    newElement.topLeft.x + newElement.size.width,
+                    newElement.topLeft.y,
+                ],
+                [
+                    newElement.topLeft.x + newElement.size.width,
+                    newElement.topLeft.y - newElement.size.height,
+                ],
+                [
+                    newElement.topLeft.x,
+                    newElement.topLeft.y - newElement.size.height,
+                ],
                 [newElement.topLeft.x, newElement.topLeft.y],
             ]);
         }

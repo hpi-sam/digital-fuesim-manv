@@ -34,5 +34,5 @@ export class Viewport {
         url: 'assets/material.svg',
         height: 400,
         aspectRatio: 134 / 102,
-    }
+    };
 }
