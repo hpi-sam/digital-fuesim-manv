@@ -22,7 +22,7 @@ export class AddVehicleAction implements Action {
     public readonly material!: Material;
 
     @IsArray()
-    @ValidateNested({ each: true })
+    @ValidateNested()
     @Type(() => Personnel)
     public readonly personnel!: readonly Personnel[];
 }

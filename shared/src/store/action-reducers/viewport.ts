@@ -29,7 +29,7 @@ export namespace ViewportActionReducers {
             draftState.viewports[viewport.id] = viewport;
             return draftState;
         },
-        rights: 'participant',
+        rights: 'trainer',
     };
 
     export const removeViewport: ActionReducer<RemoveViewportAction> = {

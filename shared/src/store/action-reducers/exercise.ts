@@ -24,8 +24,10 @@ export class StartExerciseAction implements Action {
 }
 
 export class ExerciseTickAction implements Action {
+    @IsString()
     public readonly type = '[Exercise] Tick';
 
+    @IsArray()
     @ValidateNested()
     @Type(() => PatientUpdate)
     public readonly patientUpdates!: readonly PatientUpdate[];
