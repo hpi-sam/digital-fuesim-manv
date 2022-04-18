@@ -73,6 +73,26 @@ export namespace VehicleActionReducers {
     export const addVehicle: ActionReducer<AddVehicleAction> = {
         action: AddVehicleAction,
         reducer: (draftState, { vehicle, material, personnel }) => {
+            if (
+                vehicle.materialId !== material.id ||
+                material.vehicleId !== vehicle.id
+            ) {
+                throw new ReducerError(
+                    'Vehicle material id does not match material id'
+                );
+            }
+            if (
+                personnel.some(
+                    (_personnel) =>
+                        _personnel.vehicleId !== vehicle.id ||
+                        vehicle.personnelIds[_personnel.id] === undefined
+                ) ||
+                Object.keys(vehicle.personnelIds).length !== personnel.length
+            ) {
+                throw new ReducerError(
+                    'Vehicle personnel ids do not match personnel ids'
+                );
+            }
             draftState.vehicles[vehicle.id] = vehicle;
             draftState.materials[material.id] = material;
             for (const person of personnel) {

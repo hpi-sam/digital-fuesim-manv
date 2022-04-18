@@ -2,7 +2,13 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
 import { Type } from 'class-transformer';
-import { IsString, IsInt, ValidateNested, IsBoolean } from 'class-validator';
+import {
+    IsString,
+    IsInt,
+    ValidateNested,
+    IsBoolean,
+    IsArray,
+} from 'class-validator';
 import { StatusHistoryEntry } from '../../models/status-history-entry';
 import { getStatus } from '../../models/utils';
 import { PatientUpdate } from '../../utils/patient-updates';
