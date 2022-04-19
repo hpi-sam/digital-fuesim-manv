@@ -2,31 +2,31 @@ import { VehicleTemplate } from '../../models';
 import type { ImageProperties } from '../../models/utils/image-properties';
 
 const rtwImage: ImageProperties = {
-    url: '/assets/rtw_vehicle.png',
+    url: '/assets/rtw-vehicle.png',
     height: 100,
     aspectRatio: 3693 / 1670,
 };
 
 const ktwImage: ImageProperties = {
-    url: '/assets/ktw_vehicle.png',
+    url: '/assets/ktw-vehicle.png',
     height: 100,
     aspectRatio: 5046 / 2465,
 };
 
 const gwSanImage: ImageProperties = {
-    url: '/assets/gwsan_vehicle.png',
+    url: '/assets/gwSan-vehicle.png',
     height: 120,
     aspectRatio: 5000 / 2474,
 };
 
 const nefImage: ImageProperties = {
-    url: '/assets/nef_vehicle.png',
+    url: '/assets/nef-vehicle.png',
     height: 70,
     aspectRatio: 4455 / 1847,
 };
 
-const hubschrauberImage: ImageProperties = {
-    url: '/assets/hubschrauber_vehicle.svg',
+const rthImage: ImageProperties = {
+    url: '/assets/rth-vehicle.svg',
     height: 300,
     aspectRatio: 310 / 130,
 };

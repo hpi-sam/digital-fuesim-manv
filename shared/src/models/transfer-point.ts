@@ -40,7 +40,7 @@ export class TransferPoint {
     static readonly create = getCreate(this);
 
     static image: ImageProperties = {
-        url: 'assets/transfer_point.svg',
+        url: 'assets/transfer-point.svg',
         height: 400,
         aspectRatio: 134 / 102,
     };

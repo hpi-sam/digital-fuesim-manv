@@ -7,13 +7,13 @@ import type { ImageProperties } from '../../models/utils';
 import { healthPointsDefaults } from '../../models/utils';
 
 const defaultMaleImage: ImageProperties = {
-    url: '/assets/male_patient.svg',
+    url: '/assets/male-patient.svg',
     height: 80,
     aspectRatio: 1,
 };
 
 const defaultFemaleImage: ImageProperties = {
-    url: '/assets/female_patient.svg',
+    url: '/assets/female-patient.svg',
     height: 80,
     aspectRatio: 1,
 };
