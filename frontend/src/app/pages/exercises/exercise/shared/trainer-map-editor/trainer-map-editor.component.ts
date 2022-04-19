@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { TransferPoint } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
@@ -38,4 +39,8 @@ export class TrainerMapEditorComponent {
         private readonly store: Store<AppState>,
         public readonly dragElementService: DragElementService
     ) {}
+
+    public readonly transferPointTemplate = {
+        image: TransferPoint.image,
+    };
 }

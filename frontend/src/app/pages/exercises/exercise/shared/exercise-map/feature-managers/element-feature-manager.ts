@@ -23,7 +23,6 @@ export interface PositionableElement {
 /**
  * The base class for all element feature managers.
  * * manages the position of the element
- * * manages the style of the element
  * * manages the default interactions of the element
  */
 export abstract class ElementFeatureManager<Element extends PositionableElement>
@@ -124,6 +123,12 @@ export abstract class ElementFeatureManager<Element extends PositionableElement>
             return {
                 type: 'viewport',
                 value: exerciseState.viewports[id] as unknown as Element,
+            } as const;
+        }
+        if (exerciseState.transferPoints[id]) {
+            return {
+                type: 'transferPoint',
+                value: exerciseState.transferPoints[id] as unknown as Element,
             } as const;
         }
         return undefined;

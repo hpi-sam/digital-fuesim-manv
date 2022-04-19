@@ -9,6 +9,23 @@
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">
+                    <h5>Transferpunkt</h5>
+                    <div
+                        class="overflow-auto w-100"
+                        style="white-space: nowrap"
+                    >
+                        <img
+                            [src]="transferPointTemplate.image.url"
+                            (mousedown)="
+                                dragElementService.onMouseDown($event, {
+                                    type: 'transferPoint',
+                                    template: transferPointTemplate
+                                })
+                            "
+                        />
+                    </div>
+                </li>
+                <li class="list-group-item">
                     <h5>Patienten</h5>
                     <div
                         class="overflow-auto w-100"
