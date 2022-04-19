@@ -27,6 +27,16 @@ export class AddVehicleAction implements Action {
     public readonly personnel!: readonly Personnel[];
 }
 
+export class RenameVehicleAction implements Action {
+    @IsString()
+    public readonly type = '[Vehicle] Rename vehicle';
+    @IsUUID(4, uuidValidationOptions)
+    public readonly vehicleId!: UUID;
+
+    @IsString()
+    public readonly name!: string;
+}
+
 export class MoveVehicleAction implements Action {
     @IsString()
     public readonly type = '[Vehicle] Move vehicle';
@@ -116,6 +126,37 @@ export namespace VehicleActionReducers {
             return draftState;
         },
         rights: 'participant',
+    };
+
+    export const renameVehicle: ActionReducer<RenameVehicleAction> = {
+        action: RenameVehicleAction,
+        reducer: (draftState, { vehicleId, name }) => {
+            const vehicle = draftState.vehicles[vehicleId];
+            if (!vehicle) {
+                throw new ReducerError(
+                    `Vehicle with id ${vehicleId} does not exist`
+                );
+            }
+            vehicle.name = name;
+            for (const personnelId of Object.keys(vehicle.personnelIds)) {
+                const personnel = draftState.personnel[personnelId];
+                if (!personnel) {
+                    throw new ReducerError(
+                        `Personnel with id ${personnelId} does not exist`
+                    );
+                }
+                personnel.vehicleName = name;
+            }
+            const material = draftState.materials[vehicle.materialId];
+            if (!material) {
+                throw new ReducerError(
+                    `Material with id ${vehicle.materialId} does not exist`
+                );
+            }
+            material.vehicleName = name;
+            return draftState;
+        },
+        rights: 'trainer',
     };
 
     export const removeVehicle: ActionReducer<RemoveVehicleAction> = {

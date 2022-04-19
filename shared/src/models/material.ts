@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsDefined, IsOptional, IsUUID, ValidateNested } from 'class-validator';
+import {
+    IsDefined,
+    IsOptional,
+    IsString,
+    IsUUID,
+    ValidateNested,
+} from 'class-validator';
 import { uuid, UUID, UUIDSet, uuidValidationOptions } from '../utils';
 import { CanCaterFor, getCreate, ImageProperties, Position } from './utils';
 
@@ -9,6 +15,9 @@ export class Material {
 
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId: UUID;
+
+    @IsString()
+    public readonly vehicleName: string;
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     @IsDefined()
@@ -39,11 +48,13 @@ export class Material {
      */
     constructor(
         vehicleId: UUID,
+        vehicleName: string,
         assignedPatientIds: UUIDSet,
         canCaterFor: CanCaterFor,
         position?: Position
     ) {
         this.vehicleId = vehicleId;
+        this.vehicleName = vehicleName;
         this.assignedPatientIds = assignedPatientIds;
         this.canCaterFor = canCaterFor;
         this.position = position;
