@@ -155,18 +155,21 @@ export class DragElementService {
                 }
                 break;
             case 'viewport':
-                    this.apiService.proposeAction(
-                        {
-                            type: '[Viewport] Add viewport',
-                            viewport: Viewport.create(
-                                position,
-                                {width: 500 / currentZoom!, height: 400 / currentZoom!},
-                                // TODO: Ask for user input
-                                'Einsatzabschnitt'
-                            ),
-                        },
-                        true
-                    )
+                this.apiService.proposeAction(
+                    {
+                        type: '[Viewport] Add viewport',
+                        viewport: Viewport.create(
+                            position,
+                            {
+                                width: 500 / currentZoom!,
+                                height: 400 / currentZoom!,
+                            },
+                            // TODO: Ask for user input
+                            'Einsatzabschnitt'
+                        ),
+                    },
+                    true
+                );
                 break;
             default:
                 break;
@@ -201,8 +204,8 @@ type TransferTemplate =
           template: VehicleTemplate;
       }
     | {
-        type: 'viewport';
-        template: {
-            image: ImageProperties;
-        };
-    };
+          type: 'viewport';
+          template: {
+              image: ImageProperties;
+          };
+      };
