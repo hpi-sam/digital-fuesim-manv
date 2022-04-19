@@ -6,13 +6,10 @@ import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
-import type { WithPosition } from '../../utility/types/with-position';
 import { withElementImageStyle } from '../utility/with-element-image-style';
 import { ElementFeatureManager } from './element-feature-manager';
 
-class BaseMapImageFeatureManager extends ElementFeatureManager<
-    WithPosition<MapImage>
-> {
+class BaseMapImageFeatureManager extends ElementFeatureManager<MapImage> {
     constructor(
         store: Store<AppState>,
         olMap: OlMap,

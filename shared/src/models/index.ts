@@ -9,6 +9,6 @@ export { Viewport } from './viewport';
 export { TransferPoint } from './transfer-point';
 export { MapImage } from './map-image';
 export { Client } from './client';
-export { MapImageTemplate as ImageTemplate } from './map-image-template';
+export { MapImageTemplate } from './map-image-template';
 export { PatientTemplate } from './patient-template';
 export * from './patient-health-state';
