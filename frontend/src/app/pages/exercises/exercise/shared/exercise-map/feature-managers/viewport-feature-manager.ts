@@ -24,11 +24,6 @@ export class ViewportFeatureManager
         super();
     }
 
-    private cachedStyle?: {
-        currentZoom: number;
-        style: Style;
-    };
-
     /**
      *
      * @param feature The feature that should be styled
@@ -36,20 +31,14 @@ export class ViewportFeatureManager
      * @returns The style that should be used for the feature
      */
     // This function should be as efficient as possible, because it is called per feature on each rendered frame
-    private getStyle(feature: Feature<LineString>, currentZoom: number) {
-        if (this.cachedStyle?.currentZoom !== currentZoom) {
-            this.cachedStyle = {
-                currentZoom,
-                style: new Style({
-                    stroke: new Stroke({
-                        color: 'fffafa',
-                        width: 0.1 / currentZoom,
-                    }),
+    private getStyle(feature: Feature<LineString>) {
+        return new Style({
+            stroke: new Stroke({
+                color: '#fafaff',
+                width: 1,
                 }),
-            };
+            })
         }
-        return this.cachedStyle.style;
-    }
 
     createFeature(element: Viewport): void {
         const feature = new Feature(
@@ -61,8 +50,8 @@ export class ViewportFeatureManager
                 [element.topLeft.x, element.topLeft.y],
             ])
         );
-        feature.setStyle((thisFeature, currentZoom) =>
-            this.getStyle(thisFeature as Feature<LineString>, currentZoom)
+        feature.setStyle((thisFeature) =>
+            this.getStyle(thisFeature as Feature<LineString>)
         );
         feature.setId(element.id);
         this.layer.getSource()!.addFeature(feature);

@@ -6,7 +6,7 @@ import type {
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
 import type Point from 'ol/geom/Point';
-import { Translate, defaults as defaultInteractions } from 'ol/interaction';
+import { Translate, Modify, defaults as defaultInteractions} from 'ol/interaction';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
@@ -103,8 +103,19 @@ export class OlMapManager {
 
         TranslateHelper.registerTranslateEvents(translateInteraction);
 
+        const viewportModify = new Modify({
+            source: viewportLayer.getSource()!,
+            deleteCondition: () => false,
+            insertVertexCondition: () => false,
+        });
+
+        const viewportTranslate = new Translate({
+            layers: [viewportLayer],
+            hitTolerance: 3,
+        })
+
         this.olMap = new OlMap({
-            interactions: defaultInteractions().extend([translateInteraction]),
+            interactions: defaultInteractions().extend([translateInteraction]).extend([viewportTranslate]).extend([viewportModify]),
             target: this.openLayersContainer,
             layers: [
                 satelliteLayer,
