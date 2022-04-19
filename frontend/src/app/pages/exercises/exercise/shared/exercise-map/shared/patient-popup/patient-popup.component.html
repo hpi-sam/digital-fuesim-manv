@@ -1,16 +1,20 @@
+<!-- eslint-disable @angular-eslint/template/no-call-expression -->
 <ng-container *ngIf="patient$ | async as patient">
     <h5 class="popover-header">
         {{ patient.personalInformation.name }}
         <span
-            *ngIf="patient.visibleStatus !== null"
-            [ngStyle]="{ 'background-color': patient.visibleStatus }"
-            [class.text-dark]="patient.visibleStatus === 'yellow'"
+            [ngStyle]="{ 'background-color': patient.visibleStatus ?? 'white' }"
+            [class.text-dark]="
+                patient.visibleStatus === 'yellow' ||
+                patient.visibleStatus === 'white' ||
+                patient.visibleStatus === null
+            "
             class="badge rounded-pill font-monospace"
         >
             {{
                 (client$ | async)?.role === 'trainer'
                     ? (patient.health / healthPointsDefaults.max | percent)
-                    : 'gesichtet'
+                    : getStatusName(patient.visibleStatus ?? 'white')
             }}
         </span>
         <button
