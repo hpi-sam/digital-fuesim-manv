@@ -22,6 +22,18 @@
             >
                 Übungsleiterlink teilen
             </button>
+            <span
+                *ngIf="(exercisePausedState$ | async)?.status === 'running'"
+                class="badge bg-success ms-3"
+            >
+                Übung läuft
+            </span>
+            <span
+                *ngIf="(exercisePausedState$ | async)?.status !== 'running'"
+                class="badge bg-danger ms-3"
+            >
+                Übung pausiert
+            </span>
         </h2>
     </div>
 
