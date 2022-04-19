@@ -254,7 +254,7 @@ export class OlMapManager {
                 this.apiService
             ),
             this.store.select(selectMapImages)
-        );
+        ).togglePopup$.subscribe(this.changePopup$);
 
         this.registerFeatureElementManager(
             new CateringLinesFeatureManager(cateringLinesLayer),

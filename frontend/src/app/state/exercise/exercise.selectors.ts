@@ -23,6 +23,8 @@ export const getSelectMaterial = (materialId: UUID) => (state: AppState) =>
     state.exercise.materials[materialId];
 export const getSelectPatient = (patientId: UUID) => (state: AppState) =>
     state.exercise.patients[patientId];
+export const getSelectMapImage = (mapImageId: UUID) => (state: AppState) =>
+    state.exercise.mapImages[mapImageId];
 export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
     state.exercise.vehicles[vehicleId];
 export const getSelectTransferPoint =

@@ -7,6 +7,8 @@ import type OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import { withElementImageStyle } from '../utility/with-element-image-style';
+import { withPopup } from '../utility/with-popup';
+import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popup.component';
 import { ElementFeatureManager } from './element-feature-manager';
 
 class BaseMapImageFeatureManager extends ElementFeatureManager<MapImage> {
@@ -25,10 +27,22 @@ class BaseMapImageFeatureManager extends ElementFeatureManager<MapImage> {
         });
     }
 
-    override unsupportedChangeProperties = new Set(['id'] as const);
+    override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const MapImageFeatureManager = withElementImageStyle<MapImage>(
+const MapImageFeatureManagerWithImageStyle = withElementImageStyle<MapImage>(
     BaseMapImageFeatureManager
 );
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const MapImageFeatureManager = withPopup<
+    MapImage,
+    typeof MapImageFeatureManagerWithImageStyle,
+    MapImagePopupComponent
+>(MapImageFeatureManagerWithImageStyle, {
+    component: MapImagePopupComponent,
+    height: 110,
+    width: 50,
+    getContext: (feature) => ({ mapImageId: feature.getId() as string }),
+});

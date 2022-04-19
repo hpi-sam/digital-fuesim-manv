@@ -1,0 +1,74 @@
+<ng-container *ngIf="mapImage$ | async as mapImage">
+    <h5 class="popover-header">
+        Bildinformationen
+        <button
+            (click)="closePopup.emit()"
+            type="button"
+            class="btn-close float-end"
+        ></button>
+    </h5>
+    <div class="popover-body">
+        <ng-container *ngIf="(client$ | async)?.role === 'trainer'">
+            <div class="form-group pb-3">
+                <label class="form-label">URL</label>
+                <input
+                    #urlInput="ngModel"
+                    [(ngModel)]="url"
+                    required
+                    type="text"
+                    class="form-control"
+                />
+                <app-display-validation
+                    [ngModelInput]="urlInput"
+                ></app-display-validation>
+            </div>
+
+            <button
+                [disabled]="urlInput.invalid"
+                (click)="saveUrl()"
+                class="btn btn-warning"
+            >
+                Speichern
+            </button>
+
+            <br />
+            <br />
+
+            <div class="form-group pb-3">
+                <label class="form-label">Höhe</label>
+                <input
+                    #heightInput="ngModel"
+                    [(ngModel)]="height"
+                    required
+                    type="number"
+                    class="form-control"
+                />
+                <app-display-validation
+                    [ngModelInput]="heightInput"
+                ></app-display-validation>
+            </div>
+
+            <!-- <div class="form-group pb-3">
+                <label class="form-label">Seitenverhältnis</label>
+                <input
+                    #aspectRatioInput="ngModel"
+                    [(ngModel)]="aspectRatio"
+                    required
+                    type="number"
+                    class="form-control"
+                />
+                <app-display-validation
+                    [ngModelInput]="aspectRatioInput"
+                ></app-display-validation>
+            </div> -->
+
+            <button
+                [disabled]="heightInput.invalid"
+                (click)="resizeImage()"
+                class="btn btn-warning"
+            >
+                Speichern
+            </button>
+        </ng-container>
+    </div>
+</ng-container>

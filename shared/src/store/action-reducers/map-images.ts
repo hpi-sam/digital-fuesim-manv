@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-throw-literal */
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Type } from 'class-transformer';
-import { IsString, ValidateNested, IsUUID } from 'class-validator';
+import {
+    IsString,
+    ValidateNested,
+    IsUUID,
+    IsNumber,
+    IsPositive,
+} from 'class-validator';
 import { MapImage } from '../../models';
 import { Position } from '../../models/utils';
 import { uuidValidationOptions, UUID } from '../../utils';
@@ -29,12 +35,42 @@ export class MoveMapImageAction implements Action {
     public readonly targetPosition!: Position;
 }
 
+export class ScaleMapImageAction implements Action {
+    @IsString()
+    public readonly type = '[MapImage] Scale MapImage';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly mapImageId!: UUID;
+
+    @IsNumber()
+    @IsPositive()
+    public readonly newHeight!: number;
+
+    @IsNumber()
+    @IsPositive()
+    public readonly newAspectRatio!: number;
+}
+
 export class RemoveMapImageAction implements Action {
     @IsString()
     public readonly type = '[MapImage] Remove MapImage';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly mapImageId!: UUID;
+}
+
+export class ReconfigureMapImageUrlAction implements Action {
+    @IsString()
+    public readonly type = '[MapImage] Reconfigure Url';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly mapImageId!: UUID;
+
+    /**
+     * data URI or URL of new image
+     */
+    @IsString()
+    public readonly newUrl!: string;
 }
 
 export namespace MapImagesActionReducers {
@@ -61,6 +97,22 @@ export namespace MapImagesActionReducers {
         rights: 'trainer',
     };
 
+    export const scaleMapImage: ActionReducer<ScaleMapImageAction> = {
+        action: ScaleMapImageAction,
+        reducer: (draftState, { mapImageId, newHeight, newAspectRatio }) => {
+            if (!draftState.mapImages[mapImageId]) {
+                throw new ReducerError(
+                    `MapImage with id ${mapImageId} does not exist`
+                );
+            }
+
+            draftState.mapImages[mapImageId].image.height = newHeight;
+            draftState.mapImages[mapImageId].image.aspectRatio = newAspectRatio;
+            return draftState;
+        },
+        rights: 'trainer',
+    };
+
     export const removeMapImage: ActionReducer<RemoveMapImageAction> = {
         action: RemoveMapImageAction,
         reducer: (draftState, { mapImageId }) => {
@@ -74,4 +126,19 @@ export namespace MapImagesActionReducers {
         },
         rights: 'trainer',
     };
+
+    export const reconfigureMapImageUrl: ActionReducer<ReconfigureMapImageUrlAction> =
+        {
+            action: ReconfigureMapImageUrlAction,
+            reducer: (draftState, { mapImageId, newUrl }) => {
+                if (!draftState.mapImages[mapImageId]) {
+                    throw new ReducerError(
+                        `MapImage with id ${mapImageId} does not exist`
+                    );
+                }
+                draftState.mapImages[mapImageId].image.url = newUrl;
+                return draftState;
+            },
+            rights: 'trainer',
+        };
 }

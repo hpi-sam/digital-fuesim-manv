@@ -11,13 +11,14 @@ import {
     getSelectClient,
     getSelectTransferPoint,
 } from 'src/app/state/exercise/exercise.selectors';
+import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({
     selector: 'app-transfer-point-popup',
     templateUrl: './transfer-point-popup.component.html',
     styleUrls: ['./transfer-point-popup.component.scss'],
 })
-export class TransferPointPopupComponent implements OnInit {
+export class TransferPointPopupComponent implements PopupComponent, OnInit {
     // These properties are only set after OnInit
     public transferPointId!: UUID;
 
