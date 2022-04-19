@@ -83,10 +83,11 @@ const VehicleFeatureManagerWithImageStyle = withElementImageStyle<
 
 export const VehicleFeatureManager = withPopup<
     WithPosition<Vehicle>,
-    typeof VehicleFeatureManagerWithImageStyle
+    typeof VehicleFeatureManagerWithImageStyle,
+    VehiclePopupComponent
 >(VehicleFeatureManagerWithImageStyle, {
     component: VehiclePopupComponent,
     height: 150,
     width: 225,
-    getContext: (feature) => ({ vehicleId: feature.getId()! }),
+    getContext: (feature) => ({ vehicleId: feature.getId() as string }),
 });

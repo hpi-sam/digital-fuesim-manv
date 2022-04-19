@@ -40,10 +40,11 @@ const PatientFeatureManagerWithImageStyle = withElementImageStyle<
 
 export const PatientFeatureManager = withPopup<
     WithPosition<Patient>,
-    typeof PatientFeatureManagerWithImageStyle
+    typeof PatientFeatureManagerWithImageStyle,
+    PatientPopupComponent
 >(PatientFeatureManagerWithImageStyle, {
     component: PatientPopupComponent,
     height: 110,
     width: 50,
-    getContext: (feature) => ({ patientId: feature.getId()! }),
+    getContext: (feature) => ({ patientId: feature.getId() as string }),
 });

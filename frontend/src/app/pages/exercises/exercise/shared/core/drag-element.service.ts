@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core';
 import type {
+    ImageProperties,
     PatientTemplate,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
-import { Patient, normalZoom, addVehicle } from 'digital-fuesim-manv-shared';
+import {
+    Patient,
+    TransferPoint,
+    normalZoom,
+    addVehicle,
+} from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 
@@ -147,6 +153,20 @@ export class DragElementService {
                     );
                 }
                 break;
+            case 'transferPoint':
+                this.apiService.proposeAction(
+                    {
+                        type: '[TransferPoint] Add TransferPoint',
+                        transferPoint: TransferPoint.create(
+                            position,
+                            {},
+                            '???',
+                            '???'
+                        ),
+                    },
+                    true
+                );
+                break;
             default:
                 break;
         }
@@ -174,6 +194,12 @@ type TransferTemplate =
     | {
           type: 'patient';
           template: PatientTemplate;
+      }
+    | {
+          type: 'transferPoint';
+          template: {
+              image: ImageProperties;
+          };
       }
     | {
           type: 'vehicle';

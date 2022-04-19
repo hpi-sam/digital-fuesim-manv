@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsDefined, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
+import type { ImageProperties } from './utils';
 import { getCreate, Position } from './utils';
 
 export class TransferPoint {
@@ -13,11 +14,7 @@ export class TransferPoint {
 
     // TODO
     @IsDefined()
-    public readonly reachableTransferPoints: {
-        readonly [key: UUID]: {
-            readonly duration: number;
-        };
-    };
+    public readonly reachableTransferPoints: ReachableTransferPoints;
 
     @IsString()
     public readonly internalName: string;
@@ -30,11 +27,7 @@ export class TransferPoint {
      */
     constructor(
         position: Position,
-        reachableTransferPoints: {
-            readonly [key: UUID]: {
-                duration: number;
-            };
-        },
+        reachableTransferPoints: ReachableTransferPoints,
         internalName: string,
         externalName: string
     ) {
@@ -45,4 +38,20 @@ export class TransferPoint {
     }
 
     static readonly create = getCreate(this);
+
+    static image: ImageProperties = {
+        url: 'assets/transfer_point.svg',
+        height: 400,
+        aspectRatio: 134 / 102,
+    };
+}
+
+// TODO: Add validation
+interface ReachableTransferPoints {
+    readonly [connectTransferPointId: UUID]: {
+        /**
+         * The time in ms it takes to get from this transfer point to the other one.
+         */
+        readonly duration: number;
+    };
 }

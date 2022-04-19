@@ -3,6 +3,7 @@ import { ExerciseActionReducers } from './exercise';
 import { MaterialActionReducers } from './material';
 import { PatientActionReducers } from './patient';
 import { PersonnelActionReducers } from './personnel';
+import { TransferPointActionReducers } from './transfer-point';
 import { VehicleActionReducers } from './vehicle';
 import { ViewportActionReducers } from './viewport';
 
@@ -17,6 +18,7 @@ const actionReducers = {
     ...PersonnelActionReducers,
     ...VehicleActionReducers,
     ...ViewportActionReducers,
+    ...TransferPointActionReducers,
 };
 
 type ExerciseActionReducer = typeof actionReducers[keyof typeof actionReducers];

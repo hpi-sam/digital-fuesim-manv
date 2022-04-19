@@ -32,6 +32,7 @@ import { PersonnelFeatureManager } from '../feature-managers/personnel-feature-m
 import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
 import type { ElementManager } from '../feature-managers/element-manager';
+import { TransferPointFeatureManager } from '../feature-managers/transfer-point-feature-manager';
 import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
@@ -77,18 +78,25 @@ export class OlMapManager {
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             20
         );
-        const patientLayer = this.createElementLayer();
+        const transferPointLayer = this.createElementLayer();
         const vehicleLayer = this.createElementLayer(1000);
+        const cateringLinesLayer = this.createElementLayer<LineString>();
+        const patientLayer = this.createElementLayer();
         const personnelLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
-        const cateringLinesLayer = this.createElementLayer<LineString>();
         this.popupOverlay = new Overlay({
             element: this.popoverContainer,
         });
 
         // Interactions
         const translateInteraction = new Translate({
-            layers: [patientLayer, vehicleLayer, personnelLayer, materialLayer],
+            layers: [
+                transferPointLayer,
+                vehicleLayer,
+                patientLayer,
+                personnelLayer,
+                materialLayer,
+            ],
         });
         // Clicking on an element should not trigger a drag event - use a `singleclick` interaction instead
         // Be aware that this means that not every `dragstart` event will have an accompanying `dragend` event
@@ -105,6 +113,7 @@ export class OlMapManager {
             target: this.openLayersContainer,
             layers: [
                 satelliteLayer,
+                transferPointLayer,
                 vehicleLayer,
                 cateringLinesLayer,
                 patientLayer,
@@ -134,6 +143,16 @@ export class OlMapManager {
         // });
 
         // FeatureManagers
+        this.registerFeatureElementManager(
+            new TransferPointFeatureManager(
+                store,
+                this.olMap,
+                transferPointLayer,
+                this.apiService
+            ),
+            this.store.select(getSelectWithPosition('transferPoints'))
+        ).togglePopup$.subscribe(this.changePopup$);
+
         this.registerFeatureElementManager(
             new PatientFeatureManager(
                 store,
