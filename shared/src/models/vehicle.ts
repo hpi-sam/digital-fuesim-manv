@@ -15,8 +15,9 @@ export class Vehicle {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
 
-    @IsUUID(4, uuidValidationOptions)
-    public readonly materialId: UUID;
+   // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
+   @IsDefined()
+   public readonly materialIds: UUIDSet = {};
 
     @IsNumber()
     public readonly patientCapacity: number;
@@ -56,12 +57,12 @@ export class Vehicle {
      * @deprecated Use {@link create} instead
      */
     constructor(
-        materialId: UUID,
+        materialId: UUIDSet,
         patientCapacity: number,
         name: string,
         image: ImageProperties
     ) {
-        this.materialId = materialId;
+        this.materialIds = materialId;
         this.patientCapacity = patientCapacity;
         this.name = name;
         this.image = image;

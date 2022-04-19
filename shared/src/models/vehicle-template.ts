@@ -30,7 +30,7 @@ export class VehicleTemplate {
 
     @ValidateNested()
     @Type(() => CanCaterFor)
-    public readonly material: CanCaterFor;
+    public readonly material: CanCaterFor[];
 
     /**
      * @deprecated Use {@link create} instead
@@ -40,7 +40,7 @@ export class VehicleTemplate {
         image: ImageProperties,
         patientCapacity: number,
         personnel: readonly PersonnelType[],
-        material: CanCaterFor
+        material: CanCaterFor[]
     ) {
         this.name = name;
         this.image = image;
