@@ -374,7 +374,7 @@ export const exerciseReducerMap: {
             );
         }
         delete draftState.transferPoints[transferPointId];
-        // TODO: If we can assume that the transfer points are always connect to each other,
+        // TODO: If we can assume that the transfer points are always connected to each other,
         // we could just iterate over draftState.transferPoints[transferPointId].reachableTransferPoints
         for (const _transferPointId of Object.keys(draftState.transferPoints)) {
             const transferPoint = draftState.transferPoints[_transferPointId];
@@ -384,7 +384,7 @@ export const exerciseReducerMap: {
                 const connectedTransferPoint =
                     draftState.transferPoints[connectedTransferPointId];
                 delete connectedTransferPoint.reachableTransferPoints[
-                    _transferPointId
+                    transferPointId
                 ];
             }
         }
