@@ -177,7 +177,7 @@ export namespace TransferPointActionReducers {
                 // We remove the connection from both directions
                 if (transferPointId1 === transferPointId2) {
                     throw new ReducerError(
-                        `TransferPoint with id ${transferPointId1} cannot connect to itself`
+                        `TransferPoint with id ${transferPointId1} cannot disconnect from itself`
                     );
                 }
                 const transferPoint1 = getTransferPoint(
