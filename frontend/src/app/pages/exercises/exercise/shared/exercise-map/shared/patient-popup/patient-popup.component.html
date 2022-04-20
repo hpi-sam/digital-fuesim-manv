@@ -1,4 +1,3 @@
-<!-- eslint-disable @angular-eslint/template/no-call-expression -->
 <ng-container *ngIf="patient$ | async as patient">
     <h5 class="popover-header">
         {{ patient.personalInformation.name }}
@@ -14,7 +13,7 @@
             {{
                 (client$ | async)?.role === 'trainer'
                     ? (patient.health / healthPointsDefaults.max | percent)
-                    : getStatusName(patient.visibleStatus ?? 'white')
+                    : statusNames[patient.visibleStatus ?? 'white']
             }}
         </span>
         <button

@@ -1,11 +1,8 @@
 import type { OnInit } from '@angular/core';
 import { EventEmitter, Output, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { UUID, Patient, PatientStatus } from 'digital-fuesim-manv-shared';
-import {
-    healthPointsDefaults,
-    getStatusName,
-} from 'digital-fuesim-manv-shared';
+import type { UUID, Patient } from 'digital-fuesim-manv-shared';
+import { healthPointsDefaults, statusNames } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -45,7 +42,7 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
         this.patient$ = this.store.select(getSelectPatient(this.patientId));
     }
 
-    public getStatusName(status: PatientStatus) {
-        return getStatusName(status);
+    public get statusNames() {
+        return statusNames;
     }
 }

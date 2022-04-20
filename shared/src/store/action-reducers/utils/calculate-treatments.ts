@@ -88,7 +88,8 @@ export function calculateTreatments(state: Mutable<ExerciseState>) {
     });
     const patients = Object.values(state.patients).filter(
         (patient) =>
-            patient.position !== undefined && patient.visibleStatus !== 'black'
+            patient.position !== undefined &&
+            !['black', 'blue'].includes(patient.visibleStatus ?? 'yellow')
     );
     patients.forEach((patient) => {
         patient.isBeingTreated = false;

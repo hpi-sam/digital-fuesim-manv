@@ -6,19 +6,13 @@ export type PatientStatus =
     | 'white'
     | 'yellow';
 
-export function getStatusName(status: PatientStatus): string {
-    switch (status) {
-        case 'black':
-            return 'ex';
-        case 'blue':
-            return 'SK IV';
-        case 'green':
-            return 'SK III';
-        case 'red':
-            return 'SK I';
-        case 'white':
-            return 'Ungesichtet';
-        case 'yellow':
-            return 'SK II';
-    }
-}
+export const statusNames: {
+    [key in PatientStatus]: string;
+} = {
+    black: 'ex',
+    blue: 'SK IV',
+    green: 'SK III',
+    red: 'SK I',
+    white: 'Ungesichtet',
+    yellow: 'SK II',
+};
