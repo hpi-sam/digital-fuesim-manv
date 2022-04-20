@@ -14,15 +14,17 @@
                         class="overflow-auto w-100"
                         style="white-space: nowrap"
                     >
-                        <img
-                            [src]="transferPointTemplate.image.url"
-                            (mousedown)="
-                                dragElementService.onMouseDown($event, {
-                                    type: 'transferPoint',
-                                    template: transferPointTemplate
-                                })
-                            "
-                        />
+                        <div class="preview-image-container">
+                            <img
+                                [src]="transferPointTemplate.image.url"
+                                (mousedown)="
+                                    dragElementService.onMouseDown($event, {
+                                        type: 'transferPoint',
+                                        template: transferPointTemplate
+                                    })
+                                "
+                            />
+                        </div>
                     </div>
                 </li>
                 <li class="list-group-item">
@@ -44,10 +46,9 @@
                                 })
                             "
                         >
-                            <img
-                                [src]="patientTemplate.image.url"
-                                class="card-img-top"
-                            />
+                            <div class="preview-image-container card-img-top">
+                                <img [src]="patientTemplate.image.url" />
+                            </div>
                             <div class="card-body">
                                 <h5
                                     class="card-title text-truncate"
@@ -82,10 +83,9 @@
                                 })
                             "
                         >
-                            <img
-                                [src]="vehicleTemplate.image.url"
-                                class="card-img-top"
-                            />
+                            <div class="preview-image-container card-img-top">
+                                <img [src]="vehicleTemplate.image.url" />
+                            </div>
                             <div class="card-body">
                                 <h5
                                     class="card-title text-truncate"
@@ -117,10 +117,10 @@
                                 })
                             "
                         >
-                            <img
-                                [src]="mapImageTemplate.image.url"
-                                class="card-img-top"
-                            />
+                            <div class="preview-image-container card-img-top">
+                                <img [src]="mapImageTemplate.image.url" />
+                            </div>
+
                             <div class="card-body">
                                 <h5
                                     class="card-title text-truncate"
