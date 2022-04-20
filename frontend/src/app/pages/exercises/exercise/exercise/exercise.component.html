@@ -13,14 +13,14 @@
                 (click)="shareExercise(participantId)"
                 class="btn btn-light ms-3"
             >
-                Teile für Teilnehmer
+                Teilnehmerlink teilen
             </button>
             <button
                 *ngIf="client.role === 'trainer'"
                 (click)="shareExercise(exerciseId!)"
                 class="btn btn-outline-warning ms-3"
             >
-                Teile für Leiter
+                Übungsleiterlink teilen
             </button>
         </h2>
     </div>
