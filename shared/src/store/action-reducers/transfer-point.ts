@@ -250,17 +250,26 @@ function getTransferPoint(
 
 /**
  *
- * @returns an estimated duration to walk between the the two given positions
+ * @returns an estimated duration in ms to drive between the the two given positions
  * The resulting value is a multiple of 0.1 minutes.
  */
 function estimateDuration(startPosition: Position, targetPosition: Position) {
+    // TODO: tweak these values more
     // How long in ms it takes to start + stop moving
-    const overheadSummand = 60 * 1000;
-    // How long in ms it takes to move 1 meter
-    const distanceFactor = 1000 * 1;
-    const multipleOf = 1000 * 60 * 0.1;
-    const estimate =
+    const overheadSummand = 10 * 1000;
+    // In meters per second
+    // On average an RTW drives 11.5 m/s (41.3 km/h https://www.leitstelle-lausitz.de/leitstelle/haeufig-gestellte-fragen/#:~:text=Wie%20viel%20schneller%20ist%20ein,30%2C4%20km%2Fh.)
+    // Be aware that this could be significantly off for longer distances due to ,e.g., the use of the Autobahn.
+    const averageSpeed = 11.5;
+    // How many times longer is the actual driving distance in contrast to the distance as the crow flies?
+    // A good heuristic is 1.3 (https://forum.openstreetmap.org/viewtopic.php?id=3941)
+    const distanceFactor = 1.3;
+    const estimateTime =
         overheadSummand +
-        distanceFactor * calculateDistance(startPosition, targetPosition);
-    return Math.round(estimate / multipleOf) * multipleOf;
+        ((distanceFactor * calculateDistance(startPosition, targetPosition)) /
+            averageSpeed) *
+            // Convert to milliseconds
+            1000;
+    const multipleOf = 1000 * 60 * 0.1;
+    return Math.round(estimateTime / multipleOf) * multipleOf;
 }
