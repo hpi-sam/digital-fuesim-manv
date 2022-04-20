@@ -10,7 +10,13 @@ import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectClient,
     getSelectTransferPoint,
+    selectTransferPoints,
 } from 'src/app/state/exercise/exercise.selectors';
+
+/**
+ * We want to remember the last selected nav item, so the user doesn't have to manually select it again.
+ */
+let activeNavId: 'connections' | 'names' = 'names';
 
 @Component({
     selector: 'app-transfer-point-popup',
@@ -24,6 +30,30 @@ export class TransferPointPopupComponent implements OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public transferPoint$?: Observable<TransferPoint>;
+
+    public get activeNavId() {
+        return activeNavId;
+    }
+    public set activeNavId(value: 'connections' | 'names') {
+        activeNavId = value;
+    }
+
+    public transferPoints$ = this.store.select(selectTransferPoints);
+
+    /**
+     * All transferPoints that are neither connected to this one nor this one itself
+     */
+    public readonly transferPointsToBeAdded$ = this.store.select((state) => {
+        const transferPoints = state.exercise.transferPoints;
+        const currentTransferPoint = transferPoints[this.transferPointId];
+        return Object.fromEntries(
+            Object.entries(transferPoints).filter(
+                ([key]) =>
+                    key !== this.transferPointId &&
+                    !currentTransferPoint.reachableTransferPoints[key]
+            )
+        );
+    });
 
     public readonly client$ = this.store.select(
         getSelectClient(this.apiService.ownClientId!)
@@ -62,11 +92,23 @@ export class TransferPointPopupComponent implements OnInit {
                 color: 'success',
             });
             this.closePopup.emit();
-        } else {
-            this.messageService.postError({
-                title: 'Error when changing names',
-                error: response.message,
-            });
         }
+    }
+
+    public connectTransferPoint(transferPointId: UUID, duration?: number) {
+        this.apiService.proposeAction({
+            type: '[TransferPoint] Connect TransferPoints',
+            transferPointId1: this.transferPointId,
+            transferPointId2: transferPointId,
+            duration,
+        });
+    }
+
+    public disconnectTransferPoint(transferPointId: UUID) {
+        this.apiService.proposeAction({
+            type: '[TransferPoint] Disconnect TransferPoints',
+            transferPointId1: this.transferPointId,
+            transferPointId2: transferPointId,
+        });
     }
 }
