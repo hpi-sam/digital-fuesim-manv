@@ -14,24 +14,52 @@
                         class="overflow-auto w-100"
                         style="white-space: nowrap"
                     >
-                        <img
-                            [src]="viewportTemplate.image.url"
+                        <div
+                            class="d-inline-block card text-center"
+                            style="width: 10rem; text-overflow: ellipsis"
                             (mousedown)="
                                 dragElementService.onMouseDown($event, {
                                     type: 'viewport',
                                     template: viewportTemplate
                                 })
                             "
-                        />
-                        <img
-                            [src]="transferPointTemplate.image.url"
+                        >
+                            <img
+                                [src]="viewportTemplate.image.url"
+                                class="card-img-top"
+                            />
+                            <div class="card-body">
+                                <h5
+                                    class="card-title text-truncate"
+                                    [title]="'Ansicht'"
+                                >
+                                    Ansicht
+                                </h5>
+                            </div>
+                        </div>
+                        <div
+                            class="d-inline-block card text-center"
+                            style="width: 10rem; text-overflow: ellipsis"
                             (mousedown)="
                                 dragElementService.onMouseDown($event, {
                                     type: 'transferPoint',
                                     template: transferPointTemplate
                                 })
                             "
-                        />
+                        >
+                            <img
+                                [src]="transferPointTemplate.image.url"
+                                class="card-img-top"
+                            />
+                            <div class="card-body">
+                                <h5
+                                    class="card-title text-truncate"
+                                    [title]="'Transferpunkt'"
+                                >
+                                    Transferpunkt
+                                </h5>
+                            </div>
+                        </div>
                     </div>
                 </li>
                 <li class="list-group-item">

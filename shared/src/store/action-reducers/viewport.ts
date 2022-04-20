@@ -3,6 +3,7 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Viewport } from '../../models';
+import { Position, Size } from '../../models/utils';
 import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -20,6 +21,29 @@ export class RemoveViewportAction implements Action {
     public readonly type = '[Viewport] Remove viewport';
     @IsUUID(4, uuidValidationOptions)
     public readonly viewportId!: UUID;
+}
+
+export class MoveViewportAction implements Action {
+    @IsString()
+    public readonly type = '[Viewport] Move viewport';
+    @IsUUID(4, uuidValidationOptions)
+    public readonly viewportId!: UUID;
+    @ValidateNested()
+    @Type(() => Position)
+    public readonly targetPosition!: Position;
+}
+
+export class ResizeViewportAction implements Action {
+    @IsString()
+    public readonly type = '[Viewport] Resize viewport';
+    @IsUUID(4, uuidValidationOptions)
+    public readonly viewportId!: UUID;
+    @ValidateNested()
+    @Type(() => Position)
+    public readonly targetPosition!: Position;
+    @ValidateNested()
+    @Type(() => Size)
+    public readonly newSize!: Size;
 }
 
 export namespace ViewportActionReducers {
@@ -41,6 +65,37 @@ export namespace ViewportActionReducers {
                 );
             }
             delete draftState.viewports[viewportId];
+            return draftState;
+        },
+        rights: 'trainer',
+    };
+
+    export const moveViewport: ActionReducer<MoveViewportAction> = {
+        action: MoveViewportAction,
+        reducer: (draftState, { viewportId, targetPosition }) => {
+            const viewport = draftState.viewports[viewportId];
+            if (!viewport) {
+                throw new ReducerError(
+                    `Viewport with id ${viewportId} does not exist`
+                );
+            }
+            viewport.topLeft = targetPosition;
+            return draftState;
+        },
+        rights: 'trainer',
+    };
+
+    export const resizeViewport: ActionReducer<ResizeViewportAction> = {
+        action: ResizeViewportAction,
+        reducer: (draftState, { viewportId, targetPosition, newSize }) => {
+            const viewport = draftState.viewports[viewportId];
+            if (!viewport) {
+                throw new ReducerError(
+                    `Viewport with id ${viewportId} does not exist`
+                );
+            }
+            viewport.topLeft = targetPosition;
+            viewport.size = newSize;
             return draftState;
         },
         rights: 'trainer',

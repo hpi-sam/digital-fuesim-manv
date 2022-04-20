@@ -5,7 +5,8 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
-import type Point from 'ol/geom/Point';
+import { Circle as CircleStyle } from 'ol/style';
+import Point from 'ol/geom/Point';
 import {
     Translate,
     Modify,
@@ -30,6 +31,12 @@ import type { NgZone } from '@angular/core';
 import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
 import { isEqual } from 'lodash-es';
+import { platformModifierKeyOnly, primaryAction } from 'ol/events/condition';
+import { getCenter, getHeight, getWidth } from 'ol/extent';
+import Style from 'ol/style/Style';
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
+import { MultiPoint } from 'ol/geom';
 import { startingPosition } from '../../starting-position';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
@@ -43,6 +50,54 @@ import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
 import type { FeatureManager } from './feature-manager';
+import { ModifyHelper } from './modify-helper';
+
+// @ts-expect-error TS is stupid
+function calculateCenter(geometry) {
+    let center: number[], coordinates, minRadius;
+    const type = geometry.getType();
+    if (type === 'Polygon') {
+        let x = 0;
+        let y = 0;
+        let i = 0;
+        coordinates = geometry.getCoordinates()[0].slice(1);
+        // @ts-expect-error TS is stupid
+        coordinates.forEach((coordinate) => {
+            x += coordinate[0];
+            y += coordinate[1];
+            i++;
+        });
+        center = [x / i, y / i];
+    } else if (type === 'LineString') {
+        center = geometry.getCoordinateAt(0.5);
+        coordinates = geometry.getCoordinates();
+    } else {
+        center = getCenter(geometry.getExtent());
+    }
+    let sqDistances;
+    if (coordinates) {
+        // @ts-expect-error TS is stupid
+        sqDistances = coordinates.map((coordinate) => {
+            const dx = coordinate[0] - center[0];
+            const dy = coordinate[1] - center[1];
+            return dx * dx + dy * dy;
+        });
+        // eslint-disable-next-line prefer-spread
+        minRadius = Math.sqrt(Math.max.apply(Math, sqDistances)) / 3;
+    } else {
+        minRadius =
+            Math.max(
+                getWidth(geometry.getExtent()),
+                getHeight(geometry.getExtent())
+            ) / 3;
+    }
+    return {
+        center,
+        coordinates,
+        minRadius,
+        sqDistances,
+    };
+}
 
 /**
  * This class should run outside the Angular zone for performance reasons.
@@ -105,6 +160,78 @@ export class OlMapManager {
                 materialLayer,
             ],
         });
+
+        const defaultStyle = new Modify({ source: viewportLayer.getSource()! })
+            .getOverlay()
+            .getStyleFunction();
+
+        const viewportModify = new Modify({
+            source: viewportLayer.getSource()!,
+            condition: (event) =>
+                primaryAction(event) && platformModifierKeyOnly(event),
+            deleteCondition: () => false,
+            insertVertexCondition: () => false,
+            style: (feature) => {
+                // @ts-expect-error TS is stupid
+                feature.get('features').forEach((modifyFeature) => {
+                    const modifyGeometry = modifyFeature.get('modifyGeometry');
+                    if (modifyGeometry) {
+                        // @ts-expect-error TS is stupid
+                        const point = feature.getGeometry().getCoordinates();
+                        let modifyPoint = modifyGeometry.point;
+                        if (!modifyPoint) {
+                            // save the initial geometry and vertex position
+                            modifyPoint = point;
+                            modifyGeometry.point = modifyPoint;
+                            modifyGeometry.geometry0 = modifyGeometry.geometry;
+                            // get anchor and minimum radius of vertices to be used
+                            const result = calculateCenter(
+                                modifyGeometry.geometry0
+                            );
+                            modifyGeometry.center = result.center;
+                            modifyGeometry.minRadius = result.minRadius;
+                        }
+
+                        const center = modifyGeometry.center;
+                        const minRadius = modifyGeometry.minRadius;
+                        let dx, dy;
+                        dx = modifyPoint[0] - center[0];
+                        dy = modifyPoint[1] - center[1];
+                        const initialRadius = Math.sqrt(dx * dx + dy * dy);
+                        if (initialRadius > minRadius) {
+                            const initialAngle = Math.atan2(dy, dx);
+                            dx = point[0] - center[0];
+                            dy = point[1] - center[1];
+                            const currentRadius = Math.sqrt(dx * dx + dy * dy);
+                            if (currentRadius > 0) {
+                                const currentAngle = Math.atan2(dy, dx);
+                                const geometry =
+                                    modifyGeometry.geometry0.clone();
+                                geometry.scale(
+                                    currentRadius / initialRadius,
+                                    undefined,
+                                    center
+                                );
+                                geometry.rotate(
+                                    currentAngle - initialAngle,
+                                    center
+                                );
+                                modifyGeometry.geometry = geometry;
+                            }
+                        }
+                    }
+                });
+                return defaultStyle!(feature, 123);
+            },
+        });
+
+        const viewportTranslate = new Translate({
+            layers: [viewportLayer],
+            condition: (event) =>
+                primaryAction(event) && !platformModifierKeyOnly(event),
+            hitTolerance: 10,
+        });
+
         // Clicking on an element should not trigger a drag event - use a `singleclick` interaction instead
         // Be aware that this means that not every `dragstart` event will have an accompanying `dragend` event
         translateInteraction.on('translateend', (event) => {
@@ -112,35 +239,32 @@ export class OlMapManager {
                 event.stopPropagation();
             }
         });
+        viewportTranslate.on('translateend', (event) => {
+            if (isEqual(event.coordinate, event.startCoordinate)) {
+                event.stopPropagation();
+            }
+        });
 
         TranslateHelper.registerTranslateEvents(translateInteraction);
-
-        const viewportModify = new Modify({
-            source: viewportLayer.getSource()!,
-            deleteCondition: () => false,
-            insertVertexCondition: () => false,
-        });
-
-        const viewportTranslate = new Translate({
-            layers: [viewportLayer],
-            hitTolerance: 3,
-        });
+        TranslateHelper.registerTranslateEvents(viewportTranslate);
+        ModifyHelper.registerModifyEvents(viewportModify);
 
         this.olMap = new OlMap({
-            interactions: defaultInteractions()
-                .extend([translateInteraction])
-                .extend([viewportTranslate])
-                .extend([viewportModify]),
+            interactions: defaultInteractions().extend([
+                translateInteraction,
+                viewportTranslate,
+                viewportModify,
+            ]),
             target: this.openLayersContainer,
             layers: [
                 satelliteLayer,
+                viewportLayer,
                 transferPointLayer,
                 vehicleLayer,
                 cateringLinesLayer,
                 patientLayer,
                 personnelLayer,
                 materialLayer,
-                viewportLayer,
             ],
             overlays: [this.popupOverlay],
             view: new View({
@@ -221,7 +345,7 @@ export class OlMapManager {
         );
 
         this.registerFeatureElementManager(
-            new ViewportFeatureManager(viewportLayer),
+            new ViewportFeatureManager(viewportLayer, this.apiService),
             this.store.select(getselectViewport('viewports'))
         );
 
@@ -326,12 +450,84 @@ export class OlMapManager {
     private createElementLayer<LayerGeometry extends Geometry = Point>(
         renderBuffer = 250
     ) {
+        const style = new Style({
+            geometry(feature) {
+                console.log('geometry');
+                const modifyGeometry = feature.get('modifyGeometry');
+                return modifyGeometry
+                    ? modifyGeometry.geometry
+                    : feature.getGeometry();
+            },
+            fill: new Fill({
+                color: 'rgba(255, 255, 255, 0.2)',
+            }),
+            stroke: new Stroke({
+                color: '#ffcc33',
+                width: 2,
+            }),
+            image: new CircleStyle({
+                radius: 7,
+                fill: new Fill({
+                    color: '#ffcc33',
+                }),
+            }),
+        });
         return new VectorLayer({
             // These two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
             updateWhileAnimating: true,
             updateWhileInteracting: true,
             renderBuffer,
             source: new VectorSource<LayerGeometry>(),
+            style: (feature) => {
+                console.log('hi');
+                const styles = [style];
+                const modifyGeometry = feature.get('modifyGeometry');
+                const geometry = modifyGeometry
+                    ? modifyGeometry.geometry
+                    : feature.getGeometry();
+                const result = calculateCenter(geometry);
+                const center = result.center;
+                if (center) {
+                    styles.push(
+                        new Style({
+                            geometry: new Point(center),
+                            image: new CircleStyle({
+                                radius: 4,
+                                fill: new Fill({
+                                    color: '#ff3333',
+                                }),
+                            }),
+                        })
+                    );
+                    const coordinates = result.coordinates;
+                    if (coordinates) {
+                        const minRadius = result.minRadius;
+                        const sqDistances = result.sqDistances;
+                        const rsq = minRadius * minRadius;
+                        const points = coordinates.filter(
+                            (
+                                // @ts-expect-error TS s
+                                _coordinate,
+                                // @ts-expect-error TS s
+                                index
+                            ) => sqDistances[index] > rsq
+                        );
+                        styles.push(
+                            new Style({
+                                geometry: new MultiPoint(points),
+                                image: new CircleStyle({
+                                    radius: 4,
+                                    fill: new Fill({
+                                        color: '#33cc33',
+                                    }),
+                                }),
+                            })
+                        );
+                    }
+                }
+                console.log(styles);
+                return styles;
+            },
         });
     }
 

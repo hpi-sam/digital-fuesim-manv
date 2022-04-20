@@ -1,3 +1,4 @@
+import { Size } from 'digital-fuesim-manv-shared';
 import type { Viewport } from 'digital-fuesim-manv-shared/src/models/viewport';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
@@ -7,7 +8,10 @@ import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
+import type { ApiService } from 'src/app/core/api.service';
 import type { FeatureManager } from '../utility/feature-manager';
+import { ModifyHelper } from '../utility/modify-helper';
+import { TranslateHelper } from '../utility/translate-helper';
 import { ElementManager } from './element-manager';
 
 export class ViewportFeatureManager
@@ -20,9 +24,15 @@ export class ViewportFeatureManager
 {
     readonly unsupportedChangeProperties = new Set(['id'] as const);
 
-    constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {
+    constructor(
+        public readonly layer: VectorLayer<VectorSource<LineString>>,
+        private readonly apiService: ApiService
+    ) {
         super();
     }
+
+    private readonly translateHelper = new TranslateHelper<LineString>();
+    private readonly modifyHelper = new ModifyHelper();
 
     /**
      *
@@ -35,7 +45,7 @@ export class ViewportFeatureManager
         return new Style({
             stroke: new Stroke({
                 color: '#fafaff',
-                width: 1,
+                width: 2,
             }),
         });
     }
@@ -58,6 +68,31 @@ export class ViewportFeatureManager
         );
         feature.setId(element.id);
         this.layer.getSource()!.addFeature(feature);
+        this.translateHelper.onTranslateEnd(feature, (newPositions) => {
+            this.apiService.proposeAction(
+                {
+                    type: '[Viewport] Move viewport',
+                    viewportId: element.id,
+                    targetPosition: newPositions[0],
+                },
+                true
+            );
+        });
+        this.modifyHelper.onModifyEnd(feature, (newPositions) => {
+            const lineString = newPositions;
+
+            const topLeft = lineString[0];
+            const bottomRight = lineString[2];
+            this.apiService.proposeAction({
+                type: '[Viewport] Resize viewport',
+                viewportId: element.id,
+                targetPosition: topLeft,
+                newSize: Size.create(
+                    bottomRight.x - topLeft.x,
+                    topLeft.y - bottomRight.y
+                ),
+            });
+        });
     }
 
     deleteFeature(

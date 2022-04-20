@@ -1,17 +1,19 @@
-import { IsPositive } from 'class-validator';
+import { IsNumber /* , IsPositive */ } from 'class-validator';
 import { getCreate } from './get-create';
 
 export class Size {
     /**
      * The width in meters.
      */
-    @IsPositive()
+    // @IsPositive()
+    @IsNumber()
     public readonly width: number;
 
     /**
      * The height in meters.
      */
-    @IsPositive()
+    // @IsPositive()
+    @IsNumber()
     public readonly height: number;
 
     /**
