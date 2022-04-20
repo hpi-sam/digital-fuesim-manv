@@ -1,5 +1,5 @@
 export { Position } from './position';
-export { PatientStatus } from './patient-status';
+export * from './patient-status';
 export { Size } from './size';
 export { Role } from './role';
 export { PersonnelType } from './personnel-type';
