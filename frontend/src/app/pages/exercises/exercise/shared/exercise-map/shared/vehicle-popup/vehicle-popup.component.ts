@@ -39,12 +39,12 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
             switchMap((vehicle) => {
                 const materialIsInVehicle$ = Object.keys(
                     vehicle.materialIds
-                    ).map((materialId) =>
-                        this.store.select(getSelectPersonnel(materialId)).pipe(
-                            // TODO: only if the person is not in transfer
-                            map((material) => material.position === undefined)
-                        )
-                    );
+                ).map((materialId) =>
+                    this.store.select(getSelectPersonnel(materialId)).pipe(
+                        // TODO: only if the person is not in transfer
+                        map((material) => material.position === undefined)
+                    )
+                );
                 const personnelIsInVehicle$ = Object.keys(
                     vehicle.personnelIds
                 ).map((personnelId) =>

@@ -17,9 +17,10 @@ export class AddVehicleAction implements Action {
     @Type(() => Vehicle)
     public readonly vehicle!: Vehicle;
 
+    @IsArray()
     @ValidateNested()
     @Type(() => Material)
-    public readonly material!: Material[];
+    public readonly material!: readonly Material[];
 
     @IsArray()
     @ValidateNested()
@@ -154,7 +155,7 @@ export namespace VehicleActionReducers {
                 );
             }
             const material = Object.keys(vehicle.materialIds).map(
-                (materialId) => draftState.personnel[materialId]
+                (materialId) => draftState.materials[materialId]
             );
             const personnel = Object.keys(vehicle.personnelIds).map(
                 (personnelId) => draftState.personnel[personnelId]

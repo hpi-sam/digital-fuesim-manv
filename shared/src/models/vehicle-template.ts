@@ -7,8 +7,8 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import type { PersonnelType } from './utils';
-import { CanCaterFor, getCreate } from './utils';
+import type { PersonnelType, CanCaterFor } from './utils';
+import { getCreate } from './utils';
 import { ImageProperties } from './utils/image-properties';
 
 export class VehicleTemplate {
@@ -28,9 +28,8 @@ export class VehicleTemplate {
     @IsArray()
     public readonly personnel: readonly PersonnelType[];
 
-    @ValidateNested()
-    @Type(() => CanCaterFor)
-    public readonly material: CanCaterFor[];
+    @IsArray()
+    public readonly material: readonly CanCaterFor[];
 
     /**
      * @deprecated Use {@link create} instead
@@ -40,7 +39,7 @@ export class VehicleTemplate {
         image: ImageProperties,
         patientCapacity: number,
         personnel: readonly PersonnelType[],
-        material: CanCaterFor[]
+        material: readonly CanCaterFor[]
     ) {
         this.name = name;
         this.image = image;

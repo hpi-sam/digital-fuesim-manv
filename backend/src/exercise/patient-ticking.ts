@@ -76,11 +76,12 @@ function getDedicatedResources(
 ): Catering {
     if (!patient.isBeingTreated) {
         return {
-            firefighter: 0,
+            gf: 0,
             material: 0,
             notarzt: 0,
             notSan: 0,
-            retSan: 0,
+            rettSan: 0,
+            san: 0,
         };
     }
     const material = Object.values(state.materials).filter((thisMaterial) =>
@@ -96,15 +97,19 @@ function getDedicatedResources(
     const notSan = treatingPersonnel.filter(
         (thisPersonnel) => thisPersonnel.personnelType === 'notSan'
     ).length;
-    const retSan = treatingPersonnel.filter(
-        (thisPersonnel) => thisPersonnel.personnelType === 'retSan'
+    const rettSan = treatingPersonnel.filter(
+        (thisPersonnel) => thisPersonnel.personnelType === 'rettSan'
+    ).length;
+    const san = treatingPersonnel.filter(
+        (thisPersonnel) => thisPersonnel.personnelType === 'san'
     ).length;
     return {
-        firefighter: 0,
+        gf: 0,
         material,
         notarzt,
         notSan,
-        retSan,
+        rettSan,
+        san,
     };
 }
 
@@ -125,7 +130,8 @@ function getNextPatientHealthPoints(
     let material = treatedBy.material;
     const notarzt = treatedBy.notarzt;
     const notSan = treatedBy.notSan;
-    const retSan = treatedBy.retSan;
+    const retSan = treatedBy.rettSan;
+    const san = treatedBy.san;
     const functionParameters =
         patient.healthStates[patient.currentHealthStateId].functionParameters;
     // To do anything the personnel needs material

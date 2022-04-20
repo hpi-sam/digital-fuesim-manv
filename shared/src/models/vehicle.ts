@@ -15,9 +15,9 @@ export class Vehicle {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
 
-   // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-   @IsDefined()
-   public readonly materialIds: UUIDSet = {};
+    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
+    @IsDefined()
+    public readonly materialIds: UUIDSet = {};
 
     @IsNumber()
     public readonly patientCapacity: number;
