@@ -51,7 +51,14 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     }
 
     public async saveUrl() {
-        // const aspectRatio = await this.getImageRatio(this.url!)
+        const statusResponse = await this.apiService.callUrl(this.url!);
+        if (!(statusResponse >= 200 && statusResponse < 300)) {
+            this.messageService.postError({
+                title: 'Neue Bild-URL existiert nicht',
+                error: `Es wurde der HTTP-Status ${statusResponse} zurückgesendet`,
+            });
+            return;
+        }
         const response = await this.apiService.proposeAction({
             type: '[MapImage] Reconfigure Url',
             mapImageId: this.mapImageId,
@@ -63,11 +70,6 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
                 color: 'success',
             });
             this.closePopup.emit();
-        } else {
-            this.messageService.postError({
-                title: 'Fehler beim Ändern der Bild-URL',
-                error: response.message,
-            });
         }
     }
 
@@ -84,24 +86,6 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
                 color: 'success',
             });
             this.closePopup.emit();
-        } else {
-            this.messageService.postError({
-                title: 'Fehler beim Ändern der Bildgröße',
-                error: response.message,
-            });
         }
-    }
-
-    public async getImageRatio(url: string): Promise<any> {
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.src = url;
-            img.onload = function () {
-                resolve(img.width / img.height);
-            };
-            img.onerror = function () {
-                reject('Image failed to load');
-            };
-        });
     }
 }

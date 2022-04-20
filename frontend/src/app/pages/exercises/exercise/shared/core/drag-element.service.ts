@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-
 import { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type {

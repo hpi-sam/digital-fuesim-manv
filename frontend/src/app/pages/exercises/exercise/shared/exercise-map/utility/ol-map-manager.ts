@@ -26,14 +26,8 @@ import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
 import { isEqual } from 'lodash-es';
 import type { Observable } from 'rxjs';
-import {
-    Subject,
-    firstValueFrom,
-    debounceTime,
-    startWith,
-    pairwise,
-    takeUntil,
-} from 'rxjs';
+import { Subject, debounceTime, startWith, pairwise, takeUntil } from 'rxjs';
+import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { startingPosition } from '../../starting-position';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
@@ -41,7 +35,6 @@ import { PersonnelFeatureManager } from '../feature-managers/personnel-feature-m
 import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
 import type { ElementManager } from '../feature-managers/element-manager';
-
 import { TransferPointFeatureManager } from '../feature-managers/transfer-point-feature-manager';
 import { MapImageFeatureManager } from '../feature-managers/map-images-feature-manager';
 import { handleChanges } from './handle-changes';
@@ -55,14 +48,7 @@ import type { FeatureManager } from './feature-manager';
 export class OlMapManager {
     private readonly destroy$ = new Subject<void>();
 
-    public get olMap(): OlMap {
-        if (!this._olMap) {
-            throw new TypeError('olMap undefined when it should not be');
-        }
-        return this._olMap;
-    }
-
-    private _olMap?: OlMap;
+    public readonly olMap: OlMap;
     /**
      * If this subject emits options, the specified popup should be toggled.
      * If it emits undefined, the currently open popup should be closed.
@@ -71,13 +57,7 @@ export class OlMapManager {
         OpenPopupOptions<any> | undefined
     >();
 
-    public get popupOverlay(): Overlay {
-        if (!this._popupOverlay) {
-            throw new TypeError('popupOverlay undefined when it should not be');
-        }
-        return this._popupOverlay;
-    }
-    private _popupOverlay?: Overlay;
+    public readonly popupOverlay: Overlay;
     /**
      * key: the layer that is passed to the featureManager, that is saved in the value
      * ```ts
@@ -91,22 +71,13 @@ export class OlMapManager {
         FeatureManager<any>
     >();
 
-    /**
-     * It is required to call {@link build} afterwards before using the {@link OlMapManager}
-     */
     constructor(
         private readonly store: Store<AppState>,
         private readonly apiService: ApiService,
         private readonly openLayersContainer: HTMLDivElement,
         private readonly popoverContainer: HTMLDivElement,
         private readonly ngZone: NgZone
-    ) {}
-
-    /**
-     * Creates the {@link OlMapManager}. Is required to be called after construction.
-     * @returns This {@link OlMapManager}
-     */
-    public async build() {
+    ) {
         // Layers
         const satelliteLayer = this.createTileLayer(
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -119,7 +90,7 @@ export class OlMapManager {
         const personnelLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
         const mapImagesLayer = this.createElementLayer();
-        this._popupOverlay = new Overlay({
+        this.popupOverlay = new Overlay({
             element: this.popoverContainer,
         });
 
@@ -127,12 +98,8 @@ export class OlMapManager {
         const translateInteraction = new Translate({
             layers:
                 this.apiService.ownClientId &&
-                (
-                    await firstValueFrom(
-                        this.store.select(
-                            getSelectClient(this.apiService.ownClientId)
-                        )
-                    )
+                getSelectClient(this.apiService.ownClientId)(
+                    getStateSnapshot(this.store)
                 ).role === 'trainer'
                     ? [
                           transferPointLayer,
@@ -160,18 +127,20 @@ export class OlMapManager {
 
         TranslateHelper.registerTranslateEvents(translateInteraction);
 
-        this._olMap = new OlMap({
+        this.olMap = new OlMap({
             interactions: defaultInteractions().extend([translateInteraction]),
             target: this.openLayersContainer,
+            // Note: The order of this array determines the order of the objects on the map.
+            // The most bottom objects must be at the top of the array.
             layers: [
                 satelliteLayer,
+                mapImagesLayer,
                 transferPointLayer,
                 vehicleLayer,
                 cateringLinesLayer,
                 patientLayer,
                 personnelLayer,
                 materialLayer,
-                mapImagesLayer,
             ],
             overlays: [this.popupOverlay],
             view: new View({
@@ -263,7 +232,6 @@ export class OlMapManager {
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
-        return this;
     }
 
     private registerFeatureElementManager<

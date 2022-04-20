@@ -38,16 +38,16 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         public readonly dragElementService: DragElementService
     ) {}
 
-    async ngAfterViewInit(): Promise<void> {
+    ngAfterViewInit(): void {
         // run outside angular zone for better performance
-        await this.ngZone.runOutsideAngular(async () => {
-            this.olMapManager = await new OlMapManager(
+        this.ngZone.runOutsideAngular(() => {
+            this.olMapManager = new OlMapManager(
                 this.store,
                 this.apiService,
                 this.openLayersContainer.nativeElement,
                 this.popoverContainer.nativeElement,
                 this.ngZone
-            ).build();
+            );
             this.dragElementService.registerMap(this.olMapManager.olMap);
         });
         this.popupManager = new PopupManager(

@@ -10,9 +10,19 @@ import {
 } from 'class-validator';
 import { MapImage } from '../../models';
 import { Position } from '../../models/utils';
+import type { ExerciseState } from '../../state';
+import type { Mutable } from '../../utils';
 import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
+
+function getMapImage(state: Mutable<ExerciseState>, mapImageId: UUID) {
+    const mapImage = state.mapImages[mapImageId];
+    if (!mapImage) {
+        throw new ReducerError(`MapImage with id ${mapImageId} does not exist`);
+    }
+    return mapImage;
+}
 
 export class AddMapImageAction implements Action {
     @IsString()
@@ -86,12 +96,8 @@ export namespace MapImagesActionReducers {
     export const moveMapImage: ActionReducer<MoveMapImageAction> = {
         action: MoveMapImageAction,
         reducer: (draftState, { mapImageId, targetPosition }) => {
-            if (!draftState.mapImages[mapImageId]) {
-                throw new ReducerError(
-                    `MapImage with id ${mapImageId} does not exist`
-                );
-            }
-            draftState.mapImages[mapImageId].position = targetPosition;
+            const mapImage = getMapImage(draftState, mapImageId);
+            mapImage.position = targetPosition;
             return draftState;
         },
         rights: 'trainer',
@@ -100,14 +106,9 @@ export namespace MapImagesActionReducers {
     export const scaleMapImage: ActionReducer<ScaleMapImageAction> = {
         action: ScaleMapImageAction,
         reducer: (draftState, { mapImageId, newHeight, newAspectRatio }) => {
-            if (!draftState.mapImages[mapImageId]) {
-                throw new ReducerError(
-                    `MapImage with id ${mapImageId} does not exist`
-                );
-            }
-
-            draftState.mapImages[mapImageId].image.height = newHeight;
-            draftState.mapImages[mapImageId].image.aspectRatio = newAspectRatio;
+            const mapImage = getMapImage(draftState, mapImageId);
+            mapImage.image.height = newHeight;
+            mapImage.image.aspectRatio = newAspectRatio;
             return draftState;
         },
         rights: 'trainer',
@@ -131,12 +132,8 @@ export namespace MapImagesActionReducers {
         {
             action: ReconfigureMapImageUrlAction,
             reducer: (draftState, { mapImageId, newUrl }) => {
-                if (!draftState.mapImages[mapImageId]) {
-                    throw new ReducerError(
-                        `MapImage with id ${mapImageId} does not exist`
-                    );
-                }
-                draftState.mapImages[mapImageId].image.url = newUrl;
+                const mapImage = getMapImage(draftState, mapImageId);
+                mapImage.image.url = newUrl;
                 return draftState;
             },
             rights: 'trainer',
