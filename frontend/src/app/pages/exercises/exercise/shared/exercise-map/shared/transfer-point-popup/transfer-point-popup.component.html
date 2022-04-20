@@ -7,7 +7,7 @@
             class="btn-close float-end"
         ></button>
     </h5>
-    <div class="popover-body">
+    <div class="popover-body" style="width: 400px">
         <nav #nav="ngbNav" ngbNav [(activeId)]="activeNavId" class="nav-tabs">
             <ng-container
                 ngbNavItem="names"
@@ -85,7 +85,14 @@
                             "
                             class="list-group-item d-flex align-items-center flex-nowrap p-0"
                         >
-                            <div class="flex-grow-1 ps-2 pe-2">
+                            <div
+                                [title]="
+                                    transferPoints[reachableTransferPoint.key]
+                                        .externalName
+                                "
+                                class="flex-grow-1 ps-2 pe-2 text-truncate"
+                                style="max-width: 200px"
+                            >
                                 {{
                                     transferPoints[reachableTransferPoint.key]
                                         .externalName
@@ -107,7 +114,7 @@
                                         $event * 1000 * 60
                                     )
                                 "
-                                style="max-width: 125px"
+                                style="width: 125px"
                                 class="form-control form-control-sm"
                                 type="number"
                                 step="0.1"
