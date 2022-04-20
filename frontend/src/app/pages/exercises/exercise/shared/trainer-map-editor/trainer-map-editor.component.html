@@ -9,7 +9,7 @@
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">
-                    <h5>Ansicht</h5>
+                    <h5>Ansicht/Transferpunkt</h5>
                     <div
                         class="overflow-auto w-100"
                         style="white-space: nowrap"
@@ -20,6 +20,15 @@
                                 dragElementService.onMouseDown($event, {
                                     type: 'viewport',
                                     template: viewportTemplate
+                                })
+                            "
+                        />
+                        <img
+                            [src]="transferPointTemplate.image.url"
+                            (mousedown)="
+                                dragElementService.onMouseDown($event, {
+                                    type: 'transferPoint',
+                                    template: transferPointTemplate
                                 })
                             "
                         />

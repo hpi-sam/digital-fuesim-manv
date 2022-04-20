@@ -18,14 +18,17 @@ export function withPopup<
     // because otherwise there are type errors if the Element is a superset
     // of { id: UUID, position: Position, image: ImageProperties }
     Element extends PositionableElement,
-    BaseType extends Constructor<ElementFeatureManager<Element>>
+    BaseType extends Constructor<ElementFeatureManager<Element>>,
+    PopupComponentType extends PopupComponent
 >(
     baseClass: BaseType,
     popoverOptions: {
-        component: Type<PopupComponent>;
+        component: Type<PopupComponentType>;
         height: number;
         width: number;
-        getContext: (feature: Feature<Point>) => any;
+        getContext: (
+            feature: Feature<Point>
+        ) => Partial<InstanceType<Type<PopupComponentType>>>;
     }
 ) {
     return class WithPopup extends baseClass {

@@ -1,9 +1,9 @@
-import { ExerciseState } from '../../state';
-import type { UUID } from '../../utils';
-import { uuid } from '../../utils';
-import type { Viewport } from '../../models';
+import type { Viewport } from '../models';
+import { ExerciseState } from '../state';
+import type { UUID } from '../utils';
+import { uuid } from '../utils';
 import { reduceExerciseState } from './reduce-exercise-state';
-import { ReducerError } from '.';
+import { ReducerError } from './reducer-error';
 
 describe('exerciseReducer', () => {
     let state: ExerciseState;

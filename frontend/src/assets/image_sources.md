@@ -1,5 +1,5 @@
 <h1>Sources and Attributions:</h1>
-<h3>All images are under the same original license, look at the links to see the license and more information about the author/publisher and see the where we got them.</h3>
+<h3>All images are under the same original license, look at the links to see the license and more information about the author/publisher and see where we got them.</h3>
 <br>
 
 [female_patient.svg](female_patient.svg):<br>

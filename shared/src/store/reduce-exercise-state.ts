@@ -1,7 +1,9 @@
 import { produce } from 'immer';
-import type { ExerciseState } from '../../state';
-import type { ExerciseAction } from '../exercise.actions';
-import { exerciseReducerMap } from './exercise-reducer-map';
+import type { ExerciseState } from '../state';
+import type { ExerciseAction } from './action-reducers';
+import { getExerciseActionTypeDictionary } from './action-reducers';
+
+const exerciseActionTypeDictionary = getExerciseActionTypeDictionary();
 
 /**
  * A pure reducer function that applies the action on the state without mutating it.
@@ -16,7 +18,10 @@ export function reduceExerciseState(
 ): ExerciseState {
     // use immer to convert mutating operations to immutable ones (https://immerjs.github.io/immer/produce)
     return produce(state, (draftState) =>
-        // typescript doesn't narrow action and the reducer to the correct ones based on action.type
-        exerciseReducerMap[action.type](draftState, action as any)
+        exerciseActionTypeDictionary[action.type].reducer(
+            draftState,
+            // typescript doesn't narrow action and the reducer to the correct ones based on action.type
+            action as any
+        )
     );
 }
