@@ -131,7 +131,8 @@ function getNextPatientHealthPoints(
     const notarzt = treatedBy.notarzt;
     const notSan = treatedBy.notSan;
     const retSan = treatedBy.rettSan;
-    const san = treatedBy.san;
+    // for now sans aren't have no treatment logic
+    // const san = treatedBy.san;
     const functionParameters =
         patient.healthStates[patient.currentHealthStateId].functionParameters;
     // To do anything the personnel needs material

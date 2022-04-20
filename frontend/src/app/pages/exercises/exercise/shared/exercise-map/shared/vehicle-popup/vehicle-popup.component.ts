@@ -40,7 +40,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                 const materialIsInVehicle$ = Object.keys(
                     vehicle.materialIds
                 ).map((materialId) =>
-                    this.store.select(getSelectPersonnel(materialId)).pipe(
+                    this.store.select(getSelectMaterial(materialId)).pipe(
                         // TODO: only if the person is not in transfer
                         map((material) => material.position === undefined)
                     )
