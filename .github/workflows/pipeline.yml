@@ -177,8 +177,76 @@ jobs:
               with:
                   path: shared/dist
                   key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
+            - name: Cache coverage files
+              uses: actions/cache@v2
+              id: cache-coverage
+              env:
+                  cache-name: cache-coverage-${{ matrix.environment }}
+              with:
+                  path: ${{ matrix.environment }}/coverage
+                  key: ${{ matrix.environment }}-${{ hashFiles('${{ matrix.environment }}/coverage/**') }}
             - name: Run Tests
               run: cd ${{ matrix.environment }} && npm run test:ci
+
+    test-merge-coverage:
+        timeout-minutes: 1
+        runs-on: ${{ matrix.os }}
+
+        needs: test
+
+        strategy:
+            matrix:
+                os: [ubuntu-latest]
+            fail-fast: false
+
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: '16'
+            - name: Cache node modules
+              uses: actions/cache@v2
+              id: cache-node-modules
+              env:
+                  cache-name: cache-node-modules
+              with:
+                  path: |
+                      node_modules
+                      shared/node_modules
+                      frontend/node_modules
+                      backend/node_modules
+                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
+            - name: Cache coverage backend
+              uses: actions/cache@v2
+              id: cache-coverage-backend
+              env:
+                  cache-name: cache-coverage-backend
+              with:
+                  path: backend/coverage
+                  key: backend-${{ hashFiles('backend/coverage/**') }}
+            - name: Cache coverage frontend
+              uses: actions/cache@v2
+              id: cache-coverage-frontend
+              env:
+                  cache-name: cache-coverage-frontend
+              with:
+                  path: frontend/coverage
+                  key: frontend-${{ hashFiles('frontend/coverage/**') }}
+            - name: Cache coverage shared
+              uses: actions/cache@v2
+              id: cache-coverage-shared
+              env:
+                  cache-name: cache-coverage-shared
+              with:
+                  path: shared/coverage
+                  key: shared-${{ hashFiles('shared/coverage/**') }}
+            - name: Merge coverage
+              run: npm run merge-coverage
+            - name: Upload coverage
+              uses: actions/upload-artifact@v2
+              with:
+                  name: coverage-output
+                  path: coverage
 
     cypress:
         timeout-minutes: 4
