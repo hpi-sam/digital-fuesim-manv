@@ -89,7 +89,7 @@ export class OlMapManager {
         const patientLayer = this.createElementLayer();
         const personnelLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
-        const mapImagesLayer = this.createElementLayer();
+        const mapImagesLayer = this.createElementLayer(10_000);
         this.popupOverlay = new Overlay({
             element: this.popoverContainer,
         });
