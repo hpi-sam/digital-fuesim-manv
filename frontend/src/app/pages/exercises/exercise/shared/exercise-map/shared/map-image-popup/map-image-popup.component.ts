@@ -32,6 +32,7 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
 
     public url?: string;
     public height?: number;
+    // TODO: Allow changing this (with effect)
     public aspectRatio?: number;
 
     constructor(
@@ -51,14 +52,6 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     }
 
     public async saveUrl() {
-        const statusResponse = await this.apiService.callUrl(this.url!);
-        if (!(statusResponse >= 200 && statusResponse < 300)) {
-            this.messageService.postError({
-                title: 'Neue Bild-URL existiert nicht',
-                error: `Es wurde der HTTP-Status ${statusResponse} zurückgesendet`,
-            });
-            return;
-        }
         const response = await this.apiService.proposeAction({
             type: '[MapImage] Reconfigure Url',
             mapImageId: this.mapImageId,
@@ -73,19 +66,21 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
         }
     }
 
-    public async resizeImage() {
+    public async resizeImage(
+        targetHeight: number | null,
+        targetAspectRatio: number | null
+    ) {
         const response = await this.apiService.proposeAction({
             type: '[MapImage] Scale MapImage',
             mapImageId: this.mapImageId,
-            newHeight: this.height!,
-            newAspectRatio: this.aspectRatio!,
+            newHeight: targetHeight ?? this.height!,
+            newAspectRatio: targetAspectRatio ?? this.aspectRatio!,
         });
         if (response.success) {
             this.messageService.postMessage({
                 title: 'Größe des Bildes erfolgreich verändert',
                 color: 'success',
             });
-            this.closePopup.emit();
         }
     }
 }

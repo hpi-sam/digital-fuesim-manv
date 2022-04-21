@@ -16,14 +16,6 @@ import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 
-function getMapImage(state: Mutable<ExerciseState>, mapImageId: UUID) {
-    const mapImage = state.mapImages[mapImageId];
-    if (!mapImage) {
-        throw new ReducerError(`MapImage with id ${mapImageId} does not exist`);
-    }
-    return mapImage;
-}
-
 export class AddMapImageAction implements Action {
     @IsString()
     public readonly type = '[MapImage] Add MapImage';
@@ -138,4 +130,12 @@ export namespace MapImagesActionReducers {
             },
             rights: 'trainer',
         };
+}
+
+function getMapImage(state: Mutable<ExerciseState>, mapImageId: UUID) {
+    const mapImage = state.mapImages[mapImageId];
+    if (!mapImage) {
+        throw new ReducerError(`MapImage with id ${mapImageId} does not exist`);
+    }
+    return mapImage;
 }

@@ -2,9 +2,6 @@
 
 ## All images are under the same original license, look at the links to see the license and more information about the author/publisher and see where we got them
 
-[car-crash.svg](car-crash.svg):  
-<https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_car-crash.svg>
-
 [female_patient.svg](female_patient.svg):  
 <https://commons.wikimedia.org/wiki/File:Woman_(958542)_-_The_Noun_Project.svg> (edited)
 

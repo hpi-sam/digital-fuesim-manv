@@ -15,6 +15,7 @@
                     #urlInput="ngModel"
                     [(ngModel)]="url"
                     required
+                    appImageExistsValidator
                     type="text"
                     class="form-control"
                 />
@@ -38,7 +39,8 @@
                 <label class="form-label">Höhe</label>
                 <input
                     #heightInput="ngModel"
-                    [(ngModel)]="height"
+                    [ngModel]="height"
+                    (ngModelChange)="resizeImage($event, null)"
                     required
                     type="number"
                     class="form-control"
@@ -47,28 +49,6 @@
                     [ngModelInput]="heightInput"
                 ></app-display-validation>
             </div>
-
-            <!-- <div class="form-group pb-3">
-                <label class="form-label">Seitenverhältnis</label>
-                <input
-                    #aspectRatioInput="ngModel"
-                    [(ngModel)]="aspectRatio"
-                    required
-                    type="number"
-                    class="form-control"
-                />
-                <app-display-validation
-                    [ngModelInput]="aspectRatioInput"
-                ></app-display-validation>
-            </div> -->
-
-            <button
-                [disabled]="heightInput.invalid"
-                (click)="resizeImage()"
-                class="btn btn-warning"
-            >
-                Speichern
-            </button>
         </ng-container>
     </div>
 </ng-container>

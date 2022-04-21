@@ -238,7 +238,7 @@ export class ApiService {
      * @param url The URL to call
      * @returns The status of the call to {@link url}
      */
-    public async callUrl(url: string) {
+    public async getUrlStatus(url: string) {
         const response = await fetch(url);
         return response.status;
     }
