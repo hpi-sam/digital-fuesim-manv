@@ -11,6 +11,33 @@ describe('LogToStringPipe', () => {
         expect(logToStringPipeTransform(aNumber)).toEqual('1234.45');
     });
 
+    it('converts boolean correctly', () => {
+        const aBoolean = true;
+        expect(logToStringPipeTransform(aBoolean)).toEqual('true');
+    });
+
+    it('converts function correctly', () => {
+        const aFunction = () => 42;
+        expect(logToStringPipeTransform(aFunction)).toEqual('function');
+    });
+
+    it('converts undefined correctly', () => {
+        const anUndefined = undefined;
+        expect(logToStringPipeTransform(anUndefined)).toEqual(null);
+    });
+
+    it('converts bigint correctly', () => {
+        const aBigInt = BigInt('0x1fffffffffffff');
+        expect(logToStringPipeTransform(aBigInt)).toEqual('9007199254740991');
+    });
+
+    it('convert fails when value is not convertible', () => {
+        const anIllegalValue = { bigValue: BigInt('0x1fffffffffffff') };
+        expect(logToStringPipeTransform(anIllegalValue)).toEqual(
+            'Not able to display the Log-object.'
+        );
+    });
+
     it('converts objects correctly', () => {
         const anObject = {
             a: 123,
@@ -60,5 +87,15 @@ describe('LogToStringPipe', () => {
 4"
 }`
         );
+    });
+
+    it('correctly handles cyclic references', () => {
+        interface Obj {
+            obj?: Obj;
+        }
+        const objA: Obj = { obj: undefined };
+        const objB: Obj = { obj: objA };
+        objA.obj = objB;
+        expect(logToStringPipeTransform(objA)).toContain('CYCLIC REFERENCE');
     });
 });
