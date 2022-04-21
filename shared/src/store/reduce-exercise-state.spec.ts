@@ -8,12 +8,12 @@ import { ReducerError } from './reducer-error';
 describe('exerciseReducer', () => {
     let state: ExerciseState;
 
-    function generateViewport() {
+    function generateViewport(): Viewport {
         return {
             id: uuid(),
             name: 'Test',
             size: { width: 100, height: 100 },
-            topLeft: { x: 0, y: 0 },
+            position: { x: 0, y: 0 },
         } as const;
     }
 
