@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { NgbDropdownModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExerciseMapComponent } from './exercise-map.component';
 import { VehiclePopupComponent } from './shared/vehicle-popup/vehicle-popup.component';
 import { PatientPopupComponent } from './shared/patient-popup/patient-popup.component';
@@ -16,7 +17,13 @@ import { MapImagePopupComponent } from './shared/map-image-popup/map-image-popup
         PatientPopupComponent,
         TransferPointPopupComponent,
     ],
-    imports: [CommonModule, FormsModule, SharedModule],
+    imports: [
+        CommonModule,
+        FormsModule,
+        SharedModule,
+        NgbDropdownModule,
+        NgbNavModule,
+    ],
     exports: [ExerciseMapComponent],
 })
 export class ExerciseMapModule {}

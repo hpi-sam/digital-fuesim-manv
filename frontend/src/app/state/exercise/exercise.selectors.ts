@@ -30,6 +30,8 @@ export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
 export const getSelectTransferPoint =
     (transferPointId: UUID) => (state: AppState) =>
         state.exercise.transferPoints[transferPointId];
+export const selectTransferPoints = (state: AppState) =>
+    state.exercise.transferPoints;
 
 /**
  * @returns a selector that returns a dictionary of all elements that have a position
