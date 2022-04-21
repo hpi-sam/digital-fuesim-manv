@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class TransferLinesService {
     /**
-     * Wether the TransferLines should be displayed or not.
+     * Whether the TransferLines should be displayed or not.
      */
     public get displayTransferLines() {
         return this._displayTransferLines;
