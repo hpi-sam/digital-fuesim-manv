@@ -37,13 +37,14 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
         this.vehicle$ = this.store.select(getSelectVehicle(this.vehicleId));
         this.vehicleIsCompletelyUnloaded$ = this.vehicle$.pipe(
             switchMap((vehicle) => {
-                const materialAreInVehicle$ = Object.keys(
+                const materialsAreInVehicle$ = Object.keys(
                     vehicle.materialIds
                 ).map((materialId) =>
-                    this.store.select(getSelectMaterial(materialId)).pipe(
-                        // TODO: only if the material is not in transfer
-                        map((material) => material.position === undefined)
-                    )
+                    this.store
+                        .select(getSelectMaterial(materialId))
+                        .pipe(
+                            map((material) => material.position === undefined)
+                        )
                 );
                 const personnelIsInVehicle$ = Object.keys(
                     vehicle.personnelIds
@@ -65,7 +66,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                             )
                 );
                 return combineLatest([
-                    materialAreInVehicle$,
+                    ...materialsAreInVehicle$,
                     ...personnelIsInVehicle$,
                     ...patientIsInVehicle$,
                 ]);
