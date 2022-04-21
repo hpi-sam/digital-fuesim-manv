@@ -4,6 +4,7 @@ import { TransferPoint } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
+    selectMapImagesTemplates,
     selectPatientTemplates,
     selectVehicleTemplates,
 } from 'src/app/state/exercise/exercise.selectors';
@@ -27,6 +28,10 @@ export class TrainerMapEditorComponent {
 
     public readonly patientTemplates$ = this.store.select(
         selectPatientTemplates
+    );
+
+    public readonly mapImageTemplates$ = this.store.select(
+        selectMapImagesTemplates
     );
 
     constructor(

@@ -12,6 +12,7 @@ import {
     getSelectTransferPoint,
     selectTransferPoints,
 } from 'src/app/state/exercise/exercise.selectors';
+import type { PopupComponent } from '../../utility/popup-manager';
 
 /**
  * We want to remember the last selected nav item, so the user doesn't have to manually select it again.
@@ -23,7 +24,7 @@ let activeNavId: 'connections' | 'names' = 'names';
     templateUrl: './transfer-point-popup.component.html',
     styleUrls: ['./transfer-point-popup.component.scss'],
 })
-export class TransferPointPopupComponent implements OnInit {
+export class TransferPointPopupComponent implements PopupComponent, OnInit {
     // These properties are only set after OnInit
     public transferPointId!: UUID;
 

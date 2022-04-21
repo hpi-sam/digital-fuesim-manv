@@ -7,22 +7,28 @@
             <div class="card-header text-center">
                 <h5 class="mb-0">Editor</h5>
             </div>
-            <ul class="list-group list-group-flush">
+            <!-- We want the editor panel to overflow, if it is too high -->
+            <ul
+                class="list-group list-group-flush"
+                style="flex: auto; height: 0; overflow-y: auto"
+            >
                 <li class="list-group-item">
                     <h5>Transferpunkt</h5>
                     <div
                         class="overflow-auto w-100"
                         style="white-space: nowrap"
                     >
-                        <img
-                            [src]="transferPointTemplate.image.url"
-                            (mousedown)="
-                                dragElementService.onMouseDown($event, {
-                                    type: 'transferPoint',
-                                    template: transferPointTemplate
-                                })
-                            "
-                        />
+                        <div class="preview-image-container">
+                            <img
+                                [src]="transferPointTemplate.image.url"
+                                (mousedown)="
+                                    dragElementService.onMouseDown($event, {
+                                        type: 'transferPoint',
+                                        template: transferPointTemplate
+                                    })
+                                "
+                            />
+                        </div>
                     </div>
                 </li>
                 <li class="list-group-item">
@@ -44,10 +50,9 @@
                                 })
                             "
                         >
-                            <img
-                                [src]="patientTemplate.image.url"
-                                class="card-img-top"
-                            />
+                            <div class="preview-image-container card-img-top">
+                                <img [src]="patientTemplate.image.url" />
+                            </div>
                             <div class="card-body">
                                 <h5
                                     class="card-title text-truncate"
@@ -82,16 +87,50 @@
                                 })
                             "
                         >
-                            <img
-                                [src]="vehicleTemplate.image.url"
-                                class="card-img-top"
-                            />
+                            <div class="preview-image-container card-img-top">
+                                <img [src]="vehicleTemplate.image.url" />
+                            </div>
                             <div class="card-body">
                                 <h5
                                     class="card-title text-truncate"
                                     [title]="vehicleTemplate.name"
                                 >
                                     {{ vehicleTemplate.name }}
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <h5>Bilder</h5>
+                    <div
+                        class="overflow-auto w-100"
+                        style="white-space: nowrap"
+                    >
+                        <div
+                            *ngFor="
+                                let mapImageTemplate of mapImageTemplates$
+                                    | async
+                            "
+                            class="d-inline-block card text-center"
+                            style="width: 10rem; text-overflow: ellipsis"
+                            (mousedown)="
+                                dragElementService.onMouseDown($event, {
+                                    type: 'mapImage',
+                                    template: mapImageTemplate
+                                })
+                            "
+                        >
+                            <div class="preview-image-container card-img-top">
+                                <img [src]="mapImageTemplate.image.url" />
+                            </div>
+
+                            <div class="card-body">
+                                <h5
+                                    class="card-title text-truncate"
+                                    [title]="mapImageTemplate.name"
+                                >
+                                    {{ mapImageTemplate.name }}
                                 </h5>
                             </div>
                         </div>
