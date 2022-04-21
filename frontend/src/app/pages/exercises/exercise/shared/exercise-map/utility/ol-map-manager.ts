@@ -12,7 +12,6 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import {
-    getSelectClient,
     getSelectWithPosition,
     selectCateringLines,
     selectMapImages,
@@ -26,8 +25,14 @@ import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
 import { isEqual } from 'lodash-es';
 import type { Observable } from 'rxjs';
-import { Subject, debounceTime, startWith, pairwise, takeUntil } from 'rxjs';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import {
+    Subject,
+    filter,
+    debounceTime,
+    startWith,
+    pairwise,
+    takeUntil,
+} from 'rxjs';
 import { startingPosition } from '../../starting-position';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
@@ -37,6 +42,7 @@ import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-
 import type { ElementManager } from '../feature-managers/element-manager';
 import { TransferPointFeatureManager } from '../feature-managers/transfer-point-feature-manager';
 import { MapImageFeatureManager } from '../feature-managers/map-images-feature-manager';
+import { isTrainer } from '../../utility/is-trainer';
 import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
@@ -78,6 +84,7 @@ export class OlMapManager {
         private readonly popoverContainer: HTMLDivElement,
         private readonly ngZone: NgZone
     ) {
+        const _isTrainer = isTrainer(this.apiService, this.store);
         // Layers
         const satelliteLayer = this.createTileLayer(
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -95,27 +102,21 @@ export class OlMapManager {
         });
 
         // Interactions
+        // The layers where elements can be translated by trainer and participant
+        const alwaysTranslatableLayers = [
+            vehicleLayer,
+            patientLayer,
+            personnelLayer,
+            materialLayer,
+        ];
         const translateInteraction = new Translate({
-            layers:
-                this.apiService.ownClientId &&
-                getSelectClient(this.apiService.ownClientId)(
-                    getStateSnapshot(this.store)
-                ).role === 'trainer'
-                    ? [
-                          transferPointLayer,
-                          vehicleLayer,
-                          patientLayer,
-                          personnelLayer,
-                          materialLayer,
-                          mapImagesLayer,
-                      ]
-                    : // client.role = 'participant'
-                      [
-                          vehicleLayer,
-                          patientLayer,
-                          personnelLayer,
-                          materialLayer,
-                      ],
+            layers: _isTrainer
+                ? [
+                      ...alwaysTranslatableLayers,
+                      transferPointLayer,
+                      mapImagesLayer,
+                  ]
+                : alwaysTranslatableLayers,
         });
         // Clicking on an element should not trigger a drag event - use a `singleclick` interaction instead
         // Be aware that this means that not every `dragstart` event will have an accompanying `dragend` event
@@ -223,7 +224,12 @@ export class OlMapManager {
                 this.apiService
             ),
             this.store.select(selectMapImages)
-        ).togglePopup$.subscribe(this.changePopup$);
+        )
+            .togglePopup$.pipe(
+                // We only want to open the popup if the user is a trainer
+                filter(() => _isTrainer)
+            )
+            .subscribe(this.changePopup$);
 
         this.registerFeatureElementManager(
             new CateringLinesFeatureManager(cateringLinesLayer),
