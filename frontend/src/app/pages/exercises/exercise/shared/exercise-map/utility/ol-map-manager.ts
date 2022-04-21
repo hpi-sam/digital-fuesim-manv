@@ -16,6 +16,7 @@ import { debounceTime, startWith, Subject, pairwise, takeUntil } from 'rxjs';
 import {
     getSelectWithPosition,
     selectCateringLines,
+    selectTransferLines,
 } from 'src/app/state/exercise/exercise.selectors';
 import OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
@@ -33,6 +34,7 @@ import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manag
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
 import type { ElementManager } from '../feature-managers/element-manager';
 import { TransferPointFeatureManager } from '../feature-managers/transfer-point-feature-manager';
+import { TransferLinesFeatureManager } from '../feature-managers/transfer-lines-feature-manager';
 import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
@@ -81,6 +83,7 @@ export class OlMapManager {
         const transferPointLayer = this.createElementLayer();
         const vehicleLayer = this.createElementLayer(1000);
         const cateringLinesLayer = this.createElementLayer<LineString>();
+        const transferLinesLayer = this.createElementLayer<LineString>();
         const patientLayer = this.createElementLayer();
         const personnelLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
@@ -113,6 +116,7 @@ export class OlMapManager {
             target: this.openLayersContainer,
             layers: [
                 satelliteLayer,
+                transferLinesLayer,
                 transferPointLayer,
                 vehicleLayer,
                 cateringLinesLayer,
@@ -143,6 +147,11 @@ export class OlMapManager {
         // });
 
         // FeatureManagers
+        this.registerFeatureElementManager(
+            new TransferLinesFeatureManager(transferLinesLayer),
+            this.store.select(selectTransferLines)
+        );
+
         this.registerFeatureElementManager(
             new TransferPointFeatureManager(
                 store,
