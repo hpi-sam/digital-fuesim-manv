@@ -6,8 +6,18 @@ import type { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
 import type Point from 'ol/geom/Point';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { isEqual } from 'lodash-es';
+import { isArray, isEqual } from 'lodash-es';
 import type { LineString } from 'ol/geom';
+import type { Coordinate } from 'ol/coordinate';
+
+export type Coordinates<T extends LineString | Point> = T extends Point
+    ? Coordinate
+    : Coordinate[];
+
+interface CoordinatePair<T extends Coordinate | Coordinate[]> {
+    startPosition: T;
+    endPosition: T;
+}
 
 /**
  * Animates the movement of a feature to a new position.
@@ -18,15 +28,10 @@ export class MovementAnimator<T extends LineString | Point> {
      */
     private readonly movementAnimationTime = 200;
 
-    private readonly type: T extends LineString ? 'LineString' : 'Point';
-
     constructor(
         private readonly olMap: OlMap,
-        private readonly layer: VectorLayer<VectorSource>,
-        type: T extends LineString ? 'LineString' : 'Point'
-    ) {
-        this.type = type;
-    }
+        private readonly layer: VectorLayer<VectorSource>
+    ) {}
 
     /**
      * This map stores the listeners for each feature to be able to unsubscribe them.
@@ -44,20 +49,14 @@ export class MovementAnimator<T extends LineString | Point> {
      */
     public animateFeatureMovement(
         feature: Feature<T>,
-        endPosition: [number, number]
+        endPosition: Coordinates<T>
     ) {
-        if (this.type !== 'Point') {
-            return;
-        }
-        const thisFeature = feature as Feature<Point>;
         const startTime = Date.now();
-        const featureGeometry = thisFeature.getGeometry()!;
-        const startPosition = featureGeometry.getCoordinates() as [
-            number,
-            number
-        ];
+        const featureGeometry = feature.getGeometry()!;
+        const startPosition =
+            featureGeometry.getCoordinates() as Coordinates<T>;
         // Stop an ongoing movement animation
-        this.stopMovementAnimation(thisFeature as Feature<T>);
+        this.stopMovementAnimation(feature as Feature<T>);
         // We don't have to animate this
         if (isEqual(startPosition, endPosition)) {
             return;
@@ -66,16 +65,27 @@ export class MovementAnimator<T extends LineString | Point> {
             this.animationTick(
                 event,
                 startTime,
-                startPosition,
-                endPosition,
-                thisFeature
+                { startPosition, endPosition },
+                feature
             );
         };
-        this.animationListeners.set(this.getFeatureId(thisFeature), listener);
+        this.animationListeners.set(this.getFeatureId(feature), listener);
         // The listener unsubscribes itself
         this.layer.on('postrender', listener);
         // Trigger the first animation tick
         this.olMap.render();
+    }
+
+    private isCoordinateArrayPair(
+        coordinates: CoordinatePair<Coordinates<LineString | Point>>
+    ): coordinates is CoordinatePair<Coordinates<LineString>> {
+        return isArray(coordinates.startPosition[0]);
+    }
+
+    private isCoordinatePair(
+        coordinates: CoordinatePair<Coordinates<LineString | Point>>
+    ): coordinates is CoordinatePair<Coordinates<Point>> {
+        return !isArray(coordinates.startPosition[0]);
     }
 
     /**
@@ -85,9 +95,8 @@ export class MovementAnimator<T extends LineString | Point> {
     private animationTick(
         event: RenderEvent,
         startTime: number,
-        startPosition: [number, number],
-        endPosition: [number, number],
-        feature: Feature<Point>
+        positions: CoordinatePair<Coordinates<T>>,
+        feature: Feature<T>
     ) {
         const featureGeometry = feature.getGeometry()!;
         const elapsedTime = event.frameState!.time - startTime;
@@ -99,26 +108,54 @@ export class MovementAnimator<T extends LineString | Point> {
         // We should already be (nearly) at the end position
         if (progress >= 1) {
             this.stopMovementAnimation(feature as Feature<T>);
-            featureGeometry.setCoordinates(endPosition);
+            (
+                featureGeometry.setCoordinates as (
+                    coordinates: Coordinates<T>,
+                    opt_layout?: any
+                ) => void
+            )(positions.endPosition);
             this.olMap.render();
             return;
         }
-        // The next position is calculated by a linear interpolation between the start and end position
-        const nextPosition = [
-            startPosition[0] + (endPosition[0] - startPosition[0]) * progress,
-            startPosition[1] + (endPosition[1] - startPosition[1]) * progress,
+        const interpolate = (
+            startCoordinate: Coordinate,
+            endCoordinate: Coordinate,
+            lerpFactor: number
+        ): Coordinate => [
+            startCoordinate[0] +
+                (endCoordinate[0] - startCoordinate[0]) * lerpFactor,
+            startCoordinate[1] +
+                (endCoordinate[1] - startCoordinate[1]) * lerpFactor,
         ];
-        featureGeometry.setCoordinates(nextPosition);
+        // The next position is calculated by a linear interpolation between the start and end position(s)
+        const nextPosition: Coordinates<T> = this.isCoordinateArrayPair(
+            positions
+        )
+            ? (positions.startPosition.map((startPos, index) =>
+                  interpolate(startPos, positions.endPosition[index], progress)
+              ) as Coordinates<T>)
+            : this.isCoordinatePair(positions)
+            ? (interpolate(
+                  positions.startPosition,
+                  positions.endPosition,
+                  progress
+              ) as Coordinates<T>)
+            : [];
+        if (nextPosition.length === 0) {
+            throw new TypeError('positions was no valid type');
+        }
+        (
+            featureGeometry.setCoordinates as (
+                coordinates: Coordinates<T>,
+                opt_layout?: any
+            ) => void
+        )(nextPosition);
         getVectorContext(event).drawGeometry(featureGeometry);
         this.olMap.render();
     }
 
     public stopMovementAnimation(feature: Feature<T>) {
-        if (this.type !== 'Point') {
-            return;
-        }
-        const thisFeature = feature as Feature<Point>;
-        const listenerId = this.getFeatureId(thisFeature);
+        const listenerId = this.getFeatureId(feature);
         if (!this.animationListeners.has(listenerId)) {
             return;
         }
@@ -126,7 +163,7 @@ export class MovementAnimator<T extends LineString | Point> {
         this.animationListeners.delete(listenerId);
     }
 
-    private getFeatureId(feature: Feature<Point>) {
+    private getFeatureId(feature: Feature<T>) {
         // TODO: handle features without an id
         return feature.getId()! as UUID;
     }

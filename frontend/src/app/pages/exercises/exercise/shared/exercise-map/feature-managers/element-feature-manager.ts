@@ -1,6 +1,7 @@
 import type { UUID, Position } from 'digital-fuesim-manv-shared';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
+import GeometryType from 'ol/geom/GeometryType';
 import Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
@@ -10,6 +11,7 @@ import type { Store } from '@ngrx/store';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type { LineString } from 'ol/geom';
+import type { Coordinates } from '../utility/movement-animator';
 import { MovementAnimator } from '../utility/movement-animator';
 import { TranslateHelper } from '../utility/translate-helper';
 import type { FeatureManager } from '../utility/feature-manager';
@@ -18,6 +20,12 @@ import { ElementManager } from './element-manager';
 export interface PositionableElement {
     readonly id: UUID;
     readonly position: Position;
+}
+
+function isLineString(
+    feature: Feature<LineString | Point>
+): feature is Feature<LineString> {
+    return feature.getGeometry()!.getType() === GeometryType.LINE_STRING;
 }
 
 /**
@@ -38,10 +46,6 @@ export abstract class ElementFeatureManager<
     >
     implements FeatureManager<ElementFeature>
 {
-    private readonly type: FeatureType extends LineString
-        ? 'LineString'
-        : 'Point';
-
     private readonly movementAnimator;
     protected readonly translateHelper = new TranslateHelper<FeatureType>();
     private readonly elementCreator: (element: Element) => ElementFeature;
@@ -60,15 +64,13 @@ export abstract class ElementFeatureManager<
             : ((element: Element) => ElementFeature) | undefined
     ) {
         super();
-        this.type = type;
-        this.movementAnimator = new MovementAnimator(
+        this.movementAnimator = new MovementAnimator<FeatureType>(
             this.olMap,
-            this.layer,
-            this.type
+            this.layer
         );
         if (!elementCreator) {
-            if (this.type !== 'Point') {
-                throw new TypeError(`Expected Point, but got ${this.type}`);
+            if (type !== 'Point') {
+                throw new TypeError(`Expected Point, but got ${type}`);
             } else {
                 this.elementCreator = ((element) =>
                     new Feature(
@@ -105,13 +107,29 @@ export abstract class ElementFeatureManager<
         newElement: Element,
         // It is too much work to correctly type this param with {@link unsupportedChangeProperties}
         changedProperties: ReadonlySet<keyof Element>,
-        patientFeature: ElementFeature
+        elementFeature: ElementFeature,
+        triggerCondition: (
+            changedProperties: ReadonlySet<keyof Element>
+        ) => boolean = (updatedProperties) => updatedProperties.has('position'),
+        targetPosition: (newElement: Element) => Coordinates<FeatureType> = (
+            updatedElement: Element
+        ) => {
+            const newFeature = this.getFeatureFromElement(updatedElement);
+            if (!newFeature) {
+                throw new TypeError('newFeature undefined');
+            }
+            return (
+                isLineString(newFeature)
+                    ? (newFeature.getGeometry()! as LineString).getCoordinates()
+                    : [updatedElement.position.x, updatedElement.position.y]
+            ) as Coordinates<FeatureType>;
+        }
     ): void {
-        if (changedProperties.has('position')) {
-            this.movementAnimator.animateFeatureMovement(patientFeature, [
-                newElement.position.x,
-                newElement.position.y,
-            ]);
+        if (triggerCondition(changedProperties)) {
+            this.movementAnimator.animateFeatureMovement(
+                elementFeature,
+                targetPosition(newElement)
+            );
         }
     }
 

@@ -103,28 +103,31 @@ class BaseViewportFeatureManager
         changedProperties: ReadonlySet<keyof Viewport>,
         elementFeature: Feature<LineString>
     ): void {
-        // Rendering the lines again is expensive, so we only do it if we must
-        if (
-            changedProperties.has('position') ||
-            changedProperties.has('size')
-        ) {
-            elementFeature.getGeometry()!.setCoordinates([
-                [newElement.position.x, newElement.position.y],
+        super.changeFeature(
+            oldElement,
+            newElement,
+            changedProperties,
+            elementFeature,
+            (updatedProperties) =>
+                updatedProperties.has('position') ||
+                updatedProperties.has('size'),
+            (updatedElement) => [
+                [updatedElement.position.x, updatedElement.position.y],
                 [
-                    newElement.position.x + newElement.size.width,
-                    newElement.position.y,
+                    updatedElement.position.x + updatedElement.size.width,
+                    updatedElement.position.y,
                 ],
                 [
-                    newElement.position.x + newElement.size.width,
-                    newElement.position.y - newElement.size.height,
+                    updatedElement.position.x + updatedElement.size.width,
+                    updatedElement.position.y - updatedElement.size.height,
                 ],
                 [
-                    newElement.position.x,
-                    newElement.position.y - newElement.size.height,
+                    updatedElement.position.x,
+                    updatedElement.position.y - updatedElement.size.height,
                 ],
-                [newElement.position.x, newElement.position.y],
-            ]);
-        }
+                [updatedElement.position.x, updatedElement.position.y],
+            ]
+        );
     }
 }
 
