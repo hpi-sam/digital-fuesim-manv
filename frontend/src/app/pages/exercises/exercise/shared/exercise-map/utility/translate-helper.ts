@@ -32,7 +32,7 @@ export class TranslateHelper<T extends LineString | Point = Point> {
     }
 
     public onTranslateEnd(
-        feature: Feature<T extends Point ? Point : LineString>,
+        feature: Feature<T>,
         callback: (
             newCoordinates: T extends Point ? Position : Position[]
         ) => void
@@ -42,19 +42,17 @@ export class TranslateHelper<T extends LineString | Point = Point> {
             const coordinates = feature.getGeometry()!.getCoordinates();
             if (isArray(coordinates[0])) {
                 callback(
-                    // @ts-expect-error 2345
                     (coordinates as Coordinate[]).map((coordinate) =>
                         Position.create(coordinate[0], coordinate[1])
-                    )
+                    ) as T extends Point ? never : Position[]
                 );
                 return;
             }
             callback(
-                // @ts-expect-error 2345
                 Position.create(
                     (coordinates as Coordinate)[0],
                     (coordinates as Coordinate)[1]
-                )
+                ) as T extends Point ? Position : never
             );
         });
     }

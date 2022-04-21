@@ -43,6 +43,12 @@ export class ViewportFeatureManager
     // This function should be as efficient as possible, because it is called per feature on each rendered frame
     private getStyle(feature: Feature<LineString>) {
         return new Style({
+            geometry(thisFeature) {
+                const modifyGeometry = thisFeature.get('modifyGeometry');
+                return modifyGeometry
+                    ? modifyGeometry.geometry
+                    : thisFeature.getGeometry();
+            },
             stroke: new Stroke({
                 color: '#fafaff',
                 width: 2,
