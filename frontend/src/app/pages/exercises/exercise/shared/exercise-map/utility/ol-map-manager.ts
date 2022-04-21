@@ -45,6 +45,7 @@ import { TransferPointFeatureManager } from '../feature-managers/transfer-point-
 import { TransferLinesFeatureManager } from '../feature-managers/transfer-lines-feature-manager';
 import { MapImageFeatureManager } from '../feature-managers/map-images-feature-manager';
 import { isTrainer } from '../../utility/is-trainer';
+import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
@@ -84,7 +85,8 @@ export class OlMapManager {
         private readonly apiService: ApiService,
         private readonly openLayersContainer: HTMLDivElement,
         private readonly popoverContainer: HTMLDivElement,
-        private readonly ngZone: NgZone
+        private readonly ngZone: NgZone,
+        transferLinesService: TransferLinesService
     ) {
         const _isTrainer = isTrainer(this.apiService, this.store);
         // Layers
@@ -170,11 +172,15 @@ export class OlMapManager {
         // });
 
         // FeatureManagers
-        this.registerFeatureElementManager(
-            new TransferLinesFeatureManager(transferLinesLayer),
-            this.store.select(selectTransferLines)
-        );
-
+        if (_isTrainer) {
+            this.registerFeatureElementManager(
+                new TransferLinesFeatureManager(transferLinesLayer),
+                this.store.select(selectTransferLines)
+            );
+            transferLinesService.displayTransferLines$.subscribe((display) => {
+                transferLinesLayer.setVisible(display);
+            });
+        }
         this.registerFeatureElementManager(
             new TransferPointFeatureManager(
                 this.store,
