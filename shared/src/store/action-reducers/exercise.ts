@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 import { StatusHistoryEntry } from '../../models/status-history-entry';
 import { getStatus } from '../../models/utils';
+import { imageSizeToPosition } from '../../state-helpers';
 import { PatientUpdate } from '../../utils/patient-updates';
 import type { Action, ActionReducer } from '../action-reducer';
 import { calculateTreatments } from './utils/calculate-treatments';
@@ -40,6 +41,9 @@ export class ExerciseTickAction implements Action {
 
     @IsBoolean()
     public readonly refreshTreatments!: boolean;
+
+    @IsInt()
+    public readonly tickInterval!: number;
 }
 
 export class SetParticipantIdAction implements Action {
@@ -80,7 +84,13 @@ export namespace ExerciseActionReducers {
 
     export const exerciseTick: ActionReducer<ExerciseTickAction> = {
         action: ExerciseTickAction,
-        reducer: (draftState, { patientUpdates, refreshTreatments }) => {
+        reducer: (
+            draftState,
+            { patientUpdates, refreshTreatments, tickInterval }
+        ) => {
+            // Refresh the current time
+            draftState.currentTime += tickInterval;
+            // Refresh patient status
             patientUpdates.forEach((patientUpdate) => {
                 const currentPatient = draftState.patients[patientUpdate.id];
                 currentPatient.currentHealthStateId = patientUpdate.nextStateId;
@@ -91,9 +101,33 @@ export namespace ExerciseActionReducers {
                     currentPatient.visibleStatus = currentPatient.realStatus;
                 }
             });
+            // Refresh treatments
             if (refreshTreatments) {
                 calculateTreatments(draftState);
             }
+            // Refresh transferred vehicles
+            Object.values(draftState.vehicles).forEach((vehicle) => {
+                if (
+                    !vehicle.transfer ||
+                    // Not transferred yet
+                    vehicle.transfer.endTimeStamp > draftState.currentTime
+                ) {
+                    return;
+                }
+                // Vehicle arrived at new transferPoint
+                const targetTransferPoint =
+                    draftState.transferPoints[
+                        vehicle.transfer.targetTransferPointId
+                    ];
+                vehicle.position = {
+                    ...targetTransferPoint.position,
+                    y:
+                        targetTransferPoint.position.y +
+                        // Position it on the upper half of the transferPoint
+                        imageSizeToPosition(150),
+                };
+                delete vehicle.transfer;
+            });
             return draftState;
         },
         rights: 'server',

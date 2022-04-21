@@ -1,0 +1,25 @@
+<div
+    *ngIf="reachableTransferPoints$ | async as reachableTransferPoints"
+    class="dropdown-menu"
+    style="
+        position: static;
+        display: block;
+        max-height: 200px;
+        overflow-y: auto;
+    "
+>
+    <button
+        *ngFor="
+            let reachableTransferPoint of reachableTransferPoints;
+            trackBy: '$index' | appTrackByProperty: reachableTransferPoints
+        "
+        (click)="transferTo(reachableTransferPoint)"
+        type="button"
+        class="dropdown-item"
+    >
+        {{ reachableTransferPoint.externalName }}
+        <span class="text-muted"
+            >({{ reachableTransferPoint.internalName }})</span
+        >
+    </button>
+</div>

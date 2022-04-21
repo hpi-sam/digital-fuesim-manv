@@ -118,3 +118,11 @@ export const selectTransferLines = createSelector(
                 {}
             )
 );
+
+export function getSelectReachableTransferPoints(transferPointId: UUID) {
+    return createSelector(selectTransferPoints, (transferPoints) =>
+        Object.keys(
+            transferPoints[transferPointId].reachableTransferPoints
+        ).map((id) => transferPoints[id])
+    );
+}

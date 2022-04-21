@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import type { Vehicle } from 'digital-fuesim-manv-shared';
 import { normalZoom, TransferPoint } from 'digital-fuesim-manv-shared';
 import type Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
@@ -13,9 +14,13 @@ import Style from 'ol/style/Style';
 import Icon from 'ol/style/Icon';
 import OlText from 'ol/style/Text';
 import Fill from 'ol/style/Fill';
+import { Subject } from 'rxjs';
 import type { WithPosition } from '../../utility/types/with-position';
 import { withPopup } from '../utility/with-popup';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
+import type { OpenPopupOptions } from '../utility/popup-manager';
+import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
+import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { ElementFeatureManager } from './element-feature-manager';
 
 class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoint> {
@@ -23,7 +28,7 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoin
         store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        apiService: ApiService
+        private readonly apiService: ApiService
     ) {
         super(store, olMap, layer, (targetPosition, transferPoint) => {
             apiService.proposeAction({
@@ -35,6 +40,7 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoin
     }
 
     private readonly styleCache = new Map<string, Style>();
+    public readonly togglePopup$ = new Subject<OpenPopupOptions<any>>();
 
     private previousZoom?: number;
     /**
@@ -93,12 +99,64 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoin
         droppedOnFeature: Feature<Point>
     ) {
         const droppedElement = this.getElementFromFeature(droppedFeature);
-        const droppedOnVehicle = this.getElementFromFeature(droppedOnFeature);
-        if (!droppedElement || !droppedOnVehicle) {
+        const droppedOnTransferPoint: TransferPoint =
+            this.getElementFromFeature(droppedOnFeature)!.value!;
+        if (!droppedElement || !droppedOnTransferPoint) {
             console.error('Could not find element for the features');
             return false;
         }
-        // TODO: Implement transferring of the dropped element
+        if (droppedElement.type === 'vehicle') {
+            const reachableTransferPointIds = Object.keys(
+                droppedOnTransferPoint.reachableTransferPoints
+            );
+            if (reachableTransferPointIds.length === 0) {
+                return false;
+            }
+            if (reachableTransferPointIds.length === 1) {
+                // There is an obvious answer to which transfer point the vehicle should transfer to
+                this.apiService.proposeAction(
+                    {
+                        type: '[Vehicle] Transfer vehicle',
+                        vehicleId: droppedElement.value.id,
+                        startTransferPointId: droppedOnTransferPoint.id,
+                        targetTransferPointId: reachableTransferPointIds[0],
+                    },
+                    false
+                );
+                return true;
+            }
+            // Show a popup to choose the transfer point
+            // TODO: refactor this, to remove code duplication in withPopup
+            const featureCenter = droppedOnFeature
+                .getGeometry()!
+                .getCoordinates();
+            const view = this.olMap.getView();
+            const zoom = view.getZoom()!;
+            const { position, positioning } = calculatePopupPositioning(
+                featureCenter,
+                {
+                    // TODO: tweak these numbers
+                    width: 400 / zoom,
+                    height: 300 / zoom,
+                },
+                view.getCenter()!
+            );
+            const popupOptions: OpenPopupOptions<ChooseTransferTargetPopupComponent> =
+                {
+                    component: ChooseTransferTargetPopupComponent,
+                    position,
+                    positioning,
+                    context: {
+                        transferPointId: droppedOnTransferPoint.id,
+
+                        droppedElement:
+                            // TODO: Fix the type in getElementFromFeature
+                            droppedElement.value as unknown as Vehicle,
+                    },
+                };
+            this.togglePopup$.next(popupOptions);
+            return true;
+        }
         return false;
     }
 
