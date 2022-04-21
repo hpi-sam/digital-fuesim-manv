@@ -7,10 +7,13 @@ import type { TransferLine } from 'src/app/shared/types/transfer-line';
 import type { AppState } from '../app.state';
 
 export const selectViewports = (state: AppState) => state.exercise.viewports;
+export const selectMapImages = (state: AppState) => state.exercise.mapImages;
 export const selectVehicleTemplates = (state: AppState) =>
     state.exercise.vehicleTemplates;
 export const selectPatientTemplates = (state: AppState) =>
     state.exercise.patientTemplates;
+export const selectMapImagesTemplates = (state: AppState) =>
+    state.exercise.mapImageTemplates;
 export const selectPatients = (state: AppState) => state.exercise.patients;
 export const selectVehicles = (state: AppState) => state.exercise.vehicles;
 export const selectPersonnel = (state: AppState) => state.exercise.personnel;
@@ -21,6 +24,8 @@ export const getSelectMaterial = (materialId: UUID) => (state: AppState) =>
     state.exercise.materials[materialId];
 export const getSelectPatient = (patientId: UUID) => (state: AppState) =>
     state.exercise.patients[patientId];
+export const getSelectMapImage = (mapImageId: UUID) => (state: AppState) =>
+    state.exercise.mapImages[mapImageId];
 export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
     state.exercise.vehicles[vehicleId];
 export const getSelectTransferPoint =
