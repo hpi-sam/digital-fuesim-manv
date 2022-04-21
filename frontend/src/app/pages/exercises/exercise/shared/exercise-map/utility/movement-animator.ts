@@ -7,20 +7,26 @@ import { getVectorContext } from 'ol/render';
 import type Point from 'ol/geom/Point';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
+import type { LineString } from 'ol/geom';
 
 /**
  * Animates the movement of a feature to a new position.
  */
-export class MovementAnimator {
+export class MovementAnimator<T extends LineString | Point> {
     /**
      * The time in milliseconds how long the moving animation should take
      */
     private readonly movementAnimationTime = 200;
 
+    private readonly type: T extends LineString ? 'LineString' : 'Point';
+
     constructor(
         private readonly olMap: OlMap,
-        private readonly layer: VectorLayer<VectorSource>
-    ) {}
+        private readonly layer: VectorLayer<VectorSource>,
+        type: T extends LineString ? 'LineString' : 'Point'
+    ) {
+        this.type = type;
+    }
 
     /**
      * This map stores the listeners for each feature to be able to unsubscribe them.
@@ -37,17 +43,21 @@ export class MovementAnimator {
      * If the feature is removed from the layer before the animation is finished, it is recommended to call {@link stopMovementAnimation}.
      */
     public animateFeatureMovement(
-        feature: Feature<Point>,
+        feature: Feature<T>,
         endPosition: [number, number]
     ) {
+        if (this.type !== 'Point') {
+            return;
+        }
+        const thisFeature = feature as Feature<Point>;
         const startTime = Date.now();
-        const featureGeometry = feature.getGeometry()!;
+        const featureGeometry = thisFeature.getGeometry()!;
         const startPosition = featureGeometry.getCoordinates() as [
             number,
             number
         ];
         // Stop an ongoing movement animation
-        this.stopMovementAnimation(feature);
+        this.stopMovementAnimation(thisFeature as Feature<T>);
         // We don't have to animate this
         if (isEqual(startPosition, endPosition)) {
             return;
@@ -58,10 +68,10 @@ export class MovementAnimator {
                 startTime,
                 startPosition,
                 endPosition,
-                feature
+                thisFeature
             );
         };
-        this.animationListeners.set(this.getFeatureId(feature), listener);
+        this.animationListeners.set(this.getFeatureId(thisFeature), listener);
         // The listener unsubscribes itself
         this.layer.on('postrender', listener);
         // Trigger the first animation tick
@@ -88,7 +98,7 @@ export class MovementAnimator {
         );
         // We should already be (nearly) at the end position
         if (progress >= 1) {
-            this.stopMovementAnimation(feature);
+            this.stopMovementAnimation(feature as Feature<T>);
             featureGeometry.setCoordinates(endPosition);
             this.olMap.render();
             return;
@@ -103,8 +113,12 @@ export class MovementAnimator {
         this.olMap.render();
     }
 
-    public stopMovementAnimation(feature: Feature<Point>) {
-        const listenerId = this.getFeatureId(feature);
+    public stopMovementAnimation(feature: Feature<T>) {
+        if (this.type !== 'Point') {
+            return;
+        }
+        const thisFeature = feature as Feature<Point>;
+        const listenerId = this.getFeatureId(thisFeature);
         if (!this.animationListeners.has(listenerId)) {
             return;
         }

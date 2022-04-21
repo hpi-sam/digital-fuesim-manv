@@ -1,5 +1,6 @@
 import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
+import type { LineString, Point } from 'ol/geom';
 import { generateChangedProperties } from '../utility/generate-changed-properties';
 
 /**
@@ -10,7 +11,8 @@ import { generateChangedProperties } from '../utility/generate-changed-propertie
  */
 export abstract class ElementManager<
     Element extends ImmutableJsonObject,
-    ElementFeature extends Feature<any>,
+    FeatureType extends LineString | Point,
+    ElementFeature extends Feature<FeatureType>,
     UnsupportedChangeProperties extends ReadonlySet<keyof Element>,
     SupportedChangeProperties extends Exclude<
         ReadonlySet<keyof Element>,
@@ -70,7 +72,7 @@ export abstract class ElementManager<
     /**
      * Adds a new feature representing the {@link element} to the map.
      */
-    abstract createFeature(element: Element): void;
+    abstract createFeature(element: Element): ElementFeature;
 
     /**
      * Delete the {@link elementFeature} representing the {@link element} from the map.

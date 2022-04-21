@@ -18,13 +18,20 @@ class BaseMapImageFeatureManager extends ElementFeatureManager<MapImage> {
         layer: VectorLayer<VectorSource<Point>>,
         apiService: ApiService
     ) {
-        super(store, olMap, layer, (targetPosition, mapImage) => {
-            apiService.proposeAction({
-                type: '[MapImage] Move MapImage',
-                mapImageId: mapImage.id,
-                targetPosition,
-            });
-        });
+        super(
+            store,
+            olMap,
+            layer,
+            (targetPosition, mapImage) => {
+                apiService.proposeAction({
+                    type: '[MapImage] Move MapImage',
+                    mapImageId: mapImage.id,
+                    targetPosition,
+                });
+            },
+            'Point',
+            undefined
+        );
     }
 
     override unsupportedChangeProperties = new Set(['id', 'image'] as const);

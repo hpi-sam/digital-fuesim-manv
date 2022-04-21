@@ -9,12 +9,12 @@ import type { AppState } from 'src/app/state/app.state';
 import type { Store } from '@ngrx/store';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { TranslateEvent } from 'ol/interaction/Translate';
+import type { LineString } from 'ol/geom';
 import { MovementAnimator } from '../utility/movement-animator';
 import { TranslateHelper } from '../utility/translate-helper';
 import type { FeatureManager } from '../utility/feature-manager';
 import { ElementManager } from './element-manager';
 
-type ElementFeature = Feature<Point>;
 export interface PositionableElement {
     readonly id: UUID;
     readonly position: Position;
@@ -25,40 +25,74 @@ export interface PositionableElement {
  * * manages the position of the element
  * * manages the default interactions of the element
  */
-export abstract class ElementFeatureManager<Element extends PositionableElement>
-    extends ElementManager<Element, ElementFeature, ReadonlySet<keyof Element>>
+export abstract class ElementFeatureManager<
+        Element extends PositionableElement,
+        FeatureType extends LineString | Point = Point,
+        ElementFeature extends Feature<FeatureType> = Feature<FeatureType>
+    >
+    extends ElementManager<
+        Element,
+        FeatureType,
+        ElementFeature,
+        ReadonlySet<keyof Element>
+    >
     implements FeatureManager<ElementFeature>
 {
-    private readonly movementAnimator = new MovementAnimator(
-        this.olMap,
-        this.layer
-    );
-    private readonly translateHelper = new TranslateHelper();
+    private readonly type: FeatureType extends LineString
+        ? 'LineString'
+        : 'Point';
+
+    private readonly movementAnimator;
+    protected readonly translateHelper = new TranslateHelper<FeatureType>();
+    private readonly elementCreator: (element: Element) => ElementFeature;
 
     constructor(
         protected readonly store: Store<AppState>,
         protected readonly olMap: OlMap,
-        public readonly layer: VectorLayer<VectorSource<Point>>,
+        public readonly layer: VectorLayer<VectorSource<FeatureType>>,
         private readonly proposeMovementAction: (
-            newPosition: Position,
+            newPosition: FeatureType extends Point ? Position : Position[],
             element: Element
-        ) => void
+        ) => void,
+        type: FeatureType extends LineString ? 'LineString' : 'Point',
+        elementCreator: FeatureType extends LineString
+            ? (element: Element) => ElementFeature
+            : ((element: Element) => ElementFeature) | undefined
     ) {
         super();
+        this.type = type;
+        this.movementAnimator = new MovementAnimator(
+            this.olMap,
+            this.layer,
+            this.type
+        );
+        if (!elementCreator) {
+            if (this.type !== 'Point') {
+                throw new TypeError(`Expected Point, but got ${this.type}`);
+            } else {
+                this.elementCreator = ((element) =>
+                    new Feature(
+                        new Point([element.position.x, element.position.y])
+                    )) as (
+                    element: Element
+                ) => ElementFeature /* ElementFeature is Feature<Point> here, TS doesn't know that */;
+            }
+        } else {
+            this.elementCreator = elementCreator;
+        }
     }
 
     override unsupportedChangeProperties: ReadonlySet<keyof Element> = new Set(
         [] as const
     );
-    createFeature(element: Element): void {
-        const elementFeature = new Feature(
-            new Point([element.position.x, element.position.y])
-        );
+    createFeature(element: Element): ElementFeature {
+        const elementFeature = this.elementCreator(element);
         elementFeature.setId(element.id);
         this.layer.getSource()!.addFeature(elementFeature);
         this.translateHelper.onTranslateEnd(elementFeature, (newPosition) => {
             this.proposeMovementAction(newPosition, element);
         });
+        return elementFeature;
     }
 
     deleteFeature(element: Element, elementFeature: ElementFeature): void {
@@ -82,7 +116,12 @@ export abstract class ElementFeatureManager<Element extends PositionableElement>
     }
 
     getFeatureFromElement(element: Element): ElementFeature | undefined {
-        return this.layer.getSource()!.getFeatureById(element.id) ?? undefined;
+        return (
+            (this.layer
+                .getSource()!
+                .getFeatureById(element.id) as ElementFeature | null) ??
+            undefined
+        );
     }
 
     protected getElementFromFeature(feature: Feature<any>) {

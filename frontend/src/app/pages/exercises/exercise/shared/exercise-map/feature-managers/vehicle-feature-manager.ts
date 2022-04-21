@@ -24,13 +24,20 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
         layer: VectorLayer<VectorSource<Point>>,
         private readonly apiService: ApiService
     ) {
-        super(store, olMap, layer, (targetPosition, vehicle) => {
-            apiService.proposeAction({
-                type: '[Vehicle] Move vehicle',
-                vehicleId: vehicle.id,
-                targetPosition,
-            });
-        });
+        super(
+            store,
+            olMap,
+            layer,
+            (targetPosition, vehicle) => {
+                apiService.proposeAction({
+                    type: '[Vehicle] Move vehicle',
+                    vehicleId: vehicle.id,
+                    targetPosition,
+                });
+            },
+            'Point',
+            undefined
+        );
     }
 
     public override onFeatureDrop(

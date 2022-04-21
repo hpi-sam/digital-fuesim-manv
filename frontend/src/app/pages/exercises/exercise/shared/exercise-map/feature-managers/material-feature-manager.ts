@@ -19,13 +19,20 @@ class BaseMaterialFeatureManager extends ElementFeatureManager<
         layer: VectorLayer<VectorSource<Point>>,
         apiService: ApiService
     ) {
-        super(store, olMap, layer, (targetPosition, material) => {
-            apiService.proposeAction({
-                type: '[Material] Move material',
-                materialId: material.id,
-                targetPosition,
-            });
-        });
+        super(
+            store,
+            olMap,
+            layer,
+            (targetPosition, material) => {
+                apiService.proposeAction({
+                    type: '[Material] Move material',
+                    materialId: material.id,
+                    targetPosition,
+                });
+            },
+            'Point',
+            undefined
+        );
     }
 
     override unsupportedChangeProperties = new Set(['id', 'image'] as const);

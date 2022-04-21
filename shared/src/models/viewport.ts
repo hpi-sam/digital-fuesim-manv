@@ -8,9 +8,12 @@ export class Viewport {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
 
+    /**
+     * top-left position
+     */
     @ValidateNested()
     @Type(() => Position)
-    public readonly topLeft: Position;
+    public readonly position: Position;
 
     @ValidateNested()
     @Type(() => Size)
@@ -20,10 +23,11 @@ export class Viewport {
     public readonly name: string;
 
     /**
+     * @param position top-left position
      * @deprecated Use {@link create} instead
      */
-    constructor(topLeft: Position, size: Size, name: string) {
-        this.topLeft = topLeft;
+    constructor(position: Position, size: Size, name: string) {
+        this.position = position;
         this.size = size;
         this.name = name;
     }

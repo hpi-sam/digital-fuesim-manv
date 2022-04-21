@@ -19,13 +19,20 @@ class BasePersonnelFeatureManager extends ElementFeatureManager<
         layer: VectorLayer<VectorSource<Point>>,
         apiService: ApiService
     ) {
-        super(store, olMap, layer, (targetPosition, personnel) => {
-            apiService.proposeAction({
-                type: '[Personnel] Move personnel',
-                personnelId: personnel.id,
-                targetPosition,
-            });
-        });
+        super(
+            store,
+            olMap,
+            layer,
+            (targetPosition, personnel) => {
+                apiService.proposeAction({
+                    type: '[Personnel] Move personnel',
+                    personnelId: personnel.id,
+                    targetPosition,
+                });
+            },
+            'Point',
+            undefined
+        );
     }
 
     override unsupportedChangeProperties = new Set(['id', 'image'] as const);

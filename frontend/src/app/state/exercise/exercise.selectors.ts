@@ -30,6 +30,8 @@ export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
 export const getSelectTransferPoint =
     (transferPointId: UUID) => (state: AppState) =>
         state.exercise.transferPoints[transferPointId];
+export const getSelectViewport = (viewportId: UUID) => (state: AppState) =>
+    state.exercise.viewports[viewportId];
 export const selectTransferPoints = (state: AppState) =>
     state.exercise.transferPoints;
 
@@ -53,20 +55,6 @@ export function getSelectWithPosition<
         pickBy(
             state.exercise[key],
             (element) => element.position !== undefined
-        ) as ElementsWithPosition;
-}
-
-export function getselectViewport<
-    Key extends 'viewports',
-    Elements extends AppState['exercise'][Key] = AppState['exercise'][Key],
-    ElementsWithPosition extends {
-        [Id in keyof Elements]: WithPosition<Elements[Id]>;
-    } = { [Id in keyof Elements]: WithPosition<Elements[Id]> }
->(key: Key) {
-    return (state: AppState): ElementsWithPosition =>
-        pickBy(
-            state.exercise[key],
-            (element) => element.topLeft !== undefined
         ) as ElementsWithPosition;
 }
 

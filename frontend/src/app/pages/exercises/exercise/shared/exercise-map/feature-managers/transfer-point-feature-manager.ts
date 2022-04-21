@@ -25,13 +25,20 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoin
         layer: VectorLayer<VectorSource<Point>>,
         apiService: ApiService
     ) {
-        super(store, olMap, layer, (targetPosition, transferPoint) => {
-            apiService.proposeAction({
-                type: '[TransferPoint] Move TransferPoint',
-                transferPointId: transferPoint.id,
-                targetPosition,
-            });
-        });
+        super(
+            store,
+            olMap,
+            layer,
+            (targetPosition, transferPoint) => {
+                apiService.proposeAction({
+                    type: '[TransferPoint] Move TransferPoint',
+                    transferPointId: transferPoint.id,
+                    targetPosition,
+                });
+            },
+            'Point',
+            undefined
+        );
     }
 
     private readonly styleCache = new Map<string, Style>();
@@ -78,13 +85,16 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoin
         return this.styleCache.get(key)!;
     }
 
-    public override createFeature(element: WithPosition<TransferPoint>): void {
-        super.createFeature(element);
+    public override createFeature(
+        element: WithPosition<TransferPoint>
+    ): Feature<Point> {
+        const feature = super.createFeature(element);
         // Because the feature is already added in the super method, there is a short flickering
-        const feature = this.getFeatureFromElement(element)!;
+        // const feature = this.getFeatureFromElement(element)!;
         feature.setStyle((thisFeature, currentZoom) =>
             this.getStyle(thisFeature as Feature<Point>, currentZoom)
         );
+        return feature;
     }
 
     public override onFeatureDrop(

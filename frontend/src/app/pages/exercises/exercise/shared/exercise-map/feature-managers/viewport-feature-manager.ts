@@ -1,37 +1,66 @@
+import type { Store } from '@ngrx/store';
 import { Size } from 'digital-fuesim-manv-shared';
 import type { Viewport } from 'digital-fuesim-manv-shared/src/models/viewport';
-import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
+import type OlMap from 'ol/Map';
 import LineString from 'ol/geom/LineString';
-import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import type { ApiService } from 'src/app/core/api.service';
+import type { AppState } from 'src/app/state/app.state';
 import type { FeatureManager } from '../utility/feature-manager';
 import { ModifyHelper } from '../utility/modify-helper';
-import { TranslateHelper } from '../utility/translate-helper';
-import { ElementManager } from './element-manager';
+import { withPopup } from '../utility/with-popup';
+import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
+import { ElementFeatureManager } from './element-feature-manager';
 
-export class ViewportFeatureManager
-    extends ElementManager<
-        Viewport,
-        Feature<LineString>,
-        ReadonlySet<keyof Viewport>
-    >
+class BaseViewportFeatureManager
+    extends ElementFeatureManager<Viewport, LineString>
     implements FeatureManager<Feature<LineString>>
 {
-    readonly unsupportedChangeProperties = new Set(['id'] as const);
+    override unsupportedChangeProperties = new Set(['id'] as const);
 
     constructor(
-        public readonly layer: VectorLayer<VectorSource<LineString>>,
+        store: Store<AppState>,
+        olMap: OlMap,
+        layer: VectorLayer<VectorSource<LineString>>,
         private readonly apiService: ApiService
     ) {
-        super();
+        super(
+            store,
+            olMap,
+            layer,
+            (targetPositions, viewport) => {
+                apiService.proposeAction({
+                    type: '[Viewport] Move viewport',
+                    viewportId: viewport.id,
+                    targetPosition: targetPositions[0],
+                });
+            },
+            'LineString',
+            (viewport: Viewport) =>
+                new Feature(
+                    new LineString([
+                        [viewport.position.x, viewport.position.y],
+                        [
+                            viewport.position.x + viewport.size.width,
+                            viewport.position.y,
+                        ],
+                        [
+                            viewport.position.x + viewport.size.width,
+                            viewport.position.y - viewport.size.height,
+                        ],
+                        [
+                            viewport.position.x,
+                            viewport.position.y - viewport.size.height,
+                        ],
+                        [viewport.position.x, viewport.position.y],
+                    ])
+                )
+        );
     }
-
-    private readonly translateHelper = new TranslateHelper<LineString>();
     private readonly modifyHelper = new ModifyHelper();
 
     private readonly style = new Style({
@@ -47,32 +76,9 @@ export class ViewportFeatureManager
         }),
     });
 
-    createFeature(element: Viewport): void {
-        const feature = new Feature(
-            new LineString([
-                [element.topLeft.x, element.topLeft.y],
-                [element.topLeft.x + element.size.width, element.topLeft.y],
-                [
-                    element.topLeft.x + element.size.width,
-                    element.topLeft.y - element.size.height,
-                ],
-                [element.topLeft.x, element.topLeft.y - element.size.height],
-                [element.topLeft.x, element.topLeft.y],
-            ])
-        );
+    override createFeature(element: Viewport): Feature<LineString> {
+        const feature = super.createFeature(element);
         feature.setStyle(this.style);
-        feature.setId(element.id);
-        this.layer.getSource()!.addFeature(feature);
-        this.translateHelper.onTranslateEnd(feature, (newPositions) => {
-            this.apiService.proposeAction(
-                {
-                    type: '[Viewport] Move viewport',
-                    viewportId: element.id,
-                    targetPosition: newPositions[0],
-                },
-                true
-            );
-        });
         this.modifyHelper.onModifyEnd(feature, (newPositions) => {
             const lineString = newPositions;
 
@@ -88,57 +94,49 @@ export class ViewportFeatureManager
                 ),
             });
         });
+        return feature;
     }
 
-    deleteFeature(
-        element: Viewport,
-        elementFeature: Feature<LineString>
-    ): void {
-        this.layer.getSource()!.removeFeature(elementFeature);
-    }
-
-    changeFeature(
+    override changeFeature(
         oldElement: Viewport,
         newElement: Viewport,
         changedProperties: ReadonlySet<keyof Viewport>,
         elementFeature: Feature<LineString>
     ): void {
         // Rendering the lines again is expensive, so we only do it if we must
-        if (changedProperties.has('topLeft') || changedProperties.has('size')) {
+        if (
+            changedProperties.has('position') ||
+            changedProperties.has('size')
+        ) {
             elementFeature.getGeometry()!.setCoordinates([
-                [newElement.topLeft.x, newElement.topLeft.y],
+                [newElement.position.x, newElement.position.y],
                 [
-                    newElement.topLeft.x + newElement.size.width,
-                    newElement.topLeft.y,
+                    newElement.position.x + newElement.size.width,
+                    newElement.position.y,
                 ],
                 [
-                    newElement.topLeft.x + newElement.size.width,
-                    newElement.topLeft.y - newElement.size.height,
+                    newElement.position.x + newElement.size.width,
+                    newElement.position.y - newElement.size.height,
                 ],
                 [
-                    newElement.topLeft.x,
-                    newElement.topLeft.y - newElement.size.height,
+                    newElement.position.x,
+                    newElement.position.y - newElement.size.height,
                 ],
-                [newElement.topLeft.x, newElement.topLeft.y],
+                [newElement.position.x, newElement.position.y],
             ]);
         }
     }
-
-    onFeatureClicked(
-        event: MapBrowserEvent<any>,
-        feature: Feature<LineString>
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-    ) {}
-
-    onFeatureDrop(
-        dropEvent: TranslateEvent,
-        droppedFeature: Feature<any>,
-        droppedOnFeature: Feature<LineString>
-    ) {
-        return false;
-    }
-
-    getFeatureFromElement(element: Viewport) {
-        return this.layer.getSource()!.getFeatureById(element.id) ?? undefined;
-    }
 }
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const ViewportFeatureManager = withPopup<
+    Viewport,
+    typeof BaseViewportFeatureManager,
+    ViewportPopupComponent,
+    LineString
+>(BaseViewportFeatureManager, {
+    component: ViewportPopupComponent,
+    height: 150,
+    width: 225,
+    getContext: (feature) => ({ viewportId: feature.getId() as string }),
+});

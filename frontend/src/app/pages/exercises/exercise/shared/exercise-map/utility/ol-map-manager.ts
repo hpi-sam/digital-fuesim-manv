@@ -16,7 +16,7 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import {
-    getselectViewport,
+    selectViewports,
     getSelectWithPosition,
     selectCateringLines,
     selectMapImages,
@@ -329,9 +329,19 @@ export class OlMapManager {
         );
 
         this.registerFeatureElementManager(
-            new ViewportFeatureManager(viewportLayer, this.apiService),
-            this.store.select(getselectViewport('viewports'))
-        );
+            new ViewportFeatureManager(
+                this.store,
+                this.olMap,
+                viewportLayer,
+                this.apiService
+            ),
+            this.store.select(selectViewports)
+        )
+            .togglePopup$.pipe(
+                // We only want to open the popup if the user is a trainer
+                filter(() => _isTrainer)
+            )
+            .subscribe(this.changePopup$);
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
@@ -340,7 +350,7 @@ export class OlMapManager {
     private registerFeatureElementManager<
         Element extends ImmutableJsonObject,
         T extends MergeIntersection<
-            ElementManager<Element, any, any> & FeatureManager<any>
+            ElementManager<Element, any, any, any> & FeatureManager<any>
         >
     >(
         featureManager: T,
@@ -382,9 +392,18 @@ export class OlMapManager {
     private registerPopupTriggers(translateInteraction: Translate) {
         this.olMap.on('singleclick', (event) => {
             this.olMap.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
+                // Skip layer when unset
+                if (layer === null) {
+                    return false;
+                }
                 this.layerFeatureManagerDictionary
-                    .get(layer as VectorLayer<VectorSource<Point>>)!
-                    .onFeatureClicked(event, feature as Feature<Point>);
+                    .get(
+                        layer as VectorLayer<VectorSource<LineString | Point>>
+                    )!
+                    .onFeatureClicked(
+                        event,
+                        feature as Feature<LineString | Point>
+                    );
                 // we only want the top one -> a truthy return breaks this loop
                 return true;
             });

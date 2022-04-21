@@ -22,13 +22,20 @@ class PatientFeatureManagerBase extends ElementFeatureManager<
         layer: VectorLayer<VectorSource<Point>>,
         apiService: ApiService
     ) {
-        super(store, olMap, layer, (targetPosition, patient) => {
-            apiService.proposeAction({
-                type: '[Patient] Move patient',
-                patientId: patient.id,
-                targetPosition,
-            });
-        });
+        super(
+            store,
+            olMap,
+            layer,
+            (targetPosition, patient) => {
+                apiService.proposeAction({
+                    type: '[Patient] Move patient',
+                    patientId: patient.id,
+                    targetPosition,
+                });
+            },
+            'Point',
+            undefined
+        );
     }
 
     override unsupportedChangeProperties = new Set(['id', 'image'] as const);
