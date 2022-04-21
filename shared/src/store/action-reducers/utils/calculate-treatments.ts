@@ -1,12 +1,9 @@
 import { groupBy } from 'lodash-es';
 import type { Material, Personnel, Patient } from '../../../models';
-import type { Position, PatientStatus } from '../../../models/utils';
+import type { PatientStatus } from '../../../models/utils';
 import type { ExerciseState } from '../../../state';
 import type { Mutable } from '../../../utils';
-
-function calculateDistance(a: Position, b: Position) {
-    return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
-}
+import { calculateDistance } from './calculate-distance';
 
 interface CatersFor {
     red: number;
@@ -88,7 +85,9 @@ export function calculateTreatments(state: Mutable<ExerciseState>) {
     });
     const patients = Object.values(state.patients).filter(
         (patient) =>
-            patient.position !== undefined && patient.visibleStatus !== 'black'
+            patient.position !== undefined &&
+            patient.visibleStatus !== 'black' &&
+            patient.visibleStatus !== 'blue'
     );
     patients.forEach((patient) => {
         patient.isBeingTreated = false;
