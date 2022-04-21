@@ -34,27 +34,18 @@ export class ViewportFeatureManager
     private readonly translateHelper = new TranslateHelper<LineString>();
     private readonly modifyHelper = new ModifyHelper();
 
-    /**
-     *
-     * @param feature The feature that should be styled
-     * @param currentZoom This is for some reason also called `resolution` in the ol typings
-     * @returns The style that should be used for the feature
-     */
-    // This function should be as efficient as possible, because it is called per feature on each rendered frame
-    private getStyle(feature: Feature<LineString>) {
-        return new Style({
-            geometry(thisFeature) {
-                const modifyGeometry = thisFeature.get('modifyGeometry');
-                return modifyGeometry
-                    ? modifyGeometry.geometry
-                    : thisFeature.getGeometry();
-            },
-            stroke: new Stroke({
-                color: '#fafaff',
-                width: 2,
-            }),
-        });
-    }
+    private readonly style = new Style({
+        geometry(thisFeature) {
+            const modifyGeometry = thisFeature.get('modifyGeometry');
+            return modifyGeometry
+                ? modifyGeometry.geometry
+                : thisFeature.getGeometry();
+        },
+        stroke: new Stroke({
+            color: '#fafaff',
+            width: 2,
+        }),
+    });
 
     createFeature(element: Viewport): void {
         const feature = new Feature(
@@ -69,9 +60,7 @@ export class ViewportFeatureManager
                 [element.topLeft.x, element.topLeft.y],
             ])
         );
-        feature.setStyle((thisFeature) =>
-            this.getStyle(thisFeature as Feature<LineString>)
-        );
+        feature.setStyle(this.style);
         feature.setId(element.id);
         this.layer.getSource()!.addFeature(feature);
         this.translateHelper.onTranslateEnd(feature, (newPositions) => {

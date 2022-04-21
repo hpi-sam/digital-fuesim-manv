@@ -3,7 +3,6 @@ import type { Feature } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
 import type { FeatureLike } from 'ol/Feature';
 import type { LineString } from 'ol/geom';
-import type Point from 'ol/geom/Point';
 import type { Modify } from 'ol/interaction';
 
 function calculateDistance(a: Coordinate, b: Coordinate) {
@@ -110,7 +109,7 @@ export class ModifyHelper<T extends LineString = LineString> {
             callback(
                 (coordinates as Coordinate[]).map((coordinate) =>
                     Position.create(coordinate[0], coordinate[1])
-                ) as T extends Point ? never : Position[]
+                )
             );
         });
     }
