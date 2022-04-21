@@ -52,6 +52,9 @@ Keep in mind that it is also possible to add a [proxy](https://angular.io/guide/
 -   [Bootstrap](https://getbootstrap.com) - A styling framework
     -   [Documentation](https://getbootstrap.com/docs)
     -   [Cheatsheet](https://getbootstrap.com/docs/5.1/examples/cheatsheet/)
+-   [Bootstrap-icons](https://icons.getbootstrap.com/) - the icons we use in the application
+    -   [List of all icons](https://icons.getbootstrap.com/#icons)
+    -   We import the `.css`. Use it like `<i class="bi-alarm"></i>`
 -   [ngBootstrap](https://ng-bootstrap.github.io/) - Angular components for bootstrap
     -   [Documentation](https://ng-bootstrap.github.io/#/components/accordion/examples)
 -   [openlayers](https://openlayers.org/) - A library for displaying maps

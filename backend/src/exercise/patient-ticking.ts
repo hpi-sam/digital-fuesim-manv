@@ -41,27 +41,30 @@ export function patientTick(
     state: ExerciseState,
     patientTickInterval: number
 ): PatientTickResult[] {
-    return Object.values(state.patients)
-        .filter((patient) => isAlive(patient.health))
-        .map((patient) => {
-            const nextHealthPoints = getNextPatientHealthPoints(
-                patient,
-                getDedicatedResources(state, patient),
-                patientTickInterval
-            );
-            const nextStateId = getNextStateId(patient);
-            const nextStateTime =
-                nextStateId === patient.currentHealthStateId
-                    ? patient.stateTime +
-                      patientTickInterval * patient.timeSpeed
-                    : 0;
-            return {
-                id: patient.id,
-                nextHealthPoints,
-                nextStateId,
-                nextStateTime,
-            };
-        });
+    return (
+        Object.values(state.patients)
+            // Only look at patients that are alive and have a position, i.e. are not in a vehicle
+            .filter((patient) => isAlive(patient.health) && patient.position)
+            .map((patient) => {
+                const nextHealthPoints = getNextPatientHealthPoints(
+                    patient,
+                    getDedicatedResources(state, patient),
+                    patientTickInterval
+                );
+                const nextStateId = getNextStateId(patient);
+                const nextStateTime =
+                    nextStateId === patient.currentHealthStateId
+                        ? patient.stateTime +
+                          patientTickInterval * patient.timeSpeed
+                        : 0;
+                return {
+                    id: patient.id,
+                    nextHealthPoints,
+                    nextStateId,
+                    nextStateTime,
+                };
+            })
+    );
 }
 
 /**
