@@ -9,6 +9,7 @@ import {
     selectVehicleTemplates,
 } from 'src/app/state/exercise/exercise.selectors';
 import { DragElementService } from '../core/drag-element.service';
+import { TransferLinesService } from '../core/transfer-lines.service';
 
 @Component({
     selector: 'app-trainer-map-editor',
@@ -34,10 +35,15 @@ export class TrainerMapEditorComponent {
         selectMapImagesTemplates
     );
 
+    public changeDisplayTransferLines(newValue: boolean) {
+        this.transferLinesService.displayTransferLines = newValue;
+    }
+
     constructor(
         public readonly apiService: ApiService,
         private readonly store: Store<AppState>,
-        public readonly dragElementService: DragElementService
+        public readonly dragElementService: DragElementService,
+        public readonly transferLinesService: TransferLinesService
     ) {}
 
     public readonly viewportTemplate = {

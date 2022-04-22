@@ -72,6 +72,23 @@
                                 </h5>
                             </div>
                         </div>
+                        <div class="p-2">
+                            <div class="form-check form-switch">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    [ngModel]="
+                                        transferLinesService.displayTransferLines
+                                    "
+                                    (ngModelChange)="
+                                        changeDisplayTransferLines($event)
+                                    "
+                                />
+                                <label class="form-check-label"
+                                    >Verbindungen Anzeigen</label
+                                >
+                            </div>
+                        </div>
                     </div>
                 </li>
                 <li class="list-group-item">
