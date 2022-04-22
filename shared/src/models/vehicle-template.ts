@@ -6,15 +6,9 @@ import {
     IsNumber,
     IsArray,
 } from 'class-validator';
-import type { PersonnelType } from '..';
-import {
-    CanCaterFor,
-    getCreate,
-    ImageProperties,
-    UUID,
-    uuid,
-    uuidValidationOptions,
-} from '..';
+import { uuidValidationOptions, UUID, uuid } from '../utils';
+import type { PersonnelType } from './utils';
+import { CanCaterFor, ImageProperties, getCreate } from './utils';
 
 export class VehicleTemplate {
     @IsUUID(4, uuidValidationOptions)
