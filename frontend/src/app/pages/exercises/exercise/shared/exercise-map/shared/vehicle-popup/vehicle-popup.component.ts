@@ -71,6 +71,14 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
         );
     }
 
+    public renameVehicle(name: string) {
+        this.apiService.proposeAction({
+            type: '[Vehicle] Rename vehicle',
+            vehicleId: this.vehicleId,
+            name,
+        });
+    }
+
     public unloadVehicle() {
         this.apiService.proposeAction({
             type: '[Vehicle] Unload vehicle',
