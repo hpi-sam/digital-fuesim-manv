@@ -37,7 +37,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
         this.vehicle$ = this.store.select(getSelectVehicle(this.vehicleId));
         this.vehicleIsCompletelyUnloaded$ = this.vehicle$.pipe(
             switchMap((vehicle) => {
-                const materialAreInVehicle$ = Object.keys(
+                const materialsAreInVehicle$ = Object.keys(
                     vehicle.materialIds
                 ).map((materialId) =>
                     this.store.select(getSelectMaterial(materialId)).pipe(
@@ -45,7 +45,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                         map((material) => material.position === undefined)
                     )
                 );
-                const personnelIsInVehicle$ = Object.keys(
+                const personnelAreInVehicle$ = Object.keys(
                     vehicle.personnelIds
                 ).map((personnelId) =>
                     this.store.select(getSelectPersonnel(personnelId)).pipe(
@@ -53,21 +53,19 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                         map((personnel) => personnel.position === undefined)
                     )
                 );
-                const patientIsInVehicle$ = Object.keys(vehicle.patientIds).map(
-                    (patientId) =>
-                        this.store
-                            .select(getSelectPatient(patientId))
-                            .pipe(
-                                map(
-                                    (personnel) =>
-                                        personnel.position === undefined
-                                )
-                            )
+                const patientsAreInVehicle$ = Object.keys(
+                    vehicle.patientIds
+                ).map((patientId) =>
+                    this.store
+                        .select(getSelectPatient(patientId))
+                        .pipe(
+                            map((personnel) => personnel.position === undefined)
+                        )
                 );
                 return combineLatest([
-                    materialAreInVehicle$,
-                    ...personnelIsInVehicle$,
-                    ...patientIsInVehicle$,
+                    materialsAreInVehicle$,
+                    ...personnelAreInVehicle$,
+                    ...patientsAreInVehicle$,
                 ]);
             }),
             map((areInVehicle) =>

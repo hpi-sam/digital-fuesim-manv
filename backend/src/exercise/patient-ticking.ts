@@ -133,9 +133,8 @@ function getNextPatientHealthPoints(
     let material = treatedBy.material;
     const notarzt = treatedBy.notarzt;
     const notSan = treatedBy.notSan;
-    const retSan = treatedBy.rettSan;
-    // for now sans aren't have no treatment logic
-    // const san = treatedBy.san;
+    const rettSan = treatedBy.rettSan;
+    // TODO: Sans should be able to treat patients too
     const functionParameters =
         patient.healthStates[patient.currentHealthStateId].functionParameters;
     // To do anything the personnel needs material
@@ -145,7 +144,7 @@ function getNextPatientHealthPoints(
     material = Math.max(material - equippedNotarzt, 0);
     let equippedNotSan = Math.min(notSan, material);
     material = Math.max(material - equippedNotSan, 0);
-    let equippedRetSan = Math.min(retSan, material);
+    let equippedRetSan = Math.min(rettSan, material);
     // much more notarzt != much better patient
     equippedNotarzt = Math.log2(equippedNotarzt + 1);
     equippedNotSan = Math.log2(equippedNotSan + 1);

@@ -57,12 +57,12 @@ export class Vehicle {
      * @deprecated Use {@link create} instead
      */
     constructor(
-        materialId: UUIDSet,
+        materialIds: UUIDSet,
         patientCapacity: number,
         name: string,
         image: ImageProperties
     ) {
-        this.materialIds = materialId;
+        this.materialIds = materialIds;
         this.patientCapacity = patientCapacity;
         this.name = name;
         this.image = image;

@@ -20,7 +20,7 @@ export class AddVehicleAction implements Action {
     @IsArray()
     @ValidateNested()
     @Type(() => Material)
-    public readonly material!: readonly Material[];
+    public readonly materials!: readonly Material[];
 
     @IsArray()
     @ValidateNested()
@@ -73,14 +73,14 @@ export class LoadVehicleAction implements Action {
 export namespace VehicleActionReducers {
     export const addVehicle: ActionReducer<AddVehicleAction> = {
         action: AddVehicleAction,
-        reducer: (draftState, { vehicle, material, personnel }) => {
+        reducer: (draftState, { vehicle, materials, personnel }) => {
             if (
-                material.some(
-                    (_material) =>
-                        _material.vehicleId !== vehicle.id ||
-                        vehicle.materialIds[_material.id] === undefined
+                materials.some(
+                    (_materials) =>
+                        _materials.vehicleId !== vehicle.id ||
+                        vehicle.materialIds[_materials.id] === undefined
                 ) ||
-                Object.keys(vehicle.materialIds).length !== material.length
+                Object.keys(vehicle.materialIds).length !== materials.length
             ) {
                 throw new ReducerError(
                     'Vehicle material ids do not match material ids'
@@ -99,7 +99,7 @@ export namespace VehicleActionReducers {
                 );
             }
             draftState.vehicles[vehicle.id] = vehicle;
-            for (const currentMaterial of material) {
+            for (const currentMaterial of materials) {
                 draftState.materials[currentMaterial.id] = currentMaterial;
             }
             for (const person of personnel) {
@@ -154,7 +154,7 @@ export namespace VehicleActionReducers {
                     `Vehicle with id ${vehicleId} is currently in transfer`
                 );
             }
-            const material = Object.keys(vehicle.materialIds).map(
+            const materials = Object.keys(vehicle.materialIds).map(
                 (materialId) => draftState.materials[materialId]
             );
             const personnel = Object.keys(vehicle.personnelIds).map(
@@ -168,7 +168,7 @@ export namespace VehicleActionReducers {
             );
             const space =
                 vehicleWidthInPosition /
-                (personnel.length + material.length + patients.length + 1);
+                (personnel.length + materials.length + patients.length + 1);
             let x = unloadPosition.x - vehicleWidthInPosition / 2;
             for (const patient of patients) {
                 x += space;
@@ -186,7 +186,7 @@ export namespace VehicleActionReducers {
                     y: unloadPosition.y,
                 };
             }
-            for (const currentMaterial of material) {
+            for (const currentMaterial of materials) {
                 x += space;
                 // TODO: only if the material is not in transfer
                 currentMaterial.position ??= {

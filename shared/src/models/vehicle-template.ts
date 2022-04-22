@@ -1,15 +1,20 @@
 import { Type } from 'class-transformer';
 import {
-    IsArray,
-    IsNumber,
-    IsString,
     IsUUID,
+    IsString,
     ValidateNested,
+    IsNumber,
+    IsArray,
 } from 'class-validator';
-import { UUID, uuid, uuidValidationOptions } from '../utils';
-import type { PersonnelType, CanCaterFor } from './utils';
-import { getCreate } from './utils';
-import { ImageProperties } from './utils/image-properties';
+import type { PersonnelType } from '..';
+import {
+    CanCaterFor,
+    getCreate,
+    ImageProperties,
+    UUID,
+    uuid,
+    uuidValidationOptions,
+} from '..';
 
 export class VehicleTemplate {
     @IsUUID(4, uuidValidationOptions)
@@ -26,10 +31,13 @@ export class VehicleTemplate {
     public readonly patientCapacity: number;
 
     @IsArray()
+    @IsString()
     public readonly personnel: readonly PersonnelType[];
 
     @IsArray()
-    public readonly material: readonly CanCaterFor[];
+    @ValidateNested()
+    @Type(() => CanCaterFor)
+    public readonly materials: readonly CanCaterFor[];
 
     /**
      * @deprecated Use {@link create} instead
@@ -39,13 +47,13 @@ export class VehicleTemplate {
         image: ImageProperties,
         patientCapacity: number,
         personnel: readonly PersonnelType[],
-        material: readonly CanCaterFor[]
+        materials: readonly CanCaterFor[]
     ) {
         this.name = name;
         this.image = image;
         this.patientCapacity = patientCapacity;
         this.personnel = personnel;
-        this.material = material;
+        this.materials = materials;
     }
 
     static readonly create = getCreate(this);
