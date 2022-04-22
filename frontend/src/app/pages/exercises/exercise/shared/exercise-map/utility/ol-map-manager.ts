@@ -17,6 +17,7 @@ import {
     selectCateringLines,
     selectTransferLines,
     selectMapImages,
+    getRestrictedViewport,
 } from 'src/app/state/exercise/exercise.selectors';
 import OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
@@ -181,6 +182,9 @@ export class OlMapManager {
                 center: [startingPosition.x, startingPosition.y],
                 zoom: 20,
                 maxZoom: 23,
+                smoothExtentConstraint: false,
+                smoothResolutionConstraint: false,
+                constrainRotation: 1,
             }),
         });
 
@@ -295,6 +299,36 @@ export class OlMapManager {
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
+        this.registerViewportRestriction();
+    }
+
+    private registerViewportRestriction() {
+        this.store
+            .select(getRestrictedViewport(this.apiService.ownClientId!))
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((viewport) => {
+                const view = this.olMap.getView();
+                if (viewport) {
+                    view.set('extent', undefined);
+                    view.setMinZoom(0);
+                    const targetExtent = [
+                        viewport.position.x,
+                        viewport.position.y - viewport.size.height,
+                        viewport.position.x + viewport.size.width,
+                        viewport.position.y,
+                    ];
+                    view.fit(targetExtent);
+                    view.set('extent', targetExtent);
+                    const minZoom = Math.min(
+                        view.getZoom()!,
+                        view.getMaxZoom()
+                    );
+                    view.setMinZoom(minZoom);
+                } else {
+                    view.set('extent', undefined);
+                    view.setMinZoom(0);
+                }
+            });
     }
 
     private registerFeatureElementManager<
