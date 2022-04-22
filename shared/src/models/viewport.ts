@@ -37,6 +37,6 @@ export class Viewport {
     static image: ImageProperties = {
         url: 'assets/viewport.svg',
         height: 400,
-        aspectRatio: 100 / 100,
+        aspectRatio: 160 / 90,
     };
 }

@@ -80,6 +80,23 @@ class BaseViewportFeatureManager
         const feature = super.createFeature(element);
         feature.setStyle(this.style);
         this.modifyHelper.onModifyEnd(feature, (newPositions) => {
+            // Skip when not all coordinates are properly set.
+            if (
+                !newPositions.every(
+                    (position) =>
+                        Number.isFinite(position.x) &&
+                        Number.isFinite(position.y)
+                )
+            ) {
+                const viewport = this.getElementFromFeature(feature)!.value;
+                this.changeFeature(
+                    viewport,
+                    viewport,
+                    new Set(['position', 'size'] as const),
+                    feature
+                );
+                return;
+            }
             const lineString = newPositions;
 
             const topLeft = lineString[0];

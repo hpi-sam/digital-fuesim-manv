@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="100"
+   width="200"
    height="100"
-   viewBox="0 0 26.458333 26.458334"
+   viewBox="0 0 52.916666 26.458334"
    version="1.1"
    id="svg8"
    inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
@@ -26,14 +26,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="8"
-     inkscape:cx="74.531387"
-     inkscape:cy="30.53709"
+     inkscape:cx="94.531387"
+     inkscape:cy="50.53709"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
      units="px"
-     inkscape:window-width="3368"
-     inkscape:window-height="1376"
+     inkscape:window-width="1848"
+     inkscape:window-height="1016"
      inkscape:window-x="72"
      inkscape:window-y="27"
      inkscape:window-maximized="1" />
@@ -55,41 +55,41 @@
      id="layer1"
      transform="translate(0,-270.54165)">
     <rect
-       style="fill:#666666;stroke-width:0.26458332;fill-opacity:0"
+       style="fill:#666666;fill-opacity:0;stroke-width:0.26458332"
        id="rect18"
        width="26.600073"
        height="26.529205"
        x="-0.023623513"
        y="270.54166" />
     <rect
-       style="fill:#ffffff;stroke-width:0.39563894"
+       style="fill:#ffffff;stroke-width:0.55951798"
        id="rect20"
-       width="21.166666"
+       width="42.333332"
        height="0.26458332"
-       x="2.6458333"
-       y="272.92291" />
+       x="5.2916665"
+       y="272.39374" />
     <rect
-       y="294.08957"
-       x="2.6458333"
-       height="0.26458332"
-       width="21.166666"
-       id="rect24"
-       style="fill:#ffffff;stroke-width:0.39563894" />
-    <rect
-       style="fill:#ffffff;stroke-width:0.39563894"
+       style="fill:#ffffff;stroke-width:0.41963848"
        id="rect26"
-       width="21.166666"
+       width="23.8125"
        height="0.26458332"
-       x="-294.08957"
-       y="2.6458333"
+       x="-296.20624"
+       y="5.2916665"
        transform="rotate(-90)" />
     <rect
        transform="rotate(-90)"
-       y="23.547916"
-       x="-294.08957"
+       y="47.625"
+       x="-296.20624"
        height="0.26458332"
-       width="21.166666"
-       id="rect28"
-       style="fill:#ffffff;stroke-width:0.39563894" />
+       width="23.8125"
+       id="rect3717"
+       style="fill:#ffffff;stroke-width:0.41963848" />
+    <rect
+       y="296.20624"
+       x="5.2916665"
+       height="0.26458332"
+       width="42.333332"
+       id="rect3719"
+       style="fill:#ffffff;stroke-width:0.55951798" />
   </g>
 </svg>

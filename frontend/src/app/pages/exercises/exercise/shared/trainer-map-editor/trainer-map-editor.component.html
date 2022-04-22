@@ -20,11 +20,7 @@
                     >
                         <div
                             class="d-inline-block card text-center"
-                            style="
-                                width: 10rem;
-                                text-overflow: ellipsis;
-                                background-color: #999999;
-                            "
+                            style="width: 10rem; text-overflow: ellipsis"
                             (mousedown)="
                                 dragElementService.onMouseDown($event, {
                                     type: 'viewport',
@@ -32,7 +28,7 @@
                                 })
                             "
                         >
-                            <div class="preview-image-container">
+                            <div class="preview-image-container bg-secondary">
                                 <img
                                     [src]="viewportTemplate.image.url"
                                     class="card-img-top"
