@@ -11,7 +11,9 @@ import {
 } from 'class-validator';
 import { StatusHistoryEntry } from '../../models/status-history-entry';
 import { getStatus } from '../../models/utils';
+import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
+import type { Mutable } from '../../utils';
 import { PatientUpdate } from '../../utils/patient-updates';
 import type { Action, ActionReducer } from '../action-reducer';
 import { calculateTreatments } from './utils/calculate-treatments';
@@ -105,29 +107,9 @@ export namespace ExerciseActionReducers {
             if (refreshTreatments) {
                 calculateTreatments(draftState);
             }
-            // Refresh transferred vehicles
-            Object.values(draftState.vehicles).forEach((vehicle) => {
-                if (
-                    !vehicle.transfer ||
-                    // Not transferred yet
-                    vehicle.transfer.endTimeStamp > draftState.currentTime
-                ) {
-                    return;
-                }
-                // Vehicle arrived at new transferPoint
-                const targetTransferPoint =
-                    draftState.transferPoints[
-                        vehicle.transfer.targetTransferPointId
-                    ];
-                vehicle.position = {
-                    ...targetTransferPoint.position,
-                    y:
-                        targetTransferPoint.position.y +
-                        // Position it on the upper half of the transferPoint
-                        imageSizeToPosition(150),
-                };
-                delete vehicle.transfer;
-            });
+            // Refresh transfers
+            refreshTransfer(draftState, 'vehicles');
+            refreshTransfer(draftState, 'personnel');
             return draftState;
         },
         rights: 'server',
@@ -141,4 +123,31 @@ export namespace ExerciseActionReducers {
         },
         rights: 'server',
     };
+}
+
+function refreshTransfer(
+    draftState: Mutable<ExerciseState>,
+    key: 'personnel' | 'vehicles'
+): void {
+    const elements = draftState[key];
+    Object.values(elements).forEach((element) => {
+        if (
+            !element.transfer ||
+            // Not transferred yet
+            element.transfer.endTimeStamp > draftState.currentTime
+        ) {
+            return;
+        }
+        // Vehicle arrived at new transferPoint
+        const targetTransferPoint =
+            draftState.transferPoints[element.transfer.targetTransferPointId];
+        element.position = {
+            ...targetTransferPoint.position,
+            y:
+                targetTransferPoint.position.y +
+                // Position it on the upper half of the transferPoint
+                imageSizeToPosition(150),
+        };
+        delete element.transfer;
+    });
 }

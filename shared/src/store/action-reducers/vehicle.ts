@@ -10,6 +10,7 @@ import type { Mutable } from '../../utils';
 import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
+import { getTransferPoint } from './transfer-point';
 import { calculateTreatments } from './utils/calculate-treatments';
 
 export class AddVehicleAction implements Action {
@@ -333,17 +334,4 @@ function getVehicle(state: Mutable<ExerciseState>, vehicleId: UUID) {
         throw new ReducerError(`Vehicle with id ${vehicleId} does not exist`);
     }
     return vehicle;
-}
-
-function getTransferPoint(
-    state: Mutable<ExerciseState>,
-    transferPointId: UUID
-) {
-    const transferPoint = state.transferPoints[transferPointId];
-    if (!transferPoint) {
-        throw new ReducerError(
-            `TransferPoint with id ${transferPointId} does not exist`
-        );
-    }
-    return transferPoint;
 }
