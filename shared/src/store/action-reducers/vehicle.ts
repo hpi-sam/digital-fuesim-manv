@@ -139,21 +139,9 @@ export namespace VehicleActionReducers {
             }
             vehicle.name = name;
             for (const personnelId of Object.keys(vehicle.personnelIds)) {
-                const personnel = draftState.personnel[personnelId];
-                if (!personnel) {
-                    throw new ReducerError(
-                        `Personnel with id ${personnelId} does not exist`
-                    );
-                }
-                personnel.vehicleName = name;
+                draftState.personnel[personnelId].vehicleName = name;
             }
-            const material = draftState.materials[vehicle.materialId];
-            if (!material) {
-                throw new ReducerError(
-                    `Material with id ${vehicle.materialId} does not exist`
-                );
-            }
-            material.vehicleName = name;
+            draftState.materials[vehicle.materialId].vehicleName = name;
             return draftState;
         },
         rights: 'trainer',
