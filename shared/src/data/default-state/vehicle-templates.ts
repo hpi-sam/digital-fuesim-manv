@@ -31,15 +31,9 @@ const rthImage: ImageProperties = {
     aspectRatio: 310 / 130,
 };
 
-let rtwCounter = 0;
-let ktwCounter = 0;
-let gwSanCounter = 0;
-let nefCounter = 0;
-let rthCounter = 0;
-
 const rtwVehicleTemplate = VehicleTemplate.create(
     'RTW',
-    `RTW-${rtwCounter++}`,
+    `RTW-???`,
     rtwImage,
     2,
     ['notSan', 'retSan'],
@@ -53,7 +47,7 @@ const rtwVehicleTemplate = VehicleTemplate.create(
 
 const ktwVehicleTemplate = VehicleTemplate.create(
     'KTW',
-    `KTW-${ktwCounter++}`,
+    `KTW-???`,
     ktwImage,
     2,
     ['notSan', 'retSan'],
@@ -67,7 +61,7 @@ const ktwVehicleTemplate = VehicleTemplate.create(
 
 const gwSanVehicleTemplate = VehicleTemplate.create(
     'GW-San',
-    `GW-San-${gwSanCounter++}`,
+    `GW-San-???`,
     gwSanImage,
     0,
     ['notSan', 'retSan', 'retSan', 'retSan'],
@@ -81,7 +75,7 @@ const gwSanVehicleTemplate = VehicleTemplate.create(
 
 const nefVehicleTemplate = VehicleTemplate.create(
     'NEF',
-    `NEF-${nefCounter++}`,
+    `NEF-???`,
     nefImage,
     0,
     ['notarzt', 'notSan'],
@@ -95,7 +89,7 @@ const nefVehicleTemplate = VehicleTemplate.create(
 
 const rthVehicleTemplate = VehicleTemplate.create(
     'RTH',
-    `RTH-${rthCounter++}`,
+    `RTH-???`,
     rthImage,
     1,
     ['notarzt', 'notSan'],
