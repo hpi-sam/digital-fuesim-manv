@@ -32,12 +32,10 @@
                     ></app-transfer-point-name>
                 </td>
                 <td class="align-middle">
-                    <!-- TODO: Improve formatting -->
                     {{
-                        (vehicleTransfer.vehicle.transfer!.endTimeStamp -
-                            currentTime) /
-                            1000
-                    }}s
+                        vehicleTransfer.vehicle.transfer!.endTimeStamp -
+                            currentTime | formatDuration
+                    }}
                 </td>
             </tr>
             <!-- Personnel -->
@@ -48,7 +46,7 @@
                 "
             >
                 <td class="align-middle">
-                    <!-- TODO: -->
+                    {{ personnelTransfer.personnel.vehicleName }}
                     <span class="text-muted">
                         {{ personnelTransfer.personnel.personnelType }}
                     </span>
@@ -64,12 +62,10 @@
                     ></app-transfer-point-name>
                 </td>
                 <td class="align-middle">
-                    <!-- TODO: Improve formatting -->
                     {{
-                        (personnelTransfer.personnel.transfer!.endTimeStamp -
-                            currentTime) /
-                            1000
-                    }}s
+                        personnelTransfer.personnel.transfer!.endTimeStamp -
+                            currentTime | formatDuration
+                    }}
                 </td>
             </tr>
         </tbody>

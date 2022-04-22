@@ -1,0 +1,40 @@
+import type { PipeTransform } from '@angular/core';
+import { Pipe } from '@angular/core';
+
+@Pipe({
+    name: 'formatDuration',
+})
+export class FormatDurationPipe implements PipeTransform {
+    /**
+     *
+     * @param duration in ms
+     */
+    transform(duration: number): string {
+        const seconds = Math.floor(duration / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+
+        const secondsStr = seconds % 60;
+        const minutesStr = minutes % 60;
+        const hoursStr = hours % 24;
+        const daysStr = days;
+
+        const parts = [];
+        if (daysStr) {
+            parts.push(`${daysStr}d`);
+        }
+        if (hoursStr) {
+            parts.push(`${hoursStr}h`);
+        }
+        if (minutesStr) {
+            parts.push(`${minutesStr}m`);
+        }
+        // we only want to show seconds if there are no other parts because they change too fast
+        if (secondsStr && !parts.length) {
+            parts.push(`${secondsStr}s`);
+        }
+
+        return parts.join(' ');
+    }
+}

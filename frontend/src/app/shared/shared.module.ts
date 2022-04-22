@@ -8,6 +8,7 @@ import { AppTrackByPropertyPipe } from './pipes/track-by-property/app-track-by-p
 import { ExerciseExistsValidatorDirective } from './validation/exercise-exists-validator.directive';
 import { ImageExistsValidatorDirective } from './validation/image-exists-validator.directive';
 import { TransferPointNameComponent } from './components/transfer-point-name/transfer-point-name.component';
+import { FormatDurationPipe } from './pipes/format-duration.pipe';
 
 @NgModule({
     declarations: [
@@ -19,6 +20,7 @@ import { TransferPointNameComponent } from './components/transfer-point-name/tra
         ExerciseExistsValidatorDirective,
         ImageExistsValidatorDirective,
         TransferPointNameComponent,
+        FormatDurationPipe,
     ],
     imports: [CommonModule],
     exports: [
@@ -30,6 +32,7 @@ import { TransferPointNameComponent } from './components/transfer-point-name/tra
         ExerciseExistsValidatorDirective,
         ImageExistsValidatorDirective,
         TransferPointNameComponent,
+        FormatDurationPipe,
     ],
 })
 export class SharedModule {}
