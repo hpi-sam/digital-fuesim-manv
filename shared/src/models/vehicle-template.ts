@@ -16,6 +16,9 @@ export class VehicleTemplate {
     public readonly id: UUID = uuid();
 
     @IsString()
+    public readonly vehicleType: string;
+
+    @IsString()
     public readonly name: string;
 
     @ValidateNested()
@@ -36,12 +39,14 @@ export class VehicleTemplate {
      * @deprecated Use {@link create} instead
      */
     constructor(
+        vehicleType: string,
         name: string,
         image: ImageProperties,
         patientCapacity: number,
         personnel: readonly PersonnelType[],
         material: CanCaterFor
     ) {
+        this.vehicleType = vehicleType;
         this.name = name;
         this.image = image;
         this.patientCapacity = patientCapacity;
