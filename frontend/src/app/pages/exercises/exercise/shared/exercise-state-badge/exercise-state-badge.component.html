@@ -1,0 +1,26 @@
+<span
+    class="badge rounded-pill bg-{{
+        latestState
+            ? latestState.status === 'running'
+                ? 'success'
+                : 'danger'
+            : 'secondary'
+    }}"
+    title="Übung {{
+        latestState
+            ? latestState.status === 'running'
+                ? 'läuft'
+                : 'pausiert'
+            : 'wurde noch nicht gestartet'
+    }}"
+>
+    <i *ngIf="!latestState" class="bi bi-stop-fill"></i>
+    <i
+        *ngIf="latestState !== null && latestState?.status === 'paused'"
+        class="bi bi-pause-fill"
+    ></i>
+    <i
+        *ngIf="latestState !== null && latestState?.status === 'running'"
+        class="bi bi-play-fill"
+    ></i>
+</span>

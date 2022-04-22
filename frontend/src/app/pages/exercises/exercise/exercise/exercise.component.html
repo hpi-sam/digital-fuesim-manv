@@ -9,6 +9,10 @@
             <span class="font-monospace fw-bold user-select-all">{{
                 participantId
             }}</span>
+            <app-exercise-state-badge
+                [latestState]="exercisePausedState$ | async"
+                class="ms-3"
+            ></app-exercise-state-badge>
             <button
                 (click)="shareExercise(participantId)"
                 class="btn btn-light ms-3"
@@ -22,18 +26,6 @@
             >
                 Übungsleiterlink teilen
             </button>
-            <span
-                *ngIf="(exercisePausedState$ | async)?.status === 'running'"
-                class="badge bg-success ms-3"
-            >
-                Übung läuft
-            </span>
-            <span
-                *ngIf="(exercisePausedState$ | async)?.status !== 'running'"
-                class="badge bg-danger ms-3"
-            >
-                Übung pausiert
-            </span>
         </h2>
     </div>
 
