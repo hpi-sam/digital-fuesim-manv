@@ -4,10 +4,12 @@ import { TransferPoint } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
+    selectMapImagesTemplates,
     selectPatientTemplates,
     selectVehicleTemplates,
 } from 'src/app/state/exercise/exercise.selectors';
 import { DragElementService } from '../core/drag-element.service';
+import { TransferLinesService } from '../core/transfer-lines.service';
 
 @Component({
     selector: 'app-trainer-map-editor',
@@ -29,10 +31,19 @@ export class TrainerMapEditorComponent {
         selectPatientTemplates
     );
 
+    public readonly mapImageTemplates$ = this.store.select(
+        selectMapImagesTemplates
+    );
+
+    public changeDisplayTransferLines(newValue: boolean) {
+        this.transferLinesService.displayTransferLines = newValue;
+    }
+
     constructor(
         public readonly apiService: ApiService,
         private readonly store: Store<AppState>,
-        public readonly dragElementService: DragElementService
+        public readonly dragElementService: DragElementService,
+        public readonly transferLinesService: TransferLinesService
     ) {}
 
     public readonly transferPointTemplate = {

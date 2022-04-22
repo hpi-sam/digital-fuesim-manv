@@ -105,7 +105,7 @@ export class Patient {
     @Min(healthPointsDefaults.min)
     public readonly health: HealthPoints;
     /**
-     * Wether the patient is currently being treated by a personnel
+     * Whether the patient is currently being treated by a personnel
      */
     @IsBoolean()
     public readonly isBeingTreated: boolean = false;

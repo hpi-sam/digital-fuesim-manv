@@ -55,6 +55,22 @@ const yellowPatientTemplate = PatientTemplate.create(
     defaultHealthState.id
 );
 
+const yellowUntriagedPatientTemplate = PatientTemplate.create(
+    {
+        sex: 'männlich',
+        name: 'Thomas Müller',
+        birthdate: '14.3.',
+        biometry: 'Glatze, 173cm',
+        age: 37,
+        address: 'Pappelstr. 70, 97537 Eschenburg',
+    },
+    false,
+    { [defaultHealthState.id]: defaultHealthState },
+    defaultMaleImage,
+    healthPointsDefaults.yellowMax,
+    defaultHealthState.id
+);
+
 const redPatientTemplate = PatientTemplate.create(
     {
         sex: 'weiblich',
@@ -90,6 +106,7 @@ const blackPatientTemplate = PatientTemplate.create(
 export const defaultPatientTemplates: readonly PatientTemplate[] = [
     greenPatientTemplate,
     yellowPatientTemplate,
+    yellowUntriagedPatientTemplate,
     redPatientTemplate,
     blackPatientTemplate,
 ];

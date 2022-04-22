@@ -11,6 +11,7 @@ import type { AppState } from 'src/app/state/app.state';
 import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { DragElementService } from '../core/drag-element.service';
+import { TransferLinesService } from '../core/transfer-lines.service';
 import { OlMapManager } from './utility/ol-map-manager';
 import { PopupManager } from './utility/popup-manager';
 
@@ -35,7 +36,8 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         private readonly store: Store<AppState>,
         private readonly ngZone: NgZone,
         private readonly apiService: ApiService,
-        public readonly dragElementService: DragElementService
+        public readonly dragElementService: DragElementService,
+        public readonly transferLinesService: TransferLinesService
     ) {}
 
     ngAfterViewInit(): void {
@@ -46,7 +48,8 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 this.apiService,
                 this.openLayersContainer.nativeElement,
                 this.popoverContainer.nativeElement,
-                this.ngZone
+                this.ngZone,
+                this.transferLinesService
             );
             this.dragElementService.registerMap(this.olMapManager.olMap);
         });

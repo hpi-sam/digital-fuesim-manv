@@ -39,4 +39,9 @@
         <span class="font-monospace">{{ exerciseExistsError.id }}</span
         >.
     </div>
+    <div *ngIf="errors['imageExists'] as imageExistsError">
+        Die angegebene URL existiert nicht (Status:
+        <span class="font-monospace">{{ imageExistsError.status }}</span
+        >).
+    </div>
 </div>

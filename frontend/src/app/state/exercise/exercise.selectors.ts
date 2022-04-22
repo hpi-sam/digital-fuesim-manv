@@ -3,13 +3,17 @@ import type { UUID } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
 import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
+import type { TransferLine } from 'src/app/shared/types/transfer-line';
 import type { AppState } from '../app.state';
 
 export const selectViewports = (state: AppState) => state.exercise.viewports;
+export const selectMapImages = (state: AppState) => state.exercise.mapImages;
 export const selectVehicleTemplates = (state: AppState) =>
     state.exercise.vehicleTemplates;
 export const selectPatientTemplates = (state: AppState) =>
     state.exercise.patientTemplates;
+export const selectMapImagesTemplates = (state: AppState) =>
+    state.exercise.mapImageTemplates;
 export const selectPatients = (state: AppState) => state.exercise.patients;
 export const selectVehicles = (state: AppState) => state.exercise.vehicles;
 export const selectPersonnel = (state: AppState) => state.exercise.personnel;
@@ -20,11 +24,15 @@ export const getSelectMaterial = (materialId: UUID) => (state: AppState) =>
     state.exercise.materials[materialId];
 export const getSelectPatient = (patientId: UUID) => (state: AppState) =>
     state.exercise.patients[patientId];
+export const getSelectMapImage = (mapImageId: UUID) => (state: AppState) =>
+    state.exercise.mapImages[mapImageId];
 export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
     state.exercise.vehicles[vehicleId];
 export const getSelectTransferPoint =
     (transferPointId: UUID) => (state: AppState) =>
         state.exercise.transferPoints[transferPointId];
+export const selectTransferPoints = (state: AppState) =>
+    state.exercise.transferPoints;
 
 /**
  * @returns a selector that returns a dictionary of all elements that have a position
@@ -83,6 +91,29 @@ export const selectCateringLines = createSelector(
                 (cateringLinesObject, cateringLine) => {
                     cateringLinesObject[cateringLine.id] = cateringLine;
                     return cateringLinesObject;
+                },
+                {}
+            )
+);
+
+export const selectTransferLines = createSelector(
+    selectTransferPoints,
+    (transferPoints) =>
+        Object.values(transferPoints)
+            .flatMap((transferPoint) =>
+                Object.entries(transferPoint.reachableTransferPoints).map(
+                    ([connectedId, { duration }]) => ({
+                        id: `${transferPoint.id}:${connectedId}` as const,
+                        startPosition: transferPoint.position,
+                        endPosition: transferPoints[connectedId].position,
+                        duration,
+                    })
+                )
+            )
+            .reduce<{ [id: string]: TransferLine }>(
+                (transferLines, transferLine) => {
+                    transferLines[transferLine.id] = transferLine;
+                    return transferLines;
                 },
                 {}
             )

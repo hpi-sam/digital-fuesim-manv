@@ -11,11 +11,11 @@ import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
-import type { Observable } from 'rxjs';
-import { debounceTime, startWith, Subject, pairwise, takeUntil } from 'rxjs';
 import {
     getSelectWithPosition,
     selectCateringLines,
+    selectTransferLines,
+    selectMapImages,
 } from 'src/app/state/exercise/exercise.selectors';
 import OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
@@ -25,6 +25,15 @@ import type { NgZone } from '@angular/core';
 import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
 import { isEqual } from 'lodash-es';
+import type { Observable } from 'rxjs';
+import {
+    Subject,
+    filter,
+    debounceTime,
+    startWith,
+    pairwise,
+    takeUntil,
+} from 'rxjs';
 import { startingPosition } from '../../starting-position';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
@@ -33,6 +42,10 @@ import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manag
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
 import type { ElementManager } from '../feature-managers/element-manager';
 import { TransferPointFeatureManager } from '../feature-managers/transfer-point-feature-manager';
+import { TransferLinesFeatureManager } from '../feature-managers/transfer-lines-feature-manager';
+import { MapImageFeatureManager } from '../feature-managers/map-images-feature-manager';
+import { isTrainer } from '../../utility/is-trainer';
+import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
@@ -52,6 +65,7 @@ export class OlMapManager {
     public readonly changePopup$ = new Subject<
         OpenPopupOptions<any> | undefined
     >();
+
     public readonly popupOverlay: Overlay;
     /**
      * key: the layer that is passed to the featureManager, that is saved in the value
@@ -71,8 +85,10 @@ export class OlMapManager {
         private readonly apiService: ApiService,
         private readonly openLayersContainer: HTMLDivElement,
         private readonly popoverContainer: HTMLDivElement,
-        private readonly ngZone: NgZone
+        private readonly ngZone: NgZone,
+        transferLinesService: TransferLinesService
     ) {
+        const _isTrainer = isTrainer(this.apiService, this.store);
         // Layers
         const satelliteLayer = this.createTileLayer(
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -81,22 +97,31 @@ export class OlMapManager {
         const transferPointLayer = this.createElementLayer();
         const vehicleLayer = this.createElementLayer(1000);
         const cateringLinesLayer = this.createElementLayer<LineString>();
+        const transferLinesLayer = this.createElementLayer<LineString>();
         const patientLayer = this.createElementLayer();
         const personnelLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
+        const mapImagesLayer = this.createElementLayer(10_000);
         this.popupOverlay = new Overlay({
             element: this.popoverContainer,
         });
 
         // Interactions
+        // The layers where elements can be translated by trainer and participant
+        const alwaysTranslatableLayers = [
+            vehicleLayer,
+            patientLayer,
+            personnelLayer,
+            materialLayer,
+        ];
         const translateInteraction = new Translate({
-            layers: [
-                transferPointLayer,
-                vehicleLayer,
-                patientLayer,
-                personnelLayer,
-                materialLayer,
-            ],
+            layers: _isTrainer
+                ? [
+                      ...alwaysTranslatableLayers,
+                      transferPointLayer,
+                      mapImagesLayer,
+                  ]
+                : alwaysTranslatableLayers,
         });
         // Clicking on an element should not trigger a drag event - use a `singleclick` interaction instead
         // Be aware that this means that not every `dragstart` event will have an accompanying `dragend` event
@@ -111,8 +136,12 @@ export class OlMapManager {
         this.olMap = new OlMap({
             interactions: defaultInteractions().extend([translateInteraction]),
             target: this.openLayersContainer,
+            // Note: The order of this array determines the order of the objects on the map.
+            // The most bottom objects must be at the top of the array.
             layers: [
                 satelliteLayer,
+                mapImagesLayer,
+                transferLinesLayer,
                 transferPointLayer,
                 vehicleLayer,
                 cateringLinesLayer,
@@ -143,9 +172,18 @@ export class OlMapManager {
         // });
 
         // FeatureManagers
+        if (_isTrainer) {
+            this.registerFeatureElementManager(
+                new TransferLinesFeatureManager(transferLinesLayer),
+                this.store.select(selectTransferLines)
+            );
+            transferLinesService.displayTransferLines$.subscribe((display) => {
+                transferLinesLayer.setVisible(display);
+            });
+        }
         this.registerFeatureElementManager(
             new TransferPointFeatureManager(
-                store,
+                this.store,
                 this.olMap,
                 transferPointLayer,
                 this.apiService
@@ -155,7 +193,7 @@ export class OlMapManager {
 
         this.registerFeatureElementManager(
             new PatientFeatureManager(
-                store,
+                this.store,
                 this.olMap,
                 patientLayer,
                 this.apiService
@@ -165,7 +203,7 @@ export class OlMapManager {
 
         this.registerFeatureElementManager(
             new VehicleFeatureManager(
-                store,
+                this.store,
                 this.olMap,
                 vehicleLayer,
                 this.apiService
@@ -175,7 +213,7 @@ export class OlMapManager {
 
         this.registerFeatureElementManager(
             new PersonnelFeatureManager(
-                store,
+                this.store,
                 this.olMap,
                 personnelLayer,
                 this.apiService
@@ -185,13 +223,28 @@ export class OlMapManager {
 
         this.registerFeatureElementManager(
             new MaterialFeatureManager(
-                store,
+                this.store,
                 this.olMap,
                 materialLayer,
                 this.apiService
             ),
             this.store.select(getSelectWithPosition('materials'))
         );
+
+        this.registerFeatureElementManager(
+            new MapImageFeatureManager(
+                this.store,
+                this.olMap,
+                mapImagesLayer,
+                this.apiService
+            ),
+            this.store.select(selectMapImages)
+        )
+            .togglePopup$.pipe(
+                // We only want to open the popup if the user is a trainer
+                filter(() => _isTrainer)
+            )
+            .subscribe(this.changePopup$);
 
         this.registerFeatureElementManager(
             new CateringLinesFeatureManager(cateringLinesLayer),
