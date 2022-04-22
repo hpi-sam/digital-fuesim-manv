@@ -166,7 +166,6 @@ export class DragElementService {
                                 width: 500 / currentZoom!,
                                 height: 400 / currentZoom!,
                             },
-                            // TODO: Ask for user input
                             'Einsatzabschnitt'
                         ),
                     },

@@ -11,6 +11,8 @@ import type { Store } from '@ngrx/store';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type { LineString } from 'ol/geom';
+import { isArray } from 'lodash-es';
+import type { Coordinate } from 'ol/coordinate';
 import type { Coordinates } from '../utility/movement-animator';
 import { MovementAnimator } from '../utility/movement-animator';
 import { TranslateHelper } from '../utility/translate-helper';
@@ -26,6 +28,12 @@ function isLineString(
     feature: Feature<LineString | Point>
 ): feature is Feature<LineString> {
     return feature.getGeometry()!.getType() === GeometryType.LINE_STRING;
+}
+
+export function isCoordinateArray(
+    coordinates: Coordinate | Coordinate[]
+): coordinates is Coordinate[] {
+    return isArray(coordinates[0]);
 }
 
 /**
@@ -189,6 +197,18 @@ export abstract class ElementFeatureManager<
             } as const;
         }
         return undefined;
+    }
+
+    public getCenter(feature: ElementFeature): Coordinate {
+        const coordinates = feature.getGeometry()!.getCoordinates();
+        return isCoordinateArray(coordinates)
+            ? [
+                  coordinates[0][0] +
+                      (coordinates[2][0] - coordinates[0][0]) / 2,
+                  coordinates[0][1] +
+                      (coordinates[2][1] - coordinates[0][1]) / 2,
+              ]
+            : coordinates;
     }
 
     public onFeatureClicked(

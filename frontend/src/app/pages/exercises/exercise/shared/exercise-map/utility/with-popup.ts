@@ -4,8 +4,6 @@ import type { Type } from '@angular/core';
 import { Subject } from 'rxjs';
 import type { Constructor } from 'digital-fuesim-manv-shared';
 import type { LineString } from 'ol/geom';
-import { isArray } from 'lodash-es';
-import type { Coordinate } from 'ol/coordinate';
 import type {
     ElementFeatureManager,
     PositionableElement,
@@ -46,14 +44,11 @@ export function withPopup<
             feature: Feature<FeatureType>
         ): void {
             super.onFeatureClicked(event, feature);
-            const featureCenter = feature.getGeometry()!.getCoordinates();
+            const featureCenter = this.getCenter(feature);
             const view = this.olMap.getView();
             const zoom = view.getZoom()!;
             const { position, positioning } = calculatePopupPositioning(
-                isArray(featureCenter[0])
-                    ? // TODO: Use center instead of first coordinate
-                      (featureCenter as Coordinate[])[0]
-                    : (featureCenter as Coordinate),
+                featureCenter,
                 {
                     // TODO: reuse the image constraints
                     width: popoverOptions.width / zoom,

@@ -391,22 +391,28 @@ export class OlMapManager {
 
     private registerPopupTriggers(translateInteraction: Translate) {
         this.olMap.on('singleclick', (event) => {
-            this.olMap.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
-                // Skip layer when unset
-                if (layer === null) {
-                    return false;
-                }
-                this.layerFeatureManagerDictionary
-                    .get(
-                        layer as VectorLayer<VectorSource<LineString | Point>>
-                    )!
-                    .onFeatureClicked(
-                        event,
-                        feature as Feature<LineString | Point>
-                    );
-                // we only want the top one -> a truthy return breaks this loop
-                return true;
-            });
+            this.olMap.forEachFeatureAtPixel(
+                event.pixel,
+                (feature, layer) => {
+                    // Skip layer when unset
+                    if (layer === null) {
+                        return false;
+                    }
+                    this.layerFeatureManagerDictionary
+                        .get(
+                            layer as VectorLayer<
+                                VectorSource<LineString | Point>
+                            >
+                        )!
+                        .onFeatureClicked(
+                            event,
+                            feature as Feature<LineString | Point>
+                        );
+                    // we only want the top one -> a truthy return breaks this loop
+                    return true;
+                },
+                { hitTolerance: 10 }
+            );
             if (!this.olMap!.hasFeatureAtPixel(event.pixel)) {
                 this.changePopup$.next(undefined);
             }

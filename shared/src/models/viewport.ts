@@ -35,8 +35,8 @@ export class Viewport {
     static readonly create = getCreate(this);
 
     static image: ImageProperties = {
-        url: 'assets/material.svg',
+        url: 'assets/viewport.svg',
         height: 400,
-        aspectRatio: 134 / 102,
+        aspectRatio: 100 / 100,
     };
 }

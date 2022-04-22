@@ -105,9 +105,9 @@ export class ModifyHelper<T extends LineString = LineString> {
                 'modifyGeometry'
             ) as ModifyGeometry;
             // The end coordinates in the event are the mouse coordinates and not the feature coordinates.
-            const coordinates = modifyGeometry.geometry!.getCoordinates();
+            const coordinates = modifyGeometry.geometry.getCoordinates();
             callback(
-                (coordinates as Coordinate[]).map((coordinate) =>
+                coordinates.map((coordinate) =>
                     Position.create(coordinate[0], coordinate[1])
                 )
             );
