@@ -1,0 +1,55 @@
+<ng-container
+    *ngIf="currentTime$ | async as currentTime; else exerciseHasNotStarted"
+>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Start</th>
+                <th scope="col">Ziel</th>
+                <th scope="col">Dauer</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr
+                *ngFor="
+                    let vehicleTransfer of vehiclesInTransfer$ | async;
+                    trackBy: 'vehicle.id' | appTrackByProperty
+                "
+            >
+                <td class="align-middle">
+                    {{ vehicleTransfer.vehicle.name }}
+                </td>
+                <td class="align-middle">
+                    <app-transfer-point-name
+                        [transferPoint]="vehicleTransfer.startTransferPoint"
+                    ></app-transfer-point-name>
+                </td>
+                <td class="align-middle">
+                    <app-transfer-point-name
+                        [transferPoint]="vehicleTransfer.targetTransferPoint"
+                    ></app-transfer-point-name>
+                </td>
+                <td class="align-middle">
+                    <!-- TODO: Improve formatting -->
+                    {{
+                        (vehicleTransfer.vehicle.transfer!.endTimeStamp -
+                            currentTime) /
+                            1000
+                    }}s
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p
+        *ngIf="(vehiclesInTransfer$ | async)?.length === 0"
+        class="text-muted text-center"
+    >
+        Keine Fahrzeuge in Transfer
+    </p>
+</ng-container>
+
+<ng-template #exerciseHasNotStarted>
+    <p class="text-muted text-center">Die Übung wurde noch nicht gestartet.</p>
+</ng-template>

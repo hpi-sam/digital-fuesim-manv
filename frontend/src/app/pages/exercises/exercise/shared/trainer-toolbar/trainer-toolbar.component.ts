@@ -8,6 +8,7 @@ import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectLatestStatusHistoryEntry } from 'src/app/state/exercise/exercise.selectors';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
+import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
 
 @Component({
     selector: 'app-trainer-toolbar',
@@ -32,6 +33,10 @@ export class TrainerToolbarComponent {
 
     public openClientOverview() {
         openClientOverviewModal(this.modalService, this.exerciseId!);
+    }
+
+    public openTransferOverview() {
+        openTransferOverviewModal(this.modalService);
     }
 
     public async pauseExercise() {

@@ -126,3 +126,21 @@ export function getSelectReachableTransferPoints(transferPointId: UUID) {
         ).map((id) => transferPoints[id])
     );
 }
+
+export const selectVehiclesInTransfer = createSelector(
+    selectVehicles,
+    selectTransferPoints,
+    (vehicles, transferPoints) =>
+        Object.values(vehicles)
+            .filter((vehicle) => vehicle.transfer !== undefined)
+            .map((vehicle) => ({
+                vehicle,
+                startTransferPoint:
+                    transferPoints[vehicle.transfer!.startTransferPointId],
+                targetTransferPoint:
+                    transferPoints[vehicle.transfer!.targetTransferPointId],
+            }))
+);
+
+export const selectCurrentTime = (state: AppState) =>
+    state.exercise.currentTime;

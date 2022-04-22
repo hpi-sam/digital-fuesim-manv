@@ -17,9 +17,8 @@
         type="button"
         class="dropdown-item"
     >
-        {{ reachableTransferPoint.externalName }}
-        <span class="text-muted"
-            >({{ reachableTransferPoint.internalName }})</span
-        >
+        <app-transfer-point-name
+            [transferPoint]="reachableTransferPoint"
+        ></app-transfer-point-name>
     </button>
 </div>
