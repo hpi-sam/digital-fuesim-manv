@@ -142,5 +142,20 @@ export const selectVehiclesInTransfer = createSelector(
             }))
 );
 
+export const selectPersonnelInTransfer = createSelector(
+    selectPersonnel,
+    selectTransferPoints,
+    (personnel, transferPoints) =>
+        Object.values(personnel)
+            .filter((_personnel) => _personnel.transfer !== undefined)
+            .map((_personnel) => ({
+                personnel: _personnel,
+                startTransferPoint:
+                    transferPoints[_personnel.transfer!.startTransferPointId],
+                targetTransferPoint:
+                    transferPoints[_personnel.transfer!.targetTransferPointId],
+            }))
+);
+
 export const selectCurrentTime = (state: AppState) =>
     state.exercise.currentTime;

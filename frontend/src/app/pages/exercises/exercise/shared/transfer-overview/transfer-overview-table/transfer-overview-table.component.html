@@ -11,6 +11,7 @@
             </tr>
         </thead>
         <tbody>
+            <!-- Vehicles -->
             <tr
                 *ngFor="
                     let vehicleTransfer of vehiclesInTransfer$ | async;
@@ -39,14 +40,49 @@
                     }}s
                 </td>
             </tr>
+            <!-- Personnel -->
+            <tr
+                *ngFor="
+                    let personnelTransfer of personnelInTransfer$ | async;
+                    trackBy: 'personnel.id' | appTrackByProperty
+                "
+            >
+                <td class="align-middle">
+                    <!-- TODO: -->
+                    <span class="text-muted">
+                        {{ personnelTransfer.personnel.personnelType }}
+                    </span>
+                </td>
+                <td class="align-middle">
+                    <app-transfer-point-name
+                        [transferPoint]="personnelTransfer.startTransferPoint"
+                    ></app-transfer-point-name>
+                </td>
+                <td class="align-middle">
+                    <app-transfer-point-name
+                        [transferPoint]="personnelTransfer.targetTransferPoint"
+                    ></app-transfer-point-name>
+                </td>
+                <td class="align-middle">
+                    <!-- TODO: Improve formatting -->
+                    {{
+                        (personnelTransfer.personnel.transfer!.endTimeStamp -
+                            currentTime) /
+                            1000
+                    }}s
+                </td>
+            </tr>
         </tbody>
     </table>
 
     <p
-        *ngIf="(vehiclesInTransfer$ | async)?.length === 0"
+        *ngIf="
+            (vehiclesInTransfer$ | async)?.length === 0 &&
+            (personnelInTransfer$ | async)?.length === 0
+        "
         class="text-muted text-center"
     >
-        Keine Fahrzeuge in Transfer
+        Keine Rettungskräfte im Transfer
     </p>
 </ng-container>
 

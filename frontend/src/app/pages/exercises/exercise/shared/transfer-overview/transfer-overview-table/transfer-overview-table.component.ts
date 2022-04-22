@@ -3,6 +3,7 @@ import { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectCurrentTime,
+    selectPersonnelInTransfer,
     selectVehiclesInTransfer,
 } from 'src/app/state/exercise/exercise.selectors';
 
@@ -14,6 +15,9 @@ import {
 export class TransferOverviewTableComponent {
     public readonly vehiclesInTransfer$ = this.store.select(
         selectVehiclesInTransfer
+    );
+    public readonly personnelInTransfer$ = this.store.select(
+        selectPersonnelInTransfer
     );
 
     public readonly currentTime$ = this.store.select(selectCurrentTime);
