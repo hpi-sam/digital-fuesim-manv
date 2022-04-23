@@ -71,14 +71,16 @@ export abstract class ElementFeatureManager<Element extends PositionableElement>
         newElement: Element,
         // It is too much work to correctly type this param with {@link unsupportedChangeProperties}
         changedProperties: ReadonlySet<keyof Element>,
-        patientFeature: ElementFeature
+        feature: ElementFeature
     ): void {
         if (changedProperties.has('position')) {
-            this.movementAnimator.animateFeatureMovement(patientFeature, [
+            this.movementAnimator.animateFeatureMovement(feature, [
                 newElement.position.x,
                 newElement.position.y,
             ]);
         }
+        // If the style has updated, we need to redraw he feature
+        feature.changed();
     }
 
     getFeatureFromElement(element: Element): ElementFeature | undefined {

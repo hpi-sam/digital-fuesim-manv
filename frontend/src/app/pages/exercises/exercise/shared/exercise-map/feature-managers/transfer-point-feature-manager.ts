@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { normalZoom, TransferPoint } from 'digital-fuesim-manv-shared';
+import { TransferPoint } from 'digital-fuesim-manv-shared';
 import type Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
@@ -9,13 +9,10 @@ import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import type { Feature } from 'ol';
 import type { TranslateEvent } from 'ol/interaction/Translate';
-import Style from 'ol/style/Style';
-import Icon from 'ol/style/Icon';
-import OlText from 'ol/style/Text';
-import Fill from 'ol/style/Fill';
-import type { WithPosition } from '../../utility/types/with-position';
 import { withPopup } from '../utility/with-popup';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
+import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
+import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { ElementFeatureManager } from './element-feature-manager';
 
 class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoint> {
@@ -32,60 +29,33 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoin
                 targetPosition,
             });
         });
+        layer.setStyle((thisFeature, currentZoom) => [
+            this.imageStyleHelper.getStyle(
+                thisFeature as Feature<Point>,
+                currentZoom
+            ),
+            this.nameStyleHelper.getStyle(
+                thisFeature as Feature<Point>,
+                currentZoom
+            ),
+        ]);
     }
 
-    private readonly styleCache = new Map<string, Style>();
-
-    private previousZoom?: number;
-    /**
-     *
-     * @param feature The feature that should be styled
-     * @param currentZoom This is for some reason also called `resolution` in the ol typings
-     * @returns The style that should be used for the feature
-     */
-    // This function should be as efficient as possible, because it is called per feature on each rendered frame
-    private getStyle(feature: Feature<Point>, currentZoom: number) {
-        if (this.previousZoom !== currentZoom) {
-            this.previousZoom = currentZoom;
-            this.styleCache.clear();
-        }
-        const element = this.getElementFromFeature(feature)!.value;
-        const key = JSON.stringify({
-            name: element.internalName,
-        });
-        if (!this.styleCache.has(key)) {
-            this.styleCache.set(
-                key,
-                new Style({
-                    image: new Icon({
-                        src: TransferPoint.image.url,
-                        scale:
-                            TransferPoint.image.height /
-                            (currentZoom * normalZoom) /
-                            // TODO: remove this hack, look at height in transfer-point.svg, is also 102
-                            102,
-                    }),
-                    text: new OlText({
-                        text: element.internalName,
-                        scale: 0.2 / currentZoom,
-                        fill: new Fill({
-                            color: '#FEFEFE',
-                        }),
-                    }),
-                })
-            );
-        }
-        return this.styleCache.get(key)!;
-    }
-
-    public override createFeature(element: WithPosition<TransferPoint>): void {
-        super.createFeature(element);
-        // Because the feature is already added in the super method, there is a short flickering
-        const feature = this.getFeatureFromElement(element)!;
-        feature.setStyle((thisFeature, currentZoom) =>
-            this.getStyle(thisFeature as Feature<Point>, currentZoom)
-        );
-    }
+    private readonly imageStyleHelper = new ImageStyleHelper(
+        (feature: Feature) => ({
+            url: TransferPoint.image.url,
+            height: TransferPoint.image.height,
+            aspectRatio: TransferPoint.image.aspectRatio,
+        })
+    );
+    private readonly nameStyleHelper = new NameStyleHelper(
+        (feature: Feature) => ({
+            name: this.getElementFromFeature(feature)!.value.internalName,
+            offsetY: 0,
+        }),
+        0.2,
+        'middle'
+    );
 
     public override onFeatureDrop(
         dropEvent: TranslateEvent,
