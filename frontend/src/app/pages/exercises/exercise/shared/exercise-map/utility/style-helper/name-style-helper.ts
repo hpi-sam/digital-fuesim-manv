@@ -10,7 +10,7 @@ export class NameStyleHelper extends StyleHelper<Style, Feature> {
         private readonly getNameAndOffset: (feature: Feature) => {
             name: string;
             /**
-             * This is often `image.height / 2 / normalZoom` of you want to display it under the image.
+             * This is often `image.height / 2 / normalZoom` if you want to display it under the image.
              */
             offsetY: number;
         },
