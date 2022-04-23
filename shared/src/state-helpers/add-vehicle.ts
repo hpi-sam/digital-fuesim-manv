@@ -19,15 +19,16 @@ export function addVehicle(
 } {
     const vehicleId = uuid();
     const materials = vehicleTemplate.materials.map((currentMaterial) =>
-        Material.create(vehicleId, {}, currentMaterial)
+        Material.create(vehicleId, vehicleTemplate.name, {}, currentMaterial)
     );
     const personnel = vehicleTemplate.personnel.map((currentPersonnel) =>
-        Personnel.create(vehicleId, currentPersonnel, {})
+        Personnel.create(vehicleId, currentPersonnel, vehicleTemplate.name, {})
     );
 
     const vehicle: Vehicle = {
         id: vehicleId,
         materialIds: arrayToUUIDSet(materials.map((m) => m.id)),
+        vehicleType: vehicleTemplate.vehicleType,
         name: vehicleTemplate.name,
         patientCapacity: vehicleTemplate.patientCapacity,
         image: vehicleTemplate.image,

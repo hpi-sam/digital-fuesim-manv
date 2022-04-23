@@ -28,6 +28,16 @@ export class AddVehicleAction implements Action {
     public readonly personnel!: readonly Personnel[];
 }
 
+export class RenameVehicleAction implements Action {
+    @IsString()
+    public readonly type = '[Vehicle] Rename vehicle';
+    @IsUUID(4, uuidValidationOptions)
+    public readonly vehicleId!: UUID;
+
+    @IsString()
+    public readonly name!: string;
+}
+
 export class MoveVehicleAction implements Action {
     @IsString()
     public readonly type = '[Vehicle] Move vehicle';
@@ -123,6 +133,25 @@ export namespace VehicleActionReducers {
             return draftState;
         },
         rights: 'participant',
+    };
+
+    export const renameVehicle: ActionReducer<RenameVehicleAction> = {
+        action: RenameVehicleAction,
+        reducer: (draftState, { vehicleId, name }) => {
+            const vehicle = draftState.vehicles[vehicleId];
+            if (!vehicle) {
+                throw new ReducerError(
+                    `Vehicle with id ${vehicleId} does not exist`
+                );
+            }
+            vehicle.name = name;
+            for (const personnelId of Object.keys(vehicle.personnelIds)) {
+                draftState.personnel[personnelId].vehicleName = name;
+            }
+            draftState.materials[vehicle.materialId].vehicleName = name;
+            return draftState;
+        },
+        rights: 'trainer',
     };
 
     export const removeVehicle: ActionReducer<RemoveVehicleAction> = {

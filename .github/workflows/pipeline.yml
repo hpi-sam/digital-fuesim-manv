@@ -259,13 +259,14 @@ jobs:
                 os: [ubuntu-latest]
             fail-fast: false
 
+        # Don't pull LFS to reduce bandwidth usage
         steps:
             - uses: actions/checkout@v2
-              with:
-                  lfs: 'true'
+            #   with:
+            #       lfs: 'true'
             - name: checkoutLFS
               uses: actions/checkout@v2
-            - run: git lfs pull
+            # - run: git lfs pull
             - uses: actions/setup-node@v2
               with:
                   node-version: '16'

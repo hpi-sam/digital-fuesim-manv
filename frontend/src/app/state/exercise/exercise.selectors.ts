@@ -3,6 +3,7 @@ import type { UUID } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
 import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
+import type { TransferLine } from 'src/app/shared/types/transfer-line';
 import type { AppState } from '../app.state';
 
 export const selectViewports = (state: AppState) => state.exercise.viewports;
@@ -90,6 +91,29 @@ export const selectCateringLines = createSelector(
                 (cateringLinesObject, cateringLine) => {
                     cateringLinesObject[cateringLine.id] = cateringLine;
                     return cateringLinesObject;
+                },
+                {}
+            )
+);
+
+export const selectTransferLines = createSelector(
+    selectTransferPoints,
+    (transferPoints) =>
+        Object.values(transferPoints)
+            .flatMap((transferPoint) =>
+                Object.entries(transferPoint.reachableTransferPoints).map(
+                    ([connectedId, { duration }]) => ({
+                        id: `${transferPoint.id}:${connectedId}` as const,
+                        startPosition: transferPoint.position,
+                        endPosition: transferPoints[connectedId].position,
+                        duration,
+                    })
+                )
+            )
+            .reduce<{ [id: string]: TransferLine }>(
+                (transferLines, transferLine) => {
+                    transferLines[transferLine.id] = transferLine;
+                    return transferLines;
                 },
                 {}
             )
