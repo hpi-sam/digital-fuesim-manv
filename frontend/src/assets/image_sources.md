@@ -25,9 +25,6 @@ Florian Greiz 23
 [male_patient.svg](male_patient.svg):  
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
 
-[map-image-sample.webp](map-image-sample.webp):
-<https://iconscout.com/icon/image-1767939>
-
 [material.svg](material.svg) <https://commons.wikimedia.org/wiki/File:First_aid_kit_(70543)_-_The_Noun_Project.svg> (edited)
 
 [nef_vehicle.png](nef_vehicle.png):
