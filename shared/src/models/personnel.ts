@@ -26,6 +26,9 @@ export class Personnel {
     @IsString()
     public readonly personnelType: PersonnelType;
 
+    @IsString()
+    public readonly vehicleName: string;
+
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     @IsDefined()
     public readonly assignedPatientIds: UUIDSet;
@@ -56,11 +59,13 @@ export class Personnel {
     constructor(
         vehicleId: UUID,
         personnelType: PersonnelType,
+        name: string,
         assignedPatientIds: UUIDSet,
         canCaterFor: CanCaterFor = CanCaterFor.create(1, 1, 4, 'or')
     ) {
         this.vehicleId = vehicleId;
         this.personnelType = personnelType;
+        this.vehicleName = name;
         this.assignedPatientIds = assignedPatientIds;
         this.canCaterFor = canCaterFor;
     }

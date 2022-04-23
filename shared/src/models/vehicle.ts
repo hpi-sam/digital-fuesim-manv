@@ -15,14 +15,17 @@ export class Vehicle {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
 
+    @IsString()
+    public readonly vehicleType: string;
+
+    @IsString()
+    public readonly name: string;
+
     @IsUUID(4, uuidValidationOptions)
     public readonly materialId: UUID;
 
     @IsNumber()
     public readonly patientCapacity: number;
-
-    @IsString()
-    public readonly name: string;
 
     /**
      * Exclusive-or to {@link transfer}
@@ -56,14 +59,16 @@ export class Vehicle {
      * @deprecated Use {@link create} instead
      */
     constructor(
+        vehicleType: string,
+        name: string,
         materialId: UUID,
         patientCapacity: number,
-        name: string,
         image: ImageProperties
     ) {
+        this.vehicleType = vehicleType;
+        this.name = name;
         this.materialId = materialId;
         this.patientCapacity = patientCapacity;
-        this.name = name;
         this.image = image;
     }
 
