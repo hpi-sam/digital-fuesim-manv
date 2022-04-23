@@ -30,7 +30,7 @@ import type { NgZone } from '@angular/core';
 import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
 import { isEqual } from 'lodash-es';
-import { platformModifierKeyOnly, primaryAction } from 'ol/events/condition';
+import { primaryAction, shiftKeyOnly } from 'ol/events/condition';
 import type { Coordinate } from 'ol/coordinate';
 import type { Observable } from 'rxjs';
 import {
@@ -141,8 +141,7 @@ export class OlMapManager {
 
         const viewportModify = new Modify({
             source: viewportLayer.getSource()!,
-            condition: (event) =>
-                primaryAction(event) && platformModifierKeyOnly(event),
+            condition: (event) => primaryAction(event) && shiftKeyOnly(event),
             deleteCondition: () => false,
             insertVertexCondition: () => false,
             style: (feature) => {
@@ -197,8 +196,7 @@ export class OlMapManager {
 
         const viewportTranslate = new Translate({
             layers: [viewportLayer],
-            condition: (event) =>
-                primaryAction(event) && !platformModifierKeyOnly(event),
+            condition: (event) => primaryAction(event) && !shiftKeyOnly(event),
             hitTolerance: 10,
         });
 
