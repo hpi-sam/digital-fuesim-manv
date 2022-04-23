@@ -80,4 +80,10 @@ export class Personnel {
     }
 
     static readonly create = getCreate(this);
+
+    static isInVehicle(personnel: Personnel): boolean {
+        return (
+            personnel.position === undefined && personnel.transfer === undefined
+        );
+    }
 }

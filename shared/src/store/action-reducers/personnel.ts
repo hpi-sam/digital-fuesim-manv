@@ -8,8 +8,8 @@ import type { Mutable } from '../../utils';
 import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
-import { getTransferPoint } from './transfer-point';
 import { calculateTreatments } from './utils/calculate-treatments';
+import { transferElement } from './utils/transfer-element';
 
 export class MovePersonnelAction implements Action {
     @IsString()
@@ -61,31 +61,12 @@ export namespace PersonnelActionReducers {
             { personnelId, startTransferPointId, targetTransferPointId }
         ) => {
             const personnel = getPersonnel(draftState, personnelId);
-            if (!personnel.position) {
-                throw new ReducerError(
-                    `Personnel with id ${personnelId} is already in transfer`
-                );
-            }
-            const startTransferPoint = getTransferPoint(
+            transferElement(
                 draftState,
-                startTransferPointId
-            );
-            const connection =
-                startTransferPoint.reachableTransferPoints[
-                    targetTransferPointId
-                ];
-            if (!connection) {
-                throw new ReducerError(
-                    `TransferPoint with id ${targetTransferPointId} is not reachable from ${startTransferPointId}`
-                );
-            }
-            // The personnel is now in transfer
-            delete personnel.position;
-            personnel.transfer = {
+                personnel,
                 startTransferPointId,
-                targetTransferPointId,
-                endTimeStamp: draftState.currentTime + connection.duration,
-            };
+                targetTransferPointId
+            );
             return draftState;
         },
         rights: 'participant',

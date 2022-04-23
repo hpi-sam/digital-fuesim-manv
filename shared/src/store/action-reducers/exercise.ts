@@ -8,9 +8,11 @@ import {
     ValidateNested,
     IsBoolean,
     IsArray,
+    IsPositive,
 } from 'class-validator';
+import { TransferPoint } from '../../models';
 import { StatusHistoryEntry } from '../../models/status-history-entry';
-import { getStatus } from '../../models/utils';
+import { getStatus, Position } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
@@ -45,6 +47,7 @@ export class ExerciseTickAction implements Action {
     public readonly refreshTreatments!: boolean;
 
     @IsInt()
+    @IsPositive()
     public readonly tickInterval!: number;
 }
 
@@ -138,16 +141,15 @@ function refreshTransfer(
         ) {
             return;
         }
-        // Vehicle arrived at new transferPoint
+        // Personnel/Vehicle arrived at new transferPoint
         const targetTransferPoint =
             draftState.transferPoints[element.transfer.targetTransferPointId];
-        element.position = {
-            ...targetTransferPoint.position,
-            y:
-                targetTransferPoint.position.y +
-                // Position it on the upper half of the transferPoint
-                imageSizeToPosition(150),
-        };
+        element.position = Position.create(
+            targetTransferPoint.position.x,
+            targetTransferPoint.position.y +
+                //  Position it in the upper half of the transferPoint)
+                imageSizeToPosition(TransferPoint.image.height / 3)
+        );
         delete element.transfer;
     });
 }

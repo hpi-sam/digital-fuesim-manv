@@ -10,8 +10,8 @@ import type { Mutable } from '../../utils';
 import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
-import { getTransferPoint } from './transfer-point';
 import { calculateTreatments } from './utils/calculate-treatments';
+import { transferElement } from './utils/transfer-element';
 
 export class AddVehicleAction implements Action {
     @IsString()
@@ -143,12 +143,7 @@ export namespace VehicleActionReducers {
     export const renameVehicle: ActionReducer<RenameVehicleAction> = {
         action: RenameVehicleAction,
         reducer: (draftState, { vehicleId, name }) => {
-            const vehicle = draftState.vehicles[vehicleId];
-            if (!vehicle) {
-                throw new ReducerError(
-                    `Vehicle with id ${vehicleId} does not exist`
-                );
-            }
+            const vehicle = getVehicle(draftState, vehicleId);
             vehicle.name = name;
             for (const personnelId of Object.keys(vehicle.personnelIds)) {
                 draftState.personnel[personnelId].vehicleName = name;
@@ -205,7 +200,9 @@ export namespace VehicleActionReducers {
             }
             for (const person of personnel) {
                 x += space;
-                // TODO: only if the person is not in transfer
+                if (!Personnel.isInVehicle(person)) {
+                    continue;
+                }
                 person.position ??= {
                     x,
                     y: unloadPosition.y,
@@ -252,6 +249,11 @@ export namespace VehicleActionReducers {
                             `Personnel with id ${elementToBeLoadedId} does not exist`
                         );
                     }
+                    if (personnel.transfer !== undefined) {
+                        throw new ReducerError(
+                            `Personnel with id ${elementToBeLoadedId} is currently in transfer`
+                        );
+                    }
                     if (!vehicle.personnelIds[elementToBeLoadedId]) {
                         throw new ReducerError(
                             `Personnel with id ${personnel.id} is not assignable to the vehicle with id ${vehicle.id}`
@@ -280,6 +282,7 @@ export namespace VehicleActionReducers {
                     draftState.materials[vehicle.materialId].position =
                         undefined;
                     Object.keys(vehicle.personnelIds).forEach((personnelId) => {
+                        // If a personnel is in transfer, this doesn't change that
                         draftState.personnel[personnelId].position = undefined;
                     });
                 }
@@ -297,31 +300,12 @@ export namespace VehicleActionReducers {
             { vehicleId, startTransferPointId, targetTransferPointId }
         ) => {
             const vehicle = getVehicle(draftState, vehicleId);
-            if (!vehicle.position) {
-                throw new ReducerError(
-                    `Vehicle with id ${vehicleId} is already in transfer`
-                );
-            }
-            const startTransferPoint = getTransferPoint(
+            transferElement(
                 draftState,
-                startTransferPointId
-            );
-            const connection =
-                startTransferPoint.reachableTransferPoints[
-                    targetTransferPointId
-                ];
-            if (!connection) {
-                throw new ReducerError(
-                    `TransferPoint with id ${targetTransferPointId} is not reachable from ${startTransferPointId}`
-                );
-            }
-            // The vehicle is now in transfer
-            delete vehicle.position;
-            vehicle.transfer = {
+                vehicle,
                 startTransferPointId,
-                targetTransferPointId,
-                endTimeStamp: draftState.currentTime + connection.duration,
-            };
+                targetTransferPointId
+            );
             return draftState;
         },
         rights: 'participant',

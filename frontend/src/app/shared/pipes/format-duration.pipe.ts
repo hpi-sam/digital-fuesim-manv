@@ -21,17 +21,17 @@ export class FormatDurationPipe implements PipeTransform {
         const daysStr = days;
 
         const parts = [];
-        if (daysStr) {
+        if (daysStr > 0) {
             parts.push(`${daysStr}d`);
         }
-        if (hoursStr) {
+        if (hoursStr > 0) {
             parts.push(`${hoursStr}h`);
         }
-        if (minutesStr) {
+        if (minutesStr > 0) {
             parts.push(`${minutesStr}m`);
         }
         // we only want to show seconds if there are no other parts because they change too fast
-        if (secondsStr && !parts.length) {
+        if (secondsStr > 0 && parts.length === 0) {
             parts.push(`${secondsStr}s`);
         }
 
