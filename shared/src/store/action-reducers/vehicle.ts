@@ -86,9 +86,9 @@ export namespace VehicleActionReducers {
         reducer: (draftState, { vehicle, materials, personnel }) => {
             if (
                 materials.some(
-                    (_materials) =>
-                        _materials.vehicleId !== vehicle.id ||
-                        vehicle.materialIds[_materials.id] === undefined
+                    (_material) =>
+                        _material.vehicleId !== vehicle.id ||
+                        vehicle.materialIds[_material.id] === undefined
                 ) ||
                 Object.keys(vehicle.materialIds).length !== materials.length
             ) {
@@ -148,7 +148,9 @@ export namespace VehicleActionReducers {
             for (const personnelId of Object.keys(vehicle.personnelIds)) {
                 draftState.personnel[personnelId].vehicleName = name;
             }
-            draftState.materials[vehicle.materialId].vehicleName = name;
+            for (const materialId of Object.keys(vehicle.materialIds)) {
+                draftState.materials[materialId].vehicleName = name;
+            }
             return draftState;
         },
         rights: 'trainer',
@@ -217,7 +219,6 @@ export namespace VehicleActionReducers {
             }
             for (const currentMaterial of materials) {
                 x += space;
-                // TODO: only if the material is not in transfer
                 currentMaterial.position ??= {
                     x,
                     y: unloadPosition.y,

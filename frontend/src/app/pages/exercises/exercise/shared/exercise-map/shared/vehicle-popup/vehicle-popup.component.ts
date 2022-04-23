@@ -48,7 +48,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                     _vehicle.materialIds
                 ).map((materialId) =>
                     this.store
-                        .select(getSelectMaterial(_vehicle.materialId))
+                        .select(getSelectMaterial(materialId))
                         .pipe(
                             map((material) => material.position === undefined)
                         )
