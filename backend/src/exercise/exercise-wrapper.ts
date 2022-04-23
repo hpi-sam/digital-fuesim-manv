@@ -29,6 +29,7 @@ export class ExerciseWrapper {
              */
             refreshTreatments:
                 this.tickCounter % this.refreshTreatmentInterval === 0,
+            tickInterval: this.tickInterval,
         };
         this.reduce(updateAction);
         this.emitAction(updateAction);

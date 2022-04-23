@@ -1,0 +1,82 @@
+<table
+    *appLet="currentTime$ | async as currentTime"
+    class="table table-striped"
+>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Start</th>
+            <th scope="col">Ziel</th>
+            <th scope="col">Ankunft in</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Vehicles -->
+        <tr
+            *ngFor="
+                let vehicleTransfer of vehiclesInTransfer$ | async;
+                trackBy: 'vehicle.id' | appTrackByProperty
+            "
+        >
+            <td class="align-middle">
+                {{ vehicleTransfer.vehicle.name }}
+            </td>
+            <td class="align-middle">
+                <app-transfer-point-name
+                    [transferPoint]="vehicleTransfer.startTransferPoint"
+                ></app-transfer-point-name>
+            </td>
+            <td class="align-middle">
+                <app-transfer-point-name
+                    [transferPoint]="vehicleTransfer.targetTransferPoint"
+                ></app-transfer-point-name>
+            </td>
+            <td class="align-middle">
+                {{
+                    vehicleTransfer.vehicle.transfer!.endTimeStamp - currentTime
+                        | formatDuration
+                }}
+            </td>
+        </tr>
+        <!-- Personnel -->
+        <tr
+            *ngFor="
+                let personnelTransfer of personnelInTransfer$ | async;
+                trackBy: 'personnel.id' | appTrackByProperty
+            "
+        >
+            <td class="align-middle">
+                {{ personnelTransfer.personnel.vehicleName }}
+                <span class="text-muted">
+                    {{ personnelTransfer.personnel.personnelType }}
+                </span>
+            </td>
+            <td class="align-middle">
+                <app-transfer-point-name
+                    [transferPoint]="personnelTransfer.startTransferPoint"
+                ></app-transfer-point-name>
+            </td>
+            <td class="align-middle">
+                <app-transfer-point-name
+                    [transferPoint]="personnelTransfer.targetTransferPoint"
+                ></app-transfer-point-name>
+            </td>
+            <td class="align-middle">
+                {{
+                    personnelTransfer.personnel.transfer!.endTimeStamp -
+                        currentTime | formatDuration
+                }}
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<p
+    *ngIf="
+        (vehiclesInTransfer$ | async)?.length === 0 &&
+        (personnelInTransfer$ | async)?.length === 0
+    "
+    class="text-muted text-center"
+>
+    Keine Rettungskräfte im Transfer
+</p>
