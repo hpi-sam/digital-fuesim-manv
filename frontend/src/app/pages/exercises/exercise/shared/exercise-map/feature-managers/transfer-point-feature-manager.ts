@@ -16,7 +16,7 @@ import Fill from 'ol/style/Fill';
 import type { WithPosition } from '../../utility/types/with-position';
 import { withPopup } from '../utility/with-popup';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
-import { ElementFeatureManager } from './element-feature-manager';
+import { ElementFeatureManager, pointCreator } from './element-feature-manager';
 
 class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoint> {
     constructor(
@@ -36,8 +36,7 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoin
                     targetPosition,
                 });
             },
-            'Point',
-            undefined
+            pointCreator
         );
     }
 

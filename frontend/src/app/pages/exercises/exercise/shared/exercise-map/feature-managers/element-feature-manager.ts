@@ -1,4 +1,4 @@
-import type { UUID, Position } from 'digital-fuesim-manv-shared';
+import type { UUID, Position, Size } from 'digital-fuesim-manv-shared';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
 import GeometryType from 'ol/geom/GeometryType';
@@ -10,13 +10,14 @@ import type { AppState } from 'src/app/state/app.state';
 import type { Store } from '@ngrx/store';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { TranslateEvent } from 'ol/interaction/Translate';
-import type { LineString } from 'ol/geom';
+import { LineString } from 'ol/geom';
 import { isArray } from 'lodash-es';
 import type { Coordinate } from 'ol/coordinate';
 import type { Coordinates } from '../utility/movement-animator';
 import { MovementAnimator } from '../utility/movement-animator';
 import { TranslateHelper } from '../utility/translate-helper';
 import type { FeatureManager } from '../utility/feature-manager';
+import type { WithPosition } from '../../utility/types/with-position';
 import { ElementManager } from './element-manager';
 
 export interface PositionableElement {
@@ -35,6 +36,26 @@ export function isCoordinateArray(
 ): coordinates is Coordinate[] {
     return isArray(coordinates[0]);
 }
+
+export const pointCreator = (element: WithPosition<any>): Feature<Point> =>
+    new Feature(new Point([element.position.x, element.position.y]));
+
+export const lineStringCreator = (element: {
+    position: Position;
+    size: Size;
+}): Feature<LineString> =>
+    new Feature(
+        new LineString([
+            [element.position.x, element.position.y],
+            [element.position.x + element.size.width, element.position.y],
+            [
+                element.position.x + element.size.width,
+                element.position.y - element.size.height,
+            ],
+            [element.position.x, element.position.y - element.size.height],
+            [element.position.x, element.position.y],
+        ])
+    );
 
 /**
  * The base class for all element feature managers.
@@ -56,7 +77,7 @@ export abstract class ElementFeatureManager<
 {
     private readonly movementAnimator;
     protected readonly translateHelper = new TranslateHelper<FeatureType>();
-    private readonly elementCreator: (element: Element) => ElementFeature;
+    // private readonly elementCreator: (element: Element) => ElementFeature;
 
     constructor(
         protected readonly store: Store<AppState>,
@@ -66,37 +87,20 @@ export abstract class ElementFeatureManager<
             newPosition: FeatureType extends Point ? Position : Position[],
             element: Element
         ) => void,
-        type: FeatureType extends LineString ? 'LineString' : 'Point',
-        elementCreator: FeatureType extends LineString
-            ? (element: Element) => ElementFeature
-            : ((element: Element) => ElementFeature) | undefined
+        private readonly createElement: (element: Element) => ElementFeature
     ) {
         super();
         this.movementAnimator = new MovementAnimator<FeatureType>(
             this.olMap,
             this.layer
         );
-        if (!elementCreator) {
-            if (type !== 'Point') {
-                throw new TypeError(`Expected Point, but got ${type}`);
-            } else {
-                this.elementCreator = ((element) =>
-                    new Feature(
-                        new Point([element.position.x, element.position.y])
-                    )) as (
-                    element: Element
-                ) => ElementFeature /* ElementFeature is Feature<Point> here, TS doesn't know that */;
-            }
-        } else {
-            this.elementCreator = elementCreator;
-        }
     }
 
     override unsupportedChangeProperties: ReadonlySet<keyof Element> = new Set(
         [] as const
     );
     createFeature(element: Element): ElementFeature {
-        const elementFeature = this.elementCreator(element);
+        const elementFeature = this.createElement(element);
         elementFeature.setId(element.id);
         this.layer.getSource()!.addFeature(elementFeature);
         this.translateHelper.onTranslateEnd(elementFeature, (newPosition) => {

@@ -1,17 +1,43 @@
-import { Position } from 'digital-fuesim-manv-shared';
+import { calculateDistance, Position } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
-import type { FeatureLike } from 'ol/Feature';
 import type { LineString } from 'ol/geom';
 import type { Modify } from 'ol/interaction';
 
-function calculateDistance(a: Coordinate, b: Coordinate) {
-    return Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2);
+function coordinateToPosition(coordinate: Coordinate): Position {
+    return Position.create(coordinate[0], coordinate[1]);
+}
+
+export type CornerName = 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight';
+
+function getNearestCoordinateName(
+    referencePosition: Coordinate,
+    coordinates: { [name in CornerName]: Coordinate }
+): CornerName {
+    if (Object.keys(coordinates).length === 0) {
+        throw new TypeError('Expected at least one coordinate');
+    }
+    return Object.entries(coordinates)
+        .map(
+            ([name, coordinate]) =>
+                [
+                    name,
+                    calculateDistance(
+                        coordinateToPosition(referencePosition),
+                        coordinateToPosition(coordinate)
+                    ),
+                ] as [CornerName, number]
+        )
+        .sort(
+            ([, leftDistance], [, rightDistance]) =>
+                leftDistance - rightDistance
+        )
+        .map(([name]) => name)[0]!;
 }
 
 export interface ModifyGeometry {
     geometry: LineString;
-    modifyCorner: 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight';
+    modifyCorner: CornerName;
 }
 
 /**
@@ -27,73 +53,38 @@ export class ModifyHelper<T extends LineString = LineString> {
     ) {
         // These event don't propagate to anything else by default.
         // We therefore have to propagate them manually to the specific features.
-        const modifyEvents = ['modifystart', 'modifyend'] as const;
-        for (const eventName of modifyEvents) {
-            modifyInteraction.on(eventName, (event) => {
-                event.features.forEach((featureLike: FeatureLike) => {
-                    const feature = featureLike as Feature;
-                    feature.dispatchEvent(event);
-                    switch (eventName) {
-                        case 'modifystart':
-                            {
-                                const coordinates = (
-                                    feature.getGeometry() as T
-                                ).getCoordinates();
-                                const mousePosition =
-                                    event.mapBrowserEvent.coordinate;
-                                let corner = 'topLeft';
-                                let distance = calculateDistance(
-                                    mousePosition,
-                                    coordinates[0]
-                                );
-                                for (let i = 1; i <= 3; i++) {
-                                    const newDistance = calculateDistance(
-                                        mousePosition,
-                                        coordinates[i]
-                                    );
-                                    if (newDistance < distance) {
-                                        distance = newDistance;
-                                        switch (i) {
-                                            case 1:
-                                                corner = 'topRight';
-                                                break;
-                                            case 2:
-                                                corner = 'bottomRight';
-                                                break;
-                                            case 3:
-                                                corner = 'bottomLeft';
-                                                break;
-                                        }
-                                    }
-                                }
-                                feature.set(
-                                    'modifyGeometry',
-                                    {
-                                        geometry: feature
-                                            .getGeometry()!
-                                            .clone(),
-                                        modifyCorner: corner,
-                                    } as ModifyGeometry,
-                                    true
-                                );
-                            }
-                            break;
-                        case 'modifyend':
-                            {
-                                const modifyGeometry =
-                                    feature.get('modifyGeometry');
-                                if (modifyGeometry) {
-                                    feature.setGeometry(
-                                        modifyGeometry.geometry
-                                    );
-                                    feature.unset('modifyGeometry', true);
-                                }
-                            }
-                            break;
-                    }
+        modifyInteraction.on('modifystart', (event) => {
+            event.features.forEach((featureLike) => {
+                const feature = featureLike as Feature;
+                feature.dispatchEvent(event);
+                const featureGeometry = feature.getGeometry() as T;
+                const coordinates = featureGeometry.getCoordinates();
+                const mousePosition = event.mapBrowserEvent.coordinate;
+                const corner = getNearestCoordinateName(mousePosition, {
+                    topLeft: coordinates[0],
+                    topRight: coordinates[1],
+                    bottomRight: coordinates[2],
+                    bottomLeft: coordinates[3],
                 });
+                const modifyGeometry: ModifyGeometry = {
+                    // We need to clone the geometry to be able to properly resize it
+                    geometry: featureGeometry.clone(),
+                    modifyCorner: corner,
+                };
+                feature.set('modifyGeometry', modifyGeometry, true);
             });
-        }
+        });
+        modifyInteraction.on('modifyend', (event) => {
+            event.features.forEach((featureLike) => {
+                const feature = featureLike as Feature;
+                feature.dispatchEvent(event);
+                const modifyGeometry = feature.get('modifyGeometry');
+                if (modifyGeometry) {
+                    feature.setGeometry(modifyGeometry.geometry);
+                    feature.unset('modifyGeometry', true);
+                }
+            });
+        });
     }
 
     public onModifyEnd(

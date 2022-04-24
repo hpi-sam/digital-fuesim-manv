@@ -11,7 +11,7 @@ import type { WithPosition } from '../../utility/types/with-position';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
 import { withPopup } from '../utility/with-popup';
 import { withElementImageStyle } from '../utility/with-element-image-style';
-import { ElementFeatureManager } from './element-feature-manager';
+import { ElementFeatureManager, pointCreator } from './element-feature-manager';
 
 class PatientFeatureManagerBase extends ElementFeatureManager<
     WithPosition<Patient>
@@ -33,8 +33,7 @@ class PatientFeatureManagerBase extends ElementFeatureManager<
                     targetPosition,
                 });
             },
-            'Point',
-            undefined
+            pointCreator
         );
     }
 

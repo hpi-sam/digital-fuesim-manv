@@ -13,7 +13,7 @@ import type { WithPosition } from '../../utility/types/with-position';
 import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
 import { withPopup } from '../utility/with-popup';
 import { withElementImageStyle } from '../utility/with-element-image-style';
-import { ElementFeatureManager } from './element-feature-manager';
+import { ElementFeatureManager, pointCreator } from './element-feature-manager';
 
 class VehicleFeatureManagerBase extends ElementFeatureManager<
     WithPosition<Vehicle>
@@ -35,8 +35,7 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
                     targetPosition,
                 });
             },
-            'Point',
-            undefined
+            pointCreator
         );
     }
 

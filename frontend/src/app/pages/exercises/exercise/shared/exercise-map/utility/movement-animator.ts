@@ -88,6 +88,19 @@ export class MovementAnimator<T extends LineString | Point> {
         return !isArray(coordinates.startPosition[0]);
     }
 
+    private interpolate(
+        startCoordinate: Coordinate,
+        endCoordinate: Coordinate,
+        lerpFactor: number
+    ): Coordinate {
+        return [
+            startCoordinate[0] +
+                (endCoordinate[0] - startCoordinate[0]) * lerpFactor,
+            startCoordinate[1] +
+                (endCoordinate[1] - startCoordinate[1]) * lerpFactor,
+        ];
+    }
+
     /**
      * This method should be called after each postrender event.
      * It sets the feature to the next interpolated position.
@@ -117,25 +130,19 @@ export class MovementAnimator<T extends LineString | Point> {
             this.olMap.render();
             return;
         }
-        const interpolate = (
-            startCoordinate: Coordinate,
-            endCoordinate: Coordinate,
-            lerpFactor: number
-        ): Coordinate => [
-            startCoordinate[0] +
-                (endCoordinate[0] - startCoordinate[0]) * lerpFactor,
-            startCoordinate[1] +
-                (endCoordinate[1] - startCoordinate[1]) * lerpFactor,
-        ];
         // The next position is calculated by a linear interpolation between the start and end position(s)
         const nextPosition: Coordinates<T> = this.isCoordinateArrayPair(
             positions
         )
             ? (positions.startPosition.map((startPos, index) =>
-                  interpolate(startPos, positions.endPosition[index], progress)
+                  this.interpolate(
+                      startPos,
+                      positions.endPosition[index],
+                      progress
+                  )
               ) as Coordinates<T>)
             : this.isCoordinatePair(positions)
-            ? (interpolate(
+            ? (this.interpolate(
                   positions.startPosition,
                   positions.endPosition,
                   progress

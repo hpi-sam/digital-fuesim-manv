@@ -8,7 +8,7 @@ import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import type { WithPosition } from '../../utility/types/with-position';
 import { withElementImageStyle } from '../utility/with-element-image-style';
-import { ElementFeatureManager } from './element-feature-manager';
+import { ElementFeatureManager, pointCreator } from './element-feature-manager';
 
 class BasePersonnelFeatureManager extends ElementFeatureManager<
     WithPosition<Personnel>
@@ -30,8 +30,7 @@ class BasePersonnelFeatureManager extends ElementFeatureManager<
                     targetPosition,
                 });
             },
-            'Point',
-            undefined
+            pointCreator
         );
     }
 

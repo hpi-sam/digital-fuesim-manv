@@ -1,9 +1,9 @@
 import type { Store } from '@ngrx/store';
 import { Size } from 'digital-fuesim-manv-shared';
 import type { Viewport } from 'digital-fuesim-manv-shared/src/models/viewport';
-import { Feature } from 'ol';
+import type { Feature } from 'ol';
 import type OlMap from 'ol/Map';
-import LineString from 'ol/geom/LineString';
+import type LineString from 'ol/geom/LineString';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
@@ -14,7 +14,10 @@ import type { FeatureManager } from '../utility/feature-manager';
 import { ModifyHelper } from '../utility/modify-helper';
 import { withPopup } from '../utility/with-popup';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
-import { ElementFeatureManager } from './element-feature-manager';
+import {
+    ElementFeatureManager,
+    lineStringCreator,
+} from './element-feature-manager';
 
 class BaseViewportFeatureManager
     extends ElementFeatureManager<Viewport, LineString>
@@ -39,26 +42,7 @@ class BaseViewportFeatureManager
                     targetPosition: targetPositions[0],
                 });
             },
-            'LineString',
-            (viewport: Viewport) =>
-                new Feature(
-                    new LineString([
-                        [viewport.position.x, viewport.position.y],
-                        [
-                            viewport.position.x + viewport.size.width,
-                            viewport.position.y,
-                        ],
-                        [
-                            viewport.position.x + viewport.size.width,
-                            viewport.position.y - viewport.size.height,
-                        ],
-                        [
-                            viewport.position.x,
-                            viewport.position.y - viewport.size.height,
-                        ],
-                        [viewport.position.x, viewport.position.y],
-                    ])
-                )
+            lineStringCreator
         );
     }
     private readonly modifyHelper = new ModifyHelper();
@@ -78,7 +62,7 @@ class BaseViewportFeatureManager
 
     override createFeature(element: Viewport): Feature<LineString> {
         const feature = super.createFeature(element);
-        feature.setStyle(this.style);
+        this.layer.setStyle(this.style);
         this.modifyHelper.onModifyEnd(feature, (newPositions) => {
             // Skip when not all coordinates are properly set.
             if (

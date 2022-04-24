@@ -124,7 +124,7 @@ export class DragElementService {
             this.olMap.getEventPixel(event)
         );
         const position = { x, y };
-        const currentZoom = this.olMap.getView().getZoom();
+        const currentZoom = this.olMap.getView().getZoom()!;
         // create the element
         switch (this.transferringTemplate.type) {
             case 'vehicle':
@@ -163,8 +163,8 @@ export class DragElementService {
                         viewport: Viewport.create(
                             position,
                             {
-                                width: 500 / currentZoom!,
-                                height: 400 / currentZoom!,
+                                width: 3200 / currentZoom,
+                                height: 1800 / currentZoom,
                             },
                             'Einsatzabschnitt'
                         ),

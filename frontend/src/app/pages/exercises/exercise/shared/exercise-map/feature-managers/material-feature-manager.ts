@@ -8,7 +8,7 @@ import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import type { WithPosition } from '../../utility/types/with-position';
 import { withElementImageStyle } from '../utility/with-element-image-style';
-import { ElementFeatureManager } from './element-feature-manager';
+import { ElementFeatureManager, pointCreator } from './element-feature-manager';
 
 class BaseMaterialFeatureManager extends ElementFeatureManager<
     WithPosition<Material>
@@ -30,8 +30,7 @@ class BaseMaterialFeatureManager extends ElementFeatureManager<
                     targetPosition,
                 });
             },
-            'Point',
-            undefined
+            pointCreator
         );
     }
 

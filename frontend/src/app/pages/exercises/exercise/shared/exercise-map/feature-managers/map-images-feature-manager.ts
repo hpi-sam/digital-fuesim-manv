@@ -9,7 +9,7 @@ import type { AppState } from 'src/app/state/app.state';
 import { withElementImageStyle } from '../utility/with-element-image-style';
 import { withPopup } from '../utility/with-popup';
 import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popup.component';
-import { ElementFeatureManager } from './element-feature-manager';
+import { ElementFeatureManager, pointCreator } from './element-feature-manager';
 
 class BaseMapImageFeatureManager extends ElementFeatureManager<MapImage> {
     constructor(
@@ -29,8 +29,7 @@ class BaseMapImageFeatureManager extends ElementFeatureManager<MapImage> {
                     targetPosition,
                 });
             },
-            'Point',
-            undefined
+            pointCreator
         );
     }
 

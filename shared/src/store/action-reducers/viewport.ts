@@ -4,6 +4,8 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Viewport } from '../../models';
 import { Position, Size } from '../../models/utils';
+import type { ExerciseState } from '../../state';
+import type { Mutable } from '../../utils';
 import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -70,11 +72,8 @@ export namespace ViewportActionReducers {
     export const removeViewport: ActionReducer<RemoveViewportAction> = {
         action: RemoveViewportAction,
         reducer: (draftState, { viewportId }) => {
-            if (!draftState.viewports[viewportId]) {
-                throw new ReducerError(
-                    `Viewport with id ${viewportId} does not exist`
-                );
-            }
+            // Make sure the viewport exists
+            getViewport(draftState, viewportId);
             delete draftState.viewports[viewportId];
             return draftState;
         },
@@ -84,12 +83,7 @@ export namespace ViewportActionReducers {
     export const moveViewport: ActionReducer<MoveViewportAction> = {
         action: MoveViewportAction,
         reducer: (draftState, { viewportId, targetPosition }) => {
-            const viewport = draftState.viewports[viewportId];
-            if (!viewport) {
-                throw new ReducerError(
-                    `Viewport with id ${viewportId} does not exist`
-                );
-            }
+            const viewport = getViewport(draftState, viewportId);
             viewport.position = targetPosition;
             return draftState;
         },
@@ -99,12 +93,7 @@ export namespace ViewportActionReducers {
     export const resizeViewport: ActionReducer<ResizeViewportAction> = {
         action: ResizeViewportAction,
         reducer: (draftState, { viewportId, targetPosition, newSize }) => {
-            const viewport = draftState.viewports[viewportId];
-            if (!viewport) {
-                throw new ReducerError(
-                    `Viewport with id ${viewportId} does not exist`
-                );
-            }
+            const viewport = getViewport(draftState, viewportId);
             viewport.position = targetPosition;
             viewport.size = newSize;
             return draftState;
@@ -115,15 +104,21 @@ export namespace ViewportActionReducers {
     export const renameViewport: ActionReducer<RenameViewportAction> = {
         action: RenameViewportAction,
         reducer: (draftState, { viewportId, newName }) => {
-            const viewport = draftState.viewports[viewportId];
-            if (!viewport) {
-                throw new ReducerError(
-                    `Viewport with id ${viewportId} does not exist`
-                );
-            }
+            const viewport = getViewport(draftState, viewportId);
             viewport.name = newName;
             return draftState;
         },
         rights: 'trainer',
     };
+}
+
+function getViewport(
+    draftState: Mutable<ExerciseState>,
+    viewportId: UUID
+): Mutable<Viewport> {
+    const viewport = draftState.viewports[viewportId];
+    if (!viewport) {
+        throw new ReducerError(`Viewport with id ${viewportId} does not exist`);
+    }
+    return viewport;
 }

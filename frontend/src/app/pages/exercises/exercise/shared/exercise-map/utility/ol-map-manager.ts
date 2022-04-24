@@ -6,11 +6,7 @@ import type {
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
 import type Point from 'ol/geom/Point';
-import {
-    Translate,
-    Modify,
-    defaults as defaultInteractions,
-} from 'ol/interaction';
+import { Translate, defaults as defaultInteractions } from 'ol/interaction';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
@@ -31,7 +27,6 @@ import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
 import { isEqual } from 'lodash-es';
 import { primaryAction, shiftKeyOnly } from 'ol/events/condition';
-import type { Coordinate } from 'ol/coordinate';
 import type { Observable } from 'rxjs';
 import {
     Subject,
@@ -58,8 +53,8 @@ import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
 import type { FeatureManager } from './feature-manager';
-import type { ModifyGeometry } from './modify-helper';
 import { ModifyHelper } from './modify-helper';
+import { getViewportModify } from './viewport-modify';
 
 /**
  * This class should run outside the Angular zone for performance reasons.
@@ -133,66 +128,10 @@ export class OlMapManager {
                       mapImagesLayer,
                   ]
                 : alwaysTranslatableLayers,
+            hitTolerance: 10,
         });
 
-        const defaultStyle = new Modify({ source: viewportLayer.getSource()! })
-            .getOverlay()
-            .getStyleFunction();
-
-        const viewportModify = new Modify({
-            source: viewportLayer.getSource()!,
-            condition: (event) => primaryAction(event) && shiftKeyOnly(event),
-            deleteCondition: () => false,
-            insertVertexCondition: () => false,
-            style: (feature) => {
-                (feature.get('features') as Feature[]).forEach(
-                    (modifyFeature) => {
-                        const modifyGeometry = modifyFeature.get(
-                            'modifyGeometry'
-                        ) as ModifyGeometry;
-                        if (modifyGeometry) {
-                            const point = (
-                                feature.getGeometry() as Point
-                            ).getCoordinates();
-
-                            const corners =
-                                modifyGeometry.geometry.getCoordinates();
-                            let origin: Coordinate, corner: Coordinate;
-                            switch (modifyGeometry.modifyCorner) {
-                                case 'topLeft': {
-                                    origin = corners[2];
-                                    corner = corners[0];
-                                    break;
-                                }
-                                case 'topRight': {
-                                    origin = corners[3];
-                                    corner = corners[1];
-                                    break;
-                                }
-                                case 'bottomLeft': {
-                                    origin = corners[1];
-                                    corner = corners[3];
-                                    break;
-                                }
-                                case 'bottomRight': {
-                                    origin = corners[0];
-                                    corner = corners[2];
-                                    break;
-                                }
-                            }
-                            modifyGeometry.geometry.scale(
-                                (point[0] - origin[0]) /
-                                    (corner[0] - origin[0]),
-                                (origin[1] - point[1]) /
-                                    (origin[1] - corner[1]),
-                                origin
-                            );
-                        }
-                    }
-                );
-                return defaultStyle!(feature, 123);
-            },
-        });
+        const viewportModify = getViewportModify(viewportLayer);
 
         const viewportTranslate = new Translate({
             layers: [viewportLayer],
@@ -202,16 +141,14 @@ export class OlMapManager {
 
         // Clicking on an element should not trigger a drag event - use a `singleclick` interaction instead
         // Be aware that this means that not every `dragstart` event will have an accompanying `dragend` event
-        translateInteraction.on('translateend', (event) => {
-            if (isEqual(event.coordinate, event.startCoordinate)) {
-                event.stopPropagation();
-            }
-        });
-        viewportTranslate.on('translateend', (event) => {
-            if (isEqual(event.coordinate, event.startCoordinate)) {
-                event.stopPropagation();
-            }
-        });
+        const registerTranslate = (translate: Translate) =>
+            translate.on('translateend', (event) => {
+                if (isEqual(event.coordinate, event.startCoordinate)) {
+                    event.stopPropagation();
+                }
+            });
+        registerTranslate(translateInteraction);
+        registerTranslate(viewportTranslate);
 
         TranslateHelper.registerTranslateEvents(translateInteraction);
         TranslateHelper.registerTranslateEvents(viewportTranslate);
