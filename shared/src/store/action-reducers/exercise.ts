@@ -8,9 +8,14 @@ import {
     ValidateNested,
     IsBoolean,
     IsArray,
+    IsPositive,
 } from 'class-validator';
+import { TransferPoint } from '../../models';
 import { StatusHistoryEntry } from '../../models/status-history-entry';
-import { getStatus } from '../../models/utils';
+import { getStatus, Position } from '../../models/utils';
+import type { ExerciseState } from '../../state';
+import { imageSizeToPosition } from '../../state-helpers';
+import type { Mutable } from '../../utils';
 import { PatientUpdate } from '../../utils/patient-updates';
 import type { Action, ActionReducer } from '../action-reducer';
 import { calculateTreatments } from './utils/calculate-treatments';
@@ -40,6 +45,10 @@ export class ExerciseTickAction implements Action {
 
     @IsBoolean()
     public readonly refreshTreatments!: boolean;
+
+    @IsInt()
+    @IsPositive()
+    public readonly tickInterval!: number;
 }
 
 export class SetParticipantIdAction implements Action {
@@ -80,7 +89,13 @@ export namespace ExerciseActionReducers {
 
     export const exerciseTick: ActionReducer<ExerciseTickAction> = {
         action: ExerciseTickAction,
-        reducer: (draftState, { patientUpdates, refreshTreatments }) => {
+        reducer: (
+            draftState,
+            { patientUpdates, refreshTreatments, tickInterval }
+        ) => {
+            // Refresh the current time
+            draftState.currentTime += tickInterval;
+            // Refresh patient status
             patientUpdates.forEach((patientUpdate) => {
                 const currentPatient = draftState.patients[patientUpdate.id];
                 currentPatient.currentHealthStateId = patientUpdate.nextStateId;
@@ -91,9 +106,13 @@ export namespace ExerciseActionReducers {
                     currentPatient.visibleStatus = currentPatient.realStatus;
                 }
             });
+            // Refresh treatments
             if (refreshTreatments) {
                 calculateTreatments(draftState);
             }
+            // Refresh transfers
+            refreshTransfer(draftState, 'vehicles');
+            refreshTransfer(draftState, 'personnel');
             return draftState;
         },
         rights: 'server',
@@ -107,4 +126,30 @@ export namespace ExerciseActionReducers {
         },
         rights: 'server',
     };
+}
+
+function refreshTransfer(
+    draftState: Mutable<ExerciseState>,
+    key: 'personnel' | 'vehicles'
+): void {
+    const elements = draftState[key];
+    Object.values(elements).forEach((element) => {
+        if (
+            !element.transfer ||
+            // Not transferred yet
+            element.transfer.endTimeStamp > draftState.currentTime
+        ) {
+            return;
+        }
+        // Personnel/Vehicle arrived at new transferPoint
+        const targetTransferPoint =
+            draftState.transferPoints[element.transfer.targetTransferPointId];
+        element.position = Position.create(
+            targetTransferPoint.position.x,
+            targetTransferPoint.position.y +
+                //  Position it in the upper half of the transferPoint)
+                imageSizeToPosition(TransferPoint.image.height / 3)
+        );
+        delete element.transfer;
+    });
 }

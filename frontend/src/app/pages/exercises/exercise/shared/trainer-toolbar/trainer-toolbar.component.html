@@ -2,6 +2,9 @@
     <button (click)="openClientOverview()" class="btn btn-primary">
         Teilnehmerübersicht
     </button>
+    <button (click)="openTransferOverview()" class="btn btn-primary ms-3">
+        Transferübersicht
+    </button>
     <button
         *ngIf="(exercisePausedState$ | async)?.status === 'running'"
         (click)="pauseExercise()"
