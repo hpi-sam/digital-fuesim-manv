@@ -4,7 +4,7 @@
             <th scope="col">Name</th>
             <th scope="col">Rolle</th>
             <th scope="col">Einsatzabschnitt</th>
-            <th scope="col">Im Warteraum?</th>
+            <th scope="col">In der Übung</th>
         </tr>
     </thead>
     <tbody>
@@ -64,8 +64,8 @@
             <td class="align-middle">
                 <div class="form-switch">
                     <input
-                        [ngModel]="client.value.isInWaitingRoom"
-                        (ngModelChange)="setWaitingRoom(client.key, $event)"
+                        [ngModel]="!client.value.isInWaitingRoom"
+                        (ngModelChange)="setWaitingRoom(client.key, !$event)"
                         class="form-check-input"
                         type="checkbox"
                     />
