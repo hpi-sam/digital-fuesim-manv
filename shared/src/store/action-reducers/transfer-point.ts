@@ -235,7 +235,7 @@ export namespace TransferPointActionReducers {
  * @returns The transferPoint with the given id
  * @throws ReducerError if the transferPoint does not exist
  */
-function getTransferPoint(
+export function getTransferPoint(
     state: Mutable<ExerciseState>,
     transferPointId: UUID
 ) {

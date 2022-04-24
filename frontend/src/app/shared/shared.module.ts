@@ -7,6 +7,9 @@ import { OnlyNumbersValidatorDirective } from './validation/only-numbers-validat
 import { AppTrackByPropertyPipe } from './pipes/track-by-property/app-track-by-property.pipe';
 import { ExerciseExistsValidatorDirective } from './validation/exercise-exists-validator.directive';
 import { ImageExistsValidatorDirective } from './validation/image-exists-validator.directive';
+import { TransferPointNameComponent } from './components/transfer-point-name/transfer-point-name.component';
+import { FormatDurationPipe } from './pipes/format-duration.pipe';
+import { LetDirective } from './directives/let.directive';
 
 @NgModule({
     declarations: [
@@ -17,6 +20,9 @@ import { ImageExistsValidatorDirective } from './validation/image-exists-validat
         AppTrackByPropertyPipe,
         ExerciseExistsValidatorDirective,
         ImageExistsValidatorDirective,
+        TransferPointNameComponent,
+        FormatDurationPipe,
+        LetDirective,
     ],
     imports: [CommonModule],
     exports: [
@@ -27,6 +33,9 @@ import { ImageExistsValidatorDirective } from './validation/image-exists-validat
         AppTrackByPropertyPipe,
         ExerciseExistsValidatorDirective,
         ImageExistsValidatorDirective,
+        TransferPointNameComponent,
+        FormatDurationPipe,
+        LetDirective,
     ],
 })
 export class SharedModule {}

@@ -8,6 +8,7 @@ import { ExerciseMapModule } from './shared/exercise-map/exercise-map.module';
 import { TrainerMapEditorComponent } from './shared/trainer-map-editor/trainer-map-editor.component';
 import { TrainerToolbarComponent } from './shared/trainer-toolbar/trainer-toolbar.component';
 import { ExerciseStateBadgeComponent } from './shared/exercise-state-badge/exercise-state-badge.component';
+import { TransferOverviewModule } from './shared/transfer-overview/transfer-overview.module';
 
 @NgModule({
     declarations: [
@@ -22,6 +23,7 @@ import { ExerciseStateBadgeComponent } from './shared/exercise-state-badge/exerc
         HttpClientModule,
         ClientOverviewModule,
         ExerciseMapModule,
+        TransferOverviewModule,
     ],
     exports: [ExerciseComponent],
 })

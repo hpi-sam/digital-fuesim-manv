@@ -22,6 +22,15 @@ export class TransferLinesFeatureManager
 
     constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {
         super();
+        layer.setStyle(
+            new Style({
+                stroke: new Stroke({
+                    color: '#fd7e14',
+                    // We don't want to scale with the zoom to be better seen when zoomed out
+                    width: 3,
+                }),
+            })
+        );
     }
 
     createFeature(element: TransferLine): void {
@@ -30,15 +39,6 @@ export class TransferLinesFeatureManager
                 [element.startPosition.x, element.startPosition.y],
                 [element.endPosition.x, element.endPosition.y],
             ])
-        );
-        feature.setStyle(
-            new Style({
-                stroke: new Stroke({
-                    color: '#fd7e14',
-                    // We don't want to scale with the zoom to be better seen when zoomed out
-                    width: 3,
-                }),
-            })
         );
         feature.setId(element.id);
         this.layer.getSource()!.addFeature(feature);
