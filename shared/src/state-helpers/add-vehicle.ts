@@ -22,7 +22,7 @@ export function addVehicle(
         Material.create(vehicleId, vehicleTemplate.name, {}, currentMaterial)
     );
     const personnel = vehicleTemplate.personnel.map((currentPersonnel) =>
-        Personnel.create(vehicleId, currentPersonnel, vehicleTemplate.name, {})
+        Personnel.create(vehicleId, vehicleTemplate.name, {}, currentPersonnel)
     );
 
     const vehicle: Vehicle = {

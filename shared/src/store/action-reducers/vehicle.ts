@@ -86,9 +86,9 @@ export namespace VehicleActionReducers {
         reducer: (draftState, { vehicle, materials, personnel }) => {
             if (
                 materials.some(
-                    (_material) =>
-                        _material.vehicleId !== vehicle.id ||
-                        vehicle.materialIds[_material.id] === undefined
+                    (currentMaterial) =>
+                        currentMaterial.vehicleId !== vehicle.id ||
+                        vehicle.materialIds[currentMaterial.id] === undefined
                 ) ||
                 Object.keys(vehicle.materialIds).length !== materials.length
             ) {
@@ -98,9 +98,9 @@ export namespace VehicleActionReducers {
             }
             if (
                 personnel.some(
-                    (_personnel) =>
-                        _personnel.vehicleId !== vehicle.id ||
-                        vehicle.personnelIds[_personnel.id] === undefined
+                    (currentPersonnel) =>
+                        currentPersonnel.vehicleId !== vehicle.id ||
+                        vehicle.personnelIds[currentPersonnel.id] === undefined
                 ) ||
                 Object.keys(vehicle.personnelIds).length !== personnel.length
             ) {
