@@ -9,6 +9,7 @@ import { PatientPopupComponent } from './shared/patient-popup/patient-popup.comp
 import { TransferPointPopupComponent } from './shared/transfer-point-popup/transfer-point-popup.component';
 import { MapImagePopupComponent } from './shared/map-image-popup/map-image-popup.component';
 import { ViewportPopupComponent } from './shared/viewport-popup/viewport-popup.component';
+import { ChooseTransferTargetPopupComponent } from './shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 
 @NgModule({
     declarations: [
@@ -18,6 +19,7 @@ import { ViewportPopupComponent } from './shared/viewport-popup/viewport-popup.c
         PatientPopupComponent,
         TransferPointPopupComponent,
         ViewportPopupComponent,
+        ChooseTransferTargetPopupComponent,
     ],
     imports: [
         CommonModule,

@@ -99,7 +99,7 @@ export class OlMapManager {
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             20
         );
-        const transferPointLayer = this.createElementLayer();
+        const transferPointLayer = this.createElementLayer(600);
         const vehicleLayer = this.createElementLayer(1000);
         const cateringLinesLayer = this.createElementLayer<LineString>();
         const transferLinesLayer = this.createElementLayer<LineString>();

@@ -131,4 +131,8 @@ export class Patient {
     }
 
     static readonly create = getCreate(this);
+
+    static isInVehicle(patient: Patient): boolean {
+        return patient.position === undefined;
+    }
 }

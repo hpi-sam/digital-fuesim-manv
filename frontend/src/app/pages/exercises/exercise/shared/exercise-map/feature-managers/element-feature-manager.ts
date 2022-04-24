@@ -77,7 +77,6 @@ export abstract class ElementFeatureManager<
 {
     private readonly movementAnimator;
     protected readonly translateHelper = new TranslateHelper<FeatureType>();
-    // private readonly elementCreator: (element: Element) => ElementFeature;
 
     constructor(
         protected readonly store: Store<AppState>,
@@ -143,6 +142,8 @@ export abstract class ElementFeatureManager<
                 targetPosition(newElement)
             );
         }
+        // If the style has updated, we need to redraw he feature
+        elementFeature.changed();
     }
 
     getFeatureFromElement(element: Element): ElementFeature | undefined {
