@@ -28,19 +28,28 @@
                 <tr>
                     <th scope="col">Alter</th>
                     <td class="font-monospace">
-                        {{ patient.personalInformation.age }}
+                        {{ patient.biometricInformation.age }}
                     </td>
                 </tr>
                 <tr>
                     <th scope="col">Geschlecht</th>
-                    <td class="font-monospace">
-                        {{ patient.personalInformation.sex }}
+                    <td
+                        *appLet="patient.biometricInformation.sex as sex"
+                        class="font-monospace"
+                    >
+                        {{
+                            sex === 'male'
+                                ? 'männlich'
+                                : sex === 'female'
+                                ? 'weiblich'
+                                : 'unbestimmt'
+                        }}
                     </td>
                 </tr>
                 <tr>
                     <th scope="col">Biometrie</th>
                     <td class="font-monospace">
-                        {{ patient.personalInformation.biometry }}
+                        {{ patient.biometricInformation.externalFeatures }}
                     </td>
                 </tr>
                 <tr>
@@ -55,12 +64,20 @@
                         {{ patient.personalInformation.address }}
                     </td>
                 </tr>
-                <tr *ngIf="(client$ | async)?.role === 'trainer'">
-                    <th scope="col">Verletzungs-Geschwindigkeit:</th>
-                    <td class="font-monospace">
-                        &times;{{ patient.timeSpeed }}
-                    </td>
-                </tr>
+                <ng-container *ngIf="(client$ | async)?.role === 'trainer'">
+                    <tr>
+                        <th scope="col">Beschreibung</th>
+                        <td class="font-monospace">
+                            {{ patient.healthDescription }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="col">Verletzungs-Geschwindigkeit:</th>
+                        <td class="font-monospace">
+                            &times;{{ patient.timeSpeed }}
+                        </td>
+                    </tr>
+                </ng-container>
             </tbody>
         </table>
     </div>

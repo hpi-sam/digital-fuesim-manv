@@ -50,16 +50,26 @@
                 </li>
                 <li class="list-group-item">
                     <h5>Patienten</h5>
+                    <!-- 220px height to have room for the scrollbar -->
                     <div
-                        class="overflow-auto w-100"
-                        style="white-space: nowrap"
+                        class="overflow-auto w-100 d-flex flex-wrap"
+                        style="
+                            white-space: nowrap;
+                            flex-direction: column;
+                            align-content: flex-start;
+                            height: 240px;
+                        "
                     >
                         <div
                             *ngFor="
                                 let patientTemplate of patientTemplates$ | async
                             "
-                            class="d-inline-block card text-center"
-                            style="width: 10rem; text-overflow: ellipsis"
+                            class="d-inline-block card text-center flex-shrink-0"
+                            style="
+                                width: 10rem;
+                                text-overflow: ellipsis;
+                                height: 110px;
+                            "
                             (mousedown)="
                                 dragElementService.onMouseDown($event, {
                                     type: 'patient',
@@ -67,20 +77,19 @@
                                 })
                             "
                         >
-                            <div class="preview-image-container card-img-top">
+                            <div
+                                class="preview-image-container small-image card-img-top"
+                            >
                                 <img [src]="patientTemplate.image.url" />
                             </div>
-                            <div class="card-body">
-                                <h5
-                                    class="card-title text-truncate"
-                                    [title]="
-                                        patientTemplate.personalInformation.name
-                                    "
-                                >
-                                    {{
-                                        patientTemplate.personalInformation.name
-                                    }}
-                                </h5>
+                            <div
+                                [title]="patientTemplate.name"
+                                class="p-1 text-wrap lh-1"
+                                style="overflow: auto"
+                            >
+                                <small>
+                                    {{ patientTemplate.name }}
+                                </small>
                             </div>
                         </div>
                     </div>

@@ -14,4 +14,9 @@
         top: 50%;
         transform: translateY(-50%);
     }
+
+    &.small-image {
+        height: 50px !important;
+        padding: map-get($spacers, 1);
+    }
 }

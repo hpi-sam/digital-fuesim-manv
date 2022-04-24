@@ -3,13 +3,12 @@ import { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type {
     ImageProperties,
-    PatientTemplate,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
 import {
     normalZoom,
     addVehicle,
-    Patient,
+    PatientTemplate,
     MapImage,
     TransferPoint,
 } from 'digital-fuesim-manv-shared';
@@ -139,7 +138,7 @@ export class DragElementService {
                 break;
             case 'patient':
                 {
-                    const patient = Patient.fromTemplate(
+                    const patient = PatientTemplate.generatePatient(
                         this.transferringTemplate.template
                     );
                     this.apiService.proposeAction(
