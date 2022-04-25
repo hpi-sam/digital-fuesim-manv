@@ -80,8 +80,7 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
             (droppedElement.type === 'personnel' &&
                 droppedOnVehicle.value.personnelIds[droppedElement.value.id]) ||
             (droppedElement.type === 'material' &&
-                droppedOnVehicle.value.materialId ===
-                    droppedElement.value.id) ||
+                droppedOnVehicle.value.materialIds[droppedElement.value.id]) ||
             (droppedElement.type === 'patient' &&
                 Object.keys(droppedOnVehicle.value.patientIds).length <
                     droppedOnVehicle.value.patientCapacity)

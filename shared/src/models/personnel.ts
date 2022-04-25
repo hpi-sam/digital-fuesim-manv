@@ -67,15 +67,15 @@ export class Personnel {
      */
     constructor(
         vehicleId: UUID,
-        personnelType: PersonnelType,
-        name: string,
+        vehicleName: string,
         assignedPatientIds: UUIDSet,
+        personnelType: PersonnelType,
         canCaterFor: CanCaterFor = CanCaterFor.create(1, 1, 4, 'or')
     ) {
         this.vehicleId = vehicleId;
-        this.personnelType = personnelType;
-        this.vehicleName = name;
+        this.vehicleName = vehicleName;
         this.assignedPatientIds = assignedPatientIds;
+        this.personnelType = personnelType;
         this.canCaterFor = canCaterFor;
     }
 

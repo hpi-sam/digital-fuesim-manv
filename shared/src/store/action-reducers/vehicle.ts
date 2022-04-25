@@ -20,9 +20,10 @@ export class AddVehicleAction implements Action {
     @Type(() => Vehicle)
     public readonly vehicle!: Vehicle;
 
+    @IsArray()
     @ValidateNested()
     @Type(() => Material)
-    public readonly material!: Material;
+    public readonly materials!: readonly Material[];
 
     @IsArray()
     @ValidateNested()
@@ -99,20 +100,24 @@ export class TransferVehicleAction implements Action {
 export namespace VehicleActionReducers {
     export const addVehicle: ActionReducer<AddVehicleAction> = {
         action: AddVehicleAction,
-        reducer: (draftState, { vehicle, material, personnel }) => {
+        reducer: (draftState, { vehicle, materials, personnel }) => {
             if (
-                vehicle.materialId !== material.id ||
-                material.vehicleId !== vehicle.id
+                materials.some(
+                    (currentMaterial) =>
+                        currentMaterial.vehicleId !== vehicle.id ||
+                        vehicle.materialIds[currentMaterial.id] === undefined
+                ) ||
+                Object.keys(vehicle.materialIds).length !== materials.length
             ) {
                 throw new ReducerError(
-                    'Vehicle material id does not match material id'
+                    'Vehicle material ids do not match material ids'
                 );
             }
             if (
                 personnel.some(
-                    (_personnel) =>
-                        _personnel.vehicleId !== vehicle.id ||
-                        vehicle.personnelIds[_personnel.id] === undefined
+                    (currentPersonnel) =>
+                        currentPersonnel.vehicleId !== vehicle.id ||
+                        vehicle.personnelIds[currentPersonnel.id] === undefined
                 ) ||
                 Object.keys(vehicle.personnelIds).length !== personnel.length
             ) {
@@ -121,7 +126,9 @@ export namespace VehicleActionReducers {
                 );
             }
             draftState.vehicles[vehicle.id] = vehicle;
-            draftState.materials[material.id] = material;
+            for (const currentMaterial of materials) {
+                draftState.materials[currentMaterial.id] = currentMaterial;
+            }
             for (const person of personnel) {
                 draftState.personnel[person.id] = person;
             }
@@ -148,7 +155,9 @@ export namespace VehicleActionReducers {
             for (const personnelId of Object.keys(vehicle.personnelIds)) {
                 draftState.personnel[personnelId].vehicleName = name;
             }
-            draftState.materials[vehicle.materialId].vehicleName = name;
+            for (const materialId of Object.keys(vehicle.materialIds)) {
+                draftState.materials[materialId].vehicleName = name;
+            }
             return draftState;
         },
         rights: 'trainer',
@@ -175,7 +184,9 @@ export namespace VehicleActionReducers {
                     `Vehicle with id ${vehicleId} is currently in transfer`
                 );
             }
-            const material = draftState.materials[vehicle.materialId];
+            const materials = Object.keys(vehicle.materialIds).map(
+                (materialId) => draftState.materials[materialId]
+            );
             const personnel = Object.keys(vehicle.personnelIds).map(
                 (personnelId) => draftState.personnel[personnelId]
             );
@@ -185,10 +196,9 @@ export namespace VehicleActionReducers {
             const vehicleWidthInPosition = imageSizeToPosition(
                 vehicle.image.aspectRatio * vehicle.image.height
             );
-            const numberOfMaterial = 1;
             const space =
                 vehicleWidthInPosition /
-                (personnel.length + numberOfMaterial + patients.length + 1);
+                (personnel.length + materials.length + patients.length + 1);
             let x = unloadPosition.x - vehicleWidthInPosition / 2;
             for (const patient of patients) {
                 x += space;
@@ -208,11 +218,13 @@ export namespace VehicleActionReducers {
                     y: unloadPosition.y,
                 };
             }
-            x += space;
-            material.position ??= {
-                x,
-                y: unloadPosition.y,
-            };
+            for (const currentMaterial of materials) {
+                x += space;
+                currentMaterial.position ??= {
+                    x,
+                    y: unloadPosition.y,
+                };
+            }
             calculateTreatments(draftState);
             return draftState;
         },
@@ -234,7 +246,7 @@ export namespace VehicleActionReducers {
                             `Material with id ${elementToBeLoadedId} does not exist`
                         );
                     }
-                    if (vehicle.materialId !== material.id) {
+                    if (!vehicle.materialIds[elementToBeLoadedId]) {
                         throw new ReducerError(
                             `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
@@ -279,8 +291,9 @@ export namespace VehicleActionReducers {
                     }
                     vehicle.patientIds[elementToBeLoadedId] = true;
                     patient.position = undefined;
-                    draftState.materials[vehicle.materialId].position =
-                        undefined;
+                    Object.keys(vehicle.materialIds).forEach((materialId) => {
+                        draftState.materials[materialId].position = undefined;
+                    });
                     Object.keys(vehicle.personnelIds).forEach((personnelId) => {
                         // If a personnel is in transfer, this doesn't change that
                         draftState.personnel[personnelId].position = undefined;
