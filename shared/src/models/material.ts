@@ -61,4 +61,8 @@ export class Material {
     }
 
     static readonly create = getCreate(this);
+
+    static isInVehicle(material: Material): boolean {
+        return material.position === undefined;
+    }
 }

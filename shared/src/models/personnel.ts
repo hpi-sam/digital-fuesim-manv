@@ -13,6 +13,7 @@ import {
     ImageProperties,
     PersonnelType,
     getCreate,
+    Transfer,
 } from './utils';
 
 export class Personnel {
@@ -46,12 +47,20 @@ export class Personnel {
     };
 
     /**
-     * if undefined, is in vehicle with {@link vehicleId}
+     * if undefined, is in vehicle with {@link vehicleId} or in transfer
      */
     @ValidateNested()
     @Type(() => Position)
     @IsOptional()
     public readonly position?: Position;
+
+    /**
+     * Exclusive-or to {@link position}
+     */
+    @ValidateNested()
+    @Type(() => Transfer)
+    @IsOptional()
+    public readonly transfer?: Transfer;
 
     /**
      * @deprecated Use {@link create} instead
@@ -71,4 +80,10 @@ export class Personnel {
     }
 
     static readonly create = getCreate(this);
+
+    static isInVehicle(personnel: Personnel): boolean {
+        return (
+            personnel.position === undefined && personnel.transfer === undefined
+        );
+    }
 }

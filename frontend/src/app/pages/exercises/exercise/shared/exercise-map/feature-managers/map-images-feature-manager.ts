@@ -6,12 +6,17 @@ import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
-import { withElementImageStyle } from '../utility/with-element-image-style';
+import type { Feature } from 'ol';
 import { withPopup } from '../utility/with-popup';
 import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popup.component';
+import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { ElementFeatureManager } from './element-feature-manager';
 
 class BaseMapImageFeatureManager extends ElementFeatureManager<MapImage> {
+    private readonly imageStyleHelper = new ImageStyleHelper(
+        (feature) => this.getElementFromFeature(feature)!.value.image
+    );
+
     constructor(
         store: Store<AppState>,
         olMap: OlMap,
@@ -25,22 +30,20 @@ class BaseMapImageFeatureManager extends ElementFeatureManager<MapImage> {
                 targetPosition,
             });
         });
+        this.layer.setStyle((feature, resolution) =>
+            this.imageStyleHelper.getStyle(feature as Feature, resolution)
+        );
     }
 
     override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-const MapImageFeatureManagerWithImageStyle = withElementImageStyle<MapImage>(
-    BaseMapImageFeatureManager
-);
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const MapImageFeatureManager = withPopup<
     MapImage,
-    typeof MapImageFeatureManagerWithImageStyle,
+    typeof BaseMapImageFeatureManager,
     MapImagePopupComponent
->(MapImageFeatureManagerWithImageStyle, {
+>(BaseMapImageFeatureManager, {
     component: MapImagePopupComponent,
     height: 110,
     width: 50,
