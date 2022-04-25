@@ -13,7 +13,7 @@
             {{
                 (client$ | async)?.role === 'trainer'
                     ? (patient.health / healthPointsDefaults.max | percent)
-                    : statusNames[patient.visibleStatus ?? 'white']
+                    : statusNames[patient.visibleStatus || 'white']
             }}
         </span>
         <button
@@ -22,60 +22,143 @@
             class="btn-close float-end"
         ></button>
     </h5>
-    <div class="popover-body p-0">
-        <table class="table mb-0" style="max-width: 300px">
-            <tbody>
-                <tr>
-                    <th scope="col">Alter</th>
-                    <td class="font-monospace">
-                        {{ patient.biometricInformation.age }}
-                        <small>
-                            ({{ patient.personalInformation.birthdate }})
-                        </small>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="col">Geschlecht</th>
-                    <td
-                        *appLet="patient.biometricInformation.sex as sex"
-                        class="font-monospace"
-                    >
-                        {{
-                            sex === 'male'
-                                ? 'männlich'
-                                : sex === 'female'
-                                ? 'weiblich'
-                                : 'unbestimmt'
-                        }}
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="col">Biometrie</th>
-                    <td class="font-monospace">
-                        {{ patient.biometricInformation.externalFeatures }}
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="col">Adresse</th>
-                    <td class="font-monospace">
-                        {{ patient.personalInformation.address }}
-                    </td>
-                </tr>
-                <ng-container *ngIf="(client$ | async)?.role === 'trainer'">
-                    <tr>
-                        <th scope="col">Beschreibung</th>
-                        <td class="font-monospace">
-                            {{ patient.healthDescription }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="col">Verletzungs-Geschwindigkeit:</th>
-                        <td class="font-monospace">
-                            &times;{{ patient.timeSpeed }}
-                        </td>
-                    </tr>
-                </ng-container>
-            </tbody>
-        </table>
+    <div class="popover-body p-0" style="max-width: 400px">
+        <nav #nav="ngbNav" ngbNav class="nav-tabs">
+            <ng-container ngbNavItem>
+                <a ngbNavLink>Verletzungen</a>
+                <ng-template ngbNavContent>
+                    <table class="table mb-0 table-sm">
+                        <tbody>
+                            <tr>
+                                <th scope="col">Alter</th>
+                                <td class="font-monospace">
+                                    {{ patient.biometricInformation.age }}
+                                    <small>
+                                        ({{
+                                            patient.personalInformation
+                                                .birthdate
+                                        }})
+                                    </small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Geschlecht</th>
+                                <td
+                                    *appLet="
+                                        patient.biometricInformation.sex as sex
+                                    "
+                                    class="font-monospace"
+                                >
+                                    {{
+                                        sex === 'male'
+                                            ? 'männlich'
+                                            : sex === 'female'
+                                            ? 'weiblich'
+                                            : 'unbestimmt'
+                                    }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Biometrie</th>
+                                <td class="font-monospace">
+                                    {{
+                                        patient.biometricInformation
+                                            .externalFeatures
+                                    }}
+                                </td>
+                            </tr>
+                            <tr
+                                *ngFor="
+                                    let translation of medicalInformationTranslations
+                                        | keyvalue
+                                "
+                            >
+                                <th scope="col">{{ translation.value }}</th>
+                                <td class="font-monospace">
+                                    <!-- TODO: keyvalue doesn't narrow the type correctly -->
+                                    {{
+                                        $any(patient.medicalInformation)[
+                                            translation.key
+                                        ]
+                                    }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </ng-template>
+            </ng-container>
+            <ng-container ngbNavItem>
+                <a ngbNavLink>Weitere Informationen</a>
+                <ng-template ngbNavContent>
+                    <table class="table mb-0">
+                        <tbody>
+                            <tr>
+                                <th scope="col">Alter</th>
+                                <td class="font-monospace">
+                                    {{ patient.biometricInformation.age }}
+                                    <small>
+                                        ({{
+                                            patient.personalInformation
+                                                .birthdate
+                                        }})
+                                    </small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Geschlecht</th>
+                                <td
+                                    *appLet="
+                                        patient.biometricInformation.sex as sex
+                                    "
+                                    class="font-monospace"
+                                >
+                                    {{
+                                        sex === 'male'
+                                            ? 'männlich'
+                                            : sex === 'female'
+                                            ? 'weiblich'
+                                            : 'unbestimmt'
+                                    }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Biometrie</th>
+                                <td class="font-monospace">
+                                    {{
+                                        patient.biometricInformation
+                                            .externalFeatures
+                                    }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Adresse</th>
+                                <td class="font-monospace">
+                                    {{ patient.personalInformation.address }}
+                                </td>
+                            </tr>
+                            <ng-container
+                                *ngIf="(client$ | async)?.role === 'trainer'"
+                            >
+                                <tr>
+                                    <th scope="col">Beschreibung</th>
+                                    <td class="font-monospace">
+                                        {{ patient.healthDescription }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="col">
+                                        Verletzungs-Geschwindigkeit:
+                                    </th>
+                                    <td class="font-monospace">
+                                        &times;{{ patient.timeSpeed }}
+                                    </td>
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </ng-template>
+            </ng-container>
+        </nav>
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
     </div>
 </ng-container>

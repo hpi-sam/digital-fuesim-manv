@@ -3,6 +3,7 @@ import { EventEmitter, Output, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID, Patient } from 'digital-fuesim-manv-shared';
 import { healthPointsDefaults, statusNames } from 'digital-fuesim-manv-shared';
+import type { MedicalInformation } from 'digital-fuesim-manv-shared/src/models/utils';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -32,6 +33,21 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
 
     // To use it in the template
     public readonly healthPointsDefaults = healthPointsDefaults;
+
+    public medicalInformationTranslations: {
+        [key in keyof MedicalInformation]: string;
+    } = {
+        breathing: 'Atmung',
+        consciousness: 'Bewusstsein',
+        pulse: 'Puls',
+        skin: 'Haut',
+        pain: 'Schmerzen',
+        pupils: 'Pupillen',
+        psyche: 'Psyche',
+        hearing: 'Hörvermögen',
+        injuries: 'Verletzungen',
+        bodyCheck: 'Body-check',
+    };
 
     constructor(
         private readonly store: Store<AppState>,

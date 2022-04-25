@@ -19,6 +19,7 @@ import {
     ImageProperties,
     healthPointsDefaults,
     getCreate,
+    MedicalInformation,
 } from './utils';
 import { PersonalInformation } from './utils/personal-information';
 import { BiometricInformation } from './utils/biometric-information';
@@ -35,6 +36,10 @@ export class Patient {
     @ValidateNested()
     @Type(() => BiometricInformation)
     public readonly biometricInformation: BiometricInformation;
+
+    @ValidateNested()
+    @Type(() => MedicalInformation)
+    public readonly medicalInformation: MedicalInformation;
 
     // TODO
     @IsNotIn([undefined])
@@ -59,9 +64,9 @@ export class Patient {
      * @deprecated Use {@link create} instead
      */
     constructor(
-        // TODO: Specify patient data (e.g. injuries, name, etc.)
         personalInformation: PersonalInformation,
         biometricInformation: BiometricInformation,
+        medicalInformation: MedicalInformation,
         visibleStatus: PatientStatus | null,
         realStatus: PatientStatus,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
@@ -72,6 +77,7 @@ export class Patient {
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
+        this.medicalInformation = medicalInformation;
         this.visibleStatus = visibleStatus;
         this.realStatus = realStatus;
         this.healthStates = healthStates;
