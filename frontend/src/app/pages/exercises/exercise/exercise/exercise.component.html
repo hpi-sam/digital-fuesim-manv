@@ -9,6 +9,10 @@
             <span class="font-monospace fw-bold user-select-all">{{
                 participantId
             }}</span>
+            <app-exercise-state-badge
+                [latestState]="exercisePausedState$ | async"
+                class="ms-3"
+            ></app-exercise-state-badge>
             <button
                 (click)="shareExercise(participantId)"
                 class="btn btn-light ms-3"

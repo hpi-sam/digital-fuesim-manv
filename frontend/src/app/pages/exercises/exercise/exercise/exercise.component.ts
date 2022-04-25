@@ -8,6 +8,7 @@ import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectClient,
+    selectLatestStatusHistoryEntry,
     selectParticipantId,
 } from 'src/app/state/exercise/exercise.selectors';
 
@@ -23,6 +24,10 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     public readonly participantId$ = this.store.select(selectParticipantId);
     public client$ = this.store.select(
         getSelectClient(this.apiService.ownClientId!)
+    );
+
+    public exercisePausedState$ = this.store.select(
+        selectLatestStatusHistoryEntry
     );
 
     constructor(
