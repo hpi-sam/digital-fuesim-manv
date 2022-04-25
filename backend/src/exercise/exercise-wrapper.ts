@@ -1,5 +1,6 @@
 import type { ExerciseAction, Role } from 'digital-fuesim-manv-shared';
 import { reduceExerciseState, ExerciseState } from 'digital-fuesim-manv-shared';
+import { Config } from '../config';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
 import { patientTick } from './patient-ticking';
@@ -45,7 +46,9 @@ export class ExerciseWrapper {
 
     private readonly clients = new Set<ClientWrapper>();
 
-    private currentState = ExerciseState.create();
+    private currentState: ExerciseState = Config.usePredefinedExercise
+        ? ExerciseState.create()
+        : ExerciseState.create();
 
     private readonly stateHistory: ExerciseState[] = [];
 
