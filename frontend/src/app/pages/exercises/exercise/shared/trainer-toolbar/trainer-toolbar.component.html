@@ -44,7 +44,27 @@
     >
         Start
     </button>
-    <button (click)="deleteExercise()" class="btn btn-danger ms-3 float-end">
-        Übung löschen
-    </button>
+    <div class="float-end">
+        <button
+            (click)="exportExerciseState()"
+            class="btn btn-outline-primary ms-3"
+        >
+            <i class="bi-cloud-download me-2"> </i>
+            Export
+        </button>
+        <label class="btn btn-outline-warning ms-3">
+            <i class="bi-cloud-upload me-2"> </i>
+            Import
+            <input
+                (input)="importExerciseState($any($event.target).files)"
+                type="file"
+                accept="application/json"
+                class="d-none"
+            />
+        </label>
+
+        <button (click)="deleteExercise()" class="btn btn-danger ms-3">
+            Übung löschen
+        </button>
+    </div>
 </div>

@@ -197,6 +197,15 @@ export class ApiService {
         );
     }
 
+    public async importExercise(exerciseState: ExerciseState) {
+        return lastValueFrom(
+            this.httpClient.post<ExerciseIds>(
+                `${httpOrigin}/api/exercise/${this.exerciseId}`,
+                exerciseState
+            )
+        );
+    }
+
     public async deleteExercise(trainerId: string) {
         return lastValueFrom(
             this.httpClient.delete<undefined>(
