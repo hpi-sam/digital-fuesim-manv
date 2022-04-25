@@ -11,7 +11,7 @@ import type { Feature } from 'ol';
 import type { WithPosition } from '../../utility/types/with-position';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { ElementFeatureManager } from './element-feature-manager';
+import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
 export class PersonnelFeatureManager extends ElementFeatureManager<
     WithPosition<Personnel>
@@ -37,13 +37,19 @@ export class PersonnelFeatureManager extends ElementFeatureManager<
         layer: VectorLayer<VectorSource<Point>>,
         apiService: ApiService
     ) {
-        super(store, olMap, layer, (targetPosition, personnel) => {
-            apiService.proposeAction({
-                type: '[Personnel] Move personnel',
-                personnelId: personnel.id,
-                targetPosition,
-            });
-        });
+        super(
+            store,
+            olMap,
+            layer,
+            (targetPosition, personnel) => {
+                apiService.proposeAction({
+                    type: '[Personnel] Move personnel',
+                    personnelId: personnel.id,
+                    targetPosition,
+                });
+            },
+            createPoint
+        );
         this.layer.setStyle((feature, resolution) => [
             this.nameStyleHelper.getStyle(feature as Feature, resolution),
             this.imageStyleHelper.getStyle(feature as Feature, resolution),
