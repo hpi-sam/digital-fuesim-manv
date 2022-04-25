@@ -64,7 +64,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                         )
                 );
                 const patientsAreInVehicle$ = Object.keys(
-                    _vehicle.patientIds
+                    _vehicle.patientIdsnpm run setup
                 ).map((patientId) =>
                     this.store
                         .select(getSelectPatient(patientId))
