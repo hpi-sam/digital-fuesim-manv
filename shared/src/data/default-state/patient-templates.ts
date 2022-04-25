@@ -18,95 +18,174 @@ const defaultFemaleImage: ImageProperties = {
     aspectRatio: 1,
 };
 
-const defaultHealthState = PatientHealthState.create(
-    FunctionParameters.create(-1_000, 2_000, 1_000, 500),
+const stableState = PatientHealthState.create(
+    FunctionParameters.create(0, 0, 0, 0),
     []
 );
 
-const greenPatientTemplate = PatientTemplate.create(
+// The amount of damage to kill an untreated patient with full health in 10 minutes
+const soonDamage = -healthPointsDefaults.greenMax / (10 * 60);
+const needsNotarztSoonState = PatientHealthState.create(
+    FunctionParameters.create(
+        soonDamage,
+        -soonDamage * 2,
+        -soonDamage,
+        -soonDamage / 2
+    ),
+    []
+);
+
+const needsSomeoneSoonState = PatientHealthState.create(
+    FunctionParameters.create(
+        soonDamage,
+        -soonDamage,
+        -soonDamage,
+        -soonDamage
+    ),
+    []
+);
+
+const soonDamageUntilYellow =
+    -(healthPointsDefaults.greenMax - healthPointsDefaults.yellowMax) /
+    (10 * 60);
+
+const needsSomeoneSoonGreenState = PatientHealthState.create(
+    FunctionParameters.create(
+        soonDamageUntilYellow,
+        -soonDamageUntilYellow,
+        -soonDamageUntilYellow,
+        -soonDamageUntilYellow
+    ),
+    [
+        {
+            matchingHealthStateId: stableState.id,
+            maximumHealth: healthPointsDefaults.yellowMax,
+        },
+    ]
+);
+
+const needsSomeoneLaterState2 = needsSomeoneSoonState;
+
+const needsSomeoneLaterState1 = PatientHealthState.create(
+    FunctionParameters.create(0, 0, 0, 0),
+    [
+        {
+            earliestTime: 5 * 60 * 1000,
+            matchingHealthStateId: needsSomeoneLaterState2.id,
+        },
+    ]
+);
+
+const greenStablePatientTemplate = PatientTemplate.create(
+    'SK III, stabil',
     {
-        sex: 'männlich',
-        name: 'Max Mustermann',
-        birthdate: '1.4.',
-        biometry: '150cm, Glatze, große Brille',
+        sex: 'male',
+        externalFeatures: '150cm, Glatze, große Brille',
         age: 18,
-        address: 'Musterstr. 1, 90768 Musterstadt',
     },
     true,
-    { [defaultHealthState.id]: defaultHealthState },
+    { [stableState.id]: stableState },
     defaultMaleImage,
     healthPointsDefaults.greenMax,
-    defaultHealthState.id
+    stableState.id
 );
 
-const yellowPatientTemplate = PatientTemplate.create(
+const greenGettingWorsePatientTemplate = PatientTemplate.create(
+    'SK III, Verschlechterung (< 10 min), bis SK II',
     {
-        sex: 'männlich',
-        name: 'Walter Falter',
-        birthdate: '7.3.',
-        biometry: 'blaue Augen, weiße Haare, 174cm',
-        age: 73,
-        address: 'Pappelstr. 69, 97537 Eschenburg',
+        sex: 'male',
+        externalFeatures: '150cm, Glatze, große Brille',
+        age: 18,
     },
     true,
-    { [defaultHealthState.id]: defaultHealthState },
+    {
+        [stableState.id]: stableState,
+        [needsSomeoneSoonGreenState.id]: needsSomeoneSoonGreenState,
+    },
     defaultMaleImage,
-    healthPointsDefaults.yellowMax,
-    defaultHealthState.id
+    healthPointsDefaults.greenMax,
+    needsSomeoneSoonGreenState.id
 );
 
-const yellowUntriagedPatientTemplate = PatientTemplate.create(
+const greenGettingWorseAfter5minPatientTemplate = PatientTemplate.create(
+    'SK III, stabil (5 min), Verschlechterung (< 10 min), ex',
     {
-        sex: 'männlich',
-        name: 'Thomas Müller',
-        birthdate: '14.3.',
-        biometry: 'Glatze, 173cm',
-        age: 37,
-        address: 'Pappelstr. 70, 97537 Eschenburg',
+        sex: 'male',
+        externalFeatures: '150cm, Glatze, große Brille',
+        age: 18,
     },
-    false,
-    { [defaultHealthState.id]: defaultHealthState },
+    true,
+    {
+        [needsSomeoneLaterState1.id]: needsSomeoneLaterState1,
+        [needsSomeoneLaterState2.id]: needsSomeoneLaterState2,
+    },
+    defaultMaleImage,
+    healthPointsDefaults.greenMax,
+    needsSomeoneLaterState1.id
+);
+
+const yellowGettingWorsePatientTemplate = PatientTemplate.create(
+    'SK II, Verschlechterung (< 7 min), ex',
+    {
+        sex: 'male',
+        externalFeatures: 'blaue Augen, weiße Haare, 174cm',
+        age: 73,
+    },
+    true,
+    { [needsSomeoneSoonState.id]: needsSomeoneSoonState },
     defaultMaleImage,
     healthPointsDefaults.yellowMax,
-    defaultHealthState.id
+    needsSomeoneSoonState.id
+);
+
+const yellowNeedsNotarztPatientTemplate = PatientTemplate.create(
+    'SK II, Notarzt in < 7 min, ex',
+    {
+        sex: 'male',
+        externalFeatures: 'Glatze, 173cm',
+        age: 37,
+    },
+    true,
+    { [needsNotarztSoonState.id]: needsNotarztSoonState },
+    defaultMaleImage,
+    healthPointsDefaults.yellowMax,
+    needsNotarztSoonState.id
 );
 
 const redPatientTemplate = PatientTemplate.create(
+    'SK I, Verschlechterung (< 4 min), ex',
     {
-        sex: 'weiblich',
-        name: 'Maria Kohler',
-        birthdate: '2.12.',
-        biometry: 'grüne Augen, graue Haare, 167cm',
+        sex: 'female',
+        externalFeatures: 'grüne Augen, graue Haare, 167cm',
         age: 80,
-        address: 'Hannibal Str. 85, 12345 Hinterstadt',
     },
     true,
-    { [defaultHealthState.id]: defaultHealthState },
+    { [needsSomeoneSoonState.id]: needsSomeoneSoonState },
     defaultFemaleImage,
     healthPointsDefaults.redMax,
-    defaultHealthState.id
+    needsSomeoneSoonState.id
 );
 
 const blackPatientTemplate = PatientTemplate.create(
+    'ex',
     {
-        sex: 'männlich',
-        name: 'John Doe',
-        birthdate: '8.1.',
-        biometry: 'kurze Haare, 186cm',
+        sex: 'male',
+        externalFeatures: 'kurze Haare, 186cm',
         age: 23,
-        address: 'Am Musterbahnhof 5, 10010 Musterdorf',
     },
     true,
-    { [defaultHealthState.id]: defaultHealthState },
+    { [stableState.id]: stableState },
     defaultMaleImage,
     healthPointsDefaults.blackMax,
-    defaultHealthState.id
+    stableState.id
 );
 
 export const defaultPatientTemplates: readonly PatientTemplate[] = [
-    greenPatientTemplate,
-    yellowPatientTemplate,
-    yellowUntriagedPatientTemplate,
+    greenStablePatientTemplate,
+    greenGettingWorsePatientTemplate,
+    greenGettingWorseAfter5minPatientTemplate,
+    yellowGettingWorsePatientTemplate,
+    yellowNeedsNotarztPatientTemplate,
     redPatientTemplate,
     blackPatientTemplate,
 ];

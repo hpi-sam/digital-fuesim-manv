@@ -18,11 +18,10 @@ import {
     HealthPoints,
     ImageProperties,
     healthPointsDefaults,
-    getStatus,
     getCreate,
 } from './utils';
 import { PersonalInformation } from './utils/personal-information';
-import type { PatientTemplate } from './patient-template';
+import { BiometricInformation } from './utils/biometric-information';
 import type { PatientHealthState } from '.';
 
 export class Patient {
@@ -32,6 +31,10 @@ export class Patient {
     @ValidateNested()
     @Type(() => PersonalInformation)
     public readonly personalInformation: PersonalInformation;
+
+    @ValidateNested()
+    @Type(() => BiometricInformation)
+    public readonly biometricInformation: BiometricInformation;
 
     // TODO
     @IsNotIn([undefined])
@@ -46,25 +49,36 @@ export class Patient {
     public readonly image: ImageProperties;
 
     /**
+     * A description of the expected patient health over time
+     * For the trainer
+     */
+    @IsString()
+    public readonly healthDescription: string;
+
+    /**
      * @deprecated Use {@link create} instead
      */
     constructor(
         // TODO: Specify patient data (e.g. injuries, name, etc.)
         personalInformation: PersonalInformation,
+        biometricInformation: BiometricInformation,
         visibleStatus: PatientStatus | null,
         realStatus: PatientStatus,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         currentHealthStateId: UUID,
         image: ImageProperties,
-        health: HealthPoints
+        health: HealthPoints,
+        healthDescription: string
     ) {
         this.personalInformation = personalInformation;
+        this.biometricInformation = biometricInformation;
         this.visibleStatus = visibleStatus;
         this.realStatus = realStatus;
         this.healthStates = healthStates;
         this.currentHealthStateId = currentHealthStateId;
         this.image = image;
         this.health = health;
+        this.healthDescription = healthDescription;
     }
 
     /**
@@ -116,19 +130,6 @@ export class Patient {
     @IsNumber()
     @Min(0)
     public readonly timeSpeed: number = 1;
-
-    static fromTemplate(template: PatientTemplate): Patient {
-        const status = getStatus(template.health);
-        return Patient.create(
-            template.personalInformation,
-            template.isPreTriaged ? status : null,
-            status,
-            template.healthStates,
-            template.startingHealthStateId,
-            template.image,
-            template.health
-        );
-    }
 
     static readonly create = getCreate(this);
 
