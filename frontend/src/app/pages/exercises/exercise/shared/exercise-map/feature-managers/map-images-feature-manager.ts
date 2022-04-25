@@ -10,7 +10,7 @@ import type { Feature } from 'ol';
 import { withPopup } from '../utility/with-popup';
 import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popup.component';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
-import { ElementFeatureManager } from './element-feature-manager';
+import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
 class BaseMapImageFeatureManager extends ElementFeatureManager<MapImage> {
     private readonly imageStyleHelper = new ImageStyleHelper(
@@ -23,13 +23,19 @@ class BaseMapImageFeatureManager extends ElementFeatureManager<MapImage> {
         layer: VectorLayer<VectorSource<Point>>,
         apiService: ApiService
     ) {
-        super(store, olMap, layer, (targetPosition, mapImage) => {
-            apiService.proposeAction({
-                type: '[MapImage] Move MapImage',
-                mapImageId: mapImage.id,
-                targetPosition,
-            });
-        });
+        super(
+            store,
+            olMap,
+            layer,
+            (targetPosition, mapImage) => {
+                apiService.proposeAction({
+                    type: '[MapImage] Move MapImage',
+                    mapImageId: mapImage.id,
+                    targetPosition,
+                });
+            },
+            createPoint
+        );
         this.layer.setStyle((feature, resolution) =>
             this.imageStyleHelper.getStyle(feature as Feature, resolution)
         );

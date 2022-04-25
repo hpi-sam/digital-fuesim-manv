@@ -12,7 +12,7 @@ import type { WithPosition } from '../../utility/types/with-position';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
 import { withPopup } from '../utility/with-popup';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
-import { ElementFeatureManager } from './element-feature-manager';
+import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
 class PatientFeatureManagerBase extends ElementFeatureManager<
     WithPosition<Patient>
@@ -27,13 +27,19 @@ class PatientFeatureManagerBase extends ElementFeatureManager<
         layer: VectorLayer<VectorSource<Point>>,
         apiService: ApiService
     ) {
-        super(store, olMap, layer, (targetPosition, patient) => {
-            apiService.proposeAction({
-                type: '[Patient] Move patient',
-                patientId: patient.id,
-                targetPosition,
-            });
-        });
+        super(
+            store,
+            olMap,
+            layer,
+            (targetPosition, patient) => {
+                apiService.proposeAction({
+                    type: '[Patient] Move patient',
+                    patientId: patient.id,
+                    targetPosition,
+                });
+            },
+            createPoint
+        );
         this.layer.setStyle((feature, resolution) =>
             this.imageStyleHelper.getStyle(feature as Feature, resolution)
         );

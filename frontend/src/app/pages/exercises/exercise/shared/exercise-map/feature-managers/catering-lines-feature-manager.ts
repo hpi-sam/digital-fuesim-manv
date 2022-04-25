@@ -12,6 +12,7 @@ import { ElementManager } from './element-manager';
 export class CateringLinesFeatureManager
     extends ElementManager<
         CateringLine,
+        LineString,
         Feature<LineString>,
         ReadonlySet<keyof CateringLine>
     >
@@ -28,7 +29,7 @@ export class CateringLinesFeatureManager
         );
     }
 
-    createFeature(element: CateringLine): void {
+    createFeature(element: CateringLine): Feature<LineString> {
         const feature = new Feature(
             new LineString([
                 [element.catererPosition.x, element.catererPosition.y],
@@ -37,6 +38,7 @@ export class CateringLinesFeatureManager
         );
         feature.setId(element.id);
         this.layer.getSource()!.addFeature(feature);
+        return feature;
     }
 
     deleteFeature(
