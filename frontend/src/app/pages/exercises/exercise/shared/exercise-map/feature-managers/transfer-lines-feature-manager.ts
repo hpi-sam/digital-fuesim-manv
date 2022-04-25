@@ -13,6 +13,7 @@ import { ElementManager } from './element-manager';
 export class TransferLinesFeatureManager
     extends ElementManager<
         TransferLine,
+        LineString,
         Feature<LineString>,
         ReadonlySet<keyof TransferLine>
     >
@@ -33,7 +34,7 @@ export class TransferLinesFeatureManager
         );
     }
 
-    createFeature(element: TransferLine): void {
+    createFeature(element: TransferLine): Feature<LineString> {
         const feature = new Feature(
             new LineString([
                 [element.startPosition.x, element.startPosition.y],
@@ -42,6 +43,7 @@ export class TransferLinesFeatureManager
         );
         feature.setId(element.id);
         this.layer.getSource()!.addFeature(feature);
+        return feature;
     }
 
     deleteFeature(

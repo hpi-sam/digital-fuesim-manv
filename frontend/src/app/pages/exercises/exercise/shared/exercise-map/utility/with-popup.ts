@@ -3,6 +3,7 @@ import type Point from 'ol/geom/Point';
 import type { Type } from '@angular/core';
 import { Subject } from 'rxjs';
 import type { Constructor } from 'digital-fuesim-manv-shared';
+import type { LineString } from 'ol/geom';
 import type {
     ElementFeatureManager,
     PositionableElement,
@@ -18,8 +19,9 @@ export function withPopup<
     // because otherwise there are type errors if the Element is a superset
     // of { id: UUID, position: Position, image: ImageProperties }
     Element extends PositionableElement,
-    BaseType extends Constructor<ElementFeatureManager<Element>>,
-    PopupComponentType extends PopupComponent
+    BaseType extends Constructor<ElementFeatureManager<Element, FeatureType>>,
+    PopupComponentType extends PopupComponent,
+    FeatureType extends LineString | Point = Point
 >(
     baseClass: BaseType,
     popoverOptions: {
@@ -27,7 +29,7 @@ export function withPopup<
         height: number;
         width: number;
         getContext: (
-            feature: Feature<Point>
+            feature: Feature<FeatureType>
         ) => Partial<InstanceType<Type<PopupComponentType>>>;
     }
 ) {
@@ -39,10 +41,10 @@ export function withPopup<
 
         public override onFeatureClicked(
             event: MapBrowserEvent<any>,
-            feature: Feature<Point>
+            feature: Feature<FeatureType>
         ): void {
             super.onFeatureClicked(event, feature);
-            const featureCenter = feature.getGeometry()!.getCoordinates();
+            const featureCenter = this.getCenter(feature);
             const view = this.olMap.getView();
             const zoom = view.getZoom()!;
             const { position, positioning } = calculatePopupPositioning(

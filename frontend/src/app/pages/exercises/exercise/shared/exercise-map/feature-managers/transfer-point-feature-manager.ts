@@ -22,7 +22,7 @@ import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { OpenPopupOptions } from '../utility/popup-manager';
-import { ElementFeatureManager } from './element-feature-manager';
+import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
 class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoint> {
     constructor(
@@ -31,13 +31,19 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoin
         layer: VectorLayer<VectorSource<Point>>,
         private readonly apiService: ApiService
     ) {
-        super(store, olMap, layer, (targetPosition, transferPoint) => {
-            apiService.proposeAction({
-                type: '[TransferPoint] Move TransferPoint',
-                transferPointId: transferPoint.id,
-                targetPosition,
-            });
-        });
+        super(
+            store,
+            olMap,
+            layer,
+            (targetPosition, transferPoint) => {
+                apiService.proposeAction({
+                    type: '[TransferPoint] Move TransferPoint',
+                    transferPointId: transferPoint.id,
+                    targetPosition,
+                });
+            },
+            createPoint
+        );
         layer.setStyle((thisFeature, currentZoom) => [
             this.imageStyleHelper.getStyle(
                 thisFeature as Feature<Point>,
@@ -52,6 +58,61 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoin
 
     public readonly togglePopup$ = new Subject<OpenPopupOptions<any>>();
 
+    // <<<<<<< HEAD
+    //     private previousZoom?: number;
+    //     /**
+    //      *
+    //      * @param feature The feature that should be styled
+    //      * @param currentZoom This is for some reason also called `resolution` in the ol typings
+    //      * @returns The style that should be used for the feature
+    //      */
+    //     // This function should be as efficient as possible, because it is called per feature on each rendered frame
+    //     private getStyle(feature: Feature<Point>, currentZoom: number) {
+    //         if (this.previousZoom !== currentZoom) {
+    //             this.previousZoom = currentZoom;
+    //             this.styleCache.clear();
+    //         }
+    //         const element = this.getElementFromFeature(feature)!.value;
+    //         const key = JSON.stringify({
+    //             name: element.internalName,
+    //         });
+    //         if (!this.styleCache.has(key)) {
+    //             this.styleCache.set(
+    //                 key,
+    //                 new Style({
+    //                     image: new Icon({
+    //                         src: TransferPoint.image.url,
+    //                         scale:
+    //                             TransferPoint.image.height /
+    //                             (currentZoom * normalZoom) /
+    //                             // TODO: remove this hack, look at height in transfer-point.svg, is also 102
+    //                             102,
+    //                     }),
+    //                     text: new OlText({
+    //                         text: element.internalName,
+    //                         scale: 0.2 / currentZoom,
+    //                         fill: new Fill({
+    //                             color: '#FEFEFE',
+    //                         }),
+    //                     }),
+    //                 })
+    //             );
+    //         }
+    //         return this.styleCache.get(key)!;
+    //     }
+
+    //     public override createFeature(
+    //         element: WithPosition<TransferPoint>
+    //     ): Feature<Point> {
+    //         const feature = super.createFeature(element);
+    //         // Because the feature is already added in the super method, there is a short flickering
+    //         // const feature = this.getFeatureFromElement(element)!;
+    //         feature.setStyle((thisFeature, currentZoom) =>
+    //             this.getStyle(thisFeature as Feature<Point>, currentZoom)
+    //         );
+    //         return feature;
+    //     }
+    // =======
     private readonly imageStyleHelper = new ImageStyleHelper(
         (feature: Feature) => ({
             url: TransferPoint.image.url,
@@ -67,6 +128,7 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoin
         0.2,
         'middle'
     );
+    // >>>>>>> origin/dev
 
     public override onFeatureDrop(
         dropEvent: TranslateEvent,
