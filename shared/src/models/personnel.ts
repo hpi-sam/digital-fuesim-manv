@@ -128,6 +128,6 @@ const personnelTemplateMap: {
             height: 80,
             aspectRatio: 1,
         },
-        canCaterFor: CanCaterFor.create(1, 1, 4, 'or'),
+        canCaterFor: CanCaterFor.create(0, 0, 0, 'or'),
     },
 };
