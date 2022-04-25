@@ -7,9 +7,6 @@ export class BiometricInformation {
     @Min(0)
     public readonly age: number;
 
-    /**
-     * männlich, weiblich, diverse
-     */
     @IsString()
     public readonly sex: Sex;
 

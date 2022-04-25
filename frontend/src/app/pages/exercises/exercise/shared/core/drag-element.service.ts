@@ -6,7 +6,6 @@ import type {
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
 import {
-    Patient,
     Viewport,
     TransferPoint,
     normalZoom,

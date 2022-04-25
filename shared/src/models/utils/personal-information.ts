@@ -45,7 +45,7 @@ export class PersonalInformation {
 function generateAddress() {
     const streetName =
         streetNames[Math.floor(Math.random() * streetNames.length)];
-    return `${streetName} ${Math.floor(Math.random() * 100)}`;
+    return `${streetName} ${Math.floor(Math.random() * 100) + 1}`;
 }
 
 function generateBirthDate() {
