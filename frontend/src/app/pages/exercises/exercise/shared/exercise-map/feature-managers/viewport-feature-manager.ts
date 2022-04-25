@@ -16,7 +16,8 @@ import { withPopup } from '../utility/with-popup';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
 import {
     ElementFeatureManager,
-    lineStringCreator,
+    createLineString,
+    getCoordinateArray,
 } from './element-feature-manager';
 
 class BaseViewportFeatureManager
@@ -42,8 +43,9 @@ class BaseViewportFeatureManager
                     targetPosition: targetPositions[0],
                 });
             },
-            lineStringCreator
+            createLineString
         );
+        this.layer.setStyle(this.style);
     }
     private readonly modifyHelper = new ModifyHelper();
 
@@ -62,7 +64,6 @@ class BaseViewportFeatureManager
 
     override createFeature(element: Viewport): Feature<LineString> {
         const feature = super.createFeature(element);
-        this.layer.setStyle(this.style);
         this.modifyHelper.onModifyEnd(feature, (newPositions) => {
             // Skip when not all coordinates are properly set.
             if (
@@ -73,12 +74,7 @@ class BaseViewportFeatureManager
                 )
             ) {
                 const viewport = this.getElementFromFeature(feature)!.value;
-                this.changeFeature(
-                    viewport,
-                    viewport,
-                    new Set(['position', 'size'] as const),
-                    feature
-                );
+                this.recreateFeature(viewport);
                 return;
             }
             const lineString = newPositions;
@@ -104,31 +100,21 @@ class BaseViewportFeatureManager
         changedProperties: ReadonlySet<keyof Viewport>,
         elementFeature: Feature<LineString>
     ): void {
-        super.changeFeature(
-            oldElement,
-            newElement,
-            changedProperties,
-            elementFeature,
-            (updatedProperties) =>
-                updatedProperties.has('position') ||
-                updatedProperties.has('size'),
-            (updatedElement) => [
-                [updatedElement.position.x, updatedElement.position.y],
-                [
-                    updatedElement.position.x + updatedElement.size.width,
-                    updatedElement.position.y,
-                ],
-                [
-                    updatedElement.position.x + updatedElement.size.width,
-                    updatedElement.position.y - updatedElement.size.height,
-                ],
-                [
-                    updatedElement.position.x,
-                    updatedElement.position.y - updatedElement.size.height,
-                ],
-                [updatedElement.position.x, updatedElement.position.y],
-            ]
-        );
+        if (
+            changedProperties.has('position') ||
+            changedProperties.has('size')
+        ) {
+            const newFeature = this.getFeatureFromElement(newElement);
+            if (!newFeature) {
+                throw new TypeError('newFeature undefined');
+            }
+            this.movementAnimator.animateFeatureMovement(
+                elementFeature,
+                getCoordinateArray(newElement)
+            );
+        }
+        // If the style has updated, we need to redraw the feature
+        elementFeature.changed();
     }
 }
 

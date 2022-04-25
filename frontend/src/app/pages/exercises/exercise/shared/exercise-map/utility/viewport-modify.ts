@@ -15,7 +15,7 @@ const originCornerDict: {
     topRight: { originIndex: 3, cornerIndex: 1 },
 };
 
-export function getViewportModify(
+export function createViewportModify(
     viewportLayer: VectorLayer<VectorSource<LineString>>
 ): Modify {
     const defaultStyle = new Modify({ source: viewportLayer.getSource()! })

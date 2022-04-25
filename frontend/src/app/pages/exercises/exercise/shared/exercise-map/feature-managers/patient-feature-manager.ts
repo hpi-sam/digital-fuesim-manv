@@ -12,7 +12,7 @@ import type { WithPosition } from '../../utility/types/with-position';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
 import { withPopup } from '../utility/with-popup';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
-import { ElementFeatureManager, pointCreator } from './element-feature-manager';
+import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
 class PatientFeatureManagerBase extends ElementFeatureManager<
     WithPosition<Patient>
@@ -38,7 +38,7 @@ class PatientFeatureManagerBase extends ElementFeatureManager<
                     targetPosition,
                 });
             },
-            pointCreator
+            createPoint
         );
         this.layer.setStyle((feature, resolution) =>
             this.imageStyleHelper.getStyle(feature as Feature, resolution)

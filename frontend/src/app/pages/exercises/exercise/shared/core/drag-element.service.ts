@@ -124,7 +124,6 @@ export class DragElementService {
             this.olMap.getEventPixel(event)
         );
         const position = { x, y };
-        const currentZoom = this.olMap.getView().getZoom()!;
         // create the element
         switch (this.transferringTemplate.type) {
             case 'vehicle':
@@ -156,15 +155,21 @@ export class DragElementService {
                     );
                 }
                 break;
-            case 'viewport':
+            case 'viewport': {
+                // This ratio has been determined by trial and error
+                const height = Viewport.image.height / 23.5;
+                const width = height * Viewport.image.aspectRatio;
                 this.apiService.proposeAction(
                     {
                         type: '[Viewport] Add viewport',
                         viewport: Viewport.create(
-                            position,
                             {
-                                width: 3200 / currentZoom,
-                                height: 1800 / currentZoom,
+                                x: position.x - width / 2,
+                                y: position.y + height / 2,
+                            },
+                            {
+                                height,
+                                width,
                             },
                             'Einsatzabschnitt'
                         ),
@@ -172,6 +177,7 @@ export class DragElementService {
                     true
                 );
                 break;
+            }
             case 'mapImage':
                 {
                     const template = this.transferringTemplate.template.image;

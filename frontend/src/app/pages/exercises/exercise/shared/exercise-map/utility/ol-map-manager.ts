@@ -54,7 +54,7 @@ import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
 import type { FeatureManager } from './feature-manager';
 import { ModifyHelper } from './modify-helper';
-import { getViewportModify } from './viewport-modify';
+import { createViewportModify } from './viewport-modify';
 
 /**
  * This class should run outside the Angular zone for performance reasons.
@@ -131,7 +131,7 @@ export class OlMapManager {
             hitTolerance: 10,
         });
 
-        const viewportModify = getViewportModify(viewportLayer);
+        const viewportModify = createViewportModify(viewportLayer);
 
         const viewportTranslate = new Translate({
             layers: [viewportLayer],

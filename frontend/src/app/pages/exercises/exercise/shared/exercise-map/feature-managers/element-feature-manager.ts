@@ -25,6 +25,10 @@ export interface PositionableElement {
     readonly position: Position;
 }
 
+export interface ResizableElement extends PositionableElement {
+    size: Size;
+}
+
 function isLineString(
     feature: Feature<LineString | Point>
 ): feature is Feature<LineString> {
@@ -37,25 +41,26 @@ export function isCoordinateArray(
     return isArray(coordinates[0]);
 }
 
-export const pointCreator = (element: WithPosition<any>): Feature<Point> =>
+export const createPoint = (element: WithPosition<any>): Feature<Point> =>
     new Feature(new Point([element.position.x, element.position.y]));
 
-export const lineStringCreator = (element: {
-    position: Position;
-    size: Size;
-}): Feature<LineString> =>
-    new Feature(
-        new LineString([
-            [element.position.x, element.position.y],
-            [element.position.x + element.size.width, element.position.y],
-            [
-                element.position.x + element.size.width,
-                element.position.y - element.size.height,
-            ],
-            [element.position.x, element.position.y - element.size.height],
-            [element.position.x, element.position.y],
-        ])
-    );
+export const createLineString = (
+    element: ResizableElement
+): Feature<LineString> =>
+    new Feature(new LineString(getCoordinateArray(element)));
+
+export function getCoordinateArray(element: ResizableElement) {
+    return [
+        [element.position.x, element.position.y],
+        [element.position.x + element.size.width, element.position.y],
+        [
+            element.position.x + element.size.width,
+            element.position.y - element.size.height,
+        ],
+        [element.position.x, element.position.y - element.size.height],
+        [element.position.x, element.position.y],
+    ];
+}
 
 /**
  * The base class for all element feature managers.
@@ -75,7 +80,10 @@ export abstract class ElementFeatureManager<
     >
     implements FeatureManager<ElementFeature>
 {
-    private readonly movementAnimator;
+    protected readonly movementAnimator = new MovementAnimator<FeatureType>(
+        this.olMap,
+        this.layer
+    );
     protected readonly translateHelper = new TranslateHelper<FeatureType>();
 
     constructor(
@@ -89,10 +97,6 @@ export abstract class ElementFeatureManager<
         private readonly createElement: (element: Element) => ElementFeature
     ) {
         super();
-        this.movementAnimator = new MovementAnimator<FeatureType>(
-            this.olMap,
-            this.layer
-        );
     }
 
     override unsupportedChangeProperties: ReadonlySet<keyof Element> = new Set(
@@ -118,31 +122,24 @@ export abstract class ElementFeatureManager<
         newElement: Element,
         // It is too much work to correctly type this param with {@link unsupportedChangeProperties}
         changedProperties: ReadonlySet<keyof Element>,
-        elementFeature: ElementFeature,
-        triggerCondition: (
-            changedProperties: ReadonlySet<keyof Element>
-        ) => boolean = (updatedProperties) => updatedProperties.has('position'),
-        targetPosition: (newElement: Element) => Coordinates<FeatureType> = (
-            updatedElement: Element
-        ) => {
-            const newFeature = this.getFeatureFromElement(updatedElement);
+        elementFeature: ElementFeature
+    ): void {
+        if (changedProperties.has('position')) {
+            const newFeature = this.getFeatureFromElement(newElement);
             if (!newFeature) {
                 throw new TypeError('newFeature undefined');
             }
-            return (
-                isLineString(newFeature)
-                    ? (newFeature.getGeometry()! as LineString).getCoordinates()
-                    : [updatedElement.position.x, updatedElement.position.y]
-            ) as Coordinates<FeatureType>;
-        }
-    ): void {
-        if (triggerCondition(changedProperties)) {
             this.movementAnimator.animateFeatureMovement(
                 elementFeature,
-                targetPosition(newElement)
+                (isLineString(newFeature)
+                    ? (newFeature.getGeometry()! as LineString).getCoordinates()
+                    : [
+                          newElement.position.x,
+                          newElement.position.y,
+                      ]) as Coordinates<FeatureType>
             );
         }
-        // If the style has updated, we need to redraw he feature
+        // If the style has updated, we need to redraw the feature
         elementFeature.changed();
     }
 

@@ -22,7 +22,7 @@ import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { OpenPopupOptions } from '../utility/popup-manager';
-import { ElementFeatureManager, pointCreator } from './element-feature-manager';
+import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
 class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoint> {
     constructor(
@@ -42,7 +42,7 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoin
                     targetPosition,
                 });
             },
-            pointCreator
+            createPoint
         );
         layer.setStyle((thisFeature, currentZoom) => [
             this.imageStyleHelper.getStyle(

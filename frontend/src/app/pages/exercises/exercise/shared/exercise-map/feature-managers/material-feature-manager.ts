@@ -11,7 +11,7 @@ import type { Feature } from 'ol';
 import type { WithPosition } from '../../utility/types/with-position';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { ElementFeatureManager, pointCreator } from './element-feature-manager';
+import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
 export class MaterialFeatureManager extends ElementFeatureManager<
     WithPosition<Material>
@@ -48,7 +48,7 @@ export class MaterialFeatureManager extends ElementFeatureManager<
                     targetPosition,
                 });
             },
-            pointCreator
+            createPoint
         );
         this.layer.setStyle((feature, resolution) => [
             this.nameStyleHelper.getStyle(feature as Feature, resolution),

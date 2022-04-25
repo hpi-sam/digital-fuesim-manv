@@ -10,7 +10,7 @@ import type { Feature } from 'ol';
 import { withPopup } from '../utility/with-popup';
 import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popup.component';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
-import { ElementFeatureManager, pointCreator } from './element-feature-manager';
+import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
 class BaseMapImageFeatureManager extends ElementFeatureManager<MapImage> {
     private readonly imageStyleHelper = new ImageStyleHelper(
@@ -34,7 +34,7 @@ class BaseMapImageFeatureManager extends ElementFeatureManager<MapImage> {
                     targetPosition,
                 });
             },
-            pointCreator
+            createPoint
         );
         this.layer.setStyle((feature, resolution) =>
             this.imageStyleHelper.getStyle(feature as Feature, resolution)

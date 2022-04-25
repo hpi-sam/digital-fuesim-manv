@@ -1,10 +1,9 @@
 import { Position } from 'digital-fuesim-manv-shared';
-import { isArray } from 'lodash';
 import type { Feature } from 'ol';
-import type { Coordinate } from 'ol/coordinate';
 import type { LineString } from 'ol/geom';
 import type Point from 'ol/geom/Point';
 import type { Translate } from 'ol/interaction';
+import { isCoordinateArray } from '../feature-managers/element-feature-manager';
 
 /**
  * Translates (moves) a feature to a new position.
@@ -40,9 +39,9 @@ export class TranslateHelper<T extends LineString | Point = Point> {
         feature.addEventListener('translateend', (event) => {
             // The end coordinates in the event are the mouse coordinates and not the feature coordinates.
             const coordinates = feature.getGeometry()!.getCoordinates();
-            if (isArray(coordinates[0])) {
+            if (isCoordinateArray(coordinates)) {
                 callback(
-                    (coordinates as Coordinate[]).map((coordinate) =>
+                    coordinates.map((coordinate) =>
                         Position.create(coordinate[0], coordinate[1])
                     ) as T extends Point ? never : Position[]
                 );
@@ -50,8 +49,8 @@ export class TranslateHelper<T extends LineString | Point = Point> {
             }
             callback(
                 Position.create(
-                    (coordinates as Coordinate)[0],
-                    (coordinates as Coordinate)[1]
+                    coordinates[0],
+                    coordinates[1]
                 ) as T extends Point ? Position : never
             );
         });

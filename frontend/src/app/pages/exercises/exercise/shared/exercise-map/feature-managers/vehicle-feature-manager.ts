@@ -15,7 +15,7 @@ import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.com
 import { withPopup } from '../utility/with-popup';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { ElementFeatureManager, pointCreator } from './element-feature-manager';
+import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
 class VehicleFeatureManagerBase extends ElementFeatureManager<
     WithPosition<Vehicle>
@@ -52,7 +52,7 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
                     targetPosition,
                 });
             },
-            pointCreator
+            createPoint
         );
         this.layer.setStyle((feature, resolution) => [
             this.nameStyleHelper.getStyle(feature as Feature, resolution),

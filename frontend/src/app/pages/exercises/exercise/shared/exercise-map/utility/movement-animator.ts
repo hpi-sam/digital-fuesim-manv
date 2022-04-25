@@ -82,12 +82,6 @@ export class MovementAnimator<T extends LineString | Point> {
         return isArray(coordinates.startPosition[0]);
     }
 
-    private isCoordinatePair(
-        coordinates: CoordinatePair<Coordinates<LineString | Point>>
-    ): coordinates is CoordinatePair<Coordinates<Point>> {
-        return !isArray(coordinates.startPosition[0]);
-    }
-
     private interpolate(
         startCoordinate: Coordinate,
         endCoordinate: Coordinate,
@@ -99,6 +93,11 @@ export class MovementAnimator<T extends LineString | Point> {
             startCoordinate[1] +
                 (endCoordinate[1] - startCoordinate[1]) * lerpFactor,
         ];
+    }
+
+    private setCoordinates(featureGeometry: T, coordinates: Coordinates<T>) {
+        // The ol typings are incorrect
+        featureGeometry.setCoordinates(coordinates as any);
     }
 
     /**
@@ -121,42 +120,27 @@ export class MovementAnimator<T extends LineString | Point> {
         // We should already be (nearly) at the end position
         if (progress >= 1) {
             this.stopMovementAnimation(feature as Feature<T>);
-            (
-                featureGeometry.setCoordinates as (
-                    coordinates: Coordinates<T>,
-                    opt_layout?: any
-                ) => void
-            )(positions.endPosition);
+            this.setCoordinates(featureGeometry, positions.endPosition);
             this.olMap.render();
             return;
         }
         // The next position is calculated by a linear interpolation between the start and end position(s)
-        const nextPosition: Coordinates<T> = this.isCoordinateArrayPair(
-            positions
-        )
-            ? (positions.startPosition.map((startPos, index) =>
-                  this.interpolate(
-                      startPos,
-                      positions.endPosition[index],
+        const nextPosition = (
+            this.isCoordinateArrayPair(positions)
+                ? positions.startPosition.map((startPos, index) =>
+                      this.interpolate(
+                          startPos,
+                          positions.endPosition[index],
+                          progress
+                      )
+                  )
+                : this.interpolate(
+                      positions.startPosition as Coordinates<Point>,
+                      positions.endPosition as Coordinates<Point>,
                       progress
                   )
-              ) as Coordinates<T>)
-            : this.isCoordinatePair(positions)
-            ? (this.interpolate(
-                  positions.startPosition,
-                  positions.endPosition,
-                  progress
-              ) as Coordinates<T>)
-            : [];
-        if (nextPosition.length === 0) {
-            throw new TypeError('positions was no valid type');
-        }
-        (
-            featureGeometry.setCoordinates as (
-                coordinates: Coordinates<T>,
-                opt_layout?: any
-            ) => void
-        )(nextPosition);
+        ) as Coordinates<T>;
+        this.setCoordinates(featureGeometry, nextPosition);
         getVectorContext(event).drawGeometry(featureGeometry);
         this.olMap.render();
     }
