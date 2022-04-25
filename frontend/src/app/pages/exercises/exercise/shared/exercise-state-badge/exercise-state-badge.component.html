@@ -1,11 +1,5 @@
 <span
-    class="badge rounded-pill bg-{{
-        latestState
-            ? latestState.status === 'running'
-                ? 'success'
-                : 'danger'
-            : 'secondary'
-    }}"
+    class="badge rounded-pill bg-light text-dark"
     title="Übung {{
         latestState
             ? latestState.status === 'running'
@@ -13,6 +7,7 @@
                 : 'pausiert'
             : 'wurde noch nicht gestartet'
     }}"
+    [class.text-muted]="latestState?.status !== 'running'"
 >
     <i *ngIf="!latestState" class="bi bi-stop-fill"></i>
     <i
@@ -23,4 +18,5 @@
         *ngIf="latestState !== null && latestState?.status === 'running'"
         class="bi bi-play-fill"
     ></i>
+    {{ currentTime$ | async | date: 'H:mm:ss':'UTC' }}
 </span>
