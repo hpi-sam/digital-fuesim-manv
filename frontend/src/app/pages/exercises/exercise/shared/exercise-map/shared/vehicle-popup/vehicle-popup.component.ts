@@ -50,9 +50,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                 ).map((materialId) =>
                     this.store
                         .select(getSelectMaterial(materialId))
-                        .pipe(
-                            map((material) => Material.isInVehicle(material))
-                        )
+                        .pipe(map((material) => Material.isInVehicle(material)))
                 );
                 const personnelAreInVehicle$ = Object.keys(
                     _vehicle.personnelIds
@@ -64,7 +62,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                         )
                 );
                 const patientsAreInVehicle$ = Object.keys(
-                    _vehicle.patientIdsnpm run setup
+                    _vehicle.patientIds
                 ).map((patientId) =>
                     this.store
                         .select(getSelectPatient(patientId))
