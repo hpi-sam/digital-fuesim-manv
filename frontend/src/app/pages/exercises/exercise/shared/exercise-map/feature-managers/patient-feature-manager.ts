@@ -7,42 +7,52 @@ import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
+import type { Feature } from 'ol';
 import type { WithPosition } from '../../utility/types/with-position';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
 import { withPopup } from '../utility/with-popup';
-import { withElementImageStyle } from '../utility/with-element-image-style';
-import { ElementFeatureManager } from './element-feature-manager';
+import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
+import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
 class PatientFeatureManagerBase extends ElementFeatureManager<
     WithPosition<Patient>
 > {
+    private readonly imageStyleHelper = new ImageStyleHelper(
+        (feature) => this.getElementFromFeature(feature)!.value.image
+    );
+
     constructor(
         store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
         apiService: ApiService
     ) {
-        super(store, olMap, layer, (targetPosition, patient) => {
-            apiService.proposeAction({
-                type: '[Patient] Move patient',
-                patientId: patient.id,
-                targetPosition,
-            });
-        });
+        super(
+            store,
+            olMap,
+            layer,
+            (targetPosition, patient) => {
+                apiService.proposeAction({
+                    type: '[Patient] Move patient',
+                    patientId: patient.id,
+                    targetPosition,
+                });
+            },
+            createPoint
+        );
+        this.layer.setStyle((feature, resolution) =>
+            this.imageStyleHelper.getStyle(feature as Feature, resolution)
+        );
     }
 
     override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 }
 
-const PatientFeatureManagerWithImageStyle = withElementImageStyle<
-    WithPosition<Patient>
->(PatientFeatureManagerBase);
-
 export const PatientFeatureManager = withPopup<
     WithPosition<Patient>,
-    typeof PatientFeatureManagerWithImageStyle,
+    typeof PatientFeatureManagerBase,
     PatientPopupComponent
->(PatientFeatureManagerWithImageStyle, {
+>(PatientFeatureManagerBase, {
     component: PatientPopupComponent,
     height: 110,
     width: 50,

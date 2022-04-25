@@ -79,11 +79,12 @@ function getDedicatedResources(
 ): Catering {
     if (!patient.isBeingTreated) {
         return {
-            firefighter: 0,
+            gf: 0,
             material: 0,
             notarzt: 0,
             notSan: 0,
-            retSan: 0,
+            rettSan: 0,
+            san: 0,
         };
     }
     const material = Object.values(state.materials).filter((thisMaterial) =>
@@ -99,15 +100,19 @@ function getDedicatedResources(
     const notSan = treatingPersonnel.filter(
         (thisPersonnel) => thisPersonnel.personnelType === 'notSan'
     ).length;
-    const retSan = treatingPersonnel.filter(
-        (thisPersonnel) => thisPersonnel.personnelType === 'retSan'
+    const rettSan = treatingPersonnel.filter(
+        (thisPersonnel) => thisPersonnel.personnelType === 'rettSan'
+    ).length;
+    const san = treatingPersonnel.filter(
+        (thisPersonnel) => thisPersonnel.personnelType === 'san'
     ).length;
     return {
-        firefighter: 0,
+        gf: 0,
         material,
         notarzt,
         notSan,
-        retSan,
+        rettSan,
+        san,
     };
 }
 
@@ -128,7 +133,8 @@ function getNextPatientHealthPoints(
     let material = treatedBy.material;
     const notarzt = treatedBy.notarzt;
     const notSan = treatedBy.notSan;
-    const retSan = treatedBy.retSan;
+    const rettSan = treatedBy.rettSan;
+    // TODO: Sans should be able to treat patients too
     const functionParameters =
         patient.healthStates[patient.currentHealthStateId].functionParameters;
     // To do anything the personnel needs material
@@ -138,11 +144,11 @@ function getNextPatientHealthPoints(
     material = Math.max(material - equippedNotarzt, 0);
     let equippedNotSan = Math.min(notSan, material);
     material = Math.max(material - equippedNotSan, 0);
-    let equippedRetSan = Math.min(retSan, material);
+    let equippedRettSan = Math.min(rettSan, material);
     // much more notarzt != much better patient
     equippedNotarzt = Math.log2(equippedNotarzt + 1);
     equippedNotSan = Math.log2(equippedNotSan + 1);
-    equippedRetSan = Math.log2(equippedRetSan + 1);
+    equippedRettSan = Math.log2(equippedRettSan + 1);
     // TODO: some more heuristic precalculations ...
     // e.g. each second we lose 100 health points
     const changedHealthPerSecond =
@@ -150,7 +156,7 @@ function getNextPatientHealthPoints(
         // e.g. if we have a notarzt we gain 500 additional health points per second
         functionParameters.notarztModifier * equippedNotarzt +
         functionParameters.notSanModifier * equippedNotSan +
-        functionParameters.retSanModifier * equippedRetSan;
+        functionParameters.rettSanModifier * equippedRettSan;
 
     return Math.max(
         healthPointsDefaults.min,

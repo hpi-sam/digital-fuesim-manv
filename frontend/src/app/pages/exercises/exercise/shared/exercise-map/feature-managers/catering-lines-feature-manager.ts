@@ -4,15 +4,15 @@ import LineString from 'ol/geom/LineString';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
-import Stroke from 'ol/style/Stroke';
-import Style from 'ol/style/Style';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { FeatureManager } from '../utility/feature-manager';
+import { LineStyleHelper } from '../utility/style-helper/line-style-helper';
 import { ElementManager } from './element-manager';
 
 export class CateringLinesFeatureManager
     extends ElementManager<
         CateringLine,
+        LineString,
         Feature<LineString>,
         ReadonlySet<keyof CateringLine>
     >
@@ -20,49 +20,25 @@ export class CateringLinesFeatureManager
 {
     readonly unsupportedChangeProperties = new Set(['id'] as const);
 
+    private readonly lineStyleHelper = new LineStyleHelper(0.1, '#0dcaf0');
+
     constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {
         super();
+        layer.setStyle((thisFeature, currentZoom) =>
+            this.lineStyleHelper.getStyle(thisFeature as Feature, currentZoom)
+        );
     }
 
-    private cachedStyle?: {
-        currentZoom: number;
-        style: Style;
-    };
-
-    /**
-     *
-     * @param feature The feature that should be styled
-     * @param currentZoom This is for some reason also called `resolution` in the ol typings
-     * @returns The style that should be used for the feature
-     */
-    // This function should be as efficient as possible, because it is called per feature on each rendered frame
-    private getStyle(feature: Feature<LineString>, currentZoom: number) {
-        if (this.cachedStyle?.currentZoom !== currentZoom) {
-            this.cachedStyle = {
-                currentZoom,
-                style: new Style({
-                    stroke: new Stroke({
-                        color: '#0dcaf0',
-                        width: 0.1 / currentZoom,
-                    }),
-                }),
-            };
-        }
-        return this.cachedStyle.style;
-    }
-
-    createFeature(element: CateringLine): void {
+    createFeature(element: CateringLine): Feature<LineString> {
         const feature = new Feature(
             new LineString([
                 [element.catererPosition.x, element.catererPosition.y],
                 [element.patientPosition.x, element.patientPosition.y],
             ])
         );
-        feature.setStyle((thisFeature, currentZoom) =>
-            this.getStyle(thisFeature as Feature<LineString>, currentZoom)
-        );
         feature.setId(element.id);
         this.layer.getSource()!.addFeature(feature);
+        return feature;
     }
 
     deleteFeature(

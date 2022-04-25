@@ -21,8 +21,9 @@ export class Vehicle {
     @IsString()
     public readonly name: string;
 
-    @IsUUID(4, uuidValidationOptions)
-    public readonly materialId: UUID;
+    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
+    @IsDefined()
+    public readonly materialIds: UUIDSet = {};
 
     @IsNumber()
     public readonly patientCapacity: number;
@@ -61,13 +62,13 @@ export class Vehicle {
     constructor(
         vehicleType: string,
         name: string,
-        materialId: UUID,
+        materialIds: UUIDSet,
         patientCapacity: number,
         image: ImageProperties
     ) {
         this.vehicleType = vehicleType;
         this.name = name;
-        this.materialId = materialId;
+        this.materialIds = materialIds;
         this.patientCapacity = patientCapacity;
         this.image = image;
     }

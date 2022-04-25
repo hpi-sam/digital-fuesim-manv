@@ -15,7 +15,7 @@ export class TransferLinesService {
         this._displayTransferLines = value;
         this.displayTransferLines$.next(value);
     }
-    private _displayTransferLines = false;
+    private _displayTransferLines = true;
     /**
      * The BehaviorSubject that emits the current value of the displayTransferLines property.
      */

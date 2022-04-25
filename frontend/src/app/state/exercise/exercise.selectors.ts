@@ -31,6 +31,8 @@ export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
 export const getSelectTransferPoint =
     (transferPointId: UUID) => (state: AppState) =>
         state.exercise.transferPoints[transferPointId];
+export const getSelectViewport = (viewportId: UUID) => (state: AppState) =>
+    state.exercise.viewports[viewportId];
 export const selectTransferPoints = (state: AppState) =>
     state.exercise.transferPoints;
 
@@ -118,3 +120,44 @@ export const selectTransferLines = createSelector(
                 {}
             )
 );
+
+export function getSelectReachableTransferPoints(transferPointId: UUID) {
+    return createSelector(selectTransferPoints, (transferPoints) =>
+        Object.keys(
+            transferPoints[transferPointId].reachableTransferPoints
+        ).map((id) => transferPoints[id])
+    );
+}
+
+export const selectVehiclesInTransfer = createSelector(
+    selectVehicles,
+    selectTransferPoints,
+    (vehicles, transferPoints) =>
+        Object.values(vehicles)
+            .filter((vehicle) => vehicle.transfer !== undefined)
+            .map((vehicle) => ({
+                vehicle,
+                startTransferPoint:
+                    transferPoints[vehicle.transfer!.startTransferPointId],
+                targetTransferPoint:
+                    transferPoints[vehicle.transfer!.targetTransferPointId],
+            }))
+);
+
+export const selectPersonnelInTransfer = createSelector(
+    selectPersonnel,
+    selectTransferPoints,
+    (personnel, transferPoints) =>
+        Object.values(personnel)
+            .filter((_personnel) => _personnel.transfer !== undefined)
+            .map((_personnel) => ({
+                personnel: _personnel,
+                startTransferPoint:
+                    transferPoints[_personnel.transfer!.startTransferPointId],
+                targetTransferPoint:
+                    transferPoints[_personnel.transfer!.targetTransferPointId],
+            }))
+);
+
+export const selectCurrentTime = (state: AppState) =>
+    state.exercise.currentTime;

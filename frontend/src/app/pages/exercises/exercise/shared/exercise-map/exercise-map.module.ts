@@ -8,6 +8,8 @@ import { VehiclePopupComponent } from './shared/vehicle-popup/vehicle-popup.comp
 import { PatientPopupComponent } from './shared/patient-popup/patient-popup.component';
 import { TransferPointPopupComponent } from './shared/transfer-point-popup/transfer-point-popup.component';
 import { MapImagePopupComponent } from './shared/map-image-popup/map-image-popup.component';
+import { ViewportPopupComponent } from './shared/viewport-popup/viewport-popup.component';
+import { ChooseTransferTargetPopupComponent } from './shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 
 @NgModule({
     declarations: [
@@ -16,6 +18,8 @@ import { MapImagePopupComponent } from './shared/map-image-popup/map-image-popup
         MapImagePopupComponent,
         PatientPopupComponent,
         TransferPointPopupComponent,
+        ViewportPopupComponent,
+        ChooseTransferTargetPopupComponent,
     ],
     imports: [
         CommonModule,

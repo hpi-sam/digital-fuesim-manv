@@ -13,6 +13,7 @@ import { ElementManager } from './element-manager';
 export class TransferLinesFeatureManager
     extends ElementManager<
         TransferLine,
+        LineString,
         Feature<LineString>,
         ReadonlySet<keyof TransferLine>
     >
@@ -22,16 +23,7 @@ export class TransferLinesFeatureManager
 
     constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {
         super();
-    }
-
-    createFeature(element: TransferLine): void {
-        const feature = new Feature(
-            new LineString([
-                [element.startPosition.x, element.startPosition.y],
-                [element.endPosition.x, element.endPosition.y],
-            ])
-        );
-        feature.setStyle(
+        layer.setStyle(
             new Style({
                 stroke: new Stroke({
                     color: '#fd7e14',
@@ -40,8 +32,18 @@ export class TransferLinesFeatureManager
                 }),
             })
         );
+    }
+
+    createFeature(element: TransferLine): Feature<LineString> {
+        const feature = new Feature(
+            new LineString([
+                [element.startPosition.x, element.startPosition.y],
+                [element.endPosition.x, element.endPosition.y],
+            ])
+        );
         feature.setId(element.id);
         this.layer.getSource()!.addFeature(feature);
+        return feature;
     }
 
     deleteFeature(

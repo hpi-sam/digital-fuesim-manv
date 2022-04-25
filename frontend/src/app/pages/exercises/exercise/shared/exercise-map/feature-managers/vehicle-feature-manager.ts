@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import type { Vehicle } from 'digital-fuesim-manv-shared';
+import { normalZoom } from 'digital-fuesim-manv-shared';
 import type Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
@@ -12,25 +13,51 @@ import type { TranslateEvent } from 'ol/interaction/Translate';
 import type { WithPosition } from '../../utility/types/with-position';
 import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
 import { withPopup } from '../utility/with-popup';
-import { withElementImageStyle } from '../utility/with-element-image-style';
-import { ElementFeatureManager } from './element-feature-manager';
+import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
+import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
+import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
 class VehicleFeatureManagerBase extends ElementFeatureManager<
     WithPosition<Vehicle>
 > {
+    private readonly imageStyleHelper = new ImageStyleHelper(
+        (feature) => this.getElementFromFeature(feature)!.value.image
+    );
+    private readonly nameStyleHelper = new NameStyleHelper(
+        (feature) => {
+            const vehicle = this.getElementFromFeature(feature)!.value;
+            return {
+                name: vehicle.name,
+                offsetY: vehicle.image.height / 2 / normalZoom,
+            };
+        },
+        0.1,
+        'top'
+    );
+
     constructor(
         store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
         private readonly apiService: ApiService
     ) {
-        super(store, olMap, layer, (targetPosition, vehicle) => {
-            apiService.proposeAction({
-                type: '[Vehicle] Move vehicle',
-                vehicleId: vehicle.id,
-                targetPosition,
-            });
-        });
+        super(
+            store,
+            olMap,
+            layer,
+            (targetPosition, vehicle) => {
+                apiService.proposeAction({
+                    type: '[Vehicle] Move vehicle',
+                    vehicleId: vehicle.id,
+                    targetPosition,
+                });
+            },
+            createPoint
+        );
+        this.layer.setStyle((feature, resolution) => [
+            this.nameStyleHelper.getStyle(feature as Feature, resolution),
+            this.imageStyleHelper.getStyle(feature as Feature, resolution),
+        ]);
     }
 
     public override onFeatureDrop(
@@ -53,8 +80,7 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
             (droppedElement.type === 'personnel' &&
                 droppedOnVehicle.value.personnelIds[droppedElement.value.id]) ||
             (droppedElement.type === 'material' &&
-                droppedOnVehicle.value.materialId ===
-                    droppedElement.value.id) ||
+                droppedOnVehicle.value.materialIds[droppedElement.value.id]) ||
             (droppedElement.type === 'patient' &&
                 Object.keys(droppedOnVehicle.value.patientIds).length <
                     droppedOnVehicle.value.patientCapacity)
@@ -77,15 +103,11 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
     override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 }
 
-const VehicleFeatureManagerWithImageStyle = withElementImageStyle<
-    WithPosition<Vehicle>
->(VehicleFeatureManagerBase);
-
 export const VehicleFeatureManager = withPopup<
     WithPosition<Vehicle>,
-    typeof VehicleFeatureManagerWithImageStyle,
+    typeof VehicleFeatureManagerBase,
     VehiclePopupComponent
->(VehicleFeatureManagerWithImageStyle, {
+>(VehicleFeatureManagerBase, {
     component: VehiclePopupComponent,
     height: 150,
     width: 225,

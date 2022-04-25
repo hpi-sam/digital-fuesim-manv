@@ -19,6 +19,12 @@ import { uuid } from './utils';
 
 export class ExerciseState {
     public readonly id = uuid();
+    /**
+     * The number of ms since the start of the exercise.
+     * This time is updated each `tick` by a constant value, is guaranteed to be (a bit) slower than the real time
+     * (depending on the server load and overhead of the tick).
+     */
+    public readonly currentTime = 0;
     public readonly viewports: { readonly [key: UUID]: Viewport } = {};
     public readonly vehicles: { readonly [key: UUID]: Vehicle } = {};
     public readonly personnel: { readonly [key: UUID]: Personnel } = {};

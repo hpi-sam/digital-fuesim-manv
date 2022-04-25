@@ -2,6 +2,7 @@ import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID, Vehicle } from 'digital-fuesim-manv-shared';
+import { Material, Patient, Personnel } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, firstValueFrom, map, switchMap } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
@@ -44,30 +45,33 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
         this.vehicle$ = this.store.select(getSelectVehicle(this.vehicleId));
         this.vehicleIsCompletelyUnloaded$ = this.vehicle$.pipe(
             switchMap((_vehicle) => {
-                const materialIsInVehicle$ = this.store
-                    .select(getSelectMaterial(_vehicle.materialId))
-                    .pipe(map((material) => material.position === undefined));
-                const personnelIsInVehicle$ = Object.keys(
+                const materialsAreInVehicle$ = Object.keys(
+                    _vehicle.materialIds
+                ).map((materialId) =>
+                    this.store
+                        .select(getSelectMaterial(materialId))
+                        .pipe(map((material) => Material.isInVehicle(material)))
+                );
+                const personnelAreInVehicle$ = Object.keys(
                     _vehicle.personnelIds
                 ).map((personnelId) =>
-                    this.store.select(getSelectPersonnel(personnelId)).pipe(
-                        // TODO: only if the person is not in transfer
-                        map((personnel) => personnel.position === undefined)
-                    )
+                    this.store
+                        .select(getSelectPersonnel(personnelId))
+                        .pipe(
+                            map((personnel) => Personnel.isInVehicle(personnel))
+                        )
                 );
-                const patientIsInVehicle$ = Object.keys(
+                const patientsAreInVehicle$ = Object.keys(
                     _vehicle.patientIds
                 ).map((patientId) =>
                     this.store
                         .select(getSelectPatient(patientId))
-                        .pipe(
-                            map((personnel) => personnel.position === undefined)
-                        )
+                        .pipe(map((patient) => Patient.isInVehicle(patient)))
                 );
                 return combineLatest([
-                    materialIsInVehicle$,
-                    ...personnelIsInVehicle$,
-                    ...patientIsInVehicle$,
+                    ...materialsAreInVehicle$,
+                    ...personnelAreInVehicle$,
+                    ...patientsAreInVehicle$,
                 ]);
             }),
             map((areInVehicle) =>

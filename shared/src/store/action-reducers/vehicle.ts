@@ -4,11 +4,14 @@ import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
 import { Position } from '../../models/utils';
+import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
+import type { Mutable } from '../../utils';
 import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { calculateTreatments } from './utils/calculate-treatments';
+import { transferElement } from './utils/transfer-element';
 
 export class AddVehicleAction implements Action {
     @IsString()
@@ -17,9 +20,10 @@ export class AddVehicleAction implements Action {
     @Type(() => Vehicle)
     public readonly vehicle!: Vehicle;
 
+    @IsArray()
     @ValidateNested()
     @Type(() => Material)
-    public readonly material!: Material;
+    public readonly materials!: readonly Material[];
 
     @IsArray()
     @ValidateNested()
@@ -79,23 +83,41 @@ export class LoadVehicleAction implements Action {
     public readonly elementToBeLoadedId!: UUID;
 }
 
+export class TransferVehicleAction implements Action {
+    @IsString()
+    public readonly type = '[Vehicle] Transfer vehicle';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly vehicleId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly startTransferPointId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly targetTransferPointId!: UUID;
+}
+
 export namespace VehicleActionReducers {
     export const addVehicle: ActionReducer<AddVehicleAction> = {
         action: AddVehicleAction,
-        reducer: (draftState, { vehicle, material, personnel }) => {
+        reducer: (draftState, { vehicle, materials, personnel }) => {
             if (
-                vehicle.materialId !== material.id ||
-                material.vehicleId !== vehicle.id
+                materials.some(
+                    (currentMaterial) =>
+                        currentMaterial.vehicleId !== vehicle.id ||
+                        vehicle.materialIds[currentMaterial.id] === undefined
+                ) ||
+                Object.keys(vehicle.materialIds).length !== materials.length
             ) {
                 throw new ReducerError(
-                    'Vehicle material id does not match material id'
+                    'Vehicle material ids do not match material ids'
                 );
             }
             if (
                 personnel.some(
-                    (_personnel) =>
-                        _personnel.vehicleId !== vehicle.id ||
-                        vehicle.personnelIds[_personnel.id] === undefined
+                    (currentPersonnel) =>
+                        currentPersonnel.vehicleId !== vehicle.id ||
+                        vehicle.personnelIds[currentPersonnel.id] === undefined
                 ) ||
                 Object.keys(vehicle.personnelIds).length !== personnel.length
             ) {
@@ -104,7 +126,9 @@ export namespace VehicleActionReducers {
                 );
             }
             draftState.vehicles[vehicle.id] = vehicle;
-            draftState.materials[material.id] = material;
+            for (const currentMaterial of materials) {
+                draftState.materials[currentMaterial.id] = currentMaterial;
+            }
             for (const person of personnel) {
                 draftState.personnel[person.id] = person;
             }
@@ -116,12 +140,7 @@ export namespace VehicleActionReducers {
     export const moveVehicle: ActionReducer<MoveVehicleAction> = {
         action: MoveVehicleAction,
         reducer: (draftState, { vehicleId, targetPosition }) => {
-            const vehicle = draftState.vehicles[vehicleId];
-            if (!vehicle) {
-                throw new ReducerError(
-                    `Vehicle with id ${vehicleId} does not exist`
-                );
-            }
+            const vehicle = getVehicle(draftState, vehicleId);
             vehicle.position = targetPosition;
             return draftState;
         },
@@ -131,17 +150,14 @@ export namespace VehicleActionReducers {
     export const renameVehicle: ActionReducer<RenameVehicleAction> = {
         action: RenameVehicleAction,
         reducer: (draftState, { vehicleId, name }) => {
-            const vehicle = draftState.vehicles[vehicleId];
-            if (!vehicle) {
-                throw new ReducerError(
-                    `Vehicle with id ${vehicleId} does not exist`
-                );
-            }
+            const vehicle = getVehicle(draftState, vehicleId);
             vehicle.name = name;
             for (const personnelId of Object.keys(vehicle.personnelIds)) {
                 draftState.personnel[personnelId].vehicleName = name;
             }
-            draftState.materials[vehicle.materialId].vehicleName = name;
+            for (const materialId of Object.keys(vehicle.materialIds)) {
+                draftState.materials[materialId].vehicleName = name;
+            }
             return draftState;
         },
         rights: 'trainer',
@@ -150,11 +166,8 @@ export namespace VehicleActionReducers {
     export const removeVehicle: ActionReducer<RemoveVehicleAction> = {
         action: RemoveVehicleAction,
         reducer: (draftState, { vehicleId }) => {
-            if (!draftState.vehicles[vehicleId]) {
-                throw new ReducerError(
-                    `Vehicle with id ${vehicleId} does not exist`
-                );
-            }
+            // Check if the vehicle exists
+            getVehicle(draftState, vehicleId);
             delete draftState.vehicles[vehicleId];
             return draftState;
         },
@@ -164,19 +177,16 @@ export namespace VehicleActionReducers {
     export const unloadVehicle: ActionReducer<UnloadVehicleAction> = {
         action: UnloadVehicleAction,
         reducer: (draftState, { vehicleId }) => {
-            const vehicle = draftState.vehicles[vehicleId];
-            if (!vehicle) {
-                throw new ReducerError(
-                    `Vehicle with id ${vehicleId} does not exist`
-                );
-            }
+            const vehicle = getVehicle(draftState, vehicleId);
             const unloadPosition = vehicle.position;
             if (!unloadPosition) {
                 throw new ReducerError(
                     `Vehicle with id ${vehicleId} is currently in transfer`
                 );
             }
-            const material = draftState.materials[vehicle.materialId];
+            const materials = Object.keys(vehicle.materialIds).map(
+                (materialId) => draftState.materials[materialId]
+            );
             const personnel = Object.keys(vehicle.personnelIds).map(
                 (personnelId) => draftState.personnel[personnelId]
             );
@@ -186,10 +196,9 @@ export namespace VehicleActionReducers {
             const vehicleWidthInPosition = imageSizeToPosition(
                 vehicle.image.aspectRatio * vehicle.image.height
             );
-            const numberOfMaterial = 1;
             const space =
                 vehicleWidthInPosition /
-                (personnel.length + numberOfMaterial + patients.length + 1);
+                (personnel.length + materials.length + patients.length + 1);
             let x = unloadPosition.x - vehicleWidthInPosition / 2;
             for (const patient of patients) {
                 x += space;
@@ -201,17 +210,21 @@ export namespace VehicleActionReducers {
             }
             for (const person of personnel) {
                 x += space;
-                // TODO: only if the person is not in transfer
+                if (!Personnel.isInVehicle(person)) {
+                    continue;
+                }
                 person.position ??= {
                     x,
                     y: unloadPosition.y,
                 };
             }
-            x += space;
-            material.position ??= {
-                x,
-                y: unloadPosition.y,
-            };
+            for (const currentMaterial of materials) {
+                x += space;
+                currentMaterial.position ??= {
+                    x,
+                    y: unloadPosition.y,
+                };
+            }
             calculateTreatments(draftState);
             return draftState;
         },
@@ -224,12 +237,7 @@ export namespace VehicleActionReducers {
             draftState,
             { vehicleId, elementToBeLoadedId, elementToBeLoadedType }
         ) => {
-            const vehicle = draftState.vehicles[vehicleId];
-            if (!vehicle) {
-                throw new ReducerError(
-                    `Vehicle with id ${vehicleId} does not exist`
-                );
-            }
+            const vehicle = getVehicle(draftState, vehicleId);
             switch (elementToBeLoadedType) {
                 case 'material': {
                     const material = draftState.materials[elementToBeLoadedId];
@@ -238,7 +246,7 @@ export namespace VehicleActionReducers {
                             `Material with id ${elementToBeLoadedId} does not exist`
                         );
                     }
-                    if (vehicle.materialId !== material.id) {
+                    if (!vehicle.materialIds[elementToBeLoadedId]) {
                         throw new ReducerError(
                             `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
@@ -251,6 +259,11 @@ export namespace VehicleActionReducers {
                     if (!personnel) {
                         throw new ReducerError(
                             `Personnel with id ${elementToBeLoadedId} does not exist`
+                        );
+                    }
+                    if (personnel.transfer !== undefined) {
+                        throw new ReducerError(
+                            `Personnel with id ${elementToBeLoadedId} is currently in transfer`
                         );
                     }
                     if (!vehicle.personnelIds[elementToBeLoadedId]) {
@@ -278,9 +291,11 @@ export namespace VehicleActionReducers {
                     }
                     vehicle.patientIds[elementToBeLoadedId] = true;
                     patient.position = undefined;
-                    draftState.materials[vehicle.materialId].position =
-                        undefined;
+                    Object.keys(vehicle.materialIds).forEach((materialId) => {
+                        draftState.materials[materialId].position = undefined;
+                    });
                     Object.keys(vehicle.personnelIds).forEach((personnelId) => {
+                        // If a personnel is in transfer, this doesn't change that
                         draftState.personnel[personnelId].position = undefined;
                     });
                 }
@@ -290,4 +305,30 @@ export namespace VehicleActionReducers {
         },
         rights: 'participant',
     };
+
+    export const transferVehicle: ActionReducer<TransferVehicleAction> = {
+        action: TransferVehicleAction,
+        reducer: (
+            draftState,
+            { vehicleId, startTransferPointId, targetTransferPointId }
+        ) => {
+            const vehicle = getVehicle(draftState, vehicleId);
+            transferElement(
+                draftState,
+                vehicle,
+                startTransferPointId,
+                targetTransferPointId
+            );
+            return draftState;
+        },
+        rights: 'participant',
+    };
+}
+
+function getVehicle(state: Mutable<ExerciseState>, vehicleId: UUID) {
+    const vehicle = state.vehicles[vehicleId];
+    if (!vehicle) {
+        throw new ReducerError(`Vehicle with id ${vehicleId} does not exist`);
+    }
+    return vehicle;
 }

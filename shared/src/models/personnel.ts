@@ -13,6 +13,7 @@ import {
     ImageProperties,
     PersonnelType,
     getCreate,
+    Transfer,
 } from './utils';
 
 export class Personnel {
@@ -42,7 +43,7 @@ export class Personnel {
     public readonly image: ImageProperties;
 
     /**
-     * if undefined, is in vehicle with {@link vehicleId}
+     * if undefined, is in vehicle with {@link vehicleId} or in transfer
      */
     @ValidateNested()
     @Type(() => Position)
@@ -50,23 +51,37 @@ export class Personnel {
     public readonly position?: Position;
 
     /**
+     * Exclusive-or to {@link position}
+     */
+    @ValidateNested()
+    @Type(() => Transfer)
+    @IsOptional()
+    public readonly transfer?: Transfer;
+
+    /**
      * @deprecated Use {@link create} instead
      */
     constructor(
         vehicleId: UUID,
-        personnelType: PersonnelType,
         vehicleName: string,
+        personnelType: PersonnelType,
         assignedPatientIds: UUIDSet
     ) {
         this.vehicleId = vehicleId;
-        this.personnelType = personnelType;
         this.vehicleName = vehicleName;
+        this.personnelType = personnelType;
         this.assignedPatientIds = assignedPatientIds;
         this.image = personnelTemplateMap[personnelType].image;
         this.canCaterFor = personnelTemplateMap[personnelType].canCaterFor;
     }
 
     static readonly create = getCreate(this);
+
+    static isInVehicle(personnel: Personnel): boolean {
+        return (
+            personnel.position === undefined && personnel.transfer === undefined
+        );
+    }
 }
 
 const personnelTemplateMap: {
@@ -75,6 +90,14 @@ const personnelTemplateMap: {
         canCaterFor: CanCaterFor;
     };
 } = {
+    san: {
+        image: {
+            url: '/assets/san-personnel.svg',
+            height: 80,
+            aspectRatio: 1,
+        },
+        canCaterFor: CanCaterFor.create(1, 1, 4, 'or'),
+    },
     notSan: {
         image: {
             url: '/assets/notSan-personnel.svg',
@@ -83,9 +106,9 @@ const personnelTemplateMap: {
         },
         canCaterFor: CanCaterFor.create(1, 1, 4, 'or'),
     },
-    retSan: {
+    rettSan: {
         image: {
-            url: '/assets/retSan-personnel.svg',
+            url: '/assets/rettSan-personnel.svg',
             height: 80,
             aspectRatio: 1,
         },
@@ -102,14 +125,6 @@ const personnelTemplateMap: {
     gf: {
         image: {
             url: '/assets/gf-personnel.svg',
-            height: 80,
-            aspectRatio: 1,
-        },
-        canCaterFor: CanCaterFor.create(1, 1, 4, 'or'),
-    },
-    firefighter: {
-        image: {
-            url: '/assets/firefighter-personnel.svg',
             height: 80,
             aspectRatio: 1,
         },
