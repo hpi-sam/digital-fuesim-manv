@@ -15,7 +15,7 @@ import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.com
 import { withPopup } from '../utility/with-popup';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { ElementFeatureManager } from './element-feature-manager';
+import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
 class VehicleFeatureManagerBase extends ElementFeatureManager<
     WithPosition<Vehicle>
@@ -41,13 +41,19 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
         layer: VectorLayer<VectorSource<Point>>,
         private readonly apiService: ApiService
     ) {
-        super(store, olMap, layer, (targetPosition, vehicle) => {
-            apiService.proposeAction({
-                type: '[Vehicle] Move vehicle',
-                vehicleId: vehicle.id,
-                targetPosition,
-            });
-        });
+        super(
+            store,
+            olMap,
+            layer,
+            (targetPosition, vehicle) => {
+                apiService.proposeAction({
+                    type: '[Vehicle] Move vehicle',
+                    vehicleId: vehicle.id,
+                    targetPosition,
+                });
+            },
+            createPoint
+        );
         this.layer.setStyle((feature, resolution) => [
             this.nameStyleHelper.getStyle(feature as Feature, resolution),
             this.imageStyleHelper.getStyle(feature as Feature, resolution),
@@ -74,8 +80,7 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
             (droppedElement.type === 'personnel' &&
                 droppedOnVehicle.value.personnelIds[droppedElement.value.id]) ||
             (droppedElement.type === 'material' &&
-                droppedOnVehicle.value.materialId ===
-                    droppedElement.value.id) ||
+                droppedOnVehicle.value.materialIds[droppedElement.value.id]) ||
             (droppedElement.type === 'patient' &&
                 Object.keys(droppedOnVehicle.value.patientIds).length <
                     droppedOnVehicle.value.patientCapacity)

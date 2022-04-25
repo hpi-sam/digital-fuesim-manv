@@ -31,6 +31,8 @@ export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
 export const getSelectTransferPoint =
     (transferPointId: UUID) => (state: AppState) =>
         state.exercise.transferPoints[transferPointId];
+export const getSelectViewport = (viewportId: UUID) => (state: AppState) =>
+    state.exercise.viewports[viewportId];
 export const selectTransferPoints = (state: AppState) =>
     state.exercise.transferPoints;
 

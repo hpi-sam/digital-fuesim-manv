@@ -13,33 +13,21 @@ export function addVehicle(
     vehicleTemplate: VehicleTemplate,
     vehiclePosition?: Position
 ): {
-    material: Material;
+    materials: Material[];
     personnel: Personnel[];
     vehicle: Vehicle;
 } {
     const vehicleId = uuid();
-    const material: Material = {
-        ...Material.create(
-            vehicleId,
-            vehicleTemplate.name,
-            {},
-            vehicleTemplate.material
-        ),
-    };
-    const personnel: Personnel[] = [];
-    for (const personnelType of vehicleTemplate.personnel) {
-        const newPersonnel = Personnel.create(
-            vehicleId,
-            personnelType,
-            vehicleTemplate.name,
-            {}
-        );
-        personnel.push(newPersonnel);
-    }
+    const materials = vehicleTemplate.materials.map((currentMaterial) =>
+        Material.create(vehicleId, vehicleTemplate.name, {}, currentMaterial)
+    );
+    const personnel = vehicleTemplate.personnel.map((currentPersonnel) =>
+        Personnel.create(vehicleId, vehicleTemplate.name, {}, currentPersonnel)
+    );
 
     const vehicle: Vehicle = {
         id: vehicleId,
-        materialId: material.id,
+        materialIds: arrayToUUIDSet(materials.map((m) => m.id)),
         vehicleType: vehicleTemplate.vehicleType,
         name: vehicleTemplate.name,
         patientCapacity: vehicleTemplate.patientCapacity,
@@ -49,7 +37,7 @@ export function addVehicle(
         position: vehiclePosition,
     };
     return {
-        material,
+        materials,
         personnel,
         vehicle,
     };

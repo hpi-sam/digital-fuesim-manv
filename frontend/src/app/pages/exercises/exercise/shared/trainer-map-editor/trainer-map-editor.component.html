@@ -13,21 +13,60 @@
                 style="flex: auto; height: 0; overflow-y: auto"
             >
                 <li class="list-group-item">
-                    <h5>Transferpunkt</h5>
+                    <h5>Ansicht/Transferpunkt</h5>
                     <div
                         class="overflow-auto w-100"
                         style="white-space: nowrap"
                     >
-                        <div class="preview-image-container">
-                            <img
-                                [src]="transferPointTemplate.image.url"
-                                (mousedown)="
-                                    dragElementService.onMouseDown($event, {
-                                        type: 'transferPoint',
-                                        template: transferPointTemplate
-                                    })
-                                "
-                            />
+                        <div
+                            class="d-inline-block card text-center"
+                            style="width: 10rem; text-overflow: ellipsis"
+                            (mousedown)="
+                                dragElementService.onMouseDown($event, {
+                                    type: 'viewport',
+                                    template: viewportTemplate
+                                })
+                            "
+                        >
+                            <div class="preview-image-container bg-secondary">
+                                <img
+                                    [src]="viewportTemplate.image.url"
+                                    class="card-img-top"
+                                />
+                            </div>
+                            <div class="card-body">
+                                <h5
+                                    class="card-title text-truncate"
+                                    [title]="'Ansicht'"
+                                >
+                                    Ansicht
+                                </h5>
+                            </div>
+                        </div>
+                        <div
+                            class="d-inline-block card text-center"
+                            style="width: 10rem; text-overflow: ellipsis"
+                            (mousedown)="
+                                dragElementService.onMouseDown($event, {
+                                    type: 'transferPoint',
+                                    template: transferPointTemplate
+                                })
+                            "
+                        >
+                            <div class="preview-image-container">
+                                <img
+                                    [src]="transferPointTemplate.image.url"
+                                    class="card-img-top"
+                                />
+                            </div>
+                            <div class="card-body">
+                                <h5
+                                    class="card-title text-truncate"
+                                    [title]="'Transferpunkt'"
+                                >
+                                    Transferpunkt
+                                </h5>
+                            </div>
                         </div>
                         <div class="p-2">
                             <div class="form-check form-switch">

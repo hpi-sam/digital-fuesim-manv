@@ -12,6 +12,7 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import {
+    selectViewports,
     getSelectWithPosition,
     selectCateringLines,
     selectTransferLines,
@@ -25,6 +26,7 @@ import type { NgZone } from '@angular/core';
 import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
 import { isEqual } from 'lodash-es';
+import { primaryAction, shiftKeyOnly } from 'ol/events/condition';
 import type { Observable } from 'rxjs';
 import {
     Subject,
@@ -40,6 +42,7 @@ import { PatientFeatureManager } from '../feature-managers/patient-feature-manag
 import { PersonnelFeatureManager } from '../feature-managers/personnel-feature-manager';
 import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
+import { ViewportFeatureManager } from '../feature-managers/viewport-feature-manager';
 import type { ElementManager } from '../feature-managers/element-manager';
 import { TransferPointFeatureManager } from '../feature-managers/transfer-point-feature-manager';
 import { TransferLinesFeatureManager } from '../feature-managers/transfer-lines-feature-manager';
@@ -50,6 +53,8 @@ import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
 import type { FeatureManager } from './feature-manager';
+import { ModifyHelper } from './modify-helper';
+import { createViewportModify } from './viewport-modify';
 
 /**
  * This class should run outside the Angular zone for performance reasons.
@@ -101,6 +106,7 @@ export class OlMapManager {
         const patientLayer = this.createElementLayer();
         const personnelLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
+        const viewportLayer = this.createElementLayer<LineString>();
         const mapImagesLayer = this.createElementLayer(10_000);
         this.popupOverlay = new Overlay({
             element: this.popoverContainer,
@@ -122,19 +128,39 @@ export class OlMapManager {
                       mapImagesLayer,
                   ]
                 : alwaysTranslatableLayers,
+            hitTolerance: 10,
         });
+
+        const viewportModify = createViewportModify(viewportLayer);
+
+        const viewportTranslate = new Translate({
+            layers: [viewportLayer],
+            condition: (event) => primaryAction(event) && !shiftKeyOnly(event),
+            hitTolerance: 10,
+        });
+
         // Clicking on an element should not trigger a drag event - use a `singleclick` interaction instead
         // Be aware that this means that not every `dragstart` event will have an accompanying `dragend` event
-        translateInteraction.on('translateend', (event) => {
-            if (isEqual(event.coordinate, event.startCoordinate)) {
-                event.stopPropagation();
-            }
-        });
+        const registerTranslate = (translate: Translate) =>
+            translate.on('translateend', (event) => {
+                if (isEqual(event.coordinate, event.startCoordinate)) {
+                    event.stopPropagation();
+                }
+            });
+        registerTranslate(translateInteraction);
+        registerTranslate(viewportTranslate);
 
         TranslateHelper.registerTranslateEvents(translateInteraction);
+        TranslateHelper.registerTranslateEvents(viewportTranslate);
+        ModifyHelper.registerModifyEvents(viewportModify);
+
+        const alwaysInteractions = [translateInteraction];
+        const interactions = _isTrainer
+            ? [...alwaysInteractions, viewportTranslate, viewportModify]
+            : alwaysInteractions;
 
         this.olMap = new OlMap({
-            interactions: defaultInteractions().extend([translateInteraction]),
+            interactions: defaultInteractions().extend(interactions),
             target: this.openLayersContainer,
             // Note: The order of this array determines the order of the objects on the map.
             // The most bottom objects must be at the top of the array.
@@ -148,6 +174,7 @@ export class OlMapManager {
                 patientLayer,
                 personnelLayer,
                 materialLayer,
+                viewportLayer,
             ],
             overlays: [this.popupOverlay],
             view: new View({
@@ -251,6 +278,21 @@ export class OlMapManager {
             this.store.select(selectCateringLines)
         );
 
+        this.registerFeatureElementManager(
+            new ViewportFeatureManager(
+                this.store,
+                this.olMap,
+                viewportLayer,
+                this.apiService
+            ),
+            this.store.select(selectViewports)
+        )
+            .togglePopup$.pipe(
+                // We only want to open the popup if the user is a trainer
+                filter(() => _isTrainer)
+            )
+            .subscribe(this.changePopup$);
+
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
     }
@@ -258,7 +300,7 @@ export class OlMapManager {
     private registerFeatureElementManager<
         Element extends ImmutableJsonObject,
         T extends MergeIntersection<
-            ElementManager<Element, any, any> & FeatureManager<any>
+            ElementManager<Element, any, any, any> & FeatureManager<any>
         >
     >(
         featureManager: T,
@@ -299,13 +341,28 @@ export class OlMapManager {
 
     private registerPopupTriggers(translateInteraction: Translate) {
         this.olMap.on('singleclick', (event) => {
-            this.olMap.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
-                this.layerFeatureManagerDictionary
-                    .get(layer as VectorLayer<VectorSource<Point>>)!
-                    .onFeatureClicked(event, feature as Feature<Point>);
-                // we only want the top one -> a truthy return breaks this loop
-                return true;
-            });
+            this.olMap.forEachFeatureAtPixel(
+                event.pixel,
+                (feature, layer) => {
+                    // Skip layer when unset
+                    if (layer === null) {
+                        return false;
+                    }
+                    this.layerFeatureManagerDictionary
+                        .get(
+                            layer as VectorLayer<
+                                VectorSource<LineString | Point>
+                            >
+                        )!
+                        .onFeatureClicked(
+                            event,
+                            feature as Feature<LineString | Point>
+                        );
+                    // we only want the top one -> a truthy return breaks this loop
+                    return true;
+                },
+                { hitTolerance: 10 }
+            );
             if (!this.olMap!.hasFeatureAtPixel(event.pixel)) {
                 this.changePopup$.next(undefined);
             }

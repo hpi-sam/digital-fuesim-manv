@@ -1,20 +1,19 @@
-<ng-container *ngIf="vehicle$ | async as vehicle">
+<ng-container *ngIf="viewport$ | async as viewport">
     <h5 class="popover-header">
-        {{ vehicle.name }}
+        Ansicht {{ viewport.name }}
         <button
             (click)="closePopup.emit()"
             type="button"
             class="btn-close float-end"
         ></button>
     </h5>
-    <div class="popover-body">
+    <div class="popover-body" style="width: 350px; height: 300px">
         <ng-container *ngIf="(client$ | async)?.role === 'trainer'">
             <div class="form-group pb-3">
-                <label class="form-label">Fahrzeugname</label>
+                <label class="form-label">Name</label>
                 <input
                     #nameInput="ngModel"
                     [(ngModel)]="name"
-                    [maxlength]="16"
                     required
                     type="text"
                     class="form-control"
@@ -23,27 +22,14 @@
                     [ngModelInput]="nameInput"
                 ></app-display-validation>
             </div>
+
             <button
                 [disabled]="nameInput.invalid"
-                (click)="renameVehicle()"
+                (click)="saveName()"
                 class="btn btn-warning"
             >
                 Speichern
             </button>
         </ng-container>
-        <div class="mt-3 mb-3">
-            Verfügbare Patientenplätze:
-            {{
-                vehicle.patientCapacity - (vehicle.patientIds | keyvalue).length
-            }}
-        </div>
-
-        <button
-            (click)="unloadVehicle()"
-            [disabled]="vehicleIsCompletelyUnloaded$ | async"
-            class="btn btn-primary"
-        >
-            Alle aussteigen
-        </button>
     </div>
 </ng-container>

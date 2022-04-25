@@ -6,11 +6,13 @@ import type {
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
 import {
+    Patient,
+    Viewport,
+    TransferPoint,
     normalZoom,
     addVehicle,
     PatientTemplate,
     MapImage,
-    TransferPoint,
 } from 'digital-fuesim-manv-shared';
 
 @Injectable({
@@ -153,6 +155,29 @@ export class DragElementService {
                     );
                 }
                 break;
+            case 'viewport': {
+                // This ratio has been determined by trial and error
+                const height = Viewport.image.height / 23.5;
+                const width = height * Viewport.image.aspectRatio;
+                this.apiService.proposeAction(
+                    {
+                        type: '[Viewport] Add viewport',
+                        viewport: Viewport.create(
+                            {
+                                x: position.x - width / 2,
+                                y: position.y + height / 2,
+                            },
+                            {
+                                height,
+                                width,
+                            },
+                            'Einsatzabschnitt'
+                        ),
+                    },
+                    true
+                );
+                break;
+            }
             case 'mapImage':
                 {
                     const template = this.transferringTemplate.template.image;
@@ -217,4 +242,10 @@ type TransferTemplate =
     | {
           type: 'vehicle';
           template: VehicleTemplate;
+      }
+    | {
+          type: 'viewport';
+          template: {
+              image: ImageProperties;
+          };
       };
