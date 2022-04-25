@@ -5,6 +5,7 @@ import type {
     Client,
     EocLogEntry,
     MapImage,
+    TileMapProperties,
     Material,
     Patient,
     Personnel,
@@ -40,6 +41,11 @@ export class ExerciseState {
     public readonly ecoLog: readonly EocLogEntry[] = [];
     public readonly statusHistory: readonly StatusHistoryEntry[] = [];
     public readonly participantId: string = '';
+    public readonly tileMapProperties: TileMapProperties = {
+        tileUrl:
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        maxZoom: 20,
+    };
 
     /**
      * @deprecated Use {@link create} instead.

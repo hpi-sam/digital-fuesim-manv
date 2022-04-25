@@ -36,6 +36,7 @@ import {
     pairwise,
     takeUntil,
 } from 'rxjs';
+import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { startingPosition } from '../../starting-position';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
@@ -95,9 +96,11 @@ export class OlMapManager {
     ) {
         const _isTrainer = isTrainer(this.apiService, this.store);
         // Layers
+        const tileMapProperties = getStateSnapshot(this.store).exercise
+            .tileMapProperties;
         const satelliteLayer = this.createTileLayer(
-            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            20
+            tileMapProperties.tileUrl,
+            tileMapProperties.maxZoom
         );
         const transferPointLayer = this.createElementLayer(600);
         const vehicleLayer = this.createElementLayer(1000);
