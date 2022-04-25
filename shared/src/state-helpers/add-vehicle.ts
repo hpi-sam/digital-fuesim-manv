@@ -1,5 +1,5 @@
-import type { Vehicle, VehicleTemplate } from '../models';
 import { Material, Personnel } from '../models';
+import type { Vehicle, VehicleTemplate } from '../models';
 import type { Position } from '../models/utils';
 import { uuid } from '../utils';
 

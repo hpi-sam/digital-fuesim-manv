@@ -39,11 +39,7 @@ export class Personnel {
 
     @ValidateNested()
     @Type(() => ImageProperties)
-    public readonly image: ImageProperties = {
-        url: './assets/personnel.svg',
-        height: 80,
-        aspectRatio: 1,
-    };
+    public readonly image: ImageProperties;
 
     /**
      * if undefined, is in vehicle with {@link vehicleId}
@@ -59,16 +55,64 @@ export class Personnel {
     constructor(
         vehicleId: UUID,
         personnelType: PersonnelType,
-        name: string,
-        assignedPatientIds: UUIDSet,
-        canCaterFor: CanCaterFor = CanCaterFor.create(1, 1, 4, 'or')
+        vehicleName: string,
+        assignedPatientIds: UUIDSet
     ) {
         this.vehicleId = vehicleId;
         this.personnelType = personnelType;
-        this.vehicleName = name;
+        this.vehicleName = vehicleName;
         this.assignedPatientIds = assignedPatientIds;
-        this.canCaterFor = canCaterFor;
+        this.image = personnelTemplateMap[personnelType].image;
+        this.canCaterFor = personnelTemplateMap[personnelType].canCaterFor;
     }
 
     static readonly create = getCreate(this);
 }
+
+const personnelTemplateMap: {
+    [key in PersonnelType]: {
+        image: ImageProperties;
+        canCaterFor: CanCaterFor;
+    };
+} = {
+    notSan: {
+        image: {
+            url: '/assets/notSan-personnel.svg',
+            height: 80,
+            aspectRatio: 1,
+        },
+        canCaterFor: CanCaterFor.create(1, 1, 4, 'or'),
+    },
+    retSan: {
+        image: {
+            url: '/assets/retSan-personnel.svg',
+            height: 80,
+            aspectRatio: 1,
+        },
+        canCaterFor: CanCaterFor.create(1, 1, 4, 'or'),
+    },
+    notarzt: {
+        image: {
+            url: '/assets/notarzt-personnel.svg',
+            height: 80,
+            aspectRatio: 1,
+        },
+        canCaterFor: CanCaterFor.create(1, 1, 4, 'or'),
+    },
+    gf: {
+        image: {
+            url: '/assets/gf-personnel.svg',
+            height: 80,
+            aspectRatio: 1,
+        },
+        canCaterFor: CanCaterFor.create(1, 1, 4, 'or'),
+    },
+    firefighter: {
+        image: {
+            url: '/assets/firefighter-personnel.svg',
+            height: 80,
+            aspectRatio: 1,
+        },
+        canCaterFor: CanCaterFor.create(1, 1, 4, 'or'),
+    },
+};
