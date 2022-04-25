@@ -1,1 +1,1 @@
-export type Sex = 'divers' | 'female' | 'male';
+export type Sex = 'diverse' | 'female' | 'male';

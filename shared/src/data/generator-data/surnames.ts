@@ -1,3 +1,4 @@
+// Extracted from https://fossbytes.com/tools/random-name-generator
 export const surnames = [
     'Ackermann',
     'Adler',

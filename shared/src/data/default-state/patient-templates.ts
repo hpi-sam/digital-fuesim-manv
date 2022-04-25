@@ -59,7 +59,7 @@ const needsSomeoneSoonGreenState = PatientHealthState.create(
     [
         {
             matchingHealthStateId: stableState.id,
-            maximumHealth: healthPointsDefaults.yellowMax - 1,
+            maximumHealth: healthPointsDefaults.yellowMax,
         },
     ]
 );

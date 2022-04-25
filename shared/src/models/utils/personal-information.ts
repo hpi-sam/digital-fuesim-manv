@@ -2,9 +2,12 @@ import { IsString } from 'class-validator';
 import {
     femaleFirstNames,
     maleFirstNames,
+    unisexNames,
 } from '../../data/generator-data/first-names';
+import { streetNames } from '../../data/generator-data/street-names';
 import { surnames } from '../../data/generator-data/surnames';
 import { getCreate } from './get-create';
+import type { Sex } from './sex';
 
 export class PersonalInformation {
     @IsString()
@@ -30,24 +33,34 @@ export class PersonalInformation {
 
     static readonly create = getCreate(this);
 
-    static generatePersonalInformation(isMale: boolean): PersonalInformation {
-        const address = `Musterstraße ${Math.floor(Math.random() * 1000)}`;
+    static generatePersonalInformation(sex: Sex): PersonalInformation {
         return PersonalInformation.create(
-            generateName(isMale),
-            address,
+            generateName(sex),
+            generateAddress(),
             generateBirthDate()
         );
     }
 }
 
+function generateAddress() {
+    const streetName =
+        streetNames[Math.floor(Math.random() * streetNames.length)];
+    return `${streetName} ${Math.floor(Math.random() * 100)}`;
+}
+
 function generateBirthDate() {
     const aDate = 1650800000000;
     const randomDate = new Date(Math.floor(Math.random() * aDate));
-    return `${randomDate.getDay()}.${randomDate.getMonth() + 1}`;
+    return `${randomDate.getDate()}.${randomDate.getMonth() + 1}.`;
 }
 
-function generateName(isMale: boolean) {
-    const firstNames = isMale ? maleFirstNames : femaleFirstNames;
+function generateName(sex: Sex) {
+    const firstNames =
+        sex === 'male'
+            ? maleFirstNames
+            : sex === 'female'
+            ? femaleFirstNames
+            : unisexNames;
     const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
     const surname = surnames[Math.floor(Math.random() * surnames.length)];
     return `${firstName} ${surname}`;

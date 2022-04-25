@@ -1,13 +1,14 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsInt, IsString, Min } from 'class-validator';
 import { getCreate } from './get-create';
 import { Sex } from './sex';
 
 export class BiometricInformation {
-    @IsNumber()
+    @IsInt()
+    @Min(0)
     public readonly age: number;
 
     /**
-     * männlich, weiblich, divers
+     * männlich, weiblich, diverse
      */
     @IsString()
     public readonly sex: Sex;

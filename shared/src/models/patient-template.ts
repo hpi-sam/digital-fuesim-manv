@@ -98,7 +98,7 @@ export class PatientTemplate {
         const status = getStatus(template.health);
         return Patient.create(
             PersonalInformation.generatePersonalInformation(
-                template.biometricInformation.sex === 'male'
+                template.biometricInformation.sex
             ),
             template.biometricInformation,
             template.isPreTriaged ? status : null,

@@ -1,3 +1,4 @@
+// Extracted from https://fossbytes.com/tools/random-name-generator
 export const maleFirstNames = [
     'Abbas',
     'Abdul',
@@ -624,6 +625,7 @@ export const maleFirstNames = [
     'Zoltan',
 ];
 
+// Extracted from https://fossbytes.com/tools/random-name-generator
 export const femaleFirstNames = [
     'Adele',
     'Adelgunde',
@@ -1252,4 +1254,49 @@ export const femaleFirstNames = [
     'Zehra',
     'Zenta',
     'Zita',
+];
+
+// Extracted from https://www.vorname.com/das-sind-die-schoensten-unisex-vornamen.html
+export const unisexNames = [
+    'Adrian',
+    'Alex',
+    'Alexis',
+    'Benja',
+    'Bente',
+    'Charlie',
+    'Chris',
+    'Dana',
+    'Dominique',
+    'Elia',
+    'Erin',
+    'Finn',
+    'Florin',
+    'Gabriel',
+    'Gerrit',
+    'Harper',
+    'Ira',
+    'Jamie',
+    'Janis',
+    'JonA',
+    'Jule',
+    'Kay',
+    'Kelly',
+    'Kim',
+    'Lovis',
+    'Luan',
+    'Luca',
+    'Marian',
+    'Maxi',
+    'Merle',
+    'Mika',
+    'Nicola',
+    'Noah',
+    'Quinn',
+    'Robin',
+    'Sam',
+    'Sascha',
+    'Sidney',
+    'Tjorven',
+    'Tomke',
+    'Toni',
 ];

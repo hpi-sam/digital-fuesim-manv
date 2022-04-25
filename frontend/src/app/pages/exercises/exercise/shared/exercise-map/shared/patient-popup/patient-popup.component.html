@@ -29,6 +29,9 @@
                     <th scope="col">Alter</th>
                     <td class="font-monospace">
                         {{ patient.biometricInformation.age }}
+                        <small>
+                            ({{ patient.personalInformation.birthdate }})
+                        </small>
                     </td>
                 </tr>
                 <tr>
@@ -50,12 +53,6 @@
                     <th scope="col">Biometrie</th>
                     <td class="font-monospace">
                         {{ patient.biometricInformation.externalFeatures }}
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="col">Geburtsdatum</th>
-                    <td class="font-monospace">
-                        {{ patient.personalInformation.birthdate }}
                     </td>
                 </tr>
                 <tr>
