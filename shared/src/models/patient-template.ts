@@ -13,6 +13,7 @@ import {
     getStatus,
     HealthPoints,
     IsValidHealthPoint,
+    MedicalInformation,
 } from './utils';
 import { ImageProperties } from './utils/image-properties';
 import { PersonalInformation } from './utils/personal-information';
@@ -27,6 +28,10 @@ export class PatientTemplate {
     @ValidateNested()
     @Type(() => BiometricInformation)
     public readonly biometricInformation: BiometricInformation;
+
+    @ValidateNested()
+    @Type(() => MedicalInformation)
+    public readonly medicalInformation: MedicalInformation;
 
     @IsBoolean()
     public readonly isPreTriaged: boolean;
@@ -55,6 +60,7 @@ export class PatientTemplate {
     constructor(
         name: string,
         biometricInformation: BiometricInformation,
+        medicalInformation: MedicalInformation,
         isPreTriaged: boolean,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         image: ImageProperties,
@@ -63,6 +69,7 @@ export class PatientTemplate {
     ) {
         this.name = name;
         this.biometricInformation = biometricInformation;
+        this.medicalInformation = medicalInformation;
         this.isPreTriaged = isPreTriaged;
         this.image = image;
         this.healthStates = healthStates;
@@ -101,6 +108,7 @@ export class PatientTemplate {
                 template.biometricInformation.sex
             ),
             template.biometricInformation,
+            template.medicalInformation,
             template.isPreTriaged ? status : null,
             status,
             healthStates,
