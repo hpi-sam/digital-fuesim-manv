@@ -3,8 +3,8 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "start:once": "node --experimental-specifier-resolution=node dist/src/index.js",
-        "start": "nodemon --watch \"./\" --watch \"../shared/dist/\" --ext \"ts js json\" --exec \"node --experimental-specifier-resolution=node --loader ts-node/esm\" src/index.ts",
+        "start:once": "NODE_ENV=production node --experimental-specifier-resolution=node dist/src/index.js",
+        "start": "NODE_ENV=development nodemon --watch \"./\" --watch \"../shared/dist/\" --ext \"ts js json\" --exec \"node --experimental-specifier-resolution=node --loader ts-node/esm\" src/index.ts",
         "build": "tsc --project ./tsconfig.build.json",
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,html}\"",
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,html}\"",

@@ -1,11 +1,13 @@
 import type { ExerciseServer, ExerciseSocket } from '../../exercise-server';
 import { clientMap } from '../client-map';
+import { secureOn } from './secure-on';
 
 export const registerJoinExerciseHandler = (
     io: ExerciseServer,
     client: ExerciseSocket
 ) => {
-    client.on(
+    secureOn(
+        client,
         'joinExercise',
         (exerciseId: string, clientName: string, callback): void => {
             const clientId = clientMap
