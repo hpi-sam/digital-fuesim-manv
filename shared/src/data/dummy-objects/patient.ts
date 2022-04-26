@@ -14,6 +14,7 @@ export function generateDummyPatient(): Patient {
             birthdate: '1.1.',
         },
         template.biometricInformation,
+        template.medicalInformation,
         'green',
         'green',
         { [healthState.id]: healthState },

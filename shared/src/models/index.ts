@@ -8,6 +8,7 @@ export { Vehicle } from './vehicle';
 export { Viewport } from './viewport';
 export { TransferPoint } from './transfer-point';
 export { MapImage } from './map-image';
+export { TileMapProperties } from './tile-map-properties';
 export { Client } from './client';
 export { MapImageTemplate } from './map-image-template';
 export { PatientTemplate } from './patient-template';

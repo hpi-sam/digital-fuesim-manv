@@ -2,11 +2,14 @@ import { Input, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
+import type { ExerciseState } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
 import { MessageService } from 'src/app/core/messages/message.service';
+import { saveBlob } from 'src/app/shared/functions/save-blob';
 import type { AppState } from 'src/app/state/app.state';
 import { selectLatestStatusHistoryEntry } from 'src/app/state/exercise/exercise.selectors';
+import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
 
@@ -84,5 +87,30 @@ export class TrainerToolbarComponent {
             .finally(() => {
                 this.router.navigate(['/']);
             });
+    }
+
+    public exportExerciseState() {
+        const blob = new Blob([
+            JSON.stringify(getStateSnapshot(this.store).exercise),
+        ]);
+        saveBlob(blob, `exercise-state-${this.exerciseId}.json`);
+    }
+
+    public async importExerciseState(fileList: FileList) {
+        try {
+            const exerciseStateString = await fileList.item(0)?.text();
+            if (!exerciseStateString) {
+                throw new Error('No file selected');
+            }
+            const exerciseState: ExerciseState =
+                JSON.parse(exerciseStateString);
+            await this.apiService.importExercise(exerciseState);
+            location.reload();
+        } catch (error: unknown) {
+            this.messageService.postError({
+                title: 'Fehler beim Importieren der Übung',
+                error,
+            });
+        }
     }
 }

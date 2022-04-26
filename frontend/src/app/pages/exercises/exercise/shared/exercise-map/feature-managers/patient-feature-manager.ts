@@ -12,6 +12,7 @@ import type { WithPosition } from '../../utility/types/with-position';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
 import { withPopup } from '../utility/with-popup';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
+import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
 class PatientFeatureManagerBase extends ElementFeatureManager<
@@ -19,6 +20,18 @@ class PatientFeatureManagerBase extends ElementFeatureManager<
 > {
     private readonly imageStyleHelper = new ImageStyleHelper(
         (feature) => this.getElementFromFeature(feature)!.value.image
+    );
+
+    private readonly textStyleHelper = new NameStyleHelper(
+        (feature) => ({
+            name: this.getElementFromFeature(feature)!.value.medicalInformation
+                .walkable
+                ? 'G'
+                : '',
+            offsetY: -0.4,
+        }),
+        0.05,
+        'middle'
     );
 
     constructor(
@@ -40,9 +53,10 @@ class PatientFeatureManagerBase extends ElementFeatureManager<
             },
             createPoint
         );
-        this.layer.setStyle((feature, resolution) =>
-            this.imageStyleHelper.getStyle(feature as Feature, resolution)
-        );
+        this.layer.setStyle((feature, resolution) => [
+            this.imageStyleHelper.getStyle(feature as Feature, resolution),
+            this.textStyleHelper.getStyle(feature as Feature, resolution),
+        ]);
     }
 
     override unsupportedChangeProperties = new Set(['id', 'image'] as const);

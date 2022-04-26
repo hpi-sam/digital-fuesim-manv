@@ -17,6 +17,7 @@ import {
     selectCateringLines,
     selectTransferLines,
     selectMapImages,
+    getRestrictedViewport,
 } from 'src/app/state/exercise/exercise.selectors';
 import OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
@@ -36,6 +37,7 @@ import {
     pairwise,
     takeUntil,
 } from 'rxjs';
+import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { startingPosition } from '../../starting-position';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
@@ -96,9 +98,11 @@ export class OlMapManager {
     ) {
         const _isTrainer = isTrainer(this.apiService, this.store);
         // Layers
+        const tileMapProperties = getStateSnapshot(this.store).exercise
+            .tileMapProperties;
         const satelliteLayer = this.createTileLayer(
-            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            20
+            tileMapProperties.tileUrl,
+            tileMapProperties.maxZoom
         );
         const transferPointLayer = this.createElementLayer(600);
         const vehicleLayer = this.createElementLayer(1000);
@@ -197,6 +201,9 @@ export class OlMapManager {
                 center: [startingPosition.x, startingPosition.y],
                 zoom: 20,
                 maxZoom: 23,
+                smoothExtentConstraint: false,
+                smoothResolutionConstraint: false,
+                constrainRotation: 1,
             }),
         });
 
@@ -322,6 +329,36 @@ export class OlMapManager {
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
+        this.registerViewportRestriction();
+    }
+
+    private registerViewportRestriction() {
+        this.store
+            .select(getRestrictedViewport(this.apiService.ownClientId!))
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((viewport) => {
+                const view = this.olMap.getView();
+                if (viewport) {
+                    view.set('extent', undefined);
+                    view.setMinZoom(0);
+                    const targetExtent = [
+                        viewport.position.x,
+                        viewport.position.y - viewport.size.height,
+                        viewport.position.x + viewport.size.width,
+                        viewport.position.y,
+                    ];
+                    view.fit(targetExtent);
+                    view.set('extent', targetExtent);
+                    const minZoom = Math.min(
+                        view.getZoom()!,
+                        view.getMaxZoom()
+                    );
+                    view.setMinZoom(minZoom);
+                } else {
+                    view.set('extent', undefined);
+                    view.setMinZoom(0);
+                }
+            });
     }
 
     private registerFeatureElementManager<

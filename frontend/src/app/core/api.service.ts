@@ -64,6 +64,7 @@ export class ApiService {
     public leaveExercise() {
         this.disconnectSocket();
         this._ownClientId = undefined;
+        this.exerciseId = undefined;
     }
 
     private _ownClientId?: UUID;
@@ -78,6 +79,8 @@ export class ApiService {
     public get isJoined() {
         return this._ownClientId !== undefined;
     }
+
+    private exerciseId?: string;
 
     private readonly optimisticActionHandler = new OptimisticActionHandler<
         ExerciseAction,
@@ -143,6 +146,7 @@ export class ApiService {
             });
             return false;
         }
+        this.exerciseId = exerciseId;
         const stateSynchronized = await this.synchronizeState();
         if (!stateSynchronized.success) {
             return false;
@@ -199,6 +203,15 @@ export class ApiService {
     public async createExercise() {
         return lastValueFrom(
             this.httpClient.post<ExerciseIds>(`${httpOrigin}/api/exercise`, {})
+        );
+    }
+
+    public async importExercise(exerciseState: ExerciseState) {
+        return lastValueFrom(
+            this.httpClient.post<ExerciseIds>(
+                `${httpOrigin}/api/exercise/${this.exerciseId}`,
+                exerciseState
+            )
         );
     }
 

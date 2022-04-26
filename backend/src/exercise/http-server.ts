@@ -1,10 +1,13 @@
 import type { Server as HttpServer } from 'node:http';
 import cors from 'cors';
 import type * as core from 'express-serve-static-core';
+import type { ExerciseState } from 'digital-fuesim-manv-shared';
+import express from 'express';
 import {
     deleteExercise,
     getExercise,
     postExercise,
+    postExerciseId,
 } from './http-handler/api/exercise';
 import { getHealth } from './http-handler/api/health';
 
@@ -13,6 +16,8 @@ export class ExerciseHttpServer {
     constructor(app: core.Express, port: number) {
         // TODO: Temporary allow all
         app.use(cors());
+
+        app.use(express.json());
 
         // This endpoint is used to determine whether the API itself is running.
         // It should be independent from any other services that may or may not be running.
@@ -37,6 +42,15 @@ export class ExerciseHttpServer {
 
         app.delete('/api/exercise/:exerciseId', (req, res) => {
             const response = deleteExercise(req.params.exerciseId);
+            res.statusCode = response.statusCode;
+            res.send(response.body);
+        });
+
+        app.post('/api/exercise/:exerciseId', (req, res) => {
+            const response = postExerciseId(
+                req.params.exerciseId,
+                req.body as ExerciseState
+            );
             res.statusCode = response.statusCode;
             res.send(response.body);
         });
