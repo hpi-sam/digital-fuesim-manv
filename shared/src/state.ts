@@ -1,3 +1,4 @@
+import { defaultTileMapProperties } from './data';
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
 import { defaultPatientTemplates } from './data/default-state/patient-templates';
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
@@ -41,11 +42,8 @@ export class ExerciseState {
     public readonly ecoLog: readonly EocLogEntry[] = [];
     public readonly statusHistory: readonly StatusHistoryEntry[] = [];
     public readonly participantId: string = '';
-    public readonly tileMapProperties: TileMapProperties = {
-        tileUrl:
-            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        maxZoom: 20,
-    };
+    public readonly tileMapProperties: TileMapProperties =
+        defaultTileMapProperties;
 
     /**
      * @deprecated Use {@link create} instead.
