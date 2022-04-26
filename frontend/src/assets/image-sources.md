@@ -63,3 +63,7 @@ and Fry1989
 
 [notarzt-personnel.svg](notarzt-personnel.svg):  
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited) + <https://commons.wikimedia.org/wiki/File:Encircled_Rod_of_Asclepius.svg> (edited)
+
+[trash-can.svg](trash-can.svg):  
+Bootstrap-Icon `bi-trash-fill` (edited)
+
