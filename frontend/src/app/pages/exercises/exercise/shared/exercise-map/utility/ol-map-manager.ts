@@ -316,6 +316,7 @@ export class OlMapManager {
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
+        this.registerDropHandler(viewportTranslate);
         this.registerViewportRestriction();
     }
 
@@ -438,14 +439,26 @@ export class OlMapManager {
         translateInteraction.on('translateend', (event) => {
             const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
             this.olMap.forEachFeatureAtPixel(pixel, (feature, layer) =>
-                // we stop propagating the event as soon as the onFeatureDropped function returns true
-                this.layerFeatureManagerDictionary
-                    .get(layer as VectorLayer<VectorSource<Point>>)!
-                    .onFeatureDrop(
-                        event,
-                        event.features.getArray()[0] as Feature<Point>,
-                        feature as Feature<Point>
-                    )
+                // Skip layer when unset
+                {
+                    if (layer === null) {
+                        return;
+                    }
+                    // we stop propagating the event as soon as the onFeatureDropped function returns true
+                    this.layerFeatureManagerDictionary
+                        .get(
+                            layer as VectorLayer<
+                                VectorSource<LineString | Point>
+                            >
+                        )!
+                        .onFeatureDrop(
+                            event,
+                            event.features.getArray()[0] as Feature<
+                                LineString | Point
+                            >,
+                            feature as Feature<Point>
+                        );
+                }
             );
         });
     }
