@@ -49,8 +49,8 @@ export class Material {
     constructor(
         vehicleId: UUID,
         vehicleName: string,
-        assignedPatientIds: UUIDSet,
         canCaterFor: CanCaterFor,
+        assignedPatientIds: UUIDSet,
         position?: Position
     ) {
         this.vehicleId = vehicleId;

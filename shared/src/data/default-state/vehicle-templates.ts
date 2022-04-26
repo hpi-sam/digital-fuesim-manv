@@ -3,7 +3,7 @@ import type { ImageProperties } from '../../models/utils/image-properties';
 
 const rtwImage: ImageProperties = {
     url: '/assets/rtw-vehicle.png',
-    height: 100,
+    height: 110,
     aspectRatio: 3693 / 1670,
 };
 
@@ -15,7 +15,7 @@ const ktwImage: ImageProperties = {
 
 const gwSanImage: ImageProperties = {
     url: '/assets/gwSan-vehicle.png',
-    height: 120,
+    height: 175,
     aspectRatio: 5000 / 2474,
 };
 

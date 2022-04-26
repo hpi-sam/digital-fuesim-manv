@@ -16,6 +16,54 @@ import {
     Transfer,
 } from './utils';
 
+const personnelTemplateMap: {
+    [key in PersonnelType]: {
+        image: ImageProperties;
+        canCaterFor: CanCaterFor;
+    };
+} = {
+    san: {
+        image: {
+            url: '/assets/san-personnel.svg',
+            height: 80,
+            aspectRatio: 1,
+        },
+        canCaterFor: CanCaterFor.create(1, 1, 4, 'or'),
+    },
+    notSan: {
+        image: {
+            url: '/assets/notSan-personnel.svg',
+            height: 80,
+            aspectRatio: 1,
+        },
+        canCaterFor: CanCaterFor.create(1, 1, 4, 'or'),
+    },
+    rettSan: {
+        image: {
+            url: '/assets/rettSan-personnel.svg',
+            height: 80,
+            aspectRatio: 1,
+        },
+        canCaterFor: CanCaterFor.create(1, 1, 4, 'or'),
+    },
+    notarzt: {
+        image: {
+            url: '/assets/notarzt-personnel.svg',
+            height: 80,
+            aspectRatio: 1,
+        },
+        canCaterFor: CanCaterFor.create(1, 1, 4, 'or'),
+    },
+    gf: {
+        image: {
+            url: '/assets/gf-personnel.svg',
+            height: 80,
+            aspectRatio: 1,
+        },
+        canCaterFor: CanCaterFor.create(0, 0, 0, 'or'),
+    },
+};
+
 export class Personnel {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
@@ -40,11 +88,7 @@ export class Personnel {
 
     @ValidateNested()
     @Type(() => ImageProperties)
-    public readonly image: ImageProperties = {
-        url: './assets/personnel.svg',
-        height: 80,
-        aspectRatio: 1,
-    };
+    public readonly image: ImageProperties;
 
     /**
      * if undefined, is in vehicle with {@link vehicleId} or in transfer
@@ -68,15 +112,16 @@ export class Personnel {
     constructor(
         vehicleId: UUID,
         vehicleName: string,
-        assignedPatientIds: UUIDSet,
         personnelType: PersonnelType,
-        canCaterFor: CanCaterFor = CanCaterFor.create(1, 1, 4, 'or')
+        assignedPatientIds: UUIDSet
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
-        this.assignedPatientIds = assignedPatientIds;
         this.personnelType = personnelType;
-        this.canCaterFor = canCaterFor;
+        this.assignedPatientIds = assignedPatientIds;
+        // Only assign this when the parameter is set appropriately
+        this.image = personnelTemplateMap[personnelType]?.image;
+        this.canCaterFor = personnelTemplateMap[personnelType]?.canCaterFor;
     }
 
     static readonly create = getCreate(this);
