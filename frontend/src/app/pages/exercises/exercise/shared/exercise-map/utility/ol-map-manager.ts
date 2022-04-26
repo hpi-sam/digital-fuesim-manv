@@ -56,6 +56,7 @@ import type { OpenPopupOptions } from './popup-manager';
 import type { FeatureManager } from './feature-manager';
 import { ModifyHelper } from './modify-helper';
 import { createViewportModify } from './viewport-modify';
+import { DeleteHelper } from './delete-helper';
 
 /**
  * This class should run outside the Angular zone for performance reasons.
@@ -83,7 +84,7 @@ export class OlMapManager {
      */
     private readonly layerFeatureManagerDictionary = new Map<
         VectorLayer<VectorSource>,
-        FeatureManager<any>
+        DeleteHelper | FeatureManager<any>
     >();
 
     constructor(
@@ -111,6 +112,7 @@ export class OlMapManager {
         const materialLayer = this.createElementLayer();
         const viewportLayer = this.createElementLayer<LineString>();
         const mapImagesLayer = this.createElementLayer(10_000);
+        const deleteFeatureLayer = this.createElementLayer();
         this.popupOverlay = new Overlay({
             element: this.popoverContainer,
         });
@@ -167,18 +169,32 @@ export class OlMapManager {
             target: this.openLayersContainer,
             // Note: The order of this array determines the order of the objects on the map.
             // The most bottom objects must be at the top of the array.
-            layers: [
-                satelliteLayer,
-                mapImagesLayer,
-                transferLinesLayer,
-                transferPointLayer,
-                vehicleLayer,
-                cateringLinesLayer,
-                patientLayer,
-                personnelLayer,
-                materialLayer,
-                viewportLayer,
-            ],
+            layers: _isTrainer
+            ? [
+                  satelliteLayer,
+                  deleteFeatureLayer,
+                  mapImagesLayer,
+                  transferLinesLayer,
+                  transferPointLayer,
+                  vehicleLayer,
+                  cateringLinesLayer,
+                  patientLayer,
+                  personnelLayer,
+                  materialLayer,
+                  viewportLayer,
+              ]
+            : [
+                  satelliteLayer,
+                  mapImagesLayer,
+                  transferLinesLayer,
+                  transferPointLayer,
+                  vehicleLayer,
+                  cateringLinesLayer,
+                  patientLayer,
+                  personnelLayer,
+                  materialLayer,
+                  viewportLayer,
+              ],
             overlays: [this.popupOverlay],
             view: new View({
                 center: [startingPosition.x, startingPosition.y],
@@ -295,6 +311,17 @@ export class OlMapManager {
                 filter(() => _isTrainer)
             )
             .subscribe(this.changePopup$);
+
+        const deleteHelper = new DeleteHelper(
+            this.store,
+            this.apiService,
+            this.olMap
+        );
+        deleteHelper.registerDeleteFeature(deleteFeatureLayer);
+        this.layerFeatureManagerDictionary.set(
+            deleteFeatureLayer,
+            deleteHelper
+        );
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
