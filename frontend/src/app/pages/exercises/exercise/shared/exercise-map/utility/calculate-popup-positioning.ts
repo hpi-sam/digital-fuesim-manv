@@ -17,21 +17,21 @@ export function calculatePopupPositioning(
 } {
     const offset = [constraints.width / 2, constraints.height / 2];
     const position = [0, 0];
+    // TODO: This is just commented out to hotfix the issue with popups that are too high
+    // if (featureCenter[1] < viewCenter[1]) {
+    //     position[0] = featureCenter[0];
+    //     position[1] = featureCenter[1] + offset[1];
+    //     return { position, positioning: 'bottom-center' };
+    // }
 
-    if (featureCenter[1] < viewCenter[1]) {
-        position[0] = featureCenter[0];
-        position[1] = featureCenter[1] + offset[1];
-        return { position, positioning: 'bottom-center' };
-    }
-
-    if (
-        Math.abs(featureCenter[0] - viewCenter[0]) <
-        Math.abs(featureCenter[1] - viewCenter[1])
-    ) {
-        position[0] = featureCenter[0];
-        position[1] = featureCenter[1] - offset[1];
-        return { position, positioning: 'top-center' };
-    }
+    // if (
+    //     Math.abs(featureCenter[0] - viewCenter[0]) <
+    //     Math.abs(featureCenter[1] - viewCenter[1])
+    // ) {
+    //     position[0] = featureCenter[0];
+    //     position[1] = featureCenter[1] - offset[1];
+    //     return { position, positioning: 'top-center' };
+    // }
 
     if (featureCenter[0] < viewCenter[0]) {
         position[0] = featureCenter[0] + offset[0];

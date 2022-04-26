@@ -34,64 +34,67 @@
             <ng-container ngbNavItem>
                 <a ngbNavLink>Medizinische Daten</a>
                 <ng-template ngbNavContent>
-                    <table class="table mb-0 table-sm">
-                        <tbody>
-                            <tr>
-                                <th scope="col">Alter</th>
-                                <td class="font-monospace">
-                                    {{ patient.biometricInformation.age }}
-                                    <small>
-                                        ({{
-                                            patient.personalInformation
-                                                .birthdate
-                                        }})
-                                    </small>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="col">Geschlecht</th>
-                                <td
-                                    *appLet="
-                                        patient.biometricInformation.sex as sex
+                    <div style="max-height: 300px; overflow-y: auto">
+                        <table class="table mb-0 table-sm">
+                            <tbody>
+                                <tr>
+                                    <th scope="col">Alter</th>
+                                    <td class="font-monospace">
+                                        {{ patient.biometricInformation.age }}
+                                        <small>
+                                            ({{
+                                                patient.personalInformation
+                                                    .birthdate
+                                            }})
+                                        </small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="col">Geschlecht</th>
+                                    <td
+                                        *appLet="
+                                            patient.biometricInformation
+                                                .sex as sex
+                                        "
+                                        class="font-monospace"
+                                    >
+                                        {{
+                                            sex === 'male'
+                                                ? 'männlich'
+                                                : sex === 'female'
+                                                ? 'weiblich'
+                                                : 'unbestimmt'
+                                        }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="col">Biometrie</th>
+                                    <td class="font-monospace">
+                                        {{
+                                            patient.biometricInformation
+                                                .externalFeatures
+                                        }}
+                                    </td>
+                                </tr>
+                                <tr
+                                    *ngFor="
+                                        let translation of medicalInformationTranslations
+                                            | keyvalue: keepOrder
                                     "
-                                    class="font-monospace"
                                 >
-                                    {{
-                                        sex === 'male'
-                                            ? 'männlich'
-                                            : sex === 'female'
-                                            ? 'weiblich'
-                                            : 'unbestimmt'
-                                    }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="col">Biometrie</th>
-                                <td class="font-monospace">
-                                    {{
-                                        patient.biometricInformation
-                                            .externalFeatures
-                                    }}
-                                </td>
-                            </tr>
-                            <tr
-                                *ngFor="
-                                    let translation of medicalInformationTranslations
-                                        | keyvalue: keepOrder
-                                "
-                            >
-                                <th scope="col">{{ translation.value }}</th>
-                                <td class="font-monospace">
-                                    <!-- TODO: keyvalue doesn't narrow the type correctly -->
-                                    {{
-                                        $any(patient.medicalInformation)[
-                                            translation.key
-                                        ]
-                                    }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                    <th scope="col">{{ translation.value }}</th>
+                                    <td class="font-monospace">
+                                        <!-- TODO: keyvalue doesn't narrow the type correctly -->
+                                        {{
+                                            $any(patient.medicalInformation)[
+                                                translation.key
+                                            ]
+                                        }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </ng-template>
             </ng-container>
             <ng-container ngbNavItem>
