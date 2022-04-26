@@ -57,6 +57,7 @@ import type { OpenPopupOptions } from './popup-manager';
 import type { FeatureManager } from './feature-manager';
 import { ModifyHelper } from './modify-helper';
 import { createViewportModify } from './viewport-modify';
+import { DeleteHelper } from './delete-helper';
 
 /**
  * This class should run outside the Angular zone for performance reasons.
@@ -84,7 +85,7 @@ export class OlMapManager {
      */
     private readonly layerFeatureManagerDictionary = new Map<
         VectorLayer<VectorSource>,
-        FeatureManager<any>
+        DeleteHelper | FeatureManager<any>
     >();
 
     constructor(
@@ -112,6 +113,7 @@ export class OlMapManager {
         const materialLayer = this.createElementLayer();
         const viewportLayer = this.createElementLayer<LineString>();
         const mapImagesLayer = this.createElementLayer(10_000);
+        const deleteFeatureLayer = this.createElementLayer();
         this.popupOverlay = new Overlay({
             element: this.popoverContainer,
         });
@@ -170,6 +172,7 @@ export class OlMapManager {
             // The most bottom objects must be at the top of the array.
             layers: [
                 satelliteLayer,
+                deleteFeatureLayer,
                 mapImagesLayer,
                 transferLinesLayer,
                 transferPointLayer,
@@ -214,6 +217,17 @@ export class OlMapManager {
             transferLinesService.displayTransferLines$.subscribe((display) => {
                 transferLinesLayer.setVisible(display);
             });
+
+            const deleteHelper = new DeleteHelper(
+                this.store,
+                this.apiService,
+                this.olMap
+            );
+            deleteHelper.registerDeleteFeature(deleteFeatureLayer);
+            this.layerFeatureManagerDictionary.set(
+                deleteFeatureLayer,
+                deleteHelper
+            );
         }
         this.registerFeatureElementManager(
             new TransferPointFeatureManager(
@@ -302,6 +316,7 @@ export class OlMapManager {
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
+        this.registerDropHandler(viewportTranslate);
         this.registerViewportRestriction();
     }
 
@@ -424,14 +439,26 @@ export class OlMapManager {
         translateInteraction.on('translateend', (event) => {
             const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
             this.olMap.forEachFeatureAtPixel(pixel, (feature, layer) =>
-                // we stop propagating the event as soon as the onFeatureDropped function returns true
-                this.layerFeatureManagerDictionary
-                    .get(layer as VectorLayer<VectorSource<Point>>)!
-                    .onFeatureDrop(
-                        event,
-                        event.features.getArray()[0] as Feature<Point>,
-                        feature as Feature<Point>
-                    )
+                // Skip layer when unset
+                {
+                    if (layer === null) {
+                        return;
+                    }
+                    // we stop propagating the event as soon as the onFeatureDropped function returns true
+                    this.layerFeatureManagerDictionary
+                        .get(
+                            layer as VectorLayer<
+                                VectorSource<LineString | Point>
+                            >
+                        )!
+                        .onFeatureDrop(
+                            event,
+                            event.features.getArray()[0] as Feature<
+                                LineString | Point
+                            >,
+                            feature as Feature<Point>
+                        );
+                }
             );
         });
     }
