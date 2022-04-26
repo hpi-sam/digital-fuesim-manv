@@ -168,6 +168,18 @@ export namespace VehicleActionReducers {
         reducer: (draftState, { vehicleId }) => {
             // Check if the vehicle exists
             getVehicle(draftState, vehicleId);
+            // Delete related material and personnel
+            Object.entries(draftState.materials)
+                .filter(([, material]) => material.vehicleId === vehicleId)
+                .forEach(
+                    ([materialId]) => delete draftState.materials[materialId]
+                );
+            Object.entries(draftState.personnel)
+                .filter(([, personnel]) => personnel.vehicleId === vehicleId)
+                .forEach(
+                    ([personnelId]) => delete draftState.personnel[personnelId]
+                );
+            // Delete the vehicle
             delete draftState.vehicles[vehicleId];
             return draftState;
         },
