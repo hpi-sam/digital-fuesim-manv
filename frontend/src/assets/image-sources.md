@@ -26,16 +26,9 @@ Florian Greiz 23
 [male-patient.svg](male-patient.svg):  
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
 
-[rth-vehicle.svg](hubschrauber_vehicle.svg):  
-Curioushavedape
-<https://commons.wikimedia.org/wiki/File:Bell_UH-1N_Iroquois_Drawing.svg> (edited)
-
 [nef-vehicle.png](nef-vehicle.png):  
 Florian Greiz 23  
 <https://commons.wikimedia.org/wiki/File:NEF_Zeulenroda.png> (edited)
-
-[male_patient.svg](male_patient.svg):  
-<https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
 
 [rtw-vehicle.png](rtw-vehicle.png):  
 Florian Greiz 23  
@@ -47,7 +40,7 @@ Florian Greiz 23
 [patient.svg](patient.svg):  
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
 
-[gf-personnel.svg](personnel.svg):  
+[gf-personnel.svg](gf-personnel.svg):  
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
 and Fry1989  
 <https://commons.wikimedia.org/wiki/File:MUTCD_RS-094.svg> (edited)
