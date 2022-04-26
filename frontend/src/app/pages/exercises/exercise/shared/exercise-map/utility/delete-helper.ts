@@ -1,7 +1,6 @@
 import Style from 'ol/style/Style';
 import type OlMap from 'ol/Map';
-// import Icon from 'ol/style/Icon';
-import { Circle, Fill } from 'ol/style';
+import Icon from 'ol/style/Icon';
 import { getTopRight } from 'ol/extent';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
@@ -33,15 +32,9 @@ export class DeleteHelper {
     public registerDeleteFeature(layer: VectorLayer<VectorSource<Point>>) {
         layer.setStyle(
             new Style({
-                image: new Circle({
-                    radius: 20,
-                    fill: new Fill({
-                        color: 'red',
-                    }),
+                image: new Icon({
+                    src: '/assets/trash-can.svg',
                 }),
-                // image: new Icon({
-                //     src: '/assets/rtw-vehicle.png',
-                // }),
             })
         );
         const view = this.olMap.getView();
