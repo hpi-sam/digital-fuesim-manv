@@ -201,7 +201,7 @@ const carPassengerYellowState1 = PatientHealthState.create(
 );
 
 const carPassengerYellowTemplate = PatientTemplate.create(
-    'SK II, Verschlechterung (< 10 min), ex',
+    'SK II, Verschlechterung (< 10 min), SK I',
     {
         sex: 'male',
         externalFeatures: '170cm, braune Haare, extrem adipös',
