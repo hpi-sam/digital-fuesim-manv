@@ -1,5 +1,6 @@
 import type { ExerciseAction, Role } from 'digital-fuesim-manv-shared';
 import { reduceExerciseState, ExerciseState } from 'digital-fuesim-manv-shared';
+import { Config } from '../config';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
 import { patientTick } from './patient-ticking';
@@ -45,9 +46,30 @@ export class ExerciseWrapper {
 
     private readonly clients = new Set<ClientWrapper>();
 
-    private currentState = ExerciseState.create();
+    private currentState: ExerciseState = Config.usePredefinedExercise
+        ? ExerciseState.create()
+        : ExerciseState.create();
 
     private readonly stateHistory: ExerciseState[] = [];
+
+    public replaceState(state: ExerciseState) {
+        // Disconnect all clients
+        this.clients.forEach((client) => {
+            client.disconnect();
+            this.removeClient(client);
+        });
+        // Delete history. It's now worthless.
+        this.stateHistory.splice(0);
+        // Delete all clients from new state. Also set participant id & id.
+        const newState = {
+            ...state,
+            clients: {},
+            participantId: this.participantId,
+            id: this.currentState.id,
+        };
+        // Set the state
+        this.currentState = newState;
+    }
 
     constructor(
         private readonly participantId: string,
