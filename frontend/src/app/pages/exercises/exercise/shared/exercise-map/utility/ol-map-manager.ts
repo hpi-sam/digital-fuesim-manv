@@ -172,7 +172,6 @@ export class OlMapManager {
             // The most bottom objects must be at the top of the array.
             layers: [
                 satelliteLayer,
-                deleteFeatureLayer,
                 mapImagesLayer,
                 transferLinesLayer,
                 transferPointLayer,
@@ -182,6 +181,7 @@ export class OlMapManager {
                 personnelLayer,
                 materialLayer,
                 viewportLayer,
+                deleteFeatureLayer,
             ],
             overlays: [this.popupOverlay],
             view: new View({
