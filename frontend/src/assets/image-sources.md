@@ -11,7 +11,7 @@
 [female-patient.svg](female-patient.svg):  
 <https://commons.wikimedia.org/wiki/File:Woman_(958542)_-_The_Noun_Project.svg> (edited)
 
-[gwsan-vehicle.png](gwsan-vehicle.png):  
+[gwSan-vehicle.png](gwSan-vehicle.png):  
 Gregor Paul <https://www.gregors-grafiken.de/> (edited)  
 License [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de)
 
@@ -26,7 +26,7 @@ Florian Greiz 23
 [male-patient.svg](male-patient.svg):  
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
 
-[hubschrauber_vehicle.svg](hubschrauber_vehicle.svg):  
+[rth-vehicle.svg](hubschrauber_vehicle.svg):  
 Curioushavedape
 <https://commons.wikimedia.org/wiki/File:Bell_UH-1N_Iroquois_Drawing.svg> (edited)
 
@@ -39,7 +39,7 @@ Florian Greiz 23
 
 [rtw-vehicle.png](rtw-vehicle.png):  
 Florian Greiz 23  
-<https://commons.wikimedia.org/wiki/File:RTW_1_Zeulenroda_PNG.png> (edited)
+<https://commons.wikimedia.org/wiki/File:RTW_Altenburg.png> (edited)
 
 [material.svg](material.svg):  
 <https://commons.wikimedia.org/wiki/File:First_aid_kit_(70543)_-_The_Noun_Project.svg> (edited)
@@ -47,7 +47,19 @@ Florian Greiz 23
 [patient.svg](patient.svg):  
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
 
-[personnel.svg](personnel.svg):  
+[gf-personnel.svg](personnel.svg):  
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
 and Fry1989  
 <https://commons.wikimedia.org/wiki/File:MUTCD_RS-094.svg> (edited)
+
+[rettSan-personnel.svg](rettSan-personnel.svg):  
+<https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
+
+[notSan-personnel.svg](notSan-personnel.svg):  
+<https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
+
+[san-personnel.svg](san-personnel.svg):  
+<https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
+
+[notarzt-personnel.svg](notarzt-personnel.svg):  
+<https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited) + <https://commons.wikimedia.org/wiki/File:Encircled_Rod_of_Asclepius.svg> (edited)
