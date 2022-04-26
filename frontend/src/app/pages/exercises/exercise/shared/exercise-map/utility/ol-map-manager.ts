@@ -167,31 +167,31 @@ export class OlMapManager {
             // Note: The order of this array determines the order of the objects on the map.
             // The most bottom objects must be at the top of the array.
             layers: _isTrainer
-            ? [
-                  satelliteLayer,
-                  deleteFeatureLayer,
-                  mapImagesLayer,
-                  transferLinesLayer,
-                  transferPointLayer,
-                  vehicleLayer,
-                  cateringLinesLayer,
-                  patientLayer,
-                  personnelLayer,
-                  materialLayer,
-                  viewportLayer,
-              ]
-            : [
-                  satelliteLayer,
-                  mapImagesLayer,
-                  transferLinesLayer,
-                  transferPointLayer,
-                  vehicleLayer,
-                  cateringLinesLayer,
-                  patientLayer,
-                  personnelLayer,
-                  materialLayer,
-                  viewportLayer,
-              ],
+                ? [
+                      satelliteLayer,
+                      deleteFeatureLayer,
+                      mapImagesLayer,
+                      transferLinesLayer,
+                      transferPointLayer,
+                      vehicleLayer,
+                      cateringLinesLayer,
+                      patientLayer,
+                      personnelLayer,
+                      materialLayer,
+                      viewportLayer,
+                  ]
+                : [
+                      satelliteLayer,
+                      mapImagesLayer,
+                      transferLinesLayer,
+                      transferPointLayer,
+                      vehicleLayer,
+                      cateringLinesLayer,
+                      patientLayer,
+                      personnelLayer,
+                      materialLayer,
+                      viewportLayer,
+                  ],
             overlays: [this.popupOverlay],
             view: new View({
                 center: [startingPosition.x, startingPosition.y],
