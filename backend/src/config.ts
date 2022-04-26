@@ -1,9 +1,11 @@
-import { cleanEnv, makeValidator } from 'envalid';
+import { bool, cleanEnv, makeValidator } from 'envalid';
 
 export class Config {
     private static _websocketPort?: number;
 
     private static _httpPort?: number;
+
+    private static _usePredefinedExercise?: boolean;
 
     public static get websocketPort(): number {
         return this._websocketPort!;
@@ -11,6 +13,10 @@ export class Config {
 
     public static get httpPort(): number {
         return this._httpPort!;
+    }
+
+    public static get usePredefinedExercise(): boolean {
+        return this._usePredefinedExercise!;
     }
 
     private static createIntegerValidator() {
@@ -30,6 +36,7 @@ export class Config {
             DFM_WEBSOCKET_PORT_TESTING: integerValidator({ default: 13200 }),
             DFM_HTTP_PORT: integerValidator({ default: 3201 }),
             DFM_HTTP_PORT_TESTING: integerValidator({ default: 13201 }),
+            DFM_USE_PREDEFINED_EXERCISE: bool({ default: true }),
         });
     }
 
@@ -41,5 +48,6 @@ export class Config {
         this._httpPort = testing
             ? env.DFM_HTTP_PORT_TESTING
             : env.DFM_HTTP_PORT;
+        this._usePredefinedExercise = env.DFM_USE_PREDEFINED_EXERCISE;
     }
 }
