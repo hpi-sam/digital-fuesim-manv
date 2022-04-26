@@ -35,7 +35,7 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     public readonly healthPointsDefaults = healthPointsDefaults;
 
     public medicalInformationTranslations: {
-        [key in keyof MedicalInformation]: string;
+        [key in keyof MedicalInformation]?: string;
     } = {
         breathing: 'Atmung',
         consciousness: 'Bewusstsein',
@@ -48,6 +48,9 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
         injuries: 'Verletzungen',
         bodyCheck: 'Body-check',
     };
+
+    // The keyvalue pipe sorts by default the keys alphabetically
+    public readonly keepOrder = (a?: any, b?: any) => a;
 
     constructor(
         private readonly store: Store<AppState>,

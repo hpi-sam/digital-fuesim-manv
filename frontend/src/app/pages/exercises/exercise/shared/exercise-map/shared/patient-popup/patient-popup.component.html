@@ -16,6 +16,13 @@
                     : statusNames[patient.visibleStatus || 'white']
             }}
         </span>
+        <span
+            *ngIf="patient.medicalInformation.walkable"
+            class="ms-3 badge rounded-pill bg-secondary font-monospace"
+            title="Ist Gehfähig"
+        >
+            G
+        </span>
         <button
             (click)="closePopup.emit()"
             type="button"
@@ -70,7 +77,7 @@
                             <tr
                                 *ngFor="
                                     let translation of medicalInformationTranslations
-                                        | keyvalue
+                                        | keyvalue: keepOrder
                                 "
                             >
                                 <th scope="col">{{ translation.value }}</th>
@@ -92,44 +99,6 @@
                 <ng-template ngbNavContent>
                     <table class="table mb-0">
                         <tbody>
-                            <tr>
-                                <th scope="col">Alter</th>
-                                <td class="font-monospace">
-                                    {{ patient.biometricInformation.age }}
-                                    <small>
-                                        ({{
-                                            patient.personalInformation
-                                                .birthdate
-                                        }})
-                                    </small>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="col">Geschlecht</th>
-                                <td
-                                    *appLet="
-                                        patient.biometricInformation.sex as sex
-                                    "
-                                    class="font-monospace"
-                                >
-                                    {{
-                                        sex === 'male'
-                                            ? 'männlich'
-                                            : sex === 'female'
-                                            ? 'weiblich'
-                                            : 'unbestimmt'
-                                    }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="col">Biometrie</th>
-                                <td class="font-monospace">
-                                    {{
-                                        patient.biometricInformation
-                                            .externalFeatures
-                                    }}
-                                </td>
-                            </tr>
                             <tr>
                                 <th scope="col">Adresse</th>
                                 <td class="font-monospace">

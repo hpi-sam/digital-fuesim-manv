@@ -3,7 +3,7 @@ import {
     PatientHealthState,
     PatientTemplate,
 } from '../../models';
-import type { ImageProperties } from '../../models/utils';
+import type { ImageProperties, MedicalInformation } from '../../models/utils';
 import { healthPointsDefaults } from '../../models/utils';
 
 const defaultMaleImage: ImageProperties = {
@@ -76,6 +76,20 @@ const needsSomeoneLaterState1 = PatientHealthState.create(
     ]
 );
 
+const defaultHealthState: MedicalInformation = {
+    consciousness: 'wach, orientiert',
+    breathing: 'unauffällig',
+    hearing: 'unauffällig',
+    skin: 'unauffällig',
+    pain: 'keine',
+    pupils: 'unauffällig',
+    psyche: 'leicht aufgeregt',
+    pulse: '80',
+    injuries: 'keine',
+    bodyCheck: 'keine Auffälligkeiten',
+    walkable: true,
+};
+
 const maleStablePatientTemplate = PatientTemplate.create(
     'SK III, stabil',
     {
@@ -84,16 +98,7 @@ const maleStablePatientTemplate = PatientTemplate.create(
         age: 18,
     },
     {
-        consciousness: 'wach, orientiert',
-        breathing: 'unauffällig',
-        hearing: 'unauffällig',
-        skin: 'unauffällig',
-        pain: 'keine',
-        pupils: 'unauffällig',
-        psyche: 'leicht aufgeregt',
-        pulse: '80',
-        injuries: 'keine',
-        bodyCheck: 'keine Auffälligkeiten',
+        ...defaultHealthState,
     },
     true,
     { [stableState.id]: stableState },
@@ -110,16 +115,7 @@ const greenGettingWorsePatientTemplate = PatientTemplate.create(
         age: 25,
     },
     {
-        consciousness: 'wach, orientiert',
-        breathing: 'unauffällig',
-        hearing: 'unauffällig',
-        skin: 'unauffällig',
-        pain: 'keine',
-        pupils: 'unauffällig',
-        psyche: 'leicht aufgeregt',
-        pulse: '80',
-        injuries: 'keine',
-        bodyCheck: 'keine Auffälligkeiten',
+        ...defaultHealthState,
     },
     true,
     {
@@ -139,16 +135,7 @@ const greenGettingWorseAfter5minPatientTemplate = PatientTemplate.create(
         age: 18,
     },
     {
-        consciousness: 'wach, orientiert',
-        breathing: 'unauffällig',
-        hearing: 'unauffällig',
-        skin: 'unauffällig',
-        pain: 'keine',
-        pupils: 'unauffällig',
-        psyche: 'leicht aufgeregt',
-        pulse: '80',
-        injuries: 'keine',
-        bodyCheck: 'keine Auffälligkeiten',
+        ...defaultHealthState,
     },
     true,
     {
@@ -168,16 +155,7 @@ const yellowGettingWorsePatientTemplate = PatientTemplate.create(
         age: 73,
     },
     {
-        consciousness: 'wach, orientiert',
-        breathing: 'unauffällig',
-        hearing: 'unauffällig',
-        skin: 'unauffällig',
-        pain: 'keine',
-        pupils: 'unauffällig',
-        psyche: 'leicht aufgeregt',
-        pulse: '80',
-        injuries: 'keine',
-        bodyCheck: 'keine Auffälligkeiten',
+        ...defaultHealthState,
     },
     true,
     { [needsSomeoneSoonState.id]: needsSomeoneSoonState },
@@ -194,16 +172,7 @@ const yellowNeedsNotarztPatientTemplate = PatientTemplate.create(
         age: 37,
     },
     {
-        consciousness: 'wach, orientiert',
-        breathing: 'unauffällig',
-        hearing: 'unauffällig',
-        skin: 'unauffällig',
-        pain: 'keine',
-        pupils: 'unauffällig',
-        psyche: 'leicht aufgeregt',
-        pulse: '80',
-        injuries: 'keine',
-        bodyCheck: 'keine Auffälligkeiten',
+        ...defaultHealthState,
     },
     true,
     { [needsNotarztSoonState.id]: needsNotarztSoonState },
@@ -220,16 +189,7 @@ const redPatientTemplate = PatientTemplate.create(
         age: 80,
     },
     {
-        consciousness: 'wach, orientiert',
-        breathing: 'unauffällig',
-        hearing: 'unauffällig',
-        skin: 'unauffällig',
-        pain: 'keine',
-        pupils: 'unauffällig',
-        psyche: 'leicht aufgeregt',
-        pulse: '80',
-        injuries: 'keine',
-        bodyCheck: 'keine Auffälligkeiten',
+        ...defaultHealthState,
     },
     true,
     { [needsSomeoneSoonState.id]: needsSomeoneSoonState },
@@ -256,6 +216,7 @@ const blackPatientTemplate = PatientTemplate.create(
         pulse: '0',
         injuries: '',
         bodyCheck: '',
+        walkable: false,
     },
     true,
     { [stableState.id]: stableState },

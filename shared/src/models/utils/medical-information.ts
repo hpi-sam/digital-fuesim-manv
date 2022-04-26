@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsBoolean, IsString } from 'class-validator';
 import { getCreate } from './get-create';
 
 export class MedicalInformation {
@@ -32,6 +32,9 @@ export class MedicalInformation {
     @IsString()
     public readonly bodyCheck: string;
 
+    @IsBoolean()
+    public readonly walkable: boolean;
+
     /**
      * @deprecated Use {@link create} instead
      */
@@ -45,7 +48,8 @@ export class MedicalInformation {
         psyche: string,
         hearing: string,
         injuries: string,
-        bodyCheck: string
+        bodyCheck: string,
+        walkable: boolean
     ) {
         this.breathing = breathing;
         this.consciousness = consciousness;
@@ -57,6 +61,7 @@ export class MedicalInformation {
         this.hearing = hearing;
         this.injuries = injuries;
         this.bodyCheck = bodyCheck;
+        this.walkable = walkable;
     }
 
     static readonly create = getCreate(this);
