@@ -66,4 +66,3 @@ and Fry1989
 
 [trash-can.svg](trash-can.svg):  
 Bootstrap-Icon `bi-trash-fill` (edited)
-
