@@ -119,8 +119,9 @@ export class Personnel {
         this.vehicleName = vehicleName;
         this.personnelType = personnelType;
         this.assignedPatientIds = assignedPatientIds;
-        this.image = personnelTemplateMap[personnelType].image;
-        this.canCaterFor = personnelTemplateMap[personnelType].canCaterFor;
+        // Only assign this when the parameter is set appropriately
+        this.image = personnelTemplateMap[personnelType]?.image;
+        this.canCaterFor = personnelTemplateMap[personnelType]?.canCaterFor;
     }
 
     static readonly create = getCreate(this);
