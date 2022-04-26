@@ -6,6 +6,7 @@ export { PersonnelType } from './personnel-type';
 export { CanCaterFor } from './cater-for';
 export { Transfer } from './transfer';
 export { ImageProperties } from './image-properties';
+export * from './biometric-information';
 export * from './health-points';
-export { getCreate } from './get-create';
+export { getCreate, isDevelopment } from './get-create';
 export * from './immutable-date';

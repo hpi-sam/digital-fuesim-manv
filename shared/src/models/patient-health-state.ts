@@ -7,8 +7,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
-import type { HealthPoints } from './utils';
-import { getCreate, IsValidHealthPoint } from './utils';
+import { getCreate, HealthPoints, IsValidHealthPoint } from './utils';
 
 /**
  * These parameters determine the increase or decrease of a patients health every second
@@ -63,19 +62,19 @@ export class ConditionParameters {
      */
     @IsOptional()
     @IsNumber()
-    public readonly earliestTime: number | undefined;
+    public readonly earliestTime?: number;
     @IsOptional()
     @IsNumber()
-    public readonly latestTime: number | undefined;
+    public readonly latestTime?: number;
     @IsOptional()
     @IsValidHealthPoint()
-    public readonly minimumHealth: HealthPoints | undefined;
+    public readonly minimumHealth?: HealthPoints;
     @IsOptional()
     @IsValidHealthPoint()
-    public readonly maximumHealth: HealthPoints | undefined;
+    public readonly maximumHealth?: HealthPoints;
     @IsOptional()
     @IsBoolean()
-    public readonly isBeingTreated: boolean | undefined;
+    public readonly isBeingTreated?: boolean;
     /**
      * The id of the patients healthState to switch to when all the conditions match
      */
