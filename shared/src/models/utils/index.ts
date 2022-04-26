@@ -9,5 +9,5 @@ export { ImageProperties } from './image-properties';
 export * from './biometric-information';
 export * from './medical-information';
 export * from './health-points';
-export { getCreate } from './get-create';
+export { getCreate, isDevelopment } from './get-create';
 export * from './immutable-date';

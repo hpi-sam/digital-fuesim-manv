@@ -1,11 +1,12 @@
 import type { ExerciseSocket, ExerciseServer } from '../../exercise-server';
 import { clientMap } from '../client-map';
+import { secureOn } from './secure-on';
 
 export const registerGetStateHandler = (
     io: ExerciseServer,
     client: ExerciseSocket
 ) => {
-    client.on('getState', (callback): void => {
+    secureOn(client, 'getState', (callback): void => {
         const exercise = clientMap.get(client)?.exercise;
         if (!exercise) {
             callback({
