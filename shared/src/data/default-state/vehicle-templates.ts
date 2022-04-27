@@ -5,7 +5,7 @@ const scale = 130 / 110;
 
 const rtwImage: ImageProperties = {
     url: '/assets/rtw-vehicle.png',
-    height: Math.floor(110 * scale),
+    height: Math.floor(100 * scale),
     aspectRatio: 3693 / 1670,
 };
 
