@@ -25,11 +25,11 @@ const nefImage: ImageProperties = {
     aspectRatio: 4455 / 1847,
 };
 
-const rthImage: ImageProperties = {
-    url: '/assets/rth-vehicle.svg',
-    height: 300,
-    aspectRatio: 310 / 130,
-};
+// const rthImage: ImageProperties = {
+//     url: '/assets/rth-vehicle.svg',
+//     height: 300,
+//     aspectRatio: 310 / 130,
+// };
 
 const rtwVehicleTemplate = VehicleTemplate.create(
     'RTW',
@@ -137,26 +137,26 @@ const nefVehicleTemplate = VehicleTemplate.create(
     ]
 );
 
-const rthVehicleTemplate = VehicleTemplate.create(
-    'RTH',
-    `RTH-???`,
-    rthImage,
-    1,
-    ['notarzt', 'notSan'],
-    [
-        {
-            logicalOperator: 'or',
-            green: 2,
-            yellow: 1,
-            red: 1,
-        },
-    ]
-);
+// const rthVehicleTemplate = VehicleTemplate.create(
+//     'RTH',
+//     `RTH-???`,
+//     rthImage,
+//     1,
+//     ['notarzt', 'notSan'],
+//     [
+//         {
+//             logicalOperator: 'or',
+//             green: 2,
+//             yellow: 1,
+//             red: 1,
+//         },
+//     ]
+// );
 
 export const defaultVehicleTemplates: readonly VehicleTemplate[] = [
     rtwVehicleTemplate,
     ktwVehicleTemplate,
     gwSanVehicleTemplate,
     nefVehicleTemplate,
-    rthVehicleTemplate,
+    // rthVehicleTemplate,
 ];
