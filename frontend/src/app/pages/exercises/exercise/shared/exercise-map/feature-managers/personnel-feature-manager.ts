@@ -1,4 +1,4 @@
-import type { Personnel } from 'digital-fuesim-manv-shared';
+import type { Personnel, PersonnelType } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
@@ -13,6 +13,14 @@ import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
+const personnelNames: { [type in PersonnelType]: string } = {
+    gf: 'GF',
+    notarzt: 'Notarzt',
+    notSan: 'NotSan',
+    rettSan: 'RettSan',
+    san: 'San',
+};
+
 export class PersonnelFeatureManager extends ElementFeatureManager<
     WithPosition<Personnel>
 > {
@@ -23,7 +31,9 @@ export class PersonnelFeatureManager extends ElementFeatureManager<
         (feature) => {
             const personnel = this.getElementFromFeature(feature)!.value;
             return {
-                name: personnel.vehicleName,
+                name: `${personnelNames[personnel.personnelType]} ${
+                    personnel.vehicleName
+                }`,
                 offsetY: personnel.image.height / 2 / normalZoom,
             };
         },

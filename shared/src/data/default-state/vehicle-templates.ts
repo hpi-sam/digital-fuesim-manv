@@ -1,9 +1,11 @@
 import { VehicleTemplate } from '../../models';
 import type { ImageProperties } from '../../models/utils/image-properties';
 
+const scale = 130 / 110;
+
 const rtwImage: ImageProperties = {
     url: '/assets/rtw-vehicle.png',
-    height: 110,
+    height: Math.floor(110 * scale),
     aspectRatio: 3693 / 1670,
 };
 
@@ -21,7 +23,7 @@ const gwSanImage: ImageProperties = {
 
 const nefImage: ImageProperties = {
     url: '/assets/nef-vehicle.png',
-    height: 70,
+    height: Math.floor(70 * scale),
     aspectRatio: 4455 / 1847,
 };
 
@@ -35,7 +37,7 @@ const rtwVehicleTemplate = VehicleTemplate.create(
     'RTW',
     `RTW-???`,
     rtwImage,
-    2,
+    1,
     ['notSan', 'rettSan'],
     [
         {
@@ -51,7 +53,7 @@ const ktwVehicleTemplate = VehicleTemplate.create(
     'KTW',
     `KTW-???`,
     ktwImage,
-    2,
+    1,
     ['san', 'rettSan'],
     [
         {
