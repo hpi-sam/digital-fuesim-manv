@@ -43,7 +43,10 @@ import { PatientFeatureManager } from '../feature-managers/patient-feature-manag
 import { PersonnelFeatureManager } from '../feature-managers/personnel-feature-manager';
 import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
-import { ViewportFeatureManager } from '../feature-managers/viewport-feature-manager';
+import {
+    isInViewport,
+    ViewportFeatureManager,
+} from '../feature-managers/viewport-feature-manager';
 import type { ElementManager } from '../feature-managers/element-manager';
 import { TransferPointFeatureManager } from '../feature-managers/transfer-point-feature-manager';
 import { TransferLinesFeatureManager } from '../feature-managers/transfer-lines-feature-manager';
@@ -309,6 +312,8 @@ export class OlMapManager {
             .subscribe((viewport) => {
                 const view = this.olMap.getView();
                 if (viewport) {
+                    const center = view.getCenter()!;
+                    const previousZoom = view.getZoom()!;
                     view.set('extent', undefined);
                     view.setMinZoom(0);
                     const targetExtent = [
@@ -318,11 +323,14 @@ export class OlMapManager {
                         viewport.position.y,
                     ];
                     view.fit(targetExtent);
+                    const matchingZoom = view.getZoom()!;
+                    if (isInViewport(center, viewport)) {
+                        view.setZoom(previousZoom);
+                        view.setCenter(center);
+                    }
+
                     view.set('extent', targetExtent);
-                    const minZoom = Math.min(
-                        view.getZoom()!,
-                        view.getMaxZoom()
-                    );
+                    const minZoom = Math.min(matchingZoom, view.getMaxZoom());
                     view.setMinZoom(minZoom);
                 } else {
                     view.set('extent', undefined);

@@ -10,6 +10,7 @@ import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import type { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
+import type { Coordinate } from 'ol/coordinate';
 import type { FeatureManager } from '../utility/feature-manager';
 import { ModifyHelper } from '../utility/modify-helper';
 import { withPopup } from '../utility/with-popup';
@@ -19,6 +20,18 @@ import {
     createLineString,
     getCoordinateArray,
 } from './element-feature-manager';
+
+export function isInViewport(
+    coordinate: Coordinate,
+    viewport: Viewport
+): boolean {
+    return (
+        viewport.position.x <= coordinate[0] &&
+        coordinate[0] <= viewport.position.x + viewport.size.width &&
+        viewport.position.y - viewport.size.height <= coordinate[1] &&
+        coordinate[1] <= viewport.position.y
+    );
+}
 
 class BaseViewportFeatureManager
     extends ElementFeatureManager<Viewport, LineString>
