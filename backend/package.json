@@ -29,8 +29,10 @@
         "envalid": "^7.3.1",
         "express": "^4.17.3",
         "lodash-es": "4.17.21",
+        "pg": "^8.7.3",
         "socket.io": "^4.4.1",
-        "supertest": "^6.2.2"
+        "supertest": "^6.2.2",
+        "typeorm": "^0.3.6"
     },
     "devDependencies": {
         "@types/cors": "^2.8.12",

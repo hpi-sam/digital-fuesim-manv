@@ -1,9 +1,17 @@
-import { cleanEnv, makeValidator } from 'envalid';
+import { bool, cleanEnv, makeValidator, str } from 'envalid';
 
 export class Config {
     private static _websocketPort?: number;
 
     private static _httpPort?: number;
+
+    private static _dbUser?: string;
+
+    private static _dbPassword?: string;
+
+    private static _dbName?: string;
+
+    private static _useDataBase?: boolean;
 
     public static get websocketPort(): number {
         return this._websocketPort!;
@@ -11,6 +19,22 @@ export class Config {
 
     public static get httpPort(): number {
         return this._httpPort!;
+    }
+
+    public static get dbUser(): string {
+        return this._dbUser!;
+    }
+
+    public static get dbPassword(): string {
+        return this._dbPassword!;
+    }
+
+    public static get dbName(): string {
+        return this._dbName!;
+    }
+
+    public static get useDataBase(): boolean {
+        return this._useDataBase!;
     }
 
     private static createTCPPortValidator() {
@@ -30,6 +54,10 @@ export class Config {
             DFM_WEBSOCKET_PORT_TESTING: tcpPortValidator({ default: 13200 }),
             DFM_HTTP_PORT: tcpPortValidator({ default: 3201 }),
             DFM_HTTP_PORT_TESTING: tcpPortValidator({ default: 13201 }),
+            DFM_DB_USER: str(),
+            DFM_DB_PASSWORD: str(),
+            DFM_DB_NAME: str(),
+            DFM_USE_DATABASE: bool({ default: false }),
         });
     }
 
@@ -41,5 +69,9 @@ export class Config {
         this._httpPort = testing
             ? env.DFM_HTTP_PORT_TESTING
             : env.DFM_HTTP_PORT;
+        this._dbUser = env.DFM_DB_USER;
+        this._dbPassword = env.DFM_DB_PASSWORD;
+        this._dbName = env.DFM_DB_NAME;
+        this._useDataBase = env.DFM_USE_DATABASE;
     }
 }

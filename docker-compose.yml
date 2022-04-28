@@ -10,3 +10,17 @@ services:
         container_name: digital-fuesim-manv
         ports:
             - 80:80
+    db:
+        image: postgres:14
+        container_name: dfm_postgres
+        volumes:
+            - dfm_db:/var/lib/postgresql/data
+        ports:
+            - 127.0.0.1:5432:5432
+        environment:
+            - POSTGRES_USER=${DFM_DB_USER}
+            - POSTGRES_PASSWORD=${DFM_DB_PASSWORD}
+            - POSTGRES_DB=${DFM_DB_NAME}
+
+volumes:
+    dfm_db:
