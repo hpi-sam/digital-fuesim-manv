@@ -1,5 +1,7 @@
 import type { ExerciseAction, Role } from 'digital-fuesim-manv-shared';
 import { reduceExerciseState, ExerciseState } from 'digital-fuesim-manv-shared';
+import type { ActionEmitter } from './action-wrapper';
+import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
 import { patientTick } from './patient-ticking';
@@ -31,7 +33,7 @@ export class ExerciseWrapper {
                 this.tickCounter % this.refreshTreatmentInterval === 0,
             tickInterval: this.tickInterval,
         };
-        this.reduce(updateAction);
+        this.reduce(updateAction, { emitterId: 'server' });
         this.emitAction(updateAction);
         this.tickCounter++;
     };
@@ -47,16 +49,24 @@ export class ExerciseWrapper {
 
     private currentState = ExerciseState.create();
 
+    /**
+     * This only contains some snapshots of the state, not every state in between.
+     */
     private readonly stateHistory: ExerciseState[] = [];
+
+    private readonly actionHistory: ActionWrapper[] = [];
 
     constructor(
         private readonly participantId: string,
         private readonly trainerId: string
     ) {
-        this.reduce({
-            type: '[Exercise] Set Participant Id',
-            participantId,
-        });
+        this.reduce(
+            {
+                type: '[Exercise] Set Participant Id',
+                participantId,
+            },
+            { emitterId: 'server' }
+        );
     }
 
     /**
@@ -91,11 +101,15 @@ export class ExerciseWrapper {
         if (clientWrapper.client === undefined) {
             return;
         }
+        const client = clientWrapper.client;
         const addClientAction: ExerciseAction = {
             type: '[Client] Add client',
-            client: clientWrapper.client,
+            client,
         };
-        this.reduce(addClientAction);
+        this.reduce(addClientAction, {
+            emitterId: client.id,
+            emitterName: client.name,
+        });
         this.emitAction(addClientAction);
         // Only after all this add the client in order to not send the action adding itself to it
         this.clients.add(clientWrapper);
@@ -106,11 +120,15 @@ export class ExerciseWrapper {
             // clientWrapper not part of this exercise
             return;
         }
+        const client = clientWrapper.client!;
         const removeClientAction: ExerciseAction = {
             type: '[Client] Remove client',
-            clientId: clientWrapper.client!.id,
+            clientId: client.id,
         };
-        this.reduce(removeClientAction);
+        this.reduce(removeClientAction, {
+            emitterId: client.id,
+            emitterName: client.name,
+        });
         this.clients.delete(clientWrapper);
         this.emitAction(removeClientAction);
     }
@@ -127,9 +145,9 @@ export class ExerciseWrapper {
      * Applies the action on the current state.
      * @throws Error if the action is not applicable on the current state
      */
-    public reduce(action: ExerciseAction): void {
+    public reduce(action: ExerciseAction, emitter: ActionEmitter): void {
         const newState = reduceExerciseState(this.currentState, action);
-        this.setState(newState);
+        this.setState(newState, action, emitter);
         if (action.type === '[Exercise] Pause') {
             this.pause();
         } else if (action.type === '[Exercise] Start') {
@@ -137,8 +155,17 @@ export class ExerciseWrapper {
         }
     }
 
-    private setState(newExerciseState: ExerciseState): void {
-        this.stateHistory.push(this.currentState);
+    private setState(
+        newExerciseState: ExerciseState,
+        action: ExerciseAction,
+        emitter: ActionEmitter
+    ): void {
+        // Only save every tenth state directly
+        // TODO: Check whether this is a good threshold.
+        if (this.actionHistory.length % 10 === 0) {
+            this.stateHistory.push(this.currentState);
+        }
+        this.actionHistory.push(new ActionWrapper(emitter, action));
         this.currentState = newExerciseState;
     }
 
