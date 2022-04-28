@@ -14,26 +14,44 @@ export class Config {
     private static _useDataBase?: boolean;
 
     public static get websocketPort(): number {
+        if (!this.isInitialized) {
+            throw this.createUninitializedUseError();
+        }
         return this._websocketPort!;
     }
 
     public static get httpPort(): number {
+        if (!this.isInitialized) {
+            throw this.createUninitializedUseError();
+        }
         return this._httpPort!;
     }
 
     public static get dbUser(): string {
+        if (!this.isInitialized) {
+            throw this.createUninitializedUseError();
+        }
         return this._dbUser!;
     }
 
     public static get dbPassword(): string {
+        if (!this.isInitialized) {
+            throw this.createUninitializedUseError();
+        }
         return this._dbPassword!;
     }
 
     public static get dbName(): string {
+        if (!this.isInitialized) {
+            throw this.createUninitializedUseError();
+        }
         return this._dbName!;
     }
 
     public static get useDataBase(): boolean {
+        if (!this.isInitialized) {
+            throw this.createUninitializedUseError();
+        }
         return this._useDataBase!;
     }
 
@@ -61,7 +79,19 @@ export class Config {
         });
     }
 
-    public static initialize(testing: boolean = false) {
+    private static isInitialized = false;
+
+    private static createUninitializedUseError() {
+        return new Error('Config was used uninitialized');
+    }
+
+    public static initialize(
+        testing: boolean = false,
+        forceRefresh: boolean = false
+    ) {
+        if (this.isInitialized && !forceRefresh) {
+            return;
+        }
         const env = this.parseVariables();
         this._websocketPort = testing
             ? env.DFM_WEBSOCKET_PORT_TESTING
@@ -73,5 +103,6 @@ export class Config {
         this._dbPassword = env.DFM_DB_PASSWORD;
         this._dbName = env.DFM_DB_NAME;
         this._useDataBase = env.DFM_USE_DATABASE;
+        this.isInitialized = true;
     }
 }
