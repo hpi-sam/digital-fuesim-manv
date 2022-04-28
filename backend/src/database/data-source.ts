@@ -1,8 +1,9 @@
 import { DataSource } from 'typeorm';
 import { Config } from '../config';
 
-export const createNewDataSource = () =>
-    new DataSource({
+export const createNewDataSource = () => {
+    Config.initialize();
+    return new DataSource({
         type: 'postgres',
         host: 'localhost',
         port: 5432,
@@ -10,5 +11,6 @@ export const createNewDataSource = () =>
         password: Config.dbPassword,
         database: Config.dbName,
         entities: [],
-        migrations: [`./migrations/**/*{.ts,.js}`],
+        migrations: [`src/database/migrations/**/*{.ts,.js}`],
     });
+};

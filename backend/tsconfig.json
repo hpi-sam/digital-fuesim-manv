@@ -15,7 +15,8 @@
         "types": ["jest", "node"],
         // For typeorm
         "emitDecoratorMetadata": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "baseUrl": "./src"
     },
     "references": [],
     "include": ["src/**/*", "test/**/*"],

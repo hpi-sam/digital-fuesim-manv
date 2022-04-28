@@ -72,9 +72,9 @@ export class Config {
             DFM_WEBSOCKET_PORT_TESTING: tcpPortValidator({ default: 13200 }),
             DFM_HTTP_PORT: tcpPortValidator({ default: 3201 }),
             DFM_HTTP_PORT_TESTING: tcpPortValidator({ default: 13201 }),
-            DFM_DB_USER: str(),
-            DFM_DB_PASSWORD: str(),
-            DFM_DB_NAME: str(),
+            DFM_DB_USER: str({ default: 'dfm' }),
+            DFM_DB_PASSWORD: str({ default: 'dfm' }),
+            DFM_DB_NAME: str({ default: 'dfm_db' }),
             DFM_USE_DATABASE: bool({ default: false }),
         });
     }
