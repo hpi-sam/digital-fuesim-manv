@@ -17,7 +17,7 @@ import {
     selectCateringLines,
     selectTransferLines,
     selectMapImages,
-    getRestrictedViewport,
+    getSelectRestrictedViewport,
 } from 'src/app/state/exercise/exercise.selectors';
 import OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
@@ -310,35 +310,36 @@ export class OlMapManager {
 
     private registerViewportRestriction() {
         this.store
-            .select(getRestrictedViewport(this.apiService.ownClientId!))
+            .select(getSelectRestrictedViewport(this.apiService.ownClientId!))
             .pipe(takeUntil(this.destroy$))
             .subscribe((viewport) => {
                 const view = this.olMap.getView();
-                if (viewport) {
-                    const center = view.getCenter()!;
-                    const previousZoom = view.getZoom()!;
-                    view.set('extent', undefined);
-                    view.setMinZoom(0);
-                    const targetExtent = [
-                        viewport.position.x,
-                        viewport.position.y - viewport.size.height,
-                        viewport.position.x + viewport.size.width,
-                        viewport.position.y,
-                    ];
-                    view.fit(targetExtent);
-                    const matchingZoom = view.getZoom()!;
-                    if (isInViewport(center, viewport)) {
-                        view.setZoom(previousZoom);
-                        view.setCenter(center);
-                    }
-
-                    view.set('extent', targetExtent);
-                    const minZoom = Math.min(matchingZoom, view.getMaxZoom());
-                    view.setMinZoom(minZoom);
-                } else {
-                    view.set('extent', undefined);
-                    view.setMinZoom(0);
+                view.set('extent', undefined);
+                view.setMinZoom(0);
+                if (!viewport) {
+                    // We are no longer restricted to a viewport.
+                    // Therefore, no new restrictions have to be set.
+                    return;
                 }
+                const center = view.getCenter()!;
+                const previousZoom = view.getZoom()!;
+                const targetExtent = [
+                    viewport.position.x,
+                    viewport.position.y - viewport.size.height,
+                    viewport.position.x + viewport.size.width,
+                    viewport.position.y,
+                ];
+                view.fit(targetExtent);
+                const matchingZoom = view.getZoom()!;
+                if (isInViewport(center, viewport)) {
+                    // We only want to change the zoom if necessary
+                    view.setZoom(previousZoom);
+                    view.setCenter(center);
+                }
+
+                view.set('extent', targetExtent);
+                const minZoom = Math.min(matchingZoom, view.getMaxZoom());
+                view.setMinZoom(minZoom);
             });
     }
 

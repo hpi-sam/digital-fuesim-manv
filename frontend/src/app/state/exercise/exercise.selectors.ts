@@ -33,12 +33,13 @@ export const getSelectTransferPoint =
         state.exercise.transferPoints[transferPointId];
 export const getSelectViewport = (viewportId: UUID) => (state: AppState) =>
     state.exercise.viewports[viewportId];
-export const getRestrictedViewport = (clientId: UUID) => (state: AppState) =>
-    state.exercise.clients[clientId].viewRestrictedToViewportId
-        ? state.exercise.viewports[
-              state.exercise.clients[clientId].viewRestrictedToViewportId!
-          ]
-        : undefined;
+export const getSelectRestrictedViewport =
+    (clientId: UUID) => (state: AppState) =>
+        state.exercise.clients[clientId].viewRestrictedToViewportId
+            ? state.exercise.viewports[
+                  state.exercise.clients[clientId].viewRestrictedToViewportId!
+              ]
+            : undefined;
 export const selectTransferPoints = (state: AppState) =>
     state.exercise.transferPoints;
 
