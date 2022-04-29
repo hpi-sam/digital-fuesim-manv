@@ -13,24 +13,30 @@ import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import type { ApiService } from 'src/app/core/api.service';
+import type { FeatureManager } from '../utility/feature-manager';
 
 function calculateTopRightViewCorner(view: View) {
     const extent = getTopRight(view.calculateExtent());
     return new Point([extent[0], extent[1]]);
 }
 
-export class DeleteHelper {
+export class DeleteFeatureManager implements FeatureManager<Feature<Point>> {
     public readonly store: Store<AppState>;
-    public readonly apiService: ApiService;
+    public readonly layer: VectorLayer<VectorSource<Point>>;
     public readonly olMap: OlMap;
-    constructor(store: Store<AppState>, apiService: ApiService, olMap: OlMap) {
+    public readonly apiService: ApiService;
+    constructor(
+        store: Store<AppState>,
+        layer: VectorLayer<VectorSource<Point>>,
+        olMap: OlMap,
+        apiService: ApiService
+    ) {
         this.store = store;
-        this.apiService = apiService;
+        this.layer = layer;
         this.olMap = olMap;
-    }
+        this.apiService = apiService;
 
-    public registerDeleteFeature(layer: VectorLayer<VectorSource<Point>>) {
-        layer.setStyle(
+        this.layer.setStyle(
             new Style({
                 image: new Icon({
                     src: '/assets/trash-can.svg',
@@ -40,14 +46,13 @@ export class DeleteHelper {
         const view = this.olMap.getView();
         const point = calculateTopRightViewCorner(view);
         const deleteIcon = new Feature(point);
-        layer.getSource()!.addFeature(deleteIcon);
+        this.layer.getSource()!.addFeature(deleteIcon);
         view.on(['change:resolution', 'change:center'], () => {
             deleteIcon.setGeometry(
                 calculateTopRightViewCorner(this.olMap.getView())
             );
         });
     }
-
     public onFeatureClicked(
         event: MapBrowserEvent<any>,
         feature: Feature<any>

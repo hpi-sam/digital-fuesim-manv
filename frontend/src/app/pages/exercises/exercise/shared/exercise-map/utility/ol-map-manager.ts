@@ -50,13 +50,13 @@ import { TransferLinesFeatureManager } from '../feature-managers/transfer-lines-
 import { MapImageFeatureManager } from '../feature-managers/map-images-feature-manager';
 import { isTrainer } from '../../utility/is-trainer';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
+import { DeleteFeatureManager } from '../feature-managers/delete-feature-manager';
 import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
 import type { FeatureManager } from './feature-manager';
 import { ModifyHelper } from './modify-helper';
 import { createViewportModify } from './viewport-modify';
-import { DeleteHelper } from './delete-helper';
 
 /**
  * This class should run outside the Angular zone for performance reasons.
@@ -84,7 +84,7 @@ export class OlMapManager {
      */
     private readonly layerFeatureManagerDictionary = new Map<
         VectorLayer<VectorSource>,
-        DeleteHelper | FeatureManager<any>
+        FeatureManager<any>
     >();
 
     constructor(
@@ -214,12 +214,12 @@ export class OlMapManager {
                 transferLinesLayer.setVisible(display);
             });
 
-            const deleteHelper = new DeleteHelper(
+            const deleteHelper = new DeleteFeatureManager(
                 this.store,
-                this.apiService,
-                this.olMap
+                deleteFeatureLayer,
+                this.olMap,
+                this.apiService
             );
-            deleteHelper.registerDeleteFeature(deleteFeatureLayer);
             this.layerFeatureManagerDictionary.set(
                 deleteFeatureLayer,
                 deleteHelper
