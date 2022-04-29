@@ -89,7 +89,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
         });
         if (response.success) {
             this.messageService.postMessage({
-                title: 'Names successfully changed',
+                title: 'Transferpunkt erfolgreich umbenannt',
                 color: 'success',
             });
             this.closePopup.emit();
