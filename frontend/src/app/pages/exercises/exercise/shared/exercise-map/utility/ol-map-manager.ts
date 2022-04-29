@@ -29,14 +29,7 @@ import type LineString from 'ol/geom/LineString';
 import { isEqual } from 'lodash-es';
 import { primaryAction, shiftKeyOnly } from 'ol/events/condition';
 import type { Observable } from 'rxjs';
-import {
-    Subject,
-    filter,
-    debounceTime,
-    startWith,
-    pairwise,
-    takeUntil,
-} from 'rxjs';
+import { Subject, debounceTime, startWith, pairwise, takeUntil } from 'rxjs';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { startingPosition } from '../../starting-position';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
@@ -226,7 +219,7 @@ export class OlMapManager {
                 this.apiService
             ),
             this.store.select(getSelectWithPosition('transferPoints'))
-        ).togglePopup$.subscribe(this.changePopup$);
+        );
 
         this.registerFeatureElementManager(
             new PatientFeatureManager(
@@ -236,7 +229,7 @@ export class OlMapManager {
                 this.apiService
             ),
             this.store.select(getSelectWithPosition('patients'))
-        ).togglePopup$.subscribe(this.changePopup$);
+        );
 
         this.registerFeatureElementManager(
             new VehicleFeatureManager(
@@ -246,7 +239,7 @@ export class OlMapManager {
                 this.apiService
             ),
             this.store.select(getSelectWithPosition('vehicles'))
-        ).togglePopup$.subscribe(this.changePopup$);
+        );
 
         this.registerFeatureElementManager(
             new PersonnelFeatureManager(
@@ -273,15 +266,11 @@ export class OlMapManager {
                 this.store,
                 this.olMap,
                 mapImagesLayer,
-                this.apiService
+                this.apiService,
+                _isTrainer
             ),
             this.store.select(selectMapImages)
-        )
-            .togglePopup$.pipe(
-                // We only want to open the popup if the user is a trainer
-                filter(() => _isTrainer)
-            )
-            .subscribe(this.changePopup$);
+        );
 
         this.registerFeatureElementManager(
             new CateringLinesFeatureManager(cateringLinesLayer),
@@ -293,15 +282,11 @@ export class OlMapManager {
                 this.store,
                 this.olMap,
                 viewportLayer,
-                this.apiService
+                this.apiService,
+                _isTrainer
             ),
             this.store.select(selectViewports)
-        )
-            .togglePopup$.pipe(
-                // We only want to open the popup if the user is a trainer
-                filter(() => _isTrainer)
-            )
-            .subscribe(this.changePopup$);
+        );
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
@@ -356,6 +341,7 @@ export class OlMapManager {
             featureManager.layer,
             featureManager
         );
+        featureManager.togglePopup$?.subscribe(this.changePopup$);
         // Propagate the changes on an element to the featureManager
         elementDictionary$
             .pipe(
@@ -382,7 +368,6 @@ export class OlMapManager {
                     );
                 });
             });
-        return featureManager;
     }
 
     private registerPopupTriggers(translateInteraction: Translate) {

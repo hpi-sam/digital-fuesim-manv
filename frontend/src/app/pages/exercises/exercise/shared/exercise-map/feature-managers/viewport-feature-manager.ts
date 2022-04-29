@@ -1,7 +1,7 @@
 import type { Store } from '@ngrx/store';
 import { Size } from 'digital-fuesim-manv-shared';
 import type { Viewport } from 'digital-fuesim-manv-shared/src/models/viewport';
-import type { Feature } from 'ol';
+import type { Feature, MapBrowserEvent } from 'ol';
 import type OlMap from 'ol/Map';
 import type LineString from 'ol/geom/LineString';
 import type VectorLayer from 'ol/layer/Vector';
@@ -13,8 +13,8 @@ import type { AppState } from 'src/app/state/app.state';
 import type { Coordinate } from 'ol/coordinate';
 import type { FeatureManager } from '../utility/feature-manager';
 import { ModifyHelper } from '../utility/modify-helper';
-import { withPopup } from '../utility/with-popup';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
+import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import {
     ElementFeatureManager,
     createLineString,
@@ -33,7 +33,7 @@ export function isInViewport(
     );
 }
 
-class BaseViewportFeatureManager
+export class ViewportFeatureManager
     extends ElementFeatureManager<Viewport, LineString>
     implements FeatureManager<Feature<LineString>>
 {
@@ -43,7 +43,8 @@ class BaseViewportFeatureManager
         store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<LineString>>,
-        private readonly apiService: ApiService
+        private readonly apiService: ApiService,
+        private readonly isTrainer: boolean
     ) {
         super(
             store,
@@ -129,17 +130,31 @@ class BaseViewportFeatureManager
         // If the style has updated, we need to redraw the feature
         elementFeature.changed();
     }
-}
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const ViewportFeatureManager = withPopup<
-    Viewport,
-    typeof BaseViewportFeatureManager,
-    ViewportPopupComponent,
-    LineString
->(BaseViewportFeatureManager, {
-    component: ViewportPopupComponent,
-    height: 150,
-    width: 225,
-    getContext: (feature) => ({ viewportId: feature.getId() as string }),
-});
+    public override onFeatureClicked(
+        event: MapBrowserEvent<any>,
+        feature: Feature<any>
+    ): void {
+        super.onFeatureClicked(event, feature);
+        if (this.isTrainer) {
+            const zoom = this.olMap.getView().getZoom()!;
+            const margin = 10 / zoom;
+
+            this.togglePopup$.next({
+                component: ViewportPopupComponent,
+                context: {
+                    viewportId: feature.getId() as string,
+                },
+                // We want the popup to be centered on the mouse position
+                ...calculatePopupPositioning(
+                    event.coordinate,
+                    {
+                        height: margin,
+                        width: margin,
+                    },
+                    this.olMap.getView().getCenter()!
+                ),
+            });
+        }
+    }
+}

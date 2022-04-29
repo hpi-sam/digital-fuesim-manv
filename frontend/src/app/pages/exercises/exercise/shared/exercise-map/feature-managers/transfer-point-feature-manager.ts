@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import type {
     TransferPersonnelAction,
     TransferVehicleAction,
@@ -12,19 +11,18 @@ import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
-import type { Feature } from 'ol';
+import type { Feature, MapBrowserEvent } from 'ol';
 import type { TranslateEvent } from 'ol/interaction/Translate';
-import { Subject } from 'rxjs';
-import { withPopup } from '../utility/with-popup';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
-import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
-import type { OpenPopupOptions } from '../utility/popup-manager';
+import { ImagePopupHelper } from '../utility/popup-helper';
 import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
-class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoint> {
+export class TransferPointFeatureManager extends ElementFeatureManager<TransferPoint> {
+    private readonly popupHelper = new ImagePopupHelper(this.olMap);
+
     constructor(
         store: Store<AppState>,
         olMap: OlMap,
@@ -55,8 +53,6 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoin
             ),
         ]);
     }
-
-    public readonly togglePopup$ = new Subject<OpenPopupOptions<any>>();
 
     private readonly imageStyleHelper = new ImageStyleHelper(
         (feature: Feature) => ({
@@ -122,31 +118,34 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoin
             return true;
         }
         // Show a popup to choose the transfer point
-        // TODO: refactor this, to remove code duplication in withPopup
-        const featureCenter = droppedOnFeature.getGeometry()!.getCoordinates();
-        const view = this.olMap.getView();
-        const zoom = view.getZoom()!;
-        const { position, positioning } = calculatePopupPositioning(
-            featureCenter,
-            {
-                // TODO: tweak these numbers
-                width: 400 / zoom,
-                height: 300 / zoom,
-            },
-            view.getCenter()!
-        );
-        const popupOptions: OpenPopupOptions<ChooseTransferTargetPopupComponent> =
-            {
-                component: ChooseTransferTargetPopupComponent,
-                position,
-                positioning,
-                context: {
+        this.togglePopup$.next(
+            this.popupHelper.getPopupOptions(
+                ChooseTransferTargetPopupComponent,
+                droppedOnFeature,
+                {
                     transferPointId: droppedOnTransferPoint.id,
                     transferToCallback: proposeTransfer,
-                },
-            };
-        this.togglePopup$.next(popupOptions);
+                }
+            )
+        );
         return true;
+    }
+
+    public override onFeatureClicked(
+        event: MapBrowserEvent<any>,
+        feature: Feature<any>
+    ): void {
+        super.onFeatureClicked(event, feature);
+
+        this.togglePopup$.next(
+            this.popupHelper.getPopupOptions(
+                TransferPointPopupComponent,
+                feature,
+                {
+                    transferPointId: feature.getId() as string,
+                }
+            )
+        );
     }
 
     override unsupportedChangeProperties = new Set([
@@ -154,14 +153,3 @@ class TransferPointFeatureManagerBase extends ElementFeatureManager<TransferPoin
         'internalName',
     ] as const);
 }
-
-export const TransferPointFeatureManager = withPopup<
-    TransferPoint,
-    typeof TransferPointFeatureManagerBase,
-    TransferPointPopupComponent
->(TransferPointFeatureManagerBase, {
-    component: TransferPointPopupComponent,
-    height: 150,
-    width: 225,
-    getContext: (feature) => ({ transferPointId: feature.getId() as string }),
-});
