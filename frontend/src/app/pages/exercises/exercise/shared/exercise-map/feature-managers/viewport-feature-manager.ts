@@ -1,6 +1,5 @@
 import type { Store } from '@ngrx/store';
-import { Size } from 'digital-fuesim-manv-shared';
-import type { Viewport } from 'digital-fuesim-manv-shared/src/models/viewport';
+import { Viewport, Size } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import type OlMap from 'ol/Map';
 import type LineString from 'ol/geom/LineString';
@@ -25,12 +24,10 @@ export function isInViewport(
     coordinate: Coordinate,
     viewport: Viewport
 ): boolean {
-    return (
-        viewport.position.x <= coordinate[0] &&
-        coordinate[0] <= viewport.position.x + viewport.size.width &&
-        viewport.position.y - viewport.size.height <= coordinate[1] &&
-        coordinate[1] <= viewport.position.y
-    );
+    return Viewport.isInViewport(viewport, {
+        x: coordinate[0],
+        y: coordinate[1],
+    });
 }
 
 class BaseViewportFeatureManager
