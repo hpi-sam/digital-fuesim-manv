@@ -9,12 +9,8 @@ export interface ActionEmitter {
 }
 
 export class ActionWrapper {
-    public readonly emitter: ActionEmitter;
-
-    public readonly action: ExerciseAction;
-
-    public constructor(emitter: ActionEmitter, action: ExerciseAction) {
-        this.emitter = emitter;
-        this.action = action;
-    }
+    public constructor(
+        public readonly emitter: ActionEmitter,
+        public readonly action: ExerciseAction
+    ) {}
 }
