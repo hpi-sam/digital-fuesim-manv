@@ -179,6 +179,11 @@ export namespace VehicleActionReducers {
                 .forEach(
                     ([personnelId]) => delete draftState.personnel[personnelId]
                 );
+            Object.entries(draftState.patients)
+                .filter(([, patients]) => patients.vehicleId === vehicleId)
+                .forEach(
+                    ([patientId]) => delete draftState.patients[patientId]
+            );
             // Delete the vehicle
             delete draftState.vehicles[vehicleId];
             return draftState;

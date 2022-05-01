@@ -15,41 +15,37 @@ import type { AppState } from 'src/app/state/app.state';
 import type { ApiService } from 'src/app/core/api.service';
 import type { FeatureManager } from '../utility/feature-manager';
 
-function calculateTopRightViewCorner(view: View) {
+function calculateTopRightViewPoint(view: View) {
     const extent = getTopRight(view.calculateExtent());
     return new Point([extent[0], extent[1]]);
 }
 
 export class DeleteFeatureManager implements FeatureManager<Feature<Point>> {
-    public readonly store: Store<AppState>;
-    public readonly layer: VectorLayer<VectorSource<Point>>;
-    public readonly olMap: OlMap;
-    public readonly apiService: ApiService;
     constructor(
-        store: Store<AppState>,
-        layer: VectorLayer<VectorSource<Point>>,
-        olMap: OlMap,
-        apiService: ApiService
+        private readonly store: Store<AppState>,
+        public readonly layer: VectorLayer<VectorSource<Point>>,
+        private readonly olMap: OlMap,
+        private readonly apiService: ApiService
     ) {
-        this.store = store;
-        this.layer = layer;
-        this.olMap = olMap;
-        this.apiService = apiService;
 
         this.layer.setStyle(
             new Style({
                 image: new Icon({
+                    opacity: 0.8,
+                    anchorOrigin: 'top-right',
+                    anchor: [-0.25, -0.25],
                     src: '/assets/trash-can.svg',
+                    scale: 3,
                 }),
             })
         );
         const view = this.olMap.getView();
-        const point = calculateTopRightViewCorner(view);
-        const deleteIcon = new Feature(point);
-        this.layer.getSource()!.addFeature(deleteIcon);
+        const point = calculateTopRightViewPoint(view);
+        const deleteFeature = new Feature(point);
+        this.layer.getSource()!.addFeature(deleteFeature);
         view.on(['change:resolution', 'change:center'], () => {
-            deleteIcon.setGeometry(
-                calculateTopRightViewCorner(this.olMap.getView())
+            deleteFeature.setGeometry(
+                calculateTopRightViewPoint(this.olMap.getView())
             );
         });
     }
