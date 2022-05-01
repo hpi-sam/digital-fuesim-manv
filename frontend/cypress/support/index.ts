@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-namespace */
 /* eslint-disable @typescript-eslint/method-signature-style */
 // ***********************************************************
 // This example support/index.js is processed and

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-throw-literal */
-/* eslint-disable @typescript-eslint/no-namespace */
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
@@ -8,6 +6,7 @@ import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { calculateTreatments } from './utils/calculate-treatments';
+import { getElement } from './utils/get-element';
 
 export class AddPatientAction implements Action {
     @IsString()
@@ -81,12 +80,7 @@ export namespace PatientActionReducers {
     export const movePatient: ActionReducer<MovePatientAction> = {
         action: MovePatientAction,
         reducer: (draftState, { patientId, targetPosition }) => {
-            const patient = draftState.patients[patientId];
-            if (!patient) {
-                throw new ReducerError(
-                    `Patient with id ${patientId} does not exist`
-                );
-            }
+            const patient = getElement(draftState, 'patients', patientId);
             patient.position = targetPosition;
             calculateTreatments(draftState);
             return draftState;
@@ -97,11 +91,7 @@ export namespace PatientActionReducers {
     export const removePatient: ActionReducer<RemovePatientAction> = {
         action: RemovePatientAction,
         reducer: (draftState, { patientId }) => {
-            if (!draftState.patients[patientId]) {
-                throw new ReducerError(
-                    `Patient with id ${patientId} does not exist`
-                );
-            }
+            getElement(draftState, 'patients', patientId);
             delete draftState.patients[patientId];
             calculateTreatments(draftState);
             return draftState;

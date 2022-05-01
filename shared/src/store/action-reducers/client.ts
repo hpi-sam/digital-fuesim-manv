@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-throw-literal */
-/* eslint-disable @typescript-eslint/no-namespace */
 import { Type } from 'class-transformer';
 import {
     IsString,
@@ -11,7 +9,7 @@ import {
 import { Client } from '../../models';
 import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
+import { getElement } from './utils/get-element';
 
 export class AddClientAction implements Action {
     @IsString()
@@ -60,11 +58,7 @@ export namespace ClientActionReducers {
     export const removeClient: ActionReducer<RemoveClientAction> = {
         action: RemoveClientAction,
         reducer: (draftState, { clientId }) => {
-            if (!draftState.clients[clientId]) {
-                throw new ReducerError(
-                    `Client with id ${clientId} does not exist`
-                );
-            }
+            getElement(draftState, 'clients', clientId);
             delete draftState.clients[clientId];
             return draftState;
         },
@@ -75,23 +69,13 @@ export namespace ClientActionReducers {
         {
             action: RestrictViewToViewportAction,
             reducer: (draftState, { clientId, viewportId }) => {
-                if (!draftState.clients[clientId]) {
-                    throw new ReducerError(
-                        `Client with id ${clientId} does not exist`
-                    );
-                }
+                const client = getElement(draftState, 'clients', clientId);
                 if (viewportId === undefined) {
-                    draftState.clients[clientId].viewRestrictedToViewportId =
-                        viewportId;
+                    client.viewRestrictedToViewportId = viewportId;
                     return draftState;
                 }
-                if (!draftState.viewports[viewportId]) {
-                    throw new ReducerError(
-                        `Viewport with id ${viewportId} does not exist`
-                    );
-                }
-                draftState.clients[clientId].viewRestrictedToViewportId =
-                    viewportId;
+                getElement(draftState, 'viewports', viewportId);
+                client.viewRestrictedToViewportId = viewportId;
                 return draftState;
             },
             rights: 'trainer',
@@ -100,13 +84,8 @@ export namespace ClientActionReducers {
     export const setWaitingRoom: ActionReducer<SetWaitingRoomAction> = {
         action: SetWaitingRoomAction,
         reducer: (draftState, { clientId, shouldBeInWaitingRoom }) => {
-            if (!draftState.clients[clientId]) {
-                throw new ReducerError(
-                    `Client with id ${clientId} does not exist`
-                );
-            }
-            draftState.clients[clientId].isInWaitingRoom =
-                shouldBeInWaitingRoom;
+            const client = getElement(draftState, 'clients', clientId);
+            client.isInWaitingRoom = shouldBeInWaitingRoom;
             return draftState;
         },
         rights: 'trainer',
