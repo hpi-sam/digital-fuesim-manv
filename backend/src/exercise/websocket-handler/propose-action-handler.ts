@@ -67,7 +67,10 @@ export const registerProposeActionHandler = (
             }
             // 4. apply action (+ save to timeline)
             try {
-                exerciseWrapper.reduce(action);
+                exerciseWrapper.reduce(action, {
+                    emitterId: clientWrapper.client.id,
+                    emitterName: clientWrapper.client.name,
+                });
             } catch (error: any) {
                 if (error instanceof ReducerError) {
                     callback({

@@ -27,7 +27,6 @@ export class DeleteFeatureManager implements FeatureManager<Feature<Point>> {
         private readonly olMap: OlMap,
         private readonly apiService: ApiService
     ) {
-
         this.layer.setStyle(
             new Style({
                 image: new Icon({
