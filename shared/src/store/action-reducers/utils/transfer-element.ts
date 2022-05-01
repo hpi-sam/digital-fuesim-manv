@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-throw-literal */
 import type { Personnel, Vehicle } from '../../../models';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
