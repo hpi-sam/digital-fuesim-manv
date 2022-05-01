@@ -13,7 +13,7 @@ import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import {
     selectViewports,
-    getSelectWithPosition,
+    getSelectVisibleElements,
     selectCateringLines,
     selectTransferLines,
     selectMapImages,
@@ -225,7 +225,12 @@ export class OlMapManager {
                 transferPointLayer,
                 this.apiService
             ),
-            this.store.select(getSelectWithPosition('transferPoints'))
+            this.store.select(
+                getSelectVisibleElements(
+                    'transferPoints',
+                    this.apiService.ownClientId!
+                )
+            )
         ).togglePopup$.subscribe(this.changePopup$);
 
         this.registerFeatureElementManager(
@@ -235,7 +240,12 @@ export class OlMapManager {
                 patientLayer,
                 this.apiService
             ),
-            this.store.select(getSelectWithPosition('patients'))
+            this.store.select(
+                getSelectVisibleElements(
+                    'patients',
+                    this.apiService.ownClientId!
+                )
+            )
         ).togglePopup$.subscribe(this.changePopup$);
 
         this.registerFeatureElementManager(
@@ -245,7 +255,12 @@ export class OlMapManager {
                 vehicleLayer,
                 this.apiService
             ),
-            this.store.select(getSelectWithPosition('vehicles'))
+            this.store.select(
+                getSelectVisibleElements(
+                    'vehicles',
+                    this.apiService.ownClientId!
+                )
+            )
         ).togglePopup$.subscribe(this.changePopup$);
 
         this.registerFeatureElementManager(
@@ -255,7 +270,12 @@ export class OlMapManager {
                 personnelLayer,
                 this.apiService
             ),
-            this.store.select(getSelectWithPosition('personnel'))
+            this.store.select(
+                getSelectVisibleElements(
+                    'personnel',
+                    this.apiService.ownClientId!
+                )
+            )
         );
 
         this.registerFeatureElementManager(
@@ -265,7 +285,12 @@ export class OlMapManager {
                 materialLayer,
                 this.apiService
             ),
-            this.store.select(getSelectWithPosition('materials'))
+            this.store.select(
+                getSelectVisibleElements(
+                    'materials',
+                    this.apiService.ownClientId!
+                )
+            )
         );
 
         this.registerFeatureElementManager(

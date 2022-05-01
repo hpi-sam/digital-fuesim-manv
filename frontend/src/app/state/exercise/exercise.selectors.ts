@@ -1,5 +1,6 @@
 import { createSelector } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
+import { Viewport } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
 import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
@@ -44,10 +45,9 @@ export const selectTransferPoints = (state: AppState) =>
     state.exercise.transferPoints;
 
 /**
- * @returns a selector that returns a dictionary of all elements that have a position
+ * @returns a selector that returns a dictionary of all elements that have a position and are in the viewport restriction
  */
-// TODO: probably also include that the position is in a viewport in the future
-export function getSelectWithPosition<
+export function getSelectVisibleElements<
     Key extends
         | 'materials'
         | 'patients'
@@ -58,12 +58,18 @@ export function getSelectWithPosition<
     ElementsWithPosition extends {
         [Id in keyof Elements]: WithPosition<Elements[Id]>;
     } = { [Id in keyof Elements]: WithPosition<Elements[Id]> }
->(key: Key) {
-    return (state: AppState): ElementsWithPosition =>
-        pickBy(
+>(key: Key, clientId: UUID) {
+    return (state: AppState): ElementsWithPosition => {
+        const viewport = getSelectRestrictedViewport(clientId)(state);
+        return pickBy(
             state.exercise[key],
-            (element) => element.position !== undefined
+            (element) =>
+                // is not in transfer
+                element.position &&
+                // no viewport restriction
+                (!viewport || Viewport.isInViewport(viewport, element.position))
         ) as ElementsWithPosition;
+    };
 }
 
 export const selectClients = (state: AppState) => state.exercise.clients;
