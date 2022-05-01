@@ -10,12 +10,11 @@ import {
 } from 'class-validator';
 import { TransferPoint } from '../../models';
 import { Position } from '../../models/utils';
-import type { ExerciseState } from '../../state';
-import type { Mutable } from '../../utils';
 import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { calculateDistance } from './utils/calculate-distance';
+import { getElement } from './utils/get-element';
 
 export class AddTransferPointAction implements Action {
     @IsString()
@@ -98,12 +97,11 @@ export namespace TransferPointActionReducers {
     export const moveTransferPoint: ActionReducer<MoveTransferPointAction> = {
         action: MoveTransferPointAction,
         reducer: (draftState, { transferPointId, targetPosition }) => {
-            const transferPoint = draftState.transferPoints[transferPointId];
-            if (!transferPoint) {
-                throw new ReducerError(
-                    `TransferPoint with id ${transferPointId} does not exist`
-                );
-            }
+            const transferPoint = getElement(
+                draftState,
+                'transferPoints',
+                transferPointId
+            );
             transferPoint.position = targetPosition;
             return draftState;
         },
@@ -117,13 +115,11 @@ export namespace TransferPointActionReducers {
                 draftState,
                 { transferPointId, internalName, externalName }
             ) => {
-                const transferPoint =
-                    draftState.transferPoints[transferPointId];
-                if (!transferPoint) {
-                    throw new ReducerError(
-                        `TransferPoint with id ${transferPointId} does not exist`
-                    );
-                }
+                const transferPoint = getElement(
+                    draftState,
+                    'transferPoints',
+                    transferPointId
+                );
                 transferPoint.internalName = internalName;
                 transferPoint.externalName = externalName;
                 return draftState;
@@ -145,12 +141,14 @@ export namespace TransferPointActionReducers {
                         `TransferPoint with id ${transferPointId1} cannot connect to itself`
                     );
                 }
-                const transferPoint1 = getTransferPoint(
+                const transferPoint1 = getElement(
                     draftState,
+                    'transferPoints',
                     transferPointId1
                 );
-                const transferPoint2 = getTransferPoint(
+                const transferPoint2 = getElement(
                     draftState,
+                    'transferPoints',
                     transferPointId2
                 );
                 const _duration =
@@ -180,12 +178,14 @@ export namespace TransferPointActionReducers {
                         `TransferPoint with id ${transferPointId1} cannot disconnect from itself`
                     );
                 }
-                const transferPoint1 = getTransferPoint(
+                const transferPoint1 = getElement(
                     draftState,
+                    'transferPoints',
                     transferPointId1
                 );
-                const transferPoint2 = getTransferPoint(
+                const transferPoint2 = getElement(
                     draftState,
+                    'transferPoints',
                     transferPointId2
                 );
                 delete transferPoint1.reachableTransferPoints[transferPointId2];
@@ -199,11 +199,7 @@ export namespace TransferPointActionReducers {
         {
             action: RemoveTransferPointAction,
             reducer: (draftState, { transferPointId }) => {
-                if (!draftState.transferPoints[transferPointId]) {
-                    throw new ReducerError(
-                        `TransferPoint with id ${transferPointId} does not exist`
-                    );
-                }
+                getElement(draftState, 'transferPoints', transferPointId);
                 delete draftState.transferPoints[transferPointId];
                 // TODO: If we can assume that the transfer points are always connected to each other,
                 // we could just iterate over draftState.transferPoints[transferPointId].reachableTransferPoints
@@ -230,23 +226,6 @@ export namespace TransferPointActionReducers {
 }
 
 // Helpers
-
-/**
- * @returns The transferPoint with the given id
- * @throws ReducerError if the transferPoint does not exist
- */
-export function getTransferPoint(
-    state: Mutable<ExerciseState>,
-    transferPointId: UUID
-) {
-    const transferPoint = state.transferPoints[transferPointId];
-    if (!transferPoint) {
-        throw new ReducerError(
-            `TransferPoint with id ${transferPointId} does not exist`
-        );
-    }
-    return transferPoint;
-}
 
 /**
  *

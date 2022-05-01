@@ -10,11 +10,9 @@ import {
 } from 'class-validator';
 import { MapImage } from '../../models';
 import { Position } from '../../models/utils';
-import type { ExerciseState } from '../../state';
-import type { Mutable } from '../../utils';
 import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
+import { getElement } from './utils/get-element';
 
 export class AddMapImageAction implements Action {
     @IsString()
@@ -88,7 +86,7 @@ export namespace MapImagesActionReducers {
     export const moveMapImage: ActionReducer<MoveMapImageAction> = {
         action: MoveMapImageAction,
         reducer: (draftState, { mapImageId, targetPosition }) => {
-            const mapImage = getMapImage(draftState, mapImageId);
+            const mapImage = getElement(draftState, 'mapImages', mapImageId);
             mapImage.position = targetPosition;
             return draftState;
         },
@@ -98,7 +96,7 @@ export namespace MapImagesActionReducers {
     export const scaleMapImage: ActionReducer<ScaleMapImageAction> = {
         action: ScaleMapImageAction,
         reducer: (draftState, { mapImageId, newHeight, newAspectRatio }) => {
-            const mapImage = getMapImage(draftState, mapImageId);
+            const mapImage = getElement(draftState, 'mapImages', mapImageId);
             mapImage.image.height = newHeight;
             mapImage.image.aspectRatio = newAspectRatio;
             return draftState;
@@ -109,11 +107,7 @@ export namespace MapImagesActionReducers {
     export const removeMapImage: ActionReducer<RemoveMapImageAction> = {
         action: RemoveMapImageAction,
         reducer: (draftState, { mapImageId }) => {
-            if (!draftState.mapImages[mapImageId]) {
-                throw new ReducerError(
-                    `MapImage with id ${mapImageId} does not exist`
-                );
-            }
+            getElement(draftState, 'mapImages', mapImageId);
             delete draftState.mapImages[mapImageId];
             return draftState;
         },
@@ -124,18 +118,14 @@ export namespace MapImagesActionReducers {
         {
             action: ReconfigureMapImageUrlAction,
             reducer: (draftState, { mapImageId, newUrl }) => {
-                const mapImage = getMapImage(draftState, mapImageId);
+                const mapImage = getElement(
+                    draftState,
+                    'mapImages',
+                    mapImageId
+                );
                 mapImage.image.url = newUrl;
                 return draftState;
             },
             rights: 'trainer',
         };
-}
-
-function getMapImage(state: Mutable<ExerciseState>, mapImageId: UUID) {
-    const mapImage = state.mapImages[mapImageId];
-    if (!mapImage) {
-        throw new ReducerError(`MapImage with id ${mapImageId} does not exist`);
-    }
-    return mapImage;
 }
