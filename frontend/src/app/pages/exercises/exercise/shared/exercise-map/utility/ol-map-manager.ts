@@ -18,6 +18,7 @@ import {
     selectTransferLines,
     selectMapImages,
     getSelectRestrictedViewport,
+    selectTileMapProperties,
 } from 'src/app/state/exercise/exercise.selectors';
 import OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
@@ -101,12 +102,20 @@ export class OlMapManager {
     ) {
         const _isTrainer = isTrainer(this.apiService, this.store);
         // Layers
-        const tileMapProperties = getStateSnapshot(this.store).exercise
-            .tileMapProperties;
-        const satelliteLayer = this.createTileLayer(
-            tileMapProperties.tileUrl,
-            tileMapProperties.maxZoom
-        );
+        const satelliteLayer = new TileLayer();
+        this.store
+            .select(selectTileMapProperties)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((tileMapProperties) => {
+                satelliteLayer.setSource(
+                    new XYZ({
+                        url: tileMapProperties.tileUrl,
+                        maxZoom: tileMapProperties.maxZoom,
+                        // We want to keep the tiles cached if we are zooming in and out fast
+                        cacheSize: 1000,
+                    })
+                );
+            });
         const transferPointLayer = this.createElementLayer(600);
         const vehicleLayer = this.createElementLayer(1000);
         const cateringLinesLayer = this.createElementLayer<LineString>();
@@ -513,21 +522,6 @@ export class OlMapManager {
             updateWhileInteracting: true,
             renderBuffer,
             source: new VectorSource<LayerGeometry>(),
-        });
-    }
-
-    /**
-     * @param url the url to the server that serves the tiles. Must include `{x}`, `{y}` or `{-y}` and `{z}`placeholders.
-     * @param maxZoom The maximum `{z}` value the tile server accepts
-     */
-    private createTileLayer(url: string, maxZoom: number) {
-        return new TileLayer({
-            source: new XYZ({
-                url,
-                maxZoom,
-                // We want to keep the tiles cached if we are zooming in and out fast
-                cacheSize: 1000,
-            }),
         });
     }
 
