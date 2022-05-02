@@ -53,13 +53,11 @@ const gfPersonnelTemplate = PersonnelTemplate.create(
 );
 
 export const personnelTemplateMap: {
-    [key in PersonnelType]: {
-        PersonnelTemplate: PersonnelTemplate;
-    };
+    [key in PersonnelType]: PersonnelTemplate;
 } = {
-    san: { PersonnelTemplate: sanPersonnelTemplate },
-    notSan: { PersonnelTemplate: notSanPersonnelTemplate },
-    rettSan: { PersonnelTemplate: rettSanPersonnelTemplate },
-    notarzt: { PersonnelTemplate: notarztPersonnelTemplate },
-    gf: { PersonnelTemplate: gfPersonnelTemplate },
+    san: sanPersonnelTemplate,
+    notSan: notSanPersonnelTemplate,
+    rettSan: rettSanPersonnelTemplate,
+    notarzt: notarztPersonnelTemplate,
+    gf: gfPersonnelTemplate,
 };

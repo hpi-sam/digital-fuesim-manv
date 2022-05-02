@@ -73,10 +73,8 @@ export class Personnel {
         this.personnelType = personnelType;
         this.assignedPatientIds = assignedPatientIds;
         // Only assign this when the parameter is set appropriately
-        this.image =
-            personnelTemplateMap[personnelType]?.PersonnelTemplate.image;
-        this.canCaterFor =
-            personnelTemplateMap[personnelType]?.PersonnelTemplate.canCaterFor;
+        this.image = personnelTemplateMap[personnelType]?.image;
+        this.canCaterFor = personnelTemplateMap[personnelType]?.canCaterFor;
     }
 
     static readonly create = getCreate(this);
