@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-throw-literal */
 import type { Personnel, Vehicle } from '../../../models';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
 import { ReducerError } from '../../reducer-error';
-import { getTransferPoint } from '../transfer-point';
+import { getElement } from './get-element';
 
 export function transferElement(
     draftState: Mutable<ExerciseState>,
@@ -16,8 +15,9 @@ export function transferElement(
             `Element with id ${element.id} is already in transfer`
         );
     }
-    const startTransferPoint = getTransferPoint(
+    const startTransferPoint = getElement(
         draftState,
+        'transferPoints',
         startTransferPointId
     );
     const connection =

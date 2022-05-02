@@ -1,14 +1,10 @@
-/* eslint-disable @typescript-eslint/no-throw-literal */
-/* eslint-disable @typescript-eslint/no-namespace */
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
-import type { ExerciseState } from '../../state';
-import type { Mutable } from '../../utils';
 import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
 import { calculateTreatments } from './utils/calculate-treatments';
+import { getElement } from './utils/get-element';
 import { transferElement } from './utils/transfer-element';
 
 export class MovePersonnelAction implements Action {
@@ -41,12 +37,7 @@ export namespace PersonnelActionReducers {
     export const movePersonnel: ActionReducer<MovePersonnelAction> = {
         action: MovePersonnelAction,
         reducer: (draftState, { personnelId, targetPosition }) => {
-            const personnel = draftState.personnel[personnelId];
-            if (!personnel) {
-                throw new ReducerError(
-                    `Personnel with id ${personnelId} does not exist`
-                );
-            }
+            const personnel = getElement(draftState, 'personnel', personnelId);
             personnel.position = targetPosition;
             calculateTreatments(draftState);
             return draftState;
@@ -60,7 +51,7 @@ export namespace PersonnelActionReducers {
             draftState,
             { personnelId, startTransferPointId, targetTransferPointId }
         ) => {
-            const personnel = getPersonnel(draftState, personnelId);
+            const personnel = getElement(draftState, 'personnel', personnelId);
             transferElement(
                 draftState,
                 personnel,
@@ -71,14 +62,4 @@ export namespace PersonnelActionReducers {
         },
         rights: 'participant',
     };
-}
-
-function getPersonnel(state: Mutable<ExerciseState>, personnelId: UUID) {
-    const personnel = state.personnel[personnelId];
-    if (!personnel) {
-        throw new ReducerError(
-            `Personnel with id ${personnelId} does not exist`
-        );
-    }
-    return personnel;
 }
