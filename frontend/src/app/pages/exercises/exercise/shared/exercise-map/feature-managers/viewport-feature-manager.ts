@@ -1,6 +1,5 @@
 import type { Store } from '@ngrx/store';
-import { Size } from 'digital-fuesim-manv-shared';
-import type { Viewport } from 'digital-fuesim-manv-shared/src/models/viewport';
+import { Viewport, Size } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import type OlMap from 'ol/Map';
 import type LineString from 'ol/geom/LineString';
@@ -10,6 +9,7 @@ import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import type { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
+import type { Coordinate } from 'ol/coordinate';
 import type { FeatureManager } from '../utility/feature-manager';
 import { ModifyHelper } from '../utility/modify-helper';
 import { withPopup } from '../utility/with-popup';
@@ -19,6 +19,16 @@ import {
     createLineString,
     getCoordinateArray,
 } from './element-feature-manager';
+
+export function isInViewport(
+    coordinate: Coordinate,
+    viewport: Viewport
+): boolean {
+    return Viewport.isInViewport(viewport, {
+        x: coordinate[0],
+        y: coordinate[1],
+    });
+}
 
 class BaseViewportFeatureManager
     extends ElementFeatureManager<Viewport, LineString>

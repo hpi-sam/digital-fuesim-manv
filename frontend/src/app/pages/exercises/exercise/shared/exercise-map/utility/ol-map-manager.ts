@@ -13,10 +13,11 @@ import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import {
     selectViewports,
-    getSelectWithPosition,
+    getSelectVisibleElements,
     selectCateringLines,
     selectTransferLines,
     selectMapImages,
+    getSelectRestrictedViewport,
 } from 'src/app/state/exercise/exercise.selectors';
 import OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
@@ -43,7 +44,10 @@ import { PatientFeatureManager } from '../feature-managers/patient-feature-manag
 import { PersonnelFeatureManager } from '../feature-managers/personnel-feature-manager';
 import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
-import { ViewportFeatureManager } from '../feature-managers/viewport-feature-manager';
+import {
+    isInViewport,
+    ViewportFeatureManager,
+} from '../feature-managers/viewport-feature-manager';
 import type { ElementManager } from '../feature-managers/element-manager';
 import { TransferPointFeatureManager } from '../feature-managers/transfer-point-feature-manager';
 import { TransferLinesFeatureManager } from '../feature-managers/transfer-lines-feature-manager';
@@ -184,6 +188,9 @@ export class OlMapManager {
                 center: [startingPosition.x, startingPosition.y],
                 zoom: 20,
                 maxZoom: 23,
+                smoothExtentConstraint: false,
+                smoothResolutionConstraint: false,
+                constrainRotation: 1,
             }),
         });
 
@@ -218,7 +225,12 @@ export class OlMapManager {
                 transferPointLayer,
                 this.apiService
             ),
-            this.store.select(getSelectWithPosition('transferPoints'))
+            this.store.select(
+                getSelectVisibleElements(
+                    'transferPoints',
+                    this.apiService.ownClientId!
+                )
+            )
         ).togglePopup$.subscribe(this.changePopup$);
 
         this.registerFeatureElementManager(
@@ -228,7 +240,12 @@ export class OlMapManager {
                 patientLayer,
                 this.apiService
             ),
-            this.store.select(getSelectWithPosition('patients'))
+            this.store.select(
+                getSelectVisibleElements(
+                    'patients',
+                    this.apiService.ownClientId!
+                )
+            )
         ).togglePopup$.subscribe(this.changePopup$);
 
         this.registerFeatureElementManager(
@@ -238,7 +255,12 @@ export class OlMapManager {
                 vehicleLayer,
                 this.apiService
             ),
-            this.store.select(getSelectWithPosition('vehicles'))
+            this.store.select(
+                getSelectVisibleElements(
+                    'vehicles',
+                    this.apiService.ownClientId!
+                )
+            )
         ).togglePopup$.subscribe(this.changePopup$);
 
         this.registerFeatureElementManager(
@@ -248,7 +270,12 @@ export class OlMapManager {
                 personnelLayer,
                 this.apiService
             ),
-            this.store.select(getSelectWithPosition('personnel'))
+            this.store.select(
+                getSelectVisibleElements(
+                    'personnel',
+                    this.apiService.ownClientId!
+                )
+            )
         );
 
         this.registerFeatureElementManager(
@@ -258,7 +285,12 @@ export class OlMapManager {
                 materialLayer,
                 this.apiService
             ),
-            this.store.select(getSelectWithPosition('materials'))
+            this.store.select(
+                getSelectVisibleElements(
+                    'materials',
+                    this.apiService.ownClientId!
+                )
+            )
         );
 
         this.registerFeatureElementManager(
@@ -298,6 +330,42 @@ export class OlMapManager {
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
+        this.registerViewportRestriction();
+    }
+
+    private registerViewportRestriction() {
+        this.store
+            .select(getSelectRestrictedViewport(this.apiService.ownClientId!))
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((viewport) => {
+                const view = this.olMap.getView();
+                view.set('extent', undefined);
+                view.setMinZoom(0);
+                if (!viewport) {
+                    // We are no longer restricted to a viewport.
+                    // Therefore, no new restrictions have to be set.
+                    return;
+                }
+                const center = view.getCenter()!;
+                const previousZoom = view.getZoom()!;
+                const targetExtent = [
+                    viewport.position.x,
+                    viewport.position.y - viewport.size.height,
+                    viewport.position.x + viewport.size.width,
+                    viewport.position.y,
+                ];
+                view.fit(targetExtent);
+                const matchingZoom = view.getZoom()!;
+                if (isInViewport(center, viewport)) {
+                    // We only want to change the zoom if necessary
+                    view.setZoom(previousZoom);
+                    view.setCenter(center);
+                }
+
+                view.set('extent', targetExtent);
+                const minZoom = Math.min(matchingZoom, view.getMaxZoom());
+                view.setMinZoom(minZoom);
+            });
     }
 
     private registerFeatureElementManager<
