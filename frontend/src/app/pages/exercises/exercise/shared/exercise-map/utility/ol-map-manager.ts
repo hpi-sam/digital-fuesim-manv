@@ -54,6 +54,7 @@ import { TransferLinesFeatureManager } from '../feature-managers/transfer-lines-
 import { MapImageFeatureManager } from '../feature-managers/map-images-feature-manager';
 import { isTrainer } from '../../utility/is-trainer';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
+import { DeleteFeatureManager } from '../feature-managers/delete-feature-manager';
 import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
@@ -115,6 +116,7 @@ export class OlMapManager {
         const materialLayer = this.createElementLayer();
         const viewportLayer = this.createElementLayer<LineString>();
         const mapImagesLayer = this.createElementLayer(10_000);
+        const deleteFeatureLayer = this.createElementLayer();
         this.popupOverlay = new Overlay({
             element: this.popoverContainer,
         });
@@ -173,6 +175,7 @@ export class OlMapManager {
             // The most bottom objects must be at the top of the array.
             layers: [
                 satelliteLayer,
+                deleteFeatureLayer,
                 mapImagesLayer,
                 transferLinesLayer,
                 transferPointLayer,
@@ -217,6 +220,17 @@ export class OlMapManager {
             transferLinesService.displayTransferLines$.subscribe((display) => {
                 transferLinesLayer.setVisible(display);
             });
+
+            const deleteHelper = new DeleteFeatureManager(
+                this.store,
+                deleteFeatureLayer,
+                this.olMap,
+                this.apiService
+            );
+            this.layerFeatureManagerDictionary.set(
+                deleteFeatureLayer,
+                deleteHelper
+            );
         }
         this.registerFeatureElementManager(
             new TransferPointFeatureManager(
@@ -330,6 +344,7 @@ export class OlMapManager {
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
+        this.registerDropHandler(viewportTranslate);
         this.registerViewportRestriction();
     }
 
@@ -458,14 +473,26 @@ export class OlMapManager {
         translateInteraction.on('translateend', (event) => {
             const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
             this.olMap.forEachFeatureAtPixel(pixel, (feature, layer) =>
-                // we stop propagating the event as soon as the onFeatureDropped function returns true
-                this.layerFeatureManagerDictionary
-                    .get(layer as VectorLayer<VectorSource<Point>>)!
-                    .onFeatureDrop(
-                        event,
-                        event.features.getArray()[0] as Feature<Point>,
-                        feature as Feature<Point>
-                    )
+                // Skip layer when unset
+                {
+                    if (layer === null) {
+                        return;
+                    }
+                    // we stop propagating the event as soon as the onFeatureDropped function returns true
+                    this.layerFeatureManagerDictionary
+                        .get(
+                            layer as VectorLayer<
+                                VectorSource<LineString | Point>
+                            >
+                        )!
+                        .onFeatureDrop(
+                            event,
+                            event.features.getArray()[0] as Feature<
+                                LineString | Point
+                            >,
+                            feature as Feature<Point>
+                        );
+                }
             );
         });
     }
