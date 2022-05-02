@@ -39,4 +39,13 @@ export class Viewport {
         height: 1800,
         aspectRatio: 1600 / 900,
     };
+
+    static isInViewport(viewport: Viewport, position: Position): boolean {
+        return (
+            viewport.position.x <= position.x &&
+            position.x <= viewport.position.x + viewport.size.width &&
+            viewport.position.y - viewport.size.height <= position.y &&
+            position.y <= viewport.position.y
+        );
+    }
 }

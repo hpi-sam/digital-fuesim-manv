@@ -295,7 +295,7 @@ module.exports = {
         ],
         '@typescript-eslint/no-base-to-string': 'warn',
         '@typescript-eslint/no-confusing-non-null-assertion': 'warn',
-        '@typescript-eslint/no-namespace': 'warn',
+        '@typescript-eslint/no-namespace': 'off',
         '@typescript-eslint/non-nullable-type-assertion-style': 'warn',
         '@typescript-eslint/sort-type-union-intersection-members': 'warn',
         '@typescript-eslint/no-confusing-void-expression': [
@@ -363,7 +363,7 @@ module.exports = {
                 hoist: 'all',
             },
         ],
-        '@typescript-eslint/no-throw-literal': 'warn',
+        '@typescript-eslint/no-throw-literal': 'off',
         '@typescript-eslint/no-unused-expressions': 'warn',
         '@typescript-eslint/no-unused-vars': ['warn', { args: 'none' }],
         '@typescript-eslint/no-use-before-define': 'off',
