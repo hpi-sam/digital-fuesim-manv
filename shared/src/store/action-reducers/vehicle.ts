@@ -10,6 +10,7 @@ import type { Mutable } from '../../utils';
 import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
+import { deletePatient } from './patient';
 import { calculateTreatments } from './utils/calculate-treatments';
 import { transferElement } from './utils/transfer-element';
 
@@ -181,9 +182,7 @@ export namespace VehicleActionReducers {
                 );
             Object.entries(draftState.patients)
                 .filter(([, patients]) => patients.vehicleId === vehicleId)
-                .forEach(
-                    ([patientId]) => delete draftState.patients[patientId]
-                );
+                .forEach(([patientId]) => deletePatient(draftState, patientId));
             // Delete the vehicle
             delete draftState.vehicles[vehicleId];
             return draftState;

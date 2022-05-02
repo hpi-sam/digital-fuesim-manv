@@ -4,10 +4,19 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
 import { Position } from '../../models/utils';
+import type { ExerciseState } from '../../state';
+import type { Mutable } from '../../utils';
 import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { calculateTreatments } from './utils/calculate-treatments';
+
+export function deletePatient(
+    draftState: Mutable<ExerciseState>,
+    patientId: UUID
+) {
+    delete draftState.patients[patientId];
+}
 
 export class AddPatientAction implements Action {
     @IsString()
@@ -102,7 +111,7 @@ export namespace PatientActionReducers {
                     `Patient with id ${patientId} does not exist`
                 );
             }
-            delete draftState.patients[patientId];
+            deletePatient(draftState, patientId);
             calculateTreatments(draftState);
             return draftState;
         },
