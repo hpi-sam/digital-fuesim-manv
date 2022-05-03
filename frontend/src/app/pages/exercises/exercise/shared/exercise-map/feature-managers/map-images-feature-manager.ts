@@ -49,17 +49,14 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
     ): void {
         super.onFeatureClicked(event, feature);
 
-        if (this.isTrainer) {
-            this.togglePopup$.next(
-                this.popupHelper.getPopupOptions(
-                    MapImagePopupComponent,
-                    feature,
-                    {
-                        mapImageId: feature.getId() as string,
-                    }
-                )
-            );
+        if (!this.isTrainer) {
+            return;
         }
+        this.togglePopup$.next(
+            this.popupHelper.getPopupOptions(MapImagePopupComponent, feature, {
+                mapImageId: feature.getId() as string,
+            })
+        );
     }
 
     override unsupportedChangeProperties = new Set(['id', 'image'] as const);

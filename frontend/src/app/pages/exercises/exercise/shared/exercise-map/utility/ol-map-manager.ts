@@ -230,7 +230,8 @@ export class OlMapManager {
                 this.store,
                 this.olMap,
                 transferPointLayer,
-                this.apiService
+                this.apiService,
+                _isTrainer
             ),
             this.store.select(
                 getSelectVisibleElements(

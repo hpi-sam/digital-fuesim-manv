@@ -133,25 +133,26 @@ export class ViewportFeatureManager
         feature: Feature<any>
     ): void {
         super.onFeatureClicked(event, feature);
-        if (this.isTrainer) {
-            const zoom = this.olMap.getView().getZoom()!;
-            const margin = 10 / zoom;
-
-            this.togglePopup$.next({
-                component: ViewportPopupComponent,
-                context: {
-                    viewportId: feature.getId() as string,
-                },
-                // We want the popup to be centered on the mouse position
-                ...calculatePopupPositioning(
-                    event.coordinate,
-                    {
-                        height: margin,
-                        width: margin,
-                    },
-                    this.olMap.getView().getCenter()!
-                ),
-            });
+        if (!this.isTrainer) {
+            return;
         }
+        const zoom = this.olMap.getView().getZoom()!;
+        const margin = 10 / zoom;
+
+        this.togglePopup$.next({
+            component: ViewportPopupComponent,
+            context: {
+                viewportId: feature.getId() as string,
+            },
+            // We want the popup to be centered on the mouse position
+            ...calculatePopupPositioning(
+                event.coordinate,
+                {
+                    height: margin,
+                    width: margin,
+                },
+                this.olMap.getView().getCenter()!
+            ),
+        });
     }
 }

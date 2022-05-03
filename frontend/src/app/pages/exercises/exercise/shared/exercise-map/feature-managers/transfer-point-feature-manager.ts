@@ -27,7 +27,8 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
         store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        private readonly apiService: ApiService
+        private readonly apiService: ApiService,
+        private readonly isTrainer: boolean
     ) {
         super(
             store,
@@ -137,6 +138,9 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
     ): void {
         super.onFeatureClicked(event, feature);
 
+        if (!this.isTrainer) {
+            return;
+        }
         this.togglePopup$.next(
             this.popupHelper.getPopupOptions(
                 TransferPointPopupComponent,
