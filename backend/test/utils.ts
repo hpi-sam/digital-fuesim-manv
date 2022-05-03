@@ -1,3 +1,5 @@
+import { createNewDataSource } from 'database/data-source';
+import { ServiceProvider } from 'database/services/service-provider';
 import type {
     ClientToServerEvents,
     ExerciseIds,
@@ -8,6 +10,7 @@ import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import request from 'supertest';
+import type { DataSource } from 'typeorm';
 import { Config } from '../src/config';
 import { FuesimServer } from '../src/fuesim-server';
 import type { SocketReservedEvents } from './socket-reserved-events';
@@ -103,7 +106,11 @@ export class WebsocketClient {
 }
 
 class TestEnvironment {
-    public server: FuesimServer;
+    public server!: FuesimServer;
+    private _serviceProvider!: ServiceProvider;
+    public get serviceProvider(): ServiceProvider {
+        return this._serviceProvider;
+    }
 
     // `request.Test` extends `Promise<Response>`, therefore eslint wants the async keyword here.
     // The problem is that `Promise<request.Test>` not the same is as `request.Test` (but `Promise<T>` is equal to `Promise<Promise<T>>`).
@@ -133,21 +140,38 @@ class TestEnvironment {
         }
     }
 
-    public constructor() {
+    public init(serviceProvider: ServiceProvider) {
+        this._serviceProvider = serviceProvider;
         Config.initialize(true);
-        this.server = new FuesimServer();
+        this.server = new FuesimServer(this.serviceProvider);
     }
 }
 
 export const createTestEnvironment = (): TestEnvironment => {
     const environment = new TestEnvironment();
+    let dataSource: DataSource;
+    let serviceProvider: ServiceProvider;
+
+    beforeAll(async () => {
+        dataSource = await createNewDataSource().initialize();
+        serviceProvider = new ServiceProvider(dataSource);
+        environment.init(serviceProvider);
+    });
     // If this gets too slow, we may look into creating the server only once
-    beforeEach(() => {
-        environment.server?.destroy();
-        environment.server = new FuesimServer();
+    beforeEach(async () => {
+        environment.server.destroy();
+        const server = new FuesimServer(serviceProvider);
+        environment.server = server;
     });
     afterEach(() => {
         environment.server.destroy();
+    });
+    afterAll(async () => {
+        if (dataSource.isInitialized) {
+            // Prevent the dataSource from being closed too soon.
+            await sleep(500);
+            await dataSource.destroy();
+        }
     });
 
     return environment;

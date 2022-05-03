@@ -15,7 +15,7 @@ export const registerProposeActionHandler = (
     secureOn(
         client,
         'proposeAction',
-        (action: ExerciseAction, callback): void => {
+        async (action: ExerciseAction, callback): Promise<void> => {
             const clientWrapper = clientMap.get(client);
             if (!clientWrapper) {
                 // There is no client. Skip.
@@ -67,7 +67,7 @@ export const registerProposeActionHandler = (
             }
             // 4. apply & broadcast action (+ save to timeline)
             try {
-                exerciseWrapper.applyAction(action, {
+                await exerciseWrapper.applyAction(action, {
                     emitterId: clientWrapper.client.id,
                     emitterName: clientWrapper.client.name,
                 });

@@ -16,10 +16,10 @@ export class ClientWrapper {
      * @param clientName The public name of the client.
      * @returns The joined client's id, or undefined when the exercise doesn't exists.
      */
-    public joinExercise(
+    public async joinExercise(
         exerciseId: string,
         clientName: string
-    ): UUID | undefined {
+    ): Promise<UUID | undefined> {
         const exercise = exerciseMap.get(exerciseId);
         if (!exercise) {
             return undefined;
@@ -30,7 +30,7 @@ export class ClientWrapper {
         // was fetched with this exact id from the exercise map.
         const role = this.chosenExercise.getRoleFromUsedId(exerciseId);
         this.relatedExerciseClient = Client.create(clientName, role, undefined);
-        this.chosenExercise.addClient(this);
+        await this.chosenExercise.addClient(this);
         return this.relatedExerciseClient.id;
     }
 

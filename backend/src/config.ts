@@ -11,7 +11,7 @@ export class Config {
 
     private static _dbName?: string;
 
-    private static _useDataBase?: boolean;
+    private static _dbLogging?: boolean;
 
     public static get websocketPort(): number {
         if (!this.isInitialized) {
@@ -48,11 +48,11 @@ export class Config {
         return this._dbName!;
     }
 
-    public static get useDataBase(): boolean {
+    public static get dbLogging(): boolean {
         if (!this.isInitialized) {
             throw this.createUninitializedUseError();
         }
-        return this._useDataBase!;
+        return this._dbLogging!;
     }
 
     private static createTCPPortValidator() {
@@ -75,7 +75,7 @@ export class Config {
             DFM_DB_USER: str({ default: 'dfm' }),
             DFM_DB_PASSWORD: str({ default: 'dfm' }),
             DFM_DB_NAME: str({ default: 'dfm_db' }),
-            DFM_USE_DATABASE: bool({ default: false }),
+            DFM_DB_LOG: bool({ default: false }),
         });
     }
 
@@ -102,7 +102,7 @@ export class Config {
         this._dbUser = env.DFM_DB_USER;
         this._dbPassword = env.DFM_DB_PASSWORD;
         this._dbName = env.DFM_DB_NAME;
-        this._useDataBase = env.DFM_USE_DATABASE;
+        this._dbLogging = env.DFM_DB_LOG;
         this.isInitialized = true;
     }
 }

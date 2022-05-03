@@ -9,8 +9,12 @@ export const registerJoinExerciseHandler = (
     secureOn(
         client,
         'joinExercise',
-        (exerciseId: string, clientName: string, callback): void => {
-            const clientId = clientMap
+        async (
+            exerciseId: string,
+            clientName: string,
+            callback
+        ): Promise<void> => {
+            const clientId = await clientMap
                 .get(client)
                 ?.joinExercise(exerciseId, clientName);
             if (!clientId) {

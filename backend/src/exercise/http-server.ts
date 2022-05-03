@@ -1,6 +1,7 @@
 import type { Server as HttpServer } from 'node:http';
 import cors from 'cors';
 import type * as core from 'express-serve-static-core';
+import type { ServiceProvider } from '../database/services/service-provider';
 import {
     deleteExercise,
     getExercise,
@@ -10,7 +11,7 @@ import { getHealth } from './http-handler/api/health';
 
 export class ExerciseHttpServer {
     public readonly httpServer: HttpServer;
-    constructor(app: core.Express, port: number) {
+    constructor(app: core.Express, port: number, services: ServiceProvider) {
         // TODO: Temporary allow all
         app.use(cors());
 
@@ -23,8 +24,8 @@ export class ExerciseHttpServer {
             res.send(response.body);
         });
 
-        app.post('/api/exercise', (req, res) => {
-            const response = postExercise();
+        app.post('/api/exercise', async (req, res) => {
+            const response = await postExercise(services);
             res.statusCode = response.statusCode;
             res.send(response.body);
         });

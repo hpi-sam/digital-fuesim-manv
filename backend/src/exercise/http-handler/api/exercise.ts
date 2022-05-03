@@ -1,16 +1,25 @@
 import type { ExerciseIds } from 'digital-fuesim-manv-shared';
+import { ExerciseState } from 'digital-fuesim-manv-shared';
+import type { ServiceProvider } from '../../../database/services/service-provider';
 import { UserReadableIdGenerator } from '../../../utils/user-readable-id-generator';
 import { exerciseMap } from '../../exercise-map';
 import { ExerciseWrapper } from '../../exercise-wrapper';
 import type { HttpResponse } from '../utils';
 
-export function postExercise(): HttpResponse<ExerciseIds> {
+export async function postExercise(
+    services: ServiceProvider
+): Promise<HttpResponse<ExerciseIds>> {
     let newParticipantId: string | undefined;
     let newTrainerId: string | undefined;
     try {
         newParticipantId = UserReadableIdGenerator.generateId();
         newTrainerId = UserReadableIdGenerator.generateId(8);
-        const newExercise = new ExerciseWrapper(newParticipantId, newTrainerId);
+        const newExercise = await ExerciseWrapper.create(
+            newParticipantId,
+            newTrainerId,
+            services,
+            ExerciseState.create()
+        );
         exerciseMap.set(newParticipantId, newExercise);
         exerciseMap.set(newTrainerId, newExercise);
         return {

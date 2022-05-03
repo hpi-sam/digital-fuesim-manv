@@ -1,13 +1,16 @@
 import 'dotenv/config';
 import { Config } from './config';
 import { createNewDataSource } from './database/data-source';
+import { ServiceProvider } from './database/services/service-provider';
 import { FuesimServer } from './fuesim-server';
 
-Config.initialize();
+async function main() {
+    Config.initialize();
 
-if (Config.useDataBase) {
-    await createNewDataSource().initialize();
+    const dataSource = await createNewDataSource().initialize();
+    const services = new ServiceProvider(dataSource);
+    // eslint-disable-next-line no-new
+    new FuesimServer(services);
 }
 
-// eslint-disable-next-line no-new
-new FuesimServer();
+main();

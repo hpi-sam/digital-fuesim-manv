@@ -1,14 +1,33 @@
+// TODO: See action-wrapper.ts (@Dassderdie)
+
+/* eslint-disable @typescript-eslint/no-duplicate-imports */
+/* eslint-disable import/order */
 import type { ExerciseAction, Role } from 'digital-fuesim-manv-shared';
 import { reduceExerciseState, ExerciseState } from 'digital-fuesim-manv-shared';
-import type { ActionEmitter } from './action-wrapper';
-import { ActionWrapper } from './action-wrapper';
+import { Column, Entity } from 'typeorm';
+import { IsInt, IsJSON, IsString, MaxLength, MinLength } from 'class-validator';
+import type { ServiceProvider } from '../database/services/service-provider';
+import type { Creatable } from '../database/dtos';
+import { BaseEntity } from '../database/base-entity';
+import { ActionEmitter } from './action-emitter';
+// import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
 import { patientTick } from './patient-ticking';
 import { PeriodicEventHandler } from './periodic-events/periodic-event-handler';
 
-export class ExerciseWrapper {
-    private tickCounter = 0;
+import { Type } from 'class-transformer';
+import { ValidateNested } from 'class-validator';
+import { ManyToOne } from 'typeorm';
+
+@Entity()
+export class ExerciseWrapper extends BaseEntity {
+    @Column({
+        type: 'integer',
+        default: 0,
+    })
+    @IsInt()
+    tickCounter = 0;
 
     /**
      * How many ticks have to pass until treatments get recalculated (e.g. with {@link tickInterval} === 1000 and {@link refreshTreatmentInterval} === 60 every minute)
@@ -46,7 +65,15 @@ export class ExerciseWrapper {
 
     private readonly clients = new Set<ClientWrapper>();
 
-    private currentState = ExerciseState.create();
+    private readonly initialState = ExerciseState.create();
+
+    @Column({
+        type: 'json',
+    })
+    @IsJSON()
+    readonly initialStateString = JSON.stringify(this.initialState);
+
+    private currentState = this.initialState;
 
     /**
      * This only contains some snapshots of the state, not every state in between.
@@ -55,17 +82,48 @@ export class ExerciseWrapper {
 
     private readonly actionHistory: ActionWrapper[] = [];
 
-    constructor(
-        private readonly participantId: string,
-        private readonly trainerId: string
-    ) {
-        this.applyAction(
+    @Column({ type: 'char', length: 6 })
+    @IsString()
+    @MinLength(6)
+    @MaxLength(6)
+    readonly participantId!: string;
+
+    @Column({ type: 'char', length: 8 })
+    @IsString()
+    @MinLength(8)
+    @MaxLength(8)
+    readonly trainerId!: string;
+
+    private services!: ServiceProvider;
+
+    /** Exists to prevent creation via it. - Use {@link create} instead. */
+    private constructor() {
+        super();
+    }
+
+    static async create(
+        participantId: string,
+        trainerId: string,
+        services: ServiceProvider,
+        initialState: ExerciseState = ExerciseState.create()
+    ): Promise<ExerciseWrapper> {
+        const exercise = await services.exerciseWrapperService.create({
+            participantId,
+            trainerId,
+            initialStateString: JSON.stringify(initialState),
+        });
+
+        exercise.services = services;
+
+        exercise.applyAction(
             {
                 type: '[Exercise] Set Participant Id',
                 participantId,
             },
             { emitterId: 'server' }
         );
+
+        return exercise;
     }
 
     /**
@@ -96,7 +154,7 @@ export class ExerciseWrapper {
         this.clients.forEach((client) => client.emitAction(action));
     }
 
-    public addClient(clientWrapper: ClientWrapper) {
+    public async addClient(clientWrapper: ClientWrapper) {
         if (clientWrapper.client === undefined) {
             return;
         }
@@ -105,7 +163,7 @@ export class ExerciseWrapper {
             type: '[Client] Add client',
             client,
         };
-        this.applyAction(addClientAction, {
+        await this.applyAction(addClientAction, {
             emitterId: client.id,
             emitterName: client.name,
         });
@@ -146,12 +204,12 @@ export class ExerciseWrapper {
      * @param intermediateAction When set is run between reducing the state and broadcasting the action
      * @throws Error if the action is not applicable on the current state
      */
-    public applyAction(
+    public async applyAction(
         action: ExerciseAction,
-        emitter: ActionEmitter,
+        emitter: Creatable<ActionEmitter>,
         intermediateAction?: () => void
-    ): void {
-        this.reduce(action, emitter);
+    ): Promise<void> {
+        await this.reduce(action, emitter);
         intermediateAction?.();
         this.emitAction(action);
     }
@@ -160,9 +218,12 @@ export class ExerciseWrapper {
      * Applies the action on the current state.
      * @throws Error if the action is not applicable on the current state
      */
-    private reduce(action: ExerciseAction, emitter: ActionEmitter): void {
+    private async reduce(
+        action: ExerciseAction,
+        emitter: Creatable<ActionEmitter>
+    ): Promise<void> {
         const newState = reduceExerciseState(this.currentState, action);
-        this.setState(newState, action, emitter);
+        await this.setState(newState, action, emitter);
         if (action.type === '[Exercise] Pause') {
             this.pause();
         } else if (action.type === '[Exercise] Start') {
@@ -170,23 +231,77 @@ export class ExerciseWrapper {
         }
     }
 
-    private setState(
+    private async setState(
         newExerciseState: ExerciseState,
         action: ExerciseAction,
-        emitter: ActionEmitter
-    ): void {
+        emitter: Creatable<ActionEmitter>
+    ): Promise<void> {
         // Only save every tenth state directly
         // TODO: Check whether this is a good threshold.
         if (this.actionHistory.length % 10 === 0) {
             this.stateHistory.push(this.currentState);
         }
-        this.actionHistory.push(new ActionWrapper(emitter, action));
         this.currentState = newExerciseState;
+        this.actionHistory.push(
+            await ActionWrapper.create(action, emitter, this, this.services)
+        );
     }
 
     public deleteExercise() {
         this.clients.forEach((client) => client.disconnect());
         exerciseMap.delete(this.participantId);
         exerciseMap.delete(this.trainerId);
+    }
+}
+
+@Entity()
+export class ActionWrapper extends BaseEntity {
+    @ManyToOne(() => ActionEmitter, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        nullable: false,
+        eager: true,
+    })
+    @ValidateNested()
+    @Type(() => ActionEmitter)
+    emitter!: ActionEmitter;
+
+    @Column({
+        type: 'timestamp with time zone',
+        default: () => 'CURRENT_TIMESTAMP',
+    })
+    created!: Date;
+
+    get action(): ExerciseAction {
+        return JSON.parse(this.actionString);
+    }
+
+    @Column({
+        type: 'json',
+    })
+    @IsJSON()
+    actionString!: string;
+
+    @ManyToOne(() => ExerciseWrapper)
+    @ValidateNested()
+    @Type(() => ExerciseWrapper)
+    exercise!: ExerciseWrapper;
+
+    /** Exists to prevent creation via it. - Use {@link create} instead. */
+    private constructor() {
+        super();
+    }
+
+    static async create(
+        action: ExerciseAction,
+        emitter: Creatable<ActionEmitter>,
+        exercise: ExerciseWrapper,
+        services: ServiceProvider
+    ): Promise<ActionWrapper> {
+        return services.actionWrapperService.create({
+            actionString: JSON.stringify(action),
+            emitter,
+            exerciseId: exercise.id,
+        });
     }
 }

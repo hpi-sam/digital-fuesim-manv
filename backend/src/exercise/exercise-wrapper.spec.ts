@@ -5,8 +5,12 @@ import { ExerciseWrapper } from './exercise-wrapper';
 
 describe('Exercise Wrapper', () => {
     const environment = createTestEnvironment();
-    it('fails getting a role for the wrong id', () => {
-        const exercise = new ExerciseWrapper('participant', 'trainer');
+    it('fails getting a role for the wrong id', async () => {
+        const exercise = await ExerciseWrapper.create(
+            '123456',
+            '12345678',
+            environment.serviceProvider
+        );
 
         expect(() => exercise.getRoleFromUsedId('wrong id')).toThrow(
             RangeError
@@ -14,7 +18,11 @@ describe('Exercise Wrapper', () => {
     });
 
     it('does nothing adding a client that is not set up', async () => {
-        const exercise = new ExerciseWrapper('participant', 'trainer');
+        const exercise = await ExerciseWrapper.create(
+            '123456',
+            '12345678',
+            environment.serviceProvider
+        );
         // Use a websocket in order to have a ClientWrapper set up
         await environment.withWebsocket(async () => {
             // Sleep a bit to allow the socket to connect.
@@ -32,7 +40,11 @@ describe('Exercise Wrapper', () => {
     });
 
     it('does nothing removing a client that is not joined', async () => {
-        const exercise = new ExerciseWrapper('participant', 'trainer');
+        const exercise = await ExerciseWrapper.create(
+            '123456',
+            '12345678',
+            environment.serviceProvider
+        );
         // Use a websocket in order to have a ClientWrapper set up
         await environment.withWebsocket(async () => {
             const client = clientMap.values().next().value;
@@ -50,8 +62,12 @@ describe('Exercise Wrapper', () => {
 
     describe('Started Exercise', () => {
         let exercise: ExerciseWrapper | undefined;
-        beforeEach(() => {
-            exercise = new ExerciseWrapper('participant', 'trainer');
+        beforeEach(async () => {
+            exercise = await ExerciseWrapper.create(
+                'participant',
+                'trainer',
+                environment.serviceProvider
+            );
             exercise.start();
         });
         afterEach(() => {
@@ -76,8 +92,12 @@ describe('Exercise Wrapper', () => {
     });
 
     describe('Reactions to Actions', () => {
-        it('calls start when matching action is sent', () => {
-            const exercise = new ExerciseWrapper('participant', 'trainer');
+        it('calls start when matching action is sent', async () => {
+            const exercise = await ExerciseWrapper.create(
+                'participant',
+                'trainer',
+                environment.serviceProvider
+            );
 
             const startMock = jest.spyOn(ExerciseWrapper.prototype, 'start');
             startMock.mockImplementation(() => ({}));
@@ -89,8 +109,12 @@ describe('Exercise Wrapper', () => {
             expect(startMock).toHaveBeenCalledTimes(1);
         });
 
-        it('calls start when matching action is sent', () => {
-            const exercise = new ExerciseWrapper('participant', 'trainer');
+        it('calls start when matching action is sent', async () => {
+            const exercise = await ExerciseWrapper.create(
+                'participant',
+                'trainer',
+                environment.serviceProvider
+            );
 
             const pause = jest.spyOn(ExerciseWrapper.prototype, 'pause');
             pause.mockImplementation(() => ({}));
