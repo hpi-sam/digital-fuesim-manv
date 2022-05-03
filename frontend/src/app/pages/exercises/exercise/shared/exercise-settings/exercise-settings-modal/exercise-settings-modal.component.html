@@ -7,7 +7,7 @@
         <div class="card-header">Karte</div>
         <div class="card-body">
             <div class="form-group mb-3">
-                <label class="form-label">Server Adresse:</label>
+                <label class="form-label">Serveradresse:</label>
                 <p class="small">
                     <!-- Yes, this is seemingly the only way to escape curly braces https://github.com/angular/angular/issues/11859 -->
                     Unter dieser Adresse werden die Karten-Kacheln geladen. Die
@@ -21,6 +21,7 @@
                     #tileUrlInput="ngModel"
                     [(ngModel)]="tileMapProperties.tileUrl"
                     [appAutofocus]="true"
+                    appUrlValidator
                     [pattern]="tileMapUrlRegex"
                     required
                     type="url"

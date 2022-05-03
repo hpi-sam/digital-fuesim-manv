@@ -38,7 +38,6 @@ import {
     pairwise,
     takeUntil,
 } from 'rxjs';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { startingPosition } from '../../starting-position';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';

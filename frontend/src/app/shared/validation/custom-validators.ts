@@ -1,4 +1,5 @@
 import type { AbstractControl } from '@angular/forms';
+import isUrl from 'validator/lib/isURL';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace CustomValidators {
@@ -13,5 +14,11 @@ export namespace CustomValidators {
             /^\d*$/u.test(control.value)
                 ? null
                 : { onlyNumbers: true as const };
+    }
+    export function urlValidator() {
+        return (control: AbstractControl) =>
+            !control.value || isUrl(control.value)
+                ? null
+                : { url: true as const };
     }
 }
