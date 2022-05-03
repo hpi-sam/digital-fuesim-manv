@@ -21,6 +21,9 @@ services:
             - POSTGRES_USER=${DFM_DB_USER}
             - POSTGRES_PASSWORD=${DFM_DB_PASSWORD}
             - POSTGRES_DB=${DFM_DB_NAME}
+        # TODO: This doesn't seem to work (@anonym-HPI)
+        env_file:
+            - backend/.env
 
 volumes:
     dfm_db:
