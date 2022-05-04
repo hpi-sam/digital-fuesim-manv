@@ -54,7 +54,7 @@ describe('Exercise Wrapper', () => {
                 'applyAction'
             );
             applySpy.mockClear();
-            exercise.removeClient(client);
+            await exercise.removeClient(client);
 
             expect(applySpy).not.toHaveBeenCalled();
         });
@@ -64,8 +64,8 @@ describe('Exercise Wrapper', () => {
         let exercise: ExerciseWrapper | undefined;
         beforeEach(async () => {
             exercise = await ExerciseWrapper.create(
-                'participant',
-                'trainer',
+                '123456',
+                '12345678',
                 environment.serviceProvider
             );
             exercise.start();
@@ -94,34 +94,34 @@ describe('Exercise Wrapper', () => {
     describe('Reactions to Actions', () => {
         it('calls start when matching action is sent', async () => {
             const exercise = await ExerciseWrapper.create(
-                'participant',
-                'trainer',
+                '123456',
+                '12345678',
                 environment.serviceProvider
             );
 
             const startMock = jest.spyOn(ExerciseWrapper.prototype, 'start');
             startMock.mockImplementation(() => ({}));
 
-            exercise.applyAction(
+            await exercise.applyAction(
                 { type: '[Exercise] Start', timestamp: 0 },
-                { emitterId: 'server' }
+                { emitterId: (exercise as any).emitterUUID }
             );
             expect(startMock).toHaveBeenCalledTimes(1);
         });
 
         it('calls start when matching action is sent', async () => {
             const exercise = await ExerciseWrapper.create(
-                'participant',
-                'trainer',
+                '123456',
+                '12345678',
                 environment.serviceProvider
             );
 
             const pause = jest.spyOn(ExerciseWrapper.prototype, 'pause');
             pause.mockImplementation(() => ({}));
 
-            exercise.applyAction(
+            await exercise.applyAction(
                 { type: '[Exercise] Pause', timestamp: 0 },
-                { emitterId: 'server' }
+                { emitterId: (exercise as any).emitterUUID }
             );
             expect(pause).toHaveBeenCalledTimes(1);
         });

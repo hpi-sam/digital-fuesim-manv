@@ -1,14 +1,16 @@
 import { exerciseMap } from '../src/exercise/exercise-map';
 import { UserReadableIdGenerator } from '../src/utils/user-readable-id-generator';
 import type { ExerciseCreationResponse } from './utils';
-import { createExercise, createTestEnvironment } from './utils';
+import { createExercise, createTestEnvironment, sleep } from './utils';
 
 describe('exercise', () => {
     const environment = createTestEnvironment();
 
-    beforeEach(() => {
+    beforeEach(async () => {
         UserReadableIdGenerator.freeAll();
         exerciseMap.clear();
+        // TODO: This is required, but it shouldn't be required (@ClFeSc)
+        await sleep(5);
     });
     describe('POST /api/exercise', () => {
         it('returns an exercise id', async () => {

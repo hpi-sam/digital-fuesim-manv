@@ -12,7 +12,6 @@ type CreateActionEmitter = Omit<ActionEmitter, 'exercise' | 'id'> & {
 
 type UpdateActionEmitter = Partial<CreateActionEmitter>;
 
-// TODO: Could there be helpers for the whole Omit<> & {}? (@Dassderdie)
 type CreateActionWrapper = Omit<
     ActionWrapper,
     'action' | 'created' | 'emitter' | 'id'

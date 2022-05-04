@@ -37,12 +37,12 @@ export class ClientWrapper {
     /**
      * Note that this method simply returns when the client did not join an exercise.
      */
-    public leaveExercise() {
+    public async leaveExercise() {
         if (this.chosenExercise === undefined) {
             // The client has not joined an exercise. Do nothing.
             return;
         }
-        this.chosenExercise.removeClient(this);
+        await this.chosenExercise.removeClient(this);
     }
 
     public get exercise(): ExerciseWrapper | undefined {
@@ -58,6 +58,9 @@ export class ClientWrapper {
     }
 
     public disconnect() {
-        this.socket.disconnect();
+        this.chosenExercise = undefined;
+        if (this.socket.connected) {
+            this.socket.disconnect();
+        }
     }
 }

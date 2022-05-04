@@ -73,7 +73,7 @@ export class ExerciseWrapper extends BaseEntity {
                 this.tickCounter % this.refreshTreatmentInterval === 0,
             tickInterval: this.tickInterval,
         };
-        this.applyAction(updateAction, { emitterId: this.emitterUUID });
+        await this.applyAction(updateAction, { emitterId: this.emitterUUID });
         this.tickCounter++;
         await this.services.exerciseWrapperService.update(this.id, {
             tickCounter: this.tickCounter,
@@ -139,7 +139,7 @@ export class ExerciseWrapper extends BaseEntity {
 
         exercise.services = services;
 
-        exercise.applyAction(
+        await exercise.applyAction(
             {
                 type: '[Exercise] Set Participant Id',
                 participantId,
@@ -195,7 +195,7 @@ export class ExerciseWrapper extends BaseEntity {
         this.clients.add(clientWrapper);
     }
 
-    public removeClient(clientWrapper: ClientWrapper) {
+    public async removeClient(clientWrapper: ClientWrapper) {
         if (!this.clients.has(clientWrapper)) {
             // clientWrapper not part of this exercise
             return;
@@ -205,13 +205,16 @@ export class ExerciseWrapper extends BaseEntity {
             type: '[Client] Remove client',
             clientId: client.id,
         };
-        this.applyAction(
+        await this.applyAction(
             removeClientAction,
             {
                 emitterId: client.id,
                 emitterName: client.name,
             },
-            () => this.clients.delete(clientWrapper)
+            () => {
+                clientWrapper.disconnect();
+                this.clients.delete(clientWrapper);
+            }
         );
     }
 

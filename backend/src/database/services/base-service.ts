@@ -100,7 +100,7 @@ export abstract class BaseService<TEntity extends BaseEntity> {
         entityManager?: EntityManager
     ): Promise<TEntity> {
         const find = async (manager: EntityManager) =>
-            (await this.findOne(options, false)) ??
+            (await this.findOne(options, false, manager)) ??
             (await this.create(creatable, manager));
         return entityManager
             ? find(entityManager)
@@ -129,7 +129,9 @@ export abstract class BaseService<TEntity extends BaseEntity> {
             } catch (e: unknown) {
                 if (e instanceof EntityNotFoundError) {
                     throw new DatabaseError(
-                        `\`${this.entityTarget.constructor.name}\` with id \`${id}\` could not be found`,
+                        `\`${
+                            (this.entityTarget as any).name
+                        }\` with id \`${id}\` could not be found`,
                         e
                     );
                 }

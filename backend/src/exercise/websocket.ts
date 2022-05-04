@@ -41,8 +41,8 @@ export class ExerciseWebsocketServer {
         registerJoinExerciseHandler(this.exerciseServer, client);
 
         // Register disconnect handler
-        client.on('disconnect', () => {
-            clientMap.get(client)!.leaveExercise();
+        client.on('disconnect', async () => {
+            await clientMap.get(client)!.leaveExercise();
             clientMap.delete(client);
         });
     }
