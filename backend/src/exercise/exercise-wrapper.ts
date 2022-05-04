@@ -1,11 +1,18 @@
-// TODO: See action-wrapper.ts (@Dassderdie)
+// TODO: See action-emitter.ts (@Dassderdie)
 
 /* eslint-disable @typescript-eslint/no-duplicate-imports */
 /* eslint-disable import/order */
-import type { ExerciseAction, Role } from 'digital-fuesim-manv-shared';
+import { uuidValidationOptions, UUID, uuid } from 'digital-fuesim-manv-shared';
 import { reduceExerciseState, ExerciseState } from 'digital-fuesim-manv-shared';
 import { Column, Entity } from 'typeorm';
-import { IsInt, IsJSON, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+    IsInt,
+    IsJSON,
+    IsString,
+    IsUUID,
+    MaxLength,
+    MinLength,
+} from 'class-validator';
 import type { ServiceProvider } from '../database/services/service-provider';
 import type { Creatable } from '../database/dtos';
 import { BaseEntity } from '../database/base-entity';
@@ -21,7 +28,7 @@ import { ValidateNested } from 'class-validator';
 import { ManyToOne } from 'typeorm';
 
 import { IsOptional } from 'class-validator';
-import type { UUID } from 'digital-fuesim-manv-shared';
+import type { ExerciseAction, Role } from 'digital-fuesim-manv-shared';
 
 @Entity()
 export class ExerciseWrapper extends BaseEntity {
@@ -31,6 +38,11 @@ export class ExerciseWrapper extends BaseEntity {
     })
     @IsInt()
     tickCounter = 0;
+
+    /**
+     * The uuid used in the ActionEmitters for Actions proposed by the server for this exercise.
+     */
+    private readonly emitterUUID = uuid();
 
     /**
      * How many ticks have to pass until treatments get recalculated (e.g. with {@link tickInterval} === 1000 and {@link refreshTreatmentInterval} === 60 every minute)
@@ -55,7 +67,7 @@ export class ExerciseWrapper extends BaseEntity {
                 this.tickCounter % this.refreshTreatmentInterval === 0,
             tickInterval: this.tickInterval,
         };
-        this.applyAction(updateAction, { emitterId: 'server' });
+        this.applyAction(updateAction, { emitterId: this.emitterUUID });
         this.tickCounter++;
     };
 
@@ -123,7 +135,7 @@ export class ExerciseWrapper extends BaseEntity {
                 type: '[Exercise] Set Participant Id',
                 participantId,
             },
-            { emitterId: 'server' }
+            { emitterId: exercise.emitterUUID }
         );
 
         return exercise;
@@ -259,18 +271,12 @@ export class ExerciseWrapper extends BaseEntity {
 
 @Entity()
 export class ActionEmitter extends BaseEntity {
-    // TODO: Select a UUID for the server (@ClFeSc, @hpistudent72)
-    @Column({
-        type: 'varchar',
-        length: 36,
-        unique: true,
-    })
-    @IsString()
-    @MaxLength(36)
-    emitterId!: UUID | 'server';
+    @Column({ type: 'uuid', unique: true })
+    @IsUUID(4, uuidValidationOptions)
+    emitterId!: UUID;
 
     /**
-     * `undefined` iff {@link emitterId}` === 'server'`
+     * `undefined` iff this emitter is the server
      */
     @Column({
         type: 'varchar',
