@@ -1,22 +1,23 @@
 import type { UUID } from 'digital-fuesim-manv-shared';
-import type { ActionEmitter } from 'exercise/action-emitter';
-// import type { ActionWrapper } from 'exercise/action-wrapper';
-import type { ActionWrapper, ExerciseWrapper } from 'exercise/exercise-wrapper';
+// import type { ActionEmitter } from 'exercise/action-emitter';
+import type { ActionWrapper } from 'exercise/action-wrapper';
+import type { ActionEmitter, ExerciseWrapper } from 'exercise/exercise-wrapper';
 import type { BaseEntity } from './base-entity';
 
 // It is important to not export these types as otherwise TypeScript may use them in places where it shouldn't.
 
-type CreateActionEmitter = Omit<ActionEmitter, 'id'>;
+type CreateActionEmitter = Omit<ActionEmitter, 'exercise' | 'id'> & {
+    exerciseId: UUID;
+};
 
 type UpdateActionEmitter = Partial<CreateActionEmitter>;
 
 // TODO: Could there be helpers for the whole Omit<> & {}? (@Dassderdie)
 type CreateActionWrapper = Omit<
     ActionWrapper,
-    'action' | 'created' | 'emitter' | 'exercise' | 'id'
+    'action' | 'created' | 'emitter' | 'id'
 > & {
     emitter: CreateActionEmitter;
-    exerciseId: UUID;
 };
 
 type UpdateActionWrapper = Omit<Partial<CreateActionWrapper>, 'emitter'> & {

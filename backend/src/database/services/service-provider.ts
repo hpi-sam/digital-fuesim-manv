@@ -9,11 +9,13 @@ export class ServiceProvider {
     public readonly exerciseWrapperService: ExerciseWrapperService;
 
     public constructor(dataSource: DataSource) {
-        this.actionEmitterService = new ActionEmitterService(dataSource);
         this.exerciseWrapperService = new ExerciseWrapperService(dataSource);
+        this.actionEmitterService = new ActionEmitterService(
+            this.exerciseWrapperService,
+            dataSource
+        );
         this.actionWrapperService = new ActionWrapperService(
             this.actionEmitterService,
-            this.exerciseWrapperService,
             dataSource
         );
     }

@@ -9,8 +9,8 @@ import { IsInt, IsJSON, IsString, MaxLength, MinLength } from 'class-validator';
 import type { ServiceProvider } from '../database/services/service-provider';
 import type { Creatable } from '../database/dtos';
 import { BaseEntity } from '../database/base-entity';
-import { ActionEmitter } from './action-emitter';
-// import { ActionWrapper } from './action-wrapper';
+// import { ActionEmitter } from './action-emitter';
+import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
 import { patientTick } from './patient-ticking';
@@ -19,6 +19,9 @@ import { PeriodicEventHandler } from './periodic-events/periodic-event-handler';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 import { ManyToOne } from 'typeorm';
+
+import { IsOptional } from 'class-validator';
+import type { UUID } from 'digital-fuesim-manv-shared';
 
 @Entity()
 export class ExerciseWrapper extends BaseEntity {
@@ -206,7 +209,7 @@ export class ExerciseWrapper extends BaseEntity {
      */
     public async applyAction(
         action: ExerciseAction,
-        emitter: Creatable<ActionEmitter>,
+        emitter: Omit<Creatable<ActionEmitter>, 'exerciseId'>,
         intermediateAction?: () => void
     ): Promise<void> {
         await this.reduce(action, emitter);
@@ -220,7 +223,7 @@ export class ExerciseWrapper extends BaseEntity {
      */
     private async reduce(
         action: ExerciseAction,
-        emitter: Creatable<ActionEmitter>
+        emitter: Omit<Creatable<ActionEmitter>, 'exerciseId'>
     ): Promise<void> {
         const newState = reduceExerciseState(this.currentState, action);
         await this.setState(newState, action, emitter);
@@ -234,7 +237,7 @@ export class ExerciseWrapper extends BaseEntity {
     private async setState(
         newExerciseState: ExerciseState,
         action: ExerciseAction,
-        emitter: Creatable<ActionEmitter>
+        emitter: Omit<Creatable<ActionEmitter>, 'exerciseId'>
     ): Promise<void> {
         // Only save every tenth state directly
         // TODO: Check whether this is a good threshold.
@@ -255,53 +258,38 @@ export class ExerciseWrapper extends BaseEntity {
 }
 
 @Entity()
-export class ActionWrapper extends BaseEntity {
-    @ManyToOne(() => ActionEmitter, {
+export class ActionEmitter extends BaseEntity {
+    // TODO: Select a UUID for the server (@ClFeSc, @hpistudent72)
+    @Column({
+        type: 'varchar',
+        length: 36,
+        unique: true,
+    })
+    @IsString()
+    @MaxLength(36)
+    emitterId!: UUID | 'server';
+
+    /**
+     * `undefined` iff {@link emitterId}` === 'server'`
+     */
+    @Column({
+        type: 'varchar',
+        // TODO: Restrict this length in shared (@ClFeSc, @hpistudent72)
+        length: 255,
+        nullable: true,
+    })
+    @IsString()
+    @IsOptional()
+    @MaxLength(255)
+    emitterName?: string;
+
+    @ManyToOne(() => ExerciseWrapper, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
         nullable: false,
         eager: true,
     })
     @ValidateNested()
-    @Type(() => ActionEmitter)
-    emitter!: ActionEmitter;
-
-    @Column({
-        type: 'timestamp with time zone',
-        default: () => 'CURRENT_TIMESTAMP',
-    })
-    created!: Date;
-
-    get action(): ExerciseAction {
-        return JSON.parse(this.actionString);
-    }
-
-    @Column({
-        type: 'json',
-    })
-    @IsJSON()
-    actionString!: string;
-
-    @ManyToOne(() => ExerciseWrapper)
-    @ValidateNested()
     @Type(() => ExerciseWrapper)
     exercise!: ExerciseWrapper;
-
-    /** Exists to prevent creation via it. - Use {@link create} instead. */
-    private constructor() {
-        super();
-    }
-
-    static async create(
-        action: ExerciseAction,
-        emitter: Creatable<ActionEmitter>,
-        exercise: ExerciseWrapper,
-        services: ServiceProvider
-    ): Promise<ActionWrapper> {
-        return services.actionWrapperService.create({
-            actionString: JSON.stringify(action),
-            emitter,
-            exerciseId: exercise.id,
-        });
-    }
 }

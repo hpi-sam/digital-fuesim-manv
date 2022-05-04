@@ -1,58 +1,55 @@
-// TODO: This can't be used due to circular imports. Class has been moved to exercise-wrapper file for now. (@Dassderdie)
+import type { ExerciseAction } from 'digital-fuesim-manv-shared';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { IsJSON, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import type { ServiceProvider } from '../database/services/service-provider';
+import type { Creatable } from '../database/dtos';
+import { BaseEntity } from '../database/base-entity';
+import type { ExerciseWrapper } from './exercise-wrapper';
+import { ActionEmitter } from './exercise-wrapper';
 
-// import { Type } from 'class-transformer';
-// import { IsJSON, MaxLength, ValidateNested } from 'class-validator';
-// import type { ExerciseAction } from 'digital-fuesim-manv-shared';
-// import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
-// import type { Creatable } from '../database/dtos';
-// import { BaseEntity } from '../database/base-entity';
-// import type { ServiceProvider } from '../database/services/service-provider';
-// import { ActionEmitter } from './action-emitter';
-// import { ExerciseWrapper } from './exercise-wrapper';
+@Entity()
+export class ActionWrapper extends BaseEntity {
+    @ManyToOne(() => ActionEmitter, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        nullable: false,
+        eager: true,
+    })
+    @ValidateNested()
+    @Type(() => ActionEmitter)
+    emitter!: ActionEmitter;
 
-// @Entity()
-// export class ActionWrapper extends BaseEntity {
-//     // TODO: Make this cascading also in the other direction.
-//     // Alternative: Make this a many-to-one where the same emitter is used for multiple wrappers.
-//     @OneToOne(() => ActionEmitter, {
-//         onDelete: 'CASCADE',
-//         onUpdate: 'CASCADE',
-//         nullable: false,
-//         eager: true,
-//     })
-//     @JoinColumn()
-//     @ValidateNested()
-//     @Type(() => ActionEmitter)
-//     emitter!: ActionEmitter;
+    @Column({
+        type: 'timestamp with time zone',
+        default: () => 'CURRENT_TIMESTAMP',
+    })
+    created!: Date;
 
-//     get action(): ExerciseAction {
-//         return JSON.parse(this.actionString);
-//     }
+    get action(): ExerciseAction {
+        return JSON.parse(this.actionString);
+    }
 
-//     @Column({
-//         type: 'json',
-//         // TODO: This is a guess. Verify it with actual data
-//         // length: 65535,
-//     })
-//     @IsJSON()
-//     @MaxLength(65535)
-//     actionString!: string;
+    @Column({
+        type: 'json',
+    })
+    @IsJSON()
+    actionString!: string;
 
-//     @ManyToOne(() => ExerciseWrapper)
-//     @ValidateNested()
-//     @Type(() => ExerciseWrapper)
-//     exercise!: ExerciseWrapper;
+    /** Exists to prevent creation via it. - Use {@link create} instead. */
+    private constructor() {
+        super();
+    }
 
-//     static async create(
-//         action: ExerciseAction,
-//         emitter: Creatable<ActionEmitter>,
-//         exercise: ExerciseWrapper,
-//         services: ServiceProvider
-//     ): Promise<ActionWrapper> {
-//         return services.actionWrapperService.create({
-//             actionString: JSON.stringify(action),
-//             emitter,
-//             exerciseId: exercise.id,
-//         });
-//     }
-// }
+    static async create(
+        action: ExerciseAction,
+        emitter: Omit<Creatable<ActionEmitter>, 'exerciseId'>,
+        exercise: ExerciseWrapper,
+        services: ServiceProvider
+    ): Promise<ActionWrapper> {
+        return services.actionWrapperService.create({
+            actionString: JSON.stringify(action),
+            emitter: { ...emitter, exerciseId: exercise.id },
+        });
+    }
+}
