@@ -1,6 +1,8 @@
 version: '3'
 services:
     digital-fuesim-manv:
+        depends_on:
+            - db
         image: digitalfuesimmanv/dfm
         # Use this to build the container for yourself:
         # build:
@@ -21,9 +23,8 @@ services:
             - POSTGRES_USER=${DFM_DB_USER}
             - POSTGRES_PASSWORD=${DFM_DB_PASSWORD}
             - POSTGRES_DB=${DFM_DB_NAME}
-        # TODO: This doesn't seem to work (@anonym-HPI)
-        env_file:
-            - backend/.env
+        # TODO: Is there a way to use this file already in the compose file? (@anonym-HPI)
+        # env_file: backend/.env
 
 volumes:
     dfm_db:
