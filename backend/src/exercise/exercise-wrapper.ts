@@ -69,6 +69,9 @@ export class ExerciseWrapper extends BaseEntity {
         };
         this.applyAction(updateAction, { emitterId: this.emitterUUID });
         this.tickCounter++;
+        await this.services.exerciseWrapperService.update(this.id, {
+            tickCounter: this.tickCounter,
+        });
     };
 
     // Call the tick every 1000 ms
