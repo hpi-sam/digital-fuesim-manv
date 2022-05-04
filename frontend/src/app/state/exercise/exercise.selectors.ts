@@ -44,6 +44,9 @@ export const getSelectRestrictedViewport =
 export const selectTransferPoints = (state: AppState) =>
     state.exercise.transferPoints;
 
+export const selectTileMapProperties = (state: AppState) =>
+    state.exercise.tileMapProperties;
+
 /**
  * @returns a selector that returns a dictionary of all elements that have a position and are in the viewport restriction
  */

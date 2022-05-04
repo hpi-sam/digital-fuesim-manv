@@ -10,6 +10,7 @@ import { ImageExistsValidatorDirective } from './validation/image-exists-validat
 import { TransferPointNameComponent } from './components/transfer-point-name/transfer-point-name.component';
 import { FormatDurationPipe } from './pipes/format-duration.pipe';
 import { LetDirective } from './directives/let.directive';
+import { UrlValidatorDirective } from './validation/url-validator.directive';
 
 @NgModule({
     declarations: [
@@ -23,6 +24,7 @@ import { LetDirective } from './directives/let.directive';
         TransferPointNameComponent,
         FormatDurationPipe,
         LetDirective,
+        UrlValidatorDirective,
     ],
     imports: [CommonModule],
     exports: [
@@ -36,6 +38,7 @@ import { LetDirective } from './directives/let.directive';
         TransferPointNameComponent,
         FormatDurationPipe,
         LetDirective,
+        UrlValidatorDirective,
     ],
 })
 export class SharedModule {}
