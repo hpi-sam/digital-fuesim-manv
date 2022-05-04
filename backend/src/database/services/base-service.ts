@@ -5,8 +5,11 @@ import type {
     EntityManager,
     EntityTarget,
     FindManyOptions,
+    FindOneOptions,
     FindOptionsWhere,
 } from 'typeorm';
+import { EntityNotFoundError } from 'typeorm';
+import { DatabaseError } from '../database-error';
 import type { BaseEntity } from '../base-entity';
 import type { Creatable, Updatable } from '../dtos';
 
@@ -55,7 +58,59 @@ export abstract class BaseService<TEntity extends BaseEntity> {
             : this.dataSource.transaction(find);
     }
 
-    public async findOne(
+    /**
+     * Finds the first row matching the {@link options}.
+     *
+     * @returns The found row, or `null` if no matching row was found and {@link mustExist} is `false`.
+     * @throws {@link DatabaseError} when {@link mustExist} is `true` and no row has been found.
+     */
+    public async findOne<TExists extends false | true>(
+        options: FindOneOptions<TEntity>,
+        mustExist: TExists,
+        entityManager?: EntityManager
+    ): Promise<TExists extends true ? TEntity : TEntity | null> {
+        const find = async (manager: EntityManager) => {
+            const tuple = await manager.findOne(this.entityTarget, options);
+            if (mustExist && tuple === null) {
+                throw new DatabaseError(
+                    `\`${
+                        this.entityTarget.constructor.name
+                    }\` with options \`${JSON.stringify(
+                        options
+                    )}\` could not be found.`
+                );
+            }
+            return tuple;
+        };
+        // TypeScript can't get the correct typings for this.
+        return (
+            entityManager
+                ? find(entityManager)
+                : this.dataSource.transaction(find)
+        ) as Promise<TExists extends true ? TEntity : TEntity | null>;
+    }
+
+    /**
+     * Finds the first row matching the {@link options} and returns it.
+     * If no row matches uses {@link creatable} to create a new row and return this row.
+     */
+    public async findOneOrCreate(
+        options: FindOneOptions<TEntity>,
+        creatable: Creatable<TEntity>,
+        entityManager?: EntityManager
+    ): Promise<TEntity> {
+        const find = async (manager: EntityManager) =>
+            (await this.findOne(options, false)) ??
+            (await this.create(creatable, manager));
+        return entityManager
+            ? find(entityManager)
+            : this.dataSource.transaction(find);
+    }
+
+    /**
+     * @throws {@link DatabaseError} when id does not exist
+     */
+    public async findById(
         id: UUID,
         entityManager?: EntityManager
     ): Promise<TEntity> {
@@ -66,9 +121,20 @@ export abstract class BaseService<TEntity extends BaseEntity> {
             const where: FindOptionsWhere<TEntity> = {
                 id,
             } as FindOptionsWhere<TEntity>;
-            return manager.findOneOrFail(this.entityTarget, {
-                where,
-            });
+            try {
+                const tuple = await manager.findOneOrFail(this.entityTarget, {
+                    where,
+                });
+                return tuple;
+            } catch (e: unknown) {
+                if (e instanceof EntityNotFoundError) {
+                    throw new DatabaseError(
+                        `\`${this.entityTarget.constructor.name}\` with id \`${id}\` could not be found`,
+                        e
+                    );
+                }
+                throw e;
+            }
         };
         return entityManager
             ? find(entityManager)
@@ -81,7 +147,7 @@ export abstract class BaseService<TEntity extends BaseEntity> {
         entityManager?: EntityManager
     ): Promise<TEntity> {
         const update = async (manager: EntityManager) => {
-            const objectToUpdate = await this.findOne(id, manager);
+            const objectToUpdate = await this.findById(id, manager);
             return manager.save(
                 await this.createSavableObject(objectToUpdate, updater, manager)
             );

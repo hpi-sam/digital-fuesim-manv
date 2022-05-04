@@ -32,36 +32,24 @@ export class ActionWrapperService extends BaseService<ActionWrapper> {
             : manager.create(this.entityTarget, rest);
         actionWrapper.emitter = initialObject
             ? actionEmitter
-                ? (
-                      await this.actionEmitterService.findAll(
-                          { where: { id: actionEmitter as UUID } },
-                          manager
-                      )
-                  )[0] // TODO: Unsafe if not exist (@ClFeSc, @hpistudent72)
+                ? await this.actionEmitterService.findOne(
+                      { where: { id: actionEmitter as UUID } },
+                      true,
+                      manager
+                  )
                 : actionWrapper.emitter
-            : await (async () => {
-                  const existingEmitter = (
-                      await this.actionEmitterService.findAll(
-                          {
-                              where: {
-                                  emitterId: (
-                                      actionEmitter as Creatable<ActionEmitter>
-                                  ).emitterId,
-                              },
-                          },
-                          manager
-                      )
-                  )[0];
-                  return (
-                      existingEmitter ??
-                      (await this.actionEmitterService.create(
-                          actionEmitter as Creatable<ActionEmitter>,
-                          manager
-                      ))
-                  );
-              })();
+            : await this.actionEmitterService.findOneOrCreate(
+                  {
+                      where: {
+                          emitterId: (actionEmitter as Creatable<ActionEmitter>)
+                              .emitterId,
+                      },
+                  },
+                  actionEmitter as Creatable<ActionEmitter>,
+                  manager
+              );
         actionWrapper.exercise = exerciseId
-            ? await this.exerciseWrapperService.findOne(exerciseId, manager)
+            ? await this.exerciseWrapperService.findById(exerciseId, manager)
             : actionWrapper.exercise;
         return actionWrapper;
     }
