@@ -2,7 +2,12 @@
 
 /* eslint-disable @typescript-eslint/no-duplicate-imports */
 /* eslint-disable import/order */
-import { uuidValidationOptions, UUID, uuid } from 'digital-fuesim-manv-shared';
+import {
+    uuidValidationOptions,
+    UUID,
+    uuid,
+    validateExerciseAction,
+} from 'digital-fuesim-manv-shared';
 import { reduceExerciseState, ExerciseState } from 'digital-fuesim-manv-shared';
 import { Column, Entity } from 'typeorm';
 import {
@@ -29,6 +34,7 @@ import { ManyToOne } from 'typeorm';
 
 import { IsOptional } from 'class-validator';
 import type { ExerciseAction, Role } from 'digital-fuesim-manv-shared';
+import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
 
 @Entity()
 export class ExerciseWrapper extends BaseEntity {
@@ -240,12 +246,20 @@ export class ExerciseWrapper extends BaseEntity {
         action: ExerciseAction,
         emitter: Omit<Creatable<ActionEmitter>, 'exerciseId'>
     ): Promise<void> {
+        this.validateAction(action);
         const newState = reduceExerciseState(this.currentState, action);
         await this.setState(newState, action, emitter);
         if (action.type === '[Exercise] Pause') {
             this.pause();
         } else if (action.type === '[Exercise] Start') {
             this.start();
+        }
+    }
+
+    private validateAction(action: ExerciseAction) {
+        const errors = validateExerciseAction(action);
+        if (errors.length > 0) {
+            throw new ValidationErrorWrapper(errors);
         }
     }
 
@@ -283,7 +297,6 @@ export class ActionEmitter extends BaseEntity {
      */
     @Column({
         type: 'varchar',
-        // TODO: Restrict this length in shared (@ClFeSc, @hpistudent72)
         length: 255,
         nullable: true,
     })

@@ -1,3 +1,5 @@
+import type { UUID } from 'digital-fuesim-manv-shared';
+import { ValidationErrorWrapper } from '../../utils/validation-error-wrapper';
 import type { ExerciseServer, ExerciseSocket } from '../../exercise-server';
 import { clientMap } from '../client-map';
 import { secureOn } from './secure-on';
@@ -14,9 +16,21 @@ export const registerJoinExerciseHandler = (
             clientName: string,
             callback
         ): Promise<void> => {
-            const clientId = await clientMap
-                .get(client)
-                ?.joinExercise(exerciseId, clientName);
+            let clientId: UUID | undefined;
+            try {
+                clientId = await clientMap
+                    .get(client)
+                    ?.joinExercise(exerciseId, clientName);
+            } catch (e: unknown) {
+                if (e instanceof ValidationErrorWrapper) {
+                    callback({
+                        success: false,
+                        message: `Invalid payload: ${e.errors}`,
+                    });
+                    return;
+                }
+                throw e;
+            }
             if (!clientId) {
                 callback({
                     success: false,
