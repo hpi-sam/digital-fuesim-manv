@@ -25,6 +25,9 @@ RUN chown -R www-data:www-data /usr/local/app/frontend/dist/digital-fuesim-manv
 #nginx config file
 COPY ./docker/nginx/default-conf /etc/nginx/sites-available/default
 
+#nginx error.html file
+COPY ./docker/nginx/error-page /var/www/
+
 #copy docker-entrypoint.sh file into the container
 COPY ./docker/docker-entrypoint.sh /docker-entrypoint.sh
 
