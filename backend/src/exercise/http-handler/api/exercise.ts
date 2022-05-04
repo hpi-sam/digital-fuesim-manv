@@ -50,7 +50,9 @@ export function getExercise(exerciseId: string): HttpResponse {
     };
 }
 
-export function deleteExercise(exerciseId: string): HttpResponse {
+export async function deleteExercise(
+    exerciseId: string
+): Promise<HttpResponse> {
     const exerciseWrapper = exerciseMap.get(exerciseId);
     if (exerciseWrapper === undefined) {
         return {
@@ -69,7 +71,7 @@ export function deleteExercise(exerciseId: string): HttpResponse {
             },
         };
     }
-    exerciseWrapper.deleteExercise();
+    await exerciseWrapper.deleteExercise();
     return {
         statusCode: 204,
         body: undefined,

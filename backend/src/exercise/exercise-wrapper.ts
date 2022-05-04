@@ -279,10 +279,11 @@ export class ExerciseWrapper extends BaseEntity {
         );
     }
 
-    public deleteExercise() {
+    public async deleteExercise() {
         this.clients.forEach((client) => client.disconnect());
         exerciseMap.delete(this.participantId);
         exerciseMap.delete(this.trainerId);
+        await this.services.exerciseWrapperService.remove(this.id);
     }
 }
 

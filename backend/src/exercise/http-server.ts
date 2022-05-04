@@ -36,8 +36,8 @@ export class ExerciseHttpServer {
             res.send(response.body);
         });
 
-        app.delete('/api/exercise/:exerciseId', (req, res) => {
-            const response = deleteExercise(req.params.exerciseId);
+        app.delete('/api/exercise/:exerciseId', async (req, res) => {
+            const response = await deleteExercise(req.params.exerciseId);
             res.statusCode = response.statusCode;
             res.send(response.body);
         });
