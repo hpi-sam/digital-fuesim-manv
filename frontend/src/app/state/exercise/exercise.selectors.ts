@@ -1,6 +1,6 @@
 import { createSelector } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { Viewport } from 'digital-fuesim-manv-shared';
+import { ExerciseState, Viewport } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
 import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
@@ -79,8 +79,8 @@ export const selectClients = (state: AppState) => state.exercise.clients;
 export const getSelectClient = (clientId: UUID) => (state: AppState) =>
     state.exercise.clients[clientId];
 
-export const selectLatestStatusHistoryEntry = (state: AppState) =>
-    state.exercise.statusHistory[state.exercise.statusHistory.length - 1];
+export const selectExerciseStatus = (state: AppState) =>
+    ExerciseState.getStatus(state.exercise);
 
 export const selectParticipantId = (state: AppState) =>
     state.exercise.participantId;
