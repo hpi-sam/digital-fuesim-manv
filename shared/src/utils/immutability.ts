@@ -14,9 +14,11 @@ export type Immutable<T extends object> = {
  * Removes all readonly modifiers from the given object (recursive).
  *
  * The provided object should be a JSON object (no Maps, Sets, Functions, ...).
+ *
+ * If a union of types is provided, all objects in the union will be made mutable.
  */
-export type Mutable<T extends object> = {
-    -readonly [K in keyof T]: T[K] extends object ? Mutable<T[K]> : T[K];
+export type Mutable<T> = {
+    -readonly [K in keyof T]: Mutable<T[K]>;
 };
 
 /**
