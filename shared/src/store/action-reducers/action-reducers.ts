@@ -1,5 +1,6 @@
 import { ClientActionReducers } from './client';
 import { ExerciseActionReducers } from './exercise';
+import { ExerciseSettingsActionReducers } from './exercise-settings';
 import { MapImagesActionReducers } from './map-images';
 import { MaterialActionReducers } from './material';
 import { PatientActionReducers } from './patient';
@@ -21,6 +22,7 @@ const actionReducers = {
     ...VehicleActionReducers,
     ...ViewportActionReducers,
     ...TransferPointActionReducers,
+    ...ExerciseSettingsActionReducers,
 };
 
 type ExerciseActionReducer = typeof actionReducers[keyof typeof actionReducers];

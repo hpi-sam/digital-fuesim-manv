@@ -18,6 +18,7 @@ import {
     selectTransferLines,
     selectMapImages,
     getSelectRestrictedViewport,
+    selectTileMapProperties,
 } from 'src/app/state/exercise/exercise.selectors';
 import OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
@@ -29,15 +30,7 @@ import type LineString from 'ol/geom/LineString';
 import { isEqual } from 'lodash-es';
 import { primaryAction, shiftKeyOnly } from 'ol/events/condition';
 import type { Observable } from 'rxjs';
-import {
-    Subject,
-    filter,
-    debounceTime,
-    startWith,
-    pairwise,
-    takeUntil,
-} from 'rxjs';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { Subject, debounceTime, startWith, pairwise, takeUntil } from 'rxjs';
 import { startingPosition } from '../../starting-position';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
@@ -54,6 +47,7 @@ import { TransferLinesFeatureManager } from '../feature-managers/transfer-lines-
 import { MapImageFeatureManager } from '../feature-managers/map-images-feature-manager';
 import { isTrainer } from '../../utility/is-trainer';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
+import { DeleteFeatureManager } from '../feature-managers/delete-feature-manager';
 import { handleChanges } from './handle-changes';
 import { TranslateHelper } from './translate-helper';
 import type { OpenPopupOptions } from './popup-manager';
@@ -100,12 +94,20 @@ export class OlMapManager {
     ) {
         const _isTrainer = isTrainer(this.apiService, this.store);
         // Layers
-        const tileMapProperties = getStateSnapshot(this.store).exercise
-            .tileMapProperties;
-        const satelliteLayer = this.createTileLayer(
-            tileMapProperties.tileUrl,
-            tileMapProperties.maxZoom
-        );
+        const satelliteLayer = new TileLayer();
+        this.store
+            .select(selectTileMapProperties)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((tileMapProperties) => {
+                satelliteLayer.setSource(
+                    new XYZ({
+                        url: tileMapProperties.tileUrl,
+                        maxZoom: tileMapProperties.maxZoom,
+                        // We want to keep the tiles cached if we are zooming in and out fast
+                        cacheSize: 1000,
+                    })
+                );
+            });
         const transferPointLayer = this.createElementLayer(600);
         const vehicleLayer = this.createElementLayer(1000);
         const cateringLinesLayer = this.createElementLayer<LineString>();
@@ -115,6 +117,7 @@ export class OlMapManager {
         const materialLayer = this.createElementLayer();
         const viewportLayer = this.createElementLayer<LineString>();
         const mapImagesLayer = this.createElementLayer(10_000);
+        const deleteFeatureLayer = this.createElementLayer();
         this.popupOverlay = new Overlay({
             element: this.popoverContainer,
         });
@@ -173,6 +176,7 @@ export class OlMapManager {
             // The most bottom objects must be at the top of the array.
             layers: [
                 satelliteLayer,
+                deleteFeatureLayer,
                 mapImagesLayer,
                 transferLinesLayer,
                 transferPointLayer,
@@ -217,13 +221,25 @@ export class OlMapManager {
             transferLinesService.displayTransferLines$.subscribe((display) => {
                 transferLinesLayer.setVisible(display);
             });
+
+            const deleteHelper = new DeleteFeatureManager(
+                this.store,
+                deleteFeatureLayer,
+                this.olMap,
+                this.apiService
+            );
+            this.layerFeatureManagerDictionary.set(
+                deleteFeatureLayer,
+                deleteHelper
+            );
         }
         this.registerFeatureElementManager(
             new TransferPointFeatureManager(
                 this.store,
                 this.olMap,
                 transferPointLayer,
-                this.apiService
+                this.apiService,
+                _isTrainer
             ),
             this.store.select(
                 getSelectVisibleElements(
@@ -231,7 +247,7 @@ export class OlMapManager {
                     this.apiService.ownClientId!
                 )
             )
-        ).togglePopup$.subscribe(this.changePopup$);
+        );
 
         this.registerFeatureElementManager(
             new PatientFeatureManager(
@@ -246,7 +262,7 @@ export class OlMapManager {
                     this.apiService.ownClientId!
                 )
             )
-        ).togglePopup$.subscribe(this.changePopup$);
+        );
 
         this.registerFeatureElementManager(
             new VehicleFeatureManager(
@@ -261,7 +277,7 @@ export class OlMapManager {
                     this.apiService.ownClientId!
                 )
             )
-        ).togglePopup$.subscribe(this.changePopup$);
+        );
 
         this.registerFeatureElementManager(
             new PersonnelFeatureManager(
@@ -298,15 +314,11 @@ export class OlMapManager {
                 this.store,
                 this.olMap,
                 mapImagesLayer,
-                this.apiService
+                this.apiService,
+                _isTrainer
             ),
             this.store.select(selectMapImages)
-        )
-            .togglePopup$.pipe(
-                // We only want to open the popup if the user is a trainer
-                filter(() => _isTrainer)
-            )
-            .subscribe(this.changePopup$);
+        );
 
         this.registerFeatureElementManager(
             new CateringLinesFeatureManager(cateringLinesLayer),
@@ -318,18 +330,15 @@ export class OlMapManager {
                 this.store,
                 this.olMap,
                 viewportLayer,
-                this.apiService
+                this.apiService,
+                _isTrainer
             ),
             this.store.select(selectViewports)
-        )
-            .togglePopup$.pipe(
-                // We only want to open the popup if the user is a trainer
-                filter(() => _isTrainer)
-            )
-            .subscribe(this.changePopup$);
+        );
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
+        this.registerDropHandler(viewportTranslate);
         this.registerViewportRestriction();
     }
 
@@ -381,6 +390,7 @@ export class OlMapManager {
             featureManager.layer,
             featureManager
         );
+        featureManager.togglePopup$?.subscribe(this.changePopup$);
         // Propagate the changes on an element to the featureManager
         elementDictionary$
             .pipe(
@@ -407,7 +417,6 @@ export class OlMapManager {
                     );
                 });
             });
-        return featureManager;
     }
 
     private registerPopupTriggers(translateInteraction: Translate) {
@@ -458,14 +467,26 @@ export class OlMapManager {
         translateInteraction.on('translateend', (event) => {
             const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
             this.olMap.forEachFeatureAtPixel(pixel, (feature, layer) =>
-                // we stop propagating the event as soon as the onFeatureDropped function returns true
-                this.layerFeatureManagerDictionary
-                    .get(layer as VectorLayer<VectorSource<Point>>)!
-                    .onFeatureDrop(
-                        event,
-                        event.features.getArray()[0] as Feature<Point>,
-                        feature as Feature<Point>
-                    )
+                // Skip layer when unset
+                {
+                    if (layer === null) {
+                        return;
+                    }
+                    // we stop propagating the event as soon as the onFeatureDropped function returns true
+                    this.layerFeatureManagerDictionary
+                        .get(
+                            layer as VectorLayer<
+                                VectorSource<LineString | Point>
+                            >
+                        )!
+                        .onFeatureDrop(
+                            event,
+                            event.features.getArray()[0] as Feature<
+                                LineString | Point
+                            >,
+                            feature as Feature<Point>
+                        );
+                }
             );
         });
     }
@@ -486,21 +507,6 @@ export class OlMapManager {
             updateWhileInteracting: true,
             renderBuffer,
             source: new VectorSource<LayerGeometry>(),
-        });
-    }
-
-    /**
-     * @param url the url to the server that serves the tiles. Must include `{x}`, `{y}` or `{-y}` and `{z}`placeholders.
-     * @param maxZoom The maximum `{z}` value the tile server accepts
-     */
-    private createTileLayer(url: string, maxZoom: number) {
-        return new TileLayer({
-            source: new XYZ({
-                url,
-                maxZoom,
-                // We want to keep the tiles cached if we are zooming in and out fast
-                cacheSize: 1000,
-            }),
         });
     }
 
