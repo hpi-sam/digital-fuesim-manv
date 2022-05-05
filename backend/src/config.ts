@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import { bool, cleanEnv, makeValidator, str } from 'envalid';
 
 export class Config {
@@ -96,6 +97,7 @@ export class Config {
         if (this.isInitialized && !forceRefresh) {
             return;
         }
+        dotenv.config();
         const env = this.parseVariables();
         this._websocketPort = testing
             ? env.DFM_WEBSOCKET_PORT_TESTING

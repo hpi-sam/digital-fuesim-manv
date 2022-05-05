@@ -193,7 +193,7 @@ jobs:
                   path: shared/dist
                   key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
             - name: Create backend .env
-              run: cat backend/.env.example | sed -e "s/^DFM_DB_LOG=/DFM_DB_LOG=/" | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/" | sed -e "s/^DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/" > backend/.env
+              run: cat backend/.env.example | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/" | sed -e "s/^DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/" > backend/.env
             - name: Run migrations
               run: cd backend && npm run migration:run & cd ..
             - name: Run Backend Tests
@@ -283,7 +283,7 @@ jobs:
               if: steps.cache-cypress.outputs.cache-hit != 'true'
               run: npm run cy:install
             - name: Create backend .env
-              run: cat backend/.env.example | sed -e "s/^DFM_DB_LOG=/DFM_DB_LOG=/" | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/" | sed -e "s/^DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/" > backend/.env
+              run: cat backend/.env.example | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/" | sed -e "s/^DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/" > backend/.env
             - name: Run migrations
               run: cd backend && npm run migration:run & cd ..
             - name: Run Cypress
