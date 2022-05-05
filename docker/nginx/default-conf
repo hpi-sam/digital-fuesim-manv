@@ -96,7 +96,7 @@ map $status $background_color {
   401 'red';
   402 'red';
   403 'red';
-  404 'black';
+  404 'red';
   405 'red';
   406 'red';
   407 'red';
