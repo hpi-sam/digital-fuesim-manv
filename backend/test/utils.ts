@@ -142,12 +142,12 @@ class TestEnvironment {
 
     public init(serviceProvider: ServiceProvider) {
         this._serviceProvider = serviceProvider;
-        Config.initialize(true);
         this.server = new FuesimServer(this.serviceProvider);
     }
 }
 
 export const createTestEnvironment = (): TestEnvironment => {
+    Config.initialize(true);
     const environment = new TestEnvironment();
     let dataSource: DataSource;
     let serviceProvider: ServiceProvider;

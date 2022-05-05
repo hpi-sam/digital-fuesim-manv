@@ -72,10 +72,14 @@ export class Config {
             DFM_WEBSOCKET_PORT_TESTING: tcpPortValidator({ default: 13200 }),
             DFM_HTTP_PORT: tcpPortValidator({ default: 3201 }),
             DFM_HTTP_PORT_TESTING: tcpPortValidator({ default: 13201 }),
-            DFM_DB_USER: str({ default: 'dfm' }),
-            DFM_DB_PASSWORD: str({ default: 'dfm' }),
-            DFM_DB_NAME: str({ default: 'dfm_db' }),
+            DFM_DB_USER: str(),
+            DFM_DB_USER_TESTING: str({ default: undefined }),
+            DFM_DB_PASSWORD: str(),
+            DFM_DB_PASSWORD_TESTING: str({ default: undefined }),
+            DFM_DB_NAME: str(),
+            DFM_DB_NAME_TESTING: str({ default: undefined }),
             DFM_DB_LOG: bool({ default: false }),
+            DFM_DB_LOG_TESTING: bool({ default: undefined }),
         });
     }
 
@@ -99,10 +103,22 @@ export class Config {
         this._httpPort = testing
             ? env.DFM_HTTP_PORT_TESTING
             : env.DFM_HTTP_PORT;
-        this._dbUser = env.DFM_DB_USER;
-        this._dbPassword = env.DFM_DB_PASSWORD;
-        this._dbName = env.DFM_DB_NAME;
-        this._dbLogging = env.DFM_DB_LOG;
+        this._dbUser =
+            testing && env.DFM_DB_USER_TESTING
+                ? env.DFM_DB_USER_TESTING
+                : env.DFM_DB_USER;
+        this._dbPassword =
+            testing && env.DFM_DB_PASSWORD_TESTING
+                ? env.DFM_DB_PASSWORD_TESTING
+                : env.DFM_DB_PASSWORD;
+        this._dbName =
+            testing && env.DFM_DB_NAME_TESTING
+                ? env.DFM_DB_NAME_TESTING
+                : env.DFM_DB_NAME;
+        this._dbLogging =
+            testing && env.DFM_DB_LOG_TESTING
+                ? env.DFM_DB_LOG_TESTING
+                : env.DFM_DB_LOG;
         this.isInitialized = true;
     }
 }
