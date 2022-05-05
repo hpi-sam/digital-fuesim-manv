@@ -17,11 +17,13 @@ The (internal) project-board is [here](https://github.com/orgs/hpi-sam/projects/
 
 ## Starting for development
 
-### Option 1:
+Make sure to have a PostgreSQL server running on `localhost` on port `5432`. It must use the environment variables specified in `backend/.env` for name, user and password. You can use the `docker-compose` service `db` for this.
+
+### Option 1
 
 If you are using [vscode](https://code.visualstudio.com/), you can run the [task](https://code.visualstudio.com/docs/editor/tasks) `Start all` to start everything in one go.
 
-### Option 2:
+### Option 2
 
 1. Open a terminal in `/shared` and run `npm run watch`
 2. Open another terminal in `/frontend` and run `npm run start`
@@ -34,13 +36,15 @@ You need to have [`docker`](https://www.docker.com/) installed.
 ### With docker-compose (recommended)
 
 1. [`docker-compose`](https://docs.docker.com/compose/) needs to be installed.
-2. Run `docker-compose up -d` in the root directory.
+2. Run `docker-compose --env-file backend/.env up -d` in the root directory.
 
 ### Without docker-compose
 
 1. Execute `docker run -p -d 80:80 digitalfuesimmanv/dfm`.
 
 The server will start listening using nginx on port `80` for all services (frontend, API, WebSockets).
+
+Make sure to have a PostgreSQL server available (see section Starting for development).
 
 ### Building the container from scratch
 
