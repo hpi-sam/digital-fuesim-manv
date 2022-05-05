@@ -11,6 +11,8 @@ import { TrainerToolbarComponent } from './shared/trainer-toolbar/trainer-toolba
 import { ExerciseStateBadgeComponent } from './shared/exercise-state-badge/exercise-state-badge.component';
 import { TransferOverviewModule } from './shared/transfer-overview/transfer-overview.module';
 import { ExerciseSettingsModalComponent } from './shared/exercise-settings/exercise-settings-modal/exercise-settings-modal.component';
+import { CreateImageTemplateModalComponent } from './shared/editor-panel/create-image-template-modal/create-image-template-modal.component';
+import { EditImageTemplateModalComponent } from './shared/editor-panel/edit-image-template-modal/edit-image-template-modal.component';
 
 @NgModule({
     declarations: [
@@ -19,6 +21,8 @@ import { ExerciseSettingsModalComponent } from './shared/exercise-settings/exerc
         TrainerToolbarComponent,
         ExerciseStateBadgeComponent,
         ExerciseSettingsModalComponent,
+        CreateImageTemplateModalComponent,
+        EditImageTemplateModalComponent,
     ],
     imports: [
         CommonModule,
