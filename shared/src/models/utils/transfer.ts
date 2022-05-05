@@ -1,4 +1,4 @@
-import { IsNumber, IsUUID } from 'class-validator';
+import { IsBoolean, IsNumber, IsUUID } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { getCreate } from './get-create';
 
@@ -14,6 +14,9 @@ export class Transfer {
 
     @IsUUID(4, uuidValidationOptions)
     public readonly targetTransferPointId: UUID;
+
+    @IsBoolean()
+    public readonly isPaused!: boolean;
 
     /**
      * @deprecated Use {@link create} instead

@@ -28,11 +28,14 @@ export class FormatDurationPipe implements PipeTransform {
             parts.push(`${hoursStr}h`);
         }
         if (minutesStr > 0) {
-            parts.push(`${minutesStr}m`);
+            parts.push(`${minutesStr}min`);
         }
         // we only want to show seconds if there are no other parts because they change too fast
         if (secondsStr > 0 && parts.length === 0) {
             parts.push(`${secondsStr}s`);
+        }
+        if (parts.length === 0) {
+            return '0s';
         }
 
         return parts.join(' ');
