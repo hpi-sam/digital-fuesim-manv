@@ -147,32 +147,18 @@ export function getSelectReachableTransferPoints(transferPointId: UUID) {
 
 export const selectVehiclesInTransfer = createSelector(
     selectVehicles,
-    selectTransferPoints,
-    (vehicles, transferPoints) =>
-        Object.values(vehicles)
-            .filter((vehicle) => vehicle.transfer !== undefined)
-            .map((vehicle) => ({
-                vehicle,
-                startTransferPoint:
-                    transferPoints[vehicle.transfer!.startTransferPointId],
-                targetTransferPoint:
-                    transferPoints[vehicle.transfer!.targetTransferPointId],
-            }))
+    (vehicles) =>
+        Object.values(vehicles).filter(
+            (vehicle) => vehicle.transfer !== undefined
+        )
 );
 
 export const selectPersonnelInTransfer = createSelector(
     selectPersonnel,
-    selectTransferPoints,
-    (personnel, transferPoints) =>
-        Object.values(personnel)
-            .filter((_personnel) => _personnel.transfer !== undefined)
-            .map((_personnel) => ({
-                personnel: _personnel,
-                startTransferPoint:
-                    transferPoints[_personnel.transfer!.startTransferPointId],
-                targetTransferPoint:
-                    transferPoints[_personnel.transfer!.targetTransferPointId],
-            }))
+    (personnel) =>
+        Object.values(personnel).filter(
+            (_personnel) => _personnel.transfer !== undefined
+        )
 );
 
 export const selectCurrentTime = (state: AppState) =>

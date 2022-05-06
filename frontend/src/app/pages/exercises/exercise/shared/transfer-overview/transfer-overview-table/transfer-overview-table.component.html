@@ -1,7 +1,4 @@
-<table
-    *appLet="currentTime$ | async as currentTime"
-    class="table table-striped"
->
+<table class="table table-striped">
     <thead>
         <tr>
             <th scope="col">Name</th>
@@ -30,144 +27,64 @@
         <!-- Vehicles -->
         <tr
             *ngFor="
-                let vehicleTransfer of vehiclesInTransfer$ | async;
-                trackBy: 'vehicle.id' | appTrackByProperty
+                let vehicle of vehiclesInTransfer$ | async;
+                trackBy: 'id' | appTrackByProperty
             "
         >
             <td class="align-middle">
-                {{ vehicleTransfer.vehicle.name }}
+                {{ vehicle.name }}
             </td>
             <td class="align-middle">
                 <app-transfer-point-name
-                    [transferPoint]="vehicleTransfer.startTransferPoint"
+                    [transferPointId]="vehicle.transfer.startTransferPointId"
                 ></app-transfer-point-name>
             </td>
-            <td ngbDropdown class="align-middle">
-                <button
-                    type="button"
-                    class="btn btn-sm btn-outline-primary dropdown-toggle"
-                    ngbDropdownToggle
-                >
-                    <app-transfer-point-name
-                        [transferPoint]="vehicleTransfer.targetTransferPoint"
-                    ></app-transfer-point-name>
-                </button>
-                <div ngbDropdownMenu>
-                    <button
-                        *ngFor="
-                            let transferPointKeyValue of transferPoints$
-                                | async
-                                | keyvalue
-                        "
-                        ngbDropdownItem
-                        [disabled]="
-                            transferPointKeyValue.key ===
-                            vehicleTransfer.targetTransferPoint.id
-                        "
-                        (click)="
-                            setTransferTarget(
-                                'vehicles',
-                                vehicleTransfer.vehicle.id,
-                                transferPointKeyValue.key
-                            )
-                        "
-                    >
-                        <app-transfer-point-name
-                            [transferPoint]="transferPointKeyValue.value"
-                        ></app-transfer-point-name>
-                    </button>
-                </div>
+            <td class="align-middle">
+                <app-transfer-target-input
+                    [elementType]="'vehicles'"
+                    [elementId]="vehicle.id"
+                    [transfer]="vehicle.transfer"
+                ></app-transfer-target-input>
             </td>
             <td class="align-middle">
-                <div class="btn-group btn-group-sm">
-                    <button
-                        class="btn btn-small btn-outline-secondary"
-                        title="1 Minute verkürzen"
-                        (click)="
-                            addTransferTime(
-                                'vehicles',
-
-                                vehicleTransfer.vehicle.id,
-                                -60 * 1000
-                            )
-                        "
-                    >
-                        -
-                    </button>
-                    <button
-                        class="btn btn-small btn-outline-secondary font-monospace fw-bold"
-                        [class.text-dark]="
-                            !vehicleTransfer.vehicle.transfer.isPaused
-                        "
-                        (click)="
-                            togglePauseTransfer(
-                                'vehicles',
-                                vehicleTransfer.vehicle.id
-                            )
-                        "
-                        [title]="
-                            'Transfer ist ' +
-                            (vehicleTransfer.vehicle.transfer.isPaused
-                                ? 'pausiert'
-                                : 'aktiv')
-                        "
-                    >
-                        <i
-                            [ngClass]="
-                                vehicleTransfer.vehicle.transfer.isPaused
-                                    ? 'bi-pause-fill'
-                                    : 'bi-play-fill'
-                            "
-                        ></i>
-                        {{
-                            vehicleTransfer.vehicle.transfer!.endTimeStamp -
-                                currentTime | formatDuration
-                        }}
-                    </button>
-                    <button
-                        class="btn btn-small btn-outline-secondary"
-                        title="1 Minute verlängern"
-                        (click)="
-                            addTransferTime(
-                                'vehicles',
-                                vehicleTransfer.vehicle.id,
-                                60 * 1000
-                            )
-                        "
-                    >
-                        +
-                    </button>
-                </div>
+                <app-transfer-time-input
+                    [elementType]="'vehicles'"
+                    [elementId]="vehicle.id"
+                    [transfer]="vehicle.transfer"
+                ></app-transfer-time-input>
             </td>
         </tr>
         <!-- Personnel -->
         <tr
             *ngFor="
-                let personnelTransfer of personnelInTransfer$ | async;
-                trackBy: 'personnel.id' | appTrackByProperty
+                let personnel of personnelInTransfer$ | async;
+                trackBy: 'id' | appTrackByProperty
             "
         >
             <td class="align-middle">
-                {{ personnelTransfer.personnel.vehicleName }}
+                {{ personnel.vehicleName }}
                 <span class="text-muted">
-                    {{ personnelTransfer.personnel.personnelType }}
+                    {{ personnel.personnelType }}
                 </span>
             </td>
             <td class="align-middle">
                 <app-transfer-point-name
-                    [transferPoint]="personnelTransfer.startTransferPoint"
+                    [transferPointId]="personnel.transfer.startTransferPointId"
                 ></app-transfer-point-name>
             </td>
             <td class="align-middle">
-                <app-transfer-point-name
-                    [transferPoint]="personnelTransfer.targetTransferPoint"
-                ></app-transfer-point-name>
+                <app-transfer-target-input
+                    [elementType]="'personnel'"
+                    [elementId]="personnel.id"
+                    [transfer]="personnel.transfer"
+                ></app-transfer-target-input>
             </td>
             <td class="align-middle">
-                {{
-                    personnelTransfer.personnel.transfer!.endTimeStamp -
-                        currentTime | formatDuration
-                }}
+                <app-transfer-time-input
+                    [elementType]="'personnel'"
+                    [elementId]="personnel.id"
+                    [transfer]="personnel.transfer"
+                ></app-transfer-time-input>
             </td>
         </tr>
     </tbody>
