@@ -69,7 +69,7 @@ export namespace TransferActionReducers {
             }
         ) => {
             const element = getElement(draftState, elementType, elementId);
-            if (!element.position) {
+            if (element.transfer) {
                 throw new ReducerError(
                     `Element with id ${element.id} is already in transfer`
                 );
@@ -109,9 +109,7 @@ export namespace TransferActionReducers {
         ) => {
             const element = getElement(draftState, elementType, elementId);
             if (!element.transfer) {
-                throw new ReducerError(
-                    `Element with id ${element.id} is not in transfer`
-                );
+                throw getNotInTransferError(element.id);
             }
             if (targetTransferPointId) {
                 element.transfer.targetTransferPointId = targetTransferPointId;
@@ -134,13 +132,15 @@ export namespace TransferActionReducers {
             reducer: (draftState, { elementType, elementId }) => {
                 const element = getElement(draftState, elementType, elementId);
                 if (!element.transfer) {
-                    throw new ReducerError(
-                        `Element with id ${element.id} is not in transfer`
-                    );
+                    throw getNotInTransferError(element.id);
                 }
                 element.transfer.isPaused = !element.transfer.isPaused;
                 return draftState;
             },
             rights: 'trainer',
         };
+}
+
+function getNotInTransferError(elementId: UUID) {
+    return new ReducerError(`Element with id ${elementId} is not in transfer`);
 }
