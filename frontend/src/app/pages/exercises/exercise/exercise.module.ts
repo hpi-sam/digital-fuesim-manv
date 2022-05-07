@@ -13,6 +13,7 @@ import { TransferOverviewModule } from './shared/transfer-overview/transfer-over
 import { ExerciseSettingsModalComponent } from './shared/exercise-settings/exercise-settings-modal/exercise-settings-modal.component';
 import { CreateImageTemplateModalComponent } from './shared/editor-panel/create-image-template-modal/create-image-template-modal.component';
 import { EditImageTemplateModalComponent } from './shared/editor-panel/edit-image-template-modal/edit-image-template-modal.component';
+import { ImageTemplateFormComponent } from './shared/editor-panel/image-template-form/image-template-form.component';
 
 @NgModule({
     declarations: [
@@ -23,6 +24,7 @@ import { EditImageTemplateModalComponent } from './shared/editor-panel/edit-imag
         ExerciseSettingsModalComponent,
         CreateImageTemplateModalComponent,
         EditImageTemplateModalComponent,
+        ImageTemplateFormComponent,
     ],
     imports: [
         CommonModule,

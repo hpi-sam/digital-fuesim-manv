@@ -5,6 +5,7 @@ import type { MapImageTemplate } from 'digital-fuesim-manv-shared';
 import { uuid } from 'digital-fuesim-manv-shared';
 import { MessageService } from 'src/app/core/messages/message.service';
 import { getImageAspectRatio } from 'src/app/shared/functions/get-image-aspect-ratio';
+import type { EditableImageTemplate } from '../image-template-form/image-template-form.component';
 
 @Component({
     selector: 'app-create-image-template-modal',
@@ -15,14 +16,14 @@ export class CreateImageTemplateModalComponent implements OnDestroy {
     @Output() readonly createImageTemplate$ =
         new EventEmitter<MapImageTemplate | null>();
 
-    public readonly imageTemplate = {
+    public readonly imageTemplate: EditableImageTemplate = {
         id: uuid(),
         image: {
-            url: null as string | null,
+            url: null,
             height: 100,
             aspectRatio: 0,
         },
-        name: null as string | null,
+        name: null,
     };
 
     constructor(

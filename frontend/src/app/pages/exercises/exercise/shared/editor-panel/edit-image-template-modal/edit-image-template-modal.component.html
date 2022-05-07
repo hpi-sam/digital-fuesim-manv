@@ -3,43 +3,11 @@
     <button type="button" class="btn-close" (click)="close()"></button>
 </div>
 <div *ngIf="mapImageTemplate" class="modal-body">
-    <div class="form-group mb-3">
-        <label class="form-label">Name:</label>
-        <input
-            #nameInput="ngModel"
-            [(ngModel)]="mapImageTemplate.name"
-            [appAutofocus]="true"
-            required
-            type="text"
-            class="form-control"
-            placeholder="Bildname"
-        />
-        <app-display-validation
-            [ngModelInput]="nameInput"
-        ></app-display-validation>
-    </div>
-    <div class="form-group mb-3">
-        <label class="form-label">Höhe:</label>
-        <input
-            #heightInput="ngModel"
-            [(ngModel)]="mapImageTemplate.image.height"
-            required
-            type="number"
-            class="form-control"
-            placeholder="100"
-        />
-        <app-display-validation
-            [ngModelInput]="heightInput"
-        ></app-display-validation>
-    </div>
-
-    <button
-        (click)="editMapImageTemplate()"
-        [disabled]="nameInput.invalid || heightInput.invalid"
-        class="btn btn-primary"
-    >
-        Speichern
-    </button>
+    <app-image-template-form
+        [imageTemplate]="mapImageTemplate"
+        (submitImageTemplate)="editMapImageTemplate()"
+        [btnText]="'Speichern'"
+    ></app-image-template-form>
 
     <button class="btn btn-danger float-end" (click)="deleteMapImageTemplate()">
         <i class="bi bi-trash-fill"></i>
