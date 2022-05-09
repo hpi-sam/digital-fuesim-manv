@@ -1,10 +1,17 @@
-<div class="btn-group btn-group-sm">
+<div class="btn-group btn-group-sm text-nowrap">
     <button
         class="btn btn-small btn-outline-secondary"
-        title="1 Minute verkürzen"
+        title="Um 5 Minuten verkürzen"
+        (click)="addTransferTime(-5 * 60 * 1000)"
+    >
+        -5min
+    </button>
+    <button
+        class="btn btn-small btn-outline-secondary"
+        title="Um 1 Minute verkürzen"
         (click)="addTransferTime(-60 * 1000)"
     >
-        -
+        -1min
     </button>
     <button
         class="btn btn-small btn-outline-secondary font-monospace fw-bold"
@@ -21,9 +28,16 @@
     </button>
     <button
         class="btn btn-small btn-outline-secondary"
-        title="1 Minute verlängern"
+        title="Um 1 Minute verlängern"
         (click)="addTransferTime(60 * 1000)"
     >
-        +
+        +1min
+    </button>
+    <button
+        class="btn btn-small btn-outline-secondary"
+        title="Um 5 Minuten verlängern"
+        (click)="addTransferTime(5 * 60 * 1000)"
+    >
+        +5min
     </button>
 </div>
