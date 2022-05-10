@@ -63,6 +63,7 @@ describe('exercise', () => {
                 .expect(204);
 
             expect(exerciseMap.size).toBe(0);
+            await sleep(1000);
         });
 
         it('fails deleting a not existing exercise', async () => {

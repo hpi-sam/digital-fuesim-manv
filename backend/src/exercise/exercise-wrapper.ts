@@ -1,48 +1,83 @@
-// TODO: See action-emitter.ts (@Dassderdie)
-
-/* eslint-disable @typescript-eslint/no-duplicate-imports */
-/* eslint-disable import/order */
+import type { ExerciseAction, Role, UUID } from 'digital-fuesim-manv-shared';
 import {
-    uuidValidationOptions,
-    UUID,
     uuid,
+    ExerciseState,
+    reduceExerciseState,
     validateExerciseAction,
 } from 'digital-fuesim-manv-shared';
-import { reduceExerciseState, ExerciseState } from 'digital-fuesim-manv-shared';
-import { Column, Entity } from 'typeorm';
-import {
-    IsInt,
-    IsJSON,
-    IsString,
-    IsUUID,
-    MaxLength,
-    MinLength,
-} from 'class-validator';
+import type { EntityManager } from 'typeorm';
+import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
+// import { DatabaseError } from '../database/database-error';
+import type { Creatable, Updatable } from '../database/dtos';
+// import type { ActionEmitterEntity } from '../database/entities/action-emitter.entity';
+// import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
+import { NormalType } from '../database/normal-type';
 import type { ServiceProvider } from '../database/services/service-provider';
-import type { Creatable } from '../database/dtos';
-import { BaseEntity } from '../database/base-entity';
-// import { ActionEmitter } from './action-emitter';
+import type { ActionEmitterEntity } from '../database/entities/all-entities';
+import { ExerciseWrapperEntity } from '../database/entities/all-entities';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
 import { patientTick } from './patient-ticking';
 import { PeriodicEventHandler } from './periodic-events/periodic-event-handler';
 
-import { Type } from 'class-transformer';
-import { ValidateNested } from 'class-validator';
-import { ManyToOne } from 'typeorm';
+export class ExerciseWrapper extends NormalType<
+    ExerciseWrapper,
+    ExerciseWrapperEntity
+> {
+    async asEntity(
+        save: boolean,
+        entityManager?: EntityManager
+    ): Promise<ExerciseWrapperEntity> {
+        const operations = async (manager: EntityManager) => {
+            let entity = this.id
+                ? await this.services.exerciseWrapperService.findById(
+                      this.id,
+                      manager
+                  )
+                : new ExerciseWrapperEntity();
+            const existed = this.id !== undefined;
+            if (this.id) entity.id = this.id;
+            entity.initialStateString = JSON.stringify(this.initialState);
+            entity.participantId = this.participantId;
+            entity.tickCounter = this.tickCounter;
+            entity.trainerId = this.trainerId;
 
-import { IsOptional } from 'class-validator';
-import type { ExerciseAction, Role } from 'digital-fuesim-manv-shared';
-import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
+            if (save) {
+                if (existed) {
+                    const updatable: Updatable<ExerciseWrapperEntity> = {
+                        initialStateString: entity.initialStateString,
+                        participantId: entity.participantId,
+                        tickCounter: entity.tickCounter,
+                        trainerId: entity.trainerId,
+                    };
+                    entity = await this.services.exerciseWrapperService.update(
+                        entity.id,
+                        updatable,
+                        manager
+                    );
+                } else {
+                    const creatable: Creatable<ExerciseWrapperEntity> = {
+                        initialStateString: entity.initialStateString,
+                        participantId: entity.participantId,
+                        tickCounter: entity.tickCounter,
+                        trainerId: entity.trainerId,
+                    };
+                    entity = await this.services.exerciseWrapperService.create(
+                        creatable,
+                        manager
+                    );
+                }
+                this.id = entity.id;
+            }
 
-@Entity()
-export class ExerciseWrapper extends BaseEntity {
-    @Column({
-        type: 'integer',
-        default: 0,
-    })
-    @IsInt()
+            return entity;
+        };
+        return entityManager
+            ? operations(entityManager)
+            : this.services.transaction(operations);
+    }
+
     tickCounter = 0;
 
     /**
@@ -75,9 +110,7 @@ export class ExerciseWrapper extends BaseEntity {
         };
         await this.applyAction(updateAction, { emitterId: this.emitterUUID });
         this.tickCounter++;
-        await this.services.exerciseWrapperService.update(this.id, {
-            tickCounter: this.tickCounter,
-        });
+        await this.save();
     };
 
     // Call the tick every 1000 ms
@@ -89,14 +122,6 @@ export class ExerciseWrapper extends BaseEntity {
 
     private readonly clients = new Set<ClientWrapper>();
 
-    private readonly initialState = ExerciseState.create();
-
-    @Column({
-        type: 'json',
-    })
-    @IsJSON()
-    readonly initialStateString = JSON.stringify(this.initialState);
-
     private currentState = this.initialState;
 
     /**
@@ -106,23 +131,21 @@ export class ExerciseWrapper extends BaseEntity {
 
     private readonly actionHistory: ActionWrapper[] = [];
 
-    @Column({ type: 'char', length: 6 })
-    @IsString()
-    @MinLength(6)
-    @MaxLength(6)
-    readonly participantId!: string;
-
-    @Column({ type: 'char', length: 8 })
-    @IsString()
-    @MinLength(8)
-    @MaxLength(8)
-    readonly trainerId!: string;
-
-    private services!: ServiceProvider;
-
-    /** Exists to prevent creation via it. - Use {@link create} instead. */
-    private constructor() {
-        super();
+    /**
+     * Be very careful when using this. - Use {@link create} instead for most use cases.
+     * This constructor does not guarantee a valid entity.
+     */
+    constructor(
+        public readonly participantId: string,
+        public readonly trainerId: string,
+        actions: ActionWrapper[],
+        services: ServiceProvider,
+        private readonly initialState = ExerciseState.create(),
+        emitterUUID: UUID | undefined = undefined
+    ) {
+        super(services);
+        this.actionHistory = actions;
+        this.emitterUUID = emitterUUID ?? this.emitterUUID;
     }
 
     static async create(
@@ -131,13 +154,14 @@ export class ExerciseWrapper extends BaseEntity {
         services: ServiceProvider,
         initialState: ExerciseState = ExerciseState.create()
     ): Promise<ExerciseWrapper> {
-        const exercise = await services.exerciseWrapperService.create({
+        const exercise = new ExerciseWrapper(
             participantId,
             trainerId,
-            initialStateString: JSON.stringify(initialState),
-        });
-
-        exercise.services = services;
+            [],
+            services,
+            initialState
+        );
+        await exercise.save();
 
         await exercise.applyAction(
             {
@@ -233,7 +257,7 @@ export class ExerciseWrapper extends BaseEntity {
      */
     public async applyAction(
         action: ExerciseAction,
-        emitter: Omit<Creatable<ActionEmitter>, 'exerciseId'>,
+        emitter: Omit<Creatable<ActionEmitterEntity>, 'exerciseId'>,
         intermediateAction?: () => void
     ): Promise<void> {
         await this.reduce(action, emitter);
@@ -247,7 +271,7 @@ export class ExerciseWrapper extends BaseEntity {
      */
     private async reduce(
         action: ExerciseAction,
-        emitter: Omit<Creatable<ActionEmitter>, 'exerciseId'>
+        emitter: Omit<Creatable<ActionEmitterEntity>, 'exerciseId'>
     ): Promise<void> {
         this.validateAction(action);
         const newState = reduceExerciseState(this.currentState, action);
@@ -269,7 +293,7 @@ export class ExerciseWrapper extends BaseEntity {
     private async setState(
         newExerciseState: ExerciseState,
         action: ExerciseAction,
-        emitter: Omit<Creatable<ActionEmitter>, 'exerciseId'>
+        emitter: Omit<Creatable<ActionEmitterEntity>, 'exerciseId'>
     ): Promise<void> {
         // Only save every tenth state directly
         // TODO: Check whether this is a good threshold.
@@ -286,36 +310,6 @@ export class ExerciseWrapper extends BaseEntity {
         this.clients.forEach((client) => client.disconnect());
         exerciseMap.delete(this.participantId);
         exerciseMap.delete(this.trainerId);
-        await this.services.exerciseWrapperService.remove(this.id);
+        if (this.id) await this.services.exerciseWrapperService.remove(this.id);
     }
-}
-
-@Entity()
-export class ActionEmitter extends BaseEntity {
-    @Column({ type: 'uuid', unique: true })
-    @IsUUID(4, uuidValidationOptions)
-    emitterId!: UUID;
-
-    /**
-     * `undefined` iff this emitter is the server
-     */
-    @Column({
-        type: 'varchar',
-        length: 255,
-        nullable: true,
-    })
-    @IsString()
-    @IsOptional()
-    @MaxLength(255)
-    emitterName?: string;
-
-    @ManyToOne(() => ExerciseWrapper, {
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-        nullable: false,
-        eager: true,
-    })
-    @ValidateNested()
-    @Type(() => ExerciseWrapper)
-    exercise!: ExerciseWrapper;
 }

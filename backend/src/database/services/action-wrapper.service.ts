@@ -1,13 +1,14 @@
 import type { EntityManager, DataSource } from 'typeorm';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Creatable, Updatable } from '../dtos';
-import { ActionWrapper } from '../../exercise/action-wrapper';
-// import type { ActionEmitter } from '../../exercise/action-emitter';
-import type { ActionEmitter } from '../../exercise/exercise-wrapper';
+// import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
+// import type { ActionEmitterEntity } from '../entities/action-emitter.entity';
+import type { ActionEmitterEntity } from '../entities/all-entities';
+import { ActionWrapperEntity } from '../entities/all-entities';
 import type { ActionEmitterService } from './action-emitter.service';
 import { BaseService } from './base-service';
 
-export class ActionWrapperService extends BaseService<ActionWrapper> {
+export class ActionWrapperService extends BaseService<ActionWrapperEntity> {
     public constructor(
         private readonly actionEmitterService: ActionEmitterService,
         dataSource: DataSource
@@ -16,14 +17,14 @@ export class ActionWrapperService extends BaseService<ActionWrapper> {
     }
 
     protected async createSavableObject<
-        TInitial extends ActionWrapper | undefined
+        TInitial extends ActionWrapperEntity | undefined
     >(
         initialObject: TInitial,
-        dto: TInitial extends ActionWrapper
-            ? Updatable<ActionWrapper>
-            : Creatable<ActionWrapper>,
+        dto: TInitial extends ActionWrapperEntity
+            ? Updatable<ActionWrapperEntity>
+            : Creatable<ActionWrapperEntity>,
         manager: EntityManager
-    ): Promise<ActionWrapper> {
+    ): Promise<ActionWrapperEntity> {
         const { emitter: actionEmitter, ...rest } = dto;
         const actionWrapper = initialObject
             ? manager.merge(this.entityTarget, initialObject, rest)
@@ -39,15 +40,16 @@ export class ActionWrapperService extends BaseService<ActionWrapper> {
             : await this.actionEmitterService.findOneOrCreate(
                   {
                       where: {
-                          emitterId: (actionEmitter as Creatable<ActionEmitter>)
-                              .emitterId,
+                          emitterId: (
+                              actionEmitter as Creatable<ActionEmitterEntity>
+                          ).emitterId,
                       },
                   },
-                  actionEmitter as Creatable<ActionEmitter>,
+                  actionEmitter as Creatable<ActionEmitterEntity>,
                   manager
               );
         return actionWrapper;
     }
 
-    protected readonly entityTarget = ActionWrapper;
+    protected readonly entityTarget = ActionWrapperEntity;
 }

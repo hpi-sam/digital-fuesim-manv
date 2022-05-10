@@ -1,4 +1,4 @@
-import { createNewDataSource } from 'database/data-source';
+import { createNewDataSource, testingDatabaseName } from 'database/data-source';
 import { ServiceProvider } from 'database/services/service-provider';
 import type {
     ClientToServerEvents,
@@ -153,29 +153,51 @@ export const createTestEnvironment = (): TestEnvironment => {
     let serviceProvider: ServiceProvider;
 
     beforeAll(async () => {
-        dataSource = await createNewDataSource().initialize();
-        serviceProvider = new ServiceProvider(dataSource);
-        environment.init(serviceProvider);
+        // dataSource = await createNewDataSource().initialize();
+        // serviceProvider = new ServiceProvider(dataSource);
+        // environment.init(serviceProvider);
     });
     // If this gets too slow, we may look into creating the server only once
     beforeEach(async () => {
+        dataSource = await setupDatabase();
+        serviceProvider = new ServiceProvider(dataSource);
+        environment.init(serviceProvider);
         environment.server.destroy();
         const server = new FuesimServer(serviceProvider);
         environment.server = server;
     });
-    afterEach(() => {
+    afterEach(async () => {
+        // Prevent the dataSource from being closed too soon.
+        await sleep(100);
+        await dataSource.destroy();
         environment.server.destroy();
     });
     afterAll(async () => {
         if (dataSource.isInitialized) {
-            // Prevent the dataSource from being closed too soon.
-            await sleep(500);
             await dataSource.destroy();
         }
     });
 
     return environment;
 };
+
+async function setupDatabase() {
+    const baselineDataSource = await createNewDataSource(
+        'baseline'
+    ).initialize();
+    await baselineDataSource.query(
+        `DROP DATABASE IF EXISTS "${testingDatabaseName}"`
+    );
+    await baselineDataSource.query(`CREATE DATABASE "${testingDatabaseName}"`);
+    await baselineDataSource.destroy();
+
+    const testDataSource = createNewDataSource('testing');
+    await testDataSource.initialize();
+
+    await testDataSource.runMigrations({ transaction: 'all' });
+
+    return testDataSource;
+}
 
 export async function createExercise(
     environment: TestEnvironment

@@ -10,10 +10,10 @@ import type {
 } from 'typeorm';
 import { EntityNotFoundError } from 'typeorm';
 import { DatabaseError } from '../database-error';
-import type { BaseEntity } from '../base-entity';
+import type { BaseEntity } from '../entities/base-entity';
 import type { Creatable, Updatable } from '../dtos';
 
-export abstract class BaseService<TEntity extends BaseEntity> {
+export abstract class BaseService<TEntity extends BaseEntity<TEntity, any>> {
     public constructor(protected readonly dataSource: DataSource) {}
 
     /**

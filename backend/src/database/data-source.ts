@@ -1,24 +1,44 @@
 import { DataSource } from 'typeorm';
-// import { ActionEmitter } from '../exercise/action-emitter';
-import { ActionWrapper } from '../exercise/action-wrapper';
 import { Config } from '../config';
-import { ActionEmitter, ExerciseWrapper } from '../exercise/exercise-wrapper';
+import {
+    ActionEmitterEntity,
+    ActionWrapperEntity,
+    ExerciseWrapperEntity,
+} from './entities/all-entities';
+import { AddExerciseAndActions1652268120769 } from './migrations/1652268120769-AddExerciseAndActions';
 
-export const createNewDataSource = () => {
+export type DataSourceMode = 'baseline' | 'default' | 'testing';
+
+export let testingDatabaseName: string;
+
+export const createNewDataSource = (mode: DataSourceMode = 'default') => {
     Config.initialize();
+    const defaultDatabaseName = `${Config.dbName}`;
+    testingDatabaseName = `${Config.dbName}_TESTING`;
     return new DataSource({
         type: 'postgres',
         host: 'localhost',
         port: 5432,
         username: Config.dbUser,
         password: Config.dbPassword,
-        database: Config.dbName,
-        entities: [ActionEmitter, ActionWrapper, ExerciseWrapper],
-        migrations: [
-            process.env.NODE_ENV === 'migration'
-                ? `src/database/migrations/**/*{.ts,.js}`
-                : `./migrations/**/*{.ts,.js}`,
+        database:
+            mode === 'baseline'
+                ? // This database probably always exists
+                  'postgres'
+                : mode === 'default'
+                ? defaultDatabaseName
+                : testingDatabaseName,
+        entities: [
+            ActionEmitterEntity,
+            ActionWrapperEntity,
+            ExerciseWrapperEntity,
         ],
+        // migrations: [
+        //     process.env.NODE_ENV === 'migration' || mode === 'testing'
+        //         ? `src/database/migrations/**/*{.ts,.js}`
+        //         : `./migrations/**/*{.ts,.js}`,
+        // ],
+        migrations: [AddExerciseAndActions1652268120769],
         logging: Config.dbLogging,
     });
 };

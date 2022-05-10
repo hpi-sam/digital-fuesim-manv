@@ -1,55 +1,103 @@
 import type { ExerciseAction } from 'digital-fuesim-manv-shared';
-import { Column, Entity, ManyToOne } from 'typeorm';
-import { IsJSON, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import type { EntityManager } from 'typeorm';
+// import { DatabaseError } from '../database/database-error';
+// import type { ActionEmitterEntity } from '../database/entities/action-emitter.entity';
+import { NormalType } from '../database/normal-type';
+import type { Creatable, Updatable } from '../database/dtos';
+// import { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
 import type { ServiceProvider } from '../database/services/service-provider';
-import type { Creatable } from '../database/dtos';
-import { BaseEntity } from '../database/base-entity';
+import type { ActionEmitterEntity } from '../database/entities/all-entities';
+import { ActionWrapperEntity } from '../database/entities/all-entities';
+import type { ActionEmitter } from './action-emitter';
 import type { ExerciseWrapper } from './exercise-wrapper';
-import { ActionEmitter } from './exercise-wrapper';
 
-@Entity()
-export class ActionWrapper extends BaseEntity {
-    @ManyToOne(() => ActionEmitter, {
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-        nullable: false,
-        eager: true,
-    })
-    @ValidateNested()
-    @Type(() => ActionEmitter)
-    emitter!: ActionEmitter;
+export class ActionWrapper extends NormalType<
+    ActionWrapper,
+    ActionWrapperEntity
+> {
+    async asEntity(
+        save: boolean,
+        entityManager?: EntityManager
+    ): Promise<ActionWrapperEntity> {
+        const operations = async (manager: EntityManager) => {
+            let entity = this.id
+                ? await this.services.actionWrapperService.findById(
+                      this.id,
+                      manager
+                  )
+                : new ActionWrapperEntity();
+            const existed = this.id !== undefined;
+            entity.actionString = JSON.stringify(this.action);
+            entity.created ??= new Date();
+            entity.emitter = await this.emitter.asEntity(save, manager);
+            if (this.id) entity.id = this.id;
+            if (save) {
+                if (existed) {
+                    const updatable: Updatable<ActionWrapperEntity> = {
+                        actionString: entity.actionString,
+                        emitter: entity.emitter.id,
+                    };
+                    entity = await this.services.actionWrapperService.update(
+                        entity.id,
+                        updatable,
+                        manager
+                    );
+                } else {
+                    const creatable: Creatable<ActionWrapperEntity> = {
+                        actionString: entity.actionString,
+                        emitter: {
+                            emitterId: entity.emitter.emitterId,
+                            exerciseId: entity.emitter.exercise.id,
+                            emitterName: entity.emitter.emitterName,
+                        },
+                    };
 
-    @Column({
-        type: 'timestamp with time zone',
-        default: () => 'CURRENT_TIMESTAMP',
-    })
-    created!: Date;
-
-    get action(): ExerciseAction {
-        return JSON.parse(this.actionString);
+                    entity = await this.services.actionWrapperService.create(
+                        creatable,
+                        manager
+                    );
+                }
+                this.id = entity.id;
+            }
+            return entity!;
+        };
+        return entityManager
+            ? operations(entityManager)
+            : this.services.transaction(operations);
     }
 
-    @Column({
-        type: 'json',
-    })
-    @IsJSON()
-    actionString!: string;
+    emitter!: ActionEmitter;
 
-    /** Exists to prevent creation via it. - Use {@link create} instead. */
-    private constructor() {
-        super();
+    action!: ExerciseAction;
+
+    /**
+     * Be very careful when using this. - Use {@link create} instead for most use cases.
+     * This constructor does not guarantee a valid object.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+    constructor(services: ServiceProvider) {
+        super(services);
     }
 
     static async create(
         action: ExerciseAction,
-        emitter: Omit<Creatable<ActionEmitter>, 'exerciseId'>,
+        emitter: Omit<Creatable<ActionEmitterEntity>, 'exerciseId'>,
         exercise: ExerciseWrapper,
         services: ServiceProvider
     ): Promise<ActionWrapper> {
-        return services.actionWrapperService.create({
-            actionString: JSON.stringify(action),
-            emitter: { ...emitter, exerciseId: exercise.id },
+        return services.transaction(async (manager) => {
+            const exerciseEntity = await exercise.asEntity(true, manager);
+            const entity = await ActionWrapperEntity.create(
+                action,
+                emitter,
+                exerciseEntity.id,
+                services,
+                manager
+            );
+
+            const normal = await entity.asNormal(services, manager);
+
+            return normal;
         });
     }
 }

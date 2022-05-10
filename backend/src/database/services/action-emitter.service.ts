@@ -1,11 +1,11 @@
 import type { DataSource, EntityManager } from 'typeorm';
-import { ActionEmitter } from '../../exercise/exercise-wrapper';
+import { ActionEmitterEntity } from '../entities/all-entities';
+// import { ActionEmitterEntity } from '../entities/action-emitter.entity';
 import type { Creatable, Updatable } from '../dtos';
-// import { ActionEmitter } from '../../exercise/action-emitter';
 import { BaseService } from './base-service';
 import type { ExerciseWrapperService } from './exercise-wrapper.service';
 
-export class ActionEmitterService extends BaseService<ActionEmitter> {
+export class ActionEmitterService extends BaseService<ActionEmitterEntity> {
     public constructor(
         private readonly exerciseService: ExerciseWrapperService,
         dataSource: DataSource
@@ -13,14 +13,14 @@ export class ActionEmitterService extends BaseService<ActionEmitter> {
         super(dataSource);
     }
     protected async createSavableObject<
-        TInitial extends ActionEmitter | undefined
+        TInitial extends ActionEmitterEntity | undefined
     >(
         initialObject: TInitial,
-        dto: TInitial extends ActionEmitter
-            ? Updatable<ActionEmitter>
-            : Creatable<ActionEmitter>,
+        dto: TInitial extends ActionEmitterEntity
+            ? Updatable<ActionEmitterEntity>
+            : Creatable<ActionEmitterEntity>,
         manager: EntityManager
-    ): Promise<ActionEmitter> {
+    ): Promise<ActionEmitterEntity> {
         const { exerciseId, ...rest } = dto;
         const emitter = initialObject
             ? manager.merge(this.entityTarget, initialObject, rest)
@@ -32,5 +32,5 @@ export class ActionEmitterService extends BaseService<ActionEmitter> {
         return emitter;
     }
 
-    protected readonly entityTarget = ActionEmitter;
+    protected readonly entityTarget = ActionEmitterEntity;
 }
