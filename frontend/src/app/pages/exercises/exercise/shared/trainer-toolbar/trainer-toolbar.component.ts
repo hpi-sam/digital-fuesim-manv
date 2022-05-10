@@ -9,6 +9,7 @@ import type { AppState } from 'src/app/state/app.state';
 import { selectLatestStatusHistoryEntry } from 'src/app/state/exercise/exercise.selectors';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 import { openExerciseSettingsModal } from '../exercise-settings/open-exercise-settings-modal';
+import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercise-statistics-modal';
 import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
 
 @Component({
@@ -42,6 +43,10 @@ export class TrainerToolbarComponent {
 
     public openExerciseSettings() {
         openExerciseSettingsModal(this.modalService);
+    }
+
+    public openExerciseStatisticsModal() {
+        openExerciseStatisticsModal(this.modalService);
     }
 
     public async pauseExercise() {
