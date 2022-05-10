@@ -13,11 +13,13 @@ import type { TranslateEvent } from 'ol/interaction/Translate';
 import { LineString } from 'ol/geom';
 import { isArray } from 'lodash-es';
 import type { Coordinate } from 'ol/coordinate';
+import { Subject } from 'rxjs';
 import type { Coordinates } from '../utility/movement-animator';
 import { MovementAnimator } from '../utility/movement-animator';
 import { TranslateHelper } from '../utility/translate-helper';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { WithPosition } from '../../utility/types/with-position';
+import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ElementManager } from './element-manager';
 
 export interface PositionableElement {
@@ -80,6 +82,7 @@ export abstract class ElementFeatureManager<
     >
     implements FeatureManager<ElementFeature>
 {
+    public readonly togglePopup$ = new Subject<OpenPopupOptions<any>>();
     protected readonly movementAnimator = new MovementAnimator<FeatureType>(
         this.olMap,
         this.layer

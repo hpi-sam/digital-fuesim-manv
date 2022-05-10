@@ -49,14 +49,14 @@ export class Material {
     constructor(
         vehicleId: UUID,
         vehicleName: string,
-        assignedPatientIds: UUIDSet,
         canCaterFor: CanCaterFor,
+        assignedPatientIds: UUIDSet,
         position?: Position
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
-        this.assignedPatientIds = assignedPatientIds;
         this.canCaterFor = canCaterFor;
+        this.assignedPatientIds = assignedPatientIds;
         this.position = position;
     }
 

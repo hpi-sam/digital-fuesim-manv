@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import type { Vehicle } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type Point from 'ol/geom/Point';
@@ -8,16 +7,16 @@ import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
-import type { Feature } from 'ol';
+import type { Feature, MapBrowserEvent } from 'ol';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type { WithPosition } from '../../utility/types/with-position';
 import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
-import { withPopup } from '../utility/with-popup';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
+import { ImagePopupHelper } from '../utility/popup-helper';
 import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
-class VehicleFeatureManagerBase extends ElementFeatureManager<
+export class VehicleFeatureManager extends ElementFeatureManager<
     WithPosition<Vehicle>
 > {
     private readonly imageStyleHelper = new ImageStyleHelper(
@@ -34,6 +33,7 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
         0.1,
         'top'
     );
+    private readonly popupHelper = new ImagePopupHelper(this.olMap);
 
     constructor(
         store: Store<AppState>,
@@ -101,15 +101,17 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
     }
 
     override unsupportedChangeProperties = new Set(['id', 'image'] as const);
-}
 
-export const VehicleFeatureManager = withPopup<
-    WithPosition<Vehicle>,
-    typeof VehicleFeatureManagerBase,
-    VehiclePopupComponent
->(VehicleFeatureManagerBase, {
-    component: VehiclePopupComponent,
-    height: 150,
-    width: 225,
-    getContext: (feature) => ({ vehicleId: feature.getId() as string }),
-});
+    public override onFeatureClicked(
+        event: MapBrowserEvent<any>,
+        feature: Feature<any>
+    ): void {
+        super.onFeatureClicked(event, feature);
+
+        this.togglePopup$.next(
+            this.popupHelper.getPopupOptions(VehiclePopupComponent, feature, {
+                vehicleId: feature.getId() as string,
+            })
+        );
+    }
+}

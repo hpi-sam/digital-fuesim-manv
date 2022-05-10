@@ -6,22 +6,24 @@ import type { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
-import type { Feature } from 'ol';
-import { withPopup } from '../utility/with-popup';
+import type { Feature, MapBrowserEvent } from 'ol';
 import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popup.component';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
+import { ImagePopupHelper } from '../utility/popup-helper';
 import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
-class BaseMapImageFeatureManager extends ElementFeatureManager<MapImage> {
+export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
     private readonly imageStyleHelper = new ImageStyleHelper(
         (feature) => this.getElementFromFeature(feature)!.value.image
     );
+    private readonly popupHelper = new ImagePopupHelper(this.olMap);
 
     constructor(
         store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        apiService: ApiService
+        apiService: ApiService,
+        private readonly isTrainer: boolean
     ) {
         super(
             store,
@@ -41,17 +43,21 @@ class BaseMapImageFeatureManager extends ElementFeatureManager<MapImage> {
         );
     }
 
+    public override onFeatureClicked(
+        event: MapBrowserEvent<any>,
+        feature: Feature<any>
+    ): void {
+        super.onFeatureClicked(event, feature);
+
+        if (!this.isTrainer) {
+            return;
+        }
+        this.togglePopup$.next(
+            this.popupHelper.getPopupOptions(MapImagePopupComponent, feature, {
+                mapImageId: feature.getId() as string,
+            })
+        );
+    }
+
     override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 }
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const MapImageFeatureManager = withPopup<
-    MapImage,
-    typeof BaseMapImageFeatureManager,
-    MapImagePopupComponent
->(BaseMapImageFeatureManager, {
-    component: MapImagePopupComponent,
-    height: 110,
-    width: 50,
-    getContext: (feature) => ({ mapImageId: feature.getId() as string }),
-});
