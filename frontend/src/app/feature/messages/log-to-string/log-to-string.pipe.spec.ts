@@ -90,12 +90,8 @@ describe('LogToStringPipe', () => {
     });
 
     it('correctly handles cyclic references', () => {
-        interface Obj {
-            obj?: Obj;
-        }
-        const objA: Obj = { obj: undefined };
-        const objB: Obj = { obj: objA };
-        objA.obj = objB;
-        expect(logToStringPipeTransform(objA)).toContain('CYCLIC REFERENCE');
+        const obj = {} as any;
+        obj.property = obj;
+        expect(logToStringPipeTransform(obj)).toContain('CYCLIC REFERENCE');
     });
 });

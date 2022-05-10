@@ -16,10 +16,7 @@ export class Config {
     private static createTCPPortValidator() {
         return makeValidator((x) => {
             const int = Number.parseInt(x);
-            if (!Number.isInteger(int)) {
-                throw new TypeError('Expected a valid port number');
-            }
-            if (!(int >= 0 && int < 2 ** 16)) {
+            if (!Number.isInteger(int) || !(int >= 0 && int < 2 ** 16)) {
                 throw new TypeError('Expected a valid port number');
             }
             return int;

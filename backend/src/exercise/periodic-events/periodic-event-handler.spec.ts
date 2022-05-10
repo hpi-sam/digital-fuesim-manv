@@ -5,9 +5,10 @@ describe('Periodic Event Handler', () => {
     it('correctly aborts async ticks', async () => {
         let startCallCounter = 0;
         let endCallCounter = 0;
+        const waitDuration = 10;
         const tick = async () => {
             startCallCounter++;
-            await sleep(10);
+            await sleep(waitDuration);
             endCallCounter++;
         };
 
@@ -18,8 +19,8 @@ describe('Periodic Event Handler', () => {
         await sleep(tickInterval * 2.1);
         tickHandler.pause();
 
-        // Wait to prevent test from finishing to early
-        await sleep(tickInterval * 2);
+        // Wait to prevent test from finishing too early
+        await sleep(waitDuration + 5);
 
         expect(startCallCounter).toBe(2);
         expect(endCallCounter).toBe(2);

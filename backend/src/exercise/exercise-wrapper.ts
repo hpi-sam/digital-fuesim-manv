@@ -152,9 +152,7 @@ export class ExerciseWrapper {
         intermediateAction?: () => void
     ): void {
         this.reduce(action, emitter);
-        if (intermediateAction) {
-            intermediateAction();
-        }
+        intermediateAction?.();
         this.emitAction(action);
     }
 
