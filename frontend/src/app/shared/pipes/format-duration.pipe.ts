@@ -22,20 +22,21 @@ export class FormatDurationPipe implements PipeTransform {
 
         const parts = [];
         if (daysStr > 0) {
-            parts.push(`${daysStr}d`);
+            // \u2009 is a thin space
+            parts.push(`${daysStr}\u2009d`);
         }
         if (hoursStr > 0) {
-            parts.push(`${hoursStr}h`);
+            parts.push(`${hoursStr}\u2009h`);
         }
         if (minutesStr > 0) {
-            parts.push(`${minutesStr}min`);
+            parts.push(`${minutesStr}\u2009min`);
         }
         // we only want to show seconds if there are no other parts because they change too fast
         if (secondsStr > 0 && parts.length === 0) {
-            parts.push(`${secondsStr}s`);
+            parts.push(`${secondsStr}\u2009s`);
         }
         if (parts.length === 0) {
-            return '0s';
+            return '0\u2009s';
         }
 
         return parts.join(' ');

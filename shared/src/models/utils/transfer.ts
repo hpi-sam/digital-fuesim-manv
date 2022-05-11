@@ -16,7 +16,7 @@ export class Transfer {
     public readonly targetTransferPointId: UUID;
 
     @IsBoolean()
-    public readonly isPaused!: boolean;
+    public readonly isPaused: boolean;
 
     /**
      * @deprecated Use {@link create} instead
@@ -24,11 +24,13 @@ export class Transfer {
     constructor(
         endTimeStamp: number,
         startTransferPointId: UUID,
-        targetTransferPointId: UUID
+        targetTransferPointId: UUID,
+        isPaused: boolean
     ) {
         this.endTimeStamp = endTimeStamp;
         this.startTransferPointId = startTransferPointId;
         this.targetTransferPointId = targetTransferPointId;
+        this.isPaused = isPaused;
     }
 
     static readonly create = getCreate(this);

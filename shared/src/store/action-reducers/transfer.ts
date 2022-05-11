@@ -114,7 +114,7 @@ export namespace TransferActionReducers {
             if (targetTransferPointId) {
                 element.transfer.targetTransferPointId = targetTransferPointId;
             }
-            if (timeToAdd !== undefined) {
+            if (timeToAdd) {
                 //  The endTimeStamp shouldn't be less then the current time
                 element.transfer.endTimeStamp = Math.max(
                     draftState.currentTime,
