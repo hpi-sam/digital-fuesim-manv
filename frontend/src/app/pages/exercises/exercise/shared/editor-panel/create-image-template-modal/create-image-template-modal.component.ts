@@ -32,22 +32,21 @@ export class CreateImageTemplateModalComponent implements OnDestroy {
     ) {}
 
     public async createImageTemplate() {
-        try {
-            const aspectRatio = await getImageAspectRatio(
-                this.imageTemplate.image.url!
-            );
-            this.imageTemplate.image.aspectRatio = aspectRatio;
-            this.createImageTemplate$.emit(
-                this.imageTemplate as MapImageTemplate
-            );
-            this.close();
-        } catch (error: unknown) {
-            this.messageService.postError({
-                title: 'Ungültige URL',
-                body: 'Bitte überprüfen Sie die Bildadresse.',
-                error,
+        getImageAspectRatio(this.imageTemplate.image.url!)
+            .then((aspectRatio) => {
+                this.imageTemplate.image.aspectRatio = aspectRatio;
+                this.createImageTemplate$.emit(
+                    this.imageTemplate as MapImageTemplate
+                );
+                this.close();
+            })
+            .catch((error) => {
+                this.messageService.postError({
+                    title: 'Ungültige URL',
+                    body: 'Bitte überprüfen Sie die Bildadresse.',
+                    error,
+                });
             });
-        }
     }
 
     public close() {

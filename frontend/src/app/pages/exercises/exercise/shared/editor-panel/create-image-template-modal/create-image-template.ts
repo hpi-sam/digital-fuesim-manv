@@ -5,7 +5,7 @@ import { CreateImageTemplateModalComponent } from './create-image-template-modal
 
 /**
  *
- * @returns a Promise that resolves with the new MapImageTemplate or undefined if the user canceled the dialog.
+ * @returns a Promise that resolves with the new MapImageTemplate or null if the user canceled the dialog.
  */
 export async function createImageTemplate(
     ngbModalService: NgbModal

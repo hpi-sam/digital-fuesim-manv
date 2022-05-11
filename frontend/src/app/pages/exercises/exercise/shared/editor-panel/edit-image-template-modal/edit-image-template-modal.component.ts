@@ -56,6 +56,7 @@ export class EditImageTemplateModalComponent implements OnInit {
             id: this.mapImageTemplateId,
             name: this.mapImageTemplate.name,
             imageHeight: this.mapImageTemplate.image.height,
+            image: this.mapImageTemplate.image,
         });
         this.close();
     }

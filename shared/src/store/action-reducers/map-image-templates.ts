@@ -7,6 +7,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { MapImageTemplate } from '../../models';
+import { ImageProperties } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { UUID, uuidValidationOptions } from '../../utils';
@@ -31,6 +32,10 @@ export class EditMapImageTemplateAction implements Action {
 
     @IsString()
     public readonly name!: string;
+
+    @ValidateNested()
+    @Type(() => ImageProperties)
+    public readonly image!: ImageProperties;
 
     @IsInt()
     @IsPositive()
@@ -68,10 +73,11 @@ export namespace MapImageTemplatesActionReducers {
     export const editMapImageTemplate: ActionReducer<EditMapImageTemplateAction> =
         {
             action: EditMapImageTemplateAction,
-            reducer: (draftState, { id, imageHeight, name }) => {
+            reducer: (draftState, { id, imageHeight, name, image }) => {
                 const mapImageTemplate = getMapImageTemplate(draftState, id);
                 mapImageTemplate.name = name;
                 mapImageTemplate.image.height = imageHeight;
+                mapImageTemplate.image = image;
                 return draftState;
             },
             rights: 'trainer',

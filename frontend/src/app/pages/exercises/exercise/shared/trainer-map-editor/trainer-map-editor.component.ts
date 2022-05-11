@@ -62,17 +62,16 @@ export class TrainerMapEditorComponent {
         const mapImageTemplate = await createImageTemplate(
             this.ngbModalService
         );
-        if (mapImageTemplate !== null) {
-            this.apiService.proposeAction({
-                type: '[MapImageTemplate] Add mapImageTemplate',
-                mapImageTemplate,
-            });
+        if (mapImageTemplate === null) {
+            return;
         }
+        this.apiService.proposeAction({
+            type: '[MapImageTemplate] Add mapImageTemplate',
+            mapImageTemplate,
+        });
     }
 
     public editMapImageTemplate(mapImageTemplateId: UUID) {
-        console.log('editMapImageTemplate', mapImageTemplateId);
-
         openEditImageTemplateModal(this.ngbModalService, mapImageTemplateId);
     }
 }

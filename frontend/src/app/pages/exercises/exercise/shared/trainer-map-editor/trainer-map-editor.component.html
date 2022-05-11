@@ -219,6 +219,15 @@
                                 </h5>
                             </div>
                         </div>
+                        <span
+                            *ngIf="
+                                (mapImageTemplates$ | async | keyvalue)
+                                    ?.length === 0
+                            "
+                            class="text-muted"
+                        >
+                            Keine Bilder vorhanden
+                        </span>
                     </div>
                 </li>
             </ul>
