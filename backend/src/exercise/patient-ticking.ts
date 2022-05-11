@@ -144,11 +144,11 @@ function getNextPatientHealthPoints(
     material = Math.max(material - equippedNotarzt, 0);
     let equippedNotSan = Math.min(notSan, material);
     material = Math.max(material - equippedNotSan, 0);
-    let equippedRetSan = Math.min(rettSan, material);
+    let equippedRettSan = Math.min(rettSan, material);
     // much more notarzt != much better patient
     equippedNotarzt = Math.log2(equippedNotarzt + 1);
     equippedNotSan = Math.log2(equippedNotSan + 1);
-    equippedRetSan = Math.log2(equippedRetSan + 1);
+    equippedRettSan = Math.log2(equippedRettSan + 1);
     // TODO: some more heuristic precalculations ...
     // e.g. each second we lose 100 health points
     const changedHealthPerSecond =
@@ -156,7 +156,7 @@ function getNextPatientHealthPoints(
         // e.g. if we have a notarzt we gain 500 additional health points per second
         functionParameters.notarztModifier * equippedNotarzt +
         functionParameters.notSanModifier * equippedNotSan +
-        functionParameters.retSanModifier * equippedRetSan;
+        functionParameters.rettSanModifier * equippedRettSan;
 
     return Math.max(
         healthPointsDefaults.min,

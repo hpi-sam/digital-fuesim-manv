@@ -70,7 +70,7 @@ function generatePatient(
 
 function generatePersonnel(position?: Position) {
     const personnel = cloneDeepMutable(
-        Personnel.create(uuid(), 'RTW 3/83/1', {}, 'notSan')
+        Personnel.create(uuid(), 'RTW 3/83/1', 'notSan', {})
     );
     if (position) {
         personnel.position = { ...position };
@@ -83,8 +83,8 @@ function generateMaterial(position?: Position) {
         Material.create(
             uuid(),
             'RTW 3/83/1',
-            {},
-            CanCaterFor.create(1, 2, 3, 'or')
+            CanCaterFor.create(1, 2, 3, 'or'),
+            {}
         )
     );
     if (position) {
