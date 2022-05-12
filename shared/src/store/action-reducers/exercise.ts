@@ -192,6 +192,7 @@ function updateStatistics(draftState: Mutable<ExerciseState>): void {
         id: uuid(),
         exercise: exerciseStatistics,
         viewports: viewportStatistics,
+        exerciseTime: draftState.currentTime,
     });
 }
 

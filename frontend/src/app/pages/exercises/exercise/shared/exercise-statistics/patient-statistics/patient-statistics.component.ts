@@ -1,21 +1,22 @@
 import type { AfterViewInit, OnDestroy } from '@angular/core';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import type { ChartDataset } from 'chart.js';
 import {
     BarController,
     BarElement,
     CategoryScale,
     Chart,
     LinearScale,
+    Tooltip,
 } from 'chart.js';
 import type { PatientStatus } from 'digital-fuesim-manv-shared';
 import { statusNames } from 'digital-fuesim-manv-shared';
-import type { AreaStatistics } from 'digital-fuesim-manv-shared/dist/models/utils/area-statistics';
 import { Subject, takeUntil } from 'rxjs';
+import { formatDuration } from 'src/app/shared/functions/format-duration';
+import type { AreaStatisticsEntry } from '../area-statistics.service';
 import { AreaStatisticsService } from '../area-statistics.service';
 
 // TODO: Is this the right place for that?
-Chart.register(CategoryScale, LinearScale, BarController, BarElement);
+Chart.register(CategoryScale, LinearScale, BarController, BarElement, Tooltip);
 
 @Component({
     selector: 'app-patient-statistics',
@@ -31,37 +32,49 @@ export class PatientStatisticsComponent implements AfterViewInit, OnDestroy {
         private readonly areaStatisticsService: AreaStatisticsService
     ) {}
 
-    private chart?: Chart;
+    private chart?: Chart<'bar', (number | null)[], string>;
 
     ngAfterViewInit() {
-        this.chart = new Chart(this.chartCanvas.nativeElement, {
-            type: 'bar',
-            data: {
-                labels: [],
-                datasets: [],
-            },
-            options: {
-                plugins: {},
-                responsive: true,
-                scales: {
-                    x: {
-                        stacked: true,
-                        // TODO: a time scale? Time adapter needed
-                        // type: 'time',
+        this.chart = new Chart<'bar', (number | null)[], string>(
+            this.chartCanvas.nativeElement,
+            {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [],
+                },
+                options: {
+                    plugins: {
+                        tooltip: {
+                            position: 'nearest',
+                            callbacks: {
+                                label: (tooltipItem) =>
+                                    `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue}`,
+                            },
+                        },
                     },
-                    y: {
-                        stacked: true,
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1,
-                            major: {
-                                enabled: true,
+                    responsive: true,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            ticks: {
+                                maxTicksLimit: 10,
+                            },
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                major: {
+                                    enabled: true,
+                                },
                             },
                         },
                     },
                 },
-            },
-        });
+            }
+        );
         this.areaStatisticsService.areaStatistics$
             .pipe(takeUntil(this.destroy$))
             .subscribe((areaStatistics) => {
@@ -82,24 +95,25 @@ export class PatientStatisticsComponent implements AfterViewInit, OnDestroy {
         black: 'rgba(33, 37, 41, 0.75)',
     };
 
-    private setChartData(statistics: AreaStatistics[]) {
-        const datasets: ChartDataset<'bar', number[]>[] = Object.entries(
-            this.patientColors
-        ).map(([status, backgroundColor]) => ({
-            label: statusNames[status as PatientStatus],
-            data: statistics.map(
-                (statisticEntry) =>
-                    statisticEntry.patients[status as PatientStatus] ?? 0
-            ),
-            backgroundColor,
-            categoryPercentage: 1,
-            // The data must be unique, sorted, and consistent
-            normalized: true,
-            barPercentage: 1,
-        }));
-        this.chart!.data.datasets = datasets;
-        this.chart!.data.labels = statistics.map(
-            (entry, index) => `${Math.round(index / 60)} min`
+    private setChartData(statistics: AreaStatisticsEntry[]) {
+        this.chart!.data.datasets = Object.entries(this.patientColors).map(
+            ([status, backgroundColor]) => ({
+                label: statusNames[status as PatientStatus],
+                data: statistics.map(
+                    (statisticEntry) =>
+                        statisticEntry.value.patients[
+                            status as PatientStatus
+                        ] ?? 0
+                ),
+                backgroundColor,
+                categoryPercentage: 1,
+                barPercentage: 1,
+                // The data must be unique, sorted, and consistent
+                normalized: true,
+            })
+        );
+        this.chart!.data.labels = statistics.map(({ exerciseTime }) =>
+            formatDuration(exerciseTime)
         );
         // We don't want to animate this
         this.chart?.update('none');

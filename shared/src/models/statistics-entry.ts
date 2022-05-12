@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsObject, IsUUID, ValidateNested } from 'class-validator';
+import { IsInt, IsObject, IsUUID, Min, ValidateNested } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
 import { getCreate } from './utils';
 import { AreaStatistics } from './utils/area-statistics';
@@ -7,6 +7,13 @@ import { AreaStatistics } from './utils/area-statistics';
 export class StatisticsEntry {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    /**
+     * The exercise time in ms where these statistics were created.
+     */
+    @IsInt()
+    @Min(0)
+    public readonly exerciseTime: number;
 
     @IsObject()
     readonly viewports: {
@@ -24,10 +31,12 @@ export class StatisticsEntry {
         viewports: {
             readonly [viewportId: string]: AreaStatistics;
         },
-        exercise: AreaStatistics
+        exercise: AreaStatistics,
+        exerciseTime: number
     ) {
         this.viewports = viewports;
         this.exercise = exercise;
+        this.exerciseTime = exerciseTime;
     }
 
     static readonly create = getCreate(this);
