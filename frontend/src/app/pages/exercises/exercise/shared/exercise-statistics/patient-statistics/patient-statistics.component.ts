@@ -1,12 +1,14 @@
 import type { AfterViewInit, OnDestroy } from '@angular/core';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import {
-    BarController,
-    BarElement,
     CategoryScale,
     Chart,
+    Filler,
     Legend,
     LinearScale,
+    LineController,
+    LineElement,
+    PointElement,
     Tooltip,
 } from 'chart.js';
 import type { PatientStatus } from 'digital-fuesim-manv-shared';
@@ -20,10 +22,12 @@ import { AreaStatisticsService } from '../area-statistics.service';
 Chart.register(
     CategoryScale,
     LinearScale,
-    BarController,
-    BarElement,
+    LineElement,
+    LineController,
+    PointElement,
     Tooltip,
-    Legend
+    Legend,
+    Filler
 );
 
 @Component({
@@ -40,13 +44,13 @@ export class PatientStatisticsComponent implements AfterViewInit, OnDestroy {
         private readonly areaStatisticsService: AreaStatisticsService
     ) {}
 
-    private chart?: Chart<'bar', (number | null)[], string>;
+    private chart?: Chart<'line', (number | null)[], string>;
 
     ngAfterViewInit() {
-        this.chart = new Chart<'bar', (number | null)[], string>(
+        this.chart = new Chart<'line', (number | null)[], string>(
             this.chartCanvas.nativeElement,
             {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: [],
                     datasets: [],
@@ -66,8 +70,14 @@ export class PatientStatisticsComponent implements AfterViewInit, OnDestroy {
                                 color: 'rgb(33, 37, 41)',
                             },
                         },
+                        filler: {
+                            propagate: true,
+                        },
                     },
                     responsive: true,
+                    interaction: {
+                        intersect: false,
+                    },
                     scales: {
                         x: {
                             stacked: true,
@@ -76,7 +86,7 @@ export class PatientStatisticsComponent implements AfterViewInit, OnDestroy {
                             },
                         },
                         y: {
-                            stacked: true,
+                            stacked: 'single',
                             beginAtZero: true,
                             ticks: {
                                 stepSize: 1,
@@ -117,11 +127,12 @@ export class PatientStatisticsComponent implements AfterViewInit, OnDestroy {
                     (statisticEntry) =>
                         statisticEntry.value.patients[
                             status as PatientStatus
-                        ] ?? 0
+                        ] ?? null
                 ),
                 backgroundColor,
-                categoryPercentage: 1,
-                barPercentage: 1,
+                fill: 'stack',
+                // Doesn't work with `fill: stacked`
+                // stepped: 'before',
                 // The data must be unique, sorted, and consistent
                 normalized: true,
             })

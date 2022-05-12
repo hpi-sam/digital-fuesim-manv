@@ -24,13 +24,16 @@ export class AreaStatisticsService {
         this.areaId$.pipe(
             switchMap((areaId) =>
                 this.store.select((state) =>
-                    state.exercise.statistics.map((statisticEntry) => ({
-                        value:
-                            areaId === null
-                                ? statisticEntry.exercise
-                                : statisticEntry.viewports[areaId],
-                        exerciseTime: statisticEntry.exerciseTime,
-                    }))
+                    state.exercise.statistics
+                        .map((statisticEntry) => ({
+                            value:
+                                areaId === null
+                                    ? statisticEntry.exercise
+                                    : // If the viewport didn't exist yet
+                                      statisticEntry.viewports[areaId],
+                            exerciseTime: statisticEntry.exerciseTime,
+                        }))
+                        .filter((entry) => entry.value !== undefined)
                 )
             )
         );
