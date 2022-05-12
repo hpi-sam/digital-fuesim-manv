@@ -53,6 +53,10 @@ The server will start listening using nginx on port `80` for all services (front
 
 1. Run `docker build -f docker/Dockerfile -t digital-fuesim-manv .`
 
+### Docker ENVs
+
+-   All available Docker ENVs are listed with their default values in [the docker-compose file](./docker-compose.yml).
+
 ## Before you commit
 
 -   We are using [git lfs](https://git-lfs.github.com/). You can see the file types that currently use git lfs in [.gitattributes](.gitattributes). If you add another binary (or very large) file type to the repository you should add it there too.

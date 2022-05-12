@@ -10,3 +10,12 @@ services:
         container_name: digital-fuesim-manv
         ports:
             - 80:80
+        # all available ENVs are listed here with their default value set
+        #environment:
+        #    - SSL_ENABLE=false # enabling this will enable https, need DOMAIN set
+        #    - DOMAIN=          # please set your desired domain name
+        volumes:
+            - ssl:/ssl
+
+volumes:
+    ssl:

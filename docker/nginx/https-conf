@@ -1,0 +1,20 @@
+server {
+    listen       443 ssl default_server;
+    listen  [::]:443 ssl default_server;
+    include conf.d/server-name;
+    include conf.d/header;
+
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-SHA;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    ssl_stapling on;
+    ssl_stapling_verify on;
+
+    ssl_certificate /ssl/certs/fullchain.pem;
+    ssl_trusted_certificate /ssl/certs/fullchain.pem;
+    ssl_certificate_key /ssl/certs/key.pem;
+    ssl_dhparam /ssl/certs/dhparam.pem;
+
+   include conf.d/locations;
+}
