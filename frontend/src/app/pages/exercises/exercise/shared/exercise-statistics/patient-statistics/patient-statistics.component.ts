@@ -5,6 +5,7 @@ import {
     BarElement,
     CategoryScale,
     Chart,
+    Legend,
     LinearScale,
     Tooltip,
 } from 'chart.js';
@@ -16,7 +17,14 @@ import type { AreaStatisticsEntry } from '../area-statistics.service';
 import { AreaStatisticsService } from '../area-statistics.service';
 
 // TODO: Is this the right place for that?
-Chart.register(CategoryScale, LinearScale, BarController, BarElement, Tooltip);
+Chart.register(
+    CategoryScale,
+    LinearScale,
+    BarController,
+    BarElement,
+    Tooltip,
+    Legend
+);
 
 @Component({
     selector: 'app-patient-statistics',
@@ -50,6 +58,12 @@ export class PatientStatisticsComponent implements AfterViewInit, OnDestroy {
                             callbacks: {
                                 label: (tooltipItem) =>
                                     `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue}`,
+                            },
+                        },
+                        legend: {
+                            display: true,
+                            labels: {
+                                color: 'rgb(33, 37, 41)',
                             },
                         },
                     },
