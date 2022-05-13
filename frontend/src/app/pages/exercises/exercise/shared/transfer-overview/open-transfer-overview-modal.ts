@@ -3,6 +3,6 @@ import { TransferOverviewModalComponent } from './transfer-overview-modal/transf
 
 export function openTransferOverviewModal(ngbModalService: NgbModal) {
     ngbModalService.open(TransferOverviewModalComponent, {
-        size: 'lg',
+        size: 'xl',
     });
 }

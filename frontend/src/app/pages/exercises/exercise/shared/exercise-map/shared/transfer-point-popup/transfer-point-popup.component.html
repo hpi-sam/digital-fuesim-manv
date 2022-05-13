@@ -98,10 +98,8 @@
                                 style="max-width: 300px"
                             >
                                 <app-transfer-point-name
-                                    [transferPoint]="
-                                        transferPoints[
-                                            reachableTransferPoint.key
-                                        ]
+                                    [transferPointId]="
+                                        reachableTransferPoint.key
                                     "
                                 ></app-transfer-point-name>
                             </div>
@@ -178,7 +176,7 @@
                                 "
                             >
                                 <app-transfer-point-name
-                                    [transferPoint]="_transferPoint.value"
+                                    [transferPointId]="_transferPoint.key"
                                 ></app-transfer-point-name>
                             </button>
                         </div>
