@@ -56,6 +56,19 @@ export class PatientStatisticsComponent implements AfterViewInit, OnDestroy {
                     datasets: [],
                 },
                 options: {
+                    transitions: {
+                        // Disable the clunky animations for showing and hiding datasets
+                        hide: {
+                            animation: {
+                                duration: 0,
+                            },
+                        },
+                        show: {
+                            animation: {
+                                duration: 0,
+                            },
+                        },
+                    },
                     plugins: {
                         tooltip: {
                             position: 'nearest',
@@ -109,14 +122,14 @@ export class PatientStatisticsComponent implements AfterViewInit, OnDestroy {
     private readonly patientColors: {
         [key in PatientStatus]: string;
     } = {
-        // The order is important
+        // The order is important (the first key is at the bottom of the chart)
         // The colors are taken from bootstrap
-        white: 'rgba(248, 249, 250, 0.75)',
-        green: 'rgba(25, 135, 84, 0.75)',
-        yellow: 'rgba(255, 193, 7, 0.75)',
-        red: 'rgba(220, 53, 69, 0.75)',
-        blue: 'rgba(13, 110, 253, 0.75)',
         black: 'rgba(33, 37, 41, 0.75)',
+        blue: 'rgba(13, 110, 253, 0.75)',
+        red: 'rgba(220, 53, 69, 0.75)',
+        yellow: 'rgba(255, 193, 7, 0.75)',
+        green: 'rgba(25, 135, 84, 0.75)',
+        white: 'rgba(248, 249, 250, 0.75)',
     };
 
     private setChartData(statistics: AreaStatisticsEntry[]) {
