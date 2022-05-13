@@ -13,26 +13,24 @@ import { DatabaseError } from '../database-error';
 import type { BaseEntity } from '../entities/base-entity';
 import type { Creatable, Updatable } from '../dtos';
 
-export abstract class BaseService<TEntity extends BaseEntity<TEntity, any>> {
+export abstract class BaseService<Entity extends BaseEntity<Entity, any>> {
     public constructor(protected readonly dataSource: DataSource) {}
 
     /**
-     * @param initialObject `undefined` for creating a new object, {@link TEntity} for updating an existing row.
+     * @param initialObject `undefined` for creating a new object, {@link Entity} for updating an existing row.
      */
-    protected abstract createSavableObject<
-        TInitial extends TEntity | undefined
-    >(
+    protected abstract createSavableObject<TInitial extends Entity | undefined>(
         initialObject: TInitial,
-        dto: TInitial extends TEntity ? Updatable<TEntity> : Creatable<TEntity>,
+        dto: TInitial extends Entity ? Updatable<Entity> : Creatable<Entity>,
         manager: EntityManager
-    ): Promise<TEntity> | TEntity;
+    ): Entity | Promise<Entity>;
 
-    protected abstract readonly entityTarget: EntityTarget<TEntity>;
+    protected abstract readonly entityTarget: EntityTarget<Entity>;
 
     public async create(
-        creator: Creatable<TEntity>,
+        creator: Creatable<Entity>,
         entityManager?: EntityManager
-    ): Promise<TEntity> {
+    ): Promise<Entity> {
         const create = async (manager: EntityManager) =>
             manager.save(
                 await this.createSavableObject(
@@ -48,9 +46,9 @@ export abstract class BaseService<TEntity extends BaseEntity<TEntity, any>> {
     }
 
     public async findAll(
-        options?: FindManyOptions<TEntity>,
+        options?: FindManyOptions<Entity>,
         entityManager?: EntityManager
-    ): Promise<TEntity[]> {
+    ): Promise<Entity[]> {
         const find = async (manager: EntityManager) =>
             manager.find(this.entityTarget, options);
         return entityManager
@@ -65,10 +63,10 @@ export abstract class BaseService<TEntity extends BaseEntity<TEntity, any>> {
      * @throws {@link DatabaseError} when {@link mustExist} is `true` and no row has been found.
      */
     public async findOne<TExists extends false | true>(
-        options: FindOneOptions<TEntity>,
+        options: FindOneOptions<Entity>,
         mustExist: TExists,
         entityManager?: EntityManager
-    ): Promise<TExists extends true ? TEntity : TEntity | null> {
+    ): Promise<TExists extends true ? Entity : Entity | null> {
         const find = async (manager: EntityManager) => {
             const tuple = await manager.findOne(this.entityTarget, options);
             if (mustExist && tuple === null) {
@@ -87,7 +85,7 @@ export abstract class BaseService<TEntity extends BaseEntity<TEntity, any>> {
             entityManager
                 ? find(entityManager)
                 : this.dataSource.transaction(find)
-        ) as Promise<TExists extends true ? TEntity : TEntity | null>;
+        ) as Promise<TExists extends true ? Entity : Entity | null>;
     }
 
     /**
@@ -95,10 +93,10 @@ export abstract class BaseService<TEntity extends BaseEntity<TEntity, any>> {
      * If no row matches uses {@link creatable} to create a new row and return this row.
      */
     public async findOneOrCreate(
-        options: FindOneOptions<TEntity>,
-        creatable: Creatable<TEntity>,
+        options: FindOneOptions<Entity>,
+        creatable: Creatable<Entity>,
         entityManager?: EntityManager
-    ): Promise<TEntity> {
+    ): Promise<Entity> {
         const find = async (manager: EntityManager) =>
             (await this.findOne(options, false, manager)) ??
             (await this.create(creatable, manager));
@@ -113,14 +111,14 @@ export abstract class BaseService<TEntity extends BaseEntity<TEntity, any>> {
     public async findById(
         id: UUID,
         entityManager?: EntityManager
-    ): Promise<TEntity> {
+    ): Promise<Entity> {
         const find = async (manager: EntityManager) => {
             // See https://github.com/microsoft/TypeScript/issues/31070
             // and https://github.com/microsoft/TypeScript/issues/13442
             // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-            const where: FindOptionsWhere<TEntity> = {
+            const where: FindOptionsWhere<Entity> = {
                 id,
-            } as FindOptionsWhere<TEntity>;
+            } as FindOptionsWhere<Entity>;
             try {
                 const tuple = await manager.findOneOrFail(this.entityTarget, {
                     where,
@@ -145,9 +143,9 @@ export abstract class BaseService<TEntity extends BaseEntity<TEntity, any>> {
 
     public async update(
         id: UUID,
-        updater: Updatable<TEntity>,
+        updater: Updatable<Entity>,
         entityManager?: EntityManager
-    ): Promise<TEntity> {
+    ): Promise<Entity> {
         const update = async (manager: EntityManager) => {
             const objectToUpdate = await this.findById(id, manager);
             return manager.save(

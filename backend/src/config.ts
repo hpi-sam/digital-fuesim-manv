@@ -14,46 +14,48 @@ export class Config {
 
     private static _dbLogging?: boolean;
 
+    private static _dbHost?: string;
+
+    private static _dbPort?: number;
+
     public static get websocketPort(): number {
-        if (!this.isInitialized) {
-            throw this.createUninitializedUseError();
-        }
+        this.throwIfNotInitialized();
         return this._websocketPort!;
     }
 
     public static get httpPort(): number {
-        if (!this.isInitialized) {
-            throw this.createUninitializedUseError();
-        }
+        this.throwIfNotInitialized();
         return this._httpPort!;
     }
 
     public static get dbUser(): string {
-        if (!this.isInitialized) {
-            throw this.createUninitializedUseError();
-        }
+        this.throwIfNotInitialized();
         return this._dbUser!;
     }
 
     public static get dbPassword(): string {
-        if (!this.isInitialized) {
-            throw this.createUninitializedUseError();
-        }
+        this.throwIfNotInitialized();
         return this._dbPassword!;
     }
 
     public static get dbName(): string {
-        if (!this.isInitialized) {
-            throw this.createUninitializedUseError();
-        }
+        this.throwIfNotInitialized();
         return this._dbName!;
     }
 
     public static get dbLogging(): boolean {
-        if (!this.isInitialized) {
-            throw this.createUninitializedUseError();
-        }
+        this.throwIfNotInitialized();
         return this._dbLogging!;
+    }
+
+    public static get dbHost(): string {
+        this.throwIfNotInitialized();
+        return this._dbHost!;
+    }
+
+    public static get dbPort(): number {
+        this.throwIfNotInitialized();
+        return this._dbPort!;
     }
 
     private static createTCPPortValidator() {
@@ -81,13 +83,18 @@ export class Config {
             DFM_DB_NAME_TESTING: str({ default: undefined }),
             DFM_DB_LOG: bool({ default: false }),
             DFM_DB_LOG_TESTING: bool({ default: undefined }),
+            DFM_DB_HOST: str({ default: 'localhost' }),
+            DFM_DB_HOST_TESTING: str({ default: 'localhost' }),
+            DFM_DB_PORT: tcpPortValidator({ default: 5432 }),
+            DFM_DB_PORT_TESTING: tcpPortValidator({ default: 5432 }),
         });
     }
 
     private static isInitialized = false;
 
-    private static createUninitializedUseError() {
-        return new Error('Config was used uninitialized');
+    private static throwIfNotInitialized() {
+        if (!this.isInitialized)
+            throw new Error('Config was used uninitialized');
     }
 
     public static initialize(
@@ -121,6 +128,8 @@ export class Config {
             testing && env.DFM_DB_LOG_TESTING
                 ? env.DFM_DB_LOG_TESTING
                 : env.DFM_DB_LOG;
+        this._dbHost = testing ? env.DFM_DB_HOST_TESTING : env.DFM_DB_HOST;
+        this._dbPort = testing ? env.DFM_DB_PORT_TESTING : env.DFM_DB_PORT;
         this.isInitialized = true;
     }
 }

@@ -17,8 +17,8 @@ export const createNewDataSource = (mode: DataSourceMode = 'default') => {
     testingDatabaseName = `${Config.dbName}_TESTING`;
     return new DataSource({
         type: 'postgres',
-        host: 'localhost',
-        port: 5432,
+        host: Config.dbHost,
+        port: Config.dbPort,
         username: Config.dbUser,
         password: Config.dbPassword,
         database:

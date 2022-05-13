@@ -12,6 +12,7 @@ export class ActionEmitterService extends BaseService<ActionEmitterEntity> {
     ) {
         super(dataSource);
     }
+
     protected async createSavableObject<
         TInitial extends ActionEmitterEntity | undefined
     >(

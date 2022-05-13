@@ -40,20 +40,20 @@ type CreateExerciseWrapper = Omit<
 
 type UpdateExerciseWrapper = Partial<CreateExerciseWrapper>;
 
-export type Creatable<TEntity extends BaseEntity<TEntity, any>> =
-    TEntity extends ActionEmitterEntity
+export type Creatable<Entity extends BaseEntity<Entity, any>> =
+    Entity extends ActionEmitterEntity
         ? CreateActionEmitter
-        : TEntity extends ActionWrapperEntity
+        : Entity extends ActionWrapperEntity
         ? CreateActionWrapper
-        : TEntity extends ExerciseWrapperEntity
+        : Entity extends ExerciseWrapperEntity
         ? CreateExerciseWrapper
         : never;
 
-export type Updatable<TEntity extends BaseEntity<TEntity, any>> =
-    TEntity extends ActionEmitterEntity
+export type Updatable<Entity extends BaseEntity<Entity, any>> =
+    Entity extends ActionEmitterEntity
         ? UpdateActionEmitter
-        : TEntity extends ActionWrapperEntity
+        : Entity extends ActionWrapperEntity
         ? UpdateActionWrapper
-        : TEntity extends ExerciseWrapperEntity
+        : Entity extends ExerciseWrapperEntity
         ? UpdateExerciseWrapper
         : never;
