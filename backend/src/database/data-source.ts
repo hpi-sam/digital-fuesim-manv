@@ -3,6 +3,7 @@ import { Config } from '../config';
 import { ActionWrapperEntity } from './entities/action-wrapper.entity';
 import { ExerciseWrapperEntity } from './entities/exercise-wrapper.entity';
 import { AddExerciseAndActions1653554608164 } from './migrations/1653554608164-AddExerciseAndActions';
+import { AddStateVersion1653601072020 } from './migrations/1653601072020-AddStateVersion';
 
 export type DataSourceMode = 'baseline' | 'default' | 'testing';
 
@@ -26,7 +27,10 @@ export const createNewDataSource = (mode: DataSourceMode = 'default') => {
                 ? defaultDatabaseName
                 : testingDatabaseName,
         entities: [ActionWrapperEntity, ExerciseWrapperEntity],
-        migrations: [AddExerciseAndActions1653554608164],
+        migrations: [
+            AddExerciseAndActions1653554608164,
+            AddStateVersion1653601072020,
+        ],
         logging: Config.dbLogging,
     });
 };

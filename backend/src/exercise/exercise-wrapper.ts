@@ -7,15 +7,20 @@ import type {
 import {
     ExerciseState,
     reduceExerciseState,
+    validateExerciseState,
     validateExerciseAction,
 } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
+import { LessThan } from 'typeorm';
 import { IncrementIdGenerator } from '../utils/increment-id-generator';
 import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
 import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
 import { NormalType } from '../database/normal-type';
 import type { DatabaseService } from '../database/services/database-service';
 import { Config } from '../config';
+import { migrations } from '../database/state-migrations/migrations';
+import { RestoreError } from '../utils/restore-error';
+import { UserReadableIdGenerator } from '../utils/user-readable-id-generator';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
@@ -70,6 +75,7 @@ export class ExerciseWrapper extends NormalType<
                 entity.participantId = this.participantId;
                 entity.tickCounter = this.tickCounter;
                 entity.trainerId = this.trainerId;
+                entity.stateVersion = this.stateVersion;
             };
             const getDto = (entity: ExerciseWrapperEntity) => ({
                 initialStateString: entity.initialStateString,
@@ -77,6 +83,7 @@ export class ExerciseWrapper extends NormalType<
                 participantId: entity.participantId,
                 tickCounter: entity.tickCounter,
                 trainerId: entity.trainerId,
+                stateVersion: entity.stateVersion,
             });
             const existed = this.id !== undefined;
             if (save && existed) {
@@ -113,7 +120,6 @@ export class ExerciseWrapper extends NormalType<
             } else {
                 const entity = getNew();
                 await copyData(entity);
-
                 return entity;
             }
         };
@@ -133,6 +139,7 @@ export class ExerciseWrapper extends NormalType<
             entity.trainerId,
             actionsInWrapper,
             databaseService,
+            entity.stateVersion,
             JSON.parse(entity.initialStateString) as ExerciseState,
             JSON.parse(entity.currentStateString) as ExerciseState
         );
@@ -210,6 +217,7 @@ export class ExerciseWrapper extends NormalType<
         public readonly trainerId: string,
         public readonly temporaryActionHistory: ActionWrapper[],
         databaseService: DatabaseService,
+        private readonly stateVersion: number,
         private readonly initialState = ExerciseState.create(),
         private currentState: ExerciseState = initialState
     ) {
@@ -227,6 +235,7 @@ export class ExerciseWrapper extends NormalType<
             trainerId,
             [],
             databaseService,
+            ExerciseState.currentStateVersion,
             initialState
         );
 
@@ -239,6 +248,116 @@ export class ExerciseWrapper extends NormalType<
         );
 
         return exercise;
+    }
+
+    private async restore(): Promise<void> {
+        if (this.stateVersion !== ExerciseState.currentStateVersion) {
+            throw new RestoreError(
+                `The exercise was created with an incompatible version of the state (got version ${this.stateVersion}, required version ${ExerciseState.currentStateVersion})`,
+                this.id!
+            );
+        }
+        this.validateInitialState();
+        await this.restoreState();
+    }
+
+    private async restoreState() {
+        this.currentState = this.initialState;
+        this.temporaryActionHistory.forEach((action) => {
+            this.validateAction(action.action);
+            const state = reduceExerciseState(this.currentState, action.action);
+            this.currentState = state;
+        });
+        this.incrementIdGenerator.setCurrent(
+            this.temporaryActionHistory.length
+        );
+        // Remove all actions to not save them again
+        this.temporaryActionHistory.splice(
+            0,
+            this.temporaryActionHistory.length
+        );
+        // Pause exercise
+        if (this.currentState.statusHistory.at(-1)?.status === 'running')
+            this.reduce(
+                {
+                    type: '[Exercise] Pause',
+                    timestamp: Date.now(),
+                },
+                this.emitterId
+            );
+        // Remove all clients from state
+        Object.values(this.currentState.clients).forEach(async (client) => {
+            const removeClientAction: ExerciseAction = {
+                type: '[Client] Remove client',
+                clientId: client.id,
+            };
+            this.reduce(removeClientAction, this.emitterId);
+        });
+    }
+
+    static async restoreAllExercises(
+        databaseService: DatabaseService
+    ): Promise<ExerciseWrapper[]> {
+        return databaseService.transaction(async (manager) => {
+            const outdatedExercises =
+                await databaseService.exerciseWrapperService.getFindAll({
+                    where: {
+                        stateVersion: LessThan(
+                            ExerciseState.currentStateVersion
+                        ),
+                    },
+                })(manager);
+            outdatedExercises.forEach(async (exercise) => {
+                do {
+                    // eslint-disable-next-line no-await-in-loop
+                    await migrations[++exercise.stateVersion](exercise.id);
+                } while (
+                    exercise.stateVersion !== ExerciseState.currentStateVersion
+                );
+            });
+
+            const exercises = await Promise.all(
+                (
+                    await databaseService.exerciseWrapperService.getFindAll()(
+                        manager
+                    )
+                ).map(async (exerciseEntity) => {
+                    const exercise = ExerciseWrapper.createFromEntity(
+                        exerciseEntity,
+                        databaseService
+                    );
+                    // Load all actions
+                    exercise.temporaryActionHistory.splice(
+                        0,
+                        exercise.temporaryActionHistory.length,
+                        ...(
+                            await databaseService.actionWrapperService.getFindAll(
+                                {
+                                    where: { exercise: { id: exercise.id } },
+                                    order: { index: 'ASC' },
+                                }
+                            )(manager)
+                        ).map((actionEntity) =>
+                            ActionWrapper.createFromEntity(
+                                actionEntity,
+                                databaseService,
+                                exercise
+                            )
+                        )
+                    );
+                    return exercise;
+                })
+            );
+            await Promise.all(
+                exercises.map(async (exercise) => exercise.restore())
+            );
+            exercises.forEach((exercise) => {
+                exerciseMap.set(exercise.participantId, exercise);
+                exerciseMap.set(exercise.trainerId, exercise);
+            });
+            UserReadableIdGenerator.lock([...exerciseMap.keys()]);
+            return exercises;
+        });
     }
 
     /**
@@ -334,6 +453,13 @@ export class ExerciseWrapper extends NormalType<
             this.pause();
         } else if (action.type === '[Exercise] Start') {
             this.start();
+        }
+    }
+
+    private validateInitialState() {
+        const errors = validateExerciseState(this.initialState);
+        if (errors.length > 0) {
+            throw new ValidationErrorWrapper(errors);
         }
     }
 

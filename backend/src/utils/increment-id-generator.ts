@@ -9,4 +9,8 @@ export class IncrementIdGenerator {
         }
         return this.current++;
     }
+
+    public setCurrent(current: number) {
+        this.current = current;
+    }
 }

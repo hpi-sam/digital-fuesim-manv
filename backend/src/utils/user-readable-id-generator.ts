@@ -44,4 +44,12 @@ export class UserReadableIdGenerator {
     public static freeAll() {
         this.generatedIds.clear();
     }
+
+    /**
+     * Notes all provided {@link ids} as used.
+     * @param ids The ids to lock
+     */
+    public static lock(ids: string[]) {
+        ids.map((id) => this.generatedIds.add(id));
+    }
 }
