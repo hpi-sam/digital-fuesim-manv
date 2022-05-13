@@ -15,9 +15,14 @@ The (internal) project-board is [here](https://github.com/orgs/hpi-sam/projects/
 5. Run `npm run setup` from the root folder
 6. (Optional) We have a list of recommended [vscode](https://code.visualstudio.com/) extensions. We strongly recommend you to use them if you are developing. You can see them via [the `@recommended` filter in the extensions panel](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
 
-## Starting for development
+## Setup - Database
 
-Make sure to have a PostgreSQL server running on `localhost` on port `5432`. It must use the environment variables specified in `backend/.env` for name, user and password. You can use the `docker-compose` service `db` for this.
+Make sure to have a [PostgreSQL](https://www.postgresql.org/) (version 14) server running. It must use a configuration according to the environment variables specified in `backend/.env` for name, user, password, host and port.
+We provide a `docker-compose` service named `db` for this (see also [below](#with-docker-compose-recommended)). You can start this service by using `docker-compose up -d db`.
+
+Before starting the application make sure that you have run the migrations (run `npm run migration:run` in `./backend`).
+
+## Starting for development
 
 ### Option 1
 
@@ -36,7 +41,7 @@ You need to have [`docker`](https://www.docker.com/) installed.
 ### With docker-compose (recommended)
 
 1. [`docker-compose`](https://docs.docker.com/compose/) needs to be installed.
-2. Run `docker-compose --env-file backend/.env up -d` in the root directory.
+2. Run `docker-compose up -d` in the root directory. This also starts the database.
 
 ### Without docker-compose
 
@@ -44,7 +49,7 @@ You need to have [`docker`](https://www.docker.com/) installed.
 
 The server will start listening using nginx on port `80` for all services (frontend, API, WebSockets).
 
-Make sure to have a PostgreSQL server available (see section Starting for development).
+Make sure to have a PostgreSQL server available (see section [Starting for development](#setup---database)).
 
 ### Building the container from scratch
 
