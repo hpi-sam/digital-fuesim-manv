@@ -150,25 +150,16 @@ export const createTestEnvironment = (): TestEnvironment => {
     Config.initialize(true);
     const environment = new TestEnvironment();
     let dataSource: DataSource;
-    let serviceProvider: ServiceProvider;
 
-    beforeAll(async () => {
-        // dataSource = await createNewDataSource().initialize();
-        // serviceProvider = new ServiceProvider(dataSource);
-        // environment.init(serviceProvider);
-    });
     // If this gets too slow, we may look into creating the server only once
     beforeEach(async () => {
         dataSource = await setupDatabase();
-        serviceProvider = new ServiceProvider(dataSource);
+        const serviceProvider = new ServiceProvider(dataSource);
         environment.init(serviceProvider);
-        environment.server.destroy();
-        const server = new FuesimServer(serviceProvider);
-        environment.server = server;
     });
     afterEach(async () => {
         // Prevent the dataSource from being closed too soon.
-        await sleep(100);
+        await sleep(200);
         await dataSource.destroy();
         environment.server.destroy();
     });
@@ -185,6 +176,7 @@ async function setupDatabase() {
     const baselineDataSource = await createNewDataSource(
         'baseline'
     ).initialize();
+    // Re-create the test database
     await baselineDataSource.query(
         `DROP DATABASE IF EXISTS "${testingDatabaseName}"`
     );
@@ -194,6 +186,7 @@ async function setupDatabase() {
     const testDataSource = createNewDataSource('testing');
     await testDataSource.initialize();
 
+    // Apply the migrations on the newly created database
     await testDataSource.runMigrations({ transaction: 'all' });
 
     return testDataSource;

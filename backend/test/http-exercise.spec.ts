@@ -9,8 +9,6 @@ describe('exercise', () => {
     beforeEach(async () => {
         UserReadableIdGenerator.freeAll();
         exerciseMap.clear();
-        // TODO: This is required, but it shouldn't be required (@ClFeSc)
-        await sleep(5);
     });
     describe('POST /api/exercise', () => {
         it('returns an exercise id', async () => {
