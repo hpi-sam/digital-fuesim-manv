@@ -6,7 +6,7 @@ import { ApiService } from 'src/app/core/api.service';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectLatestStatusHistoryEntry } from 'src/app/state/exercise/exercise.selectors';
+import { selectExerciseStatus } from 'src/app/state/exercise/exercise.selectors';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 import { openExerciseSettingsModal } from '../exercise-settings/open-exercise-settings-modal';
 import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercise-statistics-modal';
@@ -20,9 +20,7 @@ import { openTransferOverviewModal } from '../transfer-overview/open-transfer-ov
 export class TrainerToolbarComponent {
     @Input() exerciseId!: string;
 
-    public exercisePausedState$ = this.store.select(
-        selectLatestStatusHistoryEntry
-    );
+    public exerciseStatus$ = this.store.select(selectExerciseStatus);
 
     constructor(
         private readonly store: Store<AppState>,
