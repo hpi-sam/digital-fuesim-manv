@@ -1,8 +1,0 @@
--   make transferpoints have a type (normal, hospital) and an event when a vehicle arrives at them
-    -   advantage: hospital benefit from changes on transferpoints and features (e.g. can be seen in transfer overview)
-    -   events: normal having no event (right now), hospitals having event: "patient arrived and gets deleted + TODO: what to do with vehicle? Send it back to where it came with like 30 min. delay (for offloading, refilling, ...)?"
--   make transferpoints only available for vehicles (not sending personnel to hospital)
--   pause patients on the way to a hospital
--   let trainers create hospitals
--   statistics distinguish between normal transferpoints and hospitals
--

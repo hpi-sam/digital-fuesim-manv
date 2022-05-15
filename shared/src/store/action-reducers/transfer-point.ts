@@ -236,7 +236,7 @@ function estimateDuration(startPosition: Position, targetPosition: Position) {
     const overheadSummand = 10 * 1000;
     // In meters per second
     // On average an RTW drives 11.5 m/s (41.3 km/h https://www.leitstelle-lausitz.de/leitstelle/haeufig-gestellte-fragen/#:~:text=Wie%20viel%20schneller%20ist%20ein,30%2C4%20km%2Fh.)
-    // Be aware that this could be significantly off for longer distances due to, e.g., the use of the Autobahn.
+    // Be aware that this could be significantly off for longer distances due to, e.g., the use of an Autobahn.
     const averageSpeed = 11.5;
     // How many times longer is the actual driving distance in contrast to the distance as the crow flies?
     // A good heuristic is 1.3 (https://forum.openstreetmap.org/viewtopic.php?id=3941)

@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsDefined, IsString, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { UUID, uuid, UUIDSet, uuidValidationOptions } from '../utils';
+import { Hospital } from './hospital';
 import type { ImageProperties } from './utils';
 import { getCreate, Position } from './utils';
 
@@ -16,6 +17,10 @@ export class TransferPoint {
     @IsDefined()
     public readonly reachableTransferPoints: ReachableTransferPoints;
 
+    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
+    @IsDefined()
+    public readonly reachableHospitals: UUIDSet = {};
+
     @IsString()
     public readonly internalName: string;
 
@@ -28,11 +33,13 @@ export class TransferPoint {
     constructor(
         position: Position,
         reachableTransferPoints: ReachableTransferPoints,
+        reachableHospitals: UUIDSet,
         internalName: string,
         externalName: string
     ) {
         this.position = position;
         this.reachableTransferPoints = reachableTransferPoints;
+        this.reachableHospitals = reachableHospitals;
         this.internalName = internalName;
         this.externalName = externalName;
     }

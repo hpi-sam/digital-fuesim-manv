@@ -14,6 +14,8 @@ import type {
     TransferPoint,
     Vehicle,
     Viewport,
+    Hospital,
+    HospitalPatient,
 } from './models';
 import { getCreate } from './models/utils';
 import type { UUID } from './utils';
@@ -35,6 +37,10 @@ export class ExerciseState {
     public readonly mapImages: { readonly [key: UUID]: MapImage } = {};
     public readonly transferPoints: { readonly [key: UUID]: TransferPoint } =
         {};
+    public readonly hospitals: { readonly [key: UUID]: Hospital } = {};
+    public readonly hospitalPatients: {
+        readonly [key: UUID]: HospitalPatient;
+    } = {};
     public readonly clients: { readonly [key: UUID]: Client } = {};
     public readonly patientTemplates = defaultPatientTemplates;
     public readonly vehicleTemplates = defaultVehicleTemplates;

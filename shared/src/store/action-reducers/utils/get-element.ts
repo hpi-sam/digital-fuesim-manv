@@ -16,6 +16,7 @@ export function getElement<
         | 'transferPoints'
         | 'vehicles'
         | 'viewports'
+        | 'hospitals'
 >(
     state: Mutable<ExerciseState>,
     elementType: ElementType,
