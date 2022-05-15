@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO: checking if this whole script gets executed correctly
+
 if [[ -z "${DOMAIN}" ]]; then
     echo "Error: Domain not set"
     exit(1)
@@ -13,12 +15,17 @@ CERTS_PATH="/ssl/certs"
 mkdir -p /var/www/acme-challenge/.well-known/acme-challenge
 chown -R www-data:www-data /var/www/acme-challenge
 
-acme.sh --issue --ecc --ocsp -d ${DOMAIN} \
+acme.sh --issue \
+--ecc \
+--ocsp \
+-d ${DOMAIN} \
 --keylength ec-256 \
 --cert-file ${CERTS_PATH}/cert.pem \
 --key-file ${CERTS_PATH}/key.pem \
 --fullchain-file ${CERTS_PATH}/fullchain.pem \
--w /var/www/acme-challenge --server letsencrypt
+-w /var/www/acme-challenge \
+--server letsencrypt \
+--reload-cmd "nginx -s reload"
 
 if [[ -f "${CERTS_PATH}/dhparam.pem" ]]; then
     echo "${CERTS_PATH}/dhparam.pem exists already, not creating new one"
@@ -34,12 +41,10 @@ else
     exit(1)
 fi
 
-### nginx part
+if [[ ${ENABLE_HSTS} ]]; then
+    cp -a /etc/nginx/conf.d/https-securits-headers.template /etc/nginx/conf.d/https-security-headers
+fi
 
-# enabling https.conf, only *.conf files in this folder are enabled, others have to explicitly included
-mv /etc/nginx/conf.d/https-conf /etc/nginx/conf.d/https.conf
-
-# TODO checking if this whole script gets executed
 # giving output to console if something is wrong with nginx
 echo "checking if nginx can start"
 echo nginx -t

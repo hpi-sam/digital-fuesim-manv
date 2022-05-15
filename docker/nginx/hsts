@@ -1,0 +1,1 @@
+# empty by default, gets overwritten with template file, when ENABLE_HSTS is set to true
