@@ -3,13 +3,12 @@ import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
 import { Position } from '../../models/utils';
 import { imageSizeToPosition } from '../../state-helpers';
-import { uuidValidationOptions, UUID } from '../../utils';
+import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { deletePatient } from './patient';
 import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
-import { transferElement } from './utils/transfer-element';
 
 export class AddVehicleAction implements Action {
     @IsString()
@@ -68,6 +67,7 @@ export class UnloadVehicleAction implements Action {
 export class LoadVehicleAction implements Action {
     @IsString()
     public readonly type = '[Vehicle] Load vehicle';
+
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
 
@@ -79,20 +79,6 @@ export class LoadVehicleAction implements Action {
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementToBeLoadedId!: UUID;
-}
-
-export class TransferVehicleAction implements Action {
-    @IsString()
-    public readonly type = '[Vehicle] Transfer vehicle';
-
-    @IsUUID(4, uuidValidationOptions)
-    public readonly vehicleId!: UUID;
-
-    @IsUUID(4, uuidValidationOptions)
-    public readonly startTransferPointId!: UUID;
-
-    @IsUUID(4, uuidValidationOptions)
-    public readonly targetTransferPointId!: UUID;
 }
 
 export namespace VehicleActionReducers {
@@ -311,24 +297,6 @@ export namespace VehicleActionReducers {
                 }
             }
             calculateTreatments(draftState);
-            return draftState;
-        },
-        rights: 'participant',
-    };
-
-    export const transferVehicle: ActionReducer<TransferVehicleAction> = {
-        action: TransferVehicleAction,
-        reducer: (
-            draftState,
-            { vehicleId, startTransferPointId, targetTransferPointId }
-        ) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
-            transferElement(
-                draftState,
-                vehicle,
-                startTransferPointId,
-                targetTransferPointId
-            );
             return draftState;
         },
         rights: 'participant',

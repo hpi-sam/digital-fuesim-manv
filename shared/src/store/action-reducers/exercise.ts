@@ -7,6 +7,7 @@ import {
     IsArray,
     IsPositive,
 } from 'class-validator';
+import type { Personnel, Vehicle } from '../../models';
 import { TransferPoint } from '../../models';
 import { StatusHistoryEntry } from '../../models/status-history-entry';
 import { getStatus, Position } from '../../models/utils';
@@ -108,8 +109,8 @@ export namespace ExerciseActionReducers {
                 calculateTreatments(draftState);
             }
             // Refresh transfers
-            refreshTransfer(draftState, 'vehicles');
-            refreshTransfer(draftState, 'personnel');
+            refreshTransfer(draftState, 'vehicles', tickInterval);
+            refreshTransfer(draftState, 'personnel', tickInterval);
             return draftState;
         },
         rights: 'server',
@@ -127,15 +128,20 @@ export namespace ExerciseActionReducers {
 
 function refreshTransfer(
     draftState: Mutable<ExerciseState>,
-    key: 'personnel' | 'vehicles'
+    key: 'personnel' | 'vehicles',
+    tickInterval: number
 ): void {
     const elements = draftState[key];
-    Object.values(elements).forEach((element) => {
-        if (
-            !element.transfer ||
-            // Not transferred yet
-            element.transfer.endTimeStamp > draftState.currentTime
-        ) {
+    Object.values(elements).forEach((element: Mutable<Personnel | Vehicle>) => {
+        if (!element.transfer) {
+            return;
+        }
+        if (element.transfer.isPaused) {
+            element.transfer.endTimeStamp += tickInterval;
+            return;
+        }
+        // Not transferred yet
+        if (element.transfer.endTimeStamp > draftState.currentTime) {
             return;
         }
         // Personnel/Vehicle arrived at new transferPoint
