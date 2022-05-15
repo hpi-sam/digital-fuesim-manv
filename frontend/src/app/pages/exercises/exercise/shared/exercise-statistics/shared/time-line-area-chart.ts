@@ -10,6 +10,7 @@ import {
     PointElement,
     Tooltip,
 } from 'chart.js';
+import { rgbColorPalette } from 'src/app/shared/functions/colors';
 
 Chart.register(
     CategoryScale,
@@ -37,14 +38,32 @@ export class TimeLineAreaChart {
     }
 
     public setChartData(
-        labels: string[],
-        datasets: ChartDataset<'line', Data[]>[]
+        newLabels: string[],
+        newDatasets: ChartDataset<'line', Data[]>[]
     ) {
-        // TODO: optimise by updating the values in place
-        this.chart.data.labels = labels;
-        this.chart.data.datasets = datasets;
-        // We don't want to animate this
-        this.chart.update('none');
+        this.chart.data.labels = newLabels;
+
+        // Replacing the current datasets with new ones resets the chart and causes problems https://stackoverflow.com/a/58118273
+        // So we mutate the current datasets instead
+
+        // Remove all datasets that are no longer present
+        this.chart.data.datasets.splice(newDatasets.length);
+        // Add new datasets and update the values of the existing ones
+        newDatasets.forEach((newDataset, index) => {
+            if (!this.chart.data.datasets[index]) {
+                this.chart.data.datasets[index] = newDataset;
+                return;
+            }
+            const oldDataset = this.chart.data.datasets[index];
+            // Remove all properties
+            Object.keys(oldDataset).forEach((key) => {
+                delete oldDataset[key as keyof ChartDataset];
+            });
+            // Add the properties from the new dataset
+            Object.assign(oldDataset, newDataset);
+        });
+
+        this.chart.update();
     }
 
     public destroy() {
@@ -84,7 +103,7 @@ export class TimeLineAreaChart {
                     legend: {
                         display: true,
                         labels: {
-                            color: 'rgb(33, 37, 41)',
+                            color: rgbColorPalette.black,
                         },
                     },
                     filler: {
