@@ -22,6 +22,7 @@ export class VehicleStatisticsComponent implements AfterViewInit, OnDestroy {
     chartCanvas!: ElementRef<HTMLCanvasElement>;
 
     private readonly destroy$ = new Subject<void>();
+
     constructor(
         private readonly areaStatisticsService: AreaStatisticsService
     ) {}

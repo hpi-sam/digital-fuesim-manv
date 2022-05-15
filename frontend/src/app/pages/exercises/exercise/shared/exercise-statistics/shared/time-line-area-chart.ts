@@ -25,13 +25,14 @@ Chart.register(
 type Data = number | null;
 
 export class TimeLineAreaChart {
-    public static readonly backgroundAlpha = 0.75;
+    // TODO: Set this to 0.75, for this `fill` must be set to 'stack'
+    public static readonly backgroundAlpha = 1;
     public readonly chart: Chart<'line', Data[], string>;
 
     constructor(canvas: HTMLCanvasElement) {
         this.chart = new Chart<'line', Data[], string>(
             canvas,
-            TimeLineAreaChart.canvasConfig
+            this.canvasConfig
         );
     }
 
@@ -50,85 +51,83 @@ export class TimeLineAreaChart {
         this.chart.destroy();
     }
 
-    private static readonly canvasConfig: ChartConfiguration<
-        'line',
-        Data[],
-        string
-    > = {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [],
-        },
-        options: {
-            transitions: {
-                // Disable the clunky animations for showing and hiding datasets
-                hide: {
-                    animation: {
-                        duration: 0,
-                    },
-                },
-                show: {
-                    animation: {
-                        duration: 0,
-                    },
-                },
+    // It causes problems if this object is shared between multiple charts.
+    private readonly canvasConfig: ChartConfiguration<'line', Data[], string> =
+        {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [],
             },
-            plugins: {
-                tooltip: {
-                    position: 'nearest',
-                    callbacks: {
-                        label: (tooltipItem) =>
-                            `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue}`,
+            options: {
+                transitions: {
+                    // Disable the clunky animations for showing and hiding datasets
+                    hide: {
+                        animation: {
+                            duration: 0,
+                        },
                     },
-                },
-                legend: {
-                    display: true,
-                    labels: {
-                        color: 'rgb(33, 37, 41)',
-                    },
-                },
-                filler: {
-                    propagate: true,
-                },
-            },
-            responsive: true,
-            interaction: {
-                intersect: false,
-            },
-            scales: {
-                x: {
-                    stacked: true,
-                    ticks: {
-                        maxTicksLimit: 10,
-                    },
-                },
-                y: {
-                    stacked: 'single',
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1,
-                        major: {
-                            enabled: true,
+                    show: {
+                        animation: {
+                            duration: 0,
                         },
                     },
                 },
-            },
-            datasets: {
-                line: {
-                    pointRadius: 0,
-                    // We only fill the area below the line
-                    borderWidth: 0,
-                    showLine: false,
-                    // TODO: these two options produce overlapping triangles when the data changes
-                    fill: 'stack',
-                    stepped: 'after',
-                    // The data must be unique, sorted, and consistent
-                    normalized: true,
+                plugins: {
+                    tooltip: {
+                        position: 'nearest',
+                        callbacks: {
+                            label: (tooltipItem) =>
+                                `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue}`,
+                        },
+                    },
+                    legend: {
+                        display: true,
+                        labels: {
+                            color: 'rgb(33, 37, 41)',
+                        },
+                    },
+                    filler: {
+                        propagate: false,
+                    },
                 },
+                responsive: true,
+                interaction: {
+                    intersect: false,
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        ticks: {
+                            maxTicksLimit: 10,
+                        },
+                    },
+                    y: {
+                        stacked: 'single',
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            major: {
+                                enabled: true,
+                            },
+                        },
+                    },
+                },
+                datasets: {
+                    line: {
+                        pointRadius: 0,
+                        // We only fill the area below the line
+                        borderWidth: 0,
+                        showLine: false,
+                        // TODO: Change this to `fill: 'stack'`, currently there are artifacts (triangles when the values chaneg)
+                        fill: 'origin',
+                        stepped: 'after',
+                        // The data must be unique, sorted, and consistent
+                        normalized: false,
+                    },
+                },
+                // This can improve the performance
+                spanGaps: true,
             },
-            // This can improve the performance
-            spanGaps: true,
-        },
-    };
+        };
 }
