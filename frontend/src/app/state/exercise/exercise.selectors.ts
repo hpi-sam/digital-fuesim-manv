@@ -1,6 +1,6 @@
 import { createSelector } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { Viewport } from 'digital-fuesim-manv-shared';
+import { ExerciseState, Viewport } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
 import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
@@ -79,8 +79,8 @@ export const selectClients = (state: AppState) => state.exercise.clients;
 export const getSelectClient = (clientId: UUID) => (state: AppState) =>
     state.exercise.clients[clientId];
 
-export const selectLatestStatusHistoryEntry = (state: AppState) =>
-    state.exercise.statusHistory[state.exercise.statusHistory.length - 1];
+export const selectExerciseStatus = (state: AppState) =>
+    ExerciseState.getStatus(state.exercise);
 
 export const selectParticipantId = (state: AppState) =>
     state.exercise.participantId;
@@ -147,32 +147,18 @@ export function getSelectReachableTransferPoints(transferPointId: UUID) {
 
 export const selectVehiclesInTransfer = createSelector(
     selectVehicles,
-    selectTransferPoints,
-    (vehicles, transferPoints) =>
-        Object.values(vehicles)
-            .filter((vehicle) => vehicle.transfer !== undefined)
-            .map((vehicle) => ({
-                vehicle,
-                startTransferPoint:
-                    transferPoints[vehicle.transfer!.startTransferPointId],
-                targetTransferPoint:
-                    transferPoints[vehicle.transfer!.targetTransferPointId],
-            }))
+    (vehicles) =>
+        Object.values(vehicles).filter(
+            (vehicle) => vehicle.transfer !== undefined
+        )
 );
 
 export const selectPersonnelInTransfer = createSelector(
     selectPersonnel,
-    selectTransferPoints,
-    (personnel, transferPoints) =>
-        Object.values(personnel)
-            .filter((_personnel) => _personnel.transfer !== undefined)
-            .map((_personnel) => ({
-                personnel: _personnel,
-                startTransferPoint:
-                    transferPoints[_personnel.transfer!.startTransferPointId],
-                targetTransferPoint:
-                    transferPoints[_personnel.transfer!.targetTransferPointId],
-            }))
+    (personnel) =>
+        Object.values(personnel).filter(
+            (_personnel) => _personnel.transfer !== undefined
+        )
 );
 
 export const selectCurrentTime = (state: AppState) =>

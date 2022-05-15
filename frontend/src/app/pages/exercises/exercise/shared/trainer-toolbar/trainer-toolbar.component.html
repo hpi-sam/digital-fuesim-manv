@@ -10,14 +10,14 @@
         Transferübersicht
     </button>
     <button
-        *ngIf="(exercisePausedState$ | async)?.status === 'running'"
+        *ngIf="(exerciseStatus$ | async) === 'running'"
         (click)="pauseExercise()"
         class="btn btn-primary ms-3"
     >
         Pause
     </button>
     <button
-        *ngIf="(exercisePausedState$ | async)?.status !== 'running'"
+        *ngIf="(exerciseStatus$ | async) !== 'running'"
         (click)="startExercise()"
         class="btn btn-primary ms-3"
     >
