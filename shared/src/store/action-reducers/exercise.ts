@@ -8,8 +8,8 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { countBy } from 'lodash-es';
-import type { Client, Patient, Personnel, Vehicle } from '../../models';
-import { TransferPoint, Viewport } from '../../models';
+import type { Client, Patient, Vehicle } from '../../models';
+import { Personnel, TransferPoint, Viewport } from '../../models';
 import { StatusHistoryEntry } from '../../models/status-history-entry';
 import { getStatus, Position } from '../../models/utils';
 import type { AreaStatistics } from '../../models/utils/area-statistics';
@@ -169,7 +169,8 @@ function updateStatistics(draftState: Mutable<ExerciseState>): void {
     const exerciseStatistics = generateAreaStatistics(
         Object.values(draftState.clients),
         Object.values(draftState.patients),
-        Object.values(draftState.vehicles)
+        Object.values(draftState.vehicles),
+        Object.values(draftState.personnel)
     );
 
     const viewportStatistics = Object.fromEntries(
@@ -188,6 +189,11 @@ function updateStatistics(draftState: Mutable<ExerciseState>): void {
                     (vehicle) =>
                         vehicle.position &&
                         Viewport.isInViewport(viewport, vehicle.position)
+                ),
+                Object.values(draftState.personnel).filter(
+                    (personnel) =>
+                        personnel.position &&
+                        Viewport.isInViewport(viewport, personnel.position)
                 )
             ),
         ])
@@ -204,7 +210,8 @@ function updateStatistics(draftState: Mutable<ExerciseState>): void {
 function generateAreaStatistics(
     clients: Client[],
     patients: Patient[],
-    vehicles: Vehicle[]
+    vehicles: Vehicle[],
+    personnel: Personnel[]
 ): AreaStatistics {
     return {
         numberOfActiveParticipants: clients.filter(
@@ -212,5 +219,13 @@ function generateAreaStatistics(
         ).length,
         patients: countBy(patients, (patient) => patient.realStatus),
         vehicles: countBy(vehicles, (vehicle) => vehicle.vehicleType),
+        personnel: countBy(
+            personnel.filter(
+                (_personnel) =>
+                    !Personnel.isInVehicle(_personnel) &&
+                    _personnel.transfer === undefined
+            ),
+            (_personnel) => _personnel.personnelType
+        ),
     };
 }
