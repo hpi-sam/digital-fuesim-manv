@@ -22,19 +22,24 @@ export class FormatDurationPipe implements PipeTransform {
 
         const parts = [];
         if (daysStr > 0) {
-            parts.push(`${daysStr}d`);
+            parts.push(`${daysStr}${thinSpace}d`);
         }
         if (hoursStr > 0) {
-            parts.push(`${hoursStr}h`);
+            parts.push(`${hoursStr}${thinSpace}h`);
         }
         if (minutesStr > 0) {
-            parts.push(`${minutesStr}m`);
+            parts.push(`${minutesStr}${thinSpace}min`);
         }
         // we only want to show seconds if there are no other parts because they change too fast
         if (secondsStr > 0 && parts.length === 0) {
-            parts.push(`${secondsStr}s`);
+            parts.push(`${secondsStr}${thinSpace}s`);
+        }
+        if (parts.length === 0) {
+            return `0${thinSpace}s`;
         }
 
         return parts.join(' ');
     }
 }
+
+const thinSpace = `\u2009`;
