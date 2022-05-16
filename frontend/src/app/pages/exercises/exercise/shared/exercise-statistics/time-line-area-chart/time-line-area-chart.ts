@@ -25,6 +25,8 @@ Chart.register(
 
 type Data = number | null;
 
+export type TimeLineAreaChartDatasets = ChartDataset<'line', Data[]>[];
+
 export class TimeLineAreaChart {
     // TODO: Set this to 0.75, for this `fill` must be set to 'stack'
     public static readonly backgroundAlpha = 1;
@@ -39,7 +41,7 @@ export class TimeLineAreaChart {
 
     public setChartData(
         newLabels: string[],
-        newDatasets: ChartDataset<'line', Data[]>[]
+        newDatasets: TimeLineAreaChartDatasets
     ) {
         this.chart.data.labels = newLabels;
 
