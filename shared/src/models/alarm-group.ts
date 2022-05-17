@@ -11,7 +11,7 @@ export class AlarmGroup {
     public readonly name: string;
 
     @IsObject()
-    public alarmGroupVehicles: { readonly [key: UUID]: AlarmGroupVehicle} = {};
+    public alarmGroupVehicles: { readonly [key: UUID]: AlarmGroupVehicle } = {};
 
     constructor(name: string) {
         this.name = name;

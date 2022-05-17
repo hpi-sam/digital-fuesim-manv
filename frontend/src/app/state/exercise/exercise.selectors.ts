@@ -1,6 +1,6 @@
 import { createSelector } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { Viewport } from 'digital-fuesim-manv-shared';
+import { ExerciseState, Viewport } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
 import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
@@ -18,7 +18,8 @@ export const selectMapImagesTemplates = (state: AppState) =>
 export const selectPatients = (state: AppState) => state.exercise.patients;
 export const selectVehicles = (state: AppState) => state.exercise.vehicles;
 export const selectPersonnel = (state: AppState) => state.exercise.personnel;
-export const selectAlarmGroups = (state: AppState) => state.exercise.alarmGroups;
+export const selectAlarmGroups = (state: AppState) =>
+    state.exercise.alarmGroups;
 export const getSelectPersonnel = (personnelId: UUID) => (state: AppState) =>
     state.exercise.personnel[personnelId];
 export const selectMaterials = (state: AppState) => state.exercise.materials;
@@ -30,8 +31,11 @@ export const getSelectMapImage = (mapImageId: UUID) => (state: AppState) =>
     state.exercise.mapImages[mapImageId];
 export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
     state.exercise.vehicles[vehicleId];
-export const getSelectVehicleTemplate = (vehicleTemplateId: UUID) => (state: AppState) =>
-    state.exercise.vehicleTemplates.find((vehicleTemplate)=> vehicleTemplate.id === vehicleTemplateId)!;
+export const getSelectVehicleTemplate =
+    (vehicleTemplateId: UUID) => (state: AppState) =>
+        state.exercise.vehicleTemplates.find(
+            (vehicleTemplate) => vehicleTemplate.id === vehicleTemplateId
+        )!;
 export const getSelectAlarmGroup = (alarmGroupId: UUID) => (state: AppState) =>
     state.exercise.alarmGroups[alarmGroupId];
 export const getSelectTransferPoint =
@@ -84,8 +88,8 @@ export const selectClients = (state: AppState) => state.exercise.clients;
 export const getSelectClient = (clientId: UUID) => (state: AppState) =>
     state.exercise.clients[clientId];
 
-export const selectLatestStatusHistoryEntry = (state: AppState) =>
-    state.exercise.statusHistory[state.exercise.statusHistory.length - 1];
+export const selectExerciseStatus = (state: AppState) =>
+    ExerciseState.getStatus(state.exercise);
 
 export const selectParticipantId = (state: AppState) =>
     state.exercise.participantId;
@@ -152,32 +156,18 @@ export function getSelectReachableTransferPoints(transferPointId: UUID) {
 
 export const selectVehiclesInTransfer = createSelector(
     selectVehicles,
-    selectTransferPoints,
-    (vehicles, transferPoints) =>
-        Object.values(vehicles)
-            .filter((vehicle) => vehicle.transfer !== undefined)
-            .map((vehicle) => ({
-                vehicle,
-                startTransferPoint:
-                    transferPoints[vehicle.transfer!.startTransferPointId],
-                targetTransferPoint:
-                    transferPoints[vehicle.transfer!.targetTransferPointId],
-            }))
+    (vehicles) =>
+        Object.values(vehicles).filter(
+            (vehicle) => vehicle.transfer !== undefined
+        )
 );
 
 export const selectPersonnelInTransfer = createSelector(
     selectPersonnel,
-    selectTransferPoints,
-    (personnel, transferPoints) =>
-        Object.values(personnel)
-            .filter((_personnel) => _personnel.transfer !== undefined)
-            .map((_personnel) => ({
-                personnel: _personnel,
-                startTransferPoint:
-                    transferPoints[_personnel.transfer!.startTransferPointId],
-                targetTransferPoint:
-                    transferPoints[_personnel.transfer!.targetTransferPointId],
-            }))
+    (personnel) =>
+        Object.values(personnel).filter(
+            (_personnel) => _personnel.transfer !== undefined
+        )
 );
 
 export const selectCurrentTime = (state: AppState) =>

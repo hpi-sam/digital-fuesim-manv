@@ -36,7 +36,7 @@ export class ExerciseState {
     public readonly mapImages: { readonly [key: UUID]: MapImage } = {};
     public readonly transferPoints: { readonly [key: UUID]: TransferPoint } =
         {};
-    public readonly alarmGroups: { readonly [key: UUID]: AlarmGroup} = {};
+    public readonly alarmGroups: { readonly [key: UUID]: AlarmGroup } = {};
     public readonly clients: { readonly [key: UUID]: Client } = {};
     public readonly patientTemplates = defaultPatientTemplates;
     public readonly vehicleTemplates = defaultVehicleTemplates;
@@ -54,4 +54,13 @@ export class ExerciseState {
     constructor() {}
 
     static readonly create = getCreate(this);
+
+    static getStatus(
+        state: ExerciseState
+    ): StatusHistoryEntry['status'] | 'notStarted' {
+        return (
+            state.statusHistory[state.statusHistory.length - 1]?.status ??
+            'notStarted'
+        );
+    }
 }

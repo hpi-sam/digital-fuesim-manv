@@ -1,6 +1,6 @@
-import { IsNumber, IsUUID } from "class-validator";
-import { uuid, UUID, uuidValidationOptions } from "../../utils";
-import { getCreate } from "./get-create";
+import { IsNumber, IsUUID } from 'class-validator';
+import { uuid, UUID, uuidValidationOptions } from '../../utils';
+import { getCreate } from './get-create';
 
 export class AlarmGroupVehicle {
     @IsUUID(4, uuidValidationOptions)

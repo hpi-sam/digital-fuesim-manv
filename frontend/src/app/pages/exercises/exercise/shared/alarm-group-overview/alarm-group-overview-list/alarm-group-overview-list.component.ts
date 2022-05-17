@@ -35,13 +35,14 @@ export class AlarmGroupOverviewListComponent {
     }
 
     editAlarmGroupVehicle(alarmGroupId: UUID, alarmGroupVehicleId: UUID) {
-        openEditAlarmGroupVehicleModal(this.ngbModalService, alarmGroupId, alarmGroupVehicleId);
+        openEditAlarmGroupVehicleModal(
+            this.ngbModalService,
+            alarmGroupId,
+            alarmGroupVehicleId
+        );
     }
 
-    createAlarmGroupVehicle(
-        alarmGroupId: UUID,
-        vehicleTemplateId: UUID,
-    ) {
+    createAlarmGroupVehicle(alarmGroupId: UUID, vehicleTemplateId: UUID) {
         this.apiService.proposeAction({
             type: '[AlarmGroup] Add AlarmGroupVehicle',
             alarmGroupId,

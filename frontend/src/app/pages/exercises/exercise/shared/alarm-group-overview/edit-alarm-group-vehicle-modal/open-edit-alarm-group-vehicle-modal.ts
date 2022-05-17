@@ -5,7 +5,7 @@ import { EditAlarmGroupVehicleModalComponent } from './edit-alarm-group-vehicle-
 export async function openEditAlarmGroupVehicleModal(
     ngbModalService: NgbModal,
     alarmGroupId: UUID,
-    alarmGroupVehicleId: UUID,
+    alarmGroupVehicleId: UUID
 ) {
     const modalRef = ngbModalService.open(EditAlarmGroupVehicleModalComponent);
     const componentInstance =

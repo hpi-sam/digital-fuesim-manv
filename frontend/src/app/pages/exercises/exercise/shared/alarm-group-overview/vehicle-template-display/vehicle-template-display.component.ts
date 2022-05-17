@@ -1,9 +1,5 @@
-import type {
-    OnChanges} from '@angular/core';
-import {
-    Component,
-    Input
-} from '@angular/core';
+import type { OnChanges } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { VehicleTemplate } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';

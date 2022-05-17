@@ -28,7 +28,8 @@ export class EditAlarmGroupVehicleModalComponent implements OnInit {
         const alarmGroup = getSelectAlarmGroup(this.alarmGroupId)(
             getStateSnapshot(this.store)
         );
-        const alarmGroupVehicle = alarmGroup.alarmGroupVehicles[this.alarmGroupVehicleId];
+        const alarmGroupVehicle =
+            alarmGroup.alarmGroupVehicles[this.alarmGroupVehicleId];
         console.log(alarmGroupVehicle);
         this.time = alarmGroupVehicle.time;
     }

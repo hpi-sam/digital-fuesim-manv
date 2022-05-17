@@ -9,21 +9,18 @@
     <button (click)="openTransferOverview()" class="btn btn-primary ms-3">
         Transferübersicht
     </button>
-    <button
-        (click)="openAlarmGroupOverview()"
-        class="btn btn-primary ms-3"
-    >
+    <button (click)="openAlarmGroupOverview()" class="btn btn-primary ms-3">
         Alarmierungsgruppen
     </button>
     <button
-        *ngIf="(exercisePausedState$ | async)?.status === 'running'"
+        *ngIf="(exerciseStatus$ | async) !== 'running'"
         (click)="pauseExercise()"
         class="btn btn-primary ms-3"
     >
         Pause
     </button>
     <button
-        *ngIf="(exercisePausedState$ | async)?.status !== 'running'"
+        *ngIf="(exerciseStatus$ | async) !== 'running'"
         (click)="startExercise()"
         class="btn btn-primary ms-3"
     >

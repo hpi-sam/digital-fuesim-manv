@@ -1,10 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-    IsNumber,
-    IsString,
-    IsUUID,
-    ValidateNested,
-} from 'class-validator';
+import { IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { AlarmGroup } from '../../models/alarm-group';
 import { AlarmGroupVehicle } from '../../models/utils/alarm-group-vehicle';
 import { UUID, uuidValidationOptions } from '../../utils';
@@ -116,7 +111,8 @@ export namespace AlarmGroupActionReducers {
                     'alarmGroups',
                     alarmGroupId
                 );
-                alarmGroup.alarmGroupVehicles[alarmGroupVehicle.id] = alarmGroupVehicle;
+                alarmGroup.alarmGroupVehicles[alarmGroupVehicle.id] =
+                    alarmGroupVehicle;
                 return draftState;
             },
             rights: 'trainer',
