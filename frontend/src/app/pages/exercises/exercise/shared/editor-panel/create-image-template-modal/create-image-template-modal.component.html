@@ -4,8 +4,12 @@
 </div>
 <div class="modal-body">
     <app-image-template-form
-        [imageTemplate]="imageTemplate"
-        (submitImageTemplate)="createImageTemplate()"
+        [initialValues]="{
+            url: editableImageTemplateValues.url,
+            height: editableImageTemplateValues.height,
+            name: editableImageTemplateValues.name
+        }"
+        (submitImageTemplate)="createImageTemplate($event)"
         [btnText]="'Bild hinzufügen'"
     ></app-image-template-form>
 </div>

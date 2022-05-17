@@ -12,6 +12,7 @@ import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import { getSelectMapImageTemplate } from 'src/app/state/exercise/exercise.selectors';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import type { ChangedImageTemplateValues } from '../image-template-form/image-template-form.component';
 
 @Component({
     selector: 'app-edit-image-template-modal',
@@ -46,7 +47,12 @@ export class EditImageTemplateModalComponent implements OnInit {
         this.close();
     }
 
-    public editMapImageTemplate(): void {
+    public editMapImageTemplate({
+        url,
+        height,
+        name,
+        aspectRatio,
+    }: ChangedImageTemplateValues): void {
         if (!this.mapImageTemplate) {
             console.error("MapImageTemplate wasn't initialized yet");
             return;
@@ -54,9 +60,12 @@ export class EditImageTemplateModalComponent implements OnInit {
         this.apiService.proposeAction({
             type: '[MapImageTemplate] Edit mapImageTemplate',
             id: this.mapImageTemplateId,
-            name: this.mapImageTemplate.name,
-            imageHeight: this.mapImageTemplate.image.height,
-            image: this.mapImageTemplate.image,
+            name,
+            image: {
+                url,
+                height,
+                aspectRatio,
+            },
         });
         this.close();
     }

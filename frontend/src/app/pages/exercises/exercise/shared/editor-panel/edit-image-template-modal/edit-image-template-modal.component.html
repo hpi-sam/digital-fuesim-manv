@@ -4,8 +4,12 @@
 </div>
 <div *ngIf="mapImageTemplate" class="modal-body">
     <app-image-template-form
-        [imageTemplate]="mapImageTemplate"
-        (submitImageTemplate)="editMapImageTemplate()"
+        [initialValues]="{
+            url: mapImageTemplate.image.url,
+            height: mapImageTemplate.image.height,
+            name: mapImageTemplate.name
+        }"
+        (submitImageTemplate)="editMapImageTemplate($event)"
         [btnText]="'Speichern'"
     ></app-image-template-form>
 

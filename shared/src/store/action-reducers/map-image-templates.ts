@@ -1,11 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-    IsInt,
-    IsPositive,
-    IsString,
-    IsUUID,
-    ValidateNested,
-} from 'class-validator';
+import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { MapImageTemplate } from '../../models';
 import { ImageProperties } from '../../models/utils';
 import type { ExerciseState } from '../../state';
@@ -36,10 +30,6 @@ export class EditMapImageTemplateAction implements Action {
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image!: ImageProperties;
-
-    @IsInt()
-    @IsPositive()
-    public readonly imageHeight!: number;
 }
 
 export class DeleteMapImageTemplateAction implements Action {
@@ -73,10 +63,9 @@ export namespace MapImageTemplatesActionReducers {
     export const editMapImageTemplate: ActionReducer<EditMapImageTemplateAction> =
         {
             action: EditMapImageTemplateAction,
-            reducer: (draftState, { id, imageHeight, name, image }) => {
+            reducer: (draftState, { id, name, image }) => {
                 const mapImageTemplate = getMapImageTemplate(draftState, id);
                 mapImageTemplate.name = name;
-                mapImageTemplate.image.height = imageHeight;
                 mapImageTemplate.image = image;
                 return draftState;
             },

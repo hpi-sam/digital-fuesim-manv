@@ -43,9 +43,9 @@
         >.
     </div>
     <div *ngIf="errors['imageExists'] as imageExistsError">
-        Die angegebene URL existiert nicht (<span class="font-monospace">{{
-            imageExistsError.error
-        }}</span
-        >).
+        Kein Bild gefunden<ng-container *ngIf="imageExistsError.error">
+            (<span class="font-monospace">{{ imageExistsError.error }}</span
+            >) </ng-container
+        >.
     </div>
 </div>

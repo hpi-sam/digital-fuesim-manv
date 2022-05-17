@@ -1,6 +1,7 @@
 import { Directive } from '@angular/core';
 import type { AbstractControl, AsyncValidator } from '@angular/forms';
 import { NG_ASYNC_VALIDATORS } from '@angular/forms';
+import { getImageAspectRatio } from '../functions/get-image-aspect-ratio';
 
 @Directive({
     selector: '[appImageExistsValidator]',
@@ -17,21 +18,12 @@ export class ImageExistsValidatorDirective implements AsyncValidator {
         control: AbstractControl
     ): Promise<ImageExistsValidatorError | null> {
         // We expect the image to not spontaneously being changing existence.
-        return fetch(control.value)
-            .then((response) =>
-                response.status >= 200 && response.status < 300
-                    ? null
-                    : {
-                          imageExists: {
-                              url: control.value,
-                              error: `Status: ${response.status}`,
-                          },
-                      }
-            )
+        return getImageAspectRatio(control.value)
+            .then((aspectRatio) => null)
             .catch((error) => ({
                 imageExists: {
                     url: control.value,
-                    error: error?.message,
+                    error,
                 },
             }));
     }
