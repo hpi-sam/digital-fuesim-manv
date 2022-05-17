@@ -6,15 +6,13 @@ import {
     validateExerciseAction,
 } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
+import { IsNull } from 'typeorm';
 import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
-// import { DatabaseError } from '../database/database-error';
 import type { Creatable, Updatable } from '../database/dtos';
-// import type { ActionEmitterEntity } from '../database/entities/action-emitter.entity';
-// import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
+import type { ActionEmitterEntity } from '../database/entities/action-emitter.entity';
+import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
 import { NormalType } from '../database/normal-type';
 import type { ServiceProvider } from '../database/services/service-provider';
-import type { ActionEmitterEntity } from '../database/entities/all-entities';
-import { ExerciseWrapperEntity } from '../database/entities/all-entities';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
@@ -76,6 +74,70 @@ export class ExerciseWrapper extends NormalType<
         return entityManager
             ? operations(entityManager)
             : this.services.transaction(operations);
+    }
+
+    static async createFromEntity(
+        entity: ExerciseWrapperEntity,
+        services: ServiceProvider,
+        entityManager?: EntityManager
+    ): Promise<ExerciseWrapper> {
+        const operations = async (manager: EntityManager) => {
+            const actions = await services.actionWrapperService.findAll(
+                {
+                    where: {
+                        emitter: {
+                            exercise: {
+                                id: entity.id,
+                            },
+                        },
+                    },
+                    order: {
+                        created: 'ASC',
+                    },
+                },
+                manager
+            );
+            const actionsInWrapper: ActionWrapper[] = [];
+            const normal = new ExerciseWrapper(
+                entity.participantId,
+                entity.trainerId,
+                actionsInWrapper,
+                services,
+                JSON.parse(entity.initialStateString) as ExerciseState,
+                (
+                    await services.actionEmitterService.findOne(
+                        {
+                            where: {
+                                exercise: { id: entity.id },
+                                emitterName: IsNull(),
+                            },
+                        },
+                        false,
+                        manager
+                    )
+                )?.emitterId ?? undefined
+            );
+            normal.id = entity.id;
+            actionsInWrapper.splice(
+                0,
+                0,
+                ...(await Promise.all(
+                    actions.map(async (action) =>
+                        ActionWrapper.createFromEntity(
+                            action,
+                            services,
+                            manager,
+                            normal
+                        )
+                    )
+                ))
+            );
+            normal.tickCounter = entity.tickCounter;
+            return normal;
+        };
+        return entityManager
+            ? operations(entityManager)
+            : services.transaction(operations);
     }
 
     tickCounter = 0;

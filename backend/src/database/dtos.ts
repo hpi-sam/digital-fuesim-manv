@@ -1,13 +1,8 @@
 import type { UUID } from 'digital-fuesim-manv-shared';
-import type {
-    ActionEmitterEntity,
-    ActionWrapperEntity,
-    ExerciseWrapperEntity,
-} from './entities/all-entities';
-// import type { ActionEmitterEntity } from './entities/action-emitter.entity';
-// import type { ActionWrapperEntity } from './entities/action-wrapper.entity';
+import type { ActionEmitterEntity } from './entities/action-emitter.entity';
+import type { ActionWrapperEntity } from './entities/action-wrapper.entity';
 import type { BaseEntity } from './entities/base-entity';
-// import type { ExerciseWrapperEntity } from './entities/exercise-wrapper.entity';
+import type { ExerciseWrapperEntity } from './entities/exercise-wrapper.entity';
 
 // It is important to not export these types as otherwise TypeScript may use them in places where it shouldn't.
 

@@ -1,14 +1,11 @@
 import type { ExerciseAction } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
-// import { DatabaseError } from '../database/database-error';
-// import type { ActionEmitterEntity } from '../database/entities/action-emitter.entity';
+import type { ActionEmitterEntity } from '../database/entities/action-emitter.entity';
 import { NormalType } from '../database/normal-type';
 import type { Creatable, Updatable } from '../database/dtos';
-// import { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
+import { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
 import type { ServiceProvider } from '../database/services/service-provider';
-import type { ActionEmitterEntity } from '../database/entities/all-entities';
-import { ActionWrapperEntity } from '../database/entities/all-entities';
-import type { ActionEmitter } from './action-emitter';
+import { ActionEmitter } from './action-emitter';
 import type { ExerciseWrapper } from './exercise-wrapper';
 
 export class ActionWrapper extends NormalType<
@@ -66,6 +63,24 @@ export class ActionWrapper extends NormalType<
             : this.services.transaction(operations);
     }
 
+    static async createFromEntity(
+        entity: ActionWrapperEntity,
+        services: ServiceProvider,
+        entityManager?: EntityManager,
+        exercise?: ExerciseWrapper
+    ): Promise<ActionWrapper> {
+        const normal = new ActionWrapper(services);
+        normal.action = JSON.parse(entity.actionString);
+        normal.emitter = await ActionEmitter.createFromEntity(
+            entity.emitter,
+            services,
+            entityManager,
+            exercise
+        );
+        normal.id = entity.id;
+        return normal;
+    }
+
     emitter!: ActionEmitter;
 
     action!: ExerciseAction;
@@ -95,7 +110,11 @@ export class ActionWrapper extends NormalType<
                 manager
             );
 
-            const normal = await entity.asNormal(services, manager);
+            const normal = await ActionWrapper.createFromEntity(
+                entity,
+                services,
+                manager
+            );
 
             return normal;
         });

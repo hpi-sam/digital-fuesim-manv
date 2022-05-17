@@ -1,12 +1,10 @@
 import type { UUID } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
-// import { ActionEmitterEntity } from '../database/entities/action-emitter.entity';
-// import { DatabaseError } from '../database/database-error';
+import { ActionEmitterEntity } from '../database/entities/action-emitter.entity';
 import type { Creatable, Updatable } from '../database/dtos';
 import { NormalType } from '../database/normal-type';
 import type { ServiceProvider } from '../database/services/service-provider';
-import { ActionEmitterEntity } from '../database/entities/all-entities';
-import type { ExerciseWrapper } from './exercise-wrapper';
+import { ExerciseWrapper } from './exercise-wrapper';
 
 // Keep this import for the JSDoc comment of the constructor.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -75,6 +73,28 @@ export class ActionEmitter extends NormalType<
             ? operations(entityManager)
             : this.services.transaction(operations);
     }
+
+    static async createFromEntity(
+        entity: ActionEmitterEntity,
+        services: ServiceProvider,
+        entityManager?: EntityManager,
+        exercise?: ExerciseWrapper
+    ): Promise<ActionEmitter> {
+        const normal = new ActionEmitter(services);
+        normal.emitterId = entity.emitterId;
+        normal.emitterName = entity.emitterName;
+        normal.exercise =
+            exercise && exercise.id === entity.exercise.id
+                ? exercise
+                : await ExerciseWrapper.createFromEntity(
+                      entity.exercise,
+                      services,
+                      entityManager
+                  );
+        normal.id = entity.id;
+        return normal;
+    }
+
     emitterId!: UUID;
 
     /**

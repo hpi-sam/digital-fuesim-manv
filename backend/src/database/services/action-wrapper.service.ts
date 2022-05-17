@@ -1,10 +1,8 @@
 import type { EntityManager, DataSource } from 'typeorm';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Creatable, Updatable } from '../dtos';
-// import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
-// import type { ActionEmitterEntity } from '../entities/action-emitter.entity';
-import type { ActionEmitterEntity } from '../entities/all-entities';
-import { ActionWrapperEntity } from '../entities/all-entities';
+import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
+import type { ActionEmitterEntity } from '../entities/action-emitter.entity';
 import type { ActionEmitterService } from './action-emitter.service';
 import { BaseService } from './base-service';
 

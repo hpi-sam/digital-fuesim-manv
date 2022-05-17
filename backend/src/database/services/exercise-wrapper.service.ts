@@ -1,6 +1,5 @@
 import type { EntityManager } from 'typeorm';
-import { ExerciseWrapperEntity } from '../entities/all-entities';
-// import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity';
+import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity';
 import type { Creatable, Updatable } from '../dtos';
 import { BaseService } from './base-service';
 

@@ -1,6 +1,5 @@
 import type { DataSource, EntityManager } from 'typeorm';
-import { ActionEmitterEntity } from '../entities/all-entities';
-// import { ActionEmitterEntity } from '../entities/action-emitter.entity';
+import { ActionEmitterEntity } from '../entities/action-emitter.entity';
 import type { Creatable, Updatable } from '../dtos';
 import { BaseService } from './base-service';
 import type { ExerciseWrapperService } from './exercise-wrapper.service';

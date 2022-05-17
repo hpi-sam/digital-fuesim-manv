@@ -1,10 +1,8 @@
 import { DataSource } from 'typeorm';
 import { Config } from '../config';
-import {
-    ActionEmitterEntity,
-    ActionWrapperEntity,
-    ExerciseWrapperEntity,
-} from './entities/all-entities';
+import { ActionEmitterEntity } from './entities/action-emitter.entity';
+import { ActionWrapperEntity } from './entities/action-wrapper.entity';
+import { ExerciseWrapperEntity } from './entities/exercise-wrapper.entity';
 import { AddExerciseAndActions1652268120769 } from './migrations/1652268120769-AddExerciseAndActions';
 
 export type DataSourceMode = 'baseline' | 'default' | 'testing';
