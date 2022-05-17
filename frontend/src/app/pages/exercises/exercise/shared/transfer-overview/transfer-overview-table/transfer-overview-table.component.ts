@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    selectCurrentTime,
+    selectExerciseStatus,
     selectPersonnelInTransfer,
     selectVehiclesInTransfer,
 } from 'src/app/state/exercise/exercise.selectors';
@@ -20,7 +20,7 @@ export class TransferOverviewTableComponent {
         selectPersonnelInTransfer
     );
 
-    public readonly currentTime$ = this.store.select(selectCurrentTime);
+    public readonly exerciseStatus$ = this.store.select(selectExerciseStatus);
 
     constructor(private readonly store: Store<AppState>) {}
 }

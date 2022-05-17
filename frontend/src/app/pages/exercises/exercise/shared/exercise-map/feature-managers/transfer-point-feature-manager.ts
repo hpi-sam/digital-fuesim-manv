@@ -1,24 +1,20 @@
-import type {
-    TransferPersonnelAction,
-    TransferVehicleAction,
-    UUID,
-} from 'digital-fuesim-manv-shared';
+import type { Store } from '@ngrx/store';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import { TransferPoint } from 'digital-fuesim-manv-shared';
+import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
+import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
+import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import type { ApiService } from 'src/app/core/api.service';
-import type OlMap from 'ol/Map';
-import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
-import type { Feature, MapBrowserEvent } from 'ol';
-import type { TranslateEvent } from 'ol/interaction/Translate';
+import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
+import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
-import { ImagePopupHelper } from '../utility/popup-helper';
-import { ElementFeatureManager, createPoint } from './element-feature-manager';
+import { createPoint, ElementFeatureManager } from './element-feature-manager';
 
 export class TransferPointFeatureManager extends ElementFeatureManager<TransferPoint> {
     private readonly popupHelper = new ImagePopupHelper(this.olMap);
@@ -91,21 +87,20 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
             return false;
         }
         const proposeTransfer = (targetTransferPointId: UUID) => {
-            const action: TransferPersonnelAction | TransferVehicleAction =
-                droppedElement.type === 'vehicle'
-                    ? {
-                          type: '[Vehicle] Transfer vehicle',
-                          vehicleId: droppedElement.value.id,
-                          startTransferPointId: droppedOnTransferPoint.id,
-                          targetTransferPointId,
-                      }
-                    : {
-                          type: '[Personnel] Transfer personnel',
-                          personnelId: droppedElement.value.id,
-                          startTransferPointId: droppedOnTransferPoint.id,
-                          targetTransferPointId,
-                      };
-            this.apiService.proposeAction(action, true);
+            this.apiService.proposeAction(
+                {
+                    type: '[Transfer] Add to transfer',
+                    // TODO: The type should already be correct
+                    elementType:
+                        droppedElement.type === 'vehicle'
+                            ? 'vehicles'
+                            : 'personnel',
+                    elementId: droppedElement.value.id,
+                    startTransferPointId: droppedOnTransferPoint.id,
+                    targetTransferPointId,
+                },
+                true
+            );
         };
         const reachableTransferPointIds = Object.keys(
             droppedOnTransferPoint.reachableTransferPoints

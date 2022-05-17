@@ -1,8 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { StatusHistoryEntry } from 'digital-fuesim-manv-shared';
 import type { AppState } from 'src/app/state/app.state';
-import { selectCurrentTime } from 'src/app/state/exercise/exercise.selectors';
+import {
+    selectCurrentTime,
+    selectExerciseStatus,
+} from 'src/app/state/exercise/exercise.selectors';
 
 @Component({
     selector: 'app-exercise-state-badge',
@@ -10,9 +12,8 @@ import { selectCurrentTime } from 'src/app/state/exercise/exercise.selectors';
     styleUrls: ['./exercise-state-badge.component.scss'],
 })
 export class ExerciseStateBadgeComponent {
-    @Input() latestState!: StatusHistoryEntry | null;
-
-    public currentTime$ = this.store.select(selectCurrentTime);
+    public readonly exerciseStatus$ = this.store.select(selectExerciseStatus);
+    public readonly currentTime$ = this.store.select(selectCurrentTime);
 
     constructor(private readonly store: Store<AppState>) {}
 }

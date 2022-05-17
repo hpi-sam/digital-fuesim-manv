@@ -52,4 +52,13 @@ export class ExerciseState {
     constructor() {}
 
     static readonly create = getCreate(this);
+
+    static getStatus(
+        state: ExerciseState
+    ): StatusHistoryEntry['status'] | 'notStarted' {
+        return (
+            state.statusHistory[state.statusHistory.length - 1]?.status ??
+            'notStarted'
+        );
+    }
 }
