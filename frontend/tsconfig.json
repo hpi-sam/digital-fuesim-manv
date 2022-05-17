@@ -20,7 +20,7 @@
         "importHelpers": true,
         "target": "es2017",
         "module": "es2020",
-        "lib": ["ESNext", "dom"],
+        "lib": ["es2020", "dom"],
         // needed for https://github.com/typescript-eslint/typescript-eslint/issues/2559#issuecomment-692882427
         "emitDecoratorMetadata": true
     },

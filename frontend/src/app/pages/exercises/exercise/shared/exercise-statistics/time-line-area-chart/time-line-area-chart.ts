@@ -140,7 +140,7 @@ export class TimeLineAreaChart {
                         // We only fill the area below the line
                         borderWidth: 0,
                         showLine: false,
-                        // TODO: Change this to `fill: 'stack'`, currently there are artifacts (triangles when the values chaneg)
+                        // TODO: Change this to `fill: 'stack'`, currently there are artifacts (triangles when the values change)
                         fill: 'origin',
                         stepped: 'after',
                         // The data must be unique, sorted, and consistent
