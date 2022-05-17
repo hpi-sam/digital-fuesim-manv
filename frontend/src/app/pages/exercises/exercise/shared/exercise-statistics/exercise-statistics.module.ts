@@ -6,10 +6,7 @@ import { ExerciseStatisticsModalComponent } from './exercise-statistics-modal/ex
 import { StackedBarChartComponent } from './stacked-bar-chart/stacked-bar-chart.component';
 
 @NgModule({
-    declarations: [
-        ExerciseStatisticsModalComponent,
-        StackedBarChartComponent,
-    ],
+    declarations: [ExerciseStatisticsModalComponent, StackedBarChartComponent],
     imports: [CommonModule, NgbDropdownModule, SharedModule],
 })
 export class ExerciseStatisticsModule {}
