@@ -1,0 +1,93 @@
+<h2>
+    <input
+        #nameInput="ngModel"
+        [ngModel]="alarmGroup.name"
+        (ngModelChange)="renameAlarmGroup($event)"
+        required
+        placeholder="Name"
+        type="text"
+        class="form-control d-inline-block fw-bold"
+        style="width: 200px"
+    />
+    <div ngbDropdown autoClose="outside" class="d-inline-block">
+        <button
+            ngbDropdownToggle
+            type="button"
+            class="btn btn-outline-primary ms-3"
+        >
+            Fahrzeug hinzufügen
+        </button>
+        <div ngbDropdownMenu>
+            <button
+                *ngFor="let vehicleTemplate of vehicleTemplates$ | async"
+                ngbDropdownItem
+                (click)="createAlarmGroupVehicle(vehicleTemplate.id)"
+                type="button"
+                class="btn"
+            >
+                <i class="bi bi-plus"></i> {{ vehicleTemplate.vehicleType }}
+            </button>
+        </div>
+    </div>
+
+    <button
+        (click)="removeAlarmGroup()"
+        class="btn btn-outline-danger float-end"
+    >
+        <i class="bi bi-trash"></i> Löschen
+    </button>
+</h2>
+
+<div
+    *ngIf="
+        (alarmGroup.alarmGroupVehicles | values).length > 0;
+        else noAlarmGroupVehicles
+    "
+    class="d-flex flex-wrap"
+>
+    <div
+        *ngFor="
+            let alarmGroupVehicle of alarmGroup.alarmGroupVehicles | values;
+            trackBy: 'key' | appTrackByProperty
+        "
+        class="card text-center m-1"
+        style="width: 10rem; text-overflow: ellipsis; height: auto"
+    >
+        <div>
+            <div
+                title="Zeit bis zur Ankunft"
+                class="input-group input-group-sm float-start"
+                style="width: 100px"
+            >
+                <input
+                    #timeInput="ngModel"
+                    [ngModel]="alarmGroupVehicle.time"
+                    (ngModelChange)="
+                        editAlarmGroupVehicle(alarmGroupVehicle.id, $event)
+                    "
+                    required
+                    type="number"
+                    class="form-control form-control-sm d-inline-block"
+                    style="
+                        background-image: none !important;
+                        padding-right: 0.25rem;
+                    "
+                />
+                <span class="input-group-text">Min</span>
+            </div>
+            <button
+                (click)="removeVehicleTemplate(alarmGroupVehicle.id)"
+                class="btn btn-sm btn-outline-danger float-end"
+            >
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+        <app-vehicle-template-display
+            [vehicleTemplateId]="alarmGroupVehicle.vehicleTemplateId"
+        >
+        </app-vehicle-template-display>
+    </div>
+</div>
+<ng-template #noAlarmGroupVehicles>
+    <div class="text-muted mt-3 mb-3">Keine Fahrzeuge zugewiesen</div>
+</ng-template>

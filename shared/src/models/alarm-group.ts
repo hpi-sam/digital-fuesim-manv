@@ -17,5 +17,8 @@ export class AlarmGroup {
         this.name = name;
     }
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     static readonly create = getCreate(this);
 }

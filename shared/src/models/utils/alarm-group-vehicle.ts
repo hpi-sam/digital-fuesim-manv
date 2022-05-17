@@ -12,6 +12,9 @@ export class AlarmGroupVehicle {
     @IsNumber()
     public readonly time: number;
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(vehicleTemplateId: UUID, time: number) {
         this.vehicleTemplateId = vehicleTemplateId;
         this.time = time;
