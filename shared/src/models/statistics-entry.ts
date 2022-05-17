@@ -9,7 +9,7 @@ export class StatisticsEntry {
     public readonly id: UUID = uuid();
 
     /**
-     * The exercise time in ms where these statistics were created.
+     * The exercise time in ms when these statistics were created.
      */
     @IsInt()
     @Min(0)

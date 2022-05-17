@@ -114,11 +114,12 @@ export namespace ExerciseActionReducers {
             // Refresh transfers
             refreshTransfer(draftState, 'vehicles', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);
-            // Update the statistics every ten seconds
-            // TODO:
-            // if (draftState.currentTime % (10 * 1000) === 0) {
-            updateStatistics(draftState);
-            // }
+            // Update the statistics every ten ticks
+            // TODO: Refactor this so that `refreshTreatments` is done the same way
+            // TODO: Make this work with non-constant tickIntervals
+            if (draftState.currentTime % (10 * tickInterval) === 0) {
+                updateStatistics(draftState);
+            }
             return draftState;
         },
         rights: 'server',
