@@ -1,12 +1,28 @@
 import type { EntityManager, DataSource } from 'typeorm';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import type { Creatable, Updatable } from '../dtos';
 import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
-import type { ActionEmitterEntity } from '../entities/action-emitter.entity';
-import type { ActionEmitterService } from './action-emitter.service';
+import type {
+    ActionEmitterService,
+    CreateActionEmitter,
+} from './action-emitter.service';
 import { BaseService } from './base-service';
 
-export class ActionWrapperService extends BaseService<ActionWrapperEntity> {
+type CreateActionWrapper = Omit<
+    ActionWrapperEntity,
+    'created' | 'emitter' | 'id'
+> & {
+    emitter: CreateActionEmitter;
+};
+
+type UpdateActionWrapper = Omit<Partial<CreateActionWrapper>, 'emitter'> & {
+    emitter?: UUID;
+};
+
+export class ActionWrapperService extends BaseService<
+    ActionWrapperEntity,
+    CreateActionWrapper,
+    UpdateActionWrapper
+> {
     public constructor(
         private readonly actionEmitterService: ActionEmitterService,
         dataSource: DataSource
@@ -19,8 +35,8 @@ export class ActionWrapperService extends BaseService<ActionWrapperEntity> {
     >(
         initialObject: TInitial,
         dto: TInitial extends ActionWrapperEntity
-            ? Updatable<ActionWrapperEntity>
-            : Creatable<ActionWrapperEntity>,
+            ? UpdateActionWrapper
+            : CreateActionWrapper,
         manager: EntityManager
     ): Promise<ActionWrapperEntity> {
         const { emitter: actionEmitter, ...rest } = dto;
@@ -38,12 +54,11 @@ export class ActionWrapperService extends BaseService<ActionWrapperEntity> {
             : await this.actionEmitterService.findOneOrCreate(
                   {
                       where: {
-                          emitterId: (
-                              actionEmitter as Creatable<ActionEmitterEntity>
-                          ).emitterId,
+                          emitterId: (actionEmitter as CreateActionEmitter)
+                              .emitterId,
                       },
                   },
-                  actionEmitter as Creatable<ActionEmitterEntity>,
+                  actionEmitter as CreateActionEmitter,
                   manager
               );
         return actionWrapper;

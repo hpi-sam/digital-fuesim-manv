@@ -11,9 +11,12 @@ import type {
 import { EntityNotFoundError } from 'typeorm';
 import { DatabaseError } from '../database-error';
 import type { BaseEntity } from '../entities/base-entity';
-import type { Creatable, Updatable } from '../dtos';
 
-export abstract class BaseService<Entity extends BaseEntity<Entity, any>> {
+export abstract class BaseService<
+    Entity extends BaseEntity<Entity, any>,
+    Creatable,
+    Updatable
+> {
     public constructor(protected readonly dataSource: DataSource) {}
 
     /**
@@ -21,14 +24,14 @@ export abstract class BaseService<Entity extends BaseEntity<Entity, any>> {
      */
     protected abstract createSavableObject<TInitial extends Entity | undefined>(
         initialObject: TInitial,
-        dto: TInitial extends Entity ? Updatable<Entity> : Creatable<Entity>,
+        dto: TInitial extends Entity ? Updatable : Creatable,
         manager: EntityManager
     ): Entity | Promise<Entity>;
 
     protected abstract readonly entityTarget: EntityTarget<Entity>;
 
     public async create(
-        creator: Creatable<Entity>,
+        creator: Creatable,
         entityManager?: EntityManager
     ): Promise<Entity> {
         const create = async (manager: EntityManager) =>
@@ -94,7 +97,7 @@ export abstract class BaseService<Entity extends BaseEntity<Entity, any>> {
      */
     public async findOneOrCreate(
         options: FindOneOptions<Entity>,
-        creatable: Creatable<Entity>,
+        creatable: Creatable,
         entityManager?: EntityManager
     ): Promise<Entity> {
         const find = async (manager: EntityManager) =>
@@ -143,7 +146,7 @@ export abstract class BaseService<Entity extends BaseEntity<Entity, any>> {
 
     public async update(
         id: UUID,
-        updater: Updatable<Entity>,
+        updater: Updatable,
         entityManager?: EntityManager
     ): Promise<Entity> {
         const update = async (manager: EntityManager) => {

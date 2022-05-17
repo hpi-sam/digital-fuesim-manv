@@ -1,10 +1,23 @@
 import type { DataSource, EntityManager } from 'typeorm';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import { ActionEmitterEntity } from '../entities/action-emitter.entity';
-import type { Creatable, Updatable } from '../dtos';
 import { BaseService } from './base-service';
 import type { ExerciseWrapperService } from './exercise-wrapper.service';
 
-export class ActionEmitterService extends BaseService<ActionEmitterEntity> {
+export type CreateActionEmitter = Omit<
+    ActionEmitterEntity,
+    'exercise' | 'id'
+> & {
+    exerciseId: UUID;
+};
+
+type UpdateActionEmitter = Partial<CreateActionEmitter>;
+
+export class ActionEmitterService extends BaseService<
+    ActionEmitterEntity,
+    CreateActionEmitter,
+    UpdateActionEmitter
+> {
     public constructor(
         private readonly exerciseService: ExerciseWrapperService,
         dataSource: DataSource
@@ -17,8 +30,8 @@ export class ActionEmitterService extends BaseService<ActionEmitterEntity> {
     >(
         initialObject: TInitial,
         dto: TInitial extends ActionEmitterEntity
-            ? Updatable<ActionEmitterEntity>
-            : Creatable<ActionEmitterEntity>,
+            ? UpdateActionEmitter
+            : CreateActionEmitter,
         manager: EntityManager
     ): Promise<ActionEmitterEntity> {
         const { exerciseId, ...rest } = dto;

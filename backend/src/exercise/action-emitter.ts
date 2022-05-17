@@ -1,7 +1,6 @@
 import type { UUID } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import { ActionEmitterEntity } from '../database/entities/action-emitter.entity';
-import type { Creatable, Updatable } from '../database/dtos';
 import { NormalType } from '../database/normal-type';
 import type { ServiceProvider } from '../database/services/service-provider';
 import { ExerciseWrapper } from './exercise-wrapper';
@@ -43,7 +42,7 @@ export class ActionEmitter extends NormalType<
 
             if (save) {
                 if (existed) {
-                    const updatable: Updatable<ActionEmitterEntity> = {
+                    const updatable = {
                         emitterId: entity.emitterId,
                         emitterName: entity.emitterName,
                         exerciseId: entity.exercise.id,
@@ -54,7 +53,7 @@ export class ActionEmitter extends NormalType<
                         manager
                     );
                 } else {
-                    const creatable: Creatable<ActionEmitterEntity> = {
+                    const creatable = {
                         emitterId: entity.emitterId,
                         emitterName: entity.emitterName,
                         exerciseId: entity.exercise.id,

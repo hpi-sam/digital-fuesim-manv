@@ -8,11 +8,10 @@ import {
 import type { EntityManager } from 'typeorm';
 import { IsNull } from 'typeorm';
 import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
-import type { Creatable, Updatable } from '../database/dtos';
-import type { ActionEmitterEntity } from '../database/entities/action-emitter.entity';
 import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
 import { NormalType } from '../database/normal-type';
 import type { ServiceProvider } from '../database/services/service-provider';
+import type { CreateActionEmitter } from '../database/services/action-emitter.service';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
@@ -43,7 +42,7 @@ export class ExerciseWrapper extends NormalType<
 
             if (save) {
                 if (existed) {
-                    const updatable: Updatable<ExerciseWrapperEntity> = {
+                    const updatable = {
                         initialStateString: entity.initialStateString,
                         participantId: entity.participantId,
                         tickCounter: entity.tickCounter,
@@ -55,7 +54,7 @@ export class ExerciseWrapper extends NormalType<
                         manager
                     );
                 } else {
-                    const creatable: Creatable<ExerciseWrapperEntity> = {
+                    const creatable = {
                         initialStateString: entity.initialStateString,
                         participantId: entity.participantId,
                         tickCounter: entity.tickCounter,
@@ -319,7 +318,7 @@ export class ExerciseWrapper extends NormalType<
      */
     public async applyAction(
         action: ExerciseAction,
-        emitter: Omit<Creatable<ActionEmitterEntity>, 'exerciseId'>,
+        emitter: Omit<CreateActionEmitter, 'exerciseId'>,
         intermediateAction?: () => void
     ): Promise<void> {
         await this.reduce(action, emitter);
@@ -333,7 +332,7 @@ export class ExerciseWrapper extends NormalType<
      */
     private async reduce(
         action: ExerciseAction,
-        emitter: Omit<Creatable<ActionEmitterEntity>, 'exerciseId'>
+        emitter: Omit<CreateActionEmitter, 'exerciseId'>
     ): Promise<void> {
         this.validateAction(action);
         const newState = reduceExerciseState(this.currentState, action);
@@ -355,7 +354,7 @@ export class ExerciseWrapper extends NormalType<
     private async setState(
         newExerciseState: ExerciseState,
         action: ExerciseAction,
-        emitter: Omit<Creatable<ActionEmitterEntity>, 'exerciseId'>
+        emitter: Omit<CreateActionEmitter, 'exerciseId'>
     ): Promise<void> {
         // Only save every tenth state directly
         // TODO: Check whether this is a good threshold.

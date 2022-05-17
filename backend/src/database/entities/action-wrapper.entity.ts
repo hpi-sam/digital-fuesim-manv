@@ -1,8 +1,8 @@
 import { Type } from 'class-transformer';
 import { ValidateNested, IsJSON } from 'class-validator';
-import type { Creatable } from 'database/dtos';
+import type { CreateActionEmitter } from 'database/services/action-emitter.service';
 import type { ServiceProvider } from 'database/services/service-provider';
-import type { ExerciseAction, UUID } from 'digital-fuesim-manv-shared';
+import type { ExerciseAction } from 'digital-fuesim-manv-shared';
 import type { ActionWrapper } from 'exercise/action-wrapper';
 import type { EntityManager } from 'typeorm';
 import { Entity, ManyToOne, Column } from 'typeorm';
@@ -47,15 +47,14 @@ export class ActionWrapperEntity extends BaseEntity<
 
     static async create(
         action: ExerciseAction,
-        emitter: Omit<Creatable<ActionEmitterEntity>, 'exerciseId'>,
-        exerciseId: UUID,
+        emitter: CreateActionEmitter,
         services: ServiceProvider,
         manager?: EntityManager
     ): Promise<ActionWrapperEntity> {
         return services.actionWrapperService.create(
             {
                 actionString: JSON.stringify(action),
-                emitter: { ...emitter, exerciseId },
+                emitter,
             },
             manager
         );

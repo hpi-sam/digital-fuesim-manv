@@ -1,10 +1,9 @@
 import type { ExerciseAction } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
-import type { ActionEmitterEntity } from '../database/entities/action-emitter.entity';
 import { NormalType } from '../database/normal-type';
-import type { Creatable, Updatable } from '../database/dtos';
 import { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
 import type { ServiceProvider } from '../database/services/service-provider';
+import type { CreateActionEmitter } from '../database/services/action-emitter.service';
 import { ActionEmitter } from './action-emitter';
 import type { ExerciseWrapper } from './exercise-wrapper';
 
@@ -30,7 +29,7 @@ export class ActionWrapper extends NormalType<
             if (this.id) entity.id = this.id;
             if (save) {
                 if (existed) {
-                    const updatable: Updatable<ActionWrapperEntity> = {
+                    const updatable = {
                         actionString: entity.actionString,
                         emitter: entity.emitter.id,
                     };
@@ -40,7 +39,7 @@ export class ActionWrapper extends NormalType<
                         manager
                     );
                 } else {
-                    const creatable: Creatable<ActionWrapperEntity> = {
+                    const creatable = {
                         actionString: entity.actionString,
                         emitter: {
                             emitterId: entity.emitter.emitterId,
@@ -96,7 +95,7 @@ export class ActionWrapper extends NormalType<
 
     static async create(
         action: ExerciseAction,
-        emitter: Omit<Creatable<ActionEmitterEntity>, 'exerciseId'>,
+        emitter: Omit<CreateActionEmitter, 'exerciseId'>,
         exercise: ExerciseWrapper,
         services: ServiceProvider
     ): Promise<ActionWrapper> {
@@ -104,8 +103,7 @@ export class ActionWrapper extends NormalType<
             const exerciseEntity = await exercise.asEntity(true, manager);
             const entity = await ActionWrapperEntity.create(
                 action,
-                emitter,
-                exerciseEntity.id,
+                { ...emitter, exerciseId: exerciseEntity.id },
                 services,
                 manager
             );
