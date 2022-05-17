@@ -1,0 +1,6 @@
+<ng-container *ngIf="vehicleTemplate$ | async as vehicleTemplate">
+    <div class="preview-image-container">
+        <img [src]="vehicleTemplate.image.url" />
+        {{ vehicleTemplate.vehicleType }}
+    </div>
+</ng-container>

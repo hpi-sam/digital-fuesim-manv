@@ -1,0 +1,89 @@
+<ul class="list-group list-group-flush">
+    <li
+        class="list-group-item"
+        *ngFor="
+            let alarmGroup of alarmGroups$ | async | keyvalue;
+            trackBy: 'key' | appTrackByProperty
+        "
+    >
+        <h4>
+            {{ alarmGroup.value.name }}
+            <div ngbDropdown autoClose="outside" class="d-inline-block">
+                <button
+                    ngbDropdownToggle
+                    type="button"
+                    class="btn btn-outline-primary"
+                >
+                    Fahrzeug hinzufügen
+                </button>
+                <div ngbDropdownMenu>
+                    <button
+                        type="button"
+                        ngbDropdownItem
+                        *ngFor="
+                            let vehicleTemplate of vehicleTemplates$ | async
+                        "
+                        (click)="
+                            createAlarmGroupVehicle(
+                                alarmGroup.value.id,
+                                vehicleTemplate.id
+                            )
+                        "
+                        class="btn btn-warning"
+                    >
+                        {{ vehicleTemplate.vehicleType }}
+                    </button>
+                </div>
+            </div>
+        </h4>
+        <button
+            (click)="editAlarmGroup(alarmGroup.value.id)"
+            class="btn btn-outline-warning position-absolute"
+            style="top: 0; right: 0"
+        >
+            <i class="bi bi-pencil-fill"></i>
+        </button>
+        <div
+            *ngIf="
+                (alarmGroup.value.alarmGroupVehicles | keyvalue).length > 0;
+                else noAlarmGroupVehicles
+            "
+        >
+            <div
+                *ngFor="
+                    let alarmGroupVehicle of alarmGroup.value.alarmGroupVehicles
+                        | keyvalue;
+                    trackBy: 'key' | appTrackByProperty
+                "
+                class="d-inline-block card text-center flex-shrink-0"
+                style="width: 10rem; text-overflow: ellipsis; height: 125px"
+            >
+                <span title="Zeit bis zur Ankunft">
+                    {{ alarmGroupVehicle.value.time }} Minuten</span
+                >
+                <app-vehicle-template-display
+                    [vehicleTemplateId]="
+                        alarmGroupVehicle.value.vehicleTemplateId
+                    "
+                >
+                </app-vehicle-template-display>
+
+                <button
+                    (click)="
+                        editAlarmGroupVehicle(
+                            alarmGroup.value.id,
+                            alarmGroupVehicle.value.id
+                        )
+                    "
+                    class="btn btn-outline-warning position-absolute"
+                    style="top: 0; right: 0"
+                >
+                    <i class="bi bi-pencil-fill"></i>
+                </button>
+            </div>
+        </div>
+        <ng-template #noAlarmGroupVehicles>
+            Keine Fahrzeuge zugewiesen</ng-template
+        >
+    </li>
+</ul>

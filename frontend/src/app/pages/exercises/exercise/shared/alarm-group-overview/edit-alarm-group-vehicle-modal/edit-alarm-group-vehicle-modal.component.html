@@ -1,0 +1,31 @@
+<div class="modal-header">
+    <h4 class="modal-title">Fahrzeug bearbeiten</h4>
+    <button type="button" class="btn-close" (click)="close()"></button>
+</div>
+<div class="modal-body">
+    <div class="form-group pb-3">
+        <label class="form-label">Zeit bis zur Ankunft</label>
+        <input
+            #timeInput="ngModel"
+            [(ngModel)]="time"
+            required
+            type="number"
+            class="form-control"
+        />
+        <app-display-validation
+            [ngModelInput]="timeInput"
+        ></app-display-validation>
+    </div>
+
+    <button
+        [disabled]="timeInput.invalid"
+        (click)="editAlarmGroupVehicle(time!)"
+        class="btn btn-warning"
+    >
+        Speichern
+    </button>
+    <button class="btn btn-danger float-end" (click)="deleteAlarmGroupVehicle()">
+        <i class="bi bi-trash-fill"></i>
+        Löschen
+    </button>
+</div>

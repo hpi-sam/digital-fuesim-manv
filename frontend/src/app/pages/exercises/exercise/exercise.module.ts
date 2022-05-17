@@ -11,6 +11,7 @@ import { TrainerToolbarComponent } from './shared/trainer-toolbar/trainer-toolba
 import { ExerciseStateBadgeComponent } from './shared/exercise-state-badge/exercise-state-badge.component';
 import { TransferOverviewModule } from './shared/transfer-overview/transfer-overview.module';
 import { ExerciseSettingsModalComponent } from './shared/exercise-settings/exercise-settings-modal/exercise-settings-modal.component';
+import { AlarmGroupOverviewModule } from './shared/alarm-group-overview/alarm-group-overview.module';
 
 @NgModule({
     declarations: [
@@ -28,6 +29,7 @@ import { ExerciseSettingsModalComponent } from './shared/exercise-settings/exerc
         ClientOverviewModule,
         ExerciseMapModule,
         TransferOverviewModule,
+        AlarmGroupOverviewModule,
     ],
     exports: [ExerciseComponent],
 })
