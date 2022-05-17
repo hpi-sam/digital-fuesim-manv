@@ -38,23 +38,23 @@
     </div>
     <br />
     <h3>Patienten</h3>
-    <app-time-line-area-chart
+    <app-stacked-bar-chart
         *ngIf="patientsStatistics$ | async as statistics"
         [statistics]="statistics"
-    ></app-time-line-area-chart>
+    ></app-stacked-bar-chart>
     <br />
     <h3>Fahrzeuge</h3>
-    <app-time-line-area-chart
+    <app-stacked-bar-chart
         *ngIf="vehiclesStatistics$ | async as statistics"
         [statistics]="statistics"
-    ></app-time-line-area-chart>
+    ></app-stacked-bar-chart>
     <br />
     <h3>
         Einsatzkräfte
         <small class="text-muted">(weder im Transfer noch im Fahrzeug)</small>
     </h3>
-    <app-time-line-area-chart
+    <app-stacked-bar-chart
         *ngIf="personnelStatistics$ | async as statistics"
         [statistics]="statistics"
-    ></app-time-line-area-chart>
+    ></app-stacked-bar-chart>
 </div>

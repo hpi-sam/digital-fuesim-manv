@@ -14,8 +14,8 @@ import { formatDuration } from 'src/app/shared/functions/format-duration';
 import type { AppState } from 'src/app/state/app.state';
 import { selectViewports } from 'src/app/state/exercise/exercise.selectors';
 import { AreaStatisticsService } from '../area-statistics.service';
-import { TimeLineAreaChart } from '../time-line-area-chart/time-line-area-chart';
-import type { TimeLineAreaChartStatistics } from '../time-line-area-chart/time-line-area-chart.component';
+import type { StackedBarChartStatistics } from '../stacked-bar-chart/stacked-bar-chart.component';
+import { StackedBarChart } from '../stacked-bar-chart/time-line-area-chart';
 
 @Component({
     selector: 'app-exercise-statistics-modal',
@@ -41,15 +41,15 @@ export class ExerciseStatisticsModalComponent {
     } = {
         // The order is important (the first key is at the bottom of the chart)
         // The colors are taken from bootstrap
-        black: getRgbaColor('black', TimeLineAreaChart.backgroundAlpha),
-        blue: getRgbaColor('blue', TimeLineAreaChart.backgroundAlpha),
-        red: getRgbaColor('red', TimeLineAreaChart.backgroundAlpha),
-        yellow: getRgbaColor('yellow', TimeLineAreaChart.backgroundAlpha),
-        green: getRgbaColor('green', TimeLineAreaChart.backgroundAlpha),
-        white: getRgbaColor('white', TimeLineAreaChart.backgroundAlpha),
+        black: getRgbaColor('black', StackedBarChart.backgroundAlpha),
+        blue: getRgbaColor('blue', StackedBarChart.backgroundAlpha),
+        red: getRgbaColor('red', StackedBarChart.backgroundAlpha),
+        yellow: getRgbaColor('yellow', StackedBarChart.backgroundAlpha),
+        green: getRgbaColor('green', StackedBarChart.backgroundAlpha),
+        white: getRgbaColor('white', StackedBarChart.backgroundAlpha),
     };
 
-    public patientsStatistics$: Observable<TimeLineAreaChartStatistics> =
+    public patientsStatistics$: Observable<StackedBarChartStatistics> =
         this.areaStatisticsService.decimatedAreaStatistics$.pipe(
             map((statistics) => ({
                 datasets: Object.entries(this.patientColors).map(
@@ -77,15 +77,15 @@ export class ExerciseStatisticsModalComponent {
 
     private getColor(index: number) {
         if (index >= this.colorKeys.length) {
-            return generateRandomRgbaColor(TimeLineAreaChart.backgroundAlpha);
+            return generateRandomRgbaColor(StackedBarChart.backgroundAlpha);
         }
         return getRgbaColor(
             this.colorKeys[index],
-            TimeLineAreaChart.backgroundAlpha
+            StackedBarChart.backgroundAlpha
         );
     }
 
-    public vehiclesStatistics$: Observable<TimeLineAreaChartStatistics> =
+    public vehiclesStatistics$: Observable<StackedBarChartStatistics> =
         this.areaStatisticsService.decimatedAreaStatistics$.pipe(
             map((statistics) => {
                 // Get all vehicle types
@@ -121,14 +121,14 @@ export class ExerciseStatisticsModalComponent {
     } = {
         // The order is important (the first key is at the bottom of the chart)
         // The colors are taken from bootstrap
-        notarzt: getRgbaColor('red', TimeLineAreaChart.backgroundAlpha),
-        gf: getRgbaColor('blue', TimeLineAreaChart.backgroundAlpha),
-        notSan: getRgbaColor('green', TimeLineAreaChart.backgroundAlpha),
-        rettSan: getRgbaColor('purple', TimeLineAreaChart.backgroundAlpha),
-        san: getRgbaColor('yellow', TimeLineAreaChart.backgroundAlpha),
+        notarzt: getRgbaColor('red', StackedBarChart.backgroundAlpha),
+        gf: getRgbaColor('blue', StackedBarChart.backgroundAlpha),
+        notSan: getRgbaColor('green', StackedBarChart.backgroundAlpha),
+        rettSan: getRgbaColor('purple', StackedBarChart.backgroundAlpha),
+        san: getRgbaColor('yellow', StackedBarChart.backgroundAlpha),
     };
 
-    public personnelStatistics$: Observable<TimeLineAreaChartStatistics> =
+    public personnelStatistics$: Observable<StackedBarChartStatistics> =
         this.areaStatisticsService.decimatedAreaStatistics$.pipe(
             map((statistics) => ({
                 datasets: Object.entries(this.personnelColors).map(
