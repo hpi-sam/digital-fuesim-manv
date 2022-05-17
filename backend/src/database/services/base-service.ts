@@ -19,12 +19,14 @@ export abstract class BaseService<
 > {
     public constructor(protected readonly dataSource: DataSource) {}
 
-    /**
-     * @param initialObject `undefined` for creating a new object, {@link Entity} for updating an existing row.
-     */
-    protected abstract createSavableObject<TInitial extends Entity | undefined>(
-        initialObject: TInitial,
-        dto: TInitial extends Entity ? Updatable : Creatable,
+    protected abstract getCreateEntityObject(
+        dto: Creatable,
+        manager: EntityManager
+    ): Entity | Promise<Entity>;
+
+    protected abstract getUpdateEntityObject(
+        initialObject: Entity,
+        dto: Updatable,
         manager: EntityManager
     ): Entity | Promise<Entity>;
 
@@ -35,14 +37,7 @@ export abstract class BaseService<
         entityManager?: EntityManager
     ): Promise<Entity> {
         const create = async (manager: EntityManager) =>
-            manager.save(
-                await this.createSavableObject(
-                    undefined,
-                    // TODO: TypeScript does strange things (@Dassderdie)
-                    creator as any,
-                    manager
-                )
-            );
+            manager.save(await this.getCreateEntityObject(creator, manager));
         return entityManager
             ? create(entityManager)
             : this.dataSource.transaction(create);
@@ -152,7 +147,11 @@ export abstract class BaseService<
         const update = async (manager: EntityManager) => {
             const objectToUpdate = await this.findById(id, manager);
             return manager.save(
-                await this.createSavableObject(objectToUpdate, updater, manager)
+                await this.getUpdateEntityObject(
+                    objectToUpdate,
+                    updater,
+                    manager
+                )
             );
         };
         return entityManager

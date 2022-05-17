@@ -16,18 +16,24 @@ export class ExerciseWrapperService extends BaseService<
     CreateExerciseWrapper,
     UpdateExerciseWrapper
 > {
-    protected createSavableObject<
-        TInitial extends ExerciseWrapperEntity | undefined
-    >(
-        initialObject: TInitial,
-        dto: TInitial extends ExerciseWrapperEntity
-            ? UpdateExerciseWrapper
-            : CreateExerciseWrapper,
+    protected getCreateEntityObject(
+        dto: CreateExerciseWrapper,
         manager: EntityManager
     ): ExerciseWrapperEntity | Promise<ExerciseWrapperEntity> {
-        return initialObject
-            ? manager.merge(this.entityTarget, initialObject, dto)
-            : manager.create(this.entityTarget, dto);
+        return manager.create<ExerciseWrapperEntity>(this.entityTarget, dto);
     }
+
+    protected getUpdateEntityObject(
+        initialObject: ExerciseWrapperEntity,
+        dto: UpdateExerciseWrapper,
+        manager: EntityManager
+    ): ExerciseWrapperEntity | Promise<ExerciseWrapperEntity> {
+        return manager.merge<ExerciseWrapperEntity>(
+            this.entityTarget,
+            initialObject,
+            dto
+        );
+    }
+
     protected readonly entityTarget = ExerciseWrapperEntity;
 }

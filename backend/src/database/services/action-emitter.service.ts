@@ -25,21 +25,35 @@ export class ActionEmitterService extends BaseService<
         super(dataSource);
     }
 
-    protected async createSavableObject<
-        TInitial extends ActionEmitterEntity | undefined
-    >(
-        initialObject: TInitial,
-        dto: TInitial extends ActionEmitterEntity
-            ? UpdateActionEmitter
-            : CreateActionEmitter,
+    protected async getCreateEntityObject(
+        dto: CreateActionEmitter,
         manager: EntityManager
     ): Promise<ActionEmitterEntity> {
         const { exerciseId, ...rest } = dto;
-        const emitter = initialObject
-            ? manager.merge(this.entityTarget, initialObject, rest)
-            : manager.create(this.entityTarget, rest);
+        const emitter = manager.create<ActionEmitterEntity>(
+            this.entityTarget,
+            rest
+        );
+        emitter.exercise = await this.exerciseService.findById(
+            exerciseId,
+            manager
+        );
+        return emitter;
+    }
+
+    protected async getUpdateEntityObject(
+        initialObject: ActionEmitterEntity,
+        dto: UpdateActionEmitter,
+        manager: EntityManager
+    ): Promise<ActionEmitterEntity> {
+        const { exerciseId, ...rest } = dto;
+        const emitter = manager.merge<ActionEmitterEntity>(
+            this.entityTarget,
+            initialObject,
+            rest
+        );
         emitter.exercise =
-            initialObject && exerciseId === undefined
+            exerciseId === undefined
                 ? emitter.exercise
                 : await this.exerciseService.findById(exerciseId!, manager);
         return emitter;

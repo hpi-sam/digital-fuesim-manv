@@ -30,37 +30,45 @@ export class ActionWrapperService extends BaseService<
         super(dataSource);
     }
 
-    protected async createSavableObject<
-        TInitial extends ActionWrapperEntity | undefined
-    >(
-        initialObject: TInitial,
-        dto: TInitial extends ActionWrapperEntity
-            ? UpdateActionWrapper
-            : CreateActionWrapper,
+    protected async getCreateEntityObject(
+        dto: CreateActionWrapper,
         manager: EntityManager
     ): Promise<ActionWrapperEntity> {
         const { emitter: actionEmitter, ...rest } = dto;
-        const actionWrapper = initialObject
-            ? manager.merge(this.entityTarget, initialObject, rest)
-            : manager.create(this.entityTarget, rest);
-        actionWrapper.emitter = initialObject
-            ? actionEmitter
-                ? await this.actionEmitterService.findOne(
-                      { where: { id: actionEmitter as UUID } },
-                      true,
-                      manager
-                  )
-                : actionWrapper.emitter
-            : await this.actionEmitterService.findOneOrCreate(
-                  {
-                      where: {
-                          emitterId: (actionEmitter as CreateActionEmitter)
-                              .emitterId,
-                      },
-                  },
-                  actionEmitter as CreateActionEmitter,
+        const actionWrapper = manager.create<ActionWrapperEntity>(
+            this.entityTarget,
+            rest
+        );
+        actionWrapper.emitter = await this.actionEmitterService.findOneOrCreate(
+            {
+                where: {
+                    emitterId: actionEmitter.emitterId,
+                },
+            },
+            actionEmitter as CreateActionEmitter,
+            manager
+        );
+        return actionWrapper;
+    }
+
+    protected async getUpdateEntityObject(
+        initialObject: ActionWrapperEntity,
+        dto: UpdateActionWrapper,
+        manager: EntityManager
+    ): Promise<ActionWrapperEntity> {
+        const { emitter: actionEmitter, ...rest } = dto;
+        const actionWrapper = manager.merge<ActionWrapperEntity>(
+            this.entityTarget,
+            initialObject,
+            rest
+        );
+        actionWrapper.emitter = actionEmitter
+            ? await this.actionEmitterService.findOne(
+                  { where: { id: actionEmitter as UUID } },
+                  true,
                   manager
-              );
+              )
+            : actionWrapper.emitter;
         return actionWrapper;
     }
 
