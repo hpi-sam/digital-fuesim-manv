@@ -12,7 +12,7 @@ import {
 } from 'src/app/state/exercise/exercise.selectors';
 import { DragElementService } from '../core/drag-element.service';
 import { TransferLinesService } from '../core/transfer-lines.service';
-import { createImageTemplate } from '../editor-panel/create-image-template-modal/create-image-template';
+import { openCreateImageTemplateModal } from '../editor-panel/create-image-template-modal/open-create-image-template-modal';
 import { openEditImageTemplateModal } from '../editor-panel/edit-image-template-modal/open-edit-image-template-modal';
 
 @Component({
@@ -58,17 +58,8 @@ export class TrainerMapEditorComponent {
         image: TransferPoint.image,
     };
 
-    public async addImageTemplate() {
-        const mapImageTemplate = await createImageTemplate(
-            this.ngbModalService
-        );
-        if (mapImageTemplate === null) {
-            return;
-        }
-        this.apiService.proposeAction({
-            type: '[MapImageTemplate] Add mapImageTemplate',
-            mapImageTemplate,
-        });
+    public addImageTemplate() {
+        openCreateImageTemplateModal(this.ngbModalService);
     }
 
     public editMapImageTemplate(mapImageTemplateId: UUID) {

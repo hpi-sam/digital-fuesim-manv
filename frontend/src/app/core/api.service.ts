@@ -160,6 +160,7 @@ export class ApiService {
         action: A,
         optimistic = false
     ) {
+        // TODO: throw if `response.success` is false
         return this.optimisticActionHandler.proposeAction(action, optimistic);
     }
 

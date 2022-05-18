@@ -40,11 +40,16 @@ export class EditImageTemplateModalComponent implements OnInit {
     }
 
     public deleteMapImageTemplate(): void {
-        this.apiService.proposeAction({
-            type: '[MapImageTemplate] Delete mapImageTemplate',
-            id: this.mapImageTemplateId,
-        });
-        this.close();
+        this.apiService
+            .proposeAction({
+                type: '[MapImageTemplate] Delete mapImageTemplate',
+                id: this.mapImageTemplateId,
+            })
+            .then((response) => {
+                if (response.success) {
+                    this.close();
+                }
+            });
     }
 
     public editMapImageTemplate({
@@ -57,17 +62,22 @@ export class EditImageTemplateModalComponent implements OnInit {
             console.error("MapImageTemplate wasn't initialized yet");
             return;
         }
-        this.apiService.proposeAction({
-            type: '[MapImageTemplate] Edit mapImageTemplate',
-            id: this.mapImageTemplateId,
-            name,
-            image: {
-                url,
-                height,
-                aspectRatio,
-            },
-        });
-        this.close();
+        this.apiService
+            .proposeAction({
+                type: '[MapImageTemplate] Edit mapImageTemplate',
+                id: this.mapImageTemplateId,
+                name,
+                image: {
+                    url,
+                    height,
+                    aspectRatio,
+                },
+            })
+            .then((response) => {
+                if (response.success) {
+                    this.close();
+                }
+            });
     }
 
     public close(): void {
