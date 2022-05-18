@@ -12,10 +12,7 @@ import { StackedBarChart } from './time-line-area-chart';
 export class StackedBarChartComponent
     implements AfterViewInit, OnChanges, OnDestroy
 {
-    @Input() statistics!: {
-        labels: string[];
-        datasets: StackedBarChartDatasets;
-    };
+    @Input() statistics!: StackedBarChartStatistics;
 
     @ViewChild('chart', { static: true })
     chartCanvas!: ElementRef<HTMLCanvasElement>;

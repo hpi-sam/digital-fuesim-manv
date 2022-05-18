@@ -1,4 +1,4 @@
-import { IsInt, IsObject, IsPositive } from 'class-validator';
+import { IsInt, IsObject, Min } from 'class-validator';
 import type { Vehicle } from '../vehicle';
 import { getCreate } from './get-create';
 import type { PatientStatus } from './patient-status';
@@ -33,7 +33,7 @@ export class AreaStatistics {
     };
 
     @IsInt()
-    @IsPositive()
+    @Min(0)
     readonly numberOfActiveParticipants: number;
 
     /**
