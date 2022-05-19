@@ -19,7 +19,7 @@ For a more detailed view please look at the [`Config`](src/config.ts).
 
 ### `index.ts`
 
-When starting, the `index.ts` is executed. It simply creates a `FuesimServer`, which automatically starts it.
+When starting, the `index.ts` is executed. It establishes a database connection and creates a `FuesimServer`, which automatically starts the application.
 
 ### `FuesimServer`
 
@@ -57,3 +57,7 @@ These client wrappers get added to the [`clientMap`](src/exercise/client-map.ts)
 
 When an exercise gets created an [`ExerciseWrapper`](src/exercise/exercise-wrapper.ts) gets created for it, where the current state, the state history, and the set of connected `ClientWrappers` gets stored.
 Its main purpose is the `reduce` method, allowing an `ExerciseAction` to be applied to the current state while also storing the old state in the history. For more information on the state management see the [root Readme](../README.md#state-management-and-synchronisation).
+
+### Database
+
+We are using [PostgreSQL 14](https://www.postgresql.org/) for persistance with [typeorm](https://github.com/typeorm/typeorm/) as an in-between layer for model definitions and interaction with the database.

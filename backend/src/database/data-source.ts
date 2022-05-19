@@ -31,11 +31,6 @@ export const createNewDataSource = (mode: DataSourceMode = 'default') => {
             ActionWrapperEntity,
             ExerciseWrapperEntity,
         ],
-        // migrations: [
-        //     process.env.NODE_ENV === 'migration' || mode === 'testing'
-        //         ? `src/database/migrations/**/*{.ts,.js}`
-        //         : `./migrations/**/*{.ts,.js}`,
-        // ],
         migrations: [AddExerciseAndActions1652268120769],
         logging: Config.dbLogging,
     });
