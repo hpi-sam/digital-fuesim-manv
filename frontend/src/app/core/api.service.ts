@@ -23,6 +23,7 @@ import { getStateSnapshot } from '../state/get-state-snapshot';
 import { OptimisticActionHandler } from './optimistic-action-handler';
 import { httpOrigin, websocketOrigin } from './api-origins';
 import { MessageService } from './messages/message.service';
+import { TimeTravelService } from './time-travel.service';
 
 @Injectable({
     providedIn: 'root',
@@ -72,6 +73,15 @@ export class ApiService {
         return this._ownClientId;
     }
 
+    private _exerciseId?: UUID;
+
+    /**
+     * Either the trainer or participant id
+     */
+    public get exerciseId() {
+        return this._exerciseId;
+    }
+
     /**
      * Whether the client is currently joined to an exercise
      */
@@ -84,9 +94,16 @@ export class ApiService {
         ExerciseState,
         SocketResponse
     >(
-        (exercise) => this.store.dispatch(setExerciseState(exercise)),
+        // TODO: Make this right
+        (exercise) =>
+            this.timeTravelService.isTimeTraveling
+                ? null
+                : this.store.dispatch(setExerciseState(exercise)),
         () => getStateSnapshot(this.store).exercise,
-        (action) => this.store.dispatch(applyServerAction(action)),
+        (action) =>
+            this.timeTravelService.isTimeTraveling
+                ? null
+                : this.store.dispatch(applyServerAction(action)),
         // sendAction needs access to this.socket
         async (action) => this.sendAction(action)
     );
@@ -94,7 +111,8 @@ export class ApiService {
     constructor(
         private readonly store: Store<AppState>,
         private readonly httpClient: HttpClient,
-        private readonly messageService: MessageService
+        private readonly messageService: MessageService,
+        private readonly timeTravelService: TimeTravelService
     ) {
         this.socket.on('performAction', (action: ExerciseAction) => {
             this.optimisticActionHandler.performAction(action);
@@ -148,6 +166,7 @@ export class ApiService {
             return false;
         }
         this._ownClientId = joinExercise.payload;
+        this._exerciseId = exerciseId;
         return true;
     }
 
@@ -160,6 +179,13 @@ export class ApiService {
         action: A,
         optimistic = false
     ) {
+        if (this.timeTravelService.isTimeTraveling) {
+            this.messageService.postError({
+                title: 'Die Vergangenheit kann nicht bearbeitet werden',
+                body: 'Deaktiviere den Zeitreise Modus, um Änderungen vorzunehmen.',
+            });
+            return { success: false };
+        }
         return this.optimisticActionHandler.proposeAction(action, optimistic);
     }
 

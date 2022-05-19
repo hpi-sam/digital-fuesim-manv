@@ -21,8 +21,6 @@ import { TransferLinesService } from '../core/transfer-lines.service';
  * TODO: this is mostly a proof of concept, and in no way a final implementation.
  */
 export class TrainerMapEditorComponent {
-    @Input() exerciseId!: string;
-
     public readonly vehicleTemplates$ = this.store.select(
         selectVehicleTemplates
     );

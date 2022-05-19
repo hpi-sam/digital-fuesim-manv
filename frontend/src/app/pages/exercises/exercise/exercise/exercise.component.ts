@@ -1,10 +1,10 @@
-import type { OnDestroy, OnInit } from '@angular/core';
+import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
+import { TimeTravelService } from 'src/app/core/time-travel.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectClient,
@@ -16,10 +16,10 @@ import {
     templateUrl: './exercise.component.html',
     styleUrls: ['./exercise.component.scss'],
 })
-export class ExerciseComponent implements OnInit, OnDestroy {
+export class ExerciseComponent implements OnDestroy {
     private readonly destroy = new Subject<void>();
-    public exerciseId?: string;
 
+    public readonly exerciseId = this.apiService.exerciseId;
     public readonly participantId$ = this.store.select(selectParticipantId);
     public client$ = this.store.select(
         getSelectClient(this.apiService.ownClientId!)
@@ -27,18 +27,10 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly activatedRoute: ActivatedRoute,
         private readonly apiService: ApiService,
-        private readonly messageService: MessageService
+        private readonly messageService: MessageService,
+        public readonly timeTravelService: TimeTravelService
     ) {}
-
-    ngOnInit(): void {
-        this.activatedRoute.params
-            .pipe(takeUntil(this.destroy))
-            .subscribe((params) => {
-                this.exerciseId = params['exerciseId'] as string;
-            });
-    }
 
     public shareExercise(exerciseId: string) {
         const url = `${location.origin}/exercises/${exerciseId}`;

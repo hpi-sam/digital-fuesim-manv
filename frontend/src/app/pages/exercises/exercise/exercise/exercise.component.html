@@ -23,24 +23,38 @@
             >
                 Übungsleiterlink teilen
             </button>
+
+            <div
+                *ngIf="client.role === 'trainer'"
+                class="form-check form-switch d-inline-block float-end"
+            >
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    [(ngModel)]="timeTravelService.isTimeTraveling"
+                />
+                <label class="form-check-label">Zeitreise</label>
+            </div>
         </h2>
     </div>
 
     <div class="flex-fill">
         <ng-container *ngIf="!client.isInWaitingRoom; else waitingRoomTemplate">
             <div
-                *ngIf="client.role === 'participant'; else trainerMapEditor"
+                *ngIf="client.role === 'participant'"
                 class="h-100 rounded overflow-hidden"
             >
                 <app-exercise-map></app-exercise-map>
             </div>
 
-            <ng-template #trainerMapEditor>
+            <ng-container *ngIf="client.role === 'trainer'">
                 <app-trainer-map-editor
-                    *ngIf="exerciseId"
-                    [exerciseId]="exerciseId"
+                    *ngIf="!timeTravelService.isTimeTraveling"
                 ></app-trainer-map-editor>
-            </ng-template>
+                <app-time-travel
+                    *ngIf="timeTravelService.isTimeTraveling"
+                ></app-time-travel>
+            </ng-container>
         </ng-container>
         <ng-template #waitingRoomTemplate>
             <div class="container">

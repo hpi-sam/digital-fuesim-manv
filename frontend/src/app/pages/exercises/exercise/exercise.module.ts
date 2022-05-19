@@ -11,6 +11,7 @@ import { TrainerToolbarComponent } from './shared/trainer-toolbar/trainer-toolba
 import { ExerciseStateBadgeComponent } from './shared/exercise-state-badge/exercise-state-badge.component';
 import { TransferOverviewModule } from './shared/transfer-overview/transfer-overview.module';
 import { ExerciseSettingsModalComponent } from './shared/exercise-settings/exercise-settings-modal/exercise-settings-modal.component';
+import { TimeTravelComponent } from './shared/time-travel/time-travel.component';
 
 @NgModule({
     declarations: [
@@ -19,6 +20,7 @@ import { ExerciseSettingsModalComponent } from './shared/exercise-settings/exerc
         TrainerToolbarComponent,
         ExerciseStateBadgeComponent,
         ExerciseSettingsModalComponent,
+        TimeTravelComponent,
     ],
     imports: [
         CommonModule,

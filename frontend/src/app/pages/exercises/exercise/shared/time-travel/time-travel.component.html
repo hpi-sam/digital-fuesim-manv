@@ -1,0 +1,22 @@
+<div class="container-fluid d-flex flex-column h-100">
+    <div class="rounded overflow-hidden flex-fill">
+        <app-exercise-map></app-exercise-map>
+    </div>
+    <div class="pt-2">
+        <button (click)="openClientOverview()" class="btn btn-primary ms-3">
+            Teilnehmerübersicht
+        </button>
+        <button (click)="openTransferOverview()" class="btn btn-primary ms-3">
+            Transferübersicht
+        </button>
+    </div>
+    <div class="pt-3">
+        <input
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            class="form-range w-100"
+        />
+    </div>
+</div>
