@@ -3,18 +3,18 @@ services:
     digital-fuesim-manv:
         image: digitalfuesimmanv/dfm
         # Use this to build the container for yourself:
-        # build:
-        #     context: .
-        #     dockerfile: docker/Dockerfile
+        #build:
+        #    context: .
+        #    dockerfile: docker/Dockerfile
         restart: unless-stopped
         container_name: digital-fuesim-manv
         ports:
             - 80:80
         # all available ENVs are listed here with their default value set
         #environment:
-        #    - DOMAIN=          # please set your desired domain name
-        #    - SSL_ENABLE=false # enabling this will enable https, need DOMAIN set, to completely disable, please delete the ssl volume
-        #    - ENV SSL_HARDENING=false # WARNING enabling this once will make so you can't go back to http, only activate after you tested https works
+        #    - DOMAIN=           # please set your desired domain name
+        #    - SSL_ENABLE=false  # enabling this will enable https, need DOMAIN set, to completely disable, please delete the ssl volume
+        #    - ENABLE_HSTS=false # WARNING enabling this once will make so you can't go back to http, only activate after you tested https works
         volumes:
             - ssl:/ssl
 

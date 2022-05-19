@@ -9,13 +9,14 @@ ENV SSL_ENABLE=false
 ENV ENABLE_HSTS=false
 
 # install nginx
-RUN apt-get update && apt-get upgrade -y && apt-get install nginx git cron openssl -y
+RUN apt-get update && apt-get upgrade -y && apt-get install nginx git cron openssl curl -y
 
 # deleting default nginx conf
 RUN rm /etc/nginx/sites-enabled/default && rm /etc/nginx/sites-available/default
 
 # ssl certs and config of acme.sh in /ssl to be in volume to be saved
 RUN mkdir -p /ssl/certs
+RUN chown -R www-data:www-data /ssl/certs
 
 # nginx config file
 COPY ./docker/nginx /etc/nginx/conf.d
@@ -35,6 +36,9 @@ RUN git clone https://github.com/acmesh-official/acme.sh.git /acme.sh.git
 
 # install acme.sh
 RUN cd /acme.sh.git && ./acme.sh --install --config-home /ssl/acme.sh
+
+# we need the following to be able to use acme.sh in command line (without using explicit path)
+RUN ln -s  /root/.acme.sh/acme.sh  /usr/local/bin/acme.sh
 
 # remove acme.sh source code
 RUN rm -r /acme.sh.git

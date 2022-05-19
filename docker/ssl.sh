@@ -4,18 +4,15 @@
 
 if [[ -z "${DOMAIN}" ]]; then
     echo "Error: Domain not set"
-    exit(1)
+    exit 1
 fi
 
 CERTS_PATH="/ssl/certs"
 
-# maybe we need the following to be able to use acme.sh in command line
-#. ~/.profile
-
 mkdir -p /var/www/acme-challenge/.well-known/acme-challenge
 chown -R www-data:www-data /var/www/acme-challenge
 
-acme.sh --issue \
+ acme.sh --issue \
 --ecc \
 --ocsp \
 -d ${DOMAIN} \
@@ -25,7 +22,7 @@ acme.sh --issue \
 --fullchain-file ${CERTS_PATH}/fullchain.pem \
 -w /var/www/acme-challenge \
 --server letsencrypt \
---reload-cmd "nginx -s reload"
+--reloadcmd "nginx -s reload"
 
 if [[ -f "${CERTS_PATH}/dhparam.pem" ]]; then
     echo "${CERTS_PATH}/dhparam.pem exists already, not creating new one"
@@ -38,14 +35,11 @@ if [[ -f "${CERTS_PATH}/dhparam.pem"  && -f "${CERTS_PATH}/cert.pem" && -f "${CE
     echo "starting now to enable https in nginx"
 else
     echo "not all necessary certs exits in ${CERTS_PATH}, maybe acme.sh couldn't connect to letsencrypt"
-    exit(1)
+    exit 1
 fi
 
-if [[ ${ENABLE_HSTS} ]]; then
+if ${ENABLE_HSTS}; then
     cp -a /etc/nginx/conf.d/https-securits-headers.template /etc/nginx/conf.d/https-security-headers
 fi
 
-# giving output to console if something is wrong with nginx
-echo "checking if nginx can start"
-echo nginx -t
-echo "now back to docker-entrypoint.sh"
+echo "ssl.sh done, now back to docker-entrypoint.sh"
