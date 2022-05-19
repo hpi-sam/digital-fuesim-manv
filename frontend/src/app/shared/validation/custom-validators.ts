@@ -21,4 +21,10 @@ export namespace CustomValidators {
                 ? null
                 : { url: true as const };
     }
+    export function integerValidator() {
+        return (control: AbstractControl) =>
+            !control.value || Number.isInteger(control.value)
+                ? null
+                : { integer: true as const };
+    }
 }
