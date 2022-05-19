@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { Config } from './config';
 import { createNewDataSource } from './database/data-source';
 import { ServiceProvider } from './database/services/service-provider';

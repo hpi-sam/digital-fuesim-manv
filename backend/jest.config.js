@@ -4,7 +4,6 @@ export default {
     ...baseConfig,
     name: 'backend',
     displayName: 'Backend',
-    setupFiles: ['dotenv/config'],
     roots: ['<rootDir>'],
     // See https://kulshekhar.github.io/ts-jest/docs/next/guides/esm-support/
     // and https://jestjs.io/docs/ecmascript-modules
