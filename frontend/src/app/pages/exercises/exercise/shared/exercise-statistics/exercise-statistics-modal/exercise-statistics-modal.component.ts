@@ -116,31 +116,46 @@ export class ExerciseStatisticsModalComponent {
         );
 
     // Personnel statistics
-    private readonly personnelColors: {
-        [key in PersonnelType]: string;
+    private readonly personnelConfig: {
+        [key in PersonnelType]: { label: string; color: string };
     } = {
         // The order is important (the first key is at the bottom of the chart)
         // The colors are taken from bootstrap
-        notarzt: getRgbaColor('red', StackedBarChart.backgroundAlpha),
-        gf: getRgbaColor('blue', StackedBarChart.backgroundAlpha),
-        notSan: getRgbaColor('green', StackedBarChart.backgroundAlpha),
-        rettSan: getRgbaColor('purple', StackedBarChart.backgroundAlpha),
-        san: getRgbaColor('yellow', StackedBarChart.backgroundAlpha),
+        notarzt: {
+            label: 'Notarzt',
+            color: getRgbaColor('red', StackedBarChart.backgroundAlpha),
+        },
+        gf: {
+            label: 'GF',
+            color: getRgbaColor('blue', StackedBarChart.backgroundAlpha),
+        },
+        notSan: {
+            label: 'NotSan',
+            color: getRgbaColor('green', StackedBarChart.backgroundAlpha),
+        },
+        rettSan: {
+            label: 'RettSan',
+            color: getRgbaColor('purple', StackedBarChart.backgroundAlpha),
+        },
+        san: {
+            label: 'San',
+            color: getRgbaColor('yellow', StackedBarChart.backgroundAlpha),
+        },
     };
 
     public personnelStatistics$: Observable<StackedBarChartStatistics> =
         this.areaStatisticsService.decimatedAreaStatistics$.pipe(
             map((statistics) => ({
-                datasets: Object.entries(this.personnelColors).map(
-                    ([personnelType, backgroundColor]) => ({
-                        label: personnelType,
+                datasets: Object.entries(this.personnelConfig).map(
+                    ([personnelType, { color, label }]) => ({
+                        label,
                         data: statistics.map(
                             (statisticEntry) =>
                                 statisticEntry.value.personnel[
                                     personnelType as PersonnelType
                                 ] ?? null
                         ),
-                        backgroundColor,
+                        backgroundColor: color,
                     })
                 ),
                 labels: statistics.map(({ exerciseTime }) =>

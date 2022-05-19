@@ -91,6 +91,7 @@ export class StackedBarChart {
             plugins: {
                 tooltip: {
                     position: 'nearest',
+                    mode: 'index',
                     callbacks: {
                         label: (tooltipItem) =>
                             `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue}`,
