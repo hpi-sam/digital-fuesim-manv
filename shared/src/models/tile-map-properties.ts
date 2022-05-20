@@ -10,14 +10,14 @@ export class TileMapProperties {
     @Matches(/{x}/i)
     @Matches(/{(-)?y}/i)
     @Matches(/{z}/i)
-    tileUrl: string;
+    public readonly tileUrl: string;
 
     /**
      * The maximum {z} value the tile server accepts
      */
     @IsPositive()
     @IsInt()
-    maxZoom: number;
+    public readonly maxZoom: number;
 
     /**
      * @deprecated Use {@link create} instead
