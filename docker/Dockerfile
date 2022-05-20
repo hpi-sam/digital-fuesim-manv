@@ -4,6 +4,9 @@ FROM node:16-bullseye-slim
 # Disable interactive frontend to prevent install dialogues
 ARG DEBIAN_FRONTEND=noninteractive
 
+# make node understand we run in production
+ENV NODE_ENV=production
+
 # install necessary packages
 RUN apt-get update && apt-get upgrade -y && apt-get install nginx ca-certificates --no-install-recommends -y
 
@@ -14,7 +17,7 @@ COPY ./ /usr/local/app/
 WORKDIR /usr/local/app
 
 # setup and install all the dependencies
-RUN npm run setup:deployment
+RUN npm run setup:ci
 
 # Generate the build of the application
 RUN npm run build:deployment
