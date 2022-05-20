@@ -167,7 +167,16 @@
                     </div>
                 </li>
                 <li class="list-group-item">
-                    <h5>Bilder</h5>
+                    <h5>
+                        Bilder
+                        <button
+                            class="ms-3 btn btn-sm btn-link text-decoration-none"
+                            (click)="addImageTemplate()"
+                        >
+                            <i class="bi bi-plus"></i>
+                            Hinzufügen
+                        </button>
+                    </h5>
                     <div
                         class="overflow-auto w-100"
                         style="white-space: nowrap"
@@ -190,6 +199,17 @@
                                 <img [src]="mapImageTemplate.image.url" />
                             </div>
 
+                            <!-- (mousedown) instead of (click) to be able to stop the propagation-->
+                            <button
+                                (mousedown)="
+                                    editMapImageTemplate(mapImageTemplate.id);
+                                    $event.stopPropagation()
+                                "
+                                class="btn btn-outline-warning position-absolute"
+                                style="top: 0; right: 0"
+                            >
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
                             <div class="card-body">
                                 <h5
                                     class="card-title text-truncate"
@@ -199,6 +219,15 @@
                                 </h5>
                             </div>
                         </div>
+                        <span
+                            *ngIf="
+                                (mapImageTemplates$ | async | keyvalue)
+                                    ?.length === 0
+                            "
+                            class="text-muted"
+                        >
+                            Keine Bilder vorhanden
+                        </span>
                     </div>
                 </li>
             </ul>
