@@ -10,6 +10,8 @@ services:
         container_name: digital-fuesim-manv
         ports:
             - 80:80
+        # uncomment port 443 if HTTPS is used
+        #    - 443:443
         # all available ENVs are listed here with their default value set
         #environment:
         #    - DOMAIN=           # please set your desired domain name
