@@ -22,7 +22,8 @@
         "migration:run": "npm run typeorm:cli migration:run",
         "migration:run:windows": "npm run typeorm:cli:windows migration:run",
         "migration:revert": "npm run typeorm:cli migration:revert",
-        "migration:revert:windows": "npm run typeorm:cli:windows migration:revert"
+        "migration:revert:windows": "npm run typeorm:cli:windows migration:revert",
+        "db:purge": "node --experimental-specifier-resolution=node --loader ts-node/esm src/database/scripts/purge.ts"
     },
     "private": true,
     "engines": {
