@@ -3,6 +3,7 @@ import { ApiService } from 'src/app/core/api.service';
 import type OlMap from 'ol/Map';
 import type {
     ImageProperties,
+    MapImageTemplate,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
 import {
@@ -226,7 +227,7 @@ export class DragElementService {
 type TransferTemplate =
     | {
           type: 'mapImage';
-          template: { image: ImageProperties };
+          template: MapImageTemplate;
       }
     | {
           type: 'patient';

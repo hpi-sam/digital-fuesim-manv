@@ -15,6 +15,7 @@ import type {
     Vehicle,
     Viewport,
 } from './models';
+import type { StatisticsEntry } from './models/statistics-entry';
 import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuid } from './utils';
@@ -44,6 +45,7 @@ export class ExerciseState {
     public readonly participantId: string = '';
     public readonly tileMapProperties: TileMapProperties =
         defaultTileMapProperties;
+    public readonly statistics: readonly StatisticsEntry[] = [];
 
     /**
      * @deprecated Use {@link create} instead.
