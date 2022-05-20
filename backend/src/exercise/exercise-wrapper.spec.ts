@@ -33,7 +33,7 @@ describe('Exercise Wrapper', () => {
                 ExerciseWrapper.prototype,
                 'applyAction'
             );
-            exercise.addClient(client);
+            await exercise.addClient(client);
 
             expect(applySpy).not.toHaveBeenCalled();
         });
