@@ -6,17 +6,17 @@ describe('secure on', () => {
         const originalEnv = process.env.NODE_ENV;
         // Errors are only catched in production mode
         process.env.NODE_ENV = 'production';
-        try {
-            await environment.withWebsocket(async (socket) => {
+        await environment
+            .withWebsocket(async (socket) => {
                 socket.insecureEmit('getState', 'any');
                 // wait a bit so that the error can occur
                 await sleep(1000);
                 // Check whether the server is still available
                 await environment.httpRequest('get', '/api/health').expect(200);
+            })
+            .finally(() => {
+                process.env.NODE_ENV = originalEnv;
             });
-        } finally {
-            process.env.NODE_ENV = originalEnv;
-        }
     });
     // TODO: test that it does crash in development environment when fed with invalid data
 });
