@@ -19,33 +19,25 @@ RUN npm run setup:deployment
 # Generate the build of the application
 RUN npm run build:deployment
 
-# enable reverse delete (remove everything except ...)
-RUN shopt -s extglob
+# set shell to bash with extglob enabled to use delete everything except via rm
+SHELL ["/bin/bash", "-O" ,"extglob", "-c"]
 
 # delete unnecessary for production in frontend
-RUN cd frontend
+WORKDIR /usr/local/app/frontend
 RUN rm -rf !(dist)
-RUN rm -rf .*
-RUN cd ..
+RUN rm -rf .angular
 
 # delete unnecessary for production in shared
-RUN cd shared
-RUN rm -rf !(dist|node_modules)
-RUN rm -rf .*
-RUN cd ..
+WORKDIR /usr/local/app/shared
+RUN rm -rf !(dist|node_modules|package.json)
 
 # delete unnecessary for production in backend
-RUN cd backend
+WORKDIR /usr/local/app/backend
 RUN rm -rf !(dist|node_modules|package.json)
-RUN rm -rf .*
-RUN cd ..
 
 # delete unnecessary for production in root folder
+WORKDIR /usr/local/app
 RUN rm -rf !(frontend|shared|backend|docker)
-RUN rm -rf .*
-
-# disable reverse delete (remove everything except ...)
-RUN shopt -u extglob
 
 # set nginx frontend file rights
 RUN chown -R www-data:www-data /usr/local/app/frontend/dist/digital-fuesim-manv
