@@ -14,7 +14,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install nginx git cron opens
 # deleting default nginx conf
 RUN rm /etc/nginx/sites-enabled/default && rm /etc/nginx/sites-available/default
 
-# ssl certs and config of acme.sh in /ssl to be in volume to be saved
+# ssl certs - mount /ssl as a volume for persistency
 RUN mkdir -p /ssl/certs
 RUN chown -R www-data:www-data /ssl/certs
 
@@ -34,14 +34,14 @@ RUN chmod +x /etc/cron.daily/cron-renew-session-ticket
 # download acme.sh
 RUN git clone https://github.com/acmesh-official/acme.sh.git /acme.sh.git
 
+# folders for acme.sh
+RUN mkdir -p /ssl/acme.sh/config && mkdir -p /ssl/acme.sh/certs
+
 # install acme.sh
-RUN cd /acme.sh.git && ./acme.sh --install --home /ssl/acme.sh
+RUN cd /acme.sh.git && ./acme.sh --install --config-home /ssl/acme.sh/config --cert-home /ssl/acme.sh/certs
 
 # we need the following to be able to use acme.sh in command line (without using explicit path)
-RUN ln -s  /ssl/acme.sh  /usr/local/bin/acme.sh
-
-# set acme.sh to auto upgrade itself
-RUN acme.sh --upgrade --auto-upgrade
+RUN ln -s  /root/.acme.sh/acme.sh  /usr/local/bin/acme.sh
 
 # remove acme.sh source code
 RUN rm -r /acme.sh.git

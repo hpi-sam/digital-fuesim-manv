@@ -21,4 +21,5 @@ services:
             - ssl:/ssl
 
 volumes:
+    # needed to keep persistency with SSL
     ssl:

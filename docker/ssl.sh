@@ -20,6 +20,7 @@ set +e
 --ocsp \
 -d ${DOMAIN} \
 --keylength ec-256 \
+--cert-home /ssl/acme.sh/certs \
 --cert-file ${CERTS_PATH}/cert.pem \
 --key-file ${CERTS_PATH}/key.pem \
 --fullchain-file ${CERTS_PATH}/fullchain.pem \

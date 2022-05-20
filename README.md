@@ -53,6 +53,10 @@ The server will start listening using nginx on port `80` for all services (front
 
 1. Run `docker build -f docker/Dockerfile -t digital-fuesim-manv .`
 
+### Docker volumes / persistent data
+
+-   All important volumes are listed in [the docker-compose file](./docker-compose.yml).
+
 ### Docker ENVs
 
 -   All available Docker ENVs are listed with their default values in [the docker-compose file](./docker-compose.yml).
