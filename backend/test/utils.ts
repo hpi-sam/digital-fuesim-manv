@@ -70,6 +70,15 @@ export class WebsocketClient {
         });
     }
 
+    /**
+     * Send arbitrary data to the server.
+     * @param event The event name to use
+     * @param args Any arguments to send
+     */
+    public insecureEmit(event: string, ...args: any[]) {
+        this.socket.emit(event as any, ...args);
+    }
+
     public on<
         EventKey extends keyof AllServerToClientEvents,
         Callback extends AllServerToClientEvents[EventKey] = AllServerToClientEvents[EventKey]
