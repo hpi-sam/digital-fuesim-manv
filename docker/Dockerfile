@@ -35,10 +35,13 @@ RUN chmod +x /etc/cron.daily/cron-renew-session-ticket
 RUN git clone https://github.com/acmesh-official/acme.sh.git /acme.sh.git
 
 # install acme.sh
-RUN cd /acme.sh.git && ./acme.sh --install --config-home /ssl/acme.sh
+RUN cd /acme.sh.git && ./acme.sh --install --home /ssl/acme.sh
 
 # we need the following to be able to use acme.sh in command line (without using explicit path)
-RUN ln -s  /root/.acme.sh/acme.sh  /usr/local/bin/acme.sh
+RUN ln -s  /ssl/acme.sh  /usr/local/bin/acme.sh
+
+# set acme.sh to auto upgrade itself
+RUN acme.sh --upgrade --auto-upgrade
 
 # remove acme.sh source code
 RUN rm -r /acme.sh.git

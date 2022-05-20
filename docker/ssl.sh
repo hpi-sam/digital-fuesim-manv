@@ -12,6 +12,9 @@ CERTS_PATH="/ssl/certs"
 mkdir -p /var/www/acme-challenge/.well-known/acme-challenge
 chown -R www-data:www-data /var/www/acme-challenge
 
+# ignore "that no renewal is needed"
+set +e
+
  acme.sh --issue \
 --ecc \
 --ocsp \
@@ -23,6 +26,8 @@ chown -R www-data:www-data /var/www/acme-challenge
 -w /var/www/acme-challenge \
 --server letsencrypt \
 --reloadcmd "nginx -s reload"
+
+set -e
 
 if [[ -f "${CERTS_PATH}/dhparam.pem" ]]; then
     echo "${CERTS_PATH}/dhparam.pem exists already, not creating new one"
