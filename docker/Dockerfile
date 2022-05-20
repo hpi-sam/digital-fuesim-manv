@@ -4,8 +4,8 @@ FROM node:16-bullseye-slim
 # Disable interactive frontend to prevent install dialogues
 ARG DEBIAN_FRONTEND=noninteractive
 
-# install nginx
-RUN apt-get update && apt-get upgrade -y && apt-get install nginx -y
+# install necessary packages
+RUN apt-get update && apt-get upgrade -y && apt-get install nginx ca-certificates --no-install-recommends -y
 
 # add the source code to app
 COPY ./ /usr/local/app/
@@ -14,10 +14,38 @@ COPY ./ /usr/local/app/
 WORKDIR /usr/local/app
 
 # setup and install all the dependencies
-RUN npm run setup
+RUN npm run setup:deployment
 
 # Generate the build of the application
 RUN npm run build:deployment
+
+# enable reverse delete (remove everything except ...)
+RUN shopt -s extglob
+
+# delete unnecessary for production in frontend
+RUN cd frontend
+RUN rm -rf !(dist)
+RUN rm -rf .*
+RUN cd ..
+
+# delete unnecessary for production in shared
+RUN cd shared
+RUN rm -rf !(dist|node_modules)
+RUN rm -rf .*
+RUN cd ..
+
+# delete unnecessary for production in backend
+RUN cd backend
+RUN rm -rf !(dist|node_modules|package.json)
+RUN rm -rf .*
+RUN cd ..
+
+# delete unnecessary for production in root folder
+RUN rm -rf !(frontend|shared|backend|docker)
+RUN rm -rf .*
+
+# disable reverse delete (remove everything except ...)
+RUN shopt -u extglob
 
 # set nginx frontend file rights
 RUN chown -R www-data:www-data /usr/local/app/frontend/dist/digital-fuesim-manv
