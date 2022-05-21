@@ -8,7 +8,12 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV NODE_ENV=production
 
 # install necessary packages
-RUN apt-get update && apt-get upgrade -y && apt-get install nginx ca-certificates --no-install-recommends -y
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install --no-install-recommends \
+    nginx \
+    ca-certificates -y && \
+    rm -rf /var/lib/apt/lists/*
 
 # add the source code to app
 COPY ./ /usr/local/app/
@@ -16,43 +21,37 @@ COPY ./ /usr/local/app/
 # set workdir
 WORKDIR /usr/local/app
 
-# setup and install all the dependencies
-RUN npm run setup:ci
-
-# Generate the build of the application
-RUN npm run build:deployment
+    # setup all the dependencies
+RUN npm run setup:ci && \
+    # generate build of the application
+    npm run build:deployment && \
+    # and cleanup afterwards
+    npm cache clean --force
 
 # set shell to bash with extglob enabled to use delete everything except via rm
 SHELL ["/bin/bash", "-O" ,"extglob", "-c"]
 
-# delete unnecessary for production in frontend
-WORKDIR /usr/local/app/frontend
-RUN rm -rf !(dist)
-RUN rm -rf .angular
+    # delete unnecessary for production in frontend,
+RUN rm -rf frontend/!(dist) && \
+    rm -rf frontend/.angular && \
+    # in shared,
+    rm -rf shared/!(dist|node_modules|package.json) && \
+    # in backend,
+    rm -rf backend/!(dist|node_modules|package.json) && \
+    # in root
+    rm -rf !(frontend|shared|backend|docker) && \
+    # and delete cache
+    rm -rf /root/.cache && \
+    # set nginx frontend file rights
+    chown -R www-data:www-data /usr/local/app/frontend/dist/digital-fuesim-manv && \
+    # move docker-entrypoint.sh
+    mv ./docker/docker-entrypoint.sh /docker-entrypoint.sh && \
+    # and make it executable
+    chmod +x /docker-entrypoint.sh && \
+    # move nginx config file
+    mv ./docker/nginx/default-conf /etc/nginx/sites-available/default
 
-# delete unnecessary for production in shared
-WORKDIR /usr/local/app/shared
-RUN rm -rf !(dist|node_modules|package.json)
-
-# delete unnecessary for production in backend
-WORKDIR /usr/local/app/backend
-RUN rm -rf !(dist|node_modules|package.json)
-
-# delete unnecessary for production in root folder
-WORKDIR /usr/local/app
-RUN rm -rf !(frontend|shared|backend|docker)
-
-# set nginx frontend file rights
-RUN chown -R www-data:www-data /usr/local/app/frontend/dist/digital-fuesim-manv
-
-#nginx config file
-COPY ./docker/nginx/default-conf /etc/nginx/sites-available/default
-
-#copy docker-entrypoint.sh file into the container
-COPY ./docker/docker-entrypoint.sh /docker-entrypoint.sh
-
-#make it executable
-RUN chmod +x /docker-entrypoint.sh
+# TODO dont even install cypress into the container (right now under /root/.cache/Cypress)
 
 #needed for npm run start:once in docker-entrypoint.sh
 WORKDIR /usr/local/app/backend
