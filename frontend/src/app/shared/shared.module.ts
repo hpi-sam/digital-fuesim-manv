@@ -11,6 +11,8 @@ import { TransferPointNameComponent } from './components/transfer-point-name/tra
 import { FormatDurationPipe } from './pipes/format-duration.pipe';
 import { LetDirective } from './directives/let.directive';
 import { UrlValidatorDirective } from './validation/url-validator.directive';
+import { ViewportNameComponent } from './components/viewport-name/viewport-name.component';
+import { IntegerValidatorDirective } from './validation/integer-validator.directive';
 
 @NgModule({
     declarations: [
@@ -25,6 +27,8 @@ import { UrlValidatorDirective } from './validation/url-validator.directive';
         FormatDurationPipe,
         LetDirective,
         UrlValidatorDirective,
+        ViewportNameComponent,
+        IntegerValidatorDirective,
     ],
     imports: [CommonModule],
     exports: [
@@ -39,6 +43,8 @@ import { UrlValidatorDirective } from './validation/url-validator.directive';
         FormatDurationPipe,
         LetDirective,
         UrlValidatorDirective,
+        ViewportNameComponent,
+        IntegerValidatorDirective,
     ],
 })
 export class SharedModule {}

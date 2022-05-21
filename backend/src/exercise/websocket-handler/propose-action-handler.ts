@@ -65,9 +65,9 @@ export const registerProposeActionHandler = (
                 });
                 return;
             }
-            // 4. apply action (+ save to timeline)
+            // 4. apply & broadcast action (+ save to timeline)
             try {
-                exerciseWrapper.reduce(action, {
+                exerciseWrapper.applyAction(action, {
                     emitterId: clientWrapper.client.id,
                     emitterName: clientWrapper.client.name,
                 });
@@ -81,10 +81,7 @@ export const registerProposeActionHandler = (
                 }
                 throw error;
             }
-            // 5. TODO: determine affected clients - don't send to clients in other exercises
-            // 6. send new state to all affected clients
-            exerciseWrapper.emitAction(action);
-            // 7. send success response to emitting client
+            // 5. send success response to emitting client
             callback({
                 success: true,
             });
