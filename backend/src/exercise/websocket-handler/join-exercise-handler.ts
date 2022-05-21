@@ -10,6 +10,7 @@ export const registerJoinExerciseHandler = (
         client,
         'joinExercise',
         (exerciseId: string, clientName: string, callback): void => {
+            // When this listener is registered the socket is in the map.
             const clientWrapper = clientMap.get(client)!;
             if (clientWrapper.exercise) {
                 callback({
