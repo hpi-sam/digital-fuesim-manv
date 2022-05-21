@@ -1,7 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsDefined, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, UUIDSet, uuidValidationOptions } from '../utils';
-import { Hospital } from './hospital';
 import type { ImageProperties } from './utils';
 import { getCreate, Position } from './utils';
 

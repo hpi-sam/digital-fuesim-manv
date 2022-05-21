@@ -4,7 +4,6 @@ import { Hospital } from '../../models';
 import { HospitalPatient } from '../../models/hospital-patient';
 import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
 import { deleteVehicle } from './vehicle';
 import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
@@ -87,6 +86,7 @@ export namespace HospitalActionReducers {
                     hospitalId
                 );
                 const vehicle = getElement(draftState, 'vehicles', vehicleId);
+                // TODO block vehicles without completely loaded (personnel and material gets deleted even outside the vehicle)
                 for (const patientId of Object.keys(vehicle.patientIds)) {
                     const patient = getElement(
                         draftState,

@@ -9,6 +9,7 @@ import { ReducerError } from '../../reducer-error';
 export function getElement<
     ElementType extends
         | 'clients'
+        | 'hospitals'
         | 'mapImages'
         | 'materials'
         | 'patients'
@@ -16,7 +17,6 @@ export function getElement<
         | 'transferPoints'
         | 'vehicles'
         | 'viewports'
-        | 'hospitals'
 >(
     state: Mutable<ExerciseState>,
     elementType: ElementType,
