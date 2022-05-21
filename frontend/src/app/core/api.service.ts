@@ -186,6 +186,7 @@ export class ApiService {
             });
             return { success: false };
         }
+        // TODO: throw if `response.success` is false
         return this.optimisticActionHandler.proposeAction(action, optimistic);
     }
 
@@ -257,15 +258,5 @@ export class ApiService {
                 }
                 return false;
             });
-    }
-
-    /**
-     * Call a {@link url} and return its status
-     * @param url The URL to call
-     * @returns The status of the call to {@link url}
-     */
-    public async getUrlStatus(url: string) {
-        const response = await fetch(url);
-        return response.status;
     }
 }

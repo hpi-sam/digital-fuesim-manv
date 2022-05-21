@@ -1,6 +1,7 @@
 import { ClientActionReducers } from './client';
 import { ExerciseActionReducers } from './exercise';
 import { ExerciseSettingsActionReducers } from './exercise-settings';
+import { MapImageTemplatesActionReducers } from './map-image-templates';
 import { MapImagesActionReducers } from './map-images';
 import { MaterialActionReducers } from './material';
 import { PatientActionReducers } from './patient';
@@ -24,6 +25,7 @@ const actionReducers = {
     ...ViewportActionReducers,
     ...TransferPointActionReducers,
     ...ExerciseSettingsActionReducers,
+    ...MapImageTemplatesActionReducers,
     ...TransferActionReducers,
 };
 

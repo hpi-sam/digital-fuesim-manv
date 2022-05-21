@@ -1,0 +1,60 @@
+<div class="modal-header">
+    <h4 class="modal-title">Auswertung</h4>
+    <button type="button" class="btn-close" (click)="close()"></button>
+</div>
+<div class="modal-body">
+    <div ngbDropdown>
+        <button
+            class="btn btn-outline-primary"
+            title="Bereich für Statistik auswählen"
+            ngbDropdownToggle
+        >
+            <app-viewport-name
+                *ngIf="
+                    areaStatisticsService.areaId$ | async as areaId;
+                    else noArea
+                "
+                [viewportId]="areaId"
+            ></app-viewport-name>
+            <ng-template #noArea> Gesamt </ng-template>
+        </button>
+        <div ngbDropdownMenu>
+            <button
+                ngbDropdownItem
+                (click)="areaStatisticsService.setAreaId(null)"
+            >
+                Gesamt
+            </button>
+            <button
+                *ngFor="let viewport of viewports$ | async | keyvalue"
+                ngbDropdownItem
+                (click)="areaStatisticsService.setAreaId(viewport.key)"
+            >
+                <app-viewport-name
+                    [viewportId]="viewport.key"
+                ></app-viewport-name>
+            </button>
+        </div>
+    </div>
+    <br />
+    <h3>Patienten</h3>
+    <app-stacked-bar-chart
+        *ngIf="patientsStatistics$ | async as statistics"
+        [statistics]="statistics"
+    ></app-stacked-bar-chart>
+    <br />
+    <h3>Fahrzeuge</h3>
+    <app-stacked-bar-chart
+        *ngIf="vehiclesStatistics$ | async as statistics"
+        [statistics]="statistics"
+    ></app-stacked-bar-chart>
+    <br />
+    <h3>
+        Einsatzkräfte
+        <small class="text-muted">(weder im Transfer noch im Fahrzeug)</small>
+    </h3>
+    <app-stacked-bar-chart
+        *ngIf="personnelStatistics$ | async as statistics"
+        [statistics]="statistics"
+    ></app-stacked-bar-chart>
+</div>
