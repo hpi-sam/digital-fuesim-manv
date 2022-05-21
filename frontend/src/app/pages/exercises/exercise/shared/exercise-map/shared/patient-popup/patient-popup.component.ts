@@ -6,10 +6,7 @@ import { healthPointsDefaults, statusNames } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import {
-    getSelectClient,
-    getSelectPatient,
-} from 'src/app/state/exercise/exercise.selectors';
+import { getSelectPatient } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({
@@ -24,9 +21,6 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public patient$?: Observable<Patient>;
-    public client$ = this.store.select(
-        getSelectClient(this.apiService.ownClientId!)
-    );
 
     public currentYear = new Date().getFullYear();
 
@@ -35,7 +29,7 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService
+        public readonly apiService: ApiService
     ) {}
 
     ngOnInit(): void {

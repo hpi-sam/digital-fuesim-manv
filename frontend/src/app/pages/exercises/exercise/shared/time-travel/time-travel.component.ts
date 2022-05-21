@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ApiService } from 'src/app/core/api.service';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
 
@@ -9,7 +10,10 @@ import { openTransferOverviewModal } from '../transfer-overview/open-transfer-ov
     styleUrls: ['./time-travel.component.scss'],
 })
 export class TimeTravelComponent {
-    constructor(private readonly modalService: NgbModal) {}
+    constructor(
+        private readonly modalService: NgbModal,
+        public readonly apiService: ApiService
+    ) {}
 
     public openClientOverview() {
         openClientOverviewModal(this.modalService);

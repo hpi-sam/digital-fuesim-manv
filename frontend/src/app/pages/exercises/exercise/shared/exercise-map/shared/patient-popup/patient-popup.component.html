@@ -11,9 +11,9 @@
             class="badge rounded-pill font-monospace"
         >
             {{
-                (client$ | async)?.role === 'trainer'
+                (apiService.currentRole$ | async) !== 'participant'
                     ? (patient.health / healthPointsDefaults.max | percent)
-                    : statusNames[patient.visibleStatus ?? 'white']
+                    : statusNames[patient.visibleStatus || 'white']
             }}
         </span>
         <button
@@ -61,7 +61,9 @@
                         {{ patient.personalInformation.address }}
                     </td>
                 </tr>
-                <ng-container *ngIf="(client$ | async)?.role === 'trainer'">
+                <ng-container
+                    *ngIf="(apiService.currentRole$ | async) !== 'participant'"
+                >
                     <tr>
                         <th scope="col">Beschreibung</th>
                         <td class="font-monospace">

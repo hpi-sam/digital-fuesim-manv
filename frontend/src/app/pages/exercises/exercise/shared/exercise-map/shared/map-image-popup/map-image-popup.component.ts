@@ -7,10 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
-import {
-    getSelectClient,
-    getSelectMapImage,
-} from 'src/app/state/exercise/exercise.selectors';
+import { getSelectMapImage } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({
@@ -26,10 +23,6 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
 
     public mapImage$?: Observable<MapImage>;
 
-    public readonly client$ = this.store.select(
-        getSelectClient(this.apiService.ownClientId!)
-    );
-
     public url?: string;
     public height?: number;
     // TODO: Allow changing this (with effect)
@@ -37,7 +30,7 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService,
+        public readonly apiService: ApiService,
         private readonly messageService: MessageService
     ) {}
 

@@ -1,23 +1,27 @@
 <div
-    *ngIf="client$ | async as client"
+    *ngIf="apiService.currentRole$ | async as role"
     class="p-2 d-flex flex-column"
     style="height: 100vh"
 >
-    <div *ngIf="participantId$ | async as participantId" class="container">
+    <div class="container">
         <h2>
             Übung:
-            <span class="font-monospace fw-bold user-select-all">{{
-                participantId
-            }}</span>
-            <app-exercise-state-badge class="ms-3"></app-exercise-state-badge>
+            <ng-container *ngIf="participantId$ | async as participantId">
+                <span class="font-monospace fw-bold user-select-all">{{
+                    participantId
+                }}</span>
+                <app-exercise-state-badge
+                    class="ms-3"
+                ></app-exercise-state-badge>
+                <button
+                    (click)="shareExercise(participantId)"
+                    class="btn btn-light ms-3"
+                >
+                    Teilnehmerlink teilen
+                </button>
+            </ng-container>
             <button
-                (click)="shareExercise(participantId)"
-                class="btn btn-light ms-3"
-            >
-                Teilnehmerlink teilen
-            </button>
-            <button
-                *ngIf="client.role === 'trainer'"
+                *ngIf="role !== 'participant'"
                 (click)="shareExercise(exerciseId!)"
                 class="btn btn-outline-warning ms-3"
             >
@@ -25,13 +29,14 @@
             </button>
 
             <div
-                *ngIf="client.role === 'trainer'"
+                *ngIf="role !== 'participant'"
                 class="form-check form-switch d-inline-block float-end"
             >
                 <input
                     class="form-check-input"
                     type="checkbox"
-                    [(ngModel)]="timeTravelService.isTimeTraveling"
+                    [ngModel]="apiService.isTimeTraveling"
+                    (ngModelChange)="apiService.toggleTimeTravel()"
                 />
                 <label class="form-check-label">Zeitreise</label>
             </div>
@@ -39,20 +44,24 @@
     </div>
 
     <div class="flex-fill">
-        <ng-container *ngIf="!client.isInWaitingRoom; else waitingRoomTemplate">
+        <ng-container
+            *ngIf="
+                !(apiService.ownClient$ | async)?.isInWaitingRoom;
+                else waitingRoomTemplate
+            "
+        >
             <div
-                *ngIf="client.role === 'participant'"
+                *ngIf="role === 'participant'"
                 class="h-100 rounded overflow-hidden"
             >
                 <app-exercise-map></app-exercise-map>
             </div>
-
-            <ng-container *ngIf="client.role === 'trainer'">
+            <ng-container>
                 <app-trainer-map-editor
-                    *ngIf="!timeTravelService.isTimeTraveling"
+                    *ngIf="role === 'trainer'"
                 ></app-trainer-map-editor>
                 <app-time-travel
-                    *ngIf="timeTravelService.isTimeTraveling"
+                    *ngIf="role === 'timeTravel'"
                 ></app-time-travel>
             </ng-container>
         </ng-container>

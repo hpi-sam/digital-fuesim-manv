@@ -4,12 +4,8 @@ import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
-import { TimeTravelService } from 'src/app/core/time-travel.service';
 import type { AppState } from 'src/app/state/app.state';
-import {
-    getSelectClient,
-    selectParticipantId,
-} from 'src/app/state/exercise/exercise.selectors';
+import { selectParticipantId } from 'src/app/state/exercise/exercise.selectors';
 
 @Component({
     selector: 'app-exercise',
@@ -21,15 +17,11 @@ export class ExerciseComponent implements OnDestroy {
 
     public readonly exerciseId = this.apiService.exerciseId;
     public readonly participantId$ = this.store.select(selectParticipantId);
-    public client$ = this.store.select(
-        getSelectClient(this.apiService.ownClientId!)
-    );
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService,
-        private readonly messageService: MessageService,
-        public readonly timeTravelService: TimeTravelService
+        public readonly apiService: ApiService,
+        private readonly messageService: MessageService
     ) {}
 
     public shareExercise(exerciseId: string) {
