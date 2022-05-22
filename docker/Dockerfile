@@ -27,7 +27,7 @@ ARG PRODUCTION_PATH
 
 # Disable interactive frontend to prevent install dialogues
 ARG DEBIAN_FRONTEND=noninteractive
-# set production patch
+# set production path
 
 WORKDIR $PRODUCTION_PATH
 
@@ -35,8 +35,8 @@ WORKDIR $PRODUCTION_PATH
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install --no-install-recommends \
-    nginx \
-    ca-certificates -y && \
+        nginx \
+        ca-certificates -y && \
     rm -rf /var/lib/apt/lists/*
 
 # copy frontend
