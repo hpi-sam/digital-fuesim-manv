@@ -15,7 +15,6 @@ import { selectParticipantId } from 'src/app/state/exercise/exercise.selectors';
 export class ExerciseComponent implements OnDestroy {
     private readonly destroy = new Subject<void>();
 
-    public readonly exerciseId = this.apiService.exerciseId;
     public readonly participantId$ = this.store.select(selectParticipantId);
 
     constructor(

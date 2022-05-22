@@ -22,7 +22,7 @@
             </ng-container>
             <button
                 *ngIf="role !== 'participant'"
-                (click)="shareExercise(exerciseId!)"
+                (click)="shareExercise(apiService.exerciseId!)"
                 class="btn btn-outline-warning ms-3"
             >
                 Übungsleiterlink teilen

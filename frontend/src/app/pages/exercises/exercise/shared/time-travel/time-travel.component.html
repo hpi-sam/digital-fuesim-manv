@@ -10,7 +10,10 @@
             Transferübersicht
         </button>
     </div>
-    <div *ngIf="apiService.timeConstraints as timeConstraints" class="pt-3">
+    <div
+        *ngIf="apiService.timeConstraints$ | async as timeConstraints"
+        class="pt-3"
+    >
         <input
             type="range"
             [min]="timeConstraints.start"
@@ -18,7 +21,7 @@
             step="1000"
             class="form-range w-100"
             [disabled]="timeConstraints.start === timeConstraints.end"
-            [ngModel]="apiService.currentExerciseTime"
+            [ngModel]="timeConstraints.current"
             (ngModelChange)="apiService.jumpToTime($event)"
         />
     </div>
