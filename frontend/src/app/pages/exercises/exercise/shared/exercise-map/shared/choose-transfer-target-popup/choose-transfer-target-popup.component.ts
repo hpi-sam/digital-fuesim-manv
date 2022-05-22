@@ -1,10 +1,13 @@
 import type { OnInit } from '@angular/core';
 import { EventEmitter, Output, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { TransferPoint, UUID } from 'digital-fuesim-manv-shared';
+import type { Hospital, TransferPoint, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
-import { getSelectReachableTransferPoints } from 'src/app/state/exercise/exercise.selectors';
+import {
+    getSelectReachableHospitals,
+    getSelectReachableTransferPoints,
+} from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({
@@ -23,11 +26,16 @@ export class ChooseTransferTargetPopupComponent
 
     public reachableTransferPoints$?: Observable<TransferPoint[]>;
 
+    public reachableHospitals$?: Observable<Hospital[]>;
+
     constructor(public readonly store: Store<AppState>) {}
 
     ngOnInit(): void {
         this.reachableTransferPoints$ = this.store.select(
             getSelectReachableTransferPoints(this.transferPointId)
+        );
+        this.reachableHospitals$ = this.store.select(
+            getSelectReachableHospitals(this.transferPointId)
         );
     }
 

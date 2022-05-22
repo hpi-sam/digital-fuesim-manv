@@ -30,7 +30,6 @@ export function deleteVehicle(
         .forEach(([patientId]) => deletePatient(draftState, patientId));
     // Delete the vehicle
     delete draftState.vehicles[vehicleId];
-    // TODO does deleteVehicle needs to return the draftState?
 }
 
 export class AddVehicleAction implements Action {
@@ -174,7 +173,6 @@ export namespace VehicleActionReducers {
         action: RemoveVehicleAction,
         reducer: (draftState, { vehicleId }) => {
             deleteVehicle(draftState, vehicleId);
-            // TODO does deleteVehicle needs to return the draftState?
             return draftState;
         },
         rights: 'trainer',

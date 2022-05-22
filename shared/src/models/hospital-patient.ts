@@ -9,6 +9,7 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
+import type { Mutable } from '../utils';
 import { UUID, uuidValidationOptions } from '../utils';
 import {
     PatientStatus,
@@ -19,11 +20,14 @@ import {
 } from './utils';
 import { PersonalInformation } from './utils/personal-information';
 import { BiometricInformation } from './utils/biometric-information';
-import type { PatientHealthState } from '.';
+import type { Patient, PatientHealthState } from '.';
 
 export class HospitalPatient {
+    /**
+     * Id of the patient that was transported to a hospital, the original patient gets deleted
+     */
     @IsUUID(4, uuidValidationOptions)
-    public readonly id: UUID;
+    public readonly patientId: UUID;
 
     /**
      * The time the patient started to be sent to a hospital
@@ -87,8 +91,7 @@ export class HospitalPatient {
      * @deprecated Use {@link create} instead
      */
     constructor(
-        // TODO: Specify patient data (e.g. injuries, name, etc.)
-        id: UUID,
+        patientId: UUID,
         startTime: number,
         arrivalTime: number,
         personalInformation: PersonalInformation,
@@ -101,7 +104,7 @@ export class HospitalPatient {
         health: HealthPoints,
         healthDescription: string
     ) {
-        this.id = id;
+        this.patientId = patientId;
         this.startTime = startTime;
         this.arrivalTime = arrivalTime;
         this.personalInformation = personalInformation;
@@ -116,4 +119,32 @@ export class HospitalPatient {
     }
 
     static readonly create = getCreate(this);
+
+    /**
+     * used to create a Mutable\<HospitalPatient\> inside action-reducers/hospital.ts
+     * @param patient that should be copied
+     * @param startTime time the transport starts
+     * @param arrivalTime time the patient would arrive at a hospital
+     * @returns a Mutable\<HospitalPatient\>
+     */
+    static createFromPatient(
+        patient: Mutable<Patient>,
+        startTime: number,
+        arrivalTime: number
+    ) {
+        return HospitalPatient.create(
+            patient.id,
+            startTime,
+            arrivalTime,
+            patient.personalInformation,
+            patient.biometricInformation,
+            patient.visibleStatus,
+            patient.realStatus,
+            patient.healthStates,
+            patient.currentHealthStateId,
+            patient.image,
+            patient.health,
+            patient.healthDescription
+        ) as Mutable<HospitalPatient>;
+    }
 }

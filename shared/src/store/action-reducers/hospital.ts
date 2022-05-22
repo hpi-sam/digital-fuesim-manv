@@ -33,9 +33,9 @@ export class RemoveHospitalAction implements Action {
     public readonly hospitalId!: UUID;
 }
 
-export class AddPatientToHospitalAction implements Action {
+export class TransportPatientToHospitalAction implements Action {
     @IsString()
-    public readonly type = '[Hospital] Add patientToHospital';
+    public readonly type = '[Hospital] Transport patient to hospital';
     @IsUUID(4, uuidValidationOptions)
     public readonly hospitalId!: UUID;
 
@@ -66,19 +66,26 @@ export namespace HospitalActionReducers {
     export const removeHospital: ActionReducer<RemoveHospitalAction> = {
         action: RemoveHospitalAction,
         reducer: (draftState, { hospitalId }) => {
-            // Check if the Hospital exists
-            getElement(draftState, 'hospitals', hospitalId);
-            // TODO Delete related hospital patient or make a hospital undeletable (at all or when at leas one patient is in it)
-            // Delete the Hospital
+            const hospital = getElement(draftState, 'hospitals', hospitalId);
+            // TODO maybe make a hospital undeletable (if at least one patient is in it)
+            for (const patientId of Object.keys(hospital.patientIds)) {
+                delete draftState.hospitalPatients[patientId];
+            }
+            for (const transferPoint of Object.keys(
+                draftState.transferPoints
+            )) {
+                delete draftState.transferPoints[transferPoint]
+                    .reachableHospitals[hospitalId];
+            }
             delete draftState.hospitals[hospitalId];
             return draftState;
         },
         rights: 'trainer',
     };
 
-    export const addPatientToHospital: ActionReducer<AddPatientToHospitalAction> =
+    export const transportPatientToHospital: ActionReducer<TransportPatientToHospitalAction> =
         {
-            action: AddPatientToHospitalAction,
+            action: TransportPatientToHospitalAction,
             reducer: (draftState, { hospitalId, vehicleId }) => {
                 const hospital = getElement(
                     draftState,
@@ -93,20 +100,12 @@ export namespace HospitalActionReducers {
                         'patients',
                         patientId
                     );
-                    HospitalPatient.create(
-                        patientId,
-                        draftState.currentTime,
-                        hospital.transportDuration + draftState.currentTime,
-                        patient.personalInformation,
-                        patient.biometricInformation,
-                        patient.visibleStatus,
-                        patient.realStatus,
-                        patient.healthStates,
-                        patient.currentHealthStateId,
-                        patient.image,
-                        patient.health,
-                        patient.healthDescription
-                    );
+                    draftState.hospitalPatients[patientId] =
+                        HospitalPatient.createFromPatient(
+                            patient,
+                            draftState.currentTime,
+                            hospital.transportDuration + draftState.currentTime
+                        );
                 }
                 deleteVehicle(draftState, vehicleId);
                 calculateTreatments(draftState);

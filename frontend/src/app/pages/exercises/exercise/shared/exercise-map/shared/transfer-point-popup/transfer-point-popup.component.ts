@@ -1,7 +1,7 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { TransferPoint, UUID } from 'digital-fuesim-manv-shared';
+import type { Hospital, TransferPoint, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
@@ -31,6 +31,8 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public transferPoint$?: Observable<TransferPoint>;
+
+    public hospitals$?: Observable<Hospital>;
 
     public get activeNavId() {
         return activeNavId;
@@ -110,6 +112,22 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
             type: '[TransferPoint] Disconnect TransferPoints',
             transferPointId1: this.transferPointId,
             transferPointId2: transferPointId,
+        });
+    }
+
+    public connectHospital(hospitalId: UUID) {
+        this.apiService.proposeAction({
+            type: '[TransferPoint] Connect hospital',
+            transferPointId: this.transferPointId,
+            hospitalId,
+        });
+    }
+
+    public disconnectHospital(hospitalId: UUID) {
+        this.apiService.proposeAction({
+            type: '[TransferPoint] Disconnect hospital',
+            transferPointId: this.transferPointId,
+            hospitalId,
         });
     }
 }
