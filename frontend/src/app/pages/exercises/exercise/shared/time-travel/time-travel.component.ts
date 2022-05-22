@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from 'src/app/core/api.service';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
+import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercise-statistics-modal';
 import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
 
 @Component({
@@ -21,5 +22,9 @@ export class TimeTravelComponent {
 
     public openTransferOverview() {
         openTransferOverviewModal(this.modalService);
+    }
+
+    public openExerciseStatisticsModal() {
+        openExerciseStatisticsModal(this.modalService);
     }
 }

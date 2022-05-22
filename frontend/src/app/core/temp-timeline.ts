@@ -24,7 +24,7 @@ export function addAction(action: ExerciseAction) {
 export function setInitialState(initialState: ExerciseState) {
     tempTimeLine = {
         actionsWrappers: [],
-        initialState,
+        initialState: cloneDeepMutable(initialState),
     };
 }
 

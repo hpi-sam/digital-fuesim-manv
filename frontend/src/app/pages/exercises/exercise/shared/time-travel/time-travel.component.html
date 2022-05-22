@@ -9,6 +9,12 @@
         <button (click)="openTransferOverview()" class="btn btn-primary ms-3">
             Transferübersicht
         </button>
+        <button
+            (click)="openExerciseStatisticsModal()"
+            class="btn btn-primary ms-3"
+        >
+            Statistiken
+        </button>
     </div>
     <div
         *ngIf="apiService.timeConstraints$ | async as timeConstraints"

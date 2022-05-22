@@ -21,7 +21,6 @@ import { getStateSnapshot } from '../state/get-state-snapshot';
 import { httpOrigin } from './api-origins';
 import { MessageService } from './messages/message.service';
 import { PresentExerciseHelper } from './present-exercise-helper';
-import { getTimeLine } from './temp-timeline';
 import { TimeTravelHelper } from './time-travel-helper';
 
 @Injectable({
@@ -84,9 +83,7 @@ export class ApiService {
             this.isTimeTraveling
                 ? this.presentState!
                 : getStateSnapshot(this.store).exercise,
-        (state) => this.store.dispatch(setExerciseState(state)),
-        // TODO: get from the server
-        async () => getTimeLine()
+        (state) => this.store.dispatch(setExerciseState(state))
     );
 
     public readonly jumpToTime = this.timeTravelHelper.jumpToTime.bind(
