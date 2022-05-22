@@ -3,13 +3,14 @@ import { Injectable } from '@angular/core';
 import type { Action } from '@ngrx/store';
 import { Store } from '@ngrx/store';
 import type {
+    Client,
     ExerciseAction,
     ExerciseIds,
     ExerciseState,
 } from 'digital-fuesim-manv-shared';
 import { reduceExerciseState } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import { combineLatest, lastValueFrom, map, of, switchMap } from 'rxjs';
+import { lastValueFrom, map, of, switchMap } from 'rxjs';
 import type { AppState } from '../state/app.state';
 import {
     applyServerAction,
@@ -34,7 +35,7 @@ export class ApiService {
     ) {}
 
     private presentState?: ExerciseState;
-    // TODO: THese are currently not used
+    // TODO: These are currently not used
     private presentActionsQueue: Action[] = [];
 
     private readonly presentExerciseHelper = new PresentExerciseHelper(
@@ -83,7 +84,7 @@ export class ApiService {
             this.isTimeTraveling
                 ? this.presentState!
                 : getStateSnapshot(this.store).exercise,
-        () => this.store.dispatch(setExerciseState(this.presentState!)),
+        (state) => this.store.dispatch(setExerciseState(state)),
         // TODO: get from the server
         async () => getTimeLine()
     );
@@ -110,30 +111,34 @@ export class ApiService {
 
     /**
      * Emits either the users own client in the state or
-     * undefined if time travel is active or the user is not joined to an exercise
+     * undefined if the user is not joined to an exercise or
+     * null if time travel is active
      */
     public readonly ownClient$ = this.timeTravelHelper.isTimeTraveling$.pipe(
         switchMap((isTimeTraveling) =>
             isTimeTraveling ? of(null) : this.presentExerciseHelper.ownClientId$
         ),
-        map((clientId) =>
+        switchMap((clientId) =>
             clientId
-                ? getSelectClient(clientId)(getStateSnapshot(this.store))
-                : undefined
+                ? this.store.select(getSelectClient(clientId))
+                : // clientId is expected to never be the empty string
+                  of(clientId as null | undefined)
         )
     );
 
     public get currentRole() {
-        return this.ownClientId
+        const ownClient = this.ownClientId
             ? getSelectClient(this.ownClientId)(getStateSnapshot(this.store))
-                  .role
-            : 'timeTravel';
+            : // clientId is expected to never be the empty string
+              (this.ownClientId as null | undefined);
+        return this.getCurrentRole(ownClient);
     }
-    public currentRole$: Observable<this['currentRole']> = combineLatest<any>([
-        this.presentExerciseHelper.ownClientId$,
-        // TODO: Race condition: the store must have been updated before we execute this callback
-        this.timeTravelHelper.isTimeTraveling$,
-    ]).pipe(map(() => this.currentRole));
+    public currentRole$: Observable<this['currentRole']> = this.ownClient$.pipe(
+        map((ownClient) => this.getCurrentRole(ownClient))
+    );
+    private getCurrentRole(ownClient: Client | null | undefined) {
+        return ownClient ? ownClient.role : 'timeTravel';
+    }
 
     public toggleTimeTravel() {
         if (this.isTimeTraveling) {

@@ -1,7 +1,7 @@
 import type { ExerciseAction, ExerciseState } from 'digital-fuesim-manv-shared';
 import { applyAction } from 'digital-fuesim-manv-shared';
 import produce from 'immer';
-import { BehaviorSubject, map } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, map } from 'rxjs';
 
 export class TimeTravelHelper {
     constructor(
@@ -27,7 +27,8 @@ export class TimeTravelHelper {
         return !!this.timeConstraints;
     }
     public readonly isTimeTraveling$ = this.timeConstraints$.pipe(
-        map(() => this.isTimeTraveling)
+        map(() => this.isTimeTraveling),
+        distinctUntilChanged()
     );
 
     public async startTimeTravel() {
@@ -41,7 +42,7 @@ export class TimeTravelHelper {
     }
 
     public stopTimeTravel() {
-        this.setTimeConstraints(this.timeConstraints);
+        this.setTimeConstraints(undefined);
         this.exerciseTimeline = undefined;
         // TODO: clean up cache if available
     }
