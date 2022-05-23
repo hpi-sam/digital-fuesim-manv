@@ -2,33 +2,99 @@
     <div class="rounded overflow-hidden flex-fill">
         <app-exercise-map></app-exercise-map>
     </div>
-    <div class="pt-2">
-        <button (click)="openClientOverview()" class="btn btn-primary ms-3">
-            Teilnehmerübersicht
-        </button>
-        <button (click)="openTransferOverview()" class="btn btn-primary ms-3">
-            Transferübersicht
-        </button>
-        <button
-            (click)="openExerciseStatisticsModal()"
-            class="btn btn-primary ms-3"
-        >
-            Statistiken
-        </button>
-    </div>
-    <div
+    <ng-container
         *ngIf="apiService.timeConstraints$ | async as timeConstraints"
-        class="pt-3"
     >
-        <input
-            type="range"
-            [min]="timeConstraints.start"
-            [max]="timeConstraints.end"
-            step="1000"
-            class="form-range w-100"
-            [disabled]="timeConstraints.start === timeConstraints.end"
-            [ngModel]="timeConstraints.current"
-            (ngModelChange)="apiService.jumpToTime($event)"
-        />
-    </div>
+        <div class="pt-2">
+            <div class="d-inline-block">
+                <span
+                    class="fw-bolder fs-4 font-monospace align-top"
+                    title="Aktuelle Zeit"
+                    >{{ timeConstraints.current | formatDuration }}</span
+                >
+                <button
+                    [disabled]="
+                        timeConstraints.current === timeConstraints.start
+                    "
+                    (click)="apiService.jumpToTime(timeConstraints.start)"
+                    class="btn btn-secondary btn-sm ms-3"
+                    title="Zum Anfang"
+                >
+                    <i class="bi bi-skip-start-fill"></i>
+                </button>
+                <button
+                    [disabled]="
+                        timeConstraints.current === timeConstraints.start
+                    "
+                    (click)="
+                        apiService.jumpToTime(
+                            timeConstraints.current - timeStep
+                        )
+                    "
+                    class="btn btn-secondary btn-sm ms-2"
+                    [title]="timeStep / 1000 + 's rückwärts'"
+                >
+                    <i class="bi bi-skip-backward-fill"></i>
+                </button>
+                <button
+                    [disabled]="timeConstraints.current === timeConstraints.end"
+                    (click)="
+                        apiService.jumpToTime(
+                            timeConstraints.current + timeStep
+                        )
+                    "
+                    class="btn btn-secondary btn-sm ms-2"
+                    [title]="timeStep / 1000 + 's vorwärts'"
+                >
+                    <i class="bi bi-skip-forward-fill"></i>
+                </button>
+                <button
+                    [disabled]="timeConstraints.current === timeConstraints.end"
+                    (click)="apiService.jumpToTime(timeConstraints.end)"
+                    class="btn btn-secondary btn-sm ms-2"
+                    title="Zum Ende"
+                >
+                    <i class="bi bi-skip-end-fill"></i>
+                </button>
+            </div>
+            <div class="float-end">
+                <button
+                    (click)="openClientOverview()"
+                    class="btn btn-primary btn-sm"
+                >
+                    Teilnehmerübersicht
+                </button>
+                <button
+                    (click)="openTransferOverview()"
+                    class="btn btn-primary btn-sm ms-3"
+                >
+                    Transferübersicht
+                </button>
+                <button
+                    (click)="openExerciseStatisticsModal()"
+                    class="btn btn-primary btn-sm ms-3"
+                >
+                    Statistiken
+                </button>
+            </div>
+        </div>
+        <div class="pt-1">
+            <input
+                type="range"
+                [min]="timeConstraints.start"
+                [max]="timeConstraints.end"
+                step="1000"
+                class="form-range w-100"
+                [disabled]="timeConstraints.start === timeConstraints.end"
+                [ngModel]="timeConstraints.current"
+                (ngModelChange)="apiService.jumpToTime($event)"
+            />
+            <span class="text-muted font-monospace small">{{
+                timeConstraints.start | formatDuration
+            }}</span>
+            <span class="float-end text-muted font-monospace small">{{
+                timeConstraints.end | formatDuration
+            }}</span>
+        </div>
+    </ng-container>
 </div>

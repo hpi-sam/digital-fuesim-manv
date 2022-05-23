@@ -11,6 +11,11 @@ import { openTransferOverviewModal } from '../transfer-overview/open-transfer-ov
     styleUrls: ['./time-travel.component.scss'],
 })
 export class TimeTravelComponent {
+    /**
+     * How much time in ms should be fast forwarded/rewound
+     */
+    public readonly timeStep = 10 * 1000;
+
     constructor(
         private readonly modalService: NgbModal,
         public readonly apiService: ApiService

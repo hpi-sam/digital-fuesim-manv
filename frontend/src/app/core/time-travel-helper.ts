@@ -51,17 +51,25 @@ export class TimeTravelHelper {
         this.timeJumpHelper = undefined;
     }
 
+    /**
+     *
+     * @param exerciseTime The time to travel to, if it isn't in the timeConstraints, it will be clamped appropriately
+     */
     public async jumpToTime(exerciseTime: number): Promise<void> {
         if (!this.timeConstraints || !this.timeJumpHelper) {
             // TODO:
             throw new Error('Start the time travel before jumping to a time!');
         }
+        const clampedTime = Math.max(
+            this.timeConstraints.start,
+            Math.min(this.timeConstraints.end, exerciseTime)
+        );
         this.setTimeConstraints({
             ...this.timeConstraints,
-            current: exerciseTime,
+            current: clampedTime,
         });
         // Update the exercise store with the state
-        this.setState(this.timeJumpHelper.getStateAtTime(exerciseTime));
+        this.setState(this.timeJumpHelper.getStateAtTime(clampedTime));
     }
 
     private exerciseTimeline?: ExerciseTimeline;
