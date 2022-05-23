@@ -2,13 +2,54 @@ import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
 import { Position } from '../../models/utils';
+import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
-import { UUID, uuidValidationOptions } from '../../utils';
+import type { Mutable } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { deletePatient } from './patient';
 import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
+
+export function addVehicleToState(
+    draftState: Mutable<ExerciseState>,
+    vehicle: Vehicle,
+    materials: Material[],
+    personnel: Personnel[]
+) {
+    if (
+        materials.some(
+            (currentMaterial) =>
+                currentMaterial.vehicleId !== vehicle.id ||
+                vehicle.materialIds[currentMaterial.id] === undefined
+        ) ||
+        Object.keys(vehicle.materialIds).length !== materials.length
+    ) {
+        throw new ReducerError(
+            'Vehicle material ids do not match material ids'
+        );
+    }
+    if (
+        personnel.some(
+            (currentPersonnel) =>
+                currentPersonnel.vehicleId !== vehicle.id ||
+                vehicle.personnelIds[currentPersonnel.id] === undefined
+        ) ||
+        Object.keys(vehicle.personnelIds).length !== personnel.length
+    ) {
+        throw new ReducerError(
+            'Vehicle personnel ids do not match personnel ids'
+        );
+    }
+    draftState.vehicles[vehicle.id] = vehicle;
+    for (const currentMaterial of materials) {
+        draftState.materials[currentMaterial.id] = currentMaterial;
+    }
+    for (const person of personnel) {
+        draftState.personnel[person.id] = person;
+    }
+}
 
 export class AddVehicleAction implements Action {
     @IsString()
@@ -84,38 +125,9 @@ export class LoadVehicleAction implements Action {
 export namespace VehicleActionReducers {
     export const addVehicle: ActionReducer<AddVehicleAction> = {
         action: AddVehicleAction,
-        reducer: (draftState, { vehicle, materials, personnel }) => {
-            if (
-                materials.some(
-                    (currentMaterial) =>
-                        currentMaterial.vehicleId !== vehicle.id ||
-                        vehicle.materialIds[currentMaterial.id] === undefined
-                ) ||
-                Object.keys(vehicle.materialIds).length !== materials.length
-            ) {
-                throw new ReducerError(
-                    'Vehicle material ids do not match material ids'
-                );
-            }
-            if (
-                personnel.some(
-                    (currentPersonnel) =>
-                        currentPersonnel.vehicleId !== vehicle.id ||
-                        vehicle.personnelIds[currentPersonnel.id] === undefined
-                ) ||
-                Object.keys(vehicle.personnelIds).length !== personnel.length
-            ) {
-                throw new ReducerError(
-                    'Vehicle personnel ids do not match personnel ids'
-                );
-            }
-            draftState.vehicles[vehicle.id] = vehicle;
-            for (const currentMaterial of materials) {
-                draftState.materials[currentMaterial.id] = currentMaterial;
-            }
-            for (const person of personnel) {
-                draftState.personnel[person.id] = person;
-            }
+        reducer: (draftState, action) => {
+            const { vehicle, materials, personnel } = cloneDeepMutable(action);
+            addVehicleToState(draftState, vehicle, materials, personnel);
             return draftState;
         },
         rights: 'trainer',

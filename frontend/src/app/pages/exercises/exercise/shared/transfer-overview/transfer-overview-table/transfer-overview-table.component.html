@@ -35,9 +35,19 @@
                 {{ vehicle.name }}
             </td>
             <td class="align-middle">
-                <app-transfer-point-name
-                    [transferPointId]="vehicle.transfer.startTransferPointId"
-                ></app-transfer-point-name>
+                <div
+                    *ngIf="
+                        vehicle.transfer.startPoint.type === 'AlarmGroup';
+                        else TransferPoint
+                    "
+                >
+                    {{ vehicle.transfer.startPoint.name }}
+                </div>
+                <ng-template #TransferPoint>
+                    <app-transfer-point-name
+                        [transferPointId]="vehicle.transfer.startPoint.name"
+                    ></app-transfer-point-name>
+                </ng-template>
             </td>
             <td class="align-middle">
                 <app-transfer-target-input
@@ -68,9 +78,19 @@
                 </span>
             </td>
             <td class="align-middle">
-                <app-transfer-point-name
-                    [transferPointId]="personnel.transfer.startTransferPointId"
-                ></app-transfer-point-name>
+                <div
+                    *ngIf="
+                        personnel.transfer.startPoint.type === 'AlarmGroup';
+                        else TransferPoint
+                    "
+                >
+                    {{ personnel.transfer.startPoint.name }}
+                </div>
+                <ng-template #TransferPoint>
+                    <app-transfer-point-name
+                        [transferPointId]="personnel.transfer.startPoint.name"
+                    ></app-transfer-point-name>
+                </ng-template>
             </td>
             <td class="align-middle">
                 <app-transfer-target-input

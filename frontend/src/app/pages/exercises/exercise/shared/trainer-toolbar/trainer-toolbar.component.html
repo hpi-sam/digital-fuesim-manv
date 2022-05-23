@@ -13,6 +13,12 @@
         Alarmierungsgruppen
     </button>
     <button
+        (click)="openEmergencyOperationsCenter()"
+        class="btn btn-primary ms-3"
+    >
+        Leitstelle
+    </button>
+    <button
         *ngIf="(exerciseStatus$ | async) !== 'running'"
         (click)="pauseExercise()"
         class="btn btn-primary ms-3"

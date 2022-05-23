@@ -1,9 +1,28 @@
 import { IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
+import type { Personnel, Vehicle } from '../../models';
+import { StartPoint } from '../../models/utils/start-point';
+import type { ExerciseState } from '../../state';
+import type { Mutable } from '../../utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { getElement } from './utils/get-element';
 
+export function addTransfer(
+    draftState: Mutable<ExerciseState>,
+    element: Mutable<Personnel | Vehicle>,
+    startPoint: StartPoint,
+    targetTransferPointId: UUID,
+    duration: number
+) {
+    delete element.position;
+    element.transfer = {
+        startPoint,
+        targetTransferPointId,
+        endTimeStamp: draftState.currentTime + duration,
+        isPaused: false,
+    };
+}
 export class AddToTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Add to transfer';
@@ -88,14 +107,19 @@ export namespace TransferActionReducers {
                     `TransferPoint with id ${targetTransferPointId} is not reachable from ${startTransferPointId}`
                 );
             }
+
+            const startPoint = new StartPoint(
+                'TransferPoint',
+                startTransferPointId
+            );
             // The element is now in transfer
-            delete element.position;
-            element.transfer = {
-                startTransferPointId,
+            addTransfer(
+                draftState,
+                element,
+                startPoint,
                 targetTransferPointId,
-                endTimeStamp: draftState.currentTime + connection.duration,
-                isPaused: false,
-            };
+                connection.duration
+            );
             return draftState;
         },
         rights: 'participant',
