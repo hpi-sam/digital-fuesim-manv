@@ -91,7 +91,6 @@ export class OlMapManager {
         private readonly ngZone: NgZone,
         transferLinesService: TransferLinesService
     ) {
-        const _isTrainer = apiService.currentRole !== 'participant';
         // Layers
         const satelliteLayer = new TileLayer();
         this.store
@@ -130,13 +129,14 @@ export class OlMapManager {
             materialLayer,
         ];
         const translateInteraction = new Translate({
-            layers: _isTrainer
-                ? [
-                      ...alwaysTranslatableLayers,
-                      transferPointLayer,
-                      mapImagesLayer,
-                  ]
-                : alwaysTranslatableLayers,
+            layers:
+                this.apiService.currentRole === 'trainer'
+                    ? [
+                          ...alwaysTranslatableLayers,
+                          transferPointLayer,
+                          mapImagesLayer,
+                      ]
+                    : alwaysTranslatableLayers,
             hitTolerance: 10,
         });
 
@@ -163,10 +163,17 @@ export class OlMapManager {
         TranslateHelper.registerTranslateEvents(viewportTranslate);
         ModifyHelper.registerModifyEvents(viewportModify);
 
+        if (this.apiService.currentRole === 'timeTravel') {
+            viewportTranslate.setActive(false);
+            translateInteraction.setActive(false);
+            viewportModify.setActive(false);
+        }
+
         const alwaysInteractions = [translateInteraction];
-        const interactions = _isTrainer
-            ? [...alwaysInteractions, viewportTranslate, viewportModify]
-            : alwaysInteractions;
+        const interactions =
+            this.apiService.currentRole === 'trainer'
+                ? [...alwaysInteractions, viewportTranslate, viewportModify]
+                : alwaysInteractions;
 
         this.olMap = new OlMap({
             interactions: defaultInteractions().extend(interactions),
@@ -203,16 +210,9 @@ export class OlMapManager {
                 this.olMap!.hasFeatureAtPixel(event.pixel) ? 'pointer' : ''
             );
         });
-        // TODO:
-        // translateInteraction.on('translatestart', () => {
-        //     this.setCursorStyle('grabbing');
-        // });
-        // translateInteraction.on('translateend', () => {
-        //     this.setCursorStyle('');
-        // });
 
         // FeatureManagers
-        if (_isTrainer) {
+        if (this.apiService.currentRole === 'trainer') {
             this.registerFeatureElementManager(
                 new TransferLinesFeatureManager(transferLinesLayer),
                 this.store.select(selectTransferLines)
@@ -237,8 +237,7 @@ export class OlMapManager {
                 this.store,
                 this.olMap,
                 transferPointLayer,
-                this.apiService,
-                _isTrainer
+                this.apiService
             ),
             this.store.select(
                 getSelectVisibleElements(
@@ -313,8 +312,7 @@ export class OlMapManager {
                 this.store,
                 this.olMap,
                 mapImagesLayer,
-                this.apiService,
-                _isTrainer
+                this.apiService
             ),
             this.store.select(selectMapImages)
         );
@@ -329,8 +327,7 @@ export class OlMapManager {
                 this.store,
                 this.olMap,
                 viewportLayer,
-                this.apiService,
-                _isTrainer
+                this.apiService
             ),
             this.store.select(selectViewports)
         );

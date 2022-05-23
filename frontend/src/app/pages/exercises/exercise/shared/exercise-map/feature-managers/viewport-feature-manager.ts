@@ -40,8 +40,7 @@ export class ViewportFeatureManager
         store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<LineString>>,
-        private readonly apiService: ApiService,
-        private readonly isTrainer: boolean
+        private readonly apiService: ApiService
     ) {
         super(
             store,
@@ -133,7 +132,7 @@ export class ViewportFeatureManager
         feature: Feature<any>
     ): void {
         super.onFeatureClicked(event, feature);
-        if (!this.isTrainer) {
+        if (this.apiService.currentRole !== 'trainer') {
             return;
         }
         const zoom = this.olMap.getView().getZoom()!;
