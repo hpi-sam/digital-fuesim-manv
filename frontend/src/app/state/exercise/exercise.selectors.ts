@@ -15,6 +15,12 @@ export const selectPatientTemplates = (state: AppState) =>
     state.exercise.patientTemplates;
 export const selectMapImagesTemplates = (state: AppState) =>
     state.exercise.mapImageTemplates;
+export const getSelectMapImageTemplate =
+    (mapImageTemplateId: UUID) => (state: AppState) =>
+        state.exercise.mapImageTemplates.find(
+            (template) => template.id === mapImageTemplateId
+        );
+
 export const selectPatients = (state: AppState) => state.exercise.patients;
 export const selectVehicles = (state: AppState) => state.exercise.vehicles;
 export const selectPersonnel = (state: AppState) => state.exercise.personnel;
