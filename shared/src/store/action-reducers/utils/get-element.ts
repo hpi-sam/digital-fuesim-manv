@@ -8,6 +8,7 @@ import { ReducerError } from '../../reducer-error';
  */
 export function getElement<
     ElementType extends
+        | 'alarmGroups'
         | 'clients'
         | 'mapImages'
         | 'materials'

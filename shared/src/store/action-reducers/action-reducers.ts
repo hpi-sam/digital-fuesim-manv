@@ -1,3 +1,4 @@
+import { AlarmGroupActionReducers } from './alarm-group';
 import { ClientActionReducers } from './client';
 import { ExerciseActionReducers } from './exercise';
 import { ExerciseSettingsActionReducers } from './exercise-settings';
@@ -25,6 +26,7 @@ const actionReducers = {
     ...ViewportActionReducers,
     ...TransferPointActionReducers,
     ...ExerciseSettingsActionReducers,
+    ...AlarmGroupActionReducers,
     ...MapImageTemplatesActionReducers,
     ...TransferActionReducers,
 };
