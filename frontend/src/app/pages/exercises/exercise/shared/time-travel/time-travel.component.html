@@ -16,7 +16,7 @@
                     [disabled]="
                         timeConstraints.current === timeConstraints.start
                     "
-                    (click)="apiService.jumpToTime(timeConstraints.start)"
+                    (click)="jumpToTime(timeConstraints.start)"
                     class="btn btn-secondary btn-sm ms-3"
                     title="Zum Anfang"
                 >
@@ -26,11 +26,7 @@
                     [disabled]="
                         timeConstraints.current === timeConstraints.start
                     "
-                    (click)="
-                        apiService.jumpToTime(
-                            timeConstraints.current - timeStep
-                        )
-                    "
+                    (click)="jumpToTime(timeConstraints.current - timeStep)"
                     class="btn btn-secondary btn-sm ms-2"
                     [title]="timeStep / 1000 + 's rückwärts'"
                 >
@@ -38,11 +34,7 @@
                 </button>
                 <button
                     [disabled]="timeConstraints.current === timeConstraints.end"
-                    (click)="
-                        apiService.jumpToTime(
-                            timeConstraints.current + timeStep
-                        )
-                    "
+                    (click)="jumpToTime(timeConstraints.current + timeStep)"
                     class="btn btn-secondary btn-sm ms-2"
                     [title]="timeStep / 1000 + 's vorwärts'"
                 >
@@ -50,7 +42,7 @@
                 </button>
                 <button
                     [disabled]="timeConstraints.current === timeConstraints.end"
-                    (click)="apiService.jumpToTime(timeConstraints.end)"
+                    (click)="jumpToTime(timeConstraints.end)"
                     class="btn btn-secondary btn-sm ms-2"
                     title="Zum Ende"
                 >
@@ -87,7 +79,7 @@
                 class="form-range w-100"
                 [disabled]="timeConstraints.start === timeConstraints.end"
                 [ngModel]="timeConstraints.current"
-                (ngModelChange)="apiService.jumpToTime($event)"
+                (ngModelChange)="jumpToTime($event)"
             />
             <span class="text-muted font-monospace small">{{
                 timeConstraints.start | formatDuration

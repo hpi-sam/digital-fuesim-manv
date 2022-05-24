@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { throttle } from 'lodash';
 import { ApiService } from 'src/app/core/api.service';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercise-statistics-modal';
@@ -32,4 +33,13 @@ export class TimeTravelComponent {
     public openExerciseStatisticsModal() {
         openExerciseStatisticsModal(this.modalService);
     }
+
+    // We don't want to make too many time jumps when dragging the slider.
+    public readonly jumpToTime = throttle(
+        async (time) => this.apiService.jumpToTime(time),
+        250,
+        {
+            trailing: true,
+        }
+    );
 }
