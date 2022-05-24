@@ -3,6 +3,7 @@ import { defaultMapImagesTemplates } from './data/default-state/map-images-templ
 import { defaultPatientTemplates } from './data/default-state/patient-templates';
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
 import type {
+    AlarmGroup,
     Client,
     EocLogEntry,
     MapImage,
@@ -42,6 +43,7 @@ export class ExerciseState {
     public readonly hospitalPatients: {
         readonly [key: UUID]: HospitalPatient;
     } = {};
+    public readonly alarmGroups: { readonly [key: UUID]: AlarmGroup } = {};
     public readonly clients: { readonly [key: UUID]: Client } = {};
     public readonly patientTemplates = defaultPatientTemplates;
     public readonly vehicleTemplates = defaultVehicleTemplates;

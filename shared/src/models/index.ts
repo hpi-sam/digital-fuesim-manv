@@ -6,6 +6,7 @@ export { EocLogEntry } from './eoc-log-entry';
 export { VehicleTemplate } from './vehicle-template';
 export { Vehicle } from './vehicle';
 export { Viewport } from './viewport';
+export { AlarmGroup } from './alarm-group';
 export { TransferPoint } from './transfer-point';
 export { MapImage } from './map-image';
 export { TileMapProperties } from './tile-map-properties';
