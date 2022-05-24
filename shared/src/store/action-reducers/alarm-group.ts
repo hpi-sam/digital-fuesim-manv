@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
+import {
+    IsNumber,
+    IsString,
+    IsUUID,
+    Min,
+    ValidateNested,
+} from 'class-validator';
 import { AlarmGroup } from '../../models/alarm-group';
 import { AlarmGroupVehicle } from '../../models/utils/alarm-group-vehicle';
 import { UUID, uuidValidationOptions } from '../../utils';
@@ -55,6 +61,7 @@ export class EditAlarmGroupVehicleAction implements Action {
     public readonly alarmGroupVehicleId!: UUID;
 
     @IsNumber()
+    @Min(0)
     public readonly time!: number;
 }
 export class RemoveAlarmGroupVehicleAction implements Action {

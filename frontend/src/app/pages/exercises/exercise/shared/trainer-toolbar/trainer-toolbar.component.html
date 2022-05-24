@@ -13,7 +13,7 @@
         Alarmierungsgruppen
     </button>
     <button
-        *ngIf="(exerciseStatus$ | async) !== 'running'"
+        *ngIf="(exerciseStatus$ | async) === 'running'"
         (click)="pauseExercise()"
         class="btn btn-primary ms-3"
     >
