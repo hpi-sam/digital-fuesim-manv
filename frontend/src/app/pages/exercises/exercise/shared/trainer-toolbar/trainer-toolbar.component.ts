@@ -11,6 +11,7 @@ import { openClientOverviewModal } from '../client-overview/open-client-overview
 import { openExerciseSettingsModal } from '../exercise-settings/open-exercise-settings-modal';
 import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercise-statistics-modal';
 import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
+import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 
 @Component({
     selector: 'app-trainer-toolbar',
@@ -35,6 +36,10 @@ export class TrainerToolbarComponent {
 
     public openTransferOverview() {
         openTransferOverviewModal(this.modalService);
+    }
+
+    public openAlarmGroupOverview() {
+        openAlarmGroupOverviewModal(this.modalService);
     }
 
     public openExerciseSettings() {

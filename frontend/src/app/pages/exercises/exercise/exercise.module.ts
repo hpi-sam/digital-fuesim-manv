@@ -12,6 +12,7 @@ import { ExerciseStateBadgeComponent } from './shared/exercise-state-badge/exerc
 import { TransferOverviewModule } from './shared/transfer-overview/transfer-overview.module';
 import { ExerciseSettingsModalComponent } from './shared/exercise-settings/exercise-settings-modal/exercise-settings-modal.component';
 import { TimeTravelComponent } from './shared/time-travel/time-travel.component';
+import { AlarmGroupOverviewModule } from './shared/alarm-group-overview/alarm-group-overview.module';
 import { ExerciseStatisticsModule } from './shared/exercise-statistics/exercise-statistics.module';
 import { CreateImageTemplateModalComponent } from './shared/editor-panel/create-image-template-modal/create-image-template-modal.component';
 import { EditImageTemplateModalComponent } from './shared/editor-panel/edit-image-template-modal/edit-image-template-modal.component';
@@ -38,6 +39,7 @@ import { ImageTemplateFormComponent } from './shared/editor-panel/image-template
         ExerciseStatisticsModule,
         ExerciseMapModule,
         TransferOverviewModule,
+        AlarmGroupOverviewModule,
     ],
     exports: [ExerciseComponent],
 })

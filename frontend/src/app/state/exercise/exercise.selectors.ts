@@ -24,6 +24,8 @@ export const getSelectMapImageTemplate =
 export const selectPatients = (state: AppState) => state.exercise.patients;
 export const selectVehicles = (state: AppState) => state.exercise.vehicles;
 export const selectPersonnel = (state: AppState) => state.exercise.personnel;
+export const selectAlarmGroups = (state: AppState) =>
+    state.exercise.alarmGroups;
 export const getSelectPersonnel = (personnelId: UUID) => (state: AppState) =>
     state.exercise.personnel[personnelId];
 export const selectMaterials = (state: AppState) => state.exercise.materials;
@@ -35,6 +37,14 @@ export const getSelectMapImage = (mapImageId: UUID) => (state: AppState) =>
     state.exercise.mapImages[mapImageId];
 export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
     state.exercise.vehicles[vehicleId];
+// TODO: Refactor the !
+export const getSelectVehicleTemplate =
+    (vehicleTemplateId: UUID) => (state: AppState) =>
+        state.exercise.vehicleTemplates.find(
+            (vehicleTemplate) => vehicleTemplate.id === vehicleTemplateId
+        )!;
+export const getSelectAlarmGroup = (alarmGroupId: UUID) => (state: AppState) =>
+    state.exercise.alarmGroups[alarmGroupId];
 export const getSelectTransferPoint =
     (transferPointId: UUID) => (state: AppState) =>
         state.exercise.transferPoints[transferPointId];
