@@ -8,46 +8,51 @@
         <div class="pt-2">
             <div class="d-inline-block">
                 <span
-                    class="fw-bolder fs-4 font-monospace align-top"
+                    class="fw-bolder fs-4 font-monospace align-top me-3"
                     title="Aktuelle Zeit"
                     >{{ timeConstraints.current | formatDuration }}</span
                 >
                 <button
-                    [disabled]="
-                        timeConstraints.current === timeConstraints.start
-                    "
-                    (click)="jumpToTime(timeConstraints.start)"
-                    class="btn btn-secondary btn-sm ms-3"
-                    title="Zum Anfang"
+                    *ngIf="isReplaying"
+                    class="btn btn-sm btn-primary"
+                    title="Pause"
+                    (click)="stopReplay()"
                 >
-                    <i class="bi bi-skip-start-fill"></i>
+                    <i class="bi-pause-fill"></i>
                 </button>
-                <button
-                    [disabled]="
-                        timeConstraints.current === timeConstraints.start
-                    "
-                    (click)="jumpToTime(timeConstraints.current - timeStep)"
-                    class="btn btn-secondary btn-sm ms-2"
-                    [title]="timeStep / 1000 + 's rückwärts'"
-                >
-                    <i class="bi bi-skip-backward-fill"></i>
-                </button>
-                <button
-                    [disabled]="timeConstraints.current === timeConstraints.end"
-                    (click)="jumpToTime(timeConstraints.current + timeStep)"
-                    class="btn btn-secondary btn-sm ms-2"
-                    [title]="timeStep / 1000 + 's vorwärts'"
-                >
-                    <i class="bi bi-skip-forward-fill"></i>
-                </button>
-                <button
-                    [disabled]="timeConstraints.current === timeConstraints.end"
-                    (click)="jumpToTime(timeConstraints.end)"
-                    class="btn btn-secondary btn-sm ms-2"
-                    title="Zum Ende"
-                >
-                    <i class="bi bi-skip-end-fill"></i>
-                </button>
+                <ng-container *ngIf="!isReplaying">
+                    <button
+                        *ngIf="timeConstraints.current < timeConstraints.end"
+                        class="btn btn-sm btn-primary"
+                        title="Abspielen"
+                        (click)="startReplay()"
+                    >
+                        <i class="bi-play-fill"></i>
+                    </button>
+                    <button
+                        *ngIf="timeConstraints.current >= timeConstraints.end"
+                        class="btn btn-sm btn-primary"
+                        title="Erneut abspielen"
+                        (click)="restartReplay()"
+                    >
+                        <i class="bi-arrow-clockwise"></i>
+                    </button>
+                </ng-container>
+                <div class="ms-3 d-inline-block">
+                    <select
+                        [ngModel]="replaySpeed"
+                        (ngModelChange)="setReplaySpeed($event)"
+                        class="form-select form-select-sm d-inline-block"
+                        title="Abspielgeschwindigkeit"
+                    >
+                        <option
+                            *ngFor="let option of replaySpeedOptions"
+                            [value]="option"
+                        >
+                            x {{ option }}
+                        </option>
+                    </select>
+                </div>
             </div>
             <div class="float-end">
                 <button

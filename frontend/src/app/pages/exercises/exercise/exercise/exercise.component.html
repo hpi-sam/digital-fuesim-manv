@@ -6,40 +6,38 @@
     <div class="container">
         <h2>
             Übung:
-            <ng-container *ngIf="participantId$ | async as participantId">
-                <span class="font-monospace fw-bold user-select-all">{{
-                    participantId
-                }}</span>
+            <span class="font-monospace fw-bold user-select-all">{{
+                participantId$ | async
+            }}</span>
+            <ng-container *ngIf="role !== 'timeTravel'; else timeTravelButton">
                 <app-exercise-state-badge
                     class="ms-3"
                 ></app-exercise-state-badge>
                 <button
+                    *ngIf="participantId$ | async as participantId"
                     (click)="shareExercise(participantId)"
                     class="btn btn-light ms-3"
                 >
                     Teilnehmerlink teilen
                 </button>
+                <button
+                    *ngIf="role !== 'participant'"
+                    (click)="shareExercise(apiService.exerciseId!)"
+                    class="btn btn-outline-warning ms-3"
+                >
+                    Übungsleiterlink teilen
+                </button>
             </ng-container>
-            <button
-                *ngIf="role !== 'participant'"
-                (click)="shareExercise(apiService.exerciseId!)"
-                class="btn btn-outline-warning ms-3"
-            >
-                Übungsleiterlink teilen
-            </button>
-
-            <div
-                *ngIf="role !== 'participant'"
-                class="form-check form-switch d-inline-block float-end"
-            >
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    [ngModel]="apiService.isTimeTraveling"
-                    (ngModelChange)="apiService.toggleTimeTravel()"
-                />
-                <label class="form-check-label">Zeitreise</label>
-            </div>
+            <ng-template #timeTravelButton>
+                <button
+                    *ngIf="role === 'timeTravel'"
+                    class="btn btn-outline-primary ms-3"
+                    (click)="apiService.stopTimeTravel()"
+                >
+                    <i class="bi-box-arrow-left"></i>
+                    Aufzeichnung verlassen
+                </button>
+            </ng-template>
         </h2>
     </div>
 

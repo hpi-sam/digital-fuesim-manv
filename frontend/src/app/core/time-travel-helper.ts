@@ -15,7 +15,7 @@ export class TimeTravelHelper {
         private readonly getTimeLine: () => Promise<ExerciseTimeline>
     ) {}
 
-    private timeConstraints?: TimeConstraints;
+    public timeConstraints?: TimeConstraints;
     public readonly timeConstraints$ = new BehaviorSubject<
         TimeConstraints | undefined
     >(this.timeConstraints);

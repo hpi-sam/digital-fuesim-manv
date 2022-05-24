@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import type { Action } from '@ngrx/store';
 import { Store } from '@ngrx/store';
 import type {
     Client,
@@ -35,8 +34,6 @@ export class ApiService {
     ) {}
 
     private presentState?: ExerciseState;
-    // TODO: These are currently not used
-    private presentActionsQueue: Action[] = [];
 
     private readonly presentExerciseHelper = new PresentExerciseHelper(
         (exercise) =>
@@ -52,8 +49,6 @@ export class ApiService {
                 this.store.dispatch(applyServerAction(action));
                 return;
             }
-            // TODO: Add these to the timeHelperConstraints to enable real-time timeline updates
-            this.presentActionsQueue.push(action);
             this.presentState = reduceExerciseState(this.presentState!, action);
         },
         this.messageService
@@ -62,10 +57,12 @@ export class ApiService {
     public readonly joinExercise = this.presentExerciseHelper.joinExercise.bind(
         this.presentExerciseHelper
     );
-    public readonly leaveExercise =
+    public leaveExercise() {
         this.presentExerciseHelper.leaveExercise.bind(
             this.presentExerciseHelper
         );
+        this.stopTimeTravel();
+    }
     /**
      * Either the trainer or participant id
      */
@@ -98,6 +95,9 @@ export class ApiService {
         this.timeTravelHelper
     );
     public timeConstraints$ = this.timeTravelHelper.timeConstraints$;
+    public get timeConstraints() {
+        return this.timeTravelHelper.timeConstraints;
+    }
     public get isTimeTraveling() {
         return this.timeTravelHelper.isTimeTraveling;
     }
@@ -145,17 +145,22 @@ export class ApiService {
         return ownClient ? ownClient.role : 'timeTravel';
     }
 
-    public toggleTimeTravel() {
+    public startTimeTravel() {
         if (this.isTimeTraveling) {
-            this.timeTravelHelper.stopTimeTravel();
-            // Set the state back to the present one
-            this.store.dispatch(setExerciseState(this.presentState!));
-            this.presentState = undefined;
-            this.presentActionsQueue = [];
-        } else {
-            this.presentState = getStateSnapshot(this.store).exercise;
-            this.timeTravelHelper.startTimeTravel();
+            return;
         }
+        this.presentState = getStateSnapshot(this.store).exercise;
+        this.timeTravelHelper.startTimeTravel();
+    }
+
+    public stopTimeTravel() {
+        if (!this.isTimeTraveling) {
+            return;
+        }
+        this.timeTravelHelper.stopTimeTravel();
+        // Set the state back to the present one
+        this.store.dispatch(setExerciseState(this.presentState!));
+        this.presentState = undefined;
     }
 
     /**

@@ -15,6 +15,9 @@
     >
         Statistiken
     </button>
+    <button (click)="apiService.startTimeTravel()" class="btn btn-primary ms-3">
+        Aufzeichnung
+    </button>
     <button
         *ngIf="(exerciseStatus$ | async) === 'running'"
         (click)="pauseExercise()"
