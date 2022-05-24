@@ -31,6 +31,7 @@ export const getSelectMapImage = (mapImageId: UUID) => (state: AppState) =>
     state.exercise.mapImages[mapImageId];
 export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
     state.exercise.vehicles[vehicleId];
+// TODO: Refactor the !
 export const getSelectVehicleTemplate =
     (vehicleTemplateId: UUID) => (state: AppState) =>
         state.exercise.vehicleTemplates.find(
