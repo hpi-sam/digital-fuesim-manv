@@ -1,8 +1,7 @@
-import { Type } from 'class-transformer';
-import { IsBoolean, IsNumber, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsDefined, IsNumber, IsUUID } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { getCreate } from './get-create';
-import { StartPoint } from './start-point';
+import type { AlarmGroupStartPoint, TransferStartPoint } from './start-points';
 
 export class Transfer {
     /**
@@ -11,9 +10,8 @@ export class Transfer {
     @IsNumber()
     public readonly endTimeStamp: number;
 
-    @ValidateNested()
-    @Type(() => StartPoint)
-    public readonly startPoint: StartPoint;
+    @IsDefined()
+    public readonly startPoint: AlarmGroupStartPoint | TransferStartPoint;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly targetTransferPointId: UUID;
@@ -26,7 +24,7 @@ export class Transfer {
      */
     constructor(
         endTimeStamp: number,
-        startPoint: StartPoint,
+        startPoint: AlarmGroupStartPoint | TransferStartPoint,
         targetTransferPointId: UUID,
         isPaused: boolean
     ) {

@@ -1,28 +1,19 @@
-import { IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
-import type { Personnel, Vehicle } from '../../models';
-import { StartPoint } from '../../models/utils/start-point';
-import type { ExerciseState } from '../../state';
-import type { Mutable } from '../../utils';
+import {
+    IsDefined,
+    IsInt,
+    IsOptional,
+    IsString,
+    IsUUID,
+} from 'class-validator';
+import type {
+    AlarmGroupStartPoint,
+    TransferStartPoint,
+} from '../../models/utils/start-points';
 import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { getElement } from './utils/get-element';
 
-export function addTransfer(
-    draftState: Mutable<ExerciseState>,
-    element: Mutable<Personnel | Vehicle>,
-    startPoint: StartPoint,
-    targetTransferPointId: UUID,
-    duration: number
-) {
-    delete element.position;
-    element.transfer = {
-        startPoint,
-        targetTransferPointId,
-        endTimeStamp: draftState.currentTime + duration,
-        isPaused: false,
-    };
-}
 export class AddToTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Add to transfer';
@@ -33,8 +24,8 @@ export class AddToTransferAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;
 
-    @IsUUID(4, uuidValidationOptions)
-    public readonly startTransferPointId!: UUID;
+    @IsDefined()
+    public readonly startPoint!: AlarmGroupStartPoint | TransferStartPoint;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly targetTransferPointId!: UUID;
@@ -80,12 +71,7 @@ export namespace TransferActionReducers {
         action: AddToTransferAction,
         reducer: (
             draftState,
-            {
-                elementType,
-                elementId,
-                startTransferPointId,
-                targetTransferPointId,
-            }
+            { elementType, elementId, startPoint, targetTransferPointId }
         ) => {
             const element = getElement(draftState, elementType, elementId);
             if (element.transfer) {
@@ -93,33 +79,39 @@ export namespace TransferActionReducers {
                     `Element with id ${element.id} is already in transfer`
                 );
             }
-            const startTransferPoint = getElement(
-                draftState,
-                'transferPoints',
-                startTransferPointId
-            );
-            const connection =
-                startTransferPoint.reachableTransferPoints[
-                    targetTransferPointId
-                ];
-            if (!connection) {
-                throw new ReducerError(
-                    `TransferPoint with id ${targetTransferPointId} is not reachable from ${startTransferPointId}`
+
+            let duration = 0;
+            if (startPoint.type === 'TransferStartPoint') {
+                const transferStartPoint = getElement(
+                    draftState,
+                    'transferPoints',
+                    (startPoint as TransferStartPoint).transferStartPointId
                 );
+
+                const connection =
+                    transferStartPoint.reachableTransferPoints[
+                        targetTransferPointId
+                    ];
+                if (!connection) {
+                    throw new ReducerError(
+                        `TransferPoint with id ${targetTransferPointId} is not reachable from ${transferStartPoint.id}`
+                    );
+                }
+                duration = connection.duration;
+            } else {
+                duration =
+                    (startPoint as AlarmGroupStartPoint).duration * 60 * 1000;
             }
 
-            const startPoint = new StartPoint(
-                'TransferPoint',
-                startTransferPointId
-            );
             // The element is now in transfer
-            addTransfer(
-                draftState,
-                element,
+            console.log(duration);
+            delete element.position;
+            element.transfer = {
                 startPoint,
                 targetTransferPointId,
-                connection.duration
-            );
+                endTimeStamp: draftState.currentTime + duration,
+                isPaused: false,
+            };
             return draftState;
         },
         rights: 'participant',

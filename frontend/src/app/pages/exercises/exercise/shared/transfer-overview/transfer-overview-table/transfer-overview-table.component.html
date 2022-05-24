@@ -37,15 +37,18 @@
             <td class="align-middle">
                 <div
                     *ngIf="
-                        vehicle.transfer.startPoint.type === 'AlarmGroup';
+                        vehicle.transfer.startPoint.type ===
+                            'AlarmGroupStartPoint';
                         else TransferPoint
                     "
                 >
-                    {{ vehicle.transfer.startPoint.name }}
+                    {{ vehicle.transfer.startPoint.alarmGroupName }}
                 </div>
                 <ng-template #TransferPoint>
                     <app-transfer-point-name
-                        [transferPointId]="vehicle.transfer.startPoint.name"
+                        [transferPointId]="
+                            vehicle.transfer.startPoint.transferStartPointId
+                        "
                     ></app-transfer-point-name>
                 </ng-template>
             </td>
@@ -80,15 +83,18 @@
             <td class="align-middle">
                 <div
                     *ngIf="
-                        personnel.transfer.startPoint.type === 'AlarmGroup';
+                        personnel.transfer.startPoint.type ===
+                            'AlarmGroupStartPoint';
                         else TransferPoint
                     "
                 >
-                    {{ personnel.transfer.startPoint.name }}
+                    {{ personnel.transfer.startPoint.alarmGroupName }}
                 </div>
                 <ng-template #TransferPoint>
                     <app-transfer-point-name
-                        [transferPointId]="personnel.transfer.startPoint.name"
+                        [transferPointId]="
+                            personnel.transfer.startPoint.transferStartPointId
+                        "
                     ></app-transfer-point-name>
                 </ng-template>
             </td>

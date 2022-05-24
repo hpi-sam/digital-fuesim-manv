@@ -1,12 +1,18 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { TransferPoint, UUID } from 'digital-fuesim-manv-shared';
+import type { AlarmGroup, TransferPoint } from 'digital-fuesim-manv-shared';
+import {
+    createVehicle,
+    AlarmGroupStartPoint,
+} from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
+    getSelectVehicleTemplate,
     selectAlarmGroups,
     selectTransferPoints,
 } from 'src/app/state/exercise/exercise.selectors';
+import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 @Component({
     selector: 'app-send-alarm-group-interface',
@@ -33,11 +39,32 @@ export class SendAlarmGroupInterfaceComponent {
         this.targetName = transferPoint.externalName;
     }
 
-    public sendAlarmGroup(alarmGroupId: UUID) {
-        this.apiService.proposeAction({
-            type: '[AlarmGroup] Send AlarmGroup',
-            alarmGroupId,
-            targetTransferPointId: this.targetTransferPoint!.id,
-        });
+    public sendAlarmGroup(alarmGroup: AlarmGroup) {
+        // TODO: Make this into one Action (The Problem with that is the uuid generation)const alarmGroup = getElement(
+        Object.values(alarmGroup.alarmGroupVehicles).forEach(
+            (alarmGroupVehicle) => {
+                const vehicleTemplate = getSelectVehicleTemplate(
+                    alarmGroupVehicle.vehicleTemplateId
+                )(getStateSnapshot(this.store));
+                const vehicleParameters = createVehicle(vehicleTemplate);
+                this.apiService.proposeAction({
+                    type: '[Vehicle] Add vehicle',
+                    materials: vehicleParameters.materials,
+                    personnel: vehicleParameters.personnel,
+                    vehicle: vehicleParameters.vehicle,
+                });
+
+                this.apiService.proposeAction({
+                    type: '[Transfer] Add to transfer',
+                    elementType: 'vehicles',
+                    elementId: vehicleParameters.vehicle.id,
+                    startPoint: AlarmGroupStartPoint.create(
+                        alarmGroup.name,
+                        alarmGroupVehicle.time
+                    ),
+                    targetTransferPointId: this.targetTransferPoint!.id,
+                });
+            }
+        );
     }
 }

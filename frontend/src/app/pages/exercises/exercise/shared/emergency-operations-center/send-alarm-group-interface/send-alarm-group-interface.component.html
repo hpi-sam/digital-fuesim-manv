@@ -1,5 +1,9 @@
 <div>
-    <button class="btn btn-primary" type="button" (click)="collapse.toggle()">
+    <button
+        class="btn btn-primary m-3"
+        type="button"
+        (click)="collapse.toggle()"
+    >
         Alarmierungsgruppen entsenden
     </button>
     Ziel:
@@ -31,7 +35,7 @@
     </div>
 </div>
 <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
-    <div class="card">
+    <div class="card p-2">
         <div *ngIf="alarmGroups$ | async | values as alarmGroups">
             <div *ngIf="alarmGroups.length > 0; else noAlarmGroups">
                 <div *ngIf="targetTransferPoint; else noTargetTransferPoint">
@@ -40,8 +44,8 @@
                             let alarmGroup of alarmGroups;
                             trackBy: 'key' | appTrackByProperty
                         "
-                        class="btn btn-primary"
-                        (click)="sendAlarmGroup(alarmGroup.id)"
+                        class="btn btn-primary m-1"
+                        (click)="sendAlarmGroup(alarmGroup)"
                     >
                         {{ alarmGroup.name }}
                     </div>

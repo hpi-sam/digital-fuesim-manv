@@ -2,14 +2,10 @@ import { Type } from 'class-transformer';
 import { IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { AlarmGroup } from '../../models/alarm-group';
 import { AlarmGroupVehicle } from '../../models/utils/alarm-group-vehicle';
-import { StartPoint } from '../../models/utils/start-point';
-import { createVehicle } from '../../state-helpers';
 import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
-import { addTransfer } from './transfer';
 import { getElement } from './utils/get-element';
-import { addVehicleToState } from './vehicle';
 
 export class AddAlarmGroupAction implements Action {
     @IsString()
@@ -70,17 +66,6 @@ export class RemoveAlarmGroupVehicleAction implements Action {
 
     @IsUUID(4, uuidValidationOptions)
     public readonly alarmGroupVehicleId!: UUID;
-}
-
-export class SendAlarmGroupAction implements Action {
-    @IsString()
-    public readonly type = '[AlarmGroup] Send AlarmGroup';
-
-    @IsUUID(4, uuidValidationOptions)
-    public readonly alarmGroupId!: UUID;
-
-    @IsUUID(4, uuidValidationOptions)
-    public readonly targetTransferPointId!: UUID;
 }
 
 export namespace AlarmGroupActionReducers {
@@ -175,57 +160,4 @@ export namespace AlarmGroupActionReducers {
             },
             rights: 'trainer',
         };
-    export const sendAlarmGroupAction: ActionReducer<SendAlarmGroupAction> = {
-        action: SendAlarmGroupAction,
-        reducer: (draftState, { alarmGroupId, targetTransferPointId }) => {
-            const alarmGroup = getElement(
-                draftState,
-                'alarmGroups',
-                alarmGroupId
-            );
-            getElement(draftState, 'transferPoints', targetTransferPointId);
-
-            Object.values(alarmGroup.alarmGroupVehicles).forEach(
-                (alarmGroupVehicle) => {
-                    const vehicleTemplate = draftState.vehicleTemplates.find(
-                        (currentVehicleTemplate) =>
-                            currentVehicleTemplate.id ===
-                            alarmGroupVehicle.vehicleTemplateId
-                    );
-                    if (!vehicleTemplate) {
-                        throw new ReducerError(
-                            `VehicleTemplate with id ${alarmGroupVehicle.vehicleTemplateId} does not exist`
-                        );
-                    }
-                    const vehicleParameters = createVehicle(vehicleTemplate);
-                    addVehicleToState(
-                        draftState,
-                        vehicleParameters.vehicle,
-                        vehicleParameters.materials,
-                        vehicleParameters.personnel
-                    );
-
-                    const vehicle = getElement(
-                        draftState,
-                        'vehicles',
-                        vehicleParameters.vehicle.id
-                    );
-                    const startPoint = new StartPoint(
-                        'AlarmGroup',
-                        alarmGroup.name
-                    );
-
-                    addTransfer(
-                        draftState,
-                        vehicle,
-                        startPoint,
-                        targetTransferPointId,
-                        alarmGroupVehicle.time
-                    );
-                }
-            );
-            return draftState;
-        },
-        rights: 'trainer',
-    };
 }
