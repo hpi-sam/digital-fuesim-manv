@@ -1,4 +1,4 @@
-import { IsNumber, IsUUID } from 'class-validator';
+import { IsNumber, IsUUID, Min } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../../utils';
 import { getCreate } from './get-create';
 
@@ -10,6 +10,7 @@ export class AlarmGroupVehicle {
     public readonly vehicleTemplateId: UUID;
 
     @IsNumber()
+    @Min(0)
     public readonly time: number;
 
     /**

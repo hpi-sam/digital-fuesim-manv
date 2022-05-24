@@ -13,12 +13,12 @@ export class AlarmGroup {
     @IsObject()
     public alarmGroupVehicles: { readonly [key: UUID]: AlarmGroupVehicle } = {};
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(name: string) {
         this.name = name;
     }
 
-    /**
-     * @deprecated Use {@link create} instead
-     */
     static readonly create = getCreate(this);
 }

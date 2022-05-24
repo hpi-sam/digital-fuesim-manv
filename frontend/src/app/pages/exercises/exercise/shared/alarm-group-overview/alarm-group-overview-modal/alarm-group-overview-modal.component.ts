@@ -36,7 +36,7 @@ export class AlarmGroupOverviewModalComponent {
     public addAlarmGroup() {
         this.apiService.proposeAction({
             type: '[AlarmGroup] Add AlarmGroup',
-            alarmGroup: AlarmGroup.create('MANV 10'),
+            alarmGroup: AlarmGroup.create('???'),
         });
     }
 }
