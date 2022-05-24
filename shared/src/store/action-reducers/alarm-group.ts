@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 import { AlarmGroup } from '../../models/alarm-group';
 import { AlarmGroupVehicle } from '../../models/utils/alarm-group-vehicle';
+import type { Mutable } from '../../utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -137,12 +138,8 @@ export namespace AlarmGroupActionReducers {
                     'alarmGroups',
                     alarmGroupId
                 );
-                if (!alarmGroup.alarmGroupVehicles[alarmGroupVehicleId]) {
-                    throw new ReducerError(
-                        `AlarmGroupVehicle with id ${alarmGroupVehicleId} does not exist in Alarmgroup with id ${alarmGroupId}`
-                    );
-                }
-                alarmGroup.alarmGroupVehicles[alarmGroupVehicleId].time = time;
+                getAlarmGroupVehicle(alarmGroup, alarmGroupVehicleId).time =
+                    time;
                 return draftState;
             },
             rights: 'trainer',
@@ -157,14 +154,24 @@ export namespace AlarmGroupActionReducers {
                     'alarmGroups',
                     alarmGroupId
                 );
-                if (!alarmGroup.alarmGroupVehicles[alarmGroupVehicleId]) {
-                    throw new ReducerError(
-                        `AlarmGroupVehicle with id ${alarmGroupVehicleId} does not exist in Alarmgroup with id ${alarmGroupId}`
-                    );
-                }
+                getAlarmGroupVehicle(alarmGroup, alarmGroupVehicleId);
                 delete alarmGroup.alarmGroupVehicles[alarmGroupVehicleId];
                 return draftState;
             },
             rights: 'trainer',
         };
+}
+
+function getAlarmGroupVehicle(
+    alarmGroup: Mutable<AlarmGroup>,
+    alarmGroupVehicleId: UUID
+) {
+    const alarmGroupVehicle =
+        alarmGroup.alarmGroupVehicles[alarmGroupVehicleId];
+    if (!alarmGroupVehicle) {
+        throw new ReducerError(
+            `AlarmGroupVehicle with id ${alarmGroupVehicleId} does not exist in AlarmGroup with id ${alarmGroup.id}`
+        );
+    }
+    return alarmGroupVehicle;
 }

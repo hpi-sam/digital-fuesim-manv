@@ -7,7 +7,6 @@
     </h4>
     <button type="button" class="btn-close" (click)="close()"></button>
 </div>
-<!-- alarmGroups$ emits synchronously -->
 <div
     *ngIf="alarmGroups$ | async | values as alarmGroups"
     class="modal-body"
