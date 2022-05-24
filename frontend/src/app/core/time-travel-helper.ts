@@ -1,6 +1,8 @@
-import type { ExerciseAction, ExerciseState } from 'digital-fuesim-manv-shared';
+import type {
+    ExerciseState,
+    ExerciseTimeline,
+} from 'digital-fuesim-manv-shared';
 import { BehaviorSubject, distinctUntilChanged, map } from 'rxjs';
-import { getTimeLine } from './temp-timeline';
 import { TimeJumpHelper } from './time-jump-helper';
 
 export class TimeTravelHelper {
@@ -9,7 +11,8 @@ export class TimeTravelHelper {
          * Gets the state of the exercise at the real present time
          */
         private readonly getPresentState: () => ExerciseState,
-        private readonly setState: (state: ExerciseState) => void
+        private readonly setState: (state: ExerciseState) => void,
+        private readonly getTimeLine: () => Promise<ExerciseTimeline>
     ) {}
 
     private timeConstraints?: TimeConstraints;
@@ -75,19 +78,10 @@ export class TimeTravelHelper {
     private exerciseTimeline?: ExerciseTimeline;
     private async getExerciseTimeline(): Promise<ExerciseTimeline> {
         if (!this.exerciseTimeline) {
-            // TODO: get from server
-            this.exerciseTimeline = await getTimeLine();
+            this.exerciseTimeline = await this.getTimeLine();
         }
         return this.exerciseTimeline;
     }
-}
-
-export interface ExerciseTimeline {
-    readonly initialState: ExerciseState;
-    readonly actionsWrappers: readonly {
-        readonly action: ExerciseAction;
-        readonly time: number;
-    }[];
 }
 
 export interface TimeConstraints {

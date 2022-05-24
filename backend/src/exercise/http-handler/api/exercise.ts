@@ -1,4 +1,4 @@
-import type { ExerciseIds } from 'digital-fuesim-manv-shared';
+import type { ExerciseIds, ExerciseTimeline } from 'digital-fuesim-manv-shared';
 import { UserReadableIdGenerator } from '../../../utils/user-readable-id-generator';
 import { exerciseMap } from '../../exercise-map';
 import { ExerciseWrapper } from '../../exercise-wrapper';
@@ -64,5 +64,23 @@ export function deleteExercise(exerciseId: string): HttpResponse {
     return {
         statusCode: 204,
         body: undefined,
+    };
+}
+
+export function getExerciseHistory(
+    exerciseId: string
+): HttpResponse<ExerciseTimeline> {
+    const exerciseWrapper = exerciseMap.get(exerciseId);
+    if (exerciseWrapper === undefined) {
+        return {
+            statusCode: 404,
+            body: {
+                message: `Exercise with id '${exerciseId}' was not found`,
+            },
+        };
+    }
+    return {
+        statusCode: 200,
+        body: exerciseWrapper.getTimeLine(),
     };
 }

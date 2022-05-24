@@ -7,6 +7,7 @@ import type {
     ExerciseAction,
     ExerciseIds,
     ExerciseState,
+    ExerciseTimeline,
 } from 'digital-fuesim-manv-shared';
 import { reduceExerciseState } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
@@ -83,7 +84,14 @@ export class ApiService {
             this.isTimeTraveling
                 ? this.presentState!
                 : getStateSnapshot(this.store).exercise,
-        (state) => this.store.dispatch(setExerciseState(state))
+        (state) => this.store.dispatch(setExerciseState(state)),
+        async () =>
+            // TODO: Catch & stuff
+            lastValueFrom(
+                this.httpClient.get<ExerciseTimeline>(
+                    `${httpOrigin}/api/exercise/${this.exerciseId}/history`
+                )
+            )
     );
 
     public readonly jumpToTime = this.timeTravelHelper.jumpToTime.bind(

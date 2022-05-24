@@ -1,8 +1,10 @@
-import type { ExerciseState } from 'digital-fuesim-manv-shared';
+import type {
+    ExerciseState,
+    ExerciseTimeline,
+} from 'digital-fuesim-manv-shared';
 import { applyAction, cloneDeepMutable } from 'digital-fuesim-manv-shared';
 import produce from 'immer';
 import { TimeLineCache } from './time-line-cache';
-import type { ExerciseTimeline } from './time-travel-helper';
 
 export class TimeJumpHelper {
     private readonly exerciseStateCache = new TimeLineCache<{

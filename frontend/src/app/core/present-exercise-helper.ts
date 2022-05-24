@@ -13,7 +13,6 @@ import { io } from 'socket.io-client';
 import { websocketOrigin } from './api-origins';
 import type { MessageService } from './messages/message.service';
 import { OptimisticActionHandler } from './optimistic-action-handler';
-import { addAction, setInitialState } from './temp-timeline';
 
 export class PresentExerciseHelper {
     private _socket?: Socket<ServerToClientEvents, ClientToServerEvents>;
@@ -65,8 +64,6 @@ export class PresentExerciseHelper {
         private readonly messageService: MessageService
     ) {
         this.socket.on('performAction', (action: ExerciseAction) => {
-            // TODO: Remove this
-            addAction(action);
             this.optimisticActionHandler.performAction(action);
         });
         this.socket.on('disconnect', (reason) => {
@@ -178,8 +175,6 @@ export class PresentExerciseHelper {
             });
             return response;
         }
-        // TODO: Remove this
-        setInitialState(response.payload);
         this.setExerciseState(response.payload);
         return response;
     }
