@@ -3,7 +3,7 @@ import { ActionEmitterService } from './action-emitter.service';
 import { ActionWrapperService } from './action-wrapper.service';
 import { ExerciseWrapperService } from './exercise-wrapper.service';
 
-export class ServiceProvider {
+export class DatabaseService {
     public readonly actionEmitterService: ActionEmitterService;
     public readonly actionWrapperService: ActionWrapperService;
     public readonly exerciseWrapperService: ExerciseWrapperService;

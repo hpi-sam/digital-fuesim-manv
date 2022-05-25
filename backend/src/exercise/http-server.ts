@@ -1,7 +1,7 @@
 import type { Server as HttpServer } from 'node:http';
 import cors from 'cors';
 import type * as core from 'express-serve-static-core';
-import type { ServiceProvider } from '../database/services/service-provider';
+import type { DatabaseService } from '../database/services/database-service';
 import {
     deleteExercise,
     getExercise,
@@ -11,7 +11,7 @@ import { getHealth } from './http-handler/api/health';
 
 export class ExerciseHttpServer {
     public readonly httpServer: HttpServer;
-    constructor(app: core.Express, port: number, services: ServiceProvider) {
+    constructor(app: core.Express, port: number, services: DatabaseService) {
         // TODO: Temporary allow all
         app.use(cors());
 

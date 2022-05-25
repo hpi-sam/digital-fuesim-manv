@@ -1,13 +1,13 @@
 import { Config } from './config';
 import { createNewDataSource } from './database/data-source';
-import { ServiceProvider } from './database/services/service-provider';
+import { DatabaseService } from './database/services/database-service';
 import { FuesimServer } from './fuesim-server';
 
 async function main() {
     Config.initialize();
 
     const dataSource = await createNewDataSource().initialize();
-    const services = new ServiceProvider(dataSource);
+    const services = new DatabaseService(dataSource);
     // eslint-disable-next-line no-new
     new FuesimServer(services);
 }

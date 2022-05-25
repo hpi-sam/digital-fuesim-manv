@@ -11,6 +11,9 @@ type CreateExerciseWrapper = Omit<
 
 type UpdateExerciseWrapper = Partial<CreateExerciseWrapper>;
 
+/**
+ * Provides the API to create, update, delete etc. {@link ExerciseWrapperEntity}s in the database
+ */
 export class ExerciseWrapperService extends BaseService<
     ExerciseWrapperEntity,
     CreateExerciseWrapper,

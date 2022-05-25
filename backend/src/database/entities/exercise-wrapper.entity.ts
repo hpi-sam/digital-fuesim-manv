@@ -1,5 +1,5 @@
 import { IsInt, IsJSON, IsString, MinLength, MaxLength } from 'class-validator';
-import type { ServiceProvider } from 'database/services/service-provider';
+import type { DatabaseService } from 'database/services/database-service';
 import { ExerciseState } from 'digital-fuesim-manv-shared';
 import type { ExerciseWrapper } from 'exercise/exercise-wrapper';
 import { Entity, Column } from 'typeorm';
@@ -47,15 +47,13 @@ export class ExerciseWrapperEntity extends BaseEntity<
     static async create(
         participantId: string,
         trainerId: string,
-        services: ServiceProvider,
+        services: DatabaseService,
         initialState: ExerciseState = ExerciseState.create()
     ): Promise<ExerciseWrapperEntity> {
-        const exercise = await services.exerciseWrapperService.create({
+        return services.exerciseWrapperService.create({
             participantId,
             trainerId,
             initialStateString: JSON.stringify(initialState),
         });
-
-        return exercise;
     }
 }

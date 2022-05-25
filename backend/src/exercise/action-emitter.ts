@@ -2,7 +2,7 @@ import type { UUID } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import { ActionEmitterEntity } from '../database/entities/action-emitter.entity';
 import { NormalType } from '../database/normal-type';
-import type { ServiceProvider } from '../database/services/service-provider';
+import type { DatabaseService } from '../database/services/database-service';
 import { ExerciseWrapper } from './exercise-wrapper';
 
 // Keep this import for the JSDoc comment of the constructor.
@@ -18,7 +18,7 @@ export class ActionEmitter extends NormalType<
      * This constructor does not guarantee a valid entity.
      */
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-    constructor(services: ServiceProvider) {
+    constructor(services: DatabaseService) {
         super(services);
     }
 
@@ -75,7 +75,7 @@ export class ActionEmitter extends NormalType<
 
     static async createFromEntity(
         entity: ActionEmitterEntity,
-        services: ServiceProvider,
+        services: DatabaseService,
         entityManager?: EntityManager,
         exercise?: ExerciseWrapper
     ): Promise<ActionEmitter> {

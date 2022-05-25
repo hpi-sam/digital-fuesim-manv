@@ -1,9 +1,9 @@
 import { createNewDataSource } from '../data-source';
-import { ServiceProvider } from '../services/service-provider';
+import { DatabaseService } from '../services/database-service';
 
 const dataSource = await createNewDataSource().initialize();
 
-const services = new ServiceProvider(dataSource);
+const services = new DatabaseService(dataSource);
 
 await services.transaction(async (manager) => {
     const exercises = await services.exerciseWrapperService.findAll(

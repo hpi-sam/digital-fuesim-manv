@@ -10,7 +10,7 @@ import { IsNull } from 'typeorm';
 import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
 import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
 import { NormalType } from '../database/normal-type';
-import type { ServiceProvider } from '../database/services/service-provider';
+import type { DatabaseService } from '../database/services/database-service';
 import type { CreateActionEmitter } from '../database/services/action-emitter.service';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
@@ -77,7 +77,7 @@ export class ExerciseWrapper extends NormalType<
 
     static async createFromEntity(
         entity: ExerciseWrapperEntity,
-        services: ServiceProvider,
+        services: DatabaseService,
         entityManager?: EntityManager
     ): Promise<ExerciseWrapper> {
         const operations = async (manager: EntityManager) => {
@@ -200,9 +200,9 @@ export class ExerciseWrapper extends NormalType<
         public readonly participantId: string,
         public readonly trainerId: string,
         actions: ActionWrapper[],
-        services: ServiceProvider,
+        services: DatabaseService,
         private readonly initialState = ExerciseState.create(),
-        emitterUUID: UUID | undefined = undefined
+        emitterUUID?: UUID
     ) {
         super(services);
         this.actionHistory = actions;
@@ -212,7 +212,7 @@ export class ExerciseWrapper extends NormalType<
     static async create(
         participantId: string,
         trainerId: string,
-        services: ServiceProvider,
+        services: DatabaseService,
         initialState: ExerciseState = ExerciseState.create()
     ): Promise<ExerciseWrapper> {
         const exercise = new ExerciseWrapper(

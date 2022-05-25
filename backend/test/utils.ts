@@ -1,5 +1,5 @@
 import { createNewDataSource, testingDatabaseName } from 'database/data-source';
-import { ServiceProvider } from 'database/services/service-provider';
+import { DatabaseService } from 'database/services/database-service';
 import type {
     ClientToServerEvents,
     ExerciseIds,
@@ -107,8 +107,8 @@ export class WebsocketClient {
 
 class TestEnvironment {
     public server!: FuesimServer;
-    private _serviceProvider!: ServiceProvider;
-    public get serviceProvider(): ServiceProvider {
+    private _serviceProvider!: DatabaseService;
+    public get serviceProvider(): DatabaseService {
         return this._serviceProvider;
     }
 
@@ -140,7 +140,7 @@ class TestEnvironment {
         }
     }
 
-    public init(serviceProvider: ServiceProvider) {
+    public init(serviceProvider: DatabaseService) {
         this._serviceProvider = serviceProvider;
         this.server = new FuesimServer(this.serviceProvider);
     }
@@ -154,7 +154,7 @@ export const createTestEnvironment = (): TestEnvironment => {
     // If this gets too slow, we may look into creating the server only once
     beforeEach(async () => {
         dataSource = await setupDatabase();
-        const serviceProvider = new ServiceProvider(dataSource);
+        const serviceProvider = new DatabaseService(dataSource);
         environment.init(serviceProvider);
     });
     afterEach(async () => {

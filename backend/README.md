@@ -66,4 +66,4 @@ Use the npm script `migration:run` to apply all pending migrations, `migration:r
 
 Note that all changes in model and migration files have to be imported in [`src/database/data-source.ts`](./src/database/data-source.ts) before using them.
 
-You can use the npm script `purge` to remove all elements from the database.
+You can use the npm script `db:purge` to remove all elements from the database.

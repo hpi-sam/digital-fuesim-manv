@@ -13,6 +13,9 @@ export type CreateActionEmitter = Omit<
 
 type UpdateActionEmitter = Partial<CreateActionEmitter>;
 
+/**
+ * Provides the API to create, update, delete etc. {@link ActionEmitterEntity}s in the database
+ */
 export class ActionEmitterService extends BaseService<
     ActionEmitterEntity,
     CreateActionEmitter,

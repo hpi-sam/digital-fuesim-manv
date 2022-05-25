@@ -12,6 +12,9 @@ import { EntityNotFoundError } from 'typeorm';
 import { DatabaseError } from '../database-error';
 import type { BaseEntity } from '../entities/base-entity';
 
+/**
+ * Provides the general API for interacting with the database for a specific {@link BaseEntity}
+ */
 export abstract class BaseService<
     Entity extends BaseEntity<Entity, any>,
     Creatable,
@@ -60,7 +63,7 @@ export abstract class BaseService<
      * @returns The found row, or `null` if no matching row was found and {@link mustExist} is `false`.
      * @throws {@link DatabaseError} when {@link mustExist} is `true` and no row has been found.
      */
-    public async findOne<TExists extends false | true>(
+    public async findOne<TExists extends boolean>(
         options: FindOneOptions<Entity>,
         mustExist: TExists,
         entityManager?: EntityManager
@@ -110,30 +113,27 @@ export abstract class BaseService<
         id: UUID,
         entityManager?: EntityManager
     ): Promise<Entity> {
-        const find = async (manager: EntityManager) => {
-            // See https://github.com/microsoft/TypeScript/issues/31070
-            // and https://github.com/microsoft/TypeScript/issues/13442
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-            const where: FindOptionsWhere<Entity> = {
-                id,
-            } as FindOptionsWhere<Entity>;
-            try {
-                const tuple = await manager.findOneOrFail(this.entityTarget, {
-                    where,
+        const find = async (manager: EntityManager) =>
+            manager
+                .findOneOrFail(this.entityTarget, {
+                    // See https://github.com/microsoft/TypeScript/issues/31070
+                    // and https://github.com/microsoft/TypeScript/issues/13442
+                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                    where: {
+                        id,
+                    } as FindOptionsWhere<Entity>,
+                })
+                .catch((e: unknown) => {
+                    if (e instanceof EntityNotFoundError) {
+                        throw new DatabaseError(
+                            `\`${
+                                (this.entityTarget as any).name
+                            }\` with id \`${id}\` could not be found`,
+                            e
+                        );
+                    }
+                    throw e;
                 });
-                return tuple;
-            } catch (e: unknown) {
-                if (e instanceof EntityNotFoundError) {
-                    throw new DatabaseError(
-                        `\`${
-                            (this.entityTarget as any).name
-                        }\` with id \`${id}\` could not be found`,
-                        e
-                    );
-                }
-                throw e;
-            }
-        };
         return entityManager
             ? find(entityManager)
             : this.dataSource.transaction(find);

@@ -2,7 +2,7 @@ import type { ExerciseAction } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import { NormalType } from '../database/normal-type';
 import { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
-import type { ServiceProvider } from '../database/services/service-provider';
+import type { DatabaseService } from '../database/services/database-service';
 import type { CreateActionEmitter } from '../database/services/action-emitter.service';
 import { ActionEmitter } from './action-emitter';
 import type { ExerciseWrapper } from './exercise-wrapper';
@@ -64,7 +64,7 @@ export class ActionWrapper extends NormalType<
 
     static async createFromEntity(
         entity: ActionWrapperEntity,
-        services: ServiceProvider,
+        services: DatabaseService,
         entityManager?: EntityManager,
         exercise?: ExerciseWrapper
     ): Promise<ActionWrapper> {
@@ -89,7 +89,7 @@ export class ActionWrapper extends NormalType<
      * This constructor does not guarantee a valid object.
      */
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-    constructor(services: ServiceProvider) {
+    constructor(services: DatabaseService) {
         super(services);
     }
 
@@ -97,7 +97,7 @@ export class ActionWrapper extends NormalType<
         action: ExerciseAction,
         emitter: Omit<CreateActionEmitter, 'exerciseId'>,
         exercise: ExerciseWrapper,
-        services: ServiceProvider
+        services: DatabaseService
     ): Promise<ActionWrapper> {
         return services.transaction(async (manager) => {
             const exerciseEntity = await exercise.asEntity(true, manager);

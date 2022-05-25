@@ -18,6 +18,9 @@ type UpdateActionWrapper = Omit<Partial<CreateActionWrapper>, 'emitter'> & {
     emitter?: UUID;
 };
 
+/**
+ * Provides the API to create, update, delete etc. {@link ActionWrapperEntity}s in the database
+ */
 export class ActionWrapperService extends BaseService<
     ActionWrapperEntity,
     CreateActionWrapper,

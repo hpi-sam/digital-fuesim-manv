@@ -1,7 +1,7 @@
 import { exerciseMap } from '../src/exercise/exercise-map';
 import { UserReadableIdGenerator } from '../src/utils/user-readable-id-generator';
 import type { ExerciseCreationResponse } from './utils';
-import { createExercise, createTestEnvironment, sleep } from './utils';
+import { createExercise, createTestEnvironment } from './utils';
 
 describe('exercise', () => {
     const environment = createTestEnvironment();
@@ -61,7 +61,6 @@ describe('exercise', () => {
                 .expect(204);
 
             expect(exerciseMap.size).toBe(0);
-            await sleep(1000);
         });
 
         it('fails deleting a not existing exercise', async () => {

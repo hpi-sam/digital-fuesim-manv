@@ -1,13 +1,13 @@
 import type { ExerciseIds } from 'digital-fuesim-manv-shared';
 import { ExerciseState } from 'digital-fuesim-manv-shared';
-import type { ServiceProvider } from '../../../database/services/service-provider';
+import type { DatabaseService } from '../../../database/services/database-service';
 import { UserReadableIdGenerator } from '../../../utils/user-readable-id-generator';
 import { exerciseMap } from '../../exercise-map';
 import { ExerciseWrapper } from '../../exercise-wrapper';
 import type { HttpResponse } from '../utils';
 
 export async function postExercise(
-    services: ServiceProvider
+    services: DatabaseService
 ): Promise<HttpResponse<ExerciseIds>> {
     let newParticipantId: string | undefined;
     let newTrainerId: string | undefined;
