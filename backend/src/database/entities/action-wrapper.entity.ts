@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { ValidateNested, IsJSON, IsUUID, IsOptional } from 'class-validator';
+import {
+    ValidateNested,
+    IsJSON,
+    IsUUID,
+    IsOptional,
+    IsInt,
+} from 'class-validator';
 import type { DatabaseService } from 'database/services/database-service';
 import type { ExerciseAction, UUID } from 'digital-fuesim-manv-shared';
 import { uuidValidationOptions } from 'digital-fuesim-manv-shared';
@@ -32,11 +38,9 @@ export class ActionWrapperEntity extends BaseEntity<
     @Type(() => ExerciseWrapperEntity)
     exercise!: ExerciseWrapperEntity;
 
-    @Column({
-        type: 'timestamp with time zone',
-        default: () => 'CURRENT_TIMESTAMP',
-    })
-    created!: Date;
+    @Column({ type: 'bigint' })
+    @IsInt()
+    index!: number;
 
     @Column({
         type: 'json',
@@ -57,6 +61,7 @@ export class ActionWrapperEntity extends BaseEntity<
         action: ExerciseAction,
         emitterId: UUID | null,
         exercise: ExerciseWrapperEntity,
+        index: number,
         services: DatabaseService,
         manager?: EntityManager
     ): Promise<ActionWrapperEntity> {
@@ -65,6 +70,7 @@ export class ActionWrapperEntity extends BaseEntity<
                 actionString: JSON.stringify(action),
                 emitterId,
                 exerciseId: exercise.id,
+                index,
             },
             manager
         );

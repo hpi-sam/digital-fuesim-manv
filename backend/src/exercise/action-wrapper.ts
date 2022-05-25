@@ -22,7 +22,7 @@ export class ActionWrapper extends NormalType<
                 : new ActionWrapperEntity();
             const existed = this.id !== undefined;
             entity.actionString = JSON.stringify(this.action);
-            entity.created ??= new Date();
+            entity.index = this.index;
             entity.exercise = await this.exercise.asEntity(save, manager);
             entity.emitterId = this.emitterId;
             if (this.id) entity.id = this.id;
@@ -43,6 +43,7 @@ export class ActionWrapper extends NormalType<
                             actionString: entity.actionString,
                             emitterId: entity.emitterId,
                             exerciseId: entity.exercise.id,
+                            index: entity.index,
                         },
                         manager
                     );
@@ -73,6 +74,7 @@ export class ActionWrapper extends NormalType<
                 entityManager
             ));
         normal.id = entity.id;
+        normal.index = entity.index;
         return normal;
     }
 
@@ -84,6 +86,8 @@ export class ActionWrapper extends NormalType<
     exercise!: ExerciseWrapper;
 
     action!: ExerciseAction;
+
+    index!: number;
 
     /**
      * Be very careful when using this. - Use {@link create} instead for most use cases.
@@ -106,6 +110,7 @@ export class ActionWrapper extends NormalType<
                 action,
                 emitterId,
                 exerciseEntity,
+                exercise.incrementIdGenerator.next(),
                 services,
                 manager
             );

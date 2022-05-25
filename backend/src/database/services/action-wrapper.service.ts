@@ -4,10 +4,7 @@ import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
 import { BaseService } from './base-service';
 import type { ExerciseWrapperService } from './exercise-wrapper.service';
 
-type CreateActionWrapper = Omit<
-    ActionWrapperEntity,
-    'created' | 'exercise' | 'id'
-> & {
+type CreateActionWrapper = Omit<ActionWrapperEntity, 'exercise' | 'id'> & {
     exerciseId: UUID;
 };
 

@@ -5,6 +5,7 @@ import {
     validateExerciseAction,
 } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
+import { IncrementIdGenerator } from '../utils/increment-id-generator';
 import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
 import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
 import { NormalType } from '../database/normal-type';
@@ -86,7 +87,7 @@ export class ExerciseWrapper extends NormalType<
                         },
                     },
                     order: {
-                        created: 'ASC',
+                        index: 'ASC',
                     },
                 },
                 manager
@@ -174,6 +175,8 @@ export class ExerciseWrapper extends NormalType<
     private readonly stateHistory: ExerciseState[] = [];
 
     private readonly actionHistory: ActionWrapper[] = [];
+
+    public readonly incrementIdGenerator = new IncrementIdGenerator();
 
     /**
      * Be very careful when using this. - Use {@link create} instead for most use cases.
