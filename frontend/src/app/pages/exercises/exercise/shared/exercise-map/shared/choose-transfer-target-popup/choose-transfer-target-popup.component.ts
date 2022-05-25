@@ -1,7 +1,12 @@
 import type { OnInit } from '@angular/core';
 import { EventEmitter, Output, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { Hospital, TransferPoint, UUID } from 'digital-fuesim-manv-shared';
+import type {
+    Hospital,
+    TransferPoint,
+    UUID,
+    Vehicle,
+} from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
 import {
@@ -20,13 +25,20 @@ export class ChooseTransferTargetPopupComponent
 {
     // These properties are only set after OnInit
     public transferPointId!: UUID;
-    public transferToCallback!: (targetTransferPointId: UUID) => void;
+    public droppedElementType!: 'personnel' | 'vehicle';
+
+    public transferToCallback!: (
+        targetId: UUID,
+        targetType: 'hospital' | 'transferPoint'
+    ) => void;
 
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public reachableTransferPoints$?: Observable<TransferPoint[]>;
 
     public reachableHospitals$?: Observable<Hospital[]>;
+
+    public vehicles$?: Observable<Vehicle[]>;
 
     constructor(public readonly store: Store<AppState>) {}
 
@@ -39,8 +51,13 @@ export class ChooseTransferTargetPopupComponent
         );
     }
 
-    public transferTo(transferPoint: TransferPoint) {
-        this.transferToCallback(transferPoint.id);
+    public transferToTransferPoints(transferPoint: TransferPoint) {
+        this.transferToCallback(transferPoint.id, 'transferPoint');
+        this.closePopup.emit();
+    }
+
+    public transferToHospital(hospital: Hospital) {
+        this.transferToCallback(hospital.id, 'hospital');
         this.closePopup.emit();
     }
 }

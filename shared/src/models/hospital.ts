@@ -1,4 +1,4 @@
-import { IsDefined, IsNumber, IsString, IsUUID } from 'class-validator';
+import { IsDefined, IsNumber, IsString, IsUUID, Min } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
 import { getCreate } from './utils';
 
@@ -10,9 +10,10 @@ export class Hospital {
     public readonly name: string;
 
     /**
-     * The time in ms it takes a patient needs to arrive at this hospital
+     * The time in min. it takes to transport a patient to this hospital
      */
     @IsNumber()
+    @Min(0)
     readonly transportDuration: number = 0;
 
     /**

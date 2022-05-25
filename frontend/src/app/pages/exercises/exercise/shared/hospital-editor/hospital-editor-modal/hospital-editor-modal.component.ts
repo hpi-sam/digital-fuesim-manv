@@ -23,7 +23,7 @@ export class HospitalEditorModalComponent {
     public addHospital() {
         this.apiService.proposeAction({
             type: '[Hospital] Add hospital',
-            hospital: Hospital.create('???', 600),
+            hospital: Hospital.create('Krankenhaus-???', 60),
         });
     }
     public close() {

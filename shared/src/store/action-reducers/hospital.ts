@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
+import {
+    IsNumber,
+    IsString,
+    IsUUID,
+    Min,
+    ValidateNested,
+} from 'class-validator';
 import { Hospital } from '../../models';
 import { HospitalPatient } from '../../models/hospital-patient';
 import { UUID, uuidValidationOptions } from '../../utils';
@@ -23,6 +29,7 @@ export class EditTransportDurationToHospitalAction implements Action {
     public readonly hospitalId!: UUID;
 
     @IsNumber()
+    @Min(0)
     public readonly transportDuration!: number;
 }
 
@@ -92,7 +99,7 @@ export namespace HospitalActionReducers {
         action: RemoveHospitalAction,
         reducer: (draftState, { hospitalId }) => {
             const hospital = getElement(draftState, 'hospitals', hospitalId);
-            // TODO maybe make a hospital undeletable (if at least one patient is in it)
+            // TODO: maybe make a hospital undeletable (if at least one patient is in it)
             for (const patientId of Object.keys(hospital.patientIds)) {
                 delete draftState.hospitalPatients[patientId];
             }
@@ -118,7 +125,7 @@ export namespace HospitalActionReducers {
                     hospitalId
                 );
                 const vehicle = getElement(draftState, 'vehicles', vehicleId);
-                // TODO block vehicles without completely loaded (personnel and material gets deleted even outside the vehicle)
+                // TODO: block vehicles without completely loaded (personnel and material gets deleted even outside the vehicle)
                 for (const patientId of Object.keys(vehicle.patientIds)) {
                     const patient = getElement(
                         draftState,
