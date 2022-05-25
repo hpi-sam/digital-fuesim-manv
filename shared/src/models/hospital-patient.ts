@@ -30,6 +30,12 @@ export class HospitalPatient {
     public readonly patientId: UUID;
 
     /**
+     * the vehicle that a patient was transported with
+     */
+    @IsString()
+    public readonly vehicleType: string;
+
+    /**
      * The time the patient started to be sent to a hospital
      */
     @IsNumber()
@@ -92,6 +98,7 @@ export class HospitalPatient {
      */
     constructor(
         patientId: UUID,
+        vehicleType: string,
         startTime: number,
         arrivalTime: number,
         personalInformation: PersonalInformation,
@@ -105,6 +112,7 @@ export class HospitalPatient {
         healthDescription: string
     ) {
         this.patientId = patientId;
+        this.vehicleType = vehicleType;
         this.startTime = startTime;
         this.arrivalTime = arrivalTime;
         this.personalInformation = personalInformation;
@@ -129,11 +137,13 @@ export class HospitalPatient {
      */
     static createFromPatient(
         patient: Mutable<Patient>,
+        vehicleType: string,
         startTime: number,
         arrivalTime: number
     ) {
         return HospitalPatient.create(
             patient.id,
+            vehicleType,
             startTime,
             arrivalTime,
             patient.personalInformation,

@@ -1,1 +1,38 @@
 <!--TODO hospital-->
+<div class="modal-header">
+    <h4 class="modal-title">
+        Krankenhäuser
+        <button class="ms-3 btn btn-outline-primary" (click)="addHospital()">
+            <i class="bi bi-plus"></i> Hinzufügen
+        </button>
+    </h4>
+    <button type="button" class="btn-close" (click)="close()"></button>
+</div>
+<div
+    *ngIf="hospitals$ | async | values as hospitals"
+    class="modal-body"
+    style="min-height: 60vh"
+>
+    <ul
+        *ngIf="hospitals.length > 0; else noHospitals"
+        class="list-group list-group-flush"
+    >
+        <li
+            class="list-group-item"
+            *ngFor="
+                let hospital of hospitals;
+                trackBy: 'key' | appTrackByProperty
+            "
+        >
+            <app-hospital-editor-item
+                [hospital]="hospital"
+            ></app-hospital-editor-item>
+        </li>
+    </ul>
+
+    <ng-template #noHospitals>
+        <div class="text-muted mt-3 mb-3">
+            Es sind noch keine Krankenhäuser vorhanden.
+        </div>
+    </ng-template>
+</div>

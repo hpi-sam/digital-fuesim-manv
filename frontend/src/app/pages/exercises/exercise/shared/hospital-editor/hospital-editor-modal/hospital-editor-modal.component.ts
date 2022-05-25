@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import type { Hospital } from 'digital-fuesim-manv-shared';
+import { Hospital } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectHospitals } from 'src/app/state/exercise/exercise.selectors';
@@ -20,13 +20,12 @@ export class HospitalEditorModalComponent {
         private readonly apiService: ApiService
     ) {}
 
-    public addHospital(hospital: Hospital) {
+    public addHospital() {
         this.apiService.proposeAction({
             type: '[Hospital] Add hospital',
-            hospital,
+            hospital: Hospital.create('???', 600),
         });
     }
-
     public close() {
         this.activeModal.close();
     }

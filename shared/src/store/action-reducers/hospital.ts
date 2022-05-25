@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Hospital } from '../../models';
 import { HospitalPatient } from '../../models/hospital-patient';
 import { UUID, uuidValidationOptions } from '../../utils';
@@ -14,6 +14,16 @@ export class AddHospitalAction implements Action {
     @ValidateNested()
     @Type(() => Hospital)
     public readonly hospital!: Hospital;
+}
+
+export class EditTransportDurationToHospitalAction implements Action {
+    @IsString()
+    public readonly type = '[Hospital] Edit transportDuration to hospital';
+    @IsUUID(4, uuidValidationOptions)
+    public readonly hospitalId!: UUID;
+
+    @IsNumber()
+    public readonly transportDuration!: number;
 }
 
 export class RenameHospitalAction implements Action {
@@ -52,6 +62,21 @@ export namespace HospitalActionReducers {
         },
         rights: 'trainer',
     };
+
+    export const editTransportDurationToHospital: ActionReducer<EditTransportDurationToHospitalAction> =
+        {
+            action: EditTransportDurationToHospitalAction,
+            reducer: (draftState, { hospitalId, transportDuration }) => {
+                const hospital = getElement(
+                    draftState,
+                    'hospitals',
+                    hospitalId
+                );
+                hospital.transportDuration = transportDuration;
+                return draftState;
+            },
+            rights: 'trainer',
+        };
 
     export const renameHospital: ActionReducer<RenameHospitalAction> = {
         action: RenameHospitalAction,
@@ -103,6 +128,7 @@ export namespace HospitalActionReducers {
                     draftState.hospitalPatients[patientId] =
                         HospitalPatient.createFromPatient(
                             patient,
+                            vehicle.vehicleType,
                             draftState.currentTime,
                             hospital.transportDuration + draftState.currentTime
                         );

@@ -1,0 +1,25 @@
+<h2>
+    <input
+        #nameInput="ngModel"
+        [ngModel]="hospital.name"
+        (ngModelChange)="renameHospital($event)"
+        required
+        placeholder="Name"
+        type="text"
+        class="form-control d-inline-block fw-bold"
+        style="width: 200px"
+    />
+    <input
+        #transportDurationInput="ngModel"
+        [ngModel]="hospital.transportDuration"
+        (ngModelChange)="editTransportDurationToHospital($event)"
+        required
+        placeholder="Transportzeit"
+        type="text"
+        class="form-control d-inline-block fw-bold"
+        style="width: 200px"
+    />
+    <button (click)="removeHospital()" class="btn btn-outline-danger float-end">
+        <i class="bi bi-trash"></i> Löschen
+    </button>
+</h2>

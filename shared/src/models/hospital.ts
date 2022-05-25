@@ -13,7 +13,7 @@ export class Hospital {
      * The time in ms it takes a patient needs to arrive at this hospital
      */
     @IsNumber()
-    readonly transportDuration: number;
+    readonly transportDuration: number = 0;
 
     /**
      * Id that is saved in hospitalPatient that comes originally from a patient before being transported to a hospital
