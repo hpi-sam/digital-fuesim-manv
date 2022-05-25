@@ -48,6 +48,8 @@ export const getSelectAlarmGroup = (alarmGroupId: UUID) => (state: AppState) =>
 export const getSelectTransferPoint =
     (transferPointId: UUID) => (state: AppState) =>
         state.exercise.transferPoints[transferPointId];
+export const getSelectHospital = (hospitalId: UUID) => (state: AppState) =>
+    state.exercise.hospitals[hospitalId];
 export const getSelectViewport = (viewportId: UUID) => (state: AppState) =>
     state.exercise.viewports[viewportId];
 export const getSelectRestrictedViewport =

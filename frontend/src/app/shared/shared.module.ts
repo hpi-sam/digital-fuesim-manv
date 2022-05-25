@@ -8,6 +8,7 @@ import { AppTrackByPropertyPipe } from './pipes/track-by-property/app-track-by-p
 import { ExerciseExistsValidatorDirective } from './validation/exercise-exists-validator.directive';
 import { ImageExistsValidatorDirective } from './validation/image-exists-validator.directive';
 import { TransferPointNameComponent } from './components/transfer-point-name/transfer-point-name.component';
+import { HospitalNameComponent } from './components/hospital-name/hospital-name.component';
 import { FormatDurationPipe } from './pipes/format-duration.pipe';
 import { LetDirective } from './directives/let.directive';
 import { UrlValidatorDirective } from './validation/url-validator.directive';
@@ -25,6 +26,7 @@ import { IntegerValidatorDirective } from './validation/integer-validator.direct
         ExerciseExistsValidatorDirective,
         ImageExistsValidatorDirective,
         TransferPointNameComponent,
+        HospitalNameComponent,
         FormatDurationPipe,
         LetDirective,
         UrlValidatorDirective,
@@ -42,6 +44,7 @@ import { IntegerValidatorDirective } from './validation/integer-validator.direct
         ExerciseExistsValidatorDirective,
         ImageExistsValidatorDirective,
         TransferPointNameComponent,
+        HospitalNameComponent,
         FormatDurationPipe,
         LetDirective,
         UrlValidatorDirective,
