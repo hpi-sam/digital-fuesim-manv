@@ -7,6 +7,7 @@ import type {
     ExerciseIds,
     ExerciseState,
     ExerciseTimeline,
+    StateExport,
 } from 'digital-fuesim-manv-shared';
 import { reduceExerciseState } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
@@ -197,11 +198,19 @@ export class ApiService {
         );
     }
 
-    public async importExercise(exerciseState: ExerciseState) {
+    public async importExercise(exportedState: StateExport) {
         return lastValueFrom(
             this.httpClient.post<ExerciseIds>(
-                `${httpOrigin}/api/exercise/${this.exerciseId}`,
-                exerciseState
+                `${httpOrigin}/api/exercise`,
+                exportedState
+            )
+        );
+    }
+
+    public async exerciseHistory() {
+        return lastValueFrom(
+            this.httpClient.get<ExerciseTimeline>(
+                `${httpOrigin}/api/exercise/${this.exerciseId}/history`
             )
         );
     }

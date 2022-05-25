@@ -3,8 +3,12 @@ import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { plainToInstance } from 'class-transformer';
-import type { Constructor, ExportImportFile } from 'digital-fuesim-manv-shared';
-import { PartialExport, StateExport } from 'digital-fuesim-manv-shared';
+import type { ExportImportFile, Constructor } from 'digital-fuesim-manv-shared';
+import {
+    StateExport,
+    StateHistoryCompound,
+    PartialExport,
+} from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
 import { MessageService } from 'src/app/core/messages/message.service';
@@ -113,13 +117,19 @@ export class TrainerToolbarComponent {
             });
     }
 
-    public exportExerciseState() {
+    public async exportExerciseState() {
+        const history = await this.apiService.exerciseHistory();
         const blob = new Blob([
             // TODO: Allow more export types
             JSON.stringify(
                 new StateExport(
                     getStateSnapshot(this.store).exercise,
-                    undefined
+                    new StateHistoryCompound(
+                        history.actionsWrappers.map(
+                            (actionWrapper) => actionWrapper.action
+                        ),
+                        history.initialState
+                    )
                 )
             ),
         ]);
@@ -153,8 +163,18 @@ export class TrainerToolbarComponent {
             );
             switch (importInstance.type) {
                 case 'complete': {
-                    throw new Error(
-                        'Dieser Typ kann zur Zeit nicht importiert werden.'
+                    const ids = await this.apiService.importExercise(
+                        importInstance
+                    );
+                    // TODO: Better visualization
+                    this.messageService.postMessage(
+                        {
+                            color: 'success',
+                            title: 'Übung importiert',
+                            body: `Ids: Trainer: ${ids.trainerId}; Teilnehmer: ${ids.participantId}`,
+                        },
+                        'alert',
+                        null
                     );
                     break;
                 }

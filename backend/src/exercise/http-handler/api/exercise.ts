@@ -1,25 +1,80 @@
+import { plainToInstance } from 'class-transformer';
 import type { ExerciseIds, ExerciseTimeline } from 'digital-fuesim-manv-shared';
-import { ExerciseState } from 'digital-fuesim-manv-shared';
+import {
+    StateExport,
+    ExerciseState,
+    validateExerciseExport,
+} from 'digital-fuesim-manv-shared';
+import { isEmpty } from 'lodash-es';
 import type { DatabaseService } from '../../../database/services/database-service';
 import { UserReadableIdGenerator } from '../../../utils/user-readable-id-generator';
 import { exerciseMap } from '../../exercise-map';
 import { ExerciseWrapper } from '../../exercise-wrapper';
 import type { HttpResponse } from '../utils';
 
-export function postExercise(
-    databaseService: DatabaseService
-): HttpResponse<ExerciseIds> {
+export async function postExercise(
+    databaseService: DatabaseService,
+    importObject: StateExport
+): Promise<HttpResponse<ExerciseIds>> {
     let newParticipantId: string | undefined;
     let newTrainerId: string | undefined;
     try {
         newParticipantId = UserReadableIdGenerator.generateId();
         newTrainerId = UserReadableIdGenerator.generateId(8);
-        const newExercise = ExerciseWrapper.create(
-            newParticipantId,
-            newTrainerId,
-            databaseService,
-            ExerciseState.create()
-        );
+        let newExercise: ExerciseWrapper;
+        if (isEmpty(importObject)) {
+            newExercise = ExerciseWrapper.create(
+                newParticipantId,
+                newTrainerId,
+                databaseService,
+                ExerciseState.create()
+            );
+        } else {
+            // console.log(
+            //     inspect(importObject.history, { depth: 2, colors: true })
+            // );
+            let importInstance: StateExport;
+            try {
+                importInstance = plainToInstance(
+                    StateExport,
+                    importObject
+                    // TODO: verify that this is indeed not required
+                    // // Workaround for https://github.com/typestack/class-transformer/issues/876
+                    // { enableImplicitConversion: true }
+                );
+            } catch (e: unknown) {
+                if (e instanceof SyntaxError) {
+                    console.error(e, importObject);
+                    return {
+                        statusCode: 400,
+                        body: {
+                            message: 'Provided JSON has invalid format',
+                        },
+                    };
+                }
+                throw e;
+            }
+            // console.log(
+            //     inspect(importInstance.history, { depth: 2, colors: true })
+            // );
+            const validationErrors = validateExerciseExport(importObject);
+            if (validationErrors.length > 0) {
+                return {
+                    statusCode: 400,
+                    body: {
+                        message: `The validation of the import failed: ${validationErrors}`,
+                    },
+                };
+            }
+            newExercise = await ExerciseWrapper.importFromFile(
+                databaseService,
+                importInstance,
+                {
+                    participantId: newParticipantId,
+                    trainerId: newTrainerId,
+                }
+            );
+        }
         exerciseMap.set(newParticipantId, newExercise);
         exerciseMap.set(newTrainerId, newExercise);
         return {
@@ -29,7 +84,7 @@ export function postExercise(
                 trainerId: newTrainerId,
             },
         };
-    } catch (error: any) {
+    } catch (error: unknown) {
         if (error instanceof RangeError) {
             return {
                 statusCode: 503,
