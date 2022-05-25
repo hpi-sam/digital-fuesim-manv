@@ -1,17 +1,14 @@
 import type { ExerciseAction, Role, UUID } from 'digital-fuesim-manv-shared';
 import {
-    uuid,
     ExerciseState,
     reduceExerciseState,
     validateExerciseAction,
 } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
-import { IsNull } from 'typeorm';
 import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
 import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
 import { NormalType } from '../database/normal-type';
 import type { DatabaseService } from '../database/services/database-service';
-import type { CreateActionEmitter } from '../database/services/action-emitter.service';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
@@ -84,10 +81,8 @@ export class ExerciseWrapper extends NormalType<
             const actions = await services.actionWrapperService.findAll(
                 {
                     where: {
-                        emitter: {
-                            exercise: {
-                                id: entity.id,
-                            },
+                        exercise: {
+                            id: entity.id,
                         },
                     },
                     order: {
@@ -102,19 +97,7 @@ export class ExerciseWrapper extends NormalType<
                 entity.trainerId,
                 actionsInWrapper,
                 services,
-                JSON.parse(entity.initialStateString) as ExerciseState,
-                (
-                    await services.actionEmitterService.findOne(
-                        {
-                            where: {
-                                exercise: { id: entity.id },
-                                emitterName: IsNull(),
-                            },
-                        },
-                        false,
-                        manager
-                    )
-                )?.emitterId ?? undefined
+                JSON.parse(entity.initialStateString) as ExerciseState
             );
             normal.id = entity.id;
             actionsInWrapper.splice(
@@ -142,9 +125,9 @@ export class ExerciseWrapper extends NormalType<
     tickCounter = 0;
 
     /**
-     * The uuid used in the ActionEmitters for Actions proposed by the server for this exercise.
+     * The server always uses `null` as their emitter id.
      */
-    private readonly emitterUUID = uuid();
+    private readonly emitterId = null;
 
     /**
      * How many ticks have to pass until treatments get recalculated (e.g. with {@link tickInterval} === 1000 and {@link refreshTreatmentInterval} === 60 every minute)
@@ -169,7 +152,7 @@ export class ExerciseWrapper extends NormalType<
                 this.tickCounter % this.refreshTreatmentInterval === 0,
             tickInterval: this.tickInterval,
         };
-        await this.applyAction(updateAction, { emitterId: this.emitterUUID });
+        await this.applyAction(updateAction, this.emitterId);
         this.tickCounter++;
         await this.save();
     };
@@ -201,12 +184,10 @@ export class ExerciseWrapper extends NormalType<
         public readonly trainerId: string,
         actions: ActionWrapper[],
         services: DatabaseService,
-        private readonly initialState = ExerciseState.create(),
-        emitterUUID?: UUID
+        private readonly initialState = ExerciseState.create()
     ) {
         super(services);
         this.actionHistory = actions;
-        this.emitterUUID = emitterUUID ?? this.emitterUUID;
     }
 
     static async create(
@@ -229,7 +210,7 @@ export class ExerciseWrapper extends NormalType<
                 type: '[Exercise] Set Participant Id',
                 participantId,
             },
-            { emitterId: exercise.emitterUUID }
+            exercise.emitterId
         );
 
         return exercise;
@@ -272,10 +253,7 @@ export class ExerciseWrapper extends NormalType<
             type: '[Client] Add client',
             client,
         };
-        await this.applyAction(addClientAction, {
-            emitterId: client.id,
-            emitterName: client.name,
-        });
+        await this.applyAction(addClientAction, client.id);
         // Only after all this add the client in order to not send the action adding itself to it
         this.clients.add(clientWrapper);
     }
@@ -290,17 +268,10 @@ export class ExerciseWrapper extends NormalType<
             type: '[Client] Remove client',
             clientId: client.id,
         };
-        await this.applyAction(
-            removeClientAction,
-            {
-                emitterId: client.id,
-                emitterName: client.name,
-            },
-            () => {
-                clientWrapper.disconnect();
-                this.clients.delete(clientWrapper);
-            }
-        );
+        await this.applyAction(removeClientAction, client.id, () => {
+            clientWrapper.disconnect();
+            this.clients.delete(clientWrapper);
+        });
     }
 
     public start() {
@@ -318,10 +289,10 @@ export class ExerciseWrapper extends NormalType<
      */
     public async applyAction(
         action: ExerciseAction,
-        emitter: Omit<CreateActionEmitter, 'exerciseId'>,
+        emitterId: UUID | null,
         intermediateAction?: () => void
     ): Promise<void> {
-        await this.reduce(action, emitter);
+        await this.reduce(action, emitterId);
         intermediateAction?.();
         this.emitAction(action);
     }
@@ -332,11 +303,11 @@ export class ExerciseWrapper extends NormalType<
      */
     private async reduce(
         action: ExerciseAction,
-        emitter: Omit<CreateActionEmitter, 'exerciseId'>
+        emitterId: UUID | null
     ): Promise<void> {
         this.validateAction(action);
         const newState = reduceExerciseState(this.currentState, action);
-        await this.setState(newState, action, emitter);
+        await this.setState(newState, action, emitterId);
         if (action.type === '[Exercise] Pause') {
             this.pause();
         } else if (action.type === '[Exercise] Start') {
@@ -354,7 +325,7 @@ export class ExerciseWrapper extends NormalType<
     private async setState(
         newExerciseState: ExerciseState,
         action: ExerciseAction,
-        emitter: Omit<CreateActionEmitter, 'exerciseId'>
+        emitterId: UUID | null
     ): Promise<void> {
         // Only save every tenth state directly
         // TODO: Check whether this is a good threshold.
@@ -363,7 +334,7 @@ export class ExerciseWrapper extends NormalType<
         }
         this.currentState = newExerciseState;
         this.actionHistory.push(
-            await ActionWrapper.create(action, emitter, this, this.services)
+            await ActionWrapper.create(action, emitterId, this, this.services)
         );
     }
 

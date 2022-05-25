@@ -1,22 +1,17 @@
 import type { EntityManager, DataSource } from 'typeorm';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
-import type {
-    ActionEmitterService,
-    CreateActionEmitter,
-} from './action-emitter.service';
 import { BaseService } from './base-service';
+import type { ExerciseWrapperService } from './exercise-wrapper.service';
 
 type CreateActionWrapper = Omit<
     ActionWrapperEntity,
-    'created' | 'emitter' | 'id'
+    'created' | 'exercise' | 'id'
 > & {
-    emitter: CreateActionEmitter;
+    exerciseId: UUID;
 };
 
-type UpdateActionWrapper = Omit<Partial<CreateActionWrapper>, 'emitter'> & {
-    emitter?: UUID;
-};
+type UpdateActionWrapper = Partial<CreateActionWrapper>;
 
 /**
  * Provides the API to create, update, delete etc. {@link ActionWrapperEntity}s in the database
@@ -27,7 +22,7 @@ export class ActionWrapperService extends BaseService<
     UpdateActionWrapper
 > {
     public constructor(
-        private readonly actionEmitterService: ActionEmitterService,
+        private readonly exerciseWrapperService: ExerciseWrapperService,
         dataSource: DataSource
     ) {
         super(dataSource);
@@ -37,19 +32,13 @@ export class ActionWrapperService extends BaseService<
         dto: CreateActionWrapper,
         manager: EntityManager
     ): Promise<ActionWrapperEntity> {
-        const { emitter: actionEmitter, ...rest } = dto;
+        const { exerciseId, ...rest } = dto;
         const actionWrapper = manager.create<ActionWrapperEntity>(
             this.entityTarget,
             rest
         );
-        actionWrapper.emitter = await this.actionEmitterService.findOneOrCreate(
-            {
-                where: {
-                    emitterId: actionEmitter.emitterId,
-                },
-            },
-            actionEmitter as CreateActionEmitter,
-            manager
+        actionWrapper.exercise = await this.exerciseWrapperService.findById(
+            exerciseId
         );
         return actionWrapper;
     }
@@ -59,19 +48,15 @@ export class ActionWrapperService extends BaseService<
         dto: UpdateActionWrapper,
         manager: EntityManager
     ): Promise<ActionWrapperEntity> {
-        const { emitter: actionEmitter, ...rest } = dto;
+        const { exerciseId, ...rest } = dto;
         const actionWrapper = manager.merge<ActionWrapperEntity>(
             this.entityTarget,
             initialObject,
             rest
         );
-        actionWrapper.emitter = actionEmitter
-            ? await this.actionEmitterService.findOne(
-                  { where: { id: actionEmitter as UUID } },
-                  true,
-                  manager
-              )
-            : actionWrapper.emitter;
+        actionWrapper.exercise = exerciseId
+            ? await this.exerciseWrapperService.findById(exerciseId)
+            : actionWrapper.exercise;
         return actionWrapper;
     }
 

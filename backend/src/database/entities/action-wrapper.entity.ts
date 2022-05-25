@@ -1,28 +1,36 @@
 import { Type } from 'class-transformer';
-import { ValidateNested, IsJSON } from 'class-validator';
-import type { CreateActionEmitter } from 'database/services/action-emitter.service';
+import { ValidateNested, IsJSON, IsUUID, IsOptional } from 'class-validator';
 import type { DatabaseService } from 'database/services/database-service';
-import type { ExerciseAction } from 'digital-fuesim-manv-shared';
+import type { ExerciseAction, UUID } from 'digital-fuesim-manv-shared';
+import { uuidValidationOptions } from 'digital-fuesim-manv-shared';
 import type { ActionWrapper } from 'exercise/action-wrapper';
 import type { EntityManager } from 'typeorm';
 import { Entity, ManyToOne, Column } from 'typeorm';
-import { ActionEmitterEntity } from './action-emitter.entity';
 import { BaseEntity } from './base-entity';
+import { ExerciseWrapperEntity } from './exercise-wrapper.entity';
 
 @Entity()
 export class ActionWrapperEntity extends BaseEntity<
     ActionWrapperEntity,
     ActionWrapper
 > {
-    @ManyToOne(() => ActionEmitterEntity, {
+    /**
+     * `null` iff the emitter was the server
+     */
+    @Column({ type: 'uuid', nullable: true })
+    @IsOptional()
+    @IsUUID(4, uuidValidationOptions)
+    emitterId!: UUID | null;
+
+    @ManyToOne(() => ExerciseWrapperEntity, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
         nullable: false,
         eager: true,
     })
     @ValidateNested()
-    @Type(() => ActionEmitterEntity)
-    emitter!: ActionEmitterEntity;
+    @Type(() => ExerciseWrapperEntity)
+    exercise!: ExerciseWrapperEntity;
 
     @Column({
         type: 'timestamp with time zone',
@@ -47,14 +55,16 @@ export class ActionWrapperEntity extends BaseEntity<
 
     static async create(
         action: ExerciseAction,
-        emitter: CreateActionEmitter,
+        emitterId: UUID | null,
+        exercise: ExerciseWrapperEntity,
         services: DatabaseService,
         manager?: EntityManager
     ): Promise<ActionWrapperEntity> {
         return services.actionWrapperService.create(
             {
                 actionString: JSON.stringify(action),
-                emitter,
+                emitterId,
+                exerciseId: exercise.id,
             },
             manager
         );

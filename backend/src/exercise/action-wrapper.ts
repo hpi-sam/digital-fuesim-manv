@@ -1,11 +1,9 @@
-import type { ExerciseAction } from 'digital-fuesim-manv-shared';
+import type { ExerciseAction, UUID } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import { NormalType } from '../database/normal-type';
 import { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
 import type { DatabaseService } from '../database/services/database-service';
-import type { CreateActionEmitter } from '../database/services/action-emitter.service';
-import { ActionEmitter } from './action-emitter';
-import type { ExerciseWrapper } from './exercise-wrapper';
+import { ExerciseWrapper } from './exercise-wrapper';
 
 export class ActionWrapper extends NormalType<
     ActionWrapper,
@@ -25,31 +23,27 @@ export class ActionWrapper extends NormalType<
             const existed = this.id !== undefined;
             entity.actionString = JSON.stringify(this.action);
             entity.created ??= new Date();
-            entity.emitter = await this.emitter.asEntity(save, manager);
+            entity.exercise = await this.exercise.asEntity(save, manager);
+            entity.emitterId = this.emitterId;
             if (this.id) entity.id = this.id;
             if (save) {
                 if (existed) {
-                    const updatable = {
-                        actionString: entity.actionString,
-                        emitter: entity.emitter.id,
-                    };
                     entity = await this.services.actionWrapperService.update(
                         entity.id,
-                        updatable,
+                        {
+                            actionString: entity.actionString,
+                            emitterId: entity.emitterId,
+                            exerciseId: entity.exercise.id,
+                        },
                         manager
                     );
                 } else {
-                    const creatable = {
-                        actionString: entity.actionString,
-                        emitter: {
-                            emitterId: entity.emitter.emitterId,
-                            exerciseId: entity.emitter.exercise.id,
-                            emitterName: entity.emitter.emitterName,
-                        },
-                    };
-
                     entity = await this.services.actionWrapperService.create(
-                        creatable,
+                        {
+                            actionString: entity.actionString,
+                            emitterId: entity.emitterId,
+                            exerciseId: entity.exercise.id,
+                        },
                         manager
                     );
                 }
@@ -70,17 +64,24 @@ export class ActionWrapper extends NormalType<
     ): Promise<ActionWrapper> {
         const normal = new ActionWrapper(services);
         normal.action = JSON.parse(entity.actionString);
-        normal.emitter = await ActionEmitter.createFromEntity(
-            entity.emitter,
-            services,
-            entityManager,
-            exercise
-        );
+        normal.emitterId = entity.emitterId;
+        normal.exercise =
+            exercise ??
+            (await ExerciseWrapper.createFromEntity(
+                entity.exercise,
+                services,
+                entityManager
+            ));
         normal.id = entity.id;
         return normal;
     }
 
-    emitter!: ActionEmitter;
+    /**
+     * `null` iff the emitter was the server
+     */
+    emitterId!: UUID | null;
+
+    exercise!: ExerciseWrapper;
 
     action!: ExerciseAction;
 
@@ -95,7 +96,7 @@ export class ActionWrapper extends NormalType<
 
     static async create(
         action: ExerciseAction,
-        emitter: Omit<CreateActionEmitter, 'exerciseId'>,
+        emitterId: UUID | null,
         exercise: ExerciseWrapper,
         services: DatabaseService
     ): Promise<ActionWrapper> {
@@ -103,7 +104,8 @@ export class ActionWrapper extends NormalType<
             const exerciseEntity = await exercise.asEntity(true, manager);
             const entity = await ActionWrapperEntity.create(
                 action,
-                { ...emitter, exerciseId: exerciseEntity.id },
+                emitterId,
+                exerciseEntity,
                 services,
                 manager
             );

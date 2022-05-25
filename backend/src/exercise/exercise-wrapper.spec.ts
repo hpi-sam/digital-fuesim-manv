@@ -104,7 +104,7 @@ describe('Exercise Wrapper', () => {
 
             await exercise.applyAction(
                 { type: '[Exercise] Start', timestamp: 0 },
-                { emitterId: (exercise as any).emitterUUID }
+                (exercise as any).emitterUUID
             );
             expect(startMock).toHaveBeenCalledTimes(1);
         });
@@ -121,7 +121,7 @@ describe('Exercise Wrapper', () => {
 
             await exercise.applyAction(
                 { type: '[Exercise] Pause', timestamp: 0 },
-                { emitterId: (exercise as any).emitterUUID }
+                (exercise as any).emitterUUID
             );
             expect(pause).toHaveBeenCalledTimes(1);
         });
