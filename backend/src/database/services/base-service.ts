@@ -60,17 +60,32 @@ export abstract class BaseService<
     /**
      * Finds the first row matching the {@link options}.
      *
-     * @returns The found row, or `null` if no matching row was found and {@link mustExist} is `false`.
-     * @throws {@link DatabaseError} when {@link mustExist} is `true` and no row has been found.
+     * @returns The found row, or `null` if no matching row was found.
      */
-    public async findOne<TExists extends boolean>(
+    public async findOne(
         options: FindOneOptions<Entity>,
-        mustExist: TExists,
         entityManager?: EntityManager
-    ): Promise<TExists extends true ? Entity : Entity | null> {
+    ): Promise<Entity | null> {
+        const find = async (manager: EntityManager) =>
+            manager.findOne(this.entityTarget, options);
+        return entityManager
+            ? find(entityManager)
+            : this.dataSource.transaction(find);
+    }
+
+    /**
+     * Finds the first row matching the {@link options}.
+     *
+     * @returns The found row.
+     * @throws {@link DatabaseError} when no row has been found.
+     */
+    public async getOne(
+        options: FindOneOptions<Entity>,
+        entityManager?: EntityManager
+    ): Promise<Entity | null> {
         const find = async (manager: EntityManager) => {
-            const tuple = await manager.findOne(this.entityTarget, options);
-            if (mustExist && tuple === null) {
+            const tuple = await this.findOne(options, manager);
+            if (tuple === null) {
                 throw new DatabaseError(
                     `\`${
                         this.entityTarget.constructor.name
@@ -82,11 +97,9 @@ export abstract class BaseService<
             return tuple;
         };
         // TypeScript can't get the correct typings for this.
-        return (
-            entityManager
-                ? find(entityManager)
-                : this.dataSource.transaction(find)
-        ) as Promise<TExists extends true ? Entity : Entity | null>;
+        return entityManager
+            ? find(entityManager)
+            : this.dataSource.transaction(find);
     }
 
     /**
@@ -99,7 +112,7 @@ export abstract class BaseService<
         entityManager?: EntityManager
     ): Promise<Entity> {
         const find = async (manager: EntityManager) =>
-            (await this.findOne(options, false, manager)) ??
+            (await this.findOne(options, manager)) ??
             (await this.create(creatable, manager));
         return entityManager
             ? find(entityManager)
