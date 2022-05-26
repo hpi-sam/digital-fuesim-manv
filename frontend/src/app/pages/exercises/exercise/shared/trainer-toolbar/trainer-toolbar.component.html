@@ -9,6 +9,15 @@
     <button (click)="openTransferOverview()" class="btn btn-primary ms-3">
         Transferübersicht
     </button>
+    <button (click)="openAlarmGroupOverview()" class="btn btn-primary ms-3">
+        Alarmierungsgruppen
+    </button>
+    <button
+        (click)="openExerciseStatisticsModal()"
+        class="btn btn-primary ms-3"
+    >
+        Statistiken
+    </button>
     <button
         *ngIf="(exerciseStatus$ | async) === 'running'"
         (click)="pauseExercise()"

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import type { TileMapProperties } from 'digital-fuesim-manv-shared';
+import type { Mutable, TileMapProperties } from 'digital-fuesim-manv-shared';
 import { cloneDeep } from 'lodash';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -14,7 +14,7 @@ import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
     styleUrls: ['./exercise-settings-modal.component.scss'],
 })
 export class ExerciseSettingsModalComponent {
-    public tileMapProperties: TileMapProperties;
+    public tileMapProperties: Mutable<TileMapProperties>;
 
     public readonly tileMapUrlRegex =
         /^(?=.*\{x\})(?=.*\{-?y\})(?=.*\{z\}).*$/u;

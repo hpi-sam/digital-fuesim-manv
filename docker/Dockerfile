@@ -1,15 +1,52 @@
+# set path
+ARG PRODUCTION_PATH="/usr/local/app"
+
+# Use official node image as the base image
+FROM node:16-bullseye-slim AS builder
+
+# needed to use PRODUCTION_PATH before the first FROM
+ARG PRODUCTION_PATH
+
+# add the source code to app
+COPY ./ $PRODUCTION_PATH
+
+# set workdir
+WORKDIR $PRODUCTION_PATH
+
+# install for production and cleanup
+RUN npm run deployment
+
+####  building done  ####
+#########################
+####  prod container ####
+
 # Use official node image as the base image, important to be on debian based for apt-get
 FROM node:16-bullseye-slim
 
+# needed to use PRODUCTION_PATH before the first FROM
+ARG PRODUCTION_PATH
+
 # Disable interactive frontend to prevent install dialogues
 ARG DEBIAN_FRONTEND=noninteractive
+
+# set production path
+WORKDIR $PRODUCTION_PATH
 
 # setting DEFAULT_VARIABLES
 ENV SSL_ENABLE=false
 ENV ENABLE_HSTS=false
 
-# install nginx
-RUN apt-get update && apt-get upgrade -y && apt-get install nginx git cron openssl curl -y
+# install necessary packages
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install --no-install-recommends \
+        nginx \
+        ca-certificates \
+        git \
+        cron \
+        openssl \
+        curl -y && \
+    rm -rf /var/lib/apt/lists/*
 
 # deleting default nginx conf
 RUN rm /etc/nginx/sites-enabled/default && rm /etc/nginx/sites-available/default
@@ -17,14 +54,6 @@ RUN rm /etc/nginx/sites-enabled/default && rm /etc/nginx/sites-available/default
 # ssl certs - mount /ssl as a volume for persistency
 RUN mkdir -p /ssl/certs
 RUN chown -R www-data:www-data /ssl/certs
-
-# nginx config file
-COPY ./docker/nginx /etc/nginx/conf.d
-
-# copy docker-entrypoint.sh and ssl.sh file into the container
-COPY ./docker/docker-entrypoint.sh /docker-entrypoint.sh
-COPY ./docker/ssl.sh /ssl.sh
-COPY ./docker/cron-renew-session-ticket /etc/cron.daily/cron-renew-session-ticket
 
 # make scripts executable
 RUN chmod +x /docker-entrypoint.sh
@@ -46,25 +75,31 @@ RUN ln -s  /root/.acme.sh/acme.sh  /usr/local/bin/acme.sh
 # remove acme.sh source code
 RUN rm -r /acme.sh.git
 
-# add the source code to app
-COPY ./ /usr/local/app/
+# nginx config files
+COPY ./docker/nginx /etc/nginx/conf.d
 
-# set workdir
-WORKDIR /usr/local/app
+# copy docker-entrypoint.sh and ssl.sh file into the container
+COPY ./docker/docker-entrypoint.sh /docker-entrypoint.sh
+COPY ./docker/ssl.sh /ssl.sh
+COPY ./docker/cron-renew-session-ticket /etc/cron.daily/cron-renew-session-ticket
 
-# setup and install all the dependencies
-RUN npm run setup
+# copy frontend
+COPY --chown=www-data:www-data --from=builder $PRODUCTION_PATH/frontend/dist $PRODUCTION_PATH/frontend/dist
 
-# Generate the build of the application
-RUN npm run build:deployment
+# copy shared
+COPY --chown=www-data:www-data --from=builder $PRODUCTION_PATH/shared/dist $PRODUCTION_PATH/shared/dist
+COPY --chown=www-data:www-data --from=builder $PRODUCTION_PATH/shared/node_modules $PRODUCTION_PATH/shared/node_modules
+COPY --chown=www-data:www-data --from=builder $PRODUCTION_PATH/shared/package.json $PRODUCTION_PATH/shared
 
-# set nginx frontend file rights
-RUN chown -R www-data:www-data /usr/local/app/frontend/dist/digital-fuesim-manv
+# copy backend
+COPY --chown=www-data:www-data --from=builder $PRODUCTION_PATH/backend/dist $PRODUCTION_PATH/backend/dist
+COPY --chown=www-data:www-data --from=builder $PRODUCTION_PATH/backend/node_modules $PRODUCTION_PATH/backend/node_modules
+COPY --chown=www-data:www-data --from=builder $PRODUCTION_PATH/backend/package.json $PRODUCTION_PATH/backend
 
-# needed for npm run start:once in docker-entrypoint.sh
-WORKDIR /usr/local/app/backend
+# set correct working directory for docker-entrypoint.sh
+WORKDIR $PRODUCTION_PATH/backend
 
-# nginx ports
+# nginx port
 EXPOSE 80:80
 EXPOSE 443:443
 

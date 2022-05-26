@@ -6,7 +6,7 @@ set -e
 rm -f /etc/nginx/conf.d/https.conf
 cp -a /etc/nginx/conf.d/http.template /etc/nginx/conf.d/http.conf
 
-# start nginx
+# start nginx, needed here already for acme.sh to verify cerst via http
 nginx
 
 # only *.conf files in /etc/nginx/conf.d are enabled, others have to explicitly included
@@ -19,10 +19,10 @@ if ${SSL_ENABLE}; then
     service cron start
 fi
 
-# showing nginx errors
+# showing nginx errors, just for logs/debugging
 nginx -t
 
-# reload nginx
+# reload nginx, to use https, when enabled
 nginx -s reload
 
-npm run start:once
+NODE_ENV=production node --experimental-specifier-resolution=node dist/src/index.js
