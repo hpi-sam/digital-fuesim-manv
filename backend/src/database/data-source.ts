@@ -2,7 +2,7 @@ import { DataSource } from 'typeorm';
 import { Config } from '../config';
 import { ActionWrapperEntity } from './entities/action-wrapper.entity';
 import { ExerciseWrapperEntity } from './entities/exercise-wrapper.entity';
-import { AddExerciseAndActions1653512979288 } from './migrations/1653512979288-AddExerciseAndActions';
+import { AddExerciseAndActions1653554608164 } from './migrations/1653554608164-AddExerciseAndActions';
 
 export type DataSourceMode = 'baseline' | 'default' | 'testing';
 
@@ -26,7 +26,7 @@ export const createNewDataSource = (mode: DataSourceMode = 'default') => {
                 ? defaultDatabaseName
                 : testingDatabaseName,
         entities: [ActionWrapperEntity, ExerciseWrapperEntity],
-        migrations: [AddExerciseAndActions1653512979288],
+        migrations: [AddExerciseAndActions1653554608164],
         logging: Config.dbLogging,
     });
 };

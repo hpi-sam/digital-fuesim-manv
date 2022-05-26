@@ -34,34 +34,35 @@ export class ExerciseWrapper extends NormalType<
             const existed = this.id !== undefined;
             if (this.id) entity.id = this.id;
             entity.initialStateString = JSON.stringify(this.initialState);
+            entity.currentStateString = JSON.stringify(this.currentState);
             entity.participantId = this.participantId;
             entity.tickCounter = this.tickCounter;
             entity.trainerId = this.trainerId;
 
             if (save) {
                 if (existed) {
-                    const updatable = {
-                        initialStateString: entity.initialStateString,
-                        participantId: entity.participantId,
-                        tickCounter: entity.tickCounter,
-                        trainerId: entity.trainerId,
-                    };
                     entity =
                         await this.databaseService.exerciseWrapperService.update(
                             entity.id,
-                            updatable,
+                            {
+                                initialStateString: entity.initialStateString,
+                                currentStateString: entity.currentStateString,
+                                participantId: entity.participantId,
+                                tickCounter: entity.tickCounter,
+                                trainerId: entity.trainerId,
+                            },
                             manager
                         );
                 } else {
-                    const creatable = {
-                        initialStateString: entity.initialStateString,
-                        participantId: entity.participantId,
-                        tickCounter: entity.tickCounter,
-                        trainerId: entity.trainerId,
-                    };
                     entity =
                         await this.databaseService.exerciseWrapperService.create(
-                            creatable,
+                            {
+                                initialStateString: entity.initialStateString,
+                                currentStateString: entity.currentStateString,
+                                participantId: entity.participantId,
+                                tickCounter: entity.tickCounter,
+                                trainerId: entity.trainerId,
+                            },
                             manager
                         );
                 }
@@ -100,7 +101,8 @@ export class ExerciseWrapper extends NormalType<
                 entity.trainerId,
                 actionsInWrapper,
                 databaseService,
-                JSON.parse(entity.initialStateString) as ExerciseState
+                JSON.parse(entity.initialStateString) as ExerciseState,
+                JSON.parse(entity.currentStateString) as ExerciseState
             );
             normal.id = entity.id;
             actionsInWrapper.splice(
@@ -169,8 +171,6 @@ export class ExerciseWrapper extends NormalType<
 
     private readonly clients = new Set<ClientWrapper>();
 
-    private currentState = this.initialState;
-
     private readonly actionHistory: ActionWrapper[] = [];
 
     public readonly incrementIdGenerator = new IncrementIdGenerator();
@@ -184,7 +184,8 @@ export class ExerciseWrapper extends NormalType<
         public readonly trainerId: string,
         actions: ActionWrapper[],
         databaseService: DatabaseService,
-        private readonly initialState = ExerciseState.create()
+        private readonly initialState = ExerciseState.create(),
+        private currentState: ExerciseState = initialState
     ) {
         super(databaseService);
         this.actionHistory = actions;
@@ -336,6 +337,8 @@ export class ExerciseWrapper extends NormalType<
                 this.databaseService
             )
         );
+        // Save current state
+        await this.save();
     }
 
     public async deleteExercise() {
