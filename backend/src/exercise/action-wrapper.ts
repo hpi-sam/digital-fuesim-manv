@@ -3,7 +3,8 @@ import type { EntityManager } from 'typeorm';
 import { NormalType } from '../database/normal-type';
 import { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
 import type { DatabaseService } from '../database/services/database-service';
-import { ExerciseWrapper } from './exercise-wrapper';
+import type { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
+import type { ExerciseWrapper } from './exercise-wrapper';
 
 export class ActionWrapper extends NormalType<
     ActionWrapper,
@@ -11,7 +12,8 @@ export class ActionWrapper extends NormalType<
 > {
     async asEntity(
         save: boolean,
-        entityManager?: EntityManager
+        entityManager?: EntityManager,
+        exerciseEntity?: ExerciseWrapperEntity
     ): Promise<ActionWrapperEntity> {
         const operations = async (manager: EntityManager) => {
             let entity = this.id
@@ -23,7 +25,8 @@ export class ActionWrapper extends NormalType<
             const existed = this.id !== undefined;
             entity.actionString = JSON.stringify(this.action);
             entity.index = this.index;
-            entity.exercise = await this.exercise.asEntity(save, manager);
+            entity.exercise =
+                exerciseEntity ?? (await this.exercise.asEntity(save, manager));
             entity.emitterId = this.emitterId;
             if (this.id) entity.id = this.id;
             if (save) {
@@ -59,22 +62,15 @@ export class ActionWrapper extends NormalType<
             : this.databaseService.transaction(operations);
     }
 
-    static async createFromEntity(
+    static createFromEntity(
         entity: ActionWrapperEntity,
         databaseService: DatabaseService,
-        entityManager?: EntityManager,
-        exercise?: ExerciseWrapper
-    ): Promise<ActionWrapper> {
+        exercise: ExerciseWrapper
+    ): ActionWrapper {
         const normal = new ActionWrapper(databaseService);
         normal.action = JSON.parse(entity.actionString);
         normal.emitterId = entity.emitterId;
-        normal.exercise =
-            exercise ??
-            (await ExerciseWrapper.createFromEntity(
-                entity.exercise,
-                databaseService,
-                entityManager
-            ));
+        normal.exercise = exercise;
         normal.id = entity.id;
         normal.index = entity.index;
         return normal;
@@ -117,10 +113,10 @@ export class ActionWrapper extends NormalType<
                 manager
             );
 
-            const normal = await ActionWrapper.createFromEntity(
+            const normal = ActionWrapper.createFromEntity(
                 entity,
                 databaseService,
-                manager
+                exercise
             );
 
             return normal;

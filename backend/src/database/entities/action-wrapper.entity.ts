@@ -32,7 +32,8 @@ export class ActionWrapperEntity extends BaseEntity<
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
         nullable: false,
-        eager: true,
+        // We don't need the exercise on this side, we just need the inverse side of ExerciseWrapperEntity.actions
+        eager: false,
     })
     @ValidateNested()
     @Type(() => ExerciseWrapperEntity)

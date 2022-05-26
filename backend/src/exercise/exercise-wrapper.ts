@@ -33,6 +33,11 @@ export class ExerciseWrapper extends NormalType<
                 : new ExerciseWrapperEntity();
             const existed = this.id !== undefined;
             if (this.id) entity.id = this.id;
+            entity.actions = await Promise.all(
+                this.actionHistory.map(async (action) =>
+                    action.asEntity(false, manager, entity)
+                )
+            );
             entity.initialStateString = JSON.stringify(this.initialState);
             entity.currentStateString = JSON.stringify(this.currentState);
             entity.participantId = this.participantId;
@@ -41,6 +46,8 @@ export class ExerciseWrapper extends NormalType<
 
             if (save) {
                 if (existed) {
+                    // TODO: Is this an actual issue, or will this be fine?
+                    // eslint-disable-next-line require-atomic-updates
                     entity =
                         await this.databaseService.exerciseWrapperService.update(
                             entity.id,
@@ -54,6 +61,7 @@ export class ExerciseWrapper extends NormalType<
                             manager
                         );
                 } else {
+                    // eslint-disable-next-line require-atomic-updates
                     entity =
                         await this.databaseService.exerciseWrapperService.create(
                             {
@@ -76,55 +84,30 @@ export class ExerciseWrapper extends NormalType<
             : this.databaseService.transaction(operations);
     }
 
-    static async createFromEntity(
+    // TODO: Method currently unused, kept for follow-up changes
+    static createFromEntity(
         entity: ExerciseWrapperEntity,
-        databaseService: DatabaseService,
-        entityManager?: EntityManager
-    ): Promise<ExerciseWrapper> {
-        const operations = async (manager: EntityManager) => {
-            const actions = await databaseService.actionWrapperService.findAll(
-                {
-                    where: {
-                        exercise: {
-                            id: entity.id,
-                        },
-                    },
-                    order: {
-                        index: 'ASC',
-                    },
-                },
-                manager
-            );
-            const actionsInWrapper: ActionWrapper[] = [];
-            const normal = new ExerciseWrapper(
-                entity.participantId,
-                entity.trainerId,
-                actionsInWrapper,
-                databaseService,
-                JSON.parse(entity.initialStateString) as ExerciseState,
-                JSON.parse(entity.currentStateString) as ExerciseState
-            );
-            normal.id = entity.id;
-            actionsInWrapper.splice(
-                0,
-                0,
-                ...(await Promise.all(
-                    actions.map(async (action) =>
-                        ActionWrapper.createFromEntity(
-                            action,
-                            databaseService,
-                            manager,
-                            normal
-                        )
-                    )
-                ))
-            );
-            normal.tickCounter = entity.tickCounter;
-            return normal;
-        };
-        return entityManager
-            ? operations(entityManager)
-            : databaseService.transaction(operations);
+        databaseService: DatabaseService
+    ): ExerciseWrapper {
+        const actionsInWrapper: ActionWrapper[] = [];
+        const normal = new ExerciseWrapper(
+            entity.participantId,
+            entity.trainerId,
+            actionsInWrapper,
+            databaseService,
+            JSON.parse(entity.initialStateString) as ExerciseState,
+            JSON.parse(entity.currentStateString) as ExerciseState
+        );
+        normal.id = entity.id;
+        actionsInWrapper.splice(
+            0,
+            0,
+            ...entity.actions.map((action) =>
+                ActionWrapper.createFromEntity(action, databaseService, normal)
+            )
+        );
+        normal.tickCounter = entity.tickCounter;
+        return normal;
     }
 
     tickCounter = 0;

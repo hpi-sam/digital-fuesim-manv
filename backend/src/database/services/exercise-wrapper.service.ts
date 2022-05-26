@@ -4,7 +4,7 @@ import { BaseService } from './base-service';
 
 type CreateExerciseWrapper = Omit<
     ExerciseWrapperEntity,
-    'id' | 'tickCounter'
+    'actions' | 'id' | 'tickCounter'
 > & {
     tickCounter?: number;
 };
