@@ -101,7 +101,7 @@ export class PatientTemplate {
                 template.biometricInformation.sex
             ),
             template.biometricInformation,
-            template.isPreTriaged ? status : null,
+            'white',
             status,
             healthStates,
             template.startingHealthStateId,

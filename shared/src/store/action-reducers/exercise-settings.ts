@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsString, ValidateNested } from 'class-validator';
 import { TileMapProperties } from '../../models';
 import type { Action, ActionReducer } from '../action-reducer';
 
@@ -12,6 +12,14 @@ export class SetTileMapPropertiesAction implements Action {
     public readonly tileMapProperties!: TileMapProperties;
 }
 
+export class SetPretriageFlagAction implements Action {
+    @IsString()
+    public readonly type = '[ExerciseSettings] Set Pretriage Flag';
+
+    @IsBoolean()
+    public readonly pretriageEnabled!: boolean;
+}
+
 export namespace ExerciseSettingsActionReducers {
     export const setTileMapProperties: ActionReducer<SetTileMapPropertiesAction> =
         {
@@ -22,4 +30,13 @@ export namespace ExerciseSettingsActionReducers {
             },
             rights: 'trainer',
         };
+
+    export const setPretriageFlag: ActionReducer<SetPretriageFlagAction> = {
+        action: SetPretriageFlagAction,
+        reducer: (draftState, { pretriageEnabled }) => {
+            draftState.pretriageEnabledFlag = pretriageEnabled;
+            return draftState;
+        },
+        rights: 'trainer',
+    };
 }

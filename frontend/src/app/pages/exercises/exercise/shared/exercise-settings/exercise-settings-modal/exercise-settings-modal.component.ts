@@ -5,7 +5,10 @@ import type { Mutable, TileMapProperties } from 'digital-fuesim-manv-shared';
 import { cloneDeep } from 'lodash';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectTileMapProperties } from 'src/app/state/exercise/exercise.selectors';
+import {
+    selectPretriageFlag,
+    selectTileMapProperties,
+} from 'src/app/state/exercise/exercise.selectors';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 @Component({
@@ -19,8 +22,10 @@ export class ExerciseSettingsModalComponent {
     public readonly tileMapUrlRegex =
         /^(?=.*\{x\})(?=.*\{-?y\})(?=.*\{z\}).*$/u;
 
+    public pretriageFlag$ = this.store.select(selectPretriageFlag);
+
     constructor(
-        store: Store<AppState>,
+        public readonly store: Store<AppState>,
         public readonly activeModal: NgbActiveModal,
         private readonly apiService: ApiService
     ) {
@@ -33,6 +38,13 @@ export class ExerciseSettingsModalComponent {
         this.apiService.proposeAction({
             type: '[ExerciseSettings] Set tile map properties',
             tileMapProperties: this.tileMapProperties,
+        });
+    }
+
+    public setPretriageFlag(flag: boolean) {
+        this.apiService.proposeAction({
+            type: '[ExerciseSettings] Set Pretriage Flag',
+            pretriageEnabled: flag,
         });
     }
 

@@ -38,7 +38,7 @@ export class Patient {
 
     // TODO
     @IsNotIn([undefined])
-    public readonly visibleStatus: PatientStatus | null;
+    public readonly visibleStatus: PatientStatus;
 
     // TODO
     @IsString()
@@ -62,7 +62,7 @@ export class Patient {
         // TODO: Specify patient data (e.g. injuries, name, etc.)
         personalInformation: PersonalInformation,
         biometricInformation: BiometricInformation,
-        visibleStatus: PatientStatus | null,
+        visibleStatus: PatientStatus,
         realStatus: PatientStatus,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         currentHealthStateId: UUID,
@@ -130,6 +130,10 @@ export class Patient {
     @IsNumber()
     @Min(0)
     public readonly timeSpeed: number = 1;
+
+    @IsNumber()
+    @Min(0)
+    public treatmentTime = 0;
 
     static readonly create = getCreate(this);
 

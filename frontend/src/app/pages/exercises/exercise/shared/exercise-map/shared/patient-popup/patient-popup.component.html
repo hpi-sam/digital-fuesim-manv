@@ -2,18 +2,17 @@
     <h5 class="popover-header">
         {{ patient.personalInformation.name }}
         <span
-            [ngStyle]="{ 'background-color': patient.visibleStatus ?? 'white' }"
+            *ngIf="patientStatus$ | async as patientStatus"
+            [ngStyle]="{ 'background-color': patientStatus }"
             [class.text-dark]="
-                patient.visibleStatus === 'yellow' ||
-                patient.visibleStatus === 'white' ||
-                patient.visibleStatus === null
+                patientStatus === 'yellow' || patientStatus === 'white'
             "
             class="badge rounded-pill font-monospace"
         >
             {{
                 (client$ | async)?.role === 'trainer'
                     ? (patient.health / healthPointsDefaults.max | percent)
-                    : statusNames[patient.visibleStatus ?? 'white']
+                    : statusNames[patientStatus!]
             }}
         </span>
         <button
@@ -25,6 +24,23 @@
     <div class="popover-body p-0">
         <table class="table mb-0" style="max-width: 300px">
             <tbody>
+                <tr *ngIf="pretriageFlag$ | async">
+                    <th>Vorsichtungskategorie wählen</th>
+                    <td>
+                        <select
+                            [ngModel]="patientStatus$ | async"
+                            (ngModelChange)="
+                                setPretriageCategory(patient.id, $event)
+                            "
+                        >
+                            <option [value]="'black'">EX</option>
+                            <option [value]="'blue'">SK IV</option>
+                            <option [value]="'red'">SK I</option>
+                            <option [value]="'yellow'">SK II</option>
+                            <option [value]="'green'">SK III</option>
+                        </select>
+                    </td>
+                </tr>
                 <tr>
                     <th scope="col">Alter</th>
                     <td class="font-monospace">

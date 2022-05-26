@@ -29,6 +29,10 @@ interface PatientTickResult {
      * The new state time of the patient
      */
     nextStateTime: number;
+    /**
+     * The time a patient was treated overall
+     */
+    treatmentTime: number;
 }
 
 /**
@@ -46,6 +50,11 @@ export function patientTick(
             // Only look at patients that are alive and have a position, i.e. are not in a vehicle
             .filter((patient) => isAlive(patient.health) && patient.position)
             .map((patient) => {
+                // update the time a patient is being treated, to check for pretriage later
+                let treatmentTime = patient.treatmentTime;
+                if (patient.isBeingTreated) {
+                    treatmentTime += patientTickInterval / 1000;
+                }
                 const nextHealthPoints = getNextPatientHealthPoints(
                     patient,
                     getDedicatedResources(state, patient),
@@ -62,6 +71,7 @@ export function patientTick(
                     nextHealthPoints,
                     nextStateId,
                     nextStateTime,
+                    treatmentTime,
                 };
             })
     );

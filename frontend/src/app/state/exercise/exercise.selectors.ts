@@ -62,7 +62,8 @@ export const selectTransferPoints = (state: AppState) =>
 
 export const selectTileMapProperties = (state: AppState) =>
     state.exercise.tileMapProperties;
-
+export const selectPretriageFlag = (state: AppState) =>
+    state.exercise.pretriageEnabledFlag;
 /**
  * @returns a selector that returns a dictionary of all elements that have a position and are in the viewport restriction
  */

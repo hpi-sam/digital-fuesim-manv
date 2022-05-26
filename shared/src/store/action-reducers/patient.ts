@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
-import { Position } from '../../models/utils';
+import { PatientStatus, Position } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
@@ -42,6 +42,17 @@ export class RemovePatientAction implements Action {
     public readonly type = '[Patient] Remove patient';
     @IsUUID(4, uuidValidationOptions)
     public readonly patientId!: UUID;
+}
+
+export class SetVisibleStatusAction implements Action {
+    @IsString()
+    public readonly type = '[Patient] Set Visible Status';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly patientId!: UUID;
+
+    @IsString()
+    public readonly patientStatus!: PatientStatus;
 }
 
 export namespace PatientActionReducers {
@@ -106,5 +117,15 @@ export namespace PatientActionReducers {
             return draftState;
         },
         rights: 'trainer',
+    };
+
+    export const setVisibleStatus: ActionReducer<SetVisibleStatusAction> = {
+        action: SetVisibleStatusAction,
+        reducer: (draftState, { patientId, patientStatus }) => {
+            const patient = getElement(draftState, 'patients', patientId);
+            patient.visibleStatus = patientStatus;
+            return draftState;
+        },
+        rights: 'participant',
     };
 }

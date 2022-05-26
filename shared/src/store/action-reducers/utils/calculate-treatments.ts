@@ -30,7 +30,11 @@ function caterFor(
     catersFor: Mutable<CatersFor>,
     patient: Mutable<Patient>
 ) {
-    const status = patient.visibleStatus ?? 'yellow'; // Treat not pretriaged patients as yellow.
+    let status = patient.visibleStatus;
+    // Treat not pretriaged patients as yellow.
+    if (status === 'white') {
+        status = 'yellow';
+    }
     if (
         (status === 'red' && catering.canCaterFor.red <= catersFor.red) ||
         (status === 'yellow' &&
@@ -144,7 +148,8 @@ function calculateCatering(
         >
     > = groupBy(
         distances,
-        ({ patient }) => patient.visibleStatus ?? 'yellow' // Treat untriaged patients as yellow
+        ({ patient }) =>
+            patient.visibleStatus === 'white' ? 'yellow' : patient.visibleStatus // Treat untriaged patients as yellow
     );
 
     const redPatients =

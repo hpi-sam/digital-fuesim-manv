@@ -48,6 +48,7 @@ export class ExerciseState {
     public readonly tileMapProperties: TileMapProperties =
         defaultTileMapProperties;
     public readonly statistics: readonly StatisticsEntry[] = [];
+    public readonly pretriageEnabledFlag: boolean = true;
 
     /**
      * @deprecated Use {@link create} instead.
