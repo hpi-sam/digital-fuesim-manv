@@ -22,6 +22,8 @@ We provide a `docker-compose` service named `db` for this (see also [below](#wit
 
 Before starting the application make sure that you have run the migrations (run `npm run migration:run` in `./backend`).
 
+When you want to use the database on your host machine, e.g. to inspect it or to connect to it using a backend instance running on your host, make sure to uncomment the `ports` section of the `db` service in the [`docker-compose.yml` file](./docker-compose.yml).
+
 You can also choose to not use a database, see [here](./backend/README.md#without-a-database) for more information.
 
 ## Starting for development

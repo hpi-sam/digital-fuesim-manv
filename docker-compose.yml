@@ -17,14 +17,13 @@ services:
         container_name: dfm_postgres
         volumes:
             - dfm_db:/var/lib/postgresql/data
-        ports:
-            - 127.0.0.1:5432:5432
+        # Use this to expose the database to your host machine
+        # ports:
+        #     - 127.0.0.1:5432:5432
         environment:
             - POSTGRES_USER=${DFM_DB_USER}
             - POSTGRES_PASSWORD=${DFM_DB_PASSWORD}
             - POSTGRES_DB=${DFM_DB_NAME}
-        # TODO: Is there a way to use this file already in the compose file? (@anonym-HPI)
-        # env_file: backend/.env
 
 volumes:
     dfm_db:
