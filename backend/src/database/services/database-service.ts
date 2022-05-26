@@ -14,6 +14,10 @@ export class DatabaseService {
         );
     }
 
+    public get isInitialized() {
+        return this.dataSource.isInitialized;
+    }
+
     /**
      * Wrap all operations into one database transaction. Note that all calls inside MUST use the provided manager.
      */

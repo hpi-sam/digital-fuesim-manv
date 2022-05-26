@@ -16,10 +16,10 @@ export class ClientWrapper {
      * @param clientName The public name of the client.
      * @returns The joined client's id, or undefined when the exercise doesn't exists.
      */
-    public async joinExercise(
+    public joinExercise(
         exerciseId: string,
         clientName: string
-    ): Promise<UUID | undefined> {
+    ): UUID | undefined {
         const exercise = exerciseMap.get(exerciseId);
         if (!exercise) {
             return undefined;
@@ -30,19 +30,19 @@ export class ClientWrapper {
         // was fetched with this exact id from the exercise map.
         const role = this.chosenExercise.getRoleFromUsedId(exerciseId);
         this.relatedExerciseClient = Client.create(clientName, role, undefined);
-        await this.chosenExercise.addClient(this);
+        this.chosenExercise.addClient(this);
         return this.relatedExerciseClient.id;
     }
 
     /**
      * Note that this method simply returns when the client did not join an exercise.
      */
-    public async leaveExercise() {
+    public leaveExercise() {
         if (this.chosenExercise === undefined) {
             // The client has not joined an exercise. Do nothing.
             return;
         }
-        await this.chosenExercise.removeClient(this);
+        this.chosenExercise.removeClient(this);
     }
 
     public get exercise(): ExerciseWrapper | undefined {

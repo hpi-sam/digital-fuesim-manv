@@ -20,6 +20,29 @@ export class ExerciseWrapper extends NormalType<
     ExerciseWrapper,
     ExerciseWrapperEntity
 > {
+    private _changedSinceSave = true;
+
+    public get changedSinceSave() {
+        return this._changedSinceSave;
+    }
+
+    /**
+     * Mark this exercise as being up-to-date in the database
+     */
+    public hasBeenSaved() {
+        this._changedSinceSave = false;
+        this.temporaryActionHistory.splice(
+            0,
+            this.temporaryActionHistory.length
+        );
+    }
+
+    /**
+     * Mark this exercise as being out-of-date with the database representation
+     */
+    public hasBeenModified() {
+        this._changedSinceSave = true;
+    }
     async asEntity(
         save: boolean,
         entityManager?: EntityManager
@@ -34,7 +57,7 @@ export class ExerciseWrapper extends NormalType<
             const existed = this.id !== undefined;
             if (this.id) entity.id = this.id;
             entity.actions = await Promise.all(
-                this.actionHistory.map(async (action) =>
+                this.temporaryActionHistory.map(async (action) =>
                     action.asEntity(false, manager, entity)
                 )
             );
@@ -75,6 +98,7 @@ export class ExerciseWrapper extends NormalType<
                         );
                 }
                 this.id = entity.id;
+                this.hasBeenSaved();
             }
 
             return entity;
@@ -99,14 +123,21 @@ export class ExerciseWrapper extends NormalType<
             JSON.parse(entity.currentStateString) as ExerciseState
         );
         normal.id = entity.id;
-        actionsInWrapper.splice(
-            0,
-            0,
-            ...entity.actions.map((action) =>
-                ActionWrapper.createFromEntity(action, databaseService, normal)
-            )
-        );
+        if (entity.actions) {
+            actionsInWrapper.splice(
+                0,
+                0,
+                ...entity.actions.map((action) =>
+                    ActionWrapper.createFromEntity(
+                        action,
+                        databaseService,
+                        normal
+                    )
+                )
+            );
+        }
         normal.tickCounter = entity.tickCounter;
+        normal.hasBeenSaved();
         return normal;
     }
 
@@ -140,9 +171,9 @@ export class ExerciseWrapper extends NormalType<
                 this.tickCounter % this.refreshTreatmentInterval === 0,
             tickInterval: this.tickInterval,
         };
-        await this.applyAction(updateAction, this.emitterId);
+        this.applyAction(updateAction, this.emitterId);
         this.tickCounter++;
-        await this.save();
+        this.hasBeenModified();
     };
 
     // Call the tick every 1000 ms
@@ -154,8 +185,6 @@ export class ExerciseWrapper extends NormalType<
 
     private readonly clients = new Set<ClientWrapper>();
 
-    private readonly actionHistory: ActionWrapper[] = [];
-
     public readonly incrementIdGenerator = new IncrementIdGenerator();
 
     /**
@@ -165,21 +194,20 @@ export class ExerciseWrapper extends NormalType<
     constructor(
         public readonly participantId: string,
         public readonly trainerId: string,
-        actions: ActionWrapper[],
+        public readonly temporaryActionHistory: ActionWrapper[],
         databaseService: DatabaseService,
         private readonly initialState = ExerciseState.create(),
         private currentState: ExerciseState = initialState
     ) {
         super(databaseService);
-        this.actionHistory = actions;
     }
 
-    static async create(
+    static create(
         participantId: string,
         trainerId: string,
         databaseService: DatabaseService,
         initialState: ExerciseState = ExerciseState.create()
-    ): Promise<ExerciseWrapper> {
+    ): ExerciseWrapper {
         const exercise = new ExerciseWrapper(
             participantId,
             trainerId,
@@ -187,9 +215,8 @@ export class ExerciseWrapper extends NormalType<
             databaseService,
             initialState
         );
-        await exercise.save();
 
-        await exercise.applyAction(
+        exercise.applyAction(
             {
                 type: '[Exercise] Set Participant Id',
                 participantId,
@@ -228,7 +255,7 @@ export class ExerciseWrapper extends NormalType<
         this.clients.forEach((client) => client.emitAction(action));
     }
 
-    public async addClient(clientWrapper: ClientWrapper) {
+    public addClient(clientWrapper: ClientWrapper) {
         if (clientWrapper.client === undefined) {
             return;
         }
@@ -237,12 +264,12 @@ export class ExerciseWrapper extends NormalType<
             type: '[Client] Add client',
             client,
         };
-        await this.applyAction(addClientAction, client.id);
+        this.applyAction(addClientAction, client.id);
         // Only after all this add the client in order to not send the action adding itself to it
         this.clients.add(clientWrapper);
     }
 
-    public async removeClient(clientWrapper: ClientWrapper) {
+    public removeClient(clientWrapper: ClientWrapper) {
         if (!this.clients.has(clientWrapper)) {
             // clientWrapper not part of this exercise
             return;
@@ -252,7 +279,7 @@ export class ExerciseWrapper extends NormalType<
             type: '[Client] Remove client',
             clientId: client.id,
         };
-        await this.applyAction(removeClientAction, client.id, () => {
+        this.applyAction(removeClientAction, client.id, () => {
             clientWrapper.disconnect();
             this.clients.delete(clientWrapper);
         });
@@ -271,12 +298,12 @@ export class ExerciseWrapper extends NormalType<
      * @param intermediateAction When set is run between reducing the state and broadcasting the action
      * @throws Error if the action is not applicable on the current state
      */
-    public async applyAction(
+    public applyAction(
         action: ExerciseAction,
         emitterId: UUID | null,
         intermediateAction?: () => void
-    ): Promise<void> {
-        await this.reduce(action, emitterId);
+    ): void {
+        this.reduce(action, emitterId);
         intermediateAction?.();
         this.emitAction(action);
     }
@@ -285,13 +312,10 @@ export class ExerciseWrapper extends NormalType<
      * Applies the action on the current state.
      * @throws Error if the action is not applicable on the current state
      */
-    private async reduce(
-        action: ExerciseAction,
-        emitterId: UUID | null
-    ): Promise<void> {
+    private reduce(action: ExerciseAction, emitterId: UUID | null): void {
         this.validateAction(action);
         const newState = reduceExerciseState(this.currentState, action);
-        await this.setState(newState, action, emitterId);
+        this.setState(newState, action, emitterId);
         if (action.type === '[Exercise] Pause') {
             this.pause();
         } else if (action.type === '[Exercise] Start') {
@@ -306,29 +330,25 @@ export class ExerciseWrapper extends NormalType<
         }
     }
 
-    private async setState(
+    private setState(
         newExerciseState: ExerciseState,
         action: ExerciseAction,
         emitterId: UUID | null
-    ): Promise<void> {
+    ): void {
         this.currentState = newExerciseState;
-        this.actionHistory.push(
-            await ActionWrapper.create(
-                action,
-                emitterId,
-                this,
-                this.databaseService
-            )
+        this.temporaryActionHistory.push(
+            new ActionWrapper(this.databaseService, action, emitterId, this)
         );
-        // Save current state
-        await this.save();
+        this.hasBeenModified();
     }
 
     public async deleteExercise() {
         this.clients.forEach((client) => client.disconnect());
         exerciseMap.delete(this.participantId);
         exerciseMap.delete(this.trainerId);
-        if (this.id)
+        if (this.id) {
             await this.databaseService.exerciseWrapperService.remove(this.id);
+            this.hasBeenSaved();
+        }
     }
 }

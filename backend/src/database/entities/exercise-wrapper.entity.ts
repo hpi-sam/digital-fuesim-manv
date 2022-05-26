@@ -2,8 +2,8 @@ import { IsInt, IsJSON, IsString, MinLength, MaxLength } from 'class-validator';
 import type { DatabaseService } from 'database/services/database-service';
 import { ExerciseState } from 'digital-fuesim-manv-shared';
 import type { ExerciseWrapper } from 'exercise/exercise-wrapper';
-import { Entity, Column, OneToMany } from 'typeorm';
-import { ActionWrapperEntity } from './action-wrapper.entity';
+import { Entity, Column } from 'typeorm';
+import type { ActionWrapperEntity } from './action-wrapper.entity';
 import { BaseEntity } from './base-entity';
 
 @Entity()
@@ -42,12 +42,7 @@ export class ExerciseWrapperEntity extends BaseEntity<
     @IsJSON()
     currentStateString!: string;
 
-    @OneToMany(
-        () => ActionWrapperEntity,
-        (actionWrapper) => actionWrapper.exercise,
-        { eager: true }
-    )
-    actions!: ActionWrapperEntity[];
+    actions?: ActionWrapperEntity[];
 
     /**
      * Be very careful when using this. - Use {@link create} instead for most use cases.

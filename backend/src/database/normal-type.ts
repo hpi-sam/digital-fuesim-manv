@@ -20,7 +20,7 @@ export abstract class NormalType<
     /**
      * Creates or updates the object in the database
      */
-    async save(): Promise<EntityType> {
-        return this.asEntity(true);
+    async save(entityManager?: EntityManager): Promise<EntityType> {
+        return this.asEntity(true, entityManager);
     }
 }

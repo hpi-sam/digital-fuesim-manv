@@ -160,8 +160,8 @@ export const createTestEnvironment = (): TestEnvironment => {
     afterEach(async () => {
         // Prevent the dataSource from being closed too soon.
         await sleep(200);
+        await environment.server.destroy();
         await dataSource.destroy();
-        environment.server.destroy();
     });
     afterAll(async () => {
         if (dataSource.isInitialized) {

@@ -5,8 +5,8 @@ import { ExerciseWrapper } from './exercise-wrapper';
 
 describe('Exercise Wrapper', () => {
     const environment = createTestEnvironment();
-    it('fails getting a role for the wrong id', async () => {
-        const exercise = await ExerciseWrapper.create(
+    it('fails getting a role for the wrong id', () => {
+        const exercise = ExerciseWrapper.create(
             '123456',
             '12345678',
             environment.databaseService
@@ -18,7 +18,7 @@ describe('Exercise Wrapper', () => {
     });
 
     it('does nothing adding a client that is not set up', async () => {
-        const exercise = await ExerciseWrapper.create(
+        const exercise = ExerciseWrapper.create(
             '123456',
             '12345678',
             environment.databaseService
@@ -33,7 +33,7 @@ describe('Exercise Wrapper', () => {
                 ExerciseWrapper.prototype,
                 'applyAction'
             );
-            await exercise.addClient(client);
+            exercise.addClient(client);
 
             expect(applySpy).not.toHaveBeenCalled();
         });
@@ -54,7 +54,7 @@ describe('Exercise Wrapper', () => {
                 'applyAction'
             );
             applySpy.mockClear();
-            await exercise.removeClient(client);
+            exercise.removeClient(client);
 
             expect(applySpy).not.toHaveBeenCalled();
         });
@@ -62,8 +62,8 @@ describe('Exercise Wrapper', () => {
 
     describe('Started Exercise', () => {
         let exercise: ExerciseWrapper | undefined;
-        beforeEach(async () => {
-            exercise = await ExerciseWrapper.create(
+        beforeEach(() => {
+            exercise = ExerciseWrapper.create(
                 '123456',
                 '12345678',
                 environment.databaseService
@@ -92,8 +92,8 @@ describe('Exercise Wrapper', () => {
     });
 
     describe('Reactions to Actions', () => {
-        it('calls start when matching action is sent', async () => {
-            const exercise = await ExerciseWrapper.create(
+        it('calls start when matching action is sent', () => {
+            const exercise = ExerciseWrapper.create(
                 '123456',
                 '12345678',
                 environment.databaseService
@@ -102,15 +102,15 @@ describe('Exercise Wrapper', () => {
             const startMock = jest.spyOn(ExerciseWrapper.prototype, 'start');
             startMock.mockImplementation(() => ({}));
 
-            await exercise.applyAction(
+            exercise.applyAction(
                 { type: '[Exercise] Start', timestamp: 0 },
                 (exercise as any).emitterUUID
             );
             expect(startMock).toHaveBeenCalledTimes(1);
         });
 
-        it('calls start when matching action is sent', async () => {
-            const exercise = await ExerciseWrapper.create(
+        it('calls start when matching action is sent', () => {
+            const exercise = ExerciseWrapper.create(
                 '123456',
                 '12345678',
                 environment.databaseService
@@ -119,7 +119,7 @@ describe('Exercise Wrapper', () => {
             const pause = jest.spyOn(ExerciseWrapper.prototype, 'pause');
             pause.mockImplementation(() => ({}));
 
-            await exercise.applyAction(
+            exercise.applyAction(
                 { type: '[Exercise] Pause', timestamp: 0 },
                 (exercise as any).emitterUUID
             );

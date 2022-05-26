@@ -28,8 +28,8 @@ export class ExerciseHttpServer {
             res.send(response.body);
         });
 
-        app.post('/api/exercise', async (req, res) => {
-            const response = await postExercise(databaseService);
+        app.post('/api/exercise', (req, res) => {
+            const response = postExercise(databaseService);
             res.statusCode = response.statusCode;
             res.send(response.body);
         });

@@ -6,15 +6,15 @@ import { exerciseMap } from '../../exercise-map';
 import { ExerciseWrapper } from '../../exercise-wrapper';
 import type { HttpResponse } from '../utils';
 
-export async function postExercise(
+export function postExercise(
     databaseService: DatabaseService
-): Promise<HttpResponse<ExerciseIds>> {
+): HttpResponse<ExerciseIds> {
     let newParticipantId: string | undefined;
     let newTrainerId: string | undefined;
     try {
         newParticipantId = UserReadableIdGenerator.generateId();
         newTrainerId = UserReadableIdGenerator.generateId(8);
-        const newExercise = await ExerciseWrapper.create(
+        const newExercise = ExerciseWrapper.create(
             newParticipantId,
             newTrainerId,
             databaseService,

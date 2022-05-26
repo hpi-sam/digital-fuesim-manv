@@ -67,59 +67,31 @@ export class ActionWrapper extends NormalType<
         databaseService: DatabaseService,
         exercise: ExerciseWrapper
     ): ActionWrapper {
-        const normal = new ActionWrapper(databaseService);
-        normal.action = JSON.parse(entity.actionString);
-        normal.emitterId = entity.emitterId;
-        normal.exercise = exercise;
-        normal.id = entity.id;
-        normal.index = entity.index;
-        return normal;
+        return new ActionWrapper(
+            databaseService,
+            JSON.parse(entity.actionString),
+            entity.emitterId,
+            exercise,
+            entity.index,
+            entity.id
+        );
     }
 
-    /**
-     * `null` iff the emitter was the server
-     */
-    emitterId!: UUID | null;
-
-    exercise!: ExerciseWrapper;
-
-    action!: ExerciseAction;
-
-    index!: number;
+    public readonly index!: number;
 
     /**
-     * Be very careful when using this. - Use {@link create} instead for most use cases.
-     * This constructor does not guarantee a valid object.
+     * @param emitterId `null` iff the emitter was the server, the client id otherwise
      */
-    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-    constructor(databaseService: DatabaseService) {
+    constructor(
+        databaseService: DatabaseService,
+        public readonly action: ExerciseAction,
+        public readonly emitterId: UUID | null,
+        public readonly exercise: ExerciseWrapper,
+        index?: number,
+        id?: UUID
+    ) {
         super(databaseService);
-    }
-
-    static async create(
-        action: ExerciseAction,
-        emitterId: UUID | null,
-        exercise: ExerciseWrapper,
-        databaseService: DatabaseService
-    ): Promise<ActionWrapper> {
-        return databaseService.transaction(async (manager) => {
-            const exerciseEntity = await exercise.asEntity(true, manager);
-            const entity = await ActionWrapperEntity.create(
-                action,
-                emitterId,
-                exerciseEntity,
-                exercise.incrementIdGenerator.next(),
-                databaseService,
-                manager
-            );
-
-            const normal = ActionWrapper.createFromEntity(
-                entity,
-                databaseService,
-                exercise
-            );
-
-            return normal;
-        });
+        if (id) this.id = id;
+        this.index = index ?? exercise.incrementIdGenerator.next();
     }
 }
