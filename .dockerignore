@@ -13,6 +13,8 @@
 # Ignore test files
 **/test
 **/*.spec*
+.eslint
+.prettierrc
 
 ## Backend
 
@@ -26,3 +28,13 @@ shared/tsconfig.build.tsbuildinfo
 
 frontend/.angular
 frontend/cypress*
+
+## VSCode
+
+.vscode
+
+## more unnecessary for production, not needed inside the docker container
+
+docker-compose.yml
+**/README.md
+

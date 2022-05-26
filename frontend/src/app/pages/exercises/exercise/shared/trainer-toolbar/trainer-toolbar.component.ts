@@ -9,7 +9,9 @@ import type { AppState } from 'src/app/state/app.state';
 import { selectExerciseStatus } from 'src/app/state/exercise/exercise.selectors';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 import { openExerciseSettingsModal } from '../exercise-settings/open-exercise-settings-modal';
+import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercise-statistics-modal';
 import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
+import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 
 @Component({
     selector: 'app-trainer-toolbar',
@@ -38,8 +40,16 @@ export class TrainerToolbarComponent {
         openTransferOverviewModal(this.modalService);
     }
 
+    public openAlarmGroupOverview() {
+        openAlarmGroupOverviewModal(this.modalService);
+    }
+
     public openExerciseSettings() {
         openExerciseSettingsModal(this.modalService);
+    }
+
+    public openExerciseStatisticsModal() {
+        openExerciseStatisticsModal(this.modalService);
     }
 
     public async pauseExercise() {

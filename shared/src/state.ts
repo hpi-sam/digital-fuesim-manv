@@ -3,6 +3,7 @@ import { defaultMapImagesTemplates } from './data/default-state/map-images-templ
 import { defaultPatientTemplates } from './data/default-state/patient-templates';
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
 import type {
+    AlarmGroup,
     Client,
     EocLogEntry,
     MapImage,
@@ -15,6 +16,7 @@ import type {
     Vehicle,
     Viewport,
 } from './models';
+import type { StatisticsEntry } from './models/statistics-entry';
 import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuid } from './utils';
@@ -35,6 +37,7 @@ export class ExerciseState {
     public readonly mapImages: { readonly [key: UUID]: MapImage } = {};
     public readonly transferPoints: { readonly [key: UUID]: TransferPoint } =
         {};
+    public readonly alarmGroups: { readonly [key: UUID]: AlarmGroup } = {};
     public readonly clients: { readonly [key: UUID]: Client } = {};
     public readonly patientTemplates = defaultPatientTemplates;
     public readonly vehicleTemplates = defaultVehicleTemplates;
@@ -44,6 +47,7 @@ export class ExerciseState {
     public readonly participantId: string = '';
     public readonly tileMapProperties: TileMapProperties =
         defaultTileMapProperties;
+    public readonly statistics: readonly StatisticsEntry[] = [];
 
     /**
      * @deprecated Use {@link create} instead.
