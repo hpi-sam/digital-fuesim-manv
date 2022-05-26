@@ -60,7 +60,6 @@ export class TimeTravelHelper {
      */
     public async jumpToTime(exerciseTime: number): Promise<void> {
         if (!this.timeConstraints || !this.timeJumpHelper) {
-            // TODO:
             throw new Error('Start the time travel before jumping to a time!');
         }
         const clampedTime = Math.max(
@@ -77,9 +76,7 @@ export class TimeTravelHelper {
 
     private exerciseTimeline?: ExerciseTimeline;
     private async getExerciseTimeline(): Promise<ExerciseTimeline> {
-        if (!this.exerciseTimeline) {
-            this.exerciseTimeline = await this.getTimeLine();
-        }
+        this.exerciseTimeline ??= await this.getTimeLine();
         return this.exerciseTimeline;
     }
 }

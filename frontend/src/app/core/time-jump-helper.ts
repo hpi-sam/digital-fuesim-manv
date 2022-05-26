@@ -53,7 +53,6 @@ export class TimeJumpHelper {
                 // To mitigate this, we clone the action to make it mutable.
                 // TODO: Think more about Should this maybe even be another requirement in the reducers (Mutable actions)?
                 // this could still fail because of a `Object.frozen` error (the action applies an immutable object to the state)
-                // TODO: this doesn't work with `original()` because the original of the draftState is the initialState and not the state before the action was run
                 const unfrozenAction = cloneDeepMutable(action);
                 applyAction(draftState, unfrozenAction);
 

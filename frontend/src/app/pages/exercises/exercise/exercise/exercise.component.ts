@@ -46,6 +46,14 @@ export class ExerciseComponent implements OnDestroy {
         });
     }
 
+    public leaveTimeTravel() {
+        this.apiService.stopTimeTravel();
+        this.messageService.postMessage({
+            title: 'Zurück in die Zukunft!',
+            color: 'info',
+        });
+    }
+
     ngOnDestroy(): void {
         this.destroy.next();
     }

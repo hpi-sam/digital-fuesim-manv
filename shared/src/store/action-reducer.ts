@@ -41,15 +41,8 @@ export interface Action {
  *
  * It is expected to be used inside [immers produce](https://immerjs.github.io/immer/produce).
  *
- * [For expensive search operations, read from the original state, not the draft](https://immerjs.github.io/immer/performance#for-expensive-search-operations-read-from-the-original-state-not-the-draft)
- *
- * Example:
- * ```ts
- * // this is slow
- * draftState.anArray.find(item => item.id === action.id);
- * // this is fast
- * original(draftState).anArray.find(item => item.id === action.id);
- * ```
+ * Do not use [original()](https://immerjs.github.io/immer/original)!
+ * `original(draftState)` could be any previous state when multiple reducers are applied (time travel).
  *
  * You can also call other reducers from within a reducer function (don't create loops).
  *

@@ -83,12 +83,18 @@ export class ApiService {
                 : getStateSnapshot(this.store).exercise,
         (state) => this.store.dispatch(setExerciseState(state)),
         async () =>
-            // TODO: Catch & stuff
             lastValueFrom(
                 this.httpClient.get<ExerciseTimeline>(
                     `${httpOrigin}/api/exercise/${this.exerciseId}/history`
                 )
-            )
+            ).catch((error) => {
+                this.stopTimeTravel();
+                this.messageService.postError({
+                    title: 'Die Vergangenheit konnte nicht geladen werden',
+                    error,
+                });
+                throw error;
+            })
     );
 
     public readonly jumpToTime = this.timeTravelHelper.jumpToTime.bind(
