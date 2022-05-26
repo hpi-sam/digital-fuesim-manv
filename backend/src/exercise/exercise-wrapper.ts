@@ -169,11 +169,6 @@ export class ExerciseWrapper extends NormalType<
 
     private currentState = this.initialState;
 
-    /**
-     * This only contains some snapshots of the state, not every state in between.
-     */
-    private readonly stateHistory: ExerciseState[] = [];
-
     private readonly actionHistory: ActionWrapper[] = [];
 
     public readonly incrementIdGenerator = new IncrementIdGenerator();
@@ -330,11 +325,6 @@ export class ExerciseWrapper extends NormalType<
         action: ExerciseAction,
         emitterId: UUID | null
     ): Promise<void> {
-        // Only save every tenth state directly
-        // TODO: Check whether this is a good threshold.
-        if (this.actionHistory.length % 10 === 0) {
-            this.stateHistory.push(this.currentState);
-        }
         this.currentState = newExerciseState;
         this.actionHistory.push(
             await ActionWrapper.create(action, emitterId, this, this.services)
