@@ -319,6 +319,8 @@ jobs:
             - name: checkoutLFS
               uses: actions/checkout@v2
             - run: git lfs pull
+            - name: Create .env
+              run: cat ./.env.example | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/" | sed -e "s/^DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/" > ./.env
             # Source: https://docs.docker.com/ci-cd/github-actions/
             - name: Login to docker
               uses: docker/login-action@v1
@@ -353,6 +355,8 @@ jobs:
             - name: checkoutLFS
               uses: actions/checkout@v2
             - run: git lfs pull
+            - name: Create .env
+              run: cat ./.env.example | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/" | sed -e "s/^DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/" > ./.env
             # Source: https://docs.docker.com/ci-cd/github-actions/
             - name: Login to docker
               uses: docker/login-action@v1
