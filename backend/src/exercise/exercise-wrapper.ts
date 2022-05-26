@@ -26,7 +26,7 @@ export class ExerciseWrapper extends NormalType<
     ): Promise<ExerciseWrapperEntity> {
         const operations = async (manager: EntityManager) => {
             let entity = this.id
-                ? await this.services.exerciseWrapperService.findById(
+                ? await this.databaseService.exerciseWrapperService.findById(
                       this.id,
                       manager
                   )
@@ -46,11 +46,12 @@ export class ExerciseWrapper extends NormalType<
                         tickCounter: entity.tickCounter,
                         trainerId: entity.trainerId,
                     };
-                    entity = await this.services.exerciseWrapperService.update(
-                        entity.id,
-                        updatable,
-                        manager
-                    );
+                    entity =
+                        await this.databaseService.exerciseWrapperService.update(
+                            entity.id,
+                            updatable,
+                            manager
+                        );
                 } else {
                     const creatable = {
                         initialStateString: entity.initialStateString,
@@ -58,10 +59,11 @@ export class ExerciseWrapper extends NormalType<
                         tickCounter: entity.tickCounter,
                         trainerId: entity.trainerId,
                     };
-                    entity = await this.services.exerciseWrapperService.create(
-                        creatable,
-                        manager
-                    );
+                    entity =
+                        await this.databaseService.exerciseWrapperService.create(
+                            creatable,
+                            manager
+                        );
                 }
                 this.id = entity.id;
             }
@@ -70,16 +72,16 @@ export class ExerciseWrapper extends NormalType<
         };
         return entityManager
             ? operations(entityManager)
-            : this.services.transaction(operations);
+            : this.databaseService.transaction(operations);
     }
 
     static async createFromEntity(
         entity: ExerciseWrapperEntity,
-        services: DatabaseService,
+        databaseService: DatabaseService,
         entityManager?: EntityManager
     ): Promise<ExerciseWrapper> {
         const operations = async (manager: EntityManager) => {
-            const actions = await services.actionWrapperService.findAll(
+            const actions = await databaseService.actionWrapperService.findAll(
                 {
                     where: {
                         exercise: {
@@ -97,7 +99,7 @@ export class ExerciseWrapper extends NormalType<
                 entity.participantId,
                 entity.trainerId,
                 actionsInWrapper,
-                services,
+                databaseService,
                 JSON.parse(entity.initialStateString) as ExerciseState
             );
             normal.id = entity.id;
@@ -108,7 +110,7 @@ export class ExerciseWrapper extends NormalType<
                     actions.map(async (action) =>
                         ActionWrapper.createFromEntity(
                             action,
-                            services,
+                            databaseService,
                             manager,
                             normal
                         )
@@ -120,7 +122,7 @@ export class ExerciseWrapper extends NormalType<
         };
         return entityManager
             ? operations(entityManager)
-            : services.transaction(operations);
+            : databaseService.transaction(operations);
     }
 
     tickCounter = 0;
@@ -181,24 +183,24 @@ export class ExerciseWrapper extends NormalType<
         public readonly participantId: string,
         public readonly trainerId: string,
         actions: ActionWrapper[],
-        services: DatabaseService,
+        databaseService: DatabaseService,
         private readonly initialState = ExerciseState.create()
     ) {
-        super(services);
+        super(databaseService);
         this.actionHistory = actions;
     }
 
     static async create(
         participantId: string,
         trainerId: string,
-        services: DatabaseService,
+        databaseService: DatabaseService,
         initialState: ExerciseState = ExerciseState.create()
     ): Promise<ExerciseWrapper> {
         const exercise = new ExerciseWrapper(
             participantId,
             trainerId,
             [],
-            services,
+            databaseService,
             initialState
         );
         await exercise.save();
@@ -327,7 +329,12 @@ export class ExerciseWrapper extends NormalType<
     ): Promise<void> {
         this.currentState = newExerciseState;
         this.actionHistory.push(
-            await ActionWrapper.create(action, emitterId, this, this.services)
+            await ActionWrapper.create(
+                action,
+                emitterId,
+                this,
+                this.databaseService
+            )
         );
     }
 
@@ -335,6 +342,7 @@ export class ExerciseWrapper extends NormalType<
         this.clients.forEach((client) => client.disconnect());
         exerciseMap.delete(this.participantId);
         exerciseMap.delete(this.trainerId);
-        if (this.id) await this.services.exerciseWrapperService.remove(this.id);
+        if (this.id)
+            await this.databaseService.exerciseWrapperService.remove(this.id);
     }
 }

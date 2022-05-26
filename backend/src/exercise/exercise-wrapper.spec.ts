@@ -9,7 +9,7 @@ describe('Exercise Wrapper', () => {
         const exercise = await ExerciseWrapper.create(
             '123456',
             '12345678',
-            environment.serviceProvider
+            environment.databaseService
         );
 
         expect(() => exercise.getRoleFromUsedId('wrong id')).toThrow(
@@ -21,7 +21,7 @@ describe('Exercise Wrapper', () => {
         const exercise = await ExerciseWrapper.create(
             '123456',
             '12345678',
-            environment.serviceProvider
+            environment.databaseService
         );
         // Use a websocket in order to have a ClientWrapper set up
         await environment.withWebsocket(async () => {
@@ -43,7 +43,7 @@ describe('Exercise Wrapper', () => {
         const exercise = await ExerciseWrapper.create(
             '123456',
             '12345678',
-            environment.serviceProvider
+            environment.databaseService
         );
         // Use a websocket in order to have a ClientWrapper set up
         await environment.withWebsocket(async () => {
@@ -66,7 +66,7 @@ describe('Exercise Wrapper', () => {
             exercise = await ExerciseWrapper.create(
                 '123456',
                 '12345678',
-                environment.serviceProvider
+                environment.databaseService
             );
             exercise.start();
         });
@@ -96,7 +96,7 @@ describe('Exercise Wrapper', () => {
             const exercise = await ExerciseWrapper.create(
                 '123456',
                 '12345678',
-                environment.serviceProvider
+                environment.databaseService
             );
 
             const startMock = jest.spyOn(ExerciseWrapper.prototype, 'start');
@@ -113,7 +113,7 @@ describe('Exercise Wrapper', () => {
             const exercise = await ExerciseWrapper.create(
                 '123456',
                 '12345678',
-                environment.serviceProvider
+                environment.databaseService
             );
 
             const pause = jest.spyOn(ExerciseWrapper.prototype, 'pause');

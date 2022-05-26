@@ -7,9 +7,9 @@ async function main() {
     Config.initialize();
 
     const dataSource = await createNewDataSource().initialize();
-    const services = new DatabaseService(dataSource);
+    const databaseService = new DatabaseService(dataSource);
     // eslint-disable-next-line no-new
-    new FuesimServer(services);
+    new FuesimServer(databaseService);
 }
 
 main();

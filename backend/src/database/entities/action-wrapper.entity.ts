@@ -62,10 +62,10 @@ export class ActionWrapperEntity extends BaseEntity<
         emitterId: UUID | null,
         exercise: ExerciseWrapperEntity,
         index: number,
-        services: DatabaseService,
+        databaseService: DatabaseService,
         manager?: EntityManager
     ): Promise<ActionWrapperEntity> {
-        return services.actionWrapperService.create(
+        return databaseService.actionWrapperService.create(
             {
                 actionString: JSON.stringify(action),
                 emitterId,

@@ -15,7 +15,7 @@ export class ActionWrapper extends NormalType<
     ): Promise<ActionWrapperEntity> {
         const operations = async (manager: EntityManager) => {
             let entity = this.id
-                ? await this.services.actionWrapperService.findById(
+                ? await this.databaseService.actionWrapperService.findById(
                       this.id,
                       manager
                   )
@@ -28,25 +28,27 @@ export class ActionWrapper extends NormalType<
             if (this.id) entity.id = this.id;
             if (save) {
                 if (existed) {
-                    entity = await this.services.actionWrapperService.update(
-                        entity.id,
-                        {
-                            actionString: entity.actionString,
-                            emitterId: entity.emitterId,
-                            exerciseId: entity.exercise.id,
-                        },
-                        manager
-                    );
+                    entity =
+                        await this.databaseService.actionWrapperService.update(
+                            entity.id,
+                            {
+                                actionString: entity.actionString,
+                                emitterId: entity.emitterId,
+                                exerciseId: entity.exercise.id,
+                            },
+                            manager
+                        );
                 } else {
-                    entity = await this.services.actionWrapperService.create(
-                        {
-                            actionString: entity.actionString,
-                            emitterId: entity.emitterId,
-                            exerciseId: entity.exercise.id,
-                            index: entity.index,
-                        },
-                        manager
-                    );
+                    entity =
+                        await this.databaseService.actionWrapperService.create(
+                            {
+                                actionString: entity.actionString,
+                                emitterId: entity.emitterId,
+                                exerciseId: entity.exercise.id,
+                                index: entity.index,
+                            },
+                            manager
+                        );
                 }
                 this.id = entity.id;
             }
@@ -54,23 +56,23 @@ export class ActionWrapper extends NormalType<
         };
         return entityManager
             ? operations(entityManager)
-            : this.services.transaction(operations);
+            : this.databaseService.transaction(operations);
     }
 
     static async createFromEntity(
         entity: ActionWrapperEntity,
-        services: DatabaseService,
+        databaseService: DatabaseService,
         entityManager?: EntityManager,
         exercise?: ExerciseWrapper
     ): Promise<ActionWrapper> {
-        const normal = new ActionWrapper(services);
+        const normal = new ActionWrapper(databaseService);
         normal.action = JSON.parse(entity.actionString);
         normal.emitterId = entity.emitterId;
         normal.exercise =
             exercise ??
             (await ExerciseWrapper.createFromEntity(
                 entity.exercise,
-                services,
+                databaseService,
                 entityManager
             ));
         normal.id = entity.id;
@@ -94,30 +96,30 @@ export class ActionWrapper extends NormalType<
      * This constructor does not guarantee a valid object.
      */
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-    constructor(services: DatabaseService) {
-        super(services);
+    constructor(databaseService: DatabaseService) {
+        super(databaseService);
     }
 
     static async create(
         action: ExerciseAction,
         emitterId: UUID | null,
         exercise: ExerciseWrapper,
-        services: DatabaseService
+        databaseService: DatabaseService
     ): Promise<ActionWrapper> {
-        return services.transaction(async (manager) => {
+        return databaseService.transaction(async (manager) => {
             const exerciseEntity = await exercise.asEntity(true, manager);
             const entity = await ActionWrapperEntity.create(
                 action,
                 emitterId,
                 exerciseEntity,
                 exercise.incrementIdGenerator.next(),
-                services,
+                databaseService,
                 manager
             );
 
             const normal = await ActionWrapper.createFromEntity(
                 entity,
-                services,
+                databaseService,
                 manager
             );
 

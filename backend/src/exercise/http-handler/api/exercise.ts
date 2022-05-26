@@ -7,7 +7,7 @@ import { ExerciseWrapper } from '../../exercise-wrapper';
 import type { HttpResponse } from '../utils';
 
 export async function postExercise(
-    services: DatabaseService
+    databaseService: DatabaseService
 ): Promise<HttpResponse<ExerciseIds>> {
     let newParticipantId: string | undefined;
     let newTrainerId: string | undefined;
@@ -17,7 +17,7 @@ export async function postExercise(
         const newExercise = await ExerciseWrapper.create(
             newParticipantId,
             newTrainerId,
-            services,
+            databaseService,
             ExerciseState.create()
         );
         exerciseMap.set(newParticipantId, newExercise);

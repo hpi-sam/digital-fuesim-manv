@@ -3,17 +3,17 @@ import { DatabaseService } from '../services/database-service';
 
 const dataSource = await createNewDataSource().initialize();
 
-const services = new DatabaseService(dataSource);
+const databaseService = new DatabaseService(dataSource);
 
-await services.transaction(async (manager) => {
-    const exercises = await services.exerciseWrapperService.findAll(
+await databaseService.transaction(async (manager) => {
+    const exercises = await databaseService.exerciseWrapperService.findAll(
         { select: { id: true } },
         manager
     );
 
     const deleteResult = await Promise.all(
         exercises.map(async (exercise) =>
-            services.exerciseWrapperService.remove(exercise.id, manager)
+            databaseService.exerciseWrapperService.remove(exercise.id, manager)
         )
     );
 

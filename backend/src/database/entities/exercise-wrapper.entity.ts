@@ -47,10 +47,10 @@ export class ExerciseWrapperEntity extends BaseEntity<
     static async create(
         participantId: string,
         trainerId: string,
-        services: DatabaseService,
+        databaseService: DatabaseService,
         initialState: ExerciseState = ExerciseState.create()
     ): Promise<ExerciseWrapperEntity> {
-        return services.exerciseWrapperService.create({
+        return databaseService.exerciseWrapperService.create({
             participantId,
             trainerId,
             initialStateString: JSON.stringify(initialState),

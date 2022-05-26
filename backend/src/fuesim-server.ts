@@ -9,13 +9,17 @@ export class FuesimServer {
     private readonly _websocketServer: ExerciseWebsocketServer;
 
     constructor(
-        services: DatabaseService,
+        databaseService: DatabaseService,
         websocketPort: number = Config.websocketPort,
         httpPort: number = Config.httpPort
     ) {
         const app = express();
         this._websocketServer = new ExerciseWebsocketServer(app, websocketPort);
-        this._httpServer = new ExerciseHttpServer(app, httpPort, services);
+        this._httpServer = new ExerciseHttpServer(
+            app,
+            httpPort,
+            databaseService
+        );
     }
 
     public get websocketServer(): ExerciseWebsocketServer {

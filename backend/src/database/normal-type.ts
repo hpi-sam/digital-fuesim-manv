@@ -7,7 +7,9 @@ export abstract class NormalType<
     TSelf extends NormalType<TSelf, EntityType>,
     EntityType extends BaseEntity<any, TSelf>
 > {
-    protected constructor(protected readonly services: DatabaseService) {}
+    protected constructor(
+        protected readonly databaseService: DatabaseService
+    ) {}
     id?: UUID;
 
     abstract asEntity(

@@ -11,7 +11,11 @@ import { getHealth } from './http-handler/api/health';
 
 export class ExerciseHttpServer {
     public readonly httpServer: HttpServer;
-    constructor(app: core.Express, port: number, services: DatabaseService) {
+    constructor(
+        app: core.Express,
+        port: number,
+        databaseService: DatabaseService
+    ) {
         // TODO: Temporary allow all
         app.use(cors());
 
@@ -25,7 +29,7 @@ export class ExerciseHttpServer {
         });
 
         app.post('/api/exercise', async (req, res) => {
-            const response = await postExercise(services);
+            const response = await postExercise(databaseService);
             res.statusCode = response.statusCode;
             res.send(response.body);
         });

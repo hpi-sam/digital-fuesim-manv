@@ -107,9 +107,9 @@ export class WebsocketClient {
 
 class TestEnvironment {
     public server!: FuesimServer;
-    private _serviceProvider!: DatabaseService;
-    public get serviceProvider(): DatabaseService {
-        return this._serviceProvider;
+    private _databaseService!: DatabaseService;
+    public get databaseService(): DatabaseService {
+        return this._databaseService;
     }
 
     // `request.Test` extends `Promise<Response>`, therefore eslint wants the async keyword here.
@@ -140,9 +140,9 @@ class TestEnvironment {
         }
     }
 
-    public init(serviceProvider: DatabaseService) {
-        this._serviceProvider = serviceProvider;
-        this.server = new FuesimServer(this.serviceProvider);
+    public init(databaseService: DatabaseService) {
+        this._databaseService = databaseService;
+        this.server = new FuesimServer(this.databaseService);
     }
 }
 
@@ -154,8 +154,8 @@ export const createTestEnvironment = (): TestEnvironment => {
     // If this gets too slow, we may look into creating the server only once
     beforeEach(async () => {
         dataSource = await setupDatabase();
-        const serviceProvider = new DatabaseService(dataSource);
-        environment.init(serviceProvider);
+        const databaseService = new DatabaseService(dataSource);
+        environment.init(databaseService);
     });
     afterEach(async () => {
         // Prevent the dataSource from being closed too soon.
