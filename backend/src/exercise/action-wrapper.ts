@@ -16,46 +16,62 @@ export class ActionWrapper extends NormalType<
         exerciseEntity?: ExerciseWrapperEntity
     ): Promise<ActionWrapperEntity> {
         const operations = async (manager: EntityManager) => {
-            let entity = this.id
-                ? await this.databaseService.actionWrapperService.findById(
-                      this.id,
-                      manager
-                  )
-                : new ActionWrapperEntity();
+            const getFromDatabase = async () =>
+                this.databaseService.actionWrapperService.findById(
+                    this.id!,
+                    manager
+                );
+            const getNew = () => new ActionWrapperEntity();
+            const copyData = async (entity: ActionWrapperEntity) => {
+                entity.actionString = JSON.stringify(this.action);
+                entity.index = this.index;
+                entity.exercise =
+                    exerciseEntity ??
+                    (await this.exercise.asEntity(save, manager));
+                entity.emitterId = this.emitterId;
+            };
+            const getDto = (entity: ActionWrapperEntity) => ({
+                actionString: entity.actionString,
+                emitterId: entity.emitterId,
+                exerciseId: entity.exercise.id,
+                index: entity.index,
+            });
             const existed = this.id !== undefined;
-            entity.actionString = JSON.stringify(this.action);
-            entity.index = this.index;
-            entity.exercise =
-                exerciseEntity ?? (await this.exercise.asEntity(save, manager));
-            entity.emitterId = this.emitterId;
-            if (this.id) entity.id = this.id;
-            if (save) {
-                if (existed) {
-                    entity =
-                        await this.databaseService.actionWrapperService.update(
-                            entity.id,
-                            {
-                                actionString: entity.actionString,
-                                emitterId: entity.emitterId,
-                                exerciseId: entity.exercise.id,
-                            },
-                            manager
-                        );
-                } else {
-                    entity =
-                        await this.databaseService.actionWrapperService.create(
-                            {
-                                actionString: entity.actionString,
-                                emitterId: entity.emitterId,
-                                exerciseId: entity.exercise.id,
-                                index: entity.index,
-                            },
-                            manager
-                        );
-                }
-                this.id = entity.id;
+            if (save && existed) {
+                const entity = await getFromDatabase();
+                entity.id = this.id!;
+                await copyData(entity);
+
+                const savedEntity =
+                    await this.databaseService.actionWrapperService.update(
+                        entity.id,
+                        getDto(entity),
+                        manager
+                    );
+                this.id = savedEntity.id;
+                return savedEntity;
+            } else if (save && !existed) {
+                const entity = getNew();
+                await copyData(entity);
+
+                const savedEntity =
+                    await this.databaseService.actionWrapperService.create(
+                        getDto(entity),
+                        manager
+                    );
+                this.id = savedEntity.id;
+                return savedEntity;
+            } else if (!save && existed) {
+                const entity = await getFromDatabase();
+                entity.id = this.id!;
+                await copyData(entity);
+                return entity;
+                // eslint-disable-next-line no-else-return
+            } else {
+                const entity = getNew();
+                await copyData(entity);
+                return entity;
             }
-            return entity!;
         };
         return entityManager
             ? operations(entityManager)

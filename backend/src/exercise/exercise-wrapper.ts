@@ -49,60 +49,71 @@ export class ExerciseWrapper extends NormalType<
         entityManager?: EntityManager
     ): Promise<ExerciseWrapperEntity> {
         const operations = async (manager: EntityManager) => {
-            let entity = this.id
-                ? await this.databaseService.exerciseWrapperService.findById(
-                      this.id,
-                      manager
-                  )
-                : new ExerciseWrapperEntity();
+            const getFromDatabase = async () =>
+                this.databaseService.exerciseWrapperService.findById(
+                    this.id!,
+                    manager
+                );
+            const getNew = () => new ExerciseWrapperEntity();
+            const copyData = async (entity: ExerciseWrapperEntity) => {
+                entity.actions = await Promise.all(
+                    this.temporaryActionHistory.map(async (action) =>
+                        action.asEntity(false, manager, entity)
+                    )
+                );
+                entity.initialStateString = JSON.stringify(this.initialState);
+                entity.currentStateString = JSON.stringify(this.currentState);
+                entity.participantId = this.participantId;
+                entity.tickCounter = this.tickCounter;
+                entity.trainerId = this.trainerId;
+            };
+            const getDto = (entity: ExerciseWrapperEntity) => ({
+                initialStateString: entity.initialStateString,
+                currentStateString: entity.currentStateString,
+                participantId: entity.participantId,
+                tickCounter: entity.tickCounter,
+                trainerId: entity.trainerId,
+            });
             const existed = this.id !== undefined;
-            if (this.id) entity.id = this.id;
-            entity.actions = await Promise.all(
-                this.temporaryActionHistory.map(async (action) =>
-                    action.asEntity(false, manager, entity)
-                )
-            );
-            entity.initialStateString = JSON.stringify(this.initialState);
-            entity.currentStateString = JSON.stringify(this.currentState);
-            entity.participantId = this.participantId;
-            entity.tickCounter = this.tickCounter;
-            entity.trainerId = this.trainerId;
+            if (save && existed) {
+                const entity = await getFromDatabase();
+                entity.id = this.id!;
+                await copyData(entity);
 
-            if (save) {
-                if (existed) {
-                    // TODO: Is this an actual issue, or will this be fine?
-                    // eslint-disable-next-line require-atomic-updates
-                    entity =
-                        await this.databaseService.exerciseWrapperService.update(
-                            entity.id,
-                            {
-                                initialStateString: entity.initialStateString,
-                                currentStateString: entity.currentStateString,
-                                participantId: entity.participantId,
-                                tickCounter: entity.tickCounter,
-                                trainerId: entity.trainerId,
-                            },
-                            manager
-                        );
-                } else {
-                    // eslint-disable-next-line require-atomic-updates
-                    entity =
-                        await this.databaseService.exerciseWrapperService.create(
-                            {
-                                initialStateString: entity.initialStateString,
-                                currentStateString: entity.currentStateString,
-                                participantId: entity.participantId,
-                                tickCounter: entity.tickCounter,
-                                trainerId: entity.trainerId,
-                            },
-                            manager
-                        );
-                }
-                this.id = entity.id;
+                const savedEntity =
+                    await this.databaseService.exerciseWrapperService.update(
+                        entity.id,
+                        getDto(entity),
+                        manager
+                    );
+                this.id = savedEntity.id;
                 this.hasBeenSaved();
-            }
+                return savedEntity;
+            } else if (save && !existed) {
+                const entity = getNew();
+                await copyData(entity);
 
-            return entity;
+                const savedEntity =
+                    await this.databaseService.exerciseWrapperService.create(
+                        getDto(entity),
+                        manager
+                    );
+                this.id = savedEntity.id;
+                this.hasBeenSaved();
+                return savedEntity;
+            } else if (!save && existed) {
+                const entity = await getFromDatabase();
+                entity.id = this.id!;
+                await copyData(entity);
+
+                return entity;
+                // eslint-disable-next-line no-else-return
+            } else {
+                const entity = getNew();
+                await copyData(entity);
+
+                return entity;
+            }
         };
         return entityManager
             ? operations(entityManager)
