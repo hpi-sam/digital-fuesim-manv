@@ -1,33 +1,34 @@
-import { IsNumber, IsString, IsUUID, Min } from 'class-validator';
+import { IsIn, IsNumber, IsString, IsUUID, Min } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { getCreate } from './get-create';
 
 export class TransferStartPoint {
-    @IsUUID(4, uuidValidationOptions)
-    transferStartPointId: UUID;
+    @IsIn(['transferPoint'])
+    public readonly type = 'transferPoint';
 
-    @IsString()
-    type = 'TransferStartPoint';
+    @IsUUID(4, uuidValidationOptions)
+    public readonly transferPointId: UUID;
+
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(transferStartPointId: UUID) {
-        this.transferStartPointId = transferStartPointId;
+    constructor(transferPointId: UUID) {
+        this.transferPointId = transferPointId;
     }
 
     static readonly create = getCreate(this);
 }
 
 export class AlarmGroupStartPoint {
+    @IsIn(['alarmGroup'])
+    public readonly type = 'alarmGroup';
+
     @IsString()
-    alarmGroupName: string;
+    public readonly alarmGroupName: string;
 
     @IsNumber()
     @Min(0)
-    duration: number;
-
-    @IsString()
-    type = 'AlarmGroupStartPoint';
+    public readonly duration: number;
 
     /**
      * @deprecated Use {@link create} instead

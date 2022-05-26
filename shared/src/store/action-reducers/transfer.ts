@@ -80,14 +80,14 @@ export namespace TransferActionReducers {
                 );
             }
 
-            let duration = 0;
-            if (startPoint.type === 'TransferStartPoint') {
+            // Get the duration
+            let duration: number;
+            if (startPoint.type === 'transferPoint') {
                 const transferStartPoint = getElement(
                     draftState,
                     'transferPoints',
-                    (startPoint as TransferStartPoint).transferStartPointId
+                    startPoint.transferPointId
                 );
-
                 const connection =
                     transferStartPoint.reachableTransferPoints[
                         targetTransferPointId
@@ -99,12 +99,10 @@ export namespace TransferActionReducers {
                 }
                 duration = connection.duration;
             } else {
-                duration =
-                    (startPoint as AlarmGroupStartPoint).duration * 60 * 1000;
+                duration = startPoint.duration;
             }
 
-            // The element is now in transfer
-            console.log(duration);
+            // Set the element to transfer
             delete element.position;
             element.transfer = {
                 startPoint,

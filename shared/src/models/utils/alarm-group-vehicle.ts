@@ -9,6 +9,9 @@ export class AlarmGroupVehicle {
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleTemplateId: UUID;
 
+    /**
+     * The time in ms until the vehicle arrives
+     */
     @IsNumber()
     @Min(0)
     public readonly time: number;

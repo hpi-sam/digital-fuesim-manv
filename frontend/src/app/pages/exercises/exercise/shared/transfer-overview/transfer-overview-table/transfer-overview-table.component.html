@@ -35,22 +35,9 @@
                 {{ vehicle.name }}
             </td>
             <td class="align-middle">
-                <div
-                    *ngIf="
-                        vehicle.transfer.startPoint.type ===
-                            'AlarmGroupStartPoint';
-                        else TransferPoint
-                    "
-                >
-                    {{ vehicle.transfer.startPoint.alarmGroupName }}
-                </div>
-                <ng-template #TransferPoint>
-                    <app-transfer-point-name
-                        [transferPointId]="
-                            vehicle.transfer.startPoint.transferStartPointId
-                        "
-                    ></app-transfer-point-name>
-                </ng-template>
+                <app-start-point-name
+                    [startPoint]="vehicle.transfer.startPoint"
+                ></app-start-point-name>
             </td>
             <td class="align-middle">
                 <app-transfer-target-input
@@ -81,22 +68,9 @@
                 </span>
             </td>
             <td class="align-middle">
-                <div
-                    *ngIf="
-                        personnel.transfer.startPoint.type ===
-                            'AlarmGroupStartPoint';
-                        else TransferPoint
-                    "
-                >
-                    {{ personnel.transfer.startPoint.alarmGroupName }}
-                </div>
-                <ng-template #TransferPoint>
-                    <app-transfer-point-name
-                        [transferPointId]="
-                            personnel.transfer.startPoint.transferStartPointId
-                        "
-                    ></app-transfer-point-name>
-                </ng-template>
+                <app-start-point-name
+                    [startPoint]="personnel.transfer.startPoint"
+                ></app-start-point-name>
             </td>
             <td class="align-middle">
                 <app-transfer-target-input

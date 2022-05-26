@@ -9,7 +9,7 @@ import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
  * @returns a vehicle with personnel and materials to be added to the map
  */
 // Be aware that `uuid()` is nondeterministic and cannot be used in a reducer function.
-export function createVehicle(
+export function createVehicleParameters(
     vehicleTemplate: VehicleTemplate,
     vehiclePosition?: Position
 ): {
