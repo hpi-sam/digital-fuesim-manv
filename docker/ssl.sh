@@ -2,6 +2,8 @@
 
 # TODO: checking if this whole script gets executed correctly
 
+echo "Info: HTTPS is enabled via SSL_ENABLE"
+
 if [[ -z "${DOMAIN}" ]]; then
     echo "Error: Domain not set"
     exit 1
@@ -12,7 +14,7 @@ CERTS_PATH="/ssl/certs"
 mkdir -p /var/www/acme-challenge/.well-known/acme-challenge
 chown -R www-data:www-data /var/www/acme-challenge
 
-# ignore "that no renewal is needed"
+# ignore "that no renewal is needed" and for the dhparam check command
 set +e
 
  acme.sh --issue \
@@ -28,24 +30,24 @@ set +e
 --server letsencrypt \
 --reloadcmd "nginx -s reload"
 
-set -e
-
-if [[ -f "${CERTS_PATH}/dhparam.pem" ]]; then
-    echo "${CERTS_PATH}/dhparam.pem exists already, not creating new one"
+if openssl dhparam -check < ${CERTS_PATH}/dhparam.pem > /dev/null; then
+    echo "Skip: ${CERTS_PATH}/dhparam.pem exists already, not creating new one"
 else
     openssl dhparam -out ${CERTS_PATH}/dhparam.pem 4096
 fi
 
-# TODO not checking if anything valid is in the files, e.g. files could be empty
+set -e
+
+# TODO: checking if anything valid is in the files, e.g. files could be empty
 if [[ -f "${CERTS_PATH}/dhparam.pem"  && -f "${CERTS_PATH}/cert.pem" && -f "${CERTS_PATH}/key.pem" && -f "${CERTS_PATH}/fullchain.pem" ]]; then
-    echo "starting now to enable https in nginx"
+    echo "Sucess: all needed cert files and dhparam.pem exist"
 else
-    echo "not all necessary certs exits in ${CERTS_PATH}, maybe acme.sh couldn't connect to letsencrypt"
+    echo "Erro: Not all necessary certs exits in ${CERTS_PATH}, maybe acme.sh couldn't connect to letsencrypt or letsencrypt couldn't reach this server over http port 80"
     exit 1
 fi
 
 if ${ENABLE_HSTS}; then
-    cp -a /etc/nginx/conf.d/https-securits-headers.template /etc/nginx/conf.d/https-security-headers
+    cp -a /etc/nginx/conf.d/hsts.template /etc/nginx/conf.d/hsts
 fi
 
-echo "ssl.sh done, now back to docker-entrypoint.sh"
+echo "Sucess: ssl.sh done, now back to docker-entrypoint.sh"

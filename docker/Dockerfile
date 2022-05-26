@@ -42,7 +42,6 @@ RUN apt-get update && \
     apt-get install --no-install-recommends \
         nginx \
         ca-certificates \
-        git \
         cron \
         openssl \
         curl -y && \
@@ -51,29 +50,20 @@ RUN apt-get update && \
 # deleting default nginx conf
 RUN rm /etc/nginx/sites-enabled/default && rm /etc/nginx/sites-available/default
 
-# ssl certs - mount /ssl as a volume for persistency
-RUN mkdir -p /ssl/certs
-RUN chown -R www-data:www-data /ssl/certs
-
-# make scripts executable
-RUN chmod +x /docker-entrypoint.sh
-RUN chmod +x /ssl.sh
-RUN chmod +x /etc/cron.daily/cron-renew-session-ticket
+# /ssl includes certs and acme.sh config - mount /ssl as a volume for persistency
+RUN mkdir -p /ssl/certs && \
+    mkdir -p /ssl/acme.sh/config && mkdir -p /ssl/acme.sh/certs && \
+    chown -R www-data:www-data /ssl/certs
 
 # download acme.sh
-RUN git clone https://github.com/acmesh-official/acme.sh.git /acme.sh.git
-
-# folders for acme.sh
-RUN mkdir -p /ssl/acme.sh/config && mkdir -p /ssl/acme.sh/certs
+RUN curl https://raw.githubusercontent.com/acmesh-official/acme.sh/master/acme.sh > /acme.sh && chmod +x /acme.sh
 
 # install acme.sh
-RUN cd /acme.sh.git && ./acme.sh --install --config-home /ssl/acme.sh/config --cert-home /ssl/acme.sh/certs
-
-# we need the following to be able to use acme.sh in command line (without using explicit path)
-RUN ln -s  /root/.acme.sh/acme.sh  /usr/local/bin/acme.sh
-
-# remove acme.sh source code
-RUN rm -r /acme.sh.git
+RUN cd / && /acme.sh --install --config-home /ssl/acme.sh/config --cert-home /ssl/acme.sh/certs && \
+    # remove acme.sh install script
+    rm -r /acme.sh && \
+    # we need the following to be able to use acme.sh in command line (without using explicit path)
+    ln -s  /root/.acme.sh/acme.sh  /usr/local/bin/acme.sh
 
 # nginx config files
 COPY ./docker/nginx /etc/nginx/conf.d
@@ -82,6 +72,11 @@ COPY ./docker/nginx /etc/nginx/conf.d
 COPY ./docker/docker-entrypoint.sh /docker-entrypoint.sh
 COPY ./docker/ssl.sh /ssl.sh
 COPY ./docker/cron-renew-session-ticket /etc/cron.daily/cron-renew-session-ticket
+
+# make scripts executable
+RUN chmod +x /docker-entrypoint.sh && \
+    chmod +x /ssl.sh && \
+    chmod +x /etc/cron.daily/cron-renew-session-ticket
 
 # copy frontend
 COPY --chown=www-data:www-data --from=builder $PRODUCTION_PATH/frontend/dist $PRODUCTION_PATH/frontend/dist

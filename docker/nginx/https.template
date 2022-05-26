@@ -16,7 +16,7 @@ server {
     resolver 127.0.0.11 valid=300s;
     resolver_timeout 5s;
 
-    # using ssl session ticket instead, if problems accour, especially with Apple devices
+    # using ssl session ticket instead, if problems occur, especially with Apple devices
     # maybe uncomment the next two lines, but keep in mind to find a way to wipe the memory regurarly to keep Forward Secrecy intact
     # ssl_session_cache on;
     # ssl_session_cache shared:SSL:10m;

@@ -5,3 +5,11 @@ openssl rand 80 > /run/session_ticket.key
 chown www-data:www-data /run/session_ticket.key
 chmod 400 /run/session_ticket.key
 
+nginx -s reload
+
+# needed after each restart/reload of nginx
+# look into OCSP nginx
+# Otherwise the first access (at least on Firefox) will result in "Secure Connection Failed"
+set +e
+curl https://${DOMAIN} > /dev/null 2>&1
+set -e

@@ -15,7 +15,7 @@ services:
         # all available ENVs are listed here with their default value set
         #environment:
         #    - DOMAIN=           # please set your desired domain name
-        #    - SSL_ENABLE=false  # enabling this will enable https, need DOMAIN set, to completely disable, please delete the ssl volume
+        #    - SSL_ENABLE=false  # enabling this will enable https, needs DOMAIN set, disabling again will not delete content in the ssl volume
         #    - ENABLE_HSTS=false # WARNING enabling this once will make so you can't go back to http, only activate after you tested https works
         volumes:
             - ssl:/ssl
