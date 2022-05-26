@@ -7,6 +7,8 @@ export class Config {
 
     private static _httpPort?: number;
 
+    private static _useDb?: boolean;
+
     private static _dbUser?: string;
 
     private static _dbPassword?: string;
@@ -27,6 +29,11 @@ export class Config {
     public static get httpPort(): number {
         this.throwIfNotInitialized();
         return this._httpPort!;
+    }
+
+    public static get useDb(): boolean {
+        this.throwIfNotInitialized();
+        return this._useDb!;
     }
 
     public static get dbUser(): string {
@@ -76,6 +83,8 @@ export class Config {
             DFM_WEBSOCKET_PORT_TESTING: tcpPortValidator({ default: 13200 }),
             DFM_HTTP_PORT: tcpPortValidator({ default: 3201 }),
             DFM_HTTP_PORT_TESTING: tcpPortValidator({ default: 13201 }),
+            DFM_USE_DB: bool(),
+            DFM_USE_DB_TESTING: bool({ default: undefined }),
             DFM_DB_USER: str(),
             DFM_DB_USER_TESTING: str({ default: undefined }),
             DFM_DB_PASSWORD: str(),
@@ -113,6 +122,10 @@ export class Config {
         this._httpPort = testing
             ? env.DFM_HTTP_PORT_TESTING
             : env.DFM_HTTP_PORT;
+        this._useDb =
+            testing && env.DFM_USE_DB_TESTING
+                ? env.DFM_USE_DB_TESTING
+                : env.DFM_USE_DB;
         this._dbUser =
             testing && env.DFM_DB_USER_TESTING
                 ? env.DFM_DB_USER_TESTING

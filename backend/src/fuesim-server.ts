@@ -80,7 +80,9 @@ export class FuesimServer {
             httpPort,
             databaseService
         );
-        this.saveHandler.start();
+        if (Config.useDb) {
+            this.saveHandler.start();
+        }
     }
 
     public get websocketServer(): ExerciseWebsocketServer {

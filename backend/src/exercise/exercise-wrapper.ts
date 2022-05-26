@@ -10,6 +10,7 @@ import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
 import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
 import { NormalType } from '../database/normal-type';
 import type { DatabaseService } from '../database/services/database-service';
+import { Config } from '../config';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
@@ -346,7 +347,7 @@ export class ExerciseWrapper extends NormalType<
         this.clients.forEach((client) => client.disconnect());
         exerciseMap.delete(this.participantId);
         exerciseMap.delete(this.trainerId);
-        if (this.id) {
+        if (this.id && Config.useDb) {
             await this.databaseService.exerciseWrapperService.remove(this.id);
             this.hasBeenSaved();
         }
