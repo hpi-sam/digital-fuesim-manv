@@ -17,8 +17,7 @@ export class ActionWrapper extends NormalType<
     ): Promise<ActionWrapperEntity> {
         const operations = async (manager: EntityManager) => {
             const getFromDatabase = async () =>
-                this.databaseService.actionWrapperService.findById(
-                    this.id!,
+                this.databaseService.actionWrapperService.getFindById(this.id!)(
                     manager
                 );
             const getNew = () => new ActionWrapperEntity();
@@ -43,11 +42,10 @@ export class ActionWrapper extends NormalType<
                 await copyData(entity);
 
                 const savedEntity =
-                    await this.databaseService.actionWrapperService.update(
+                    await this.databaseService.actionWrapperService.getUpdate(
                         entity.id,
-                        getDto(entity),
-                        manager
-                    );
+                        getDto(entity)
+                    )(manager);
                 this.id = savedEntity.id;
                 return savedEntity;
             } else if (save && !existed) {
@@ -55,10 +53,9 @@ export class ActionWrapper extends NormalType<
                 await copyData(entity);
 
                 const savedEntity =
-                    await this.databaseService.actionWrapperService.create(
-                        getDto(entity),
-                        manager
-                    );
+                    await this.databaseService.actionWrapperService.getCreate(
+                        getDto(entity)
+                    )(manager);
                 this.id = savedEntity.id;
                 return savedEntity;
             } else if (!save && existed) {

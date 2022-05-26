@@ -66,14 +66,12 @@ export class ActionWrapperEntity extends BaseEntity<
         databaseService: DatabaseService,
         manager?: EntityManager
     ): Promise<ActionWrapperEntity> {
-        return databaseService.actionWrapperService.create(
-            {
-                actionString: JSON.stringify(action),
-                emitterId,
-                exerciseId: exercise.id,
-                index,
-            },
-            manager
-        );
+        const create = databaseService.actionWrapperService.getCreate({
+            actionString: JSON.stringify(action),
+            emitterId,
+            exerciseId: exercise.id,
+            index,
+        });
+        return manager ? create(manager) : databaseService.transaction(create);
     }
 }

@@ -60,11 +60,13 @@ export class ExerciseWrapperEntity extends BaseEntity<
         initialState: ExerciseState = ExerciseState.create(),
         currentState: ExerciseState = initialState
     ): Promise<ExerciseWrapperEntity> {
-        return databaseService.exerciseWrapperService.create({
-            participantId,
-            trainerId,
-            initialStateString: JSON.stringify(initialState),
-            currentStateString: JSON.stringify(currentState),
-        });
+        return databaseService.transaction(
+            databaseService.exerciseWrapperService.getCreate({
+                participantId,
+                trainerId,
+                initialStateString: JSON.stringify(initialState),
+                currentStateString: JSON.stringify(currentState),
+            })
+        );
     }
 }

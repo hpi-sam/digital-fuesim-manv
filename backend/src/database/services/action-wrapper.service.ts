@@ -34,9 +34,9 @@ export class ActionWrapperService extends BaseService<
             this.entityTarget,
             rest
         );
-        actionWrapper.exercise = await this.exerciseWrapperService.findById(
+        actionWrapper.exercise = await this.exerciseWrapperService.getFindById(
             exerciseId
-        );
+        )(manager);
         return actionWrapper;
     }
 
@@ -52,7 +52,7 @@ export class ActionWrapperService extends BaseService<
             rest
         );
         actionWrapper.exercise = exerciseId
-            ? await this.exerciseWrapperService.findById(exerciseId)
+            ? await this.exerciseWrapperService.getFindById(exerciseId)(manager)
             : actionWrapper.exercise;
         return actionWrapper;
     }

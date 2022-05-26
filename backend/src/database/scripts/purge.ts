@@ -6,14 +6,15 @@ const dataSource = await createNewDataSource().initialize();
 const databaseService = new DatabaseService(dataSource);
 
 await databaseService.transaction(async (manager) => {
-    const exercises = await databaseService.exerciseWrapperService.findAll(
-        { select: { id: true } },
-        manager
-    );
+    const exercises = await databaseService.exerciseWrapperService.getFindAll({
+        select: { id: true },
+    })(manager);
 
     const deleteResult = await Promise.all(
         exercises.map(async (exercise) =>
-            databaseService.exerciseWrapperService.remove(exercise.id, manager)
+            databaseService.exerciseWrapperService.getRemove(exercise.id)(
+                manager
+            )
         )
     );
 

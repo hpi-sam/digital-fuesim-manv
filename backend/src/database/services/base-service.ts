@@ -35,26 +35,18 @@ export abstract class BaseService<
 
     protected abstract readonly entityTarget: EntityTarget<Entity>;
 
-    public async create(
-        creator: Creatable,
-        entityManager?: EntityManager
-    ): Promise<Entity> {
-        const create = async (manager: EntityManager) =>
+    public getCreate(
+        creator: Creatable
+    ): (entityManager: EntityManager) => Promise<Entity> {
+        return async (manager: EntityManager) =>
             manager.save(await this.getCreateEntityObject(creator, manager));
-        return entityManager
-            ? create(entityManager)
-            : this.dataSource.transaction(create);
     }
 
-    public async findAll(
-        options?: FindManyOptions<Entity>,
-        entityManager?: EntityManager
-    ): Promise<Entity[]> {
-        const find = async (manager: EntityManager) =>
+    public getFindAll(
+        options?: FindManyOptions<Entity>
+    ): (entityManager: EntityManager) => Promise<Entity[]> {
+        return async (manager: EntityManager) =>
             manager.find(this.entityTarget, options);
-        return entityManager
-            ? find(entityManager)
-            : this.dataSource.transaction(find);
     }
 
     /**
@@ -62,15 +54,11 @@ export abstract class BaseService<
      *
      * @returns The found row, or `null` if no matching row was found.
      */
-    public async findOne(
-        options: FindOneOptions<Entity>,
-        entityManager?: EntityManager
-    ): Promise<Entity | null> {
-        const find = async (manager: EntityManager) =>
+    public getFindOne(
+        options: FindOneOptions<Entity>
+    ): (entityManager: EntityManager) => Promise<Entity | null> {
+        return async (manager: EntityManager) =>
             manager.findOne(this.entityTarget, options);
-        return entityManager
-            ? find(entityManager)
-            : this.dataSource.transaction(find);
     }
 
     /**
@@ -79,12 +67,11 @@ export abstract class BaseService<
      * @returns The found row.
      * @throws {@link DatabaseError} when no row has been found.
      */
-    public async getOne(
-        options: FindOneOptions<Entity>,
-        entityManager?: EntityManager
-    ): Promise<Entity | null> {
-        const find = async (manager: EntityManager) => {
-            const tuple = await this.findOne(options, manager);
+    public getGetOne(
+        options: FindOneOptions<Entity>
+    ): (entityManager: EntityManager) => Promise<Entity | null> {
+        return async (manager: EntityManager) => {
+            const tuple = await this.getFindOne(options)(manager);
             if (tuple === null) {
                 throw new DatabaseError(
                     `\`${
@@ -96,37 +83,28 @@ export abstract class BaseService<
             }
             return tuple;
         };
-        // TypeScript can't get the correct typings for this.
-        return entityManager
-            ? find(entityManager)
-            : this.dataSource.transaction(find);
     }
 
     /**
      * Finds the first row matching the {@link options} and returns it.
      * If no row matches uses {@link creatable} to create a new row and return this row.
      */
-    public async findOneOrCreate(
+    public getFindOneOrCreate(
         options: FindOneOptions<Entity>,
-        creatable: Creatable,
-        entityManager?: EntityManager
-    ): Promise<Entity> {
-        const find = async (manager: EntityManager) =>
-            (await this.findOne(options, manager)) ??
-            (await this.create(creatable, manager));
-        return entityManager
-            ? find(entityManager)
-            : this.dataSource.transaction(find);
+        creatable: Creatable
+    ): (entityManager: EntityManager) => Promise<Entity> {
+        return async (manager: EntityManager) =>
+            (await this.getFindOne(options)(manager)) ??
+            (await this.getCreate(creatable)(manager));
     }
 
     /**
      * @throws {@link DatabaseError} when id does not exist
      */
-    public async findById(
-        id: UUID,
-        entityManager?: EntityManager
-    ): Promise<Entity> {
-        const find = async (manager: EntityManager) =>
+    public getFindById(
+        id: UUID
+    ): (entityManager: EntityManager) => Promise<Entity> {
+        return async (manager: EntityManager) =>
             manager
                 .findOneOrFail(this.entityTarget, {
                     // See https://github.com/microsoft/TypeScript/issues/31070
@@ -147,18 +125,14 @@ export abstract class BaseService<
                     }
                     throw e;
                 });
-        return entityManager
-            ? find(entityManager)
-            : this.dataSource.transaction(find);
     }
 
-    public async update(
+    public getUpdate(
         id: UUID,
-        updater: Updatable,
-        entityManager?: EntityManager
-    ): Promise<Entity> {
-        const update = async (manager: EntityManager) => {
-            const objectToUpdate = await this.findById(id, manager);
+        updater: Updatable
+    ): (entityManager: EntityManager) => Promise<Entity> {
+        return async (manager: EntityManager) => {
+            const objectToUpdate = await this.getFindById(id)(manager);
             return manager.save(
                 await this.getUpdateEntityObject(
                     objectToUpdate,
@@ -167,19 +141,12 @@ export abstract class BaseService<
                 )
             );
         };
-        return entityManager
-            ? update(entityManager)
-            : this.dataSource.transaction(update);
     }
 
-    public async remove(
-        id: UUID,
-        entityManager?: EntityManager
-    ): Promise<DeleteResult> {
-        const remove = async (manager: EntityManager) =>
+    public getRemove(
+        id: UUID
+    ): (entityManager: EntityManager) => Promise<DeleteResult> {
+        return async (manager: EntityManager) =>
             manager.delete(this.entityTarget, id);
-        return entityManager
-            ? remove(entityManager)
-            : this.dataSource.transaction(remove);
     }
 }

@@ -50,10 +50,9 @@ export class ExerciseWrapper extends NormalType<
     ): Promise<ExerciseWrapperEntity> {
         const operations = async (manager: EntityManager) => {
             const getFromDatabase = async () =>
-                this.databaseService.exerciseWrapperService.findById(
-                    this.id!,
-                    manager
-                );
+                this.databaseService.exerciseWrapperService.getFindById(
+                    this.id!
+                )(manager);
             const getNew = () => new ExerciseWrapperEntity();
             const copyData = async (entity: ExerciseWrapperEntity) => {
                 entity.actions = await Promise.all(
@@ -81,11 +80,10 @@ export class ExerciseWrapper extends NormalType<
                 await copyData(entity);
 
                 const savedEntity =
-                    await this.databaseService.exerciseWrapperService.update(
+                    await this.databaseService.exerciseWrapperService.getUpdate(
                         entity.id,
-                        getDto(entity),
-                        manager
-                    );
+                        getDto(entity)
+                    )(manager);
                 this.id = savedEntity.id;
                 this.hasBeenSaved();
                 return savedEntity;
@@ -94,10 +92,9 @@ export class ExerciseWrapper extends NormalType<
                 await copyData(entity);
 
                 const savedEntity =
-                    await this.databaseService.exerciseWrapperService.create(
-                        getDto(entity),
-                        manager
-                    );
+                    await this.databaseService.exerciseWrapperService.getCreate(
+                        getDto(entity)
+                    )(manager);
                 this.id = savedEntity.id;
                 this.hasBeenSaved();
                 return savedEntity;
@@ -359,7 +356,9 @@ export class ExerciseWrapper extends NormalType<
         exerciseMap.delete(this.participantId);
         exerciseMap.delete(this.trainerId);
         if (this.id && Config.useDb) {
-            await this.databaseService.exerciseWrapperService.remove(this.id);
+            await this.databaseService.transaction(
+                this.databaseService.exerciseWrapperService.getRemove(this.id)
+            );
             this.hasBeenSaved();
         }
     }
