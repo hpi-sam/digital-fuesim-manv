@@ -28,7 +28,6 @@ server {
     ssl_certificate /ssl/certs/fullchain.pem;
     ssl_trusted_certificate /ssl/certs/fullchain.pem;
     ssl_certificate_key /ssl/certs/key.pem;
-    ssl_dhparam /ssl/certs/dhparam.pem;
 
    include conf.d/locations;
 }
