@@ -6,6 +6,7 @@ import { cloneDeep } from 'lodash';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
+    selectBluePatientsFlag,
     selectPretriageFlag,
     selectTileMapProperties,
 } from 'src/app/state/exercise/exercise.selectors';
@@ -23,6 +24,7 @@ export class ExerciseSettingsModalComponent {
         /^(?=.*\{x\})(?=.*\{-?y\})(?=.*\{z\}).*$/u;
 
     public pretriageFlag$ = this.store.select(selectPretriageFlag);
+    public bluePatientsFlag$ = this.store.select(selectBluePatientsFlag);
 
     constructor(
         public readonly store: Store<AppState>,
@@ -45,6 +47,13 @@ export class ExerciseSettingsModalComponent {
         this.apiService.proposeAction({
             type: '[ExerciseSettings] Set Pretriage Flag',
             pretriageEnabled: flag,
+        });
+    }
+
+    public setBluePatientsFlag(flag: boolean) {
+        this.apiService.proposeAction({
+            type: '[ExerciseSettings] Set Blue Patients Flag',
+            bluePatientsEnabled: flag,
         });
     }
 

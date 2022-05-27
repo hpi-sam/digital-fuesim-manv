@@ -3,6 +3,7 @@ import { EventEmitter, Output, Component } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
 import type { UUID, Patient, PatientStatus } from 'digital-fuesim-manv-shared';
 import { healthPointsDefaults, statusNames } from 'digital-fuesim-manv-shared';
+import { map } from 'rxjs';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -10,6 +11,7 @@ import {
     selectPretriageFlag,
     getSelectClient,
     getSelectPatient,
+    selectBluePatientsFlag,
 } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
@@ -34,6 +36,15 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
 
     public patientStatus?: PatientStatus;
     public pretriageFlag$ = this.store.select(selectPretriageFlag);
+    public bluePatientsFlag$ = this.store.select(selectBluePatientsFlag);
+    public readonly pretriageOptions$: Observable<PatientStatus[]> =
+        this.bluePatientsFlag$.pipe(
+            map((bluePatientFlag) =>
+                bluePatientFlag
+                    ? ['black', 'blue', 'red', 'yellow', 'green']
+                    : ['black', 'red', 'yellow', 'green']
+            )
+        );
 
     private readonly secondsUntilRealStatus = 5;
 
@@ -51,11 +62,17 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
             createSelector(
                 getSelectPatient(this.patientId),
                 selectPretriageFlag,
-                (patient, pretriageFlag) =>
-                    !pretriageFlag ||
-                    patient.treatmentTime >= this.secondsUntilRealStatus
-                        ? patient.realStatus
-                        : patient.visibleStatus
+                selectBluePatientsFlag,
+                (patient, pretriageFlag, bluePatientsFlag) => {
+                    const status =
+                        !pretriageFlag ||
+                        patient.treatmentTime >= this.secondsUntilRealStatus
+                            ? patient.realStatus
+                            : patient.visibleStatus;
+                    return status === 'blue' && !bluePatientsFlag
+                        ? 'red'
+                        : status;
+                }
             )
         );
     }

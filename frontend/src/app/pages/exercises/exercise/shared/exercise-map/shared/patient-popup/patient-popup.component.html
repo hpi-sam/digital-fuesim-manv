@@ -25,7 +25,10 @@
         <table class="table mb-0" style="max-width: 300px">
             <tbody>
                 <tr *ngIf="pretriageFlag$ | async">
-                    <th>Vorsichtungskategorie wählen</th>
+                    <th>
+                        Vorsichtungskategorie wählen
+                        {{ bluePatientsFlag$ | async }}
+                    </th>
                     <td>
                         <select
                             [ngModel]="patientStatus$ | async"
@@ -33,11 +36,12 @@
                                 setPretriageCategory(patient.id, $event)
                             "
                         >
-                            <option [value]="'black'">EX</option>
-                            <option [value]="'blue'">SK IV</option>
-                            <option [value]="'red'">SK I</option>
-                            <option [value]="'yellow'">SK II</option>
-                            <option [value]="'green'">SK III</option>
+                            <option
+                                *ngFor="let option of pretriageOptions$ | async"
+                                [value]="option"
+                            >
+                                {{ statusNames[option] }}
+                            </option>
                         </select>
                     </td>
                 </tr>

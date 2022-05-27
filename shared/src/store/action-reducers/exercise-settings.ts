@@ -20,6 +20,14 @@ export class SetPretriageFlagAction implements Action {
     public readonly pretriageEnabled!: boolean;
 }
 
+export class SetBluePatientsFlagAction implements Action {
+    @IsString()
+    public readonly type = '[ExerciseSettings] Set Blue Patients Flag';
+
+    @IsBoolean()
+    public readonly bluePatientsEnabled!: boolean;
+}
+
 export namespace ExerciseSettingsActionReducers {
     export const setTileMapProperties: ActionReducer<SetTileMapPropertiesAction> =
         {
@@ -39,4 +47,14 @@ export namespace ExerciseSettingsActionReducers {
         },
         rights: 'trainer',
     };
+
+    export const setBluePatientsFlag: ActionReducer<SetBluePatientsFlagAction> =
+        {
+            action: SetBluePatientsFlagAction,
+            reducer: (draftState, { bluePatientsEnabled }) => {
+                draftState.bluePatientsEnabledFlag = bluePatientsEnabled;
+                return draftState;
+            },
+            rights: 'trainer',
+        };
 }

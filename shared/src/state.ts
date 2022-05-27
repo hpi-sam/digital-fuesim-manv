@@ -49,6 +49,7 @@ export class ExerciseState {
         defaultTileMapProperties;
     public readonly statistics: readonly StatisticsEntry[] = [];
     public readonly pretriageEnabledFlag: boolean = true;
+    public readonly bluePatientsEnabledFlag: boolean = false;
 
     /**
      * @deprecated Use {@link create} instead.
