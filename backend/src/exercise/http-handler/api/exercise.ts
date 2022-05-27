@@ -1,4 +1,4 @@
-import type { ExerciseIds } from 'digital-fuesim-manv-shared';
+import type { ExerciseIds, ExerciseTimeline } from 'digital-fuesim-manv-shared';
 import { ExerciseState } from 'digital-fuesim-manv-shared';
 import type { DatabaseService } from '../../../database/services/database-service';
 import { UserReadableIdGenerator } from '../../../utils/user-readable-id-generator';
@@ -75,5 +75,23 @@ export async function deleteExercise(
     return {
         statusCode: 204,
         body: undefined,
+    };
+}
+
+export async function getExerciseHistory(
+    exerciseId: string
+): Promise<HttpResponse<ExerciseTimeline>> {
+    const exerciseWrapper = exerciseMap.get(exerciseId);
+    if (exerciseWrapper === undefined) {
+        return {
+            statusCode: 404,
+            body: {
+                message: `Exercise with id '${exerciseId}' was not found`,
+            },
+        };
+    }
+    return {
+        statusCode: 200,
+        body: await exerciseWrapper.getTimeLine(),
     };
 }

@@ -1,4 +1,9 @@
-import type { ExerciseAction, Role, UUID } from 'digital-fuesim-manv-shared';
+import type {
+    ExerciseAction,
+    ExerciseTimeline,
+    Role,
+    UUID,
+} from 'digital-fuesim-manv-shared';
 import {
     ExerciseState,
     reduceExerciseState,
@@ -361,5 +366,34 @@ export class ExerciseWrapper extends NormalType<
             );
             this.markAsSaved();
         }
+    }
+
+    public async getTimeLine(): Promise<ExerciseTimeline> {
+        const completeHistory = [
+            ...(this.id !== undefined
+                ? await this.databaseService.transaction(
+                      this.databaseService.actionWrapperService.getFindAll({
+                          where: { exercise: { id: this.id } },
+                      })
+                  )
+                : []
+            ).map((action) =>
+                ActionWrapper.createFromEntity(
+                    action,
+                    this.databaseService,
+                    this
+                )
+            ),
+            ...this.temporaryActionHistory,
+        ]
+            // TODO: Is this necessary?
+            .sort((a, b) => a.index - b.index);
+        return {
+            initialState: this.initialState,
+            actionsWrappers: completeHistory.map((action) => ({
+                action: action.action,
+                time: action.index,
+            })),
+        };
     }
 }

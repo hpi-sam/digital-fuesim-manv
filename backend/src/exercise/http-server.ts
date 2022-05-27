@@ -5,6 +5,7 @@ import type { DatabaseService } from '../database/services/database-service';
 import {
     deleteExercise,
     getExercise,
+    getExerciseHistory,
     postExercise,
 } from './http-handler/api/exercise';
 import { getHealth } from './http-handler/api/health';
@@ -42,6 +43,12 @@ export class ExerciseHttpServer {
 
         app.delete('/api/exercise/:exerciseId', async (req, res) => {
             const response = await deleteExercise(req.params.exerciseId);
+            res.statusCode = response.statusCode;
+            res.send(response.body);
+        });
+
+        app.get('/api/exercise/:exerciseId/history', async (req, res) => {
+            const response = await getExerciseHistory(req.params.exerciseId);
             res.statusCode = response.statusCode;
             res.send(response.body);
         });
