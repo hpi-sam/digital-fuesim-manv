@@ -11,7 +11,7 @@
                 ngbDropdownToggle
                 type="button"
                 class="btn btn-outline-primary btn-sm ms-3"
-                [disabled]="!transferPoints.length"
+                [disabled]="transferPoints.length === 0"
             >
                 <app-transfer-point-name
                     *ngIf="targetTransferPointId; else noTargetTransferPoint"

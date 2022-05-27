@@ -2,6 +2,8 @@ import { IsIn, IsNumber, IsString, IsUUID, Min } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { getCreate } from './get-create';
 
+export type StartPoint = AlarmGroupStartPoint | TransferStartPoint;
+
 export class TransferStartPoint {
     @IsIn(['transferPoint'])
     public readonly type = 'transferPoint';

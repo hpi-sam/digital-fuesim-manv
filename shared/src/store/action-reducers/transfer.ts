@@ -1,14 +1,5 @@
-import {
-    IsDefined,
-    IsInt,
-    IsOptional,
-    IsString,
-    IsUUID,
-} from 'class-validator';
-import type {
-    AlarmGroupStartPoint,
-    TransferStartPoint,
-} from '../../models/utils/start-points';
+import { IsInt, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
+import { StartPoint } from '../../models/utils/start-points';
 import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -24,8 +15,8 @@ export class AddToTransferAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;
 
-    @IsDefined()
-    public readonly startPoint!: AlarmGroupStartPoint | TransferStartPoint;
+    @IsObject()
+    public readonly startPoint!: StartPoint;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly targetTransferPointId!: UUID;
