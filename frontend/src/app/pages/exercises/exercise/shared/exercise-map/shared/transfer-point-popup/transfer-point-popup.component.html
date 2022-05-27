@@ -167,27 +167,30 @@
                                         [hospitalId]="reachableHospital.key"
                                     ></app-hospital-name>
                                 </div>
-                                <!--TODO: Fix the UI of this line-->
-                                <div class="d-inline-block float-end">
-                                    <span class="font-monospace fw-bold">{{
+                                <span
+                                    class="font-monospace text-end"
+                                    style="width: 125px"
+                                    >{{
                                         hospitals[reachableHospital.key]
-                                            .transportDuration
-                                    }}</span>
-                                    <span class="ps-2 pe-2" title="Minuten"
-                                        >min</span
-                                    >
-                                    <button
-                                        class="btn btn-link text-danger text-decoration-none"
-                                        title="Verbindung löschen"
-                                        (click)="
-                                            disconnectHospital(
-                                                reachableHospital.key
-                                            )
-                                        "
-                                    >
-                                        <i class="bi-trash"></i>
-                                    </button>
-                                </div>
+                                            .transportDuration /
+                                            1000 /
+                                            60
+                                    }}</span
+                                >
+                                <span class="ps-2 pe-2" title="Minuten"
+                                    >min</span
+                                >
+                                <button
+                                    class="btn btn-link text-danger text-decoration-none"
+                                    title="Verbindung löschen"
+                                    (click)="
+                                        disconnectHospital(
+                                            reachableHospital.key
+                                        )
+                                    "
+                                >
+                                    <i class="bi-trash"></i>
+                                </button>
                             </li>
                         </ul>
                     </div>

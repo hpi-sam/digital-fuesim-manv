@@ -10,7 +10,7 @@ export class Hospital {
     public readonly name: string;
 
     /**
-     * The time in min. it takes to transport a patient to this hospital
+     * The time in ms it takes to transport a patient to this hospital
      */
     @IsNumber()
     @Min(0)
