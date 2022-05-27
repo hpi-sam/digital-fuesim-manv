@@ -49,13 +49,16 @@ export class ActionWrapperEntity extends BaseEntity<
     @IsJSON()
     actionString!: string;
 
+    private constructor() {
+        super();
+    }
+
     /**
      * Be very careful when using this. - Use {@link create} instead for most use cases.
-     * This constructor does not guarantee a valid entity.
+     * This method does not guarantee a valid entity.
      */
-    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-    constructor() {
-        super();
+    static createNew() {
+        return new ActionWrapperEntity();
     }
 
     static async create(

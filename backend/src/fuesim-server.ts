@@ -14,6 +14,7 @@ export class FuesimServer {
     private readonly saveTick = async () => {
         const exercisesToSave: ExerciseWrapper[] = [];
         exerciseMap.forEach((exercise, key) => {
+            // Only use exercises referenced by their trainer id (8 characters) to not choose the same exercise twice
             if (key.length !== 8) {
                 return;
             }
@@ -21,44 +22,45 @@ export class FuesimServer {
                 exercisesToSave.push(exercise);
             }
         });
-        if (exercisesToSave.length > 0) {
-            await this.databaseService.transaction(async (manager) => {
-                const exerciseEntities = await Promise.all(
-                    exercisesToSave.map(async (exercise) =>
-                        exercise.asEntity(false, manager)
-                    )
-                );
-                const actionEntities = exerciseEntities.flatMap(
-                    (exercise) => exercise.actions ?? []
-                );
-                // First save the exercises...
-                await manager.save(exerciseEntities);
-                // ...and then the actions
-                await manager.save(actionEntities);
-                // Re-map database id to instance
-                exercisesToSave.forEach((exercise) => {
-                    if (!exercise.id) {
-                        exercise.id = exerciseEntities.find(
-                            (entity) => entity.trainerId === exercise.trainerId
+        if (exercisesToSave.length === 0) {
+            return;
+        }
+        await this.databaseService.transaction(async (manager) => {
+            const exerciseEntities = await Promise.all(
+                exercisesToSave.map(async (exercise) =>
+                    exercise.asEntity(false, manager)
+                )
+            );
+            const actionEntities = exerciseEntities.flatMap(
+                (exercise) => exercise.actions ?? []
+            );
+            // First save the exercises...
+            await manager.save(exerciseEntities);
+            // ...and then the actions
+            await manager.save(actionEntities);
+            // Re-map database id to instance
+            exercisesToSave.forEach((exercise) => {
+                if (!exercise.id) {
+                    exercise.id = exerciseEntities.find(
+                        (entity) => entity.trainerId === exercise.trainerId
+                    )?.id;
+                }
+            });
+            exercisesToSave
+                .flatMap((exercise) => exercise.temporaryActionHistory)
+                .forEach((action) => {
+                    if (!action.id) {
+                        action.id = actionEntities.find(
+                            (entity) =>
+                                entity.index === action.index &&
+                                entity.exercise.id === action.exercise.id
                         )?.id;
                     }
                 });
-                exercisesToSave
-                    .flatMap((exercise) => exercise.temporaryActionHistory)
-                    .forEach((action) => {
-                        if (!action.id) {
-                            action.id = actionEntities.find(
-                                (entity) =>
-                                    entity.index === action.index &&
-                                    entity.exercise.id === action.exercise.id
-                            )?.id;
-                        }
-                    });
-                exercisesToSave.forEach((exercise) => {
-                    exercise.hasBeenSaved();
-                });
+            exercisesToSave.forEach((exercise) => {
+                exercise.markAsSaved();
             });
-        }
+        });
     };
 
     private readonly saveTickInterval = 10_000;

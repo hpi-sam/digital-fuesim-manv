@@ -50,7 +50,7 @@ export abstract class BaseService<
     }
 
     /**
-     * Finds the first row matching the {@link options}.
+     * Returns a function which finds the first row matching the {@link options}.
      *
      * @returns The found row, or `null` if no matching row was found.
      */
@@ -62,7 +62,7 @@ export abstract class BaseService<
     }
 
     /**
-     * Finds the first row matching the {@link options}.
+     * Returns a function which finds the first row matching the {@link options}.
      *
      * @returns The found row.
      * @throws {@link DatabaseError} when no row has been found.
@@ -86,7 +86,7 @@ export abstract class BaseService<
     }
 
     /**
-     * Finds the first row matching the {@link options} and returns it.
+     * Returns a function which finds the first row matching the {@link options} and returns it.
      * If no row matches uses {@link creatable} to create a new row and return this row.
      */
     public getFindOneOrCreate(

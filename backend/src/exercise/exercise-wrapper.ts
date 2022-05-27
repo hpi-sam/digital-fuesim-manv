@@ -30,7 +30,7 @@ export class ExerciseWrapper extends NormalType<
     /**
      * Mark this exercise as being up-to-date in the database
      */
-    public hasBeenSaved() {
+    public markAsSaved() {
         this._changedSinceSave = false;
         this.temporaryActionHistory.splice(
             0,
@@ -41,7 +41,7 @@ export class ExerciseWrapper extends NormalType<
     /**
      * Mark this exercise as being out-of-date with the database representation
      */
-    public hasBeenModified() {
+    public markAsModified() {
         this._changedSinceSave = true;
     }
     async asEntity(
@@ -53,7 +53,7 @@ export class ExerciseWrapper extends NormalType<
                 this.databaseService.exerciseWrapperService.getFindById(
                     this.id!
                 )(manager);
-            const getNew = () => new ExerciseWrapperEntity();
+            const getNew = ExerciseWrapperEntity.createNew;
             const copyData = async (entity: ExerciseWrapperEntity) => {
                 entity.actions = await Promise.all(
                     this.temporaryActionHistory.map(async (action) =>
@@ -85,7 +85,7 @@ export class ExerciseWrapper extends NormalType<
                         getDto(entity)
                     )(manager);
                 this.id = savedEntity.id;
-                this.hasBeenSaved();
+                this.markAsSaved();
                 return savedEntity;
             } else if (save && !existed) {
                 const entity = getNew();
@@ -96,7 +96,7 @@ export class ExerciseWrapper extends NormalType<
                         getDto(entity)
                     )(manager);
                 this.id = savedEntity.id;
-                this.hasBeenSaved();
+                this.markAsSaved();
                 return savedEntity;
             } else if (!save && existed) {
                 const entity = await getFromDatabase();
@@ -146,7 +146,7 @@ export class ExerciseWrapper extends NormalType<
             );
         }
         normal.tickCounter = entity.tickCounter;
-        normal.hasBeenSaved();
+        normal.markAsSaved();
         return normal;
     }
 
@@ -182,7 +182,7 @@ export class ExerciseWrapper extends NormalType<
         };
         this.applyAction(updateAction, this.emitterId);
         this.tickCounter++;
-        this.hasBeenModified();
+        this.markAsModified();
     };
 
     // Call the tick every 1000 ms
@@ -348,7 +348,7 @@ export class ExerciseWrapper extends NormalType<
         this.temporaryActionHistory.push(
             new ActionWrapper(this.databaseService, action, emitterId, this)
         );
-        this.hasBeenModified();
+        this.markAsModified();
     }
 
     public async deleteExercise() {
@@ -359,7 +359,7 @@ export class ExerciseWrapper extends NormalType<
             await this.databaseService.transaction(
                 this.databaseService.exerciseWrapperService.getRemove(this.id)
             );
-            this.hasBeenSaved();
+            this.markAsSaved();
         }
     }
 }

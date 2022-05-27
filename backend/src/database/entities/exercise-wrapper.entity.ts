@@ -42,15 +42,18 @@ export class ExerciseWrapperEntity extends BaseEntity<
     @IsJSON()
     currentStateString!: string;
 
+    // This is not used by typeorm as this would clash with the approach of not saving every action in RAM.
     actions?: ActionWrapperEntity[];
 
+    private constructor() {
+        super();
+    }
     /**
      * Be very careful when using this. - Use {@link create} instead for most use cases.
-     * This constructor does not guarantee a valid entity.
+     * This method does not guarantee a valid entity.
      */
-    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-    constructor() {
-        super();
+    static createNew() {
+        return new ExerciseWrapperEntity();
     }
 
     static async create(
