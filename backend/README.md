@@ -62,7 +62,12 @@ Its main purpose is the `reduce` method, allowing an `ExerciseAction` to be appl
 
 We are using [PostgreSQL 14](https://www.postgresql.org/) for persistance with [typeorm](https://github.com/typeorm/typeorm/) as an in-between layer for model definitions and interaction with the database.
 
-Use the npm script `migration:run` to apply all pending migrations, `migration:revert` to revert the latest migration (can be applied multiple times for older migrations) and `migration:generate` to generate a new migration from the current changes between the models defined in code and present in the database. Note that when using non-`sh`-like shells (e.g. Windows `cmd` and PowerShell) you have to append `:windows` to the names of the scripts.
+The credentials and other parameters of the database must match the [`.env` file in the root directory](../.env).
+
+To start the database you can either (if you have `docker-compose` installed) run the `db` service (like this: `docker-compose up -d db`) (when you're using `docker-compose` to start the whole application refer to [the relevant section of the root README](../README.md#with-docker-compose-recommended)), or [install PostgreSQL 14 from the official page](https://www.postgresql.org/download/).
+
+Use the npm script `migration:run` to apply all pending migrations, `migration:revert` to revert the latest migration (can be applied multiple times for older migrations) and `migration:generate <name>` to generate a new migration from the current changes between the models defined in code and present in the database.
+Note that when using non-`sh`-like shells (e.g. Windows `cmd` and PowerShell) you have to append `:windows` to the names of the scripts.
 
 Note that all changes in model and migration files have to be imported in [`src/database/data-source.ts`](./src/database/data-source.ts) before using them.
 

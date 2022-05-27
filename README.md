@@ -13,18 +13,13 @@ The (internal) project-board is [here](https://github.com/orgs/hpi-sam/projects/
 3. [npm](https://www.npmjs.com/) should already come with NodeJs - if not install it
 4. Clone this repository
 5. Run `npm run setup` from the root folder
-6. (Optional) We have a list of recommended [vscode](https://code.visualstudio.com/) extensions. We strongly recommend you to use them if you are developing. You can see them via [the `@recommended` filter in the extensions panel](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
+6. Choose whether you want to use a database, see [the next section](#setup---database)
+7. (Optional) We have a list of recommended [vscode](https://code.visualstudio.com/) extensions. We strongly recommend you to use them if you are developing. You can see them via [the `@recommended` filter in the extensions panel](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
 
 ## Setup - Database
 
-Make sure to have a [PostgreSQL](https://www.postgresql.org/) (version 14) server running. It must use a configuration according to the environment variables specified in `backend/.env` for name, user, password, host and port.
-We provide a `docker-compose` service named `db` for this (see also [below](#with-docker-compose-recommended)). You can start this service by using `docker-compose up -d db`.
-
-Before starting the application make sure that you have run the migrations (run `npm run migration:run` in `./backend`).
-
-When you want to use the database on your host machine, e.g. to inspect it or to connect to it using a backend instance running on your host, make sure to uncomment the `ports` section of the `db` service in the [`docker-compose.yml` file](./docker-compose.yml).
-
-You can also choose to not use a database, see [here](./backend/README.md#without-a-database) for more information.
+You can (optionally) use a database for persistance of exercise data. Look at the [relevant section](./backend/README.md#database) in the backend README for further information.
+Note that to not use the database you have to edit an environment variable, see the [relevant section](./backend/README.md#without-a-database).
 
 ## Starting for development
 
@@ -45,7 +40,7 @@ You need to have [`docker`](https://www.docker.com/) installed.
 ### With docker-compose (recommended)
 
 1. [`docker-compose`](https://docs.docker.com/compose/) needs to be installed.
-2. Run `docker-compose up -d` in the root directory. This also starts the database.
+2. Run `docker-compose up -d` in the root directory. This also starts the database. If you don't want to start the database append `digital-fuesim-manv` to the command.
 
 ### Without docker-compose
 
