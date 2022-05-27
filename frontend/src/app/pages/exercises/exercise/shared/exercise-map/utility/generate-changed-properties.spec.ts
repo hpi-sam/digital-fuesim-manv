@@ -28,7 +28,7 @@ describe('GenerateChangedProperties', () => {
         ).toEqual(new Set([]));
     });
 
-    it('should not make deep comparisons to make sure the properties are equal', () => {
+    it('should make deep comparisons', () => {
         const oldElement = { a: { a: 1 }, b: 0 };
         const newElement = { a: { a: 1 }, b: 0 };
         expect(generateChangedProperties(oldElement, newElement)).toEqual(
