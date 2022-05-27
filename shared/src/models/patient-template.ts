@@ -1,10 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-    IsDefined,
-    IsString,
-    IsUUID,
-    ValidateNested,
-} from 'class-validator';
+import { IsDefined, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import {
     BiometricInformation,
