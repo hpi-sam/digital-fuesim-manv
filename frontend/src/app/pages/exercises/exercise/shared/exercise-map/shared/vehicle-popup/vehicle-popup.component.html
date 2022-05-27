@@ -8,7 +8,7 @@
         ></button>
     </h5>
     <div class="popover-body">
-        <ng-container *ngIf="(client$ | async)?.role === 'trainer'">
+        <ng-container *ngIf="(apiService.currentRole$ | async) === 'trainer'">
             <div class="form-group pb-3">
                 <label class="form-label">Fahrzeugname</label>
                 <input
