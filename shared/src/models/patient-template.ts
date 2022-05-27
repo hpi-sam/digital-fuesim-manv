@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import {
-    IsBoolean,
     IsDefined,
     IsString,
     IsUUID,
@@ -28,9 +27,6 @@ export class PatientTemplate {
     @Type(() => BiometricInformation)
     public readonly biometricInformation: BiometricInformation;
 
-    @IsBoolean()
-    public readonly isPreTriaged: boolean;
-
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
@@ -55,7 +51,6 @@ export class PatientTemplate {
     constructor(
         name: string,
         biometricInformation: BiometricInformation,
-        isPreTriaged: boolean,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         image: ImageProperties,
         health: HealthPoints,
@@ -63,7 +58,6 @@ export class PatientTemplate {
     ) {
         this.name = name;
         this.biometricInformation = biometricInformation;
-        this.isPreTriaged = isPreTriaged;
         this.image = image;
         this.healthStates = healthStates;
         this.health = health;
