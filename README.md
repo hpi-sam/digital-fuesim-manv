@@ -13,8 +13,11 @@ The (internal) project-board is [here](https://github.com/orgs/hpi-sam/projects/
 3. [npm](https://www.npmjs.com/) should already come with NodeJs - if not install it
 4. Clone this repository
 5. Run `npm run setup` from the root folder
-6. Choose whether you want to use a database, see [the next section](#setup---database)
-7. (Optional) We have a list of recommended [vscode](https://code.visualstudio.com/) extensions. We strongly recommend you to use them if you are developing. You can see them via [the `@recommended` filter in the extensions panel](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
+6. Copy the [`.env.example`](./.env.example) file to `./.env` and adjust the settings as you need them. Note that some of the variables are explained under the next point.
+7. Choose whether you want to use a database:
+   You can (optionally) use a database for persistance of exercise data. Look at the [relevant section](./backend/README.md#database) in the backend README for further information.
+   Note that to not use the database you have to edit an environment variable, see the [relevant section](./backend/README.md#without-a-database).
+8. (Optional) We have a list of recommended [vscode](https://code.visualstudio.com/) extensions. We strongly recommend you to use them if you are developing. You can see them via [the `@recommended` filter in the extensions panel](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
 
 ## Setup - Database
 
@@ -26,12 +29,14 @@ Note that to not use the database you have to edit an environment variable, see 
 ### Option 1
 
 If you are using [vscode](https://code.visualstudio.com/), you can run the [task](https://code.visualstudio.com/docs/editor/tasks) `Start all` to start everything in one go.
+Note that this _tries_ to start the database using `docker-compose`. In case this fails please start the database in another way (see [this section in the backend README](./backend/README.md#database)).
 
 ### Option 2
 
 1. Open a terminal in `/shared` and run `npm run watch`
 2. Open another terminal in `/frontend` and run `npm run start`
 3. Open another terminal in `/backend` and run `npm run start`
+4. Consider the database -- see point 7 of the [installation](#installation).
 
 ## Starting for deployment (using docker)
 
@@ -40,7 +45,7 @@ You need to have [`docker`](https://www.docker.com/) installed.
 ### With docker-compose (recommended)
 
 1. [`docker-compose`](https://docs.docker.com/compose/) needs to be installed.
-2. Run `docker-compose up -d` in the root directory. This also starts the database. If you don't want to start the database append `digital-fuesim-manv` to the command.
+2. Run `docker-compose up -d` in the root directory. This also starts the database. If you don't want to start the database run `docker-compose up -d digital-fuesim-manv` instead.
 
 ### Without docker-compose
 
@@ -48,7 +53,7 @@ You need to have [`docker`](https://www.docker.com/) installed.
 
 The server will start listening using nginx on port `80` for all services (frontend, API, WebSockets).
 
-Make sure to have a PostgreSQL server available (see section [Starting for development](#setup---database)).
+Note the database requirements depicted in [the installation section](#installation).
 
 ### Building the container from scratch
 
