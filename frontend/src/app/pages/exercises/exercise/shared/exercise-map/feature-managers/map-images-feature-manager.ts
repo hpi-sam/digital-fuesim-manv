@@ -48,7 +48,7 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
     ): void {
         super.onFeatureClicked(event, feature);
 
-        if (this.apiService.currentRole !== 'trainer') {
+        if (this.apiService.getCurrentRole() !== 'trainer') {
             return;
         }
         this.togglePopup$.next(

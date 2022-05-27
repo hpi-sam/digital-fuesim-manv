@@ -113,7 +113,7 @@ export class PresentExerciseHelper {
     /**
      * Join an exercise and retrieve its state
      * Displays an error message if the join failed
-     * @returns wether the join was successful
+     * @returns whether the join was successful
      */
     public async joinExercise(
         exerciseId: string,

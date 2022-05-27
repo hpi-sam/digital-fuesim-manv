@@ -4,6 +4,7 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import { applyAction, cloneDeepMutable } from 'digital-fuesim-manv-shared';
 import produce from 'immer';
+import { environment } from 'src/environments/environment';
 import { TimeLineCache } from './time-line-cache';
 
 export class TimeJumpHelper {
@@ -23,10 +24,13 @@ export class TimeJumpHelper {
     }
 
     public getStateAtTime(exerciseTime: number): ExerciseState {
-        const nearest = this.exerciseStateCache.getNearestValue(exerciseTime);
+        const nearest =
+            this.exerciseStateCache.getNearestValueNotAfter(exerciseTime);
         if (!nearest) {
-            // TODO: error
-            return this.exerciseTimeLine.initialState;
+            if (environment.production) {
+                return this.exerciseTimeLine.initialState;
+            }
+            throw Error(`No state found for time ${exerciseTime}`);
         }
         // Apply all the actions
         const actions = this.exerciseTimeLine.actionsWrappers
@@ -57,7 +61,7 @@ export class TimeJumpHelper {
                 applyAction(draftState, unfrozenAction);
 
                 // TODO: We actually want the last action after which currentTime <= exerciseTime
-                // Maybe look wether the action is a tick action and if so, check how much time would go by
+                // Maybe look whether the action is a tick action and if so, check how much time would go by
                 if (draftState.currentTime > exerciseTime) {
                     break;
                 }

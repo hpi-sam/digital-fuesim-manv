@@ -25,7 +25,7 @@ export class TimeTravelHelper {
     }
 
     public get isTimeTraveling(): boolean {
-        return !!this.timeConstraints;
+        return this.timeConstraints !== undefined;
     }
     public readonly isTimeTraveling$ = this.timeConstraints$.pipe(
         map(() => this.isTimeTraveling),

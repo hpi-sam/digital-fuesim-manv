@@ -58,9 +58,7 @@ export class ApiService {
         this.presentExerciseHelper
     );
     public leaveExercise() {
-        this.presentExerciseHelper.leaveExercise.bind(
-            this.presentExerciseHelper
-        );
+        this.presentExerciseHelper.leaveExercise();
         this.stopTimeTravel();
     }
     /**
@@ -137,17 +135,16 @@ export class ApiService {
         )
     );
 
-    public get currentRole() {
-        const ownClient = this.ownClientId
-            ? getSelectClient(this.ownClientId)(getStateSnapshot(this.store))
-            : // clientId is expected to never be the empty string
-              (this.ownClientId as null | undefined);
-        return this.getCurrentRole(ownClient);
-    }
-    public currentRole$: Observable<this['currentRole']> = this.ownClient$.pipe(
+    public currentRole$: Observable<CurrentRole> = this.ownClient$.pipe(
+        // If we wouldn't provide the ownClient from the observable, this could be a race condition
         map((ownClient) => this.getCurrentRole(ownClient))
     );
-    private getCurrentRole(ownClient: Client | null | undefined) {
+    public getCurrentRole(
+        ownClient: Client | null | undefined = this.ownClientId
+            ? getSelectClient(this.ownClientId)(getStateSnapshot(this.store))
+            : // clientId is expected to never be the empty string
+              (this.ownClientId as null | undefined)
+    ) {
         return ownClient ? ownClient.role : 'timeTravel';
     }
 
@@ -181,7 +178,7 @@ export class ApiService {
         if (this.isTimeTraveling) {
             this.messageService.postError({
                 title: 'Die Vergangenheit kann nicht bearbeitet werden',
-                body: 'Deaktiviere den Zeitreise Modus, um Änderungen vorzunehmen.',
+                body: 'Deaktiviere den Aufnahme Modus, um Änderungen vorzunehmen.',
             });
             return { success: false };
         }
@@ -231,3 +228,5 @@ export class ApiService {
             });
     }
 }
+
+type CurrentRole = 'participant' | 'timeTravel' | 'trainer';

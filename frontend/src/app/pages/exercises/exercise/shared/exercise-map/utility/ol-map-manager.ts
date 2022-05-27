@@ -130,7 +130,7 @@ export class OlMapManager {
         ];
         const translateInteraction = new Translate({
             layers:
-                this.apiService.currentRole === 'trainer'
+                this.apiService.getCurrentRole() === 'trainer'
                     ? [
                           ...alwaysTranslatableLayers,
                           transferPointLayer,
@@ -163,7 +163,7 @@ export class OlMapManager {
         TranslateHelper.registerTranslateEvents(viewportTranslate);
         ModifyHelper.registerModifyEvents(viewportModify);
 
-        if (this.apiService.currentRole === 'timeTravel') {
+        if (this.apiService.getCurrentRole() === 'timeTravel') {
             viewportTranslate.setActive(false);
             translateInteraction.setActive(false);
             viewportModify.setActive(false);
@@ -171,7 +171,7 @@ export class OlMapManager {
 
         const alwaysInteractions = [translateInteraction];
         const interactions =
-            this.apiService.currentRole === 'trainer'
+            this.apiService.getCurrentRole() === 'trainer'
                 ? [...alwaysInteractions, viewportTranslate, viewportModify]
                 : alwaysInteractions;
 
@@ -212,7 +212,7 @@ export class OlMapManager {
         });
 
         // FeatureManagers
-        if (this.apiService.currentRole === 'trainer') {
+        if (this.apiService.getCurrentRole() === 'trainer') {
             this.registerFeatureElementManager(
                 new TransferLinesFeatureManager(transferLinesLayer),
                 this.store.select(selectTransferLines)

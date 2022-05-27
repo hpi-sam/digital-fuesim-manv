@@ -23,7 +23,7 @@ export class TimeLineCache<T> {
             // We don't want to save this value
             return;
         }
-        const index = this.getSmallerIndex(time);
+        const index = this.getIndexNotAfter(time);
         if (index === undefined) {
             this.sortedArray.push({ time, value });
             return;
@@ -37,8 +37,8 @@ export class TimeLineCache<T> {
     /**
      * @returns the nearest value with a time less or equal than the given time
      */
-    public getNearestValue(wantedTime: number): T | undefined {
-        const index = this.getSmallerIndex(wantedTime);
+    public getNearestValueNotAfter(wantedTime: number): T | undefined {
+        const index = this.getIndexNotAfter(wantedTime);
         if (index === undefined) {
             return undefined;
         }
@@ -49,7 +49,7 @@ export class TimeLineCache<T> {
      * @returns the index of the element nearest element to {@link wantedTime} that is not bigger than {@link wantedTime}
      * or undefined if there is no such element
      */
-    private getSmallerIndex(wantedTime: number): number | undefined {
+    private getIndexNotAfter(wantedTime: number): number | undefined {
         // TODO: This could be made more efficient by using binary search - probably not worth it though
         const firstBiggerElementIndex = this.sortedArray.findIndex(
             ({ time }) => time > wantedTime

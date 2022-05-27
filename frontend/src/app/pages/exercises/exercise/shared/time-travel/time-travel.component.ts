@@ -46,7 +46,7 @@ export class TimeTravelComponent implements OnDestroy {
      * Whether the exercise is currently automatically replayed.
      */
     public get isReplaying() {
-        return !!this.replayInterval;
+        return this.replayInterval !== undefined;
     }
 
     // In the editor the type is 'NodeJS.Timer', when building angular it is 'number' -> https://stackoverflow.com/a/59681620
