@@ -53,7 +53,7 @@ export class ExerciseWrapper extends NormalType<
                 this.databaseService.exerciseWrapperService.getFindById(
                     this.id!
                 )(manager);
-            const getNew = ExerciseWrapperEntity.createNew;
+            const getNew = () => ExerciseWrapperEntity.createNew();
             const copyData = async (entity: ExerciseWrapperEntity) => {
                 entity.actions = await Promise.all(
                     this.temporaryActionHistory.map(async (action) =>

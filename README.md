@@ -15,14 +15,9 @@ The (internal) project-board is [here](https://github.com/orgs/hpi-sam/projects/
 5. Run `npm run setup` from the root folder
 6. Copy the [`.env.example`](./.env.example) file to `./.env` and adjust the settings as you need them. Note that some of the variables are explained under the next point.
 7. Choose whether you want to use a database:
-   You can (optionally) use a database for persistance of exercise data. Look at the [relevant section](./backend/README.md#database) in the backend README for further information.
+   You can (optionally) use a database for the persistence of exercise data. Look at the [relevant section](./backend/README.md#database) in the backend README for further information.
    Note that to not use the database you have to edit an environment variable, see the [relevant section](./backend/README.md#without-a-database).
 8. (Optional) We have a list of recommended [vscode](https://code.visualstudio.com/) extensions. We strongly recommend you to use them if you are developing. You can see them via [the `@recommended` filter in the extensions panel](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
-
-## Setup - Database
-
-You can (optionally) use a database for persistance of exercise data. Look at the [relevant section](./backend/README.md#database) in the backend README for further information.
-Note that to not use the database you have to edit an environment variable, see the [relevant section](./backend/README.md#without-a-database).
 
 ## Starting for development
 

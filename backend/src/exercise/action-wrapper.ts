@@ -20,7 +20,7 @@ export class ActionWrapper extends NormalType<
                 this.databaseService.actionWrapperService.getFindById(this.id!)(
                     manager
                 );
-            const getNew = ActionWrapperEntity.createNew;
+            const getNew = () => ActionWrapperEntity.createNew();
             const copyData = async (entity: ActionWrapperEntity) => {
                 entity.actionString = JSON.stringify(this.action);
                 entity.index = this.index;
