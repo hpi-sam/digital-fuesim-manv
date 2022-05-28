@@ -53,12 +53,15 @@ export const getSelectHospital = (hospitalId: UUID) => (state: AppState) =>
 export const getSelectViewport = (viewportId: UUID) => (state: AppState) =>
     state.exercise.viewports[viewportId];
 export const getSelectRestrictedViewport =
-    (clientId: UUID) => (state: AppState) =>
-        state.exercise.clients[clientId].viewRestrictedToViewportId
-            ? state.exercise.viewports[
-                  state.exercise.clients[clientId].viewRestrictedToViewportId!
-              ]
+    (clientId?: UUID | null) => (state: AppState) => {
+        if (!clientId) {
+            return undefined;
+        }
+        const client = getSelectClient(clientId)(state);
+        return client?.viewRestrictedToViewportId
+            ? state.exercise.viewports[client.viewRestrictedToViewportId!]
             : undefined;
+    };
 export const selectTransferPoints = (state: AppState) =>
     state.exercise.transferPoints;
 export const selectHospitals = (state: AppState) => state.exercise.hospitals;
@@ -80,9 +83,11 @@ export function getSelectVisibleElements<
     ElementsWithPosition extends {
         [Id in keyof Elements]: WithPosition<Elements[Id]>;
     } = { [Id in keyof Elements]: WithPosition<Elements[Id]> }
->(key: Key, clientId: UUID) {
+>(key: Key, clientId?: UUID | null) {
     return (state: AppState): ElementsWithPosition => {
-        const viewport = getSelectRestrictedViewport(clientId)(state);
+        const viewport = clientId
+            ? getSelectRestrictedViewport(clientId)(state)
+            : undefined;
         return pickBy(
             state.exercise[key],
             (element) =>

@@ -8,7 +8,6 @@ import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    getSelectClient,
     getSelectTransferPoint,
     selectHospitals,
     selectTransferPoints,
@@ -72,12 +71,8 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
         );
     });
 
-    public readonly client$ = this.store.select(
-        getSelectClient(this.apiService.ownClientId!)
-    );
-
     constructor(
-        private readonly apiService: ApiService,
+        public readonly apiService: ApiService,
         private readonly store: Store<AppState>,
         private readonly messageService: MessageService
     ) {}

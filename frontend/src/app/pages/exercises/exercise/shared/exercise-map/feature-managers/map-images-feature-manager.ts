@@ -22,8 +22,7 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
         store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        apiService: ApiService,
-        private readonly isTrainer: boolean
+        private readonly apiService: ApiService
     ) {
         super(
             store,
@@ -49,7 +48,7 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
     ): void {
         super.onFeatureClicked(event, feature);
 
-        if (!this.isTrainer) {
+        if (this.apiService.getCurrentRole() !== 'trainer') {
             return;
         }
         this.togglePopup$.next(
