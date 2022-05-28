@@ -17,7 +17,7 @@ export class Hospital {
     readonly transportDuration: number = 0;
 
     /**
-     * Id that is saved in hospitalPatient that comes originally from a patient before being transported to a hospital
+     * These Ids reference a hospitalPatients patientId
      */
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     @IsDefined()

@@ -1,51 +1,37 @@
-<ng-container
-    *ngIf="reachableTransferPoints$ | async as reachableTransferPoints"
->
-    <div
-        *ngIf="reachableTransferPoints.length > 0"
-        class="dropdown-menu"
-        style="
-            position: static;
-            display: block;
-            max-height: 200px;
-            overflow-y: auto;
-        "
-    >
-        <button
-            *ngFor="
-                let reachableTransferPoint of reachableTransferPoints;
-                trackBy: 'id' | appTrackByProperty: reachableTransferPoints
-            "
-            (click)="transferTo(reachableTransferPoint.id, 'transferPoint')"
-            type="button"
-            class="dropdown-item"
-        >
-            <app-transfer-point-name
-                [transferPointId]="reachableTransferPoint.id"
-            ></app-transfer-point-name>
-        </button>
-    </div>
-</ng-container>
-<ng-container
-    *ngIf="
-        droppedElementType === 'vehicle' &&
-        (reachableHospitals$ | async) as reachableHospitals
+<div
+    class="dropdown-menu"
+    style="
+        position: static;
+        display: block;
+        max-height: 200px;
+        overflow-y: auto;
     "
 >
-    <div
-        *ngIf="reachableHospitals.length > 0"
-        class="dropdown-menu"
-        style="
-            position: static;
-            display: block;
-            max-height: 200px;
-            overflow-y: auto;
+    <button
+        *ngFor="
+            let reachableTransferPoint of reachableTransferPoints$ | async;
+            trackBy: 'id' | appTrackByProperty
         "
+        (click)="transferTo(reachableTransferPoint.id, 'transferPoint')"
+        type="button"
+        class="dropdown-item"
     >
+        <app-transfer-point-name
+            [transferPointId]="reachableTransferPoint.id"
+        ></app-transfer-point-name>
+    </button>
+    <ng-container *ngIf="droppedElementType === 'vehicle'">
+        <div
+            *ngIf="
+                (reachableTransferPoints$ | async)?.length &&
+                (reachableHospitals$ | async)?.length
+            "
+            class="dropdown-divider"
+        ></div>
         <button
             *ngFor="
-                let reachableHospital of reachableHospitals;
-                trackBy: 'id' | appTrackByProperty: reachableHospitals
+                let reachableHospital of reachableHospitals$ | async;
+                trackBy: 'id' | appTrackByProperty
             "
             (click)="transferTo(reachableHospital.id, 'hospital')"
             type="button"
@@ -55,5 +41,5 @@
                 [hospitalId]="reachableHospital.id"
             ></app-hospital-name>
         </button>
-    </div>
-</ng-container>
+    </ng-container>
+</div>

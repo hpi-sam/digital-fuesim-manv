@@ -82,28 +82,18 @@
                             <li
                                 *ngFor="
                                     let reachableTransferPointConnection of transferPoint.reachableTransferPoints
-                                        | values;
-                                    trackBy: 'id' | appTrackByProperty
+                                        | keyvalue;
+                                    trackBy: 'key' | appTrackByProperty
                                 "
                                 class="list-group-item d-flex align-items-center flex-nowrap p-0"
                             >
                                 <div
-                                    [title]="
-                                        transferPoints[
-                                            reachableTransferPointConnection.id
-                                        ].externalName +
-                                        ' (' +
-                                        transferPoints[
-                                            reachableTransferPointConnection.id
-                                        ].internalName +
-                                        ')'
-                                    "
                                     class="flex-grow-1 ps-2 pe-2 text-truncate"
                                     style="max-width: 300px"
                                 >
                                     <app-transfer-point-name
                                         [transferPointId]="
-                                            reachableTransferPointConnection.id
+                                            reachableTransferPointConnection.key
                                         "
                                     ></app-transfer-point-name>
                                 </div>
@@ -112,13 +102,14 @@
                                     [min]="0"
                                     [max]="24 * 60"
                                     [ngModel]="
-                                        reachableTransferPointConnection.duration /
+                                        reachableTransferPointConnection.value
+                                            .duration /
                                         1000 /
                                         60
                                     "
                                     (ngModelChange)="
                                         connectTransferPoint(
-                                            reachableTransferPointConnection.id,
+                                            reachableTransferPointConnection.key,
                                             $event * 1000 * 60
                                         )
                                     "
@@ -136,7 +127,7 @@
                                     title="Verbindung löschen"
                                     (click)="
                                         disconnectTransferPoint(
-                                            reachableTransferPointConnection.id
+                                            reachableTransferPointConnection.key
                                         )
                                     "
                                 >

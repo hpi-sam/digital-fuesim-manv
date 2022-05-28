@@ -103,11 +103,10 @@ export namespace HospitalActionReducers {
             for (const patientId of Object.keys(hospital.patientIds)) {
                 delete draftState.hospitalPatients[patientId];
             }
-            for (const transferPoint of Object.keys(
+            for (const transferPoint of Object.values(
                 draftState.transferPoints
             )) {
-                delete draftState.transferPoints[transferPoint]
-                    .reachableHospitals[hospitalId];
+                delete transferPoint.reachableHospitals[hospitalId];
             }
             delete draftState.hospitals[hospitalId];
             return draftState;
@@ -125,7 +124,7 @@ export namespace HospitalActionReducers {
                     hospitalId
                 );
                 const vehicle = getElement(draftState, 'vehicles', vehicleId);
-                // TODO: block vehicles without completely loaded (personnel and material gets deleted even outside the vehicle)
+                // TODO: Block vehicles whose material and personnel are unloaded
                 for (const patientId of Object.keys(vehicle.patientIds)) {
                     const patient = getElement(
                         draftState,

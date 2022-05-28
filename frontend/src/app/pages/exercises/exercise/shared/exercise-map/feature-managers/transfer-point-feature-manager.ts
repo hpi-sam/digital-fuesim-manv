@@ -123,38 +123,37 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                 true
             );
         };
-        if (
-            reachableTransferPointIds.length === 0 &&
-            reachableHospitalIds.length === 0
-        ) {
-            return false;
-        }
-        if (
-            reachableTransferPointIds.length === 1 &&
-            (reachableHospitalIds.length === 0 ||
-                droppedElement.type === 'personnel')
-        ) {
-            // There is an obvious answer to which transferPoint the vehicle or personnel should transfer to
-            proposeTransfer(reachableTransferPointIds[0], 'transferPoint');
-            return true;
-        }
 
-        if (
-            reachableTransferPointIds.length === 0 &&
-            reachableHospitalIds.length === 1 &&
-            droppedElement.type === 'vehicle'
-        ) {
-            // There is an obvious answer to which hospital the vehicle should transport a patient / the patients to
-            proposeTransfer(reachableHospitalIds[0], 'hospital');
-            return true;
-        }
-
-        if (
-            reachableTransferPointIds.length === 0 &&
-            droppedElement.type === 'personnel'
-        ) {
-            // Personnel should only be able to transfer transferPoints
-            return false;
+        // There are obvious answers to what the user wants to do
+        if (droppedElement.type === 'personnel') {
+            if (reachableTransferPointIds.length === 0) {
+                return false;
+            }
+            if (reachableTransferPointIds.length === 1) {
+                proposeTransfer(reachableTransferPointIds[0], 'transferPoint');
+                return true;
+            }
+        } else {
+            if (
+                reachableTransferPointIds.length === 0 &&
+                reachableHospitalIds.length === 0
+            ) {
+                return false;
+            }
+            if (
+                reachableTransferPointIds.length === 1 &&
+                reachableHospitalIds.length === 0
+            ) {
+                proposeTransfer(reachableTransferPointIds[0], 'transferPoint');
+                return true;
+            }
+            if (
+                reachableTransferPointIds.length === 0 &&
+                reachableHospitalIds.length === 1
+            ) {
+                proposeTransfer(reachableHospitalIds[0], 'hospital');
+                return true;
+            }
         }
 
         // Show a popup to choose the transferPoint or hospital

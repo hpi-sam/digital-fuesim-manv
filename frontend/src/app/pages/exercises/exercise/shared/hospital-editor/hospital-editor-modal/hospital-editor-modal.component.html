@@ -12,7 +12,7 @@
     class="modal-body"
     style="min-height: 60vh"
 >
-    <table class="table" *ngIf="hospitals.length > 0; else noHospitals">
+    <table *ngIf="hospitals.length > 0; else noHospitals" class="table">
         <thead>
             <tr>
                 <th scope="col">Name</th>
