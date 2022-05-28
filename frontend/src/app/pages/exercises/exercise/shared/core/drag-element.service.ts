@@ -10,7 +10,7 @@ import {
     Viewport,
     TransferPoint,
     normalZoom,
-    addVehicle,
+    createVehicleParameters,
     PatientTemplate,
     MapImage,
 } from 'digital-fuesim-manv-shared';
@@ -130,7 +130,7 @@ export class DragElementService {
                 this.apiService.proposeAction(
                     {
                         type: '[Vehicle] Add vehicle',
-                        ...addVehicle(
+                        ...createVehicleParameters(
                             this.transferringTemplate.template,
                             position
                         ),

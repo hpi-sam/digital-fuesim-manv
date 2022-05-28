@@ -13,6 +13,7 @@ import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercis
 import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
 import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 import { openHospitalEditorModal } from '../hospital-editor/hospital-editor-modal';
+import { openEmergencyOperationsCenterModal } from '../emergency-operations-center/open-emergency-operations-center-modal';
 
 @Component({
     selector: 'app-trainer-toolbar',
@@ -45,6 +46,10 @@ export class TrainerToolbarComponent {
 
     public openHospitalEditor() {
         openHospitalEditorModal(this.modalService);
+    }
+
+    public openEmergencyOperationsCenter() {
+        openEmergencyOperationsCenterModal(this.modalService);
     }
 
     public openExerciseSettings() {

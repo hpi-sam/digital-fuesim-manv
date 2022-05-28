@@ -6,6 +6,7 @@ import { TransferOverviewModalComponent } from './transfer-overview-modal/transf
 import { TransferOverviewTableComponent } from './transfer-overview-table/transfer-overview-table.component';
 import { TransferTargetInputComponent } from './transfer-target-input/transfer-target-input.component';
 import { TransferTimeInputComponent } from './transfer-time-input/transfer-time-input.component';
+import { StartPointNameComponent } from './start-point-name/start-point-name.component';
 
 @NgModule({
     declarations: [
@@ -13,6 +14,7 @@ import { TransferTimeInputComponent } from './transfer-time-input/transfer-time-
         TransferOverviewTableComponent,
         TransferTargetInputComponent,
         TransferTimeInputComponent,
+        StartPointNameComponent,
     ],
     imports: [CommonModule, SharedModule, NgbDropdownModule],
 })

@@ -1,6 +1,6 @@
 import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { TransferPoint } from 'digital-fuesim-manv-shared';
+import { TransferPoint, TransferStartPoint } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
 import type { TranslateEvent } from 'ol/interaction/Translate';
@@ -117,7 +117,9 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                             ? 'vehicles'
                             : 'personnel',
                     elementId: droppedElement.value.id,
-                    startTransferPointId: droppedOnTransferPoint.id,
+                    startPoint: TransferStartPoint.create(
+                        droppedOnTransferPoint.id
+                    ),
                     targetTransferPointId: targetId,
                 },
                 true
