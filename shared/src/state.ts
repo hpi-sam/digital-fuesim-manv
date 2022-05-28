@@ -1,7 +1,10 @@
 import { defaultTileMapProperties } from './data';
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
 import { defaultPatientTemplates } from './data/default-state/patient-templates';
-import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
+import {
+    defaultVehicleTemplates,
+    carryingUnitImagesMap,
+} from './data/default-state/vehicle-templates';
 import type {
     AlarmGroup,
     Client,
@@ -41,6 +44,7 @@ export class ExerciseState {
     public readonly clients: { readonly [key: UUID]: Client } = {};
     public readonly patientTemplates = defaultPatientTemplates;
     public readonly vehicleTemplates = defaultVehicleTemplates;
+    public readonly carrinyUnitImagesTemplates = carryingUnitImagesMap;
     public readonly mapImageTemplates = defaultMapImagesTemplates;
     public readonly ecoLog: readonly EocLogEntry[] = [];
     public readonly statusHistory: readonly StatusHistoryEntry[] = [];

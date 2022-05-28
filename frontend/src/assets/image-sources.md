@@ -45,6 +45,21 @@ Florian Greiz 23
 and Fry1989  
 <https://commons.wikimedia.org/wiki/File:MUTCD_RS-094.svg> (edited)
 
+[carrying-unit.svg](carrying-unit.svg):  
+<https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
+and Fry1989  
+<https://commons.wikimedia.org/wiki/File:MUTCD_RS-094.svg> (edited)
+
+[carrying-unit-with-male-patient.svg](carrying-unit.svg):  
+<https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
+and Fry1989  
+<https://commons.wikimedia.org/wiki/File:MUTCD_RS-094.svg> (edited)
+
+[carrying-unit-with-female-patient.svg](carrying-unit.svg):  
+<https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
+and Fry1989  
+<https://commons.wikimedia.org/wiki/File:MUTCD_RS-094.svg> (edited)
+
 [rettSan-personnel.svg](rettSan-personnel.svg):  
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
 
@@ -59,3 +74,6 @@ and Fry1989
 
 [trash-can.svg](trash-can.svg):  
 Bootstrap-Icon `bi-trash-fill` (edited)
+
+Editing was done via VsCode with Extension: https://marketplace.visualstudio.com/items?itemName=jock.svg
+and with the help of https://github.com/SVG-Edit/svgedit live Demo (e.g. the stretcher for carrying unit was created with it)

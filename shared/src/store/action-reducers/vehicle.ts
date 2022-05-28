@@ -224,6 +224,12 @@ export namespace VehicleActionReducers {
                     y: unloadPosition.y,
                 };
             }
+            if (
+                vehicle.vehicleType === 'Tragetrupp' &&
+                Object.keys(vehicle.patientIds).length === 0
+            ) {
+                vehicle.image = draftState.carrinyUnitImagesTemplates.default;
+            }
             calculateTreatments(draftState);
             return draftState;
         },
@@ -294,6 +300,18 @@ export namespace VehicleActionReducers {
                         // If a personnel is in transfer, this doesn't change that
                         draftState.personnel[personnelId].position = undefined;
                     });
+                    if (
+                        vehicle.vehicleType === 'Tragetrupp' &&
+                        Object.keys(vehicle.patientIds).length >= 1
+                    ) {
+                        if (patient.biometricInformation.sex === 'female') {
+                            vehicle.image =
+                                draftState.carrinyUnitImagesTemplates.female;
+                        } else {
+                            vehicle.image =
+                                draftState.carrinyUnitImagesTemplates.male;
+                        }
+                    }
                 }
             }
             calculateTreatments(draftState);
