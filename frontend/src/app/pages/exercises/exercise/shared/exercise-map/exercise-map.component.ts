@@ -77,8 +77,6 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         this.openLayersContainer.nativeElement.addEventListener(
             'fullscreenchange',
             (event) => {
-                console.log('fullscreenchange', event);
-
                 this.fullscreenEnabled = document.fullscreenElement !== null;
             }
         );
