@@ -10,7 +10,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import type { Mutable } from '../utils';
-import { UUID, uuidValidationOptions } from '../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../utils';
 import {
     PatientStatus,
     HealthPoints,
@@ -141,20 +141,22 @@ export class HospitalPatient {
         startTime: number,
         arrivalTime: number
     ) {
-        return HospitalPatient.create(
-            patient.id,
-            vehicleType,
-            startTime,
-            arrivalTime,
-            patient.personalInformation,
-            patient.biometricInformation,
-            patient.visibleStatus,
-            patient.realStatus,
-            patient.healthStates,
-            patient.currentHealthStateId,
-            patient.image,
-            patient.health,
-            patient.healthDescription
-        ) as Mutable<HospitalPatient>;
+        return cloneDeepMutable(
+            HospitalPatient.create(
+                patient.id,
+                vehicleType,
+                startTime,
+                arrivalTime,
+                patient.personalInformation,
+                patient.biometricInformation,
+                patient.visibleStatus,
+                patient.realStatus,
+                patient.healthStates,
+                patient.currentHealthStateId,
+                patient.image,
+                patient.health,
+                patient.healthDescription
+            )
+        );
     }
 }
