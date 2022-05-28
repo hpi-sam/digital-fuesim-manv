@@ -31,6 +31,7 @@ import {
     selectTransferLines,
     selectViewports,
 } from 'src/app/state/exercise/exercise.selectors';
+import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
@@ -82,6 +83,8 @@ export class OlMapManager {
         VectorLayer<VectorSource>,
         FeatureManager<any>
     >();
+
+    private static readonly defaultZoom = 20;
 
     constructor(
         private readonly store: Store<AppState>,
@@ -176,7 +179,12 @@ export class OlMapManager {
                 : alwaysInteractions;
 
         this.olMap = new OlMap({
-            interactions: defaultInteractions().extend(interactions),
+            interactions: defaultInteractions({
+                pinchRotate: false,
+                altShiftDragRotate: false,
+            }).extend(interactions),
+            // We use Angular buttons instead
+            controls: [],
             target: this.openLayersContainer,
             // Note: The order of this array determines the order of the objects on the map.
             // The most bottom objects must be at the top of the array.
@@ -196,7 +204,7 @@ export class OlMapManager {
             overlays: [this.popupOverlay],
             view: new View({
                 center: [startingPosition.x, startingPosition.y],
-                zoom: 20,
+                zoom: OlMapManager.defaultZoom,
                 maxZoom: 23,
                 smoothExtentConstraint: false,
                 smoothResolutionConstraint: false,
@@ -339,6 +347,7 @@ export class OlMapManager {
     }
 
     private registerViewportRestriction() {
+        this.tryToFitViewToViewports();
         this.store
             .select(getSelectRestrictedViewport(this.apiService.ownClientId))
             .pipe(takeUntil(this.destroy$))
@@ -504,6 +513,54 @@ export class OlMapManager {
             renderBuffer,
             source: new VectorSource<LayerGeometry>(),
         });
+    }
+
+    /**
+     * Sets the map's view to see all viewports.
+     */
+    public tryToFitViewToViewports() {
+        if (
+            getSelectRestrictedViewport(this.apiService.ownClientId)(
+                getStateSnapshot(this.store)
+            ) !== undefined
+        ) {
+            // We are restricted to a viewport -> you can't fit the view
+            return;
+        }
+        const viewports = Object.values(
+            selectViewports(getStateSnapshot(this.store))
+        );
+        const view = this.olMap.getView();
+        if (viewports.length === 0) {
+            view.setCenter([startingPosition.x, startingPosition.y]);
+            return;
+        }
+        const minX = Math.min(
+            ...viewports.map((viewport) => viewport.position.x)
+        );
+        const minY = Math.min(
+            ...viewports.map(
+                (viewport) => viewport.position.y - viewport.size.height
+            )
+        );
+        const maxX = Math.max(
+            ...viewports.map(
+                (viewport) => viewport.position.x + viewport.size.width
+            )
+        );
+        const maxY = Math.max(
+            ...viewports.map((viewport) => viewport.position.y)
+        );
+        const padding = 25;
+        view.fit([minX, minY, maxX, maxY], {
+            padding: [padding, padding, padding, padding],
+        });
+    }
+
+    public changeZoom(mode: 'zoomIn' | 'zoomOut') {
+        const delta = mode === 'zoomIn' ? 1 : -1;
+        const view = this.olMap.getView();
+        view.setZoom((view.getZoom() ?? OlMapManager.defaultZoom) + delta);
     }
 
     public destroy() {
