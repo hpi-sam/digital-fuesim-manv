@@ -65,9 +65,9 @@
                 <ng-template ngbNavContent>
                     <p
                         *ngIf="
-                            (transferPoint.reachableTransferPoints | keyvalue)
+                            (transferPoint.reachableTransferPoints | values)
                                 .length === 0 &&
-                            (transferPoint.reachableHospitals | keyvalue)
+                            (transferPoint.reachableHospitals | values)
                                 .length === 0
                         "
                         class="text-muted font-bold"
@@ -81,20 +81,20 @@
                         >
                             <li
                                 *ngFor="
-                                    let reachableTransferPoint of transferPoint.reachableTransferPoints
-                                        | keyvalue;
-                                    trackBy: 'key' | appTrackByProperty
+                                    let reachableTransferPointConnection of transferPoint.reachableTransferPoints
+                                        | values;
+                                    trackBy: 'id' | appTrackByProperty
                                 "
                                 class="list-group-item d-flex align-items-center flex-nowrap p-0"
                             >
                                 <div
                                     [title]="
                                         transferPoints[
-                                            reachableTransferPoint.key
+                                            reachableTransferPointConnection.id
                                         ].externalName +
                                         ' (' +
                                         transferPoints[
-                                            reachableTransferPoint.key
+                                            reachableTransferPointConnection.id
                                         ].internalName +
                                         ')'
                                     "
@@ -103,7 +103,7 @@
                                 >
                                     <app-transfer-point-name
                                         [transferPointId]="
-                                            reachableTransferPoint.key
+                                            reachableTransferPointConnection.id
                                         "
                                     ></app-transfer-point-name>
                                 </div>
@@ -112,13 +112,13 @@
                                     [min]="0"
                                     [max]="24 * 60"
                                     [ngModel]="
-                                        reachableTransferPoint.value.duration /
+                                        reachableTransferPointConnection.duration /
                                         1000 /
                                         60
                                     "
                                     (ngModelChange)="
                                         connectTransferPoint(
-                                            reachableTransferPoint.key,
+                                            reachableTransferPointConnection.id,
                                             $event * 1000 * 60
                                         )
                                     "
@@ -136,7 +136,7 @@
                                     title="Verbindung löschen"
                                     (click)="
                                         disconnectTransferPoint(
-                                            reachableTransferPoint.key
+                                            reachableTransferPointConnection.id
                                         )
                                     "
                                 >
@@ -150,28 +150,28 @@
                         >
                             <li
                                 *ngFor="
-                                    let reachableHospital of transferPoint.reachableHospitals
-                                        | keyvalue;
-                                    trackBy: 'key' | appTrackByProperty
+                                    let reachableHospitalId of transferPoint.reachableHospitals
+                                        | keys;
+                                    trackBy: '$value' | appTrackByProperty
                                 "
                                 class="list-group-item d-flex align-items-center flex-nowrap p-0"
                             >
                                 <div
                                     [title]="
-                                        hospitals[reachableHospital.key].name
+                                        hospitals[reachableHospitalId].name
                                     "
                                     class="flex-grow-1 ps-2 pe-2 text-truncate"
                                     style="max-width: 300px"
                                 >
                                     <app-hospital-name
-                                        [hospitalId]="reachableHospital.key"
+                                        [hospitalId]="reachableHospitalId"
                                     ></app-hospital-name>
                                 </div>
                                 <span
                                     class="font-monospace text-end"
                                     style="width: 125px"
                                     >{{
-                                        hospitals[reachableHospital.key]
+                                        hospitals[reachableHospitalId]
                                             .transportDuration /
                                             1000 /
                                             60
@@ -184,9 +184,7 @@
                                     class="btn btn-link text-danger text-decoration-none"
                                     title="Verbindung löschen"
                                     (click)="
-                                        disconnectHospital(
-                                            reachableHospital.key
-                                        )
+                                        disconnectHospital(reachableHospitalId)
                                     "
                                 >
                                     <i class="bi-trash"></i>
@@ -196,10 +194,9 @@
                     </div>
                     <div
                         *ngIf="
-                            (transferPointsToBeAdded$ | async | keyvalue)
+                            (transferPointsToBeAdded$ | async | values)
                                 ?.length !== 0 ||
-                            (hospitalsToBeAdded$ | async | keyvalue)?.length !==
-                                0
+                            (hospitalsToBeAdded$ | async | values)?.length !== 0
                         "
                         ngbDropdown
                         placement="bottom-start"
@@ -220,35 +217,31 @@
                         >
                             <button
                                 *ngFor="
-                                    let _transferPoint of transferPointsToBeAdded$
+                                    let transferPoint of transferPointsToBeAdded$
                                         | async
-                                        | keyvalue;
-                                    trackBy: 'key' | appTrackByProperty
+                                        | values;
+                                    trackBy: 'id' | appTrackByProperty
                                 "
                                 ngbDropdownItem
-                                (click)="
-                                    connectTransferPoint(
-                                        _transferPoint.value.id
-                                    )
-                                "
+                                (click)="connectTransferPoint(transferPoint.id)"
                             >
                                 <app-transfer-point-name
-                                    [transferPointId]="_transferPoint.key"
+                                    [transferPointId]="transferPoint.id"
                                 ></app-transfer-point-name>
                             </button>
 
                             <button
                                 *ngFor="
-                                    let _hospital of hospitalsToBeAdded$
+                                    let hospital of hospitalsToBeAdded$
                                         | async
-                                        | keyvalue;
-                                    trackBy: 'key' | appTrackByProperty
+                                        | values;
+                                    trackBy: 'id' | appTrackByProperty
                                 "
                                 ngbDropdownItem
-                                (click)="connectHospital(_hospital.value.id)"
+                                (click)="connectHospital(hospital.id)"
                             >
                                 <app-hospital-name
-                                    [hospitalId]="_hospital.key"
+                                    [hospitalId]="hospital.id"
                                 ></app-hospital-name>
                             </button>
                         </div>
@@ -259,4 +252,3 @@
         <div [ngbNavOutlet]="nav" class="mt-2"></div>
     </div>
 </ng-container>
-<!--TODO hospital-->

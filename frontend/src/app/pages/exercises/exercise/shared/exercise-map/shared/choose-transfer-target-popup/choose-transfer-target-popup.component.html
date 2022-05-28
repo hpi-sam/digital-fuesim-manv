@@ -1,33 +1,30 @@
 <ng-container
     *ngIf="reachableTransferPoints$ | async as reachableTransferPoints"
 >
-    <!--TODO: maybe make it one ng-container and one ngIf-->
-    <ng-container *ngIf="reachableTransferPoints.length > 0 ?? false">
-        <div
-            class="dropdown-menu"
-            style="
-                position: static;
-                display: block;
-                max-height: 200px;
-                overflow-y: auto;
+    <div
+        *ngIf="reachableTransferPoints.length > 0"
+        class="dropdown-menu"
+        style="
+            position: static;
+            display: block;
+            max-height: 200px;
+            overflow-y: auto;
+        "
+    >
+        <button
+            *ngFor="
+                let reachableTransferPoint of reachableTransferPoints;
+                trackBy: 'id' | appTrackByProperty: reachableTransferPoints
             "
+            (click)="transferTo(reachableTransferPoint.id, 'transferPoint')"
+            type="button"
+            class="dropdown-item"
         >
-            <button
-                *ngFor="
-                    let reachableTransferPoint of reachableTransferPoints;
-                    trackBy: '$index'
-                        | appTrackByProperty: reachableTransferPoints
-                "
-                (click)="transferToTransferPoints(reachableTransferPoint)"
-                type="button"
-                class="dropdown-item"
-            >
-                <app-transfer-point-name
-                    [transferPointId]="reachableTransferPoint.id"
-                ></app-transfer-point-name>
-            </button>
-        </div>
-    </ng-container>
+            <app-transfer-point-name
+                [transferPointId]="reachableTransferPoint.id"
+            ></app-transfer-point-name>
+        </button>
+    </div>
 </ng-container>
 <ng-container
     *ngIf="
@@ -35,30 +32,28 @@
         (reachableHospitals$ | async) as reachableHospitals
     "
 >
-    <!--TODO: maybe make it one ng-container and one ngIf-->
-    <ng-container *ngIf="reachableHospitals.length > 0 ?? false">
-        <div
-            class="dropdown-menu"
-            style="
-                position: static;
-                display: block;
-                max-height: 200px;
-                overflow-y: auto;
+    <div
+        *ngIf="reachableHospitals.length > 0"
+        class="dropdown-menu"
+        style="
+            position: static;
+            display: block;
+            max-height: 200px;
+            overflow-y: auto;
+        "
+    >
+        <button
+            *ngFor="
+                let reachableHospital of reachableHospitals;
+                trackBy: 'id' | appTrackByProperty: reachableHospitals
             "
+            (click)="transferTo(reachableHospital.id, 'hospital')"
+            type="button"
+            class="dropdown-item"
         >
-            <button
-                *ngFor="
-                    let reachableHospital of reachableHospitals;
-                    trackBy: '$index' | appTrackByProperty: reachableHospitals
-                "
-                (click)="transferToHospital(reachableHospital)"
-                type="button"
-                class="dropdown-item"
-            >
-                <app-hospital-name
-                    [hospitalId]="reachableHospital.id"
-                ></app-hospital-name>
-            </button>
-        </div>
-    </ng-container>
+            <app-hospital-name
+                [hospitalId]="reachableHospital.id"
+            ></app-hospital-name>
+        </button>
+    </div>
 </ng-container>
