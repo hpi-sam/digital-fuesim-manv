@@ -1,8 +1,7 @@
 import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
+import { isEqual } from 'lodash';
 
 /**
- * Both elements are expected to be immutable.
- * Therefore only shallow comparisons are made.
  * @returns a Set of all the properties that are different between the two objects
  */
 export function generateChangedProperties<Element extends ImmutableJsonObject>(
@@ -17,7 +16,8 @@ export function generateChangedProperties<Element extends ImmutableJsonObject>(
     const changedProperties = new Set<keyof Element>();
     // add the changed properties to the Set
     for (const property of properties) {
-        if (oldElement[property] !== newElement[property]) {
+        // It is potentially much more efficient to deep compare here instead of having to potentially rerender something unnecessarily
+        if (!isEqual(oldElement[property], newElement[property])) {
             changedProperties.add(property);
         }
     }

@@ -8,7 +8,6 @@ import { combineLatest, firstValueFrom, map, switchMap } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    getSelectClient,
     getSelectMaterial,
     getSelectPatient,
     getSelectPersonnel,
@@ -30,15 +29,11 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
     public vehicle$?: Observable<Vehicle>;
     public vehicleIsCompletelyUnloaded$?: Observable<boolean>;
 
-    public readonly client$ = this.store.select(
-        getSelectClient(this.apiService.ownClientId!)
-    );
-
     public name?: string;
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService
+        public readonly apiService: ApiService
     ) {}
 
     async ngOnInit() {

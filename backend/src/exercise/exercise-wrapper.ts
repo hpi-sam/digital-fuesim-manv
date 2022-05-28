@@ -1,4 +1,8 @@
-import type { ExerciseAction, Role } from 'digital-fuesim-manv-shared';
+import type {
+    ExerciseAction,
+    ExerciseTimeline,
+    Role,
+} from 'digital-fuesim-manv-shared';
 import { reduceExerciseState, ExerciseState } from 'digital-fuesim-manv-shared';
 import type { ActionEmitter } from './action-wrapper';
 import { ActionWrapper } from './action-wrapper';
@@ -54,6 +58,9 @@ export class ExerciseWrapper {
     private readonly stateHistory: ExerciseState[] = [];
 
     private readonly actionHistory: ActionWrapper[] = [];
+
+    // TODO: Replace this with the initial state from the database
+    private readonly initialState: ExerciseState = this.currentState;
 
     constructor(
         private readonly participantId: string,
@@ -188,5 +195,16 @@ export class ExerciseWrapper {
         this.clients.forEach((client) => client.disconnect());
         exerciseMap.delete(this.participantId);
         exerciseMap.delete(this.trainerId);
+    }
+
+    public getTimeLine(): ExerciseTimeline {
+        return {
+            initialState: this.initialState,
+            actionsWrappers: this.actionHistory.map((action, index) => ({
+                action: action.action,
+                // TODO: Return the actual, real-world time of the action here
+                time: index,
+            })),
+        };
     }
 }

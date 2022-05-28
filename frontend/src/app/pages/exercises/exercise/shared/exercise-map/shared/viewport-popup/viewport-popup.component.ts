@@ -7,10 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
-import {
-    getSelectClient,
-    getSelectViewport,
-} from 'src/app/state/exercise/exercise.selectors';
+import { getSelectViewport } from 'src/app/state/exercise/exercise.selectors';
 
 @Component({
     selector: 'app-viewport-popup',
@@ -25,15 +22,11 @@ export class ViewportPopupComponent implements OnInit {
 
     public viewport$?: Observable<Viewport>;
 
-    public readonly client$ = this.store.select(
-        getSelectClient(this.apiService.ownClientId!)
-    );
-
     public name?: string;
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService,
+        public readonly apiService: ApiService,
         private readonly messageService: MessageService
     ) {}
 

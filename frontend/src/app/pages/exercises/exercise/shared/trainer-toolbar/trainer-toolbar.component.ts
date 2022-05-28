@@ -1,4 +1,4 @@
-import { Input, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
@@ -20,13 +20,11 @@ import { openEmergencyOperationsCenterModal } from '../emergency-operations-cent
     styleUrls: ['./trainer-toolbar.component.scss'],
 })
 export class TrainerToolbarComponent {
-    @Input() exerciseId!: string;
-
     public exerciseStatus$ = this.store.select(selectExerciseStatus);
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService,
+        public readonly apiService: ApiService,
         private readonly modalService: NgbModal,
         private readonly router: Router,
         private readonly confirmationModalService: ConfirmationModalService,
@@ -34,7 +32,7 @@ export class TrainerToolbarComponent {
     ) {}
 
     public openClientOverview() {
-        openClientOverviewModal(this.modalService, this.exerciseId!);
+        openClientOverviewModal(this.modalService);
     }
 
     public openTransferOverview() {
@@ -72,11 +70,12 @@ export class TrainerToolbarComponent {
     }
 
     public async deleteExercise() {
+        const exerciseId = this.apiService.exerciseId!;
         const deletionConfirmed = await this.confirmationModalService.confirm({
             title: 'Übung löschen',
             description:
                 'Möchten Sie die Übung wirklich unwiederbringlich löschen?',
-            confirmationString: this.exerciseId,
+            confirmationString: exerciseId,
         });
         if (!deletionConfirmed) {
             return;
@@ -84,7 +83,7 @@ export class TrainerToolbarComponent {
         // If we get disconnected by the server during the deletion a disconnect error would be displayed
         this.apiService.leaveExercise();
         this.apiService
-            .deleteExercise(this.exerciseId)
+            .deleteExercise(exerciseId)
             .then(
                 (response) => {
                     this.messageService.postMessage({
