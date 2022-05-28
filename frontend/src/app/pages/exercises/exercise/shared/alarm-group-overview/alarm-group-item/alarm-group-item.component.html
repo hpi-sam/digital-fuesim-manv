@@ -59,13 +59,19 @@
                 class="input-group input-group-sm float-start"
                 style="width: 100px"
             >
+                <!-- The input is in minutes -->
                 <input
                     #timeInput="ngModel"
-                    [ngModel]="alarmGroupVehicle.time"
+                    [ngModel]="alarmGroupVehicle.time / 60 / 1000"
                     (ngModelChange)="
-                        editAlarmGroupVehicle(alarmGroupVehicle.id, $event)
+                        editAlarmGroupVehicle(
+                            alarmGroupVehicle.id,
+                            $event * 60 * 1000
+                        )
                     "
+                    min="0"
                     required
+                    step="1"
                     type="number"
                     class="form-control form-control-sm d-inline-block no-validation"
                 />
