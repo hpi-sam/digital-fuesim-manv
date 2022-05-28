@@ -347,7 +347,7 @@ export class OlMapManager {
     }
 
     private registerViewportRestriction() {
-        this.tryToFitViewToViewports();
+        this.tryToFitViewToViewports(false);
         this.store
             .select(getSelectRestrictedViewport(this.apiService.ownClientId))
             .pipe(takeUntil(this.destroy$))
@@ -518,18 +518,17 @@ export class OlMapManager {
     /**
      * Sets the map's view to see all viewports.
      */
-    public tryToFitViewToViewports() {
+    public tryToFitViewToViewports(animate = true) {
+        const currentState = getStateSnapshot(this.store);
         if (
             getSelectRestrictedViewport(this.apiService.ownClientId)(
-                getStateSnapshot(this.store)
+                currentState
             ) !== undefined
         ) {
             // We are restricted to a viewport -> you can't fit the view
             return;
         }
-        const viewports = Object.values(
-            selectViewports(getStateSnapshot(this.store))
-        );
+        const viewports = Object.values(selectViewports(currentState));
         const view = this.olMap.getView();
         if (viewports.length === 0) {
             view.setCenter([startingPosition.x, startingPosition.y]);
@@ -554,13 +553,17 @@ export class OlMapManager {
         const padding = 25;
         view.fit([minX, minY, maxX, maxY], {
             padding: [padding, padding, padding, padding],
+            duration: animate ? 1000 : undefined,
         });
     }
 
     public changeZoom(mode: 'zoomIn' | 'zoomOut') {
         const delta = mode === 'zoomIn' ? 1 : -1;
         const view = this.olMap.getView();
-        view.setZoom((view.getZoom() ?? OlMapManager.defaultZoom) + delta);
+        view.animate({
+            zoom: (view.getZoom() ?? OlMapManager.defaultZoom) + delta,
+            duration: 200,
+        });
     }
 
     public destroy() {
