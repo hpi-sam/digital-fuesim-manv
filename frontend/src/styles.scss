@@ -1,10 +1,10 @@
 @import '~bootstrap/scss/bootstrap.scss';
 
 // These classes are automatically applied by angular on validated inputs
-.ng-valid {
+.ng-valid:not(.no-validation) {
     @extend .is-valid;
 }
-.ng-invalid.ng-dirty {
+.ng-invalid.ng-dirty:not(.no-validation) {
     @extend .is-invalid;
 }
 

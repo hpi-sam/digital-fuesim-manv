@@ -1,10 +1,13 @@
 import type { OnInit } from '@angular/core';
 import { EventEmitter, Output, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { TransferPoint, UUID } from 'digital-fuesim-manv-shared';
+import type { Hospital, TransferPoint, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
-import { getSelectReachableTransferPoints } from 'src/app/state/exercise/exercise.selectors';
+import {
+    getSelectReachableHospitals,
+    getSelectReachableTransferPoints,
+} from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({
@@ -17,22 +20,32 @@ export class ChooseTransferTargetPopupComponent
 {
     // These properties are only set after OnInit
     public transferPointId!: UUID;
-    public transferToCallback!: (targetTransferPointId: UUID) => void;
+    public droppedElementType!: 'personnel' | 'vehicle';
+
+    public transferToCallback!: (
+        targetId: UUID,
+        targetType: 'hospital' | 'transferPoint'
+    ) => void;
 
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public reachableTransferPoints$?: Observable<TransferPoint[]>;
 
-    constructor(public readonly store: Store<AppState>) {}
+    public reachableHospitals$?: Observable<Hospital[]>;
+
+    constructor(private readonly store: Store<AppState>) {}
 
     ngOnInit(): void {
         this.reachableTransferPoints$ = this.store.select(
             getSelectReachableTransferPoints(this.transferPointId)
         );
+        this.reachableHospitals$ = this.store.select(
+            getSelectReachableHospitals(this.transferPointId)
+        );
     }
 
-    public transferTo(transferPoint: TransferPoint) {
-        this.transferToCallback(transferPoint.id);
+    public transferTo(targetId: UUID, type: 'hospital' | 'transferPoint') {
+        this.transferToCallback(targetId, type);
         this.closePopup.emit();
     }
 }

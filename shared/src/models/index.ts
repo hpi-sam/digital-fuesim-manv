@@ -13,4 +13,6 @@ export { TileMapProperties } from './tile-map-properties';
 export { Client } from './client';
 export { MapImageTemplate } from './map-image-template';
 export { PatientTemplate } from './patient-template';
+export { Hospital } from './hospital';
+export { HospitalPatient } from './hospital-patient';
 export * from './patient-health-state';

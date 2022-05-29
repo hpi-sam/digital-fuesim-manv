@@ -1,15 +1,10 @@
 import { plainToInstance } from 'class-transformer';
-import type { ValidationError, ValidatorOptions } from 'class-validator';
+import type { ValidationError } from 'class-validator';
 import { validateSync } from 'class-validator';
 import type { Constructor } from '../utils';
 import type { ExerciseAction } from './action-reducers';
 import { getExerciseActionTypeDictionary } from './action-reducers';
-
-const defaultValidateOptions: ValidatorOptions = {
-    forbidUnknownValues: true,
-    forbidNonWhitelisted: true,
-    whitelist: true,
-};
+import { defaultValidateOptions } from './validation-options';
 
 /**
  *

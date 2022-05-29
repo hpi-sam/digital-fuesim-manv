@@ -10,6 +10,7 @@ export function getElement<
     ElementType extends
         | 'alarmGroups'
         | 'clients'
+        | 'hospitals'
         | 'mapImages'
         | 'materials'
         | 'patients'

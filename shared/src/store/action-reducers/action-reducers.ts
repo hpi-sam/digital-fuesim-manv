@@ -2,6 +2,7 @@ import { AlarmGroupActionReducers } from './alarm-group';
 import { ClientActionReducers } from './client';
 import { ExerciseActionReducers } from './exercise';
 import { ExerciseSettingsActionReducers } from './exercise-settings';
+import { HospitalActionReducers } from './hospital';
 import { MapImageTemplatesActionReducers } from './map-image-templates';
 import { MapImagesActionReducers } from './map-images';
 import { MaterialActionReducers } from './material';
@@ -29,6 +30,7 @@ const actionReducers = {
     ...AlarmGroupActionReducers,
     ...MapImageTemplatesActionReducers,
     ...TransferActionReducers,
+    ...HospitalActionReducers,
 };
 
 type ExerciseActionReducer = typeof actionReducers[keyof typeof actionReducers];

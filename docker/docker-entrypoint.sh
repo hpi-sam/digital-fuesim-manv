@@ -7,7 +7,6 @@ rm -f /etc/nginx/conf.d/https.conf
 cp -a /etc/nginx/conf.d/http.template /etc/nginx/conf.d/http.conf
 echo "" > /etc/nginx/conf.d/hsts
 
-
 # start nginx, needed here already for acme.sh to verify cerst via http
 nginx
 
@@ -33,5 +32,7 @@ nginx -s reload
 set +e
 curl https://${DOMAIN} > /dev/null 2>&1
 set -e
+
+npm run migration:run:prod
 
 NODE_ENV=production node --experimental-specifier-resolution=node dist/src/index.js

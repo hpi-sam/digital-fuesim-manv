@@ -1,58 +1,58 @@
+import type { NgZone } from '@angular/core';
+import type { Store } from '@ngrx/store';
 import type {
     ImmutableJsonObject,
     MergeIntersection,
     UUID,
 } from 'digital-fuesim-manv-shared';
+import { isEqual } from 'lodash-es';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
-import type Point from 'ol/geom/Point';
-import { Translate, defaults as defaultInteractions } from 'ol/interaction';
-import TileLayer from 'ol/layer/Tile';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import XYZ from 'ol/source/XYZ';
-import {
-    selectViewports,
-    getSelectVisibleElements,
-    selectCateringLines,
-    selectTransferLines,
-    selectMapImages,
-    getSelectRestrictedViewport,
-    selectTileMapProperties,
-} from 'src/app/state/exercise/exercise.selectors';
-import OlMap from 'ol/Map';
-import type { Store } from '@ngrx/store';
-import type { AppState } from 'src/app/state/app.state';
-import type { ApiService } from 'src/app/core/api.service';
-import type { NgZone } from '@angular/core';
+import { primaryAction, shiftKeyOnly } from 'ol/events/condition';
 import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
-import { isEqual } from 'lodash-es';
-import { primaryAction, shiftKeyOnly } from 'ol/events/condition';
+import type Point from 'ol/geom/Point';
+import { defaults as defaultInteractions, Translate } from 'ol/interaction';
+import TileLayer from 'ol/layer/Tile';
+import VectorLayer from 'ol/layer/Vector';
+import OlMap from 'ol/Map';
+import VectorSource from 'ol/source/Vector';
+import XYZ from 'ol/source/XYZ';
 import type { Observable } from 'rxjs';
-import { Subject, debounceTime, startWith, pairwise, takeUntil } from 'rxjs';
+import { debounceTime, pairwise, startWith, Subject, takeUntil } from 'rxjs';
+import type { ApiService } from 'src/app/core/api.service';
+import type { AppState } from 'src/app/state/app.state';
+import {
+    getSelectRestrictedViewport,
+    getSelectVisibleElements,
+    selectCateringLines,
+    selectMapImages,
+    selectTileMapProperties,
+    selectTransferLines,
+    selectViewports,
+} from 'src/app/state/exercise/exercise.selectors';
+import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
+import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
+import { DeleteFeatureManager } from '../feature-managers/delete-feature-manager';
+import type { ElementManager } from '../feature-managers/element-manager';
+import { MapImageFeatureManager } from '../feature-managers/map-images-feature-manager';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
 import { PersonnelFeatureManager } from '../feature-managers/personnel-feature-manager';
+import { TransferLinesFeatureManager } from '../feature-managers/transfer-lines-feature-manager';
+import { TransferPointFeatureManager } from '../feature-managers/transfer-point-feature-manager';
 import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
-import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
 import {
     isInViewport,
     ViewportFeatureManager,
 } from '../feature-managers/viewport-feature-manager';
-import type { ElementManager } from '../feature-managers/element-manager';
-import { TransferPointFeatureManager } from '../feature-managers/transfer-point-feature-manager';
-import { TransferLinesFeatureManager } from '../feature-managers/transfer-lines-feature-manager';
-import { MapImageFeatureManager } from '../feature-managers/map-images-feature-manager';
-import { isTrainer } from '../../utility/is-trainer';
-import type { TransferLinesService } from '../../core/transfer-lines.service';
-import { DeleteFeatureManager } from '../feature-managers/delete-feature-manager';
-import { handleChanges } from './handle-changes';
-import { TranslateHelper } from './translate-helper';
-import type { OpenPopupOptions } from './popup-manager';
 import type { FeatureManager } from './feature-manager';
+import { handleChanges } from './handle-changes';
 import { ModifyHelper } from './modify-helper';
+import type { OpenPopupOptions } from './popup-manager';
+import { TranslateHelper } from './translate-helper';
 import { createViewportModify } from './viewport-modify';
 
 /**
@@ -84,6 +84,8 @@ export class OlMapManager {
         FeatureManager<any>
     >();
 
+    private static readonly defaultZoom = 20;
+
     constructor(
         private readonly store: Store<AppState>,
         private readonly apiService: ApiService,
@@ -92,7 +94,6 @@ export class OlMapManager {
         private readonly ngZone: NgZone,
         transferLinesService: TransferLinesService
     ) {
-        const _isTrainer = isTrainer(this.apiService, this.store);
         // Layers
         const satelliteLayer = new TileLayer();
         this.store
@@ -131,13 +132,14 @@ export class OlMapManager {
             materialLayer,
         ];
         const translateInteraction = new Translate({
-            layers: _isTrainer
-                ? [
-                      ...alwaysTranslatableLayers,
-                      transferPointLayer,
-                      mapImagesLayer,
-                  ]
-                : alwaysTranslatableLayers,
+            layers:
+                this.apiService.getCurrentRole() === 'trainer'
+                    ? [
+                          ...alwaysTranslatableLayers,
+                          transferPointLayer,
+                          mapImagesLayer,
+                      ]
+                    : alwaysTranslatableLayers,
             hitTolerance: 10,
         });
 
@@ -164,13 +166,25 @@ export class OlMapManager {
         TranslateHelper.registerTranslateEvents(viewportTranslate);
         ModifyHelper.registerModifyEvents(viewportModify);
 
+        if (this.apiService.getCurrentRole() === 'timeTravel') {
+            viewportTranslate.setActive(false);
+            translateInteraction.setActive(false);
+            viewportModify.setActive(false);
+        }
+
         const alwaysInteractions = [translateInteraction];
-        const interactions = _isTrainer
-            ? [...alwaysInteractions, viewportTranslate, viewportModify]
-            : alwaysInteractions;
+        const interactions =
+            this.apiService.getCurrentRole() === 'trainer'
+                ? [...alwaysInteractions, viewportTranslate, viewportModify]
+                : alwaysInteractions;
 
         this.olMap = new OlMap({
-            interactions: defaultInteractions().extend(interactions),
+            interactions: defaultInteractions({
+                pinchRotate: false,
+                altShiftDragRotate: false,
+            }).extend(interactions),
+            // We use Angular buttons instead
+            controls: [],
             target: this.openLayersContainer,
             // Note: The order of this array determines the order of the objects on the map.
             // The most bottom objects must be at the top of the array.
@@ -190,7 +204,7 @@ export class OlMapManager {
             overlays: [this.popupOverlay],
             view: new View({
                 center: [startingPosition.x, startingPosition.y],
-                zoom: 20,
+                zoom: OlMapManager.defaultZoom,
                 maxZoom: 23,
                 smoothExtentConstraint: false,
                 smoothResolutionConstraint: false,
@@ -204,16 +218,9 @@ export class OlMapManager {
                 this.olMap!.hasFeatureAtPixel(event.pixel) ? 'pointer' : ''
             );
         });
-        // TODO:
-        // translateInteraction.on('translatestart', () => {
-        //     this.setCursorStyle('grabbing');
-        // });
-        // translateInteraction.on('translateend', () => {
-        //     this.setCursorStyle('');
-        // });
 
         // FeatureManagers
-        if (_isTrainer) {
+        if (this.apiService.getCurrentRole() === 'trainer') {
             this.registerFeatureElementManager(
                 new TransferLinesFeatureManager(transferLinesLayer),
                 this.store.select(selectTransferLines)
@@ -238,13 +245,12 @@ export class OlMapManager {
                 this.store,
                 this.olMap,
                 transferPointLayer,
-                this.apiService,
-                _isTrainer
+                this.apiService
             ),
             this.store.select(
                 getSelectVisibleElements(
                     'transferPoints',
-                    this.apiService.ownClientId!
+                    this.apiService.ownClientId
                 )
             )
         );
@@ -259,7 +265,7 @@ export class OlMapManager {
             this.store.select(
                 getSelectVisibleElements(
                     'patients',
-                    this.apiService.ownClientId!
+                    this.apiService.ownClientId
                 )
             )
         );
@@ -274,7 +280,7 @@ export class OlMapManager {
             this.store.select(
                 getSelectVisibleElements(
                     'vehicles',
-                    this.apiService.ownClientId!
+                    this.apiService.ownClientId
                 )
             )
         );
@@ -289,7 +295,7 @@ export class OlMapManager {
             this.store.select(
                 getSelectVisibleElements(
                     'personnel',
-                    this.apiService.ownClientId!
+                    this.apiService.ownClientId
                 )
             )
         );
@@ -304,7 +310,7 @@ export class OlMapManager {
             this.store.select(
                 getSelectVisibleElements(
                     'materials',
-                    this.apiService.ownClientId!
+                    this.apiService.ownClientId
                 )
             )
         );
@@ -314,8 +320,7 @@ export class OlMapManager {
                 this.store,
                 this.olMap,
                 mapImagesLayer,
-                this.apiService,
-                _isTrainer
+                this.apiService
             ),
             this.store.select(selectMapImages)
         );
@@ -330,8 +335,7 @@ export class OlMapManager {
                 this.store,
                 this.olMap,
                 viewportLayer,
-                this.apiService,
-                _isTrainer
+                this.apiService
             ),
             this.store.select(selectViewports)
         );
@@ -343,8 +347,9 @@ export class OlMapManager {
     }
 
     private registerViewportRestriction() {
+        this.tryToFitViewToViewports(false);
         this.store
-            .select(getSelectRestrictedViewport(this.apiService.ownClientId!))
+            .select(getSelectRestrictedViewport(this.apiService.ownClientId))
             .pipe(takeUntil(this.destroy$))
             .subscribe((viewport) => {
                 const view = this.olMap.getView();
@@ -507,6 +512,57 @@ export class OlMapManager {
             updateWhileInteracting: true,
             renderBuffer,
             source: new VectorSource<LayerGeometry>(),
+        });
+    }
+
+    /**
+     * Sets the map's view to see all viewports.
+     */
+    public tryToFitViewToViewports(animate = true) {
+        const currentState = getStateSnapshot(this.store);
+        if (
+            getSelectRestrictedViewport(this.apiService.ownClientId)(
+                currentState
+            ) !== undefined
+        ) {
+            // We are restricted to a viewport -> you can't fit the view
+            return;
+        }
+        const viewports = Object.values(selectViewports(currentState));
+        const view = this.olMap.getView();
+        if (viewports.length === 0) {
+            view.setCenter([startingPosition.x, startingPosition.y]);
+            return;
+        }
+        const minX = Math.min(
+            ...viewports.map((viewport) => viewport.position.x)
+        );
+        const minY = Math.min(
+            ...viewports.map(
+                (viewport) => viewport.position.y - viewport.size.height
+            )
+        );
+        const maxX = Math.max(
+            ...viewports.map(
+                (viewport) => viewport.position.x + viewport.size.width
+            )
+        );
+        const maxY = Math.max(
+            ...viewports.map((viewport) => viewport.position.y)
+        );
+        const padding = 25;
+        view.fit([minX, minY, maxX, maxY], {
+            padding: [padding, padding, padding, padding],
+            duration: animate ? 1000 : undefined,
+        });
+    }
+
+    public changeZoom(mode: 'zoomIn' | 'zoomOut') {
+        const delta = mode === 'zoomIn' ? 1 : -1;
+        const view = this.olMap.getView();
+        view.animate({
+            zoom: (view.getZoom() ?? OlMapManager.defaultZoom) + delta,
+            duration: 200,
         });
     }
 

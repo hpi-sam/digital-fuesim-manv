@@ -14,7 +14,18 @@
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,html}\"",
         "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose",
         "test:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose --ci",
-        "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --verbose --watch"
+        "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --verbose --watch",
+        "typeorm:cli": "NODE_ENV=migration node --experimental-specifier-resolution=node --loader ts-node/esm ./node_modules/typeorm/cli -d src/database/migration-datasource.ts",
+        "typeorm:cli:prod": "NODE_ENV=migration node --experimental-specifier-resolution=node ./node_modules/typeorm/cli -d dist/src/database/migration-datasource.js",
+        "typeorm:cli:windows": "set NODE_ENV=migration&& node --experimental-specifier-resolution=node --loader ts-node/esm ./node_modules/typeorm/cli -d src/database/migration-datasource.ts",
+        "migration:generate": "genmigration() { npm run typeorm:cli migration:generate \"./src/database/migrations/$1\"; }; genmigration",
+        "migration:generate:windows": ".\\src\\database\\migrations\\generate-migration.bat",
+        "migration:run": "npm run typeorm:cli migration:run",
+        "migration:run:prod": "npm run typeorm:cli:prod migration:run",
+        "migration:run:windows": "npm run typeorm:cli:windows migration:run",
+        "migration:revert": "npm run typeorm:cli migration:revert",
+        "migration:revert:windows": "npm run typeorm:cli:windows migration:revert",
+        "db:purge": "node --experimental-specifier-resolution=node --loader ts-node/esm src/database/scripts/purge.ts"
     },
     "private": true,
     "engines": {
@@ -22,6 +33,7 @@
         "npm": ">=7"
     },
     "dependencies": {
+        "class-transformer": "^0.5.1",
         "class-validator": "^0.13.2",
         "cors": "^2.8.5",
         "digital-fuesim-manv-shared": "file:../shared",
@@ -29,13 +41,16 @@
         "envalid": "^7.3.1",
         "express": "^4.17.3",
         "lodash-es": "4.17.21",
+        "pg": "^8.7.3",
         "socket.io": "^4.4.1",
-        "supertest": "^6.2.2"
+        "supertest": "^6.2.2",
+        "typeorm": "^0.3.6"
     },
     "devDependencies": {
         "@types/cors": "^2.8.12",
         "@types/express": "^4.17.13",
         "@types/jest": "^27.4.1",
+        "@types/lodash-es": "^4.17.6",
         "@types/node": "^16",
         "@types/supertest": "^2.0.12",
         "@typescript-eslint/eslint-plugin": "5.18.0",
