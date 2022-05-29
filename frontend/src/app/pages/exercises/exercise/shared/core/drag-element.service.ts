@@ -151,13 +151,6 @@ export class DragElementService {
                         ],
                         this.transferringTemplate.template.name
                     );
-                    console.log({
-                        type: '[Patient] Add patient',
-                        patient: {
-                            ...patient,
-                            position,
-                        },
-                    });
                     this.apiService.proposeAction(
                         {
                             type: '[Patient] Add patient',

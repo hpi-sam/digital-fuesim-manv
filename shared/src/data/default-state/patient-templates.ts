@@ -93,7 +93,7 @@ const recoverToGreenState = PatientHealthState.create(
     ]
 );
 
-const yellowFor2Phases = PatientHealthState.create(
+const yellowFor2PhasesState = PatientHealthState.create(
     FunctionParameters.create(0, 0, 0, 0),
     [
         {
@@ -274,7 +274,7 @@ const greenUntilPhase2State = PatientHealthState.create(
     ),
     [
         {
-            matchingHealthStateId: yellowFor2Phases.id,
+            matchingHealthStateId: yellowFor2PhasesState.id,
             maximumHealth: healthPointsDefaults.yellowAverage,
         },
     ]
@@ -413,44 +413,280 @@ const greenUntilPhase12State = PatientHealthState.create(
     ]
 );
 
+const yellowUntilPhase5State = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.yellowMax,
+            5
+        ),
+        0,
+        0,
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: noChangesState.id,
+            minimumHealth: healthPointsDefaults.greenAverage,
+        },
+    ]
+);
+
+const recoverWithRSState = PatientHealthState.create(
+    FunctionParameters.create(
+        0,
+        calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.yellowMax,
+            1
+        ),
+        calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.yellowMax,
+            1
+        ),
+        calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.yellowMax,
+            1
+        )
+    ),
+    [
+        {
+            matchingHealthStateId: noChangesState.id,
+            minimumHealth: healthPointsDefaults.greenAverage,
+        },
+    ]
+);
+
+const yellowUntilPhase4State = PatientHealthState.create(
+    FunctionParameters.create(0, 0, 0, 0),
+    [
+        {
+            matchingHealthStateId: recoverWithRSState.id,
+            earliestTime: 4 * 12 * 60 * 1000,
+        },
+    ]
+);
+
+const yellowStartPhase4RSDecisionState = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.redAverage,
+            1
+        ),
+        -calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.redAverage,
+            1
+        ),
+        -calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.redAverage,
+            1
+        ),
+        -calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.redAverage,
+            1
+        )
+    ),
+    [
+        {
+            matchingHealthStateId: noChangesState.id,
+            maximumHealth: healthPointsDefaults.redMax,
+        },
+    ]
+);
+
+const yellowUntilRedPhase4State = PatientHealthState.create(
+    FunctionParameters.create(0, 0, 0, 0),
+    [
+        {
+            matchingHealthStateId: yellowStartPhase4RSDecisionState.id,
+            earliestTime: 4 * 12 * 60 * 1000,
+        },
+    ]
+);
+
+const yellowStartPhase9RADecisionState = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.blackMax,
+            1
+        ),
+        -calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.blackMax,
+            1
+        ),
+        -calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.blackMax,
+            1
+        ),
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: noChangesState.id,
+            minimumHealth: healthPointsDefaults.yellowAverage,
+        },
+        {
+            matchingHealthStateId: noChangesState.id,
+            maximumHealth: healthPointsDefaults.blackMax,
+        },
+    ]
+);
+
+const yellowStartPhase8RADecisionState = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.redAverage,
+            1
+        ),
+        -calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.redAverage,
+            1
+        ),
+        -calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.redAverage,
+            1
+        ),
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: yellowStartPhase9RADecisionState.id,
+            earliestTime: 3 * 12 * 60 * 1000,
+        },
+    ]
+);
+
+const yellowStartPhase7RSDecisionState = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.redAverage,
+            1
+        ),
+        -calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.redAverage,
+            1
+        ),
+        -calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.redAverage,
+            1
+        ),
+        -calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.redAverage,
+            1
+        )
+    ),
+    [
+        {
+            matchingHealthStateId: yellowStartPhase8RADecisionState.id,
+            earliestTime: 3 * 12 * 60 * 1000,
+        },
+    ]
+);
+
+const yellowFor3PhasesState = PatientHealthState.create(
+    FunctionParameters.create(0, 0, 0, 0),
+    [
+        {
+            matchingHealthStateId: yellowStartPhase7RSDecisionState.id,
+            earliestTime: 3 * 12 * 60 * 1000,
+        },
+    ]
+);
+
+const redFor2PhasesState = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.redAverage,
+            healthPointsDefaults.yellowAverage,
+            2
+        ),
+        0,
+        0,
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: yellowFor3PhasesState.id,
+            minimumHealth: healthPointsDefaults.yellowAverage,
+        },
+    ]
+);
+
+const yellowUntilPhase3State = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.redAverage,
+            2
+        ),
+        0,
+        0,
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: redFor2PhasesState.id,
+            maximumHealth: healthPointsDefaults.redAverage,
+        },
+    ]
+);
+
+const redUntilBlack2PhasesState = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.redAverage,
+            healthPointsDefaults.blackMax,
+            2
+        ),
+        0,
+        0,
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: noChangesState.id,
+            maximumHealth: healthPointsDefaults.blackMax,
+        },
+    ]
+);
+
+const yellowUntilPrioRedPhase4State = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.yellowMax,
+            healthPointsDefaults.redAverage,
+            4
+        ),
+        0,
+        0,
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: redUntilBlack2PhasesState.id,
+            maximumHealth: healthPointsDefaults.redAverage,
+        },
+    ]
+);
+
 // // The amount of damage to kill an untreated patient with full health in 10 minutes
 // const soonDamage = -healthPointsDefaults.greenMax / (10 * 60);
-// const needsNotarztSoonState = PatientHealthState.create(
-//     FunctionParameters.create(
-//         soonDamage,
-//         -soonDamage * 2,
-//         -soonDamage,
-//         -soonDamage / 2
-//     ),
-//     []
-// );
-
-// const needsSomeoneSoonGreenState = PatientHealthState.create(
-//     FunctionParameters.create(
-//         soonDamageUntilYellow,
-//         -soonDamageUntilYellow,
-//         -soonDamageUntilYellow,
-//         -soonDamageUntilYellow
-//     ),
-//     [
-//         {
-//             matchingHealthStateId: stableState.id,
-//             maximumHealth: healthPointsDefaults.yellowMax,
-//         },
-//     ]
-// );
-
-// const needsSomeoneLaterState2 = needsSomeoneSoonState;
-
-// const needsSomeoneLaterState1 = PatientHealthState.create(
-//     FunctionParameters.create(0, 0, 0, 0),
-//     [
-//         {
-//             earliestTime: 5 * 60 * 1000,
-//             matchingHealthStateId: needsSomeoneLaterState2.id,
-//         },
-//     ]
-// );
 
 export const defaultPatientCategories: readonly PatientCategory[] = [
     // XAXAXA Patients
@@ -562,7 +798,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
             {
                 [noChangesState.id]: noChangesState,
                 [greenUntilPhase2State.id]: greenUntilPhase2State,
-                [yellowFor2Phases.id]: yellowFor2Phases,
+                [yellowFor2PhasesState.id]: yellowFor2PhasesState,
                 [recoverToGreenState.id]: recoverToGreenState,
             },
             defaultMaleImage,
@@ -626,10 +862,13 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                     'dunkle Haare, braune Augen, Muttermal Stirn, 165 cm',
                 age: 14,
             },
-            { [noChangesState.id]: noChangesState },
+            {
+                [noChangesState.id]: noChangesState,
+                [yellowUntilPhase5State.id]: yellowUntilPhase5State,
+            },
             defaultMaleImage,
-            healthPointsDefaults.greenMax,
-            noChangesState.id
+            healthPointsDefaults.yellowAverage,
+            yellowUntilPhase5State.id
         ),
     ]),
 
@@ -641,10 +880,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 externalFeatures: 'blaue Augen, weiße Haare, 174 cm',
                 age: 72,
             },
-            { [noChangesState.id]: noChangesState },
+            {
+                [noChangesState.id]: noChangesState,
+                [yellowUntilPhase4State.id]: yellowUntilPhase4State,
+                [recoverWithRSState.id]: recoverWithRSState,
+            },
             defaultMaleImage,
-            healthPointsDefaults.greenMax,
-            noChangesState.id
+            healthPointsDefaults.yellowMax,
+            yellowUntilPhase4State.id
         ),
     ]),
 
@@ -656,10 +899,15 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 externalFeatures: 'Vollbart, blond, blaue Augen, 1,87 m',
                 age: 55,
             },
-            { [noChangesState.id]: noChangesState },
+            {
+                [noChangesState.id]: noChangesState,
+                [yellowUntilRedPhase4State.id]: yellowUntilRedPhase4State,
+                [yellowStartPhase4RSDecisionState.id]:
+                    yellowStartPhase4RSDecisionState,
+            },
             defaultMaleImage,
-            healthPointsDefaults.greenMax,
-            noChangesState.id
+            healthPointsDefaults.yellowAverage,
+            yellowUntilRedPhase4State.id
         ),
     ]),
 
@@ -673,7 +921,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
             },
             { [noChangesState.id]: noChangesState },
             defaultMaleImage,
-            healthPointsDefaults.greenMax,
+            healthPointsDefaults.yellowAverage,
             noChangesState.id
         ),
     ]),
@@ -687,10 +935,21 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                     'graue Haare, Brille, braune Augen, ca. 1,70 m',
                 age: 71,
             },
-            { [noChangesState.id]: noChangesState },
+            {
+                [noChangesState.id]: noChangesState,
+                [yellowUntilPhase3State.id]: yellowUntilPhase3State,
+                [redFor2PhasesState.id]: redFor2PhasesState,
+                [yellowFor3PhasesState.id]: yellowFor3PhasesState,
+                [yellowStartPhase7RSDecisionState.id]:
+                    yellowStartPhase7RSDecisionState,
+                [yellowStartPhase8RADecisionState.id]:
+                    yellowStartPhase8RADecisionState,
+                [yellowStartPhase9RADecisionState.id]:
+                    yellowStartPhase9RADecisionState,
+            },
             defaultFemaleImage,
-            healthPointsDefaults.greenMax,
-            noChangesState.id
+            healthPointsDefaults.yellowAverage,
+            yellowUntilPhase3State.id
         ),
     ]),
 
@@ -703,10 +962,15 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                     'grüne Augen, grauhaarig, 1,68 m, adipös, Brille',
                 age: 51,
             },
-            { [noChangesState.id]: noChangesState },
+            {
+                [noChangesState.id]: noChangesState,
+                [yellowUntilPrioRedPhase4State.id]:
+                    yellowUntilPrioRedPhase4State,
+                [redUntilBlack2PhasesState.id]: redUntilBlack2PhasesState,
+            },
             defaultFemaleImage,
-            healthPointsDefaults.greenMax,
-            noChangesState.id
+            healthPointsDefaults.yellowMax,
+            yellowUntilPrioRedPhase4State.id
         ),
     ]),
 
