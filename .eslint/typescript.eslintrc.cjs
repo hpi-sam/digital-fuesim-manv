@@ -10,6 +10,7 @@ module.exports = {
         // TODO: doesn't work for some reason from this config and has to be imported separately
         // 'prettier',
     ],
+    ignorePatterns: ['**/migrations/**/*.ts', '**/migrations/**/*.js'],
     rules: {
         /**
          * eslint

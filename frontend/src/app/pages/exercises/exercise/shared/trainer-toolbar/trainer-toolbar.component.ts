@@ -1,4 +1,4 @@
-import { Input, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
@@ -12,6 +12,8 @@ import { openExerciseSettingsModal } from '../exercise-settings/open-exercise-se
 import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercise-statistics-modal';
 import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
 import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
+import { openHospitalEditorModal } from '../hospital-editor/hospital-editor-modal';
+import { openEmergencyOperationsCenterModal } from '../emergency-operations-center/open-emergency-operations-center-modal';
 
 @Component({
     selector: 'app-trainer-toolbar',
@@ -19,13 +21,11 @@ import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-
     styleUrls: ['./trainer-toolbar.component.scss'],
 })
 export class TrainerToolbarComponent {
-    @Input() exerciseId!: string;
-
     public exerciseStatus$ = this.store.select(selectExerciseStatus);
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService,
+        public readonly apiService: ApiService,
         private readonly modalService: NgbModal,
         private readonly router: Router,
         private readonly confirmationModalService: ConfirmationModalService,
@@ -33,7 +33,7 @@ export class TrainerToolbarComponent {
     ) {}
 
     public openClientOverview() {
-        openClientOverviewModal(this.modalService, this.exerciseId!);
+        openClientOverviewModal(this.modalService);
     }
 
     public openTransferOverview() {
@@ -42,6 +42,14 @@ export class TrainerToolbarComponent {
 
     public openAlarmGroupOverview() {
         openAlarmGroupOverviewModal(this.modalService);
+    }
+
+    public openHospitalEditor() {
+        openHospitalEditorModal(this.modalService);
+    }
+
+    public openEmergencyOperationsCenter() {
+        openEmergencyOperationsCenterModal(this.modalService);
     }
 
     public openExerciseSettings() {
@@ -67,11 +75,12 @@ export class TrainerToolbarComponent {
     }
 
     public async deleteExercise() {
+        const exerciseId = this.apiService.exerciseId!;
         const deletionConfirmed = await this.confirmationModalService.confirm({
             title: 'Übung löschen',
             description:
                 'Möchten Sie die Übung wirklich unwiederbringlich löschen?',
-            confirmationString: this.exerciseId,
+            confirmationString: exerciseId,
         });
         if (!deletionConfirmed) {
             return;
@@ -79,7 +88,7 @@ export class TrainerToolbarComponent {
         // If we get disconnected by the server during the deletion a disconnect error would be displayed
         this.apiService.leaveExercise();
         this.apiService
-            .deleteExercise(this.exerciseId)
+            .deleteExercise(exerciseId)
             .then(
                 (response) => {
                     this.messageService.postMessage({

@@ -13,9 +13,8 @@ import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectPretriageEnabledConfiguration,
-    getSelectClient,
-    getSelectPatient,
     selectBluePatientsEnabledConfiguration,
+    getSelectPatient,
 } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
@@ -32,13 +31,9 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
 
     public patient$?: Observable<Patient>;
     public patientStatus$?: Observable<PatientStatus>;
-    public client$ = this.store.select(
-        getSelectClient(this.apiService.ownClientId!)
-    );
 
     public currentYear = new Date().getFullYear();
 
-    public patientStatus?: PatientStatus;
     public pretriageEnabled$ = this.store.select(
         selectPretriageEnabledConfiguration
     );
@@ -59,7 +54,7 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService
+        public readonly apiService: ApiService
     ) {}
 
     ngOnInit(): void {

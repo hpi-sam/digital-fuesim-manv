@@ -1,0 +1,64 @@
+<div class="card">
+    <h5 class="card-header">
+        Alarmieren
+        <div
+            *appLet="transferPoints$ | async | values as transferPoints"
+            ngbDropdown
+            class="d-inline-block float-end"
+        >
+            Ziel:
+            <button
+                ngbDropdownToggle
+                type="button"
+                class="btn btn-outline-primary btn-sm ms-3"
+                [disabled]="transferPoints.length === 0"
+            >
+                <app-transfer-point-name
+                    *ngIf="targetTransferPointId; else noTargetTransferPoint"
+                    [transferPointId]="targetTransferPointId"
+                >
+                </app-transfer-point-name>
+                <ng-template #noTargetTransferPoint>
+                    <span class="text-muted"> Kein Ziel ausgewählt </span>
+                </ng-template>
+            </button>
+            <div ngbDropdownMenu>
+                <button
+                    *ngFor="
+                        let transferPoint of transferPoints;
+                        trackBy: 'id' | appTrackByProperty
+                    "
+                    ngbDropdownItem
+                    (click)="targetTransferPointId = transferPoint.id"
+                    type="button"
+                    class="btn btn-primary"
+                >
+                    <app-transfer-point-name
+                        [transferPointId]="transferPoint.id"
+                    >
+                    </app-transfer-point-name>
+                </button>
+            </div>
+        </div>
+    </h5>
+
+    <div *ngIf="alarmGroups$ | async | values as alarmGroups" class="card-body">
+        <div *ngIf="!targetTransferPointId" class="text-danger mb-3">
+            Bitte wählen Sie zuerst ein Ziel aus.
+        </div>
+        <button
+            *ngFor="
+                let alarmGroup of alarmGroups;
+                trackBy: 'key' | appTrackByProperty
+            "
+            [disabled]="!targetTransferPointId"
+            (click)="sendAlarmGroup(alarmGroup)"
+            class="btn btn-primary m-2"
+        >
+            {{ alarmGroup.name }}
+        </button>
+        <div *ngIf="alarmGroups.length <= 0" class="text-muted">
+            Es sind keine Alarmierungsgruppen vorhanden.
+        </div>
+    </div>
+</div>
