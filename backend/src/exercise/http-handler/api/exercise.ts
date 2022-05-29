@@ -1,16 +1,25 @@
 import type { ExerciseIds, ExerciseTimeline } from 'digital-fuesim-manv-shared';
+import { ExerciseState } from 'digital-fuesim-manv-shared';
+import type { DatabaseService } from '../../../database/services/database-service';
 import { UserReadableIdGenerator } from '../../../utils/user-readable-id-generator';
 import { exerciseMap } from '../../exercise-map';
 import { ExerciseWrapper } from '../../exercise-wrapper';
 import type { HttpResponse } from '../utils';
 
-export function postExercise(): HttpResponse<ExerciseIds> {
+export function postExercise(
+    databaseService: DatabaseService
+): HttpResponse<ExerciseIds> {
     let newParticipantId: string | undefined;
     let newTrainerId: string | undefined;
     try {
         newParticipantId = UserReadableIdGenerator.generateId();
         newTrainerId = UserReadableIdGenerator.generateId(8);
-        const newExercise = new ExerciseWrapper(newParticipantId, newTrainerId);
+        const newExercise = ExerciseWrapper.create(
+            newParticipantId,
+            newTrainerId,
+            databaseService,
+            ExerciseState.create()
+        );
         exerciseMap.set(newParticipantId, newExercise);
         exerciseMap.set(newTrainerId, newExercise);
         return {
@@ -41,7 +50,9 @@ export function getExercise(exerciseId: string): HttpResponse {
     };
 }
 
-export function deleteExercise(exerciseId: string): HttpResponse {
+export async function deleteExercise(
+    exerciseId: string
+): Promise<HttpResponse> {
     const exerciseWrapper = exerciseMap.get(exerciseId);
     if (exerciseWrapper === undefined) {
         return {
@@ -60,16 +71,16 @@ export function deleteExercise(exerciseId: string): HttpResponse {
             },
         };
     }
-    exerciseWrapper.deleteExercise();
+    await exerciseWrapper.deleteExercise();
     return {
         statusCode: 204,
         body: undefined,
     };
 }
 
-export function getExerciseHistory(
+export async function getExerciseHistory(
     exerciseId: string
-): HttpResponse<ExerciseTimeline> {
+): Promise<HttpResponse<ExerciseTimeline>> {
     const exerciseWrapper = exerciseMap.get(exerciseId);
     if (exerciseWrapper === undefined) {
         return {
@@ -81,6 +92,6 @@ export function getExerciseHistory(
     }
     return {
         statusCode: 200,
-        body: exerciseWrapper.getTimeLine(),
+        body: await exerciseWrapper.getTimeLine(),
     };
 }

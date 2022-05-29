@@ -12,7 +12,11 @@
         "composite": true,
         "skipLibCheck": true,
         "esModuleInterop": true,
-        "types": ["jest", "node"]
+        "types": ["jest", "node"],
+        // For typeorm
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "baseUrl": "./src"
     },
     "references": [],
     "include": ["src/**/*", "test/**/*"],
