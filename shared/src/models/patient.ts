@@ -38,7 +38,7 @@ export class Patient {
 
     // TODO
     @IsNotIn([undefined])
-    public readonly visibleStatus: PatientStatus;
+    public readonly pretriageStatus: PatientStatus;
 
     // TODO
     @IsString()
@@ -62,7 +62,7 @@ export class Patient {
         // TODO: Specify patient data (e.g. injuries, name, etc.)
         personalInformation: PersonalInformation,
         biometricInformation: BiometricInformation,
-        visibleStatus: PatientStatus,
+        pretriageStatus: PatientStatus,
         realStatus: PatientStatus,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         currentHealthStateId: UUID,
@@ -72,7 +72,7 @@ export class Patient {
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
-        this.visibleStatus = visibleStatus;
+        this.pretriageStatus = pretriageStatus;
         this.realStatus = realStatus;
         this.healthStates = healthStates;
         this.currentHealthStateId = currentHealthStateId;
@@ -136,6 +136,14 @@ export class Patient {
     public treatmentTime = 0;
 
     static readonly create = getCreate(this);
+
+    static readonly msUntilRealStatus: number = 120_000;
+
+    static getVisibleStatus(patient: Patient, pretriageEnabled: boolean) {
+        return !pretriageEnabled || patient.treatmentTime >= this.msUntilRealStatus
+            ? patient.realStatus
+            : patient.pretriageStatus;
+    }
 
     static isInVehicle(patient: Patient): boolean {
         return patient.position === undefined;

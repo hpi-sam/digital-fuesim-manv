@@ -53,7 +53,7 @@ export function patientTick(
                 // update the time a patient is being treated, to check for pretriage later
                 let treatmentTime = patient.treatmentTime;
                 if (patient.isBeingTreated) {
-                    treatmentTime += patientTickInterval / 1000;
+                    treatmentTime += patientTickInterval;
                 }
                 const nextHealthPoints = getNextPatientHealthPoints(
                     patient,

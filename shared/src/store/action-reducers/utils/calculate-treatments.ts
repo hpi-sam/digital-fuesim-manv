@@ -1,5 +1,6 @@
 import { groupBy } from 'lodash-es';
-import type { Material, Personnel, Patient } from '../../../models';
+import type { Material, Personnel} from '../../../models';
+import { Patient } from '../../../models';
 import type { PatientStatus } from '../../../models/utils';
 import type { ExerciseState } from '../../../state';
 import type { Mutable } from '../../../utils';
@@ -28,13 +29,11 @@ const generalThreshold = 5;
 function caterFor(
     catering: Mutable<Material> | Mutable<Personnel>,
     catersFor: Mutable<CatersFor>,
-    patient: Mutable<Patient>
+    patient: Mutable<Patient>,
+    pretriageEnabled: boolean,
 ) {
-    let status = patient.visibleStatus;
     // Treat not pretriaged patients as yellow.
-    if (status === 'white') {
-        status = 'yellow';
-    }
+    const status = Patient.getVisibleStatus(patient, pretriageEnabled) === 'white' ? 'yellow' : Patient.getVisibleStatus(patient, pretriageEnabled);
     if (
         (status === 'red' && catering.canCaterFor.red <= catersFor.red) ||
         (status === 'yellow' &&
@@ -74,6 +73,7 @@ function caterFor(
 }
 
 export function calculateTreatments(state: Mutable<ExerciseState>) {
+    const pretriageEnabled = state.configuration.pretriageEnabled;
     const personnels = Object.values(state.personnel).filter(
         (personnel) => personnel.position !== undefined
     );
@@ -90,8 +90,8 @@ export function calculateTreatments(state: Mutable<ExerciseState>) {
     const patients = Object.values(state.patients).filter(
         (patient) =>
             patient.position !== undefined &&
-            patient.visibleStatus !== 'black' &&
-            patient.visibleStatus !== 'blue'
+            Patient.getVisibleStatus(patient, pretriageEnabled) !== 'black' &&
+            Patient.getVisibleStatus(patient, pretriageEnabled) !== 'blue'
     );
     patients.forEach((patient) => {
         patient.isBeingTreated = false;
@@ -103,16 +103,17 @@ export function calculateTreatments(state: Mutable<ExerciseState>) {
     // We ignore whether a patient is already treated
     // and the patient is just added to the list of treated patients.
     personnels.forEach((personnel) => {
-        calculateCatering(personnel, patients);
+        calculateCatering(personnel, patients, pretriageEnabled);
     });
     materials.forEach((material) => {
-        calculateCatering(material, patients);
+        calculateCatering(material, patients, pretriageEnabled);
     });
 }
 
 function calculateCatering(
     catering: Material | Personnel,
-    patients: Mutable<Patient>[]
+    patients: Mutable<Patient>[],
+    pretriageEnabled: boolean
 ) {
     const catersFor: CatersFor = {
         red: 0,
@@ -134,7 +135,7 @@ function calculateCatering(
         return;
     }
     if (distances[0].distance <= specificThreshold) {
-        caterFor(catering, catersFor, distances[0].patient);
+        caterFor(catering, catersFor, distances[0].patient, pretriageEnabled);
     }
     // The typings of groupBy are not correct (group keys could be missing if there are no such elements in the array)
     const distancesByStatus: Partial<
@@ -149,7 +150,7 @@ function calculateCatering(
     > = groupBy(
         distances,
         ({ patient }) =>
-            patient.visibleStatus === 'white' ? 'yellow' : patient.visibleStatus // Treat untriaged patients as yellow
+        Patient.getVisibleStatus(patient, pretriageEnabled) === 'white' ? 'yellow' : Patient.getVisibleStatus(patient, pretriageEnabled) // Treat untriaged patients as yellow
     );
 
     const redPatients =
@@ -177,19 +178,19 @@ function calculateCatering(
             .map(({ patient }) => patient) ?? [];
 
     for (const patient of redPatients) {
-        if (!caterFor(catering, catersFor, patient)) {
+        if (!caterFor(catering, catersFor, patient, pretriageEnabled)) {
             break;
         }
     }
 
     for (const patient of yellowPatients) {
-        if (!caterFor(catering, catersFor, patient)) {
+        if (!caterFor(catering, catersFor, patient, pretriageEnabled)) {
             break;
         }
     }
 
     for (const patient of greenPatients) {
-        if (!caterFor(catering, catersFor, patient)) {
+        if (!caterFor(catering, catersFor, patient, pretriageEnabled)) {
             break;
         }
     }

@@ -24,13 +24,13 @@
     <div class="popover-body p-0">
         <table class="table mb-0" style="max-width: 300px">
             <tbody>
-                <tr *ngIf="pretriageFlag$ | async">
+                <tr *ngIf="pretriageEnabled$ | async">
                     <th>Vorsichtungskategorie wählen</th>
                     <td>
                         <select
                             [ngModel]="patientStatus$ | async"
                             (ngModelChange)="
-                                setPretriageCategory(patient.id, $event)
+                                setPretriageCategory($event)
                             "
                         >
                             <option [value]="'black'">EX</option>

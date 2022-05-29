@@ -1,13 +1,17 @@
 import type { OnInit } from '@angular/core';
 import { EventEmitter, Output, Component } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type { UUID, Patient, PatientStatus } from 'digital-fuesim-manv-shared';
-import { healthPointsDefaults, statusNames } from 'digital-fuesim-manv-shared';
+import type { UUID, PatientStatus } from 'digital-fuesim-manv-shared';
+import {
+    healthPointsDefaults,
+    statusNames,
+    Patient,
+} from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    selectPretriageFlag,
+    selectPretriageEnabledConfiguration,
     getSelectClient,
     getSelectPatient,
 } from 'src/app/state/exercise/exercise.selectors';
@@ -33,7 +37,9 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     public currentYear = new Date().getFullYear();
 
     public patientStatus?: PatientStatus;
-    public pretriageFlag$ = this.store.select(selectPretriageFlag);
+    public pretriageEnabled$ = this.store.select(
+        selectPretriageEnabledConfiguration
+    );
 
     private readonly secondsUntilRealStatus = 5;
 
@@ -50,20 +56,17 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
         this.patientStatus$ = this.store.select(
             createSelector(
                 getSelectPatient(this.patientId),
-                selectPretriageFlag,
-                (patient, pretriageFlag) =>
-                    !pretriageFlag ||
-                    patient.treatmentTime >= this.secondsUntilRealStatus
-                        ? patient.realStatus
-                        : patient.visibleStatus
+                selectPretriageEnabledConfiguration,
+                (patient, pretriageEnabled) =>
+                    Patient.getVisibleStatus(patient, pretriageEnabled)
             )
         );
     }
 
-    setPretriageCategory(patientId: UUID, patientStatus: PatientStatus) {
+    setPretriageCategory(patientStatus: PatientStatus) {
         this.apiService.proposeAction({
             type: '[Patient] Set Visible Status',
-            patientId,
+            patientId: this.patientId,
             patientStatus,
         });
     }

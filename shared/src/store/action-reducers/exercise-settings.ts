@@ -34,7 +34,7 @@ export namespace ExerciseSettingsActionReducers {
     export const setPretriageFlag: ActionReducer<SetPretriageFlagAction> = {
         action: SetPretriageFlagAction,
         reducer: (draftState, { pretriageEnabled }) => {
-            draftState.pretriageEnabledFlag = pretriageEnabled;
+            draftState.configuration.pretriageEnabled = pretriageEnabled;
             return draftState;
         },
         rights: 'trainer',
