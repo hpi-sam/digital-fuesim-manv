@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import {
     IsBoolean,
     IsDefined,
-    IsNotIn,
     IsNumber,
     IsOptional,
     IsString,
@@ -13,15 +12,15 @@ import {
 } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import {
-    Position,
-    PatientStatus,
-    HealthPoints,
-    ImageProperties,
-    healthPointsDefaults,
     getCreate,
+    HealthPoints,
+    healthPointsDefaults,
+    ImageProperties,
+    PatientStatus,
+    Position,
 } from './utils';
-import { PersonalInformation } from './utils/personal-information';
 import { BiometricInformation } from './utils/biometric-information';
+import { PersonalInformation } from './utils/personal-information';
 import type { PatientHealthState } from '.';
 
 export class Patient {
@@ -37,7 +36,7 @@ export class Patient {
     public readonly biometricInformation: BiometricInformation;
 
     // TODO
-    @IsNotIn([undefined])
+    @IsString()
     public readonly pretriageStatus: PatientStatus;
 
     // TODO

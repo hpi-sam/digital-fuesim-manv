@@ -1,7 +1,6 @@
 import { Type } from 'class-transformer';
 import {
     IsDefined,
-    IsNotIn,
     IsNumber,
     IsString,
     IsUUID,
@@ -12,14 +11,14 @@ import {
 import type { Mutable } from '../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../utils';
 import {
-    PatientStatus,
-    HealthPoints,
-    ImageProperties,
-    healthPointsDefaults,
     getCreate,
+    HealthPoints,
+    healthPointsDefaults,
+    ImageProperties,
+    PatientStatus,
 } from './utils';
-import { PersonalInformation } from './utils/personal-information';
 import { BiometricInformation } from './utils/biometric-information';
+import { PersonalInformation } from './utils/personal-information';
 import type { Patient, PatientHealthState } from '.';
 
 export class HospitalPatient {
@@ -56,8 +55,8 @@ export class HospitalPatient {
     public readonly biometricInformation: BiometricInformation;
 
     // TODO
-    @IsNotIn([undefined])
-    public readonly pretriageStatus: PatientStatus | null;
+    @IsString()
+    public readonly pretriageStatus: PatientStatus;
 
     // TODO
     @IsString()
@@ -93,6 +92,10 @@ export class HospitalPatient {
     @Min(healthPointsDefaults.min)
     public readonly health: HealthPoints;
 
+    @IsNumber()
+    @Min(0)
+    public treatmentTime = 0;
+
     /**
      * @deprecated Use {@link create} instead
      */
@@ -103,13 +106,14 @@ export class HospitalPatient {
         arrivalTime: number,
         personalInformation: PersonalInformation,
         biometricInformation: BiometricInformation,
-        pretriageStatus: PatientStatus | null,
+        pretriageStatus: PatientStatus,
         realStatus: PatientStatus,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         currentHealthStateId: UUID,
         image: ImageProperties,
         health: HealthPoints,
-        healthDescription: string
+        healthDescription: string,
+        treatmentTime: number
     ) {
         this.patientId = patientId;
         this.vehicleType = vehicleType;
@@ -124,6 +128,7 @@ export class HospitalPatient {
         this.image = image;
         this.health = health;
         this.healthDescription = healthDescription;
+        this.treatmentTime = treatmentTime;
     }
 
     static readonly create = getCreate(this);
@@ -155,7 +160,8 @@ export class HospitalPatient {
                 patient.currentHealthStateId,
                 patient.image,
                 patient.health,
-                patient.healthDescription
+                patient.healthDescription,
+                patient.treatmentTime
             )
         );
     }
