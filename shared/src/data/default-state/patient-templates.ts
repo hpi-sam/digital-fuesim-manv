@@ -28,38 +28,11 @@ function calculateHealthChange(
     return (targetHealth - starthealth) / (phases * 12 * 60);
 }
 
+const phaseTime = 12 * 60 * 1000;
+
 const noChangesState = PatientHealthState.create(
     FunctionParameters.create(0, 0, 0, 0),
     []
-);
-
-const yellowToGreenState = PatientHealthState.create(
-    FunctionParameters.create(
-        calculateHealthChange(
-            healthPointsDefaults.yellowAverage,
-            healthPointsDefaults.greenAverage,
-            1
-        ),
-        0,
-        0,
-        0
-    ),
-    [
-        {
-            matchingHealthStateId: noChangesState.id,
-            minimumHealth: healthPointsDefaults.greenAverage,
-        },
-    ]
-);
-
-const waitForYellowToGreenState = PatientHealthState.create(
-    FunctionParameters.create(0, 0, 0, 0),
-    [
-        {
-            matchingHealthStateId: yellowToGreenState.id,
-            earliestTime: 7 * 60 * 1000,
-        },
-    ]
 );
 
 const recoverToGreenState = PatientHealthState.create(
@@ -98,7 +71,181 @@ const yellowFor2PhasesState = PatientHealthState.create(
     [
         {
             matchingHealthStateId: recoverToGreenState.id,
-            earliestTime: 2 * 12 * 60 * 1000,
+            earliestTime: 2 * phaseTime,
+        },
+    ]
+);
+
+const greenUntilPhase2State = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.greenMax,
+            healthPointsDefaults.yellowAverage,
+            2
+        ),
+        0,
+        0,
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: yellowFor2PhasesState.id,
+            maximumHealth: healthPointsDefaults.yellowAverage,
+        },
+    ]
+);
+
+const waitForTransportState = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.redAverage,
+            healthPointsDefaults.blackMax,
+            2
+        ),
+        0,
+        0,
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: noChangesState.id,
+            maximumHealth: healthPointsDefaults.blackMax,
+        },
+    ]
+);
+
+const greenStartPhase5RADecisionState = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.redAverage,
+            healthPointsDefaults.blackMax,
+            1
+        ),
+        -calculateHealthChange(
+            healthPointsDefaults.redAverage,
+            healthPointsDefaults.blackMax,
+            1
+        ),
+        -calculateHealthChange(
+            healthPointsDefaults.redAverage,
+            healthPointsDefaults.blackMax,
+            1
+        ),
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: noChangesState.id,
+            maximumHealth: healthPointsDefaults.blackMax,
+        },
+        {
+            matchingHealthStateId: waitForTransportState.id,
+            earliestTime: 4 * phaseTime,
+        },
+    ]
+);
+
+const yellowToRedState = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.redAverage,
+            1
+        ),
+        0,
+        0,
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: greenStartPhase5RADecisionState.id,
+            maximumHealth: healthPointsDefaults.redAverage,
+        },
+    ]
+);
+
+const greenUntilPhase4State = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.greenMax,
+            healthPointsDefaults.yellowAverage,
+            4
+        ),
+        0,
+        0,
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: yellowToRedState.id,
+            maximumHealth: healthPointsDefaults.yellowAverage,
+        },
+    ]
+);
+
+const yellowToGreenState = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.yellowAverage,
+            healthPointsDefaults.greenAverage,
+            1
+        ),
+        0,
+        0,
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: noChangesState.id,
+            minimumHealth: healthPointsDefaults.greenAverage,
+        },
+    ]
+);
+
+const waitForYellowToGreenState = PatientHealthState.create(
+    FunctionParameters.create(0, 0, 0, 0),
+    [
+        {
+            matchingHealthStateId: yellowToGreenState.id,
+            earliestTime: phaseTime,
+        },
+    ]
+);
+
+const greenUntilPhase7State = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.greenMax,
+            healthPointsDefaults.yellowAverage,
+            7
+        ),
+        0,
+        0,
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: waitForYellowToGreenState.id,
+            maximumHealth: healthPointsDefaults.yellowAverage,
+        },
+    ]
+);
+
+const greenUntilPhase8State = PatientHealthState.create(
+    FunctionParameters.create(
+        calculateHealthChange(
+            healthPointsDefaults.greenMax,
+            healthPointsDefaults.yellowAverage,
+            8
+        ),
+        0,
+        0,
+        0
+    ),
+    [
+        {
+            matchingHealthStateId: waitForYellowToGreenState.id,
+            maximumHealth: healthPointsDefaults.yellowAverage,
         },
     ]
 );
@@ -156,7 +303,7 @@ const greenStartPhase10RADecisionState = PatientHealthState.create(
         },
         {
             matchingHealthStateId: greenStartPhase11RADecisionState.id,
-            earliestTime: 12 * 60 * 1000,
+            earliestTime: phaseTime,
         },
     ]
 );
@@ -172,167 +319,27 @@ const greenStartPhase9RSDecisionState = PatientHealthState.create(
             healthPointsDefaults.yellowAverage,
             healthPointsDefaults.greenAverage,
             1
-        ),
-        calculateHealthChange(
+        ) -
+            calculateHealthChange(
+                healthPointsDefaults.yellowAverage,
+                healthPointsDefaults.redAverage,
+                1
+            ),
+        -calculateHealthChange(
             healthPointsDefaults.yellowAverage,
-            healthPointsDefaults.yellowMax,
+            healthPointsDefaults.redAverage,
             1
         ),
-        calculateHealthChange(
+        -calculateHealthChange(
             healthPointsDefaults.yellowAverage,
-            healthPointsDefaults.yellowMax,
+            healthPointsDefaults.redAverage,
             1
         )
     ),
     [
         {
             matchingHealthStateId: greenStartPhase10RADecisionState.id,
-            earliestTime: 12 * 60 * 1000,
-        },
-    ]
-);
-
-const waitForTransportState = PatientHealthState.create(
-    FunctionParameters.create(
-        calculateHealthChange(
-            healthPointsDefaults.redAverage,
-            healthPointsDefaults.blackMax,
-            2
-        ),
-        0,
-        0,
-        0
-    ),
-    [
-        {
-            matchingHealthStateId: noChangesState.id,
-            maximumHealth: healthPointsDefaults.blackMax,
-        },
-    ]
-);
-
-const greenStartPhase5RADecisionState = PatientHealthState.create(
-    FunctionParameters.create(
-        calculateHealthChange(
-            healthPointsDefaults.redAverage,
-            healthPointsDefaults.blackMax,
-            1
-        ),
-        -calculateHealthChange(
-            healthPointsDefaults.redAverage,
-            healthPointsDefaults.blackMax,
-            1
-        ),
-        -calculateHealthChange(
-            healthPointsDefaults.redAverage,
-            healthPointsDefaults.blackMax,
-            1
-        ),
-        0
-    ),
-    [
-        {
-            matchingHealthStateId: noChangesState.id,
-            maximumHealth: healthPointsDefaults.blackMax,
-        },
-        {
-            matchingHealthStateId: waitForTransportState.id,
-            earliestTime: 4 * 12 * 60 * 1000,
-        },
-    ]
-);
-
-const yellowToRedState = PatientHealthState.create(
-    FunctionParameters.create(
-        calculateHealthChange(
-            healthPointsDefaults.yellowAverage,
-            healthPointsDefaults.redAverage,
-            1
-        ),
-        0,
-        0,
-        0
-    ),
-    [
-        {
-            matchingHealthStateId: greenStartPhase5RADecisionState.id,
-            maximumHealth: healthPointsDefaults.redAverage,
-        },
-    ]
-);
-
-const greenUntilPhase2State = PatientHealthState.create(
-    FunctionParameters.create(
-        calculateHealthChange(
-            healthPointsDefaults.greenMax,
-            healthPointsDefaults.yellowAverage,
-            2
-        ),
-        0,
-        0,
-        0
-    ),
-    [
-        {
-            matchingHealthStateId: yellowFor2PhasesState.id,
-            maximumHealth: healthPointsDefaults.yellowAverage,
-        },
-    ]
-);
-
-const greenUntilPhase4State = PatientHealthState.create(
-    FunctionParameters.create(
-        calculateHealthChange(
-            healthPointsDefaults.greenMax,
-            healthPointsDefaults.yellowAverage,
-            4
-        ),
-        0,
-        0,
-        0
-    ),
-    [
-        {
-            matchingHealthStateId: yellowToRedState.id,
-            maximumHealth: healthPointsDefaults.yellowAverage,
-        },
-    ]
-);
-
-const greenUntilPhase7State = PatientHealthState.create(
-    FunctionParameters.create(
-        calculateHealthChange(
-            healthPointsDefaults.greenMax,
-            healthPointsDefaults.yellowAverage,
-            7
-        ),
-        0,
-        0,
-        0
-    ),
-    [
-        {
-            matchingHealthStateId: waitForYellowToGreenState.id,
-            maximumHealth: healthPointsDefaults.yellowAverage,
-        },
-    ]
-);
-
-const greenUntilPhase8State = PatientHealthState.create(
-    FunctionParameters.create(
-        calculateHealthChange(
-            healthPointsDefaults.greenMax,
-            healthPointsDefaults.yellowAverage,
-            8
-        ),
-        0,
-        0,
-        0
-    ),
-    [
-        {
-            matchingHealthStateId: waitForYellowToGreenState.id,
-            maximumHealth: healthPointsDefaults.yellowAverage,
+            earliestTime: phaseTime,
         },
     ]
 );
@@ -464,7 +471,7 @@ const yellowUntilPhase4State = PatientHealthState.create(
     [
         {
             matchingHealthStateId: recoverWithRSState.id,
-            earliestTime: 4 * 12 * 60 * 1000,
+            earliestTime: 4 * phaseTime,
         },
     ]
 );
@@ -505,7 +512,7 @@ const yellowUntilRedPhase4State = PatientHealthState.create(
     [
         {
             matchingHealthStateId: yellowStartPhase4RSDecisionState.id,
-            earliestTime: 4 * 12 * 60 * 1000,
+            earliestTime: 4 * phaseTime,
         },
     ]
 );
@@ -563,7 +570,7 @@ const yellowStartPhase8RADecisionState = PatientHealthState.create(
     [
         {
             matchingHealthStateId: yellowStartPhase9RADecisionState.id,
-            earliestTime: 3 * 12 * 60 * 1000,
+            earliestTime: phaseTime,
         },
     ]
 );
@@ -594,7 +601,7 @@ const yellowStartPhase7RSDecisionState = PatientHealthState.create(
     [
         {
             matchingHealthStateId: yellowStartPhase8RADecisionState.id,
-            earliestTime: 3 * 12 * 60 * 1000,
+            earliestTime: phaseTime,
         },
     ]
 );
@@ -604,7 +611,7 @@ const yellowFor3PhasesState = PatientHealthState.create(
     [
         {
             matchingHealthStateId: yellowStartPhase7RSDecisionState.id,
-            earliestTime: 3 * 12 * 60 * 1000,
+            earliestTime: 3 * phaseTime,
         },
     ]
 );
@@ -633,7 +640,7 @@ const yellowUntilPhase3State = PatientHealthState.create(
         calculateHealthChange(
             healthPointsDefaults.yellowAverage,
             healthPointsDefaults.redAverage,
-            2
+            3
         ),
         0,
         0,
@@ -669,7 +676,7 @@ const redUntilBlack2PhasesState = PatientHealthState.create(
 const yellowUntilPrioRedPhase4State = PatientHealthState.create(
     FunctionParameters.create(
         calculateHealthChange(
-            healthPointsDefaults.yellowMax,
+            healthPointsDefaults.yellowAverage,
             healthPointsDefaults.redAverage,
             4
         ),
@@ -711,7 +718,7 @@ const redUntilBlackPhase2State = PatientHealthState.create(
         },
         {
             matchingHealthStateId: noChangesState.id,
-            earliestTime: 3 * 12 * 60 * 1000,
+            earliestTime: 3 * phaseTime,
         },
     ]
 );
@@ -740,7 +747,7 @@ const redIntoTransportFor2PhasesState = PatientHealthState.create(
     [
         {
             matchingHealthStateId: redInstantTransportState.id,
-            earliestTime: 2 * 12 * 60 * 1000,
+            earliestTime: 2 * phaseTime,
         },
     ]
 );
@@ -771,7 +778,7 @@ const redUntilPhase2State = PatientHealthState.create(
         },
         {
             matchingHealthStateId: redIntoTransportFor2PhasesState.id,
-            earliestTime: 3 * 12 * 60 * 1000,
+            earliestTime: 3 * phaseTime,
         },
     ]
 );
@@ -802,13 +809,10 @@ const prioRedUntilPhase2State = PatientHealthState.create(
         },
         {
             matchingHealthStateId: redInstantTransportState.id,
-            earliestTime: 3 * 12 * 60 * 1000,
+            earliestTime: 3 * phaseTime,
         },
     ]
 );
-
-// // The amount of damage to kill an untreated patient with full health in 10 minutes
-// const soonDamage = -healthPointsDefaults.greenMax / (10 * 60);
 
 export const defaultPatientCategories: readonly PatientCategory[] = [
     // XAXAXA Patients
@@ -1008,7 +1012,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [recoverWithRSState.id]: recoverWithRSState,
             },
             defaultMaleImage,
-            healthPointsDefaults.yellowMax,
+            healthPointsDefaults.yellowAverage,
             yellowUntilPhase4State.id
         ),
     ]),
@@ -1091,7 +1095,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [redUntilBlack2PhasesState.id]: redUntilBlack2PhasesState,
             },
             defaultMaleImage,
-            healthPointsDefaults.yellowMax,
+            healthPointsDefaults.yellowAverage,
             yellowUntilPrioRedPhase4State.id
         ),
     ]),
