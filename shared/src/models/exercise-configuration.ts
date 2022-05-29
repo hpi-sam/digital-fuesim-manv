@@ -13,5 +13,8 @@ export class ExerciseConfiguration {
     @Type(() => TileMapProperties)
     public readonly tileMapProperties: TileMapProperties = defaultTileMapProperties;
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     static readonly create = getCreate(this);
 }

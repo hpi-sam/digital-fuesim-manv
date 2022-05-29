@@ -34,18 +34,12 @@ function caterFor(
     bluePatientsEnabled: boolean
 ) {
     // Treat not pretriaged patients as yellow.
-    const status =
-        Patient.getVisibleStatus(
-            patient,
-            pretriageEnabled,
-            bluePatientsEnabled
-        ) === 'white'
-            ? 'yellow'
-            : Patient.getVisibleStatus(
-                  patient,
-                  pretriageEnabled,
-                  bluePatientsEnabled
-              );
+    const visibleStatus = Patient.getVisibleStatus(
+        patient,
+        pretriageEnabled,
+        bluePatientsEnabled
+    );
+    const status = visibleStatus === 'white' ? 'yellow' : visibleStatus;
     if (
         (status === 'red' && catering.canCaterFor.red <= catersFor.red) ||
         (status === 'yellow' &&
@@ -100,20 +94,18 @@ export function calculateTreatments(state: Mutable<ExerciseState>) {
     materials.forEach((material) => {
         material.assignedPatientIds = {};
     });
-    const patients = Object.values(state.patients).filter(
-        (patient) =>
+    const patients = Object.values(state.patients).filter((patient) => {
+        const visibleStatus = Patient.getVisibleStatus(
+            patient,
+            pretriageEnabled,
+            bluePatientsEnabled
+        );
+        return (
             patient.position !== undefined &&
-            Patient.getVisibleStatus(
-                patient,
-                pretriageEnabled,
-                bluePatientsEnabled
-            ) !== 'black' &&
-            Patient.getVisibleStatus(
-                patient,
-                pretriageEnabled,
-                bluePatientsEnabled
-            ) !== 'blue'
-    );
+            visibleStatus !== 'black' &&
+            visibleStatus !== 'blue'
+        );
+    });
     patients.forEach((patient) => {
         patient.isBeingTreated = false;
     });
@@ -185,21 +177,15 @@ function calculateCatering(
                 patient: Mutable<Patient>;
             }[]
         >
-    > = groupBy(
-        distances,
-        ({ patient }) =>
-            Patient.getVisibleStatus(
-                patient,
-                pretriageEnabled,
-                bluePatientsEnabled
-            ) === 'white'
-                ? 'yellow'
-                : Patient.getVisibleStatus(
-                      patient,
-                      pretriageEnabled,
-                      bluePatientsEnabled
-                  ) // Treat untriaged patients as yellow
-    );
+    > = groupBy(distances, ({ patient }) => {
+        const visibleStatus = Patient.getVisibleStatus(
+            patient,
+            pretriageEnabled,
+            bluePatientsEnabled
+        );
+        // Treat untriaged patients as yellow
+        return visibleStatus === 'white' ? 'yellow' : visibleStatus;
+    });
 
     const redPatients =
         distancesByStatus.red
