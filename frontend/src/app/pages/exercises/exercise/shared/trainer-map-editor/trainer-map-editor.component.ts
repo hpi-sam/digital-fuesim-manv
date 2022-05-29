@@ -66,7 +66,7 @@ export class TrainerMapEditorComponent {
         openEditImageTemplateModal(this.ngbModalService, mapImageTemplateId);
     }
 
-    public setCurrentCategory(category: any) {
+    public setCurrentCategory(category: string) {
         this.currentCategory = category;
     }
 }

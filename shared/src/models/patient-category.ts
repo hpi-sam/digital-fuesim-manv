@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsDefined, IsString, ValidateNested } from 'class-validator';
-import type { PatientTemplate } from './patient-template';
+import { IsArray, IsString, ValidateNested } from 'class-validator';
+import { PatientTemplate } from './patient-template';
 import { getCreate, ImageProperties } from './utils';
 import { PatientStatusCode } from './utils/patient-status-code';
 
@@ -12,9 +12,14 @@ export class PatientCategory {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    @IsDefined()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => PatientTemplate)
     public readonly patientTemplates: readonly PatientTemplate[] = [];
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(
         name: string,
         image: ImageProperties,

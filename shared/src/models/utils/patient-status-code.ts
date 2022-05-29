@@ -11,6 +11,9 @@ class PatientStatusDataField {
     @IsString()
     public readonly behaviourCode: BehaviourCode;
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(colorCode: ColorCode, behaviourCode: BehaviourCode) {
         this.colorCode = colorCode;
         this.behaviourCode = behaviourCode;
@@ -32,6 +35,9 @@ export class PatientStatusCode {
     @Type(() => PatientStatusDataField)
     public readonly thirdField!: PatientStatusDataField;
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(code: string) {
         // Plain to Instance calls constructors without arguments, therefore we have to catch it
         if (code === undefined) {
