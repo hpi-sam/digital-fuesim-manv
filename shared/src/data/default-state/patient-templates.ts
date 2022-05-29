@@ -823,6 +823,20 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 externalFeatures: 'blaue Augen, rothaarig, 1,69 m',
                 age: 16,
             },
+            {
+                injuries:
+                    'Prellmarke an der Stirn; blutende Wunde am linken Unterarm',
+                bodyCheck:
+                    'leichte Schmerzen beim Auftreten im rechten Sprunggelenk; Schwanger; sonst o.B.',
+                breathing: 'unauffällig',
+                awareness: 'leicht verwirrt',
+                pulse: '79; gut tastbar',
+                skin: 'unauffällig',
+                pain: 'leichte',
+                pupils: 'isocor',
+                psyche: 'ängstlich',
+                hearing: 'unauffällig',
+            },
             { [noChangesState.id]: noChangesState },
             defaultMaleImage,
             healthPointsDefaults.greenMax,
@@ -839,6 +853,19 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 age: 35,
             },
             {
+                injuries: 'keine äußeren Verletzungen sichtbar',
+                bodyCheck:
+                    'Pat. ist teilnahmslos; keine Kooperation bei der Untersuchung',
+                breathing: 'unauffällig',
+                awareness: 'verwirrt',
+                pulse: '82; Puls gut tastbar',
+                skin: 'unauffällig',
+                pain: 'keine',
+                pupils: 'isocor',
+                psyche: 'teilnahmslos',
+                hearing: 'unauffällig',
+            },
+            {
                 [noChangesState.id]: noChangesState,
                 [greenUntilPhase10State.id]: greenUntilPhase10State,
             },
@@ -853,6 +880,19 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 age: 25,
             },
             {
+                injuries: 'keine äußeren Verletzungen zu sehen',
+                bodyCheck:
+                    'Pat. ist nahezu hysterisch; es besteht keine Kooperation bei Untersuchung',
+                breathing: 'unauffällig',
+                awareness: 'wach aber verwirrt',
+                pulse: '94',
+                skin: 'unauffällig',
+                pain: 'keine',
+                pupils: 'isocor',
+                psyche: 'hysterisch',
+                hearing: 'schwerhörig',
+            },
+            {
                 [noChangesState.id]: noChangesState,
                 [greenUntilPhase11State.id]: greenUntilPhase10State,
             },
@@ -865,6 +905,19 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 sex: 'female',
                 externalFeatures: '1,76m, hellblond, blaue Augen, Brille',
                 age: 35,
+            },
+            {
+                injuries: 'äußerlich keine Verletzungen',
+                bodyCheck:
+                    'keine Kooperation bei Untersuchung; Pat. hysterisch und verwirrt',
+                breathing: 'unauffällig',
+                awareness: 'wach, verwirrt',
+                pulse: '95',
+                skin: 'unauffällig',
+                pain: 'keine',
+                pupils: 'isocor',
+                psyche: 'hysterisch',
+                hearing: 'schwerhörig',
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -885,6 +938,19 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 age: 50,
             },
             {
+                injuries: 'leichte Augenverletzung rechts',
+                bodyCheck:
+                    'Pat. wirkt apathisch; keine Kooperation bei Untersuchung; Prellung Unterschenkel rechts; starke Schmerzen nur beim Auftreten',
+                breathing: 'unauffällig',
+                awareness: 'wach, verwirrt',
+                pulse: '83; Puls flach',
+                skin: 'unauffällig',
+                pain: 'stark, aber nur beim Auftreten',
+                pupils: 'isocor',
+                psyche: 'teilnahmslos',
+                hearing: 'unauffällig',
+            },
+            {
                 [noChangesState.id]: noChangesState,
                 [greenUntilPhase7State.id]: greenUntilPhase7State,
                 [waitForYellowToGreenState.id]: waitForYellowToGreenState,
@@ -899,6 +965,18 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 sex: 'female',
                 externalFeatures: '1,59 m, blaue Augen, graue Haare',
                 age: 65,
+            },
+            {
+                injuries: 'äußerlich keine Verletzungen',
+                bodyCheck: 'leichter Druckschmerzen im linkes Bein',
+                breathing: 'unauffällig',
+                awareness: 'wach, verwirrt',
+                pulse: '89',
+                skin: 'unauffällig',
+                pain: 'keine',
+                pupils: 'isocor',
+                psyche: 'aufgeregt',
+                hearing: 'unauffällig',
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -922,6 +1000,19 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 age: 52,
             },
             {
+                injuries:
+                    'leicht blutende Wunde an der linken Hand, evt. Glassplitter in der Tiefe sichtbar; Prellmarke rechte Schläfe',
+                bodyCheck: 'leichte Schmerzen beim Auftreten im linken Fuß',
+                breathing: 'unauffällig',
+                awareness: 'wach, verwirrt',
+                pulse: '85; Puls gut tastbar',
+                skin: 'unauffällig',
+                pain: 'leichte',
+                pupils: 'isocor',
+                psyche: 'aufgeregt',
+                hearing: 'unauffällig',
+            },
+            {
                 [noChangesState.id]: noChangesState,
                 [greenUntilPhase2State.id]: greenUntilPhase2State,
                 [yellowFor2PhasesState.id]: yellowFor2PhasesState,
@@ -940,6 +1031,18 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 sex: 'female',
                 externalFeatures: '1,66 m, blond, blaue Augen',
                 age: 30,
+            },
+            {
+                injuries: 'Zeigefingeramputation rechts',
+                bodyCheck: 'dezenter Druckschmerzen im rechten Bein',
+                breathing: 'unauffällig',
+                awareness: 'wach, verwirrt',
+                pulse: '98; rhythmisch',
+                skin: 'unauffällig',
+                pain: 'keine',
+                pupils: 'isocor',
+                psyche: 'ängstlich',
+                hearing: 'unauffällig',
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -966,6 +1069,19 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 age: 76,
             },
             {
+                injuries: 'keine äußeren Verletzungen',
+                bodyCheck:
+                    'dezenter Druckschmerzen im linken Bein in Höhe der Patella',
+                breathing: 'unauffällig',
+                awareness: 'wach, verwirrt',
+                pulse: '97; Puls gut tastbar',
+                skin: 'warm, rot',
+                pain: 'keine',
+                pupils: 'isocor',
+                psyche: 'sehr aufgeregt',
+                hearing: 'unauffällig',
+            },
+            {
                 [noChangesState.id]: noChangesState,
                 [greenUntilPhase4State.id]: greenUntilPhase4State,
                 [yellowToRedState.id]: yellowToRedState,
@@ -989,6 +1105,19 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 age: 14,
             },
             {
+                injuries:
+                    'Kunststofffremdkörper linker Oberarm; Schulterfraktur links; Luxationsfraktur rechtes Handgelenk',
+                bodyCheck: 'Risswunde am Hinterkopf; Hüftprellung rechts',
+                breathing: 'unauffällig',
+                awareness: 'wach, orientiert',
+                pulse: '124; Puls kräftig',
+                skin: 'unauffällig',
+                pain: 'starke',
+                pupils: 'isocor',
+                psyche: 'aufgeregt',
+                hearing: 'unauffällig',
+            },
+            {
                 [noChangesState.id]: noChangesState,
                 [yellowUntilPhase5State.id]: yellowUntilPhase5State,
             },
@@ -1005,6 +1134,20 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 sex: 'male',
                 externalFeatures: 'blaue Augen, weiße Haare, 174 cm',
                 age: 72,
+            },
+            {
+                injuries:
+                    'Fehlstellung linker Oberarm; offene Fraktur Unterarm links; große Platzwunde Kopf; Handquetschung links; Dialysepatient',
+                bodyCheck:
+                    'Schlüsselbeinfraktur rechts; Thoraxprellung auf der gleichen Seite',
+                breathing: 'unauffällig',
+                awareness: 'wach und orientiert',
+                pulse: '122; Puls kräftig',
+                skin: 'unauffällig',
+                pain: 'starke',
+                pupils: 'isocor',
+                psyche: 'aufgeregt',
+                hearing: 'unauffällig',
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1026,6 +1169,20 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 age: 55,
             },
             {
+                injuries:
+                    'Prellmarke Unterschenkel rechts; Fehlstellung rechtes Sprunggelenk; Wunde Unterarm rechts',
+                bodyCheck:
+                    'Druckschmerz rechte Hüfte; Prellung Unterschenkel links',
+                breathing: 'unauffällig',
+                awareness: 'wach, verwirrt',
+                pulse: '123; Puls flach',
+                skin: 'kaltschweißig',
+                pain: 'starke',
+                pupils: 'isocor',
+                psyche: 'aufgeregt',
+                hearing: 'unauffällig',
+            },
+            {
                 [noChangesState.id]: noChangesState,
                 [yellowUntilRedPhase4State.id]: yellowUntilRedPhase4State,
                 [yellowStartPhase4RSDecisionState.id]:
@@ -1045,6 +1202,20 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 externalFeatures: 'Glatze, graublaue Augen, Brille, 174 cm',
                 age: 57,
             },
+            {
+                injuries:
+                    'leicht blutende Wunde Unterarm links; grobe Fehlstellung rechtes Sprunggelenk; Prellmarke Unterschenkel rechts',
+                bodyCheck:
+                    'Druckschmerz linke Hüfte; Prellung Unterschenkel links; Schmerzen im Genitalbereich',
+                breathing: 'unauffällig',
+                awareness: 'wach aber verwirrt',
+                pulse: '122; Puls kräftig',
+                skin: 'kaltschweißig',
+                pain: 'starke',
+                pupils: 'isocor',
+                psyche: 'hysterisch',
+                hearing: 'unauffällig',
+            },
             { [noChangesState.id]: noChangesState },
             defaultMaleImage,
             healthPointsDefaults.yellowAverage,
@@ -1060,6 +1231,19 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 externalFeatures:
                     'graue Haare, Brille, braune Augen, ca. 1,70 m',
                 age: 71,
+            },
+            {
+                injuries:
+                    'rechte Hand stark schmerzhaft; kleine blutende Platzwunde am Kopf; Glasfremdkörper am ganzen rechten Arm; unstillbares Nasenbluten',
+                bodyCheck: 'Thoraxprellung links; Schlüsselbeinfraktur links',
+                breathing: 'unauffällig',
+                awareness: 'wach, verwirrt',
+                pulse: '132; Puls kräftig',
+                skin: 'kühl, blass',
+                pain: 'starke',
+                pupils: 'isocor',
+                psyche: 'aggressiv',
+                hearing: 'unauffällig',
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1089,6 +1273,19 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 age: 51,
             },
             {
+                injuries:
+                    'starke Schmerzen am linken Sprunggelenk; Prellmarke und Schürfwunde linker Unterschenkel',
+                bodyCheck: 'Beckenprellung, Fraktur nicht auszuschließen',
+                breathing: 'unauffällig',
+                awareness: 'wach, verwirrt',
+                pulse: '97; Puls gut tastbar',
+                skin: 'kaltschweißig',
+                pain: 'stärkste',
+                pupils: 'isocor',
+                psyche: 'hysterisch',
+                hearing: 'unauffällig',
+            },
+            {
                 [noChangesState.id]: noChangesState,
                 [yellowUntilPrioRedPhase4State.id]:
                     yellowUntilPrioRedPhase4State,
@@ -1109,6 +1306,20 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 age: 60,
             },
             {
+                injuries:
+                    'Prellmarken linker Thorax; offene Oberarmfraktur rechts',
+                bodyCheck:
+                    'Rippenserienfraktur li.; Beckenprellung rechts; Hämatom hinter dem rechten Ohr; einseitig hebender Thorax rechts',
+                breathing: 'flache Schonatmung',
+                awareness: 'somnolent',
+                pulse: '134; Puls fadenförmig',
+                skin: 'zyanotisch',
+                pain: 'stärkste',
+                pupils: 'isocor',
+                psyche: 'teilnahmslos',
+                hearing: 'unauffällig',
+            },
+            {
                 [noChangesState.id]: noChangesState,
                 [redUntilBlackPhase2State.id]: redUntilBlackPhase2State,
             },
@@ -1121,6 +1332,20 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 sex: 'male',
                 externalFeatures: '1,84 m, braune Augen, Brille, braune Haare',
                 age: 15,
+            },
+            {
+                injuries:
+                    'Weichteilquetschung rechter Unterschenkel, mäßig blutend, aber schon deutlicher Blutverlust',
+                bodyCheck:
+                    'Oberschenkelfraktur rechts; kleiner Eisenfremdkörper in der linken Hand',
+                breathing: 'flache Atmung',
+                awareness: 'somnolent',
+                pulse: '154; Puls fadenförmig',
+                skin: 'grau marmoriert',
+                pain: 'stärkste',
+                pupils: 'isocor',
+                psyche: 'teilnahmslos',
+                hearing: 'unauffällig',
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1138,6 +1363,19 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 age: 50,
             },
             {
+                injuries:
+                    'Kopfplatzwunde über dem Ohr; Prellmarke Stirn; Gesicht blutverschmiert',
+                bodyCheck: 'Unterarmfraktur rechts',
+                breathing: 'Atemwegsverlegung',
+                awareness: 'bewusstlos, Massenbewegungen auf Schmerz',
+                pulse: '85; gut tastbar',
+                skin: 'tief zyanotisch',
+                pain: 'entfällt',
+                pupils: 'rechts weit',
+                psyche: 'entfällt',
+                hearing: 'entfällt',
+            },
+            {
                 [noChangesState.id]: noChangesState,
                 [redUntilBlackPhase2State.id]: redUntilBlackPhase2State,
             },
@@ -1150,6 +1388,20 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 sex: 'female',
                 externalFeatures: '1,72 m, braune Augen, blonde Haare',
                 age: 25,
+            },
+            {
+                injuries:
+                    'offene Fraktur rechter Unterschenkel, nur noch mäßig blutend, aber schon großer Blutverlust; Wunde linke Schläfe; schwanger ca. 36 SSW',
+                bodyCheck:
+                    'schulternahe Oberarmfraktur rechts; linke Hand mit Fehlstellung im Handgelenk',
+                breathing: 'flache Atmung',
+                awareness: 'somnolent',
+                pulse: '150; Puls fadenförmig',
+                skin: 'grau marmoriert',
+                pain: 'stärkste',
+                pupils: 'isocor',
+                psyche: 'teilnahmslos',
+                hearing: 'unauffällig',
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1169,6 +1421,20 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 externalFeatures:
                     'graue Haare, Brille, grüne Augen, ca. 1,60 m',
                 age: 80,
+            },
+            {
+                injuries:
+                    'große Weichteilquetschung linker Unterschenkel, nur noch mäßig blutend; aber schon deutlicher Blutverlust',
+                bodyCheck:
+                    'Oberarmfraktur rechts; fraglicher Fremdkörper rechte Hand in Wunde; blutende Prellmarke am Hinterkopf',
+                breathing: 'flache Atmung',
+                awareness: 'somnolent',
+                pulse: '132; fadenförmig',
+                skin: 'grau marmoriert',
+                pain: 'stärkste',
+                pupils: 'isocor',
+                psyche: 'teilnahmslos',
+                hearing: 'unauffällig',
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1192,6 +1458,20 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 age: 50,
             },
             {
+                injuries:
+                    'Teil-Amputation rechter Unterarm, spritzend blutend; schon großer Blutverlust',
+                bodyCheck:
+                    'geschlossene Oberschenkelfraktur links; Metallfremdkörper rechter Unterschenkel',
+                breathing: 'flache Atmung',
+                awareness: 'somnolent',
+                pulse: '145; fadenförmig',
+                skin: 'grau marmoriert',
+                pain: 'stärkste',
+                pupils: 'isocor',
+                psyche: 'teilnahmslos',
+                hearing: 'unauffällig',
+            },
+            {
                 [noChangesState.id]: noChangesState,
                 [prioRedUntilPhase2State.id]: prioRedUntilPhase2State,
                 [redInstantTransportState.id]: redInstantTransportState,
@@ -1209,6 +1489,20 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 sex: 'female',
                 externalFeatures: '1,64 m, blaue Augen, blond',
                 age: 55,
+            },
+            {
+                injuries:
+                    'starke Schmerzen im gesamten Abdomen mit gespannter Bauchdecke',
+                bodyCheck:
+                    'Prellmarken und Wunde linke Flanke; Rippenserienfraktur links',
+                breathing: 'schwere Atemnot 30/min.',
+                awareness: 'wach, verwirrt',
+                pulse: '114; flach',
+                skin: 'kühl, blass',
+                pain: 'starke Bauchschmerzen',
+                pupils: 'isocor',
+                psyche: 'ängstlich',
+                hearing: 'unauffällig',
             },
             {
                 [noChangesState.id]: noChangesState,

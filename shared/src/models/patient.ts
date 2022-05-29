@@ -23,6 +23,7 @@ import {
 import { PersonalInformation } from './utils/personal-information';
 import { BiometricInformation } from './utils/biometric-information';
 import { PatientStatusCode } from './utils/patient-status-code';
+import { PretriageInformation } from './utils/pretriage-information';
 import type { PatientHealthState } from '.';
 
 export class Patient {
@@ -37,6 +38,9 @@ export class Patient {
     @Type(() => BiometricInformation)
     public readonly biometricInformation: BiometricInformation;
 
+    @ValidateNested()
+    @Type(() => PretriageInformation)
+    public readonly pretriageInformation: PretriageInformation;
     /**
      * A description of the expected patient behaviour over time
      * For the trainer
@@ -64,6 +68,7 @@ export class Patient {
         // TODO: Specify patient data (e.g. injuries, name, etc.)
         personalInformation: PersonalInformation,
         biometricInformation: BiometricInformation,
+        pretriageInformation: PretriageInformation,
         patientStatusCode: PatientStatusCode,
         visibleStatus: PatientStatus,
         realStatus: PatientStatus,
@@ -74,6 +79,7 @@ export class Patient {
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
+        this.pretriageInformation = pretriageInformation;
         this.patientStatusCode = patientStatusCode;
         this.visibleStatus = visibleStatus;
         this.realStatus = realStatus;
