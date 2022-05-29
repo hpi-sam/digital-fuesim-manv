@@ -6,8 +6,8 @@ import { cloneDeep } from 'lodash';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    selectBluePatientsFlag,
-    selectPretriageFlag,
+    selectPretriageEnabledConfiguration,
+    selectBluePatientsEnabledConfiguration,
     selectTileMapProperties,
 } from 'src/app/state/exercise/exercise.selectors';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
@@ -23,11 +23,11 @@ export class ExerciseSettingsModalComponent {
     public readonly tileMapUrlRegex =
         /^(?=.*\{x\})(?=.*\{-?y\})(?=.*\{z\}).*$/u;
 
-    public pretriageFlag$ = this.store.select(selectPretriageFlag);
-    public bluePatientsFlag$ = this.store.select(selectBluePatientsFlag);
+    public pretriageFlag$ = this.store.select(selectPretriageEnabledConfiguration);
+    public bluePatientsFlag$ = this.store.select(selectBluePatientsEnabledConfiguration);
 
     constructor(
-        public readonly store: Store<AppState>,
+        private readonly store: Store<AppState>,
         public readonly activeModal: NgbActiveModal,
         private readonly apiService: ApiService
     ) {

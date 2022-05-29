@@ -20,6 +20,7 @@ import type { StatisticsEntry } from './models/statistics-entry';
 import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuid } from './utils';
+import { ExerciseConfiguration } from './utils/exercise-configuration';
 
 export class ExerciseState {
     public readonly id = uuid();
@@ -48,8 +49,7 @@ export class ExerciseState {
     public readonly tileMapProperties: TileMapProperties =
         defaultTileMapProperties;
     public readonly statistics: readonly StatisticsEntry[] = [];
-    public readonly pretriageEnabledFlag: boolean = true;
-    public readonly bluePatientsEnabledFlag: boolean = false;
+    public readonly configuration = ExerciseConfiguration.create();
 
     /**
      * @deprecated Use {@link create} instead.

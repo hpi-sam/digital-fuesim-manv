@@ -1,14 +1,23 @@
 import type { OnInit } from '@angular/core';
 import { EventEmitter, Output, Component } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
+<<<<<<< HEAD
 import type { UUID, Patient, PatientStatus } from 'digital-fuesim-manv-shared';
 import { healthPointsDefaults, statusNames } from 'digital-fuesim-manv-shared';
 import { map } from 'rxjs';
+=======
+import type { UUID, PatientStatus } from 'digital-fuesim-manv-shared';
+import {
+    healthPointsDefaults,
+    statusNames,
+    Patient,
+} from 'digital-fuesim-manv-shared';
+>>>>>>> feature/399-add-pretriage-functionality
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    selectPretriageFlag,
+    selectPretriageEnabledConfiguration,
     getSelectClient,
     getSelectPatient,
     selectBluePatientsFlag,
@@ -35,10 +44,10 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     public currentYear = new Date().getFullYear();
 
     public patientStatus?: PatientStatus;
-    public pretriageFlag$ = this.store.select(selectPretriageFlag);
-    public bluePatientsFlag$ = this.store.select(selectBluePatientsFlag);
+    public pretriageEnabled$ = this.store.select(selectPretriageEnabledConfiguration);
+    public bluePatientsEnabled$ = this.store.select(selectBluePatientsEnabledConfiguration);
     public readonly pretriageOptions$: Observable<PatientStatus[]> =
-        this.bluePatientsFlag$.pipe(
+        this.bluePatientsEnabled$.pipe(
             map((bluePatientFlag) =>
                 bluePatientFlag
                     ? ['black', 'blue', 'red', 'yellow', 'green']
@@ -61,26 +70,17 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
         this.patientStatus$ = this.store.select(
             createSelector(
                 getSelectPatient(this.patientId),
-                selectPretriageFlag,
-                selectBluePatientsFlag,
-                (patient, pretriageFlag, bluePatientsFlag) => {
-                    const status =
-                        !pretriageFlag ||
-                        patient.treatmentTime >= this.secondsUntilRealStatus
-                            ? patient.realStatus
-                            : patient.visibleStatus;
-                    return status === 'blue' && !bluePatientsFlag
-                        ? 'red'
-                        : status;
-                }
+                selectPretriageEnabledConfiguration,
+                (patient, pretriageEnabled) =>
+                    Patient.getVisibleStatus(patient, pretriageEnabled, bluePatientsEnabled)
             )
         );
     }
 
-    setPretriageCategory(patientId: UUID, patientStatus: PatientStatus) {
+    setPretriageCategory(patientStatus: PatientStatus) {
         this.apiService.proposeAction({
             type: '[Patient] Set Visible Status',
-            patientId,
+            patientId: this.patientId,
             patientStatus,
         });
     }

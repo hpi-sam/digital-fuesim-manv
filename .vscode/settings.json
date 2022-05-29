@@ -8,8 +8,5 @@
         "onStartup": ["all-tests"]
     },
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "[typescript]": {
-        "editor.defaultFormatter": "ms-vsliveshare.vsliveshare"
-    }
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
