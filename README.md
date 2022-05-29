@@ -67,7 +67,7 @@ Note the database requirements depicted in [the installation section](#installat
 
 ### Docker ENVs
 
--   All available Docker ENVs are listed with their default values in [the docker-compose file](./docker-compose.yml).
+-   All available Docker ENVs are listed with their default values in [.env.example](./.env.example) file. Copy this file and name it `.env` (under Linux, this would be e.g. `cp .env.example .env`)
 
 ## Before you commit
 
