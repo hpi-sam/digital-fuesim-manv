@@ -76,6 +76,12 @@ export class Config {
         });
     }
 
+    // This uses the condition that is also used by envalid (see https://github.com/af/envalid/blob/main/src/validators.ts#L39)
+    private static isTrue(input: string | undefined): boolean {
+        const lowercase = input?.toLowerCase();
+        return lowercase === 'true' || lowercase === 't' || lowercase === '1';
+    }
+
     private static parseVariables() {
         const tcpPortValidator = this.createTCPPortValidator();
         return cleanEnv(process.env, {
@@ -85,11 +91,26 @@ export class Config {
             DFM_HTTP_PORT_TESTING: tcpPortValidator({ default: 13201 }),
             DFM_USE_DB: bool(),
             DFM_USE_DB_TESTING: bool({ default: undefined }),
-            DFM_DB_USER: str(),
+            DFM_DB_USER: str(
+                // Require this variable only when the database should be used.
+                this.isTrue(process.env.DFM_USE_DB)
+                    ? {}
+                    : { default: undefined }
+            ),
             DFM_DB_USER_TESTING: str({ default: undefined }),
-            DFM_DB_PASSWORD: str(),
+            DFM_DB_PASSWORD: str(
+                // Require this variable only when the database should be used.
+                this.isTrue(process.env.DFM_USE_DB)
+                    ? {}
+                    : { default: undefined }
+            ),
             DFM_DB_PASSWORD_TESTING: str({ default: undefined }),
-            DFM_DB_NAME: str(),
+            DFM_DB_NAME: str(
+                // Require this variable only when the database should be used.
+                this.isTrue(process.env.DFM_USE_DB)
+                    ? {}
+                    : { default: undefined }
+            ),
             DFM_DB_NAME_TESTING: str({ default: undefined }),
             DFM_DB_LOG: bool({ default: false }),
             DFM_DB_LOG_TESTING: bool({ default: undefined }),
