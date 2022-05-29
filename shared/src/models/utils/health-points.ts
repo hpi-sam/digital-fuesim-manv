@@ -1,4 +1,4 @@
-import type { ValidationArguments, ValidationOptions } from 'class-validator';
+import type { ValidationOptions, ValidationArguments } from 'class-validator';
 import { isNumber, registerDecorator } from 'class-validator';
 import type { PatientStatus } from './patient-status';
 

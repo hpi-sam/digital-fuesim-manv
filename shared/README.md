@@ -13,3 +13,7 @@ Keep in mind to add new exports to the `index.ts` file in the folder.
 -   [src/socket-api/](./src/socket-api) the types for [socket.io](https://socket.io/docs/v4/typescript/)
 -   [src/data/](./src/data) data like default objects for the state or dummy objects for testing
 -   [src/state-helpers/](./src/state-helpers) utilities for working with the state.
+
+## Updates to state types
+
+Note that whenever the state types get updated you have to update `ExerciseState.currentStateVersion` in [`state.ts`](./src/state.ts).
