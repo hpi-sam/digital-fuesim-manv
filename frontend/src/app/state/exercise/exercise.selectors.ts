@@ -64,6 +64,8 @@ export const selectTileMapProperties = (state: AppState) =>
     state.exercise.tileMapProperties;
 export const selectPretriageEnabledConfiguration = (state: AppState) =>
     state.exercise.configuration.pretriageEnabled;
+export const selectBluePatientsEnabledConfiguration = (state: AppState) =>
+    state.exercise.configuration.bluePatientsEnabled;
 /**
  * @returns a selector that returns a dictionary of all elements that have a position and are in the viewport restriction
  */

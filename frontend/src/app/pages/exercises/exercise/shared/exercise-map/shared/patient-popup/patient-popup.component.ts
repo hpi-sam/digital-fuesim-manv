@@ -7,6 +7,7 @@ import {
     statusNames,
     Patient,
 } from 'digital-fuesim-manv-shared';
+import { map } from 'rxjs';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -14,6 +15,7 @@ import {
     selectPretriageEnabledConfiguration,
     getSelectClient,
     getSelectPatient,
+    selectBluePatientsEnabledConfiguration,
 } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
@@ -40,8 +42,17 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     public pretriageEnabled$ = this.store.select(
         selectPretriageEnabledConfiguration
     );
-
-    private readonly secondsUntilRealStatus = 5;
+    public bluePatientsEnabled$ = this.store.select(
+        selectBluePatientsEnabledConfiguration
+    );
+    public readonly pretriageOptions$: Observable<PatientStatus[]> =
+        this.bluePatientsEnabled$.pipe(
+            map((bluePatientFlag) =>
+                bluePatientFlag
+                    ? ['black', 'blue', 'red', 'yellow', 'green']
+                    : ['black', 'red', 'yellow', 'green']
+            )
+        );
 
     // To use it in the template
     public readonly healthPointsDefaults = healthPointsDefaults;
@@ -57,8 +68,13 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
             createSelector(
                 getSelectPatient(this.patientId),
                 selectPretriageEnabledConfiguration,
-                (patient, pretriageEnabled) =>
-                    Patient.getVisibleStatus(patient, pretriageEnabled)
+                selectBluePatientsEnabledConfiguration,
+                (patient, pretriageEnabled, bluePatientsEnabled) =>
+                    Patient.getVisibleStatus(
+                        patient,
+                        pretriageEnabled,
+                        bluePatientsEnabled
+                    )
             )
         );
     }

@@ -7,6 +7,7 @@ import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectPretriageEnabledConfiguration,
+    selectBluePatientsEnabledConfiguration,
     selectTileMapProperties,
 } from 'src/app/state/exercise/exercise.selectors';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
@@ -24,6 +25,9 @@ export class ExerciseSettingsModalComponent {
 
     public pretriageFlag$ = this.store.select(
         selectPretriageEnabledConfiguration
+    );
+    public bluePatientsFlag$ = this.store.select(
+        selectBluePatientsEnabledConfiguration
     );
 
     constructor(
@@ -47,6 +51,13 @@ export class ExerciseSettingsModalComponent {
         this.apiService.proposeAction({
             type: '[ExerciseSettings] Set Pretriage Flag',
             pretriageEnabled: flag,
+        });
+    }
+
+    public setBluePatientsFlag(flag: boolean) {
+        this.apiService.proposeAction({
+            type: '[ExerciseSettings] Set Blue Patients Flag',
+            bluePatientsEnabled: flag,
         });
     }
 

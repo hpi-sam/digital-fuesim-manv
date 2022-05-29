@@ -66,6 +66,15 @@
                     type="checkbox"
                 />
             </div>
+            Mit SK IV Patienten üben?
+            <div class="form-switch">
+                <input
+                    [ngModel]="bluePatientsFlag$ | async"
+                    (ngModelChange)="setBluePatientsFlag($event)"
+                    class="form-check-input"
+                    type="checkbox"
+                />
+            </div>
         </div>
     </div>
 </div>

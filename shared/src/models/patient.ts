@@ -139,11 +139,16 @@ export class Patient {
 
     static readonly msUntilRealStatus: number = 120_000;
 
-    static getVisibleStatus(patient: Patient, pretriageEnabled: boolean) {
-        return !pretriageEnabled ||
-            patient.treatmentTime >= this.msUntilRealStatus
-            ? patient.realStatus
-            : patient.pretriageStatus;
+    static getVisibleStatus(
+        patient: Patient,
+        pretriageEnabled: boolean,
+        bluePatientsEnabled: boolean
+    ) {
+        const status =
+            !pretriageEnabled || patient.treatmentTime >= this.msUntilRealStatus
+                ? patient.realStatus
+                : patient.pretriageStatus;
+        return status === 'blue' && !bluePatientsEnabled ? 'red' : status;
     }
 
     static isInVehicle(patient: Patient): boolean {
