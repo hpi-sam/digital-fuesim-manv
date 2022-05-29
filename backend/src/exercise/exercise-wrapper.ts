@@ -368,11 +368,13 @@ export class ExerciseWrapper extends NormalType<
         this.incrementIdGenerator.setCurrent(
             this.temporaryActionHistory.length
         );
-        // Remove all actions to not save them again
-        this.temporaryActionHistory.splice(
-            0,
-            this.temporaryActionHistory.length
-        );
+        // Remove all actions to not save them again (if database is active)
+        if (Config.useDb) {
+            this.temporaryActionHistory.splice(
+                0,
+                this.temporaryActionHistory.length
+            );
+        }
         // Pause exercise
         if (this.currentState.statusHistory.at(-1)?.status === 'running')
             this.reduce(
