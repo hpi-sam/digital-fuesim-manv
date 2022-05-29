@@ -360,7 +360,7 @@ export class ExerciseWrapper extends NormalType<
         this.clients.forEach((client) => client.disconnect());
         exerciseMap.delete(this.participantId);
         exerciseMap.delete(this.trainerId);
-        if (this.id && Config.useDb) {
+        if (this.id !== undefined && Config.useDb) {
             await this.databaseService.transaction(
                 this.databaseService.exerciseWrapperService.getRemove(this.id)
             );
@@ -370,7 +370,7 @@ export class ExerciseWrapper extends NormalType<
 
     public async getTimeLine(): Promise<ExerciseTimeline> {
         const completeHistory = [
-            ...(this.id && Config.useDb
+            ...(this.id !== undefined && Config.useDb
                 ? await this.databaseService.transaction(
                       this.databaseService.actionWrapperService.getFindAll({
                           where: { exercise: { id: this.id } },
