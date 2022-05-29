@@ -11,8 +11,8 @@ export const selectViewports = (state: AppState) => state.exercise.viewports;
 export const selectMapImages = (state: AppState) => state.exercise.mapImages;
 export const selectVehicleTemplates = (state: AppState) =>
     state.exercise.vehicleTemplates;
-export const selectPatientTemplates = (state: AppState) =>
-    state.exercise.patientTemplates;
+export const selectPatientCategories = (state: AppState) =>
+    state.exercise.patientCategories;
 export const selectMapImagesTemplates = (state: AppState) =>
     state.exercise.mapImageTemplates;
 export const getSelectMapImageTemplate =

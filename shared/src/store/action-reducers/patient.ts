@@ -83,6 +83,7 @@ export namespace PatientActionReducers {
                     }
                 );
             });
+            console.log('Tschüss');
             if (
                 patient.healthStates[patient.currentHealthStateId] === undefined
             ) {
@@ -90,8 +91,11 @@ export namespace PatientActionReducers {
                     `HealthState with id ${patient.currentHealthStateId} does not exist`
                 );
             }
+            console.log('1');
             draftState.patients[patient.id] = cloneDeepMutable(patient);
+            console.log('2');
             calculateTreatments(draftState);
+            console.log('3');
             return draftState;
         },
         rights: 'trainer',

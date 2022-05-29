@@ -14,6 +14,7 @@ import { UrlValidatorDirective } from './validation/url-validator.directive';
 import { ValuesPipe } from './pipes/values.pipe';
 import { ViewportNameComponent } from './components/viewport-name/viewport-name.component';
 import { IntegerValidatorDirective } from './validation/integer-validator.directive';
+import { PatientStatusDisplayComponent } from './components/patient-status-display/patient-status-display.component';
 
 @NgModule({
     declarations: [
@@ -25,6 +26,7 @@ import { IntegerValidatorDirective } from './validation/integer-validator.direct
         ExerciseExistsValidatorDirective,
         ImageExistsValidatorDirective,
         TransferPointNameComponent,
+        PatientStatusDisplayComponent,
         FormatDurationPipe,
         LetDirective,
         UrlValidatorDirective,
@@ -42,6 +44,7 @@ import { IntegerValidatorDirective } from './validation/integer-validator.direct
         ExerciseExistsValidatorDirective,
         ImageExistsValidatorDirective,
         TransferPointNameComponent,
+        PatientStatusDisplayComponent,
         FormatDurationPipe,
         LetDirective,
         UrlValidatorDirective,

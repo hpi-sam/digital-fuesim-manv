@@ -85,7 +85,10 @@
                     <tr>
                         <th scope="col">Beschreibung</th>
                         <td class="font-monospace">
-                            {{ patient.healthDescription }}
+                            <app-patient-status-display
+                                [patientStatus]="patient.patientStatusCode"
+                            >
+                            </app-patient-status-display>
                         </td>
                     </tr>
                     <tr>

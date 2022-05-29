@@ -14,6 +14,7 @@ import {
     PatientTemplate,
     MapImage,
 } from 'digital-fuesim-manv-shared';
+import type { PatientCategory } from 'digital-fuesim-manv-shared/dist/models/patient-category';
 
 @Injectable({
     providedIn: 'root',
@@ -141,8 +142,22 @@ export class DragElementService {
             case 'patient':
                 {
                     const patient = PatientTemplate.generatePatient(
-                        this.transferringTemplate.template
+                        this.transferringTemplate.template.patientTemplates[
+                            Math.floor(
+                                Math.random() *
+                                    this.transferringTemplate.template
+                                        .patientTemplates.length
+                            )
+                        ],
+                        this.transferringTemplate.template.name
                     );
+                    console.log({
+                        type: '[Patient] Add patient',
+                        patient: {
+                            ...patient,
+                            position,
+                        },
+                    });
                     this.apiService.proposeAction(
                         {
                             type: '[Patient] Add patient',
@@ -231,7 +246,7 @@ type TransferTemplate =
       }
     | {
           type: 'patient';
-          template: PatientTemplate;
+          template: PatientCategory;
       }
     | {
           type: 'transferPoint';

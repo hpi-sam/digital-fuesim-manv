@@ -22,6 +22,7 @@ import {
 } from './utils';
 import { PersonalInformation } from './utils/personal-information';
 import { BiometricInformation } from './utils/biometric-information';
+import { PatientStatusCode } from './utils/patient-status-code';
 import type { PatientHealthState } from '.';
 
 export class Patient {
@@ -36,6 +37,14 @@ export class Patient {
     @Type(() => BiometricInformation)
     public readonly biometricInformation: BiometricInformation;
 
+    /**
+     * A description of the expected patient behaviour over time
+     * For the trainer
+     */
+    @ValidateNested()
+    @Type(() => PatientStatusCode)
+    public readonly patientStatusCode: PatientStatusCode;
+
     // TODO
     @IsNotIn([undefined])
     public readonly visibleStatus: PatientStatus;
@@ -49,36 +58,29 @@ export class Patient {
     public readonly image: ImageProperties;
 
     /**
-     * A description of the expected patient health over time
-     * For the trainer
-     */
-    @IsString()
-    public readonly healthDescription: string;
-
-    /**
      * @deprecated Use {@link create} instead
      */
     constructor(
         // TODO: Specify patient data (e.g. injuries, name, etc.)
         personalInformation: PersonalInformation,
         biometricInformation: BiometricInformation,
+        patientStatusCode: PatientStatusCode,
         visibleStatus: PatientStatus,
         realStatus: PatientStatus,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         currentHealthStateId: UUID,
         image: ImageProperties,
-        health: HealthPoints,
-        healthDescription: string
+        health: HealthPoints
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
+        this.patientStatusCode = patientStatusCode;
         this.visibleStatus = visibleStatus;
         this.realStatus = realStatus;
         this.healthStates = healthStates;
         this.currentHealthStateId = currentHealthStateId;
         this.image = image;
         this.health = health;
-        this.healthDescription = healthDescription;
     }
 
     /**
