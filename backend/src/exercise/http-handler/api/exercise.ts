@@ -4,6 +4,7 @@ import {
     StateExport,
     ExerciseState,
     validateExerciseExport,
+    ReducerError,
 } from 'digital-fuesim-manv-shared';
 import { isEmpty } from 'lodash-es';
 import type { DatabaseService } from '../../../database/services/database-service';
@@ -66,14 +67,26 @@ export async function postExercise(
                     },
                 };
             }
-            newExercise = await ExerciseWrapper.importFromFile(
-                databaseService,
-                importInstance,
-                {
-                    participantId: newParticipantId,
-                    trainerId: newTrainerId,
+            try {
+                newExercise = await ExerciseWrapper.importFromFile(
+                    databaseService,
+                    importInstance,
+                    {
+                        participantId: newParticipantId,
+                        trainerId: newTrainerId,
+                    }
+                );
+            } catch (e: unknown) {
+                if (e instanceof ReducerError) {
+                    return {
+                        statusCode: 400,
+                        body: {
+                            message: `Error importing exercise: ${e.message}`,
+                        },
+                    };
                 }
-            );
+                throw e;
+            }
         }
         exerciseMap.set(newParticipantId, newExercise);
         exerciseMap.set(newTrainerId, newExercise);
