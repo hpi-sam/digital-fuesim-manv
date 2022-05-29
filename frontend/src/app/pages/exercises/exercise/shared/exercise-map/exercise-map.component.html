@@ -1,4 +1,46 @@
-<div #openLayersContainer class="h-100 w-100"></div>
+<div #openLayersContainer class="h-100 w-100 position-relative">
+    <div
+        class="position-absolute btn-group-vertical"
+        style="z-index: 10"
+        (click)="$event.stopPropagation()"
+    >
+        <button
+            (click)="olMapManager?.changeZoom('zoomIn')"
+            class="btn btn-sm btn-light"
+            title="Vergrößern"
+        >
+            <i class="bi-zoom-in"></i>
+        </button>
+        <button
+            (click)="olMapManager?.changeZoom('zoomOut')"
+            class="btn btn-sm btn-light"
+            title="Verkleinern"
+        >
+            <i class="bi-zoom-out"></i>
+        </button>
+        <button
+            *ngIf="
+                (apiService.currentRole$ | async) !== 'participant' &&
+                (restrictedToViewport$ | async) === undefined
+            "
+            (click)="olMapManager?.tryToFitViewToViewports()"
+            class="btn btn-sm btn-light"
+            title="Alle Ansichten anzeigen"
+        >
+            <i class="bi-aspect-ratio"></i>
+        </button>
+        <button
+            (click)="toggleFullscreen()"
+            class="btn btn-sm btn-light"
+            title="Vollbildmodus"
+        >
+            <i
+                [class.bi-fullscreen]="!fullscreenEnabled"
+                [class.bi-fullscreen-exit]="fullscreenEnabled"
+            ></i>
+        </button>
+    </div>
+</div>
 
 <!-- position-relative because openLayers deals with the positioning-->
 <div
