@@ -297,8 +297,10 @@ export class ExerciseWrapper extends NormalType<
                           databaseService
                       )
                     : (migrationResult as ExerciseWrapper);
-            // Reset actions to apply them
-            exercise.temporaryActionHistory.push(...actions);
+            // Reset actions to apply them (if they have been removed by saving to the database)
+            if (Config.useDb) {
+                exercise.temporaryActionHistory.push(...actions);
+            }
             exercise.applyAction(
                 {
                     type: '[Exercise] Set Participant Id',
