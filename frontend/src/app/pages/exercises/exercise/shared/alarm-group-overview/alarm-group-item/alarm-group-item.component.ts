@@ -74,7 +74,10 @@ export class AlarmGroupItemComponent {
         this.apiService.proposeAction({
             type: '[AlarmGroup] Add AlarmGroupVehicle',
             alarmGroupId: this.alarmGroup.id,
-            alarmGroupVehicle: AlarmGroupVehicle.create(vehicleTemplateId, 5),
+            alarmGroupVehicle: AlarmGroupVehicle.create(
+                vehicleTemplateId,
+                5 * 60 * 1000
+            ),
         });
     }
 }

@@ -123,7 +123,7 @@ export namespace PatientActionReducers {
         action: SetVisibleStatusAction,
         reducer: (draftState, { patientId, patientStatus }) => {
             const patient = getElement(draftState, 'patients', patientId);
-            patient.visibleStatus = patientStatus;
+            patient.pretriageStatus = patientStatus;
             return draftState;
         },
         rights: 'participant',

@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import {
     IsBoolean,
     IsDefined,
-    IsNotIn,
     IsNumber,
     IsOptional,
     IsString,
@@ -13,16 +12,16 @@ import {
 } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import {
-    Position,
-    PatientStatus,
-    HealthPoints,
-    ImageProperties,
-    healthPointsDefaults,
     getCreate,
+    HealthPoints,
+    healthPointsDefaults,
+    ImageProperties,
+    PatientStatus,
+    Position,
 } from './utils';
-import { PersonalInformation } from './utils/personal-information';
 import { BiometricInformation } from './utils/biometric-information';
 import { PatientStatusCode } from './utils/patient-status-code';
+import { PersonalInformation } from './utils/personal-information';
 import type { PatientHealthState } from '.';
 
 export class Patient {
@@ -46,8 +45,8 @@ export class Patient {
     public readonly patientStatusCode: PatientStatusCode;
 
     // TODO
-    @IsNotIn([undefined])
-    public readonly visibleStatus: PatientStatus;
+    @IsString()
+    public readonly pretriageStatus: PatientStatus;
 
     // TODO
     @IsString()
@@ -65,7 +64,7 @@ export class Patient {
         personalInformation: PersonalInformation,
         biometricInformation: BiometricInformation,
         patientStatusCode: PatientStatusCode,
-        visibleStatus: PatientStatus,
+        pretriageStatus: PatientStatus,
         realStatus: PatientStatus,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         currentHealthStateId: UUID,
@@ -75,7 +74,7 @@ export class Patient {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
         this.patientStatusCode = patientStatusCode;
-        this.visibleStatus = visibleStatus;
+        this.pretriageStatus = pretriageStatus;
         this.realStatus = realStatus;
         this.healthStates = healthStates;
         this.currentHealthStateId = currentHealthStateId;
@@ -138,6 +137,29 @@ export class Patient {
     public treatmentTime = 0;
 
     static readonly create = getCreate(this);
+
+    /**
+     * The time that is needed for personnel to automatically pretriage the patient
+     * in milliseconds
+     */
+    private static readonly pretriageTimeThreshold: number = 2 * 60 * 1000;
+
+    static getVisibleStatus(
+        patient: Patient,
+        pretriageEnabled: boolean,
+        bluePatientsEnabled: boolean
+    ) {
+        const status =
+            !pretriageEnabled ||
+            patient.treatmentTime >= this.pretriageTimeThreshold
+                ? patient.realStatus
+                : patient.pretriageStatus;
+        return status === 'blue' && !bluePatientsEnabled ? 'red' : status;
+    }
+
+    static pretriageStatusIsLocked(patient: Patient): boolean {
+        return patient.treatmentTime >= this.pretriageTimeThreshold;
+    }
 
     static isInVehicle(patient: Patient): boolean {
         return patient.position === undefined;

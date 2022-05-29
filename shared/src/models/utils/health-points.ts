@@ -1,5 +1,5 @@
-import type { ValidationOptions, ValidationArguments } from 'class-validator';
-import { isInt, registerDecorator } from 'class-validator';
+import type { ValidationArguments, ValidationOptions } from 'class-validator';
+import { isNumber, registerDecorator } from 'class-validator';
 import type { PatientStatus } from './patient-status';
 
 /**
@@ -95,7 +95,7 @@ export function IsValidHealthPoint(validationOptions?: ValidationOptions) {
             },
             validator: {
                 validate(value: any, args: ValidationArguments) {
-                    return isInt(value) && isValidHealthPoint(value);
+                    return isNumber(value) && isValidHealthPoint(value);
                 },
             },
         });

@@ -16,9 +16,9 @@
 .eslint
 .prettierrc
 
-## Backend
+# .env file
 
-backend/.env
+.env
 
 ## Shared
 

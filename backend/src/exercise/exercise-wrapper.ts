@@ -1,14 +1,166 @@
-import type { ExerciseAction, Role } from 'digital-fuesim-manv-shared';
-import { reduceExerciseState, ExerciseState } from 'digital-fuesim-manv-shared';
-import type { ActionEmitter } from './action-wrapper';
+import type {
+    ExerciseAction,
+    ExerciseTimeline,
+    Role,
+    UUID,
+} from 'digital-fuesim-manv-shared';
+import {
+    ExerciseState,
+    reduceExerciseState,
+    validateExerciseAction,
+} from 'digital-fuesim-manv-shared';
+import type { EntityManager } from 'typeorm';
+import { IncrementIdGenerator } from '../utils/increment-id-generator';
+import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
+import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
+import { NormalType } from '../database/normal-type';
+import type { DatabaseService } from '../database/services/database-service';
+import { Config } from '../config';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
 import { patientTick } from './patient-ticking';
 import { PeriodicEventHandler } from './periodic-events/periodic-event-handler';
 
-export class ExerciseWrapper {
-    private tickCounter = 0;
+export class ExerciseWrapper extends NormalType<
+    ExerciseWrapper,
+    ExerciseWrapperEntity
+> {
+    private _changedSinceSave = true;
+
+    public get changedSinceSave() {
+        return this._changedSinceSave;
+    }
+
+    /**
+     * Mark this exercise as being up-to-date in the database
+     */
+    public markAsSaved() {
+        this._changedSinceSave = false;
+        this.temporaryActionHistory.splice(
+            0,
+            this.temporaryActionHistory.length
+        );
+    }
+
+    /**
+     * Mark this exercise as being out-of-date with the database representation
+     */
+    public markAsModified() {
+        this._changedSinceSave = true;
+    }
+    async asEntity(
+        save: boolean,
+        entityManager?: EntityManager
+    ): Promise<ExerciseWrapperEntity> {
+        const operations = async (manager: EntityManager) => {
+            const getFromDatabase = async () =>
+                this.databaseService.exerciseWrapperService.getFindById(
+                    this.id!
+                )(manager);
+            const getNew = () => ExerciseWrapperEntity.createNew();
+            const copyData = async (entity: ExerciseWrapperEntity) => {
+                entity.actions = await Promise.all(
+                    this.temporaryActionHistory.map(async (action) =>
+                        action.asEntity(false, manager, entity)
+                    )
+                );
+                entity.initialStateString = JSON.stringify(this.initialState);
+                entity.currentStateString = JSON.stringify(this.currentState);
+                entity.participantId = this.participantId;
+                entity.tickCounter = this.tickCounter;
+                entity.trainerId = this.trainerId;
+            };
+            const getDto = (entity: ExerciseWrapperEntity) => ({
+                initialStateString: entity.initialStateString,
+                currentStateString: entity.currentStateString,
+                participantId: entity.participantId,
+                tickCounter: entity.tickCounter,
+                trainerId: entity.trainerId,
+            });
+            const existed = this.id !== undefined;
+            if (save && existed) {
+                const entity = await getFromDatabase();
+                entity.id = this.id!;
+                await copyData(entity);
+
+                const savedEntity =
+                    await this.databaseService.exerciseWrapperService.getUpdate(
+                        entity.id,
+                        getDto(entity)
+                    )(manager);
+                this.id = savedEntity.id;
+                this.markAsSaved();
+                return savedEntity;
+            } else if (save && !existed) {
+                const entity = getNew();
+                await copyData(entity);
+
+                const savedEntity =
+                    await this.databaseService.exerciseWrapperService.getCreate(
+                        getDto(entity)
+                    )(manager);
+                this.id = savedEntity.id;
+                this.markAsSaved();
+                return savedEntity;
+            } else if (!save && existed) {
+                const entity = await getFromDatabase();
+                entity.id = this.id!;
+                await copyData(entity);
+
+                return entity;
+                // eslint-disable-next-line no-else-return
+            } else {
+                const entity = getNew();
+                await copyData(entity);
+
+                return entity;
+            }
+        };
+        return entityManager
+            ? operations(entityManager)
+            : this.databaseService.transaction(operations);
+    }
+
+    // TODO: Method currently unused, kept for follow-up changes
+    static createFromEntity(
+        entity: ExerciseWrapperEntity,
+        databaseService: DatabaseService
+    ): ExerciseWrapper {
+        const actionsInWrapper: ActionWrapper[] = [];
+        const normal = new ExerciseWrapper(
+            entity.participantId,
+            entity.trainerId,
+            actionsInWrapper,
+            databaseService,
+            JSON.parse(entity.initialStateString) as ExerciseState,
+            JSON.parse(entity.currentStateString) as ExerciseState
+        );
+        normal.id = entity.id;
+        if (entity.actions) {
+            actionsInWrapper.splice(
+                0,
+                0,
+                ...entity.actions.map((action) =>
+                    ActionWrapper.createFromEntity(
+                        action,
+                        databaseService,
+                        normal
+                    )
+                )
+            );
+        }
+        normal.tickCounter = entity.tickCounter;
+        normal.markAsSaved();
+        return normal;
+    }
+
+    tickCounter = 0;
+
+    /**
+     * The server always uses `null` as their emitter id.
+     */
+    private readonly emitterId = null;
 
     /**
      * How many ticks have to pass until treatments get recalculated (e.g. with {@link tickInterval} === 1000 and {@link refreshTreatmentInterval} === 60 every minute)
@@ -33,8 +185,9 @@ export class ExerciseWrapper {
                 this.tickCounter % this.refreshTreatmentInterval === 0,
             tickInterval: this.tickInterval,
         };
-        this.applyAction(updateAction, { emitterId: 'server' });
+        this.applyAction(updateAction, this.emitterId);
         this.tickCounter++;
+        this.markAsModified();
     };
 
     // Call the tick every 1000 ms
@@ -46,26 +199,46 @@ export class ExerciseWrapper {
 
     private readonly clients = new Set<ClientWrapper>();
 
-    private currentState = ExerciseState.create();
+    public readonly incrementIdGenerator = new IncrementIdGenerator();
 
     /**
-     * This only contains some snapshots of the state, not every state in between.
+     * Be very careful when using this. - Use {@link create} instead for most use cases.
+     * This constructor does not guarantee a valid entity.
      */
-    private readonly stateHistory: ExerciseState[] = [];
-
-    private readonly actionHistory: ActionWrapper[] = [];
-
     constructor(
-        private readonly participantId: string,
-        private readonly trainerId: string
+        public readonly participantId: string,
+        public readonly trainerId: string,
+        public readonly temporaryActionHistory: ActionWrapper[],
+        databaseService: DatabaseService,
+        private readonly initialState = ExerciseState.create(),
+        private currentState: ExerciseState = initialState
     ) {
-        this.applyAction(
+        super(databaseService);
+    }
+
+    static create(
+        participantId: string,
+        trainerId: string,
+        databaseService: DatabaseService,
+        initialState: ExerciseState = ExerciseState.create()
+    ): ExerciseWrapper {
+        const exercise = new ExerciseWrapper(
+            participantId,
+            trainerId,
+            [],
+            databaseService,
+            initialState
+        );
+
+        exercise.applyAction(
             {
                 type: '[Exercise] Set Participant Id',
                 participantId,
             },
-            { emitterId: 'server' }
+            exercise.emitterId
         );
+
+        return exercise;
     }
 
     /**
@@ -105,10 +278,7 @@ export class ExerciseWrapper {
             type: '[Client] Add client',
             client,
         };
-        this.applyAction(addClientAction, {
-            emitterId: client.id,
-            emitterName: client.name,
-        });
+        this.applyAction(addClientAction, client.id);
         // Only after all this add the client in order to not send the action adding itself to it
         this.clients.add(clientWrapper);
     }
@@ -123,14 +293,10 @@ export class ExerciseWrapper {
             type: '[Client] Remove client',
             clientId: client.id,
         };
-        this.applyAction(
-            removeClientAction,
-            {
-                emitterId: client.id,
-                emitterName: client.name,
-            },
-            () => this.clients.delete(clientWrapper)
-        );
+        this.applyAction(removeClientAction, client.id, () => {
+            clientWrapper.disconnect();
+            this.clients.delete(clientWrapper);
+        });
     }
 
     public start() {
@@ -148,10 +314,10 @@ export class ExerciseWrapper {
      */
     public applyAction(
         action: ExerciseAction,
-        emitter: ActionEmitter,
+        emitterId: UUID | null,
         intermediateAction?: () => void
     ): void {
-        this.reduce(action, emitter);
+        this.reduce(action, emitterId);
         intermediateAction?.();
         this.emitAction(action);
     }
@@ -160,9 +326,10 @@ export class ExerciseWrapper {
      * Applies the action on the current state.
      * @throws Error if the action is not applicable on the current state
      */
-    private reduce(action: ExerciseAction, emitter: ActionEmitter): void {
+    private reduce(action: ExerciseAction, emitterId: UUID | null): void {
+        this.validateAction(action);
         const newState = reduceExerciseState(this.currentState, action);
-        this.setState(newState, action, emitter);
+        this.setState(newState, action, emitterId);
         if (action.type === '[Exercise] Pause') {
             this.pause();
         } else if (action.type === '[Exercise] Start') {
@@ -170,23 +337,63 @@ export class ExerciseWrapper {
         }
     }
 
+    private validateAction(action: ExerciseAction) {
+        const errors = validateExerciseAction(action);
+        if (errors.length > 0) {
+            throw new ValidationErrorWrapper(errors);
+        }
+    }
+
     private setState(
         newExerciseState: ExerciseState,
         action: ExerciseAction,
-        emitter: ActionEmitter
+        emitterId: UUID | null
     ): void {
-        // Only save every tenth state directly
-        // TODO: Check whether this is a good threshold.
-        if (this.actionHistory.length % 10 === 0) {
-            this.stateHistory.push(this.currentState);
-        }
-        this.actionHistory.push(new ActionWrapper(emitter, action));
         this.currentState = newExerciseState;
+        this.temporaryActionHistory.push(
+            new ActionWrapper(this.databaseService, action, emitterId, this)
+        );
+        this.markAsModified();
     }
 
-    public deleteExercise() {
+    public async deleteExercise() {
         this.clients.forEach((client) => client.disconnect());
         exerciseMap.delete(this.participantId);
         exerciseMap.delete(this.trainerId);
+        if (this.id !== undefined && Config.useDb) {
+            await this.databaseService.transaction(
+                this.databaseService.exerciseWrapperService.getRemove(this.id)
+            );
+            this.markAsSaved();
+        }
+    }
+
+    public async getTimeLine(): Promise<ExerciseTimeline> {
+        const completeHistory = [
+            ...(this.id !== undefined && Config.useDb
+                ? await this.databaseService.transaction(
+                      this.databaseService.actionWrapperService.getFindAll({
+                          where: { exercise: { id: this.id } },
+                      })
+                  )
+                : []
+            ).map((action) =>
+                ActionWrapper.createFromEntity(
+                    action,
+                    this.databaseService,
+                    this
+                )
+            ),
+            ...this.temporaryActionHistory,
+        ]
+            // TODO: Is this necessary?
+            .sort((a, b) => a.index - b.index);
+        return {
+            initialState: this.initialState,
+            actionsWrappers: completeHistory.map((action) => ({
+                action: action.action,
+                time: action.index,
+            })),
+        };
     }
 }

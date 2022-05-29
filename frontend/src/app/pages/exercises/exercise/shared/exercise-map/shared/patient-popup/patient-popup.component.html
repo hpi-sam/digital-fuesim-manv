@@ -2,17 +2,21 @@
     <h5 class="popover-header">
         {{ patient.personalInformation.name }}
         <span
-            *ngIf="patientStatus$ | async as patientStatus"
-            [ngStyle]="{ 'background-color': patientStatus }"
+            *ngIf="
+                (apiService.currentRole$ | async) === 'participant'
+                    ? (visibleStatus$ | async)
+                    : patient.realStatus as displayedStatus
+            "
+            [ngStyle]="{ 'background-color': displayedStatus }"
             [class.text-dark]="
-                patientStatus === 'yellow' || patientStatus === 'white'
+                displayedStatus === 'yellow' || displayedStatus === 'white'
             "
             class="badge rounded-pill font-monospace"
         >
             {{
-                (client$ | async)?.role === 'trainer'
+                (apiService.currentRole$ | async) !== 'participant'
                     ? (patient.health / healthPointsDefaults.max | percent)
-                    : statusNames[patientStatus!]
+                    : statusNames[displayedStatus]
             }}
         </span>
         <button
@@ -24,17 +28,16 @@
     <div class="popover-body p-0">
         <table class="table mb-0" style="max-width: 300px">
             <tbody>
-                <tr *ngIf="pretriageFlag$ | async">
-                    <th>
-                        Vorsichtungskategorie wählen
-                        {{ bluePatientsFlag$ | async }}
-                    </th>
+                <tr *ngIf="(configuration$ | async)?.pretriageEnabled">
+                    <th>Vorsichtung</th>
                     <td>
                         <select
-                            [ngModel]="patientStatus$ | async"
-                            (ngModelChange)="
-                                setPretriageCategory(patient.id, $event)
+                            [ngModel]="visibleStatus$ | async"
+                            (ngModelChange)="setPretriageCategory($event)"
+                            [disabled]="
+                                (pretriageStatusIsLocked$ | async) ?? false
                             "
+                            class="form-select form-select-sm no-validation"
                         >
                             <option
                                 *ngFor="let option of pretriageOptions$ | async"
@@ -81,7 +84,9 @@
                         {{ patient.personalInformation.address }}
                     </td>
                 </tr>
-                <ng-container *ngIf="(client$ | async)?.role === 'trainer'">
+                <ng-container
+                    *ngIf="(apiService.currentRole$ | async) !== 'participant'"
+                >
                     <tr>
                         <th scope="col">Beschreibung</th>
                         <td class="font-monospace">

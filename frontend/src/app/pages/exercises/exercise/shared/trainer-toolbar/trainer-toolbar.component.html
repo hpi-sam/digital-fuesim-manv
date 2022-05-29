@@ -12,11 +12,23 @@
     <button (click)="openAlarmGroupOverview()" class="btn btn-primary ms-3">
         Alarmierungsgruppen
     </button>
+    <button (click)="openHospitalEditor()" class="btn btn-primary ms-3">
+        Krankenhäuser
+    </button>
+    <button
+        (click)="openEmergencyOperationsCenter()"
+        class="btn btn-primary ms-3"
+    >
+        Leitstelle
+    </button>
     <button
         (click)="openExerciseStatisticsModal()"
         class="btn btn-primary ms-3"
     >
         Statistiken
+    </button>
+    <button (click)="apiService.startTimeTravel()" class="btn btn-primary ms-3">
+        Aufzeichnung
     </button>
     <button
         *ngIf="(exerciseStatus$ | async) === 'running'"

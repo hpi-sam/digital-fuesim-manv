@@ -58,6 +58,9 @@ export class ClientWrapper {
     }
 
     public disconnect() {
-        this.socket.disconnect();
+        this.chosenExercise = undefined;
+        if (this.socket.connected) {
+            this.socket.disconnect();
+        }
     }
 }

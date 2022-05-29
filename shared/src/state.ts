@@ -1,4 +1,3 @@
-import { defaultTileMapProperties } from './data';
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
 import { defaultPatientCategories } from './data/default-state/patient-templates';
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
@@ -6,8 +5,9 @@ import type {
     AlarmGroup,
     Client,
     EocLogEntry,
+    Hospital,
+    HospitalPatient,
     MapImage,
-    TileMapProperties,
     Material,
     Patient,
     Personnel,
@@ -16,6 +16,7 @@ import type {
     Vehicle,
     Viewport,
 } from './models';
+import { ExerciseConfiguration } from './models/exercise-configuration';
 import type { StatisticsEntry } from './models/statistics-entry';
 import { getCreate } from './models/utils';
 import type { UUID } from './utils';
@@ -37,6 +38,10 @@ export class ExerciseState {
     public readonly mapImages: { readonly [key: UUID]: MapImage } = {};
     public readonly transferPoints: { readonly [key: UUID]: TransferPoint } =
         {};
+    public readonly hospitals: { readonly [key: UUID]: Hospital } = {};
+    public readonly hospitalPatients: {
+        readonly [key: UUID]: HospitalPatient;
+    } = {};
     public readonly alarmGroups: { readonly [key: UUID]: AlarmGroup } = {};
     public readonly clients: { readonly [key: UUID]: Client } = {};
     public readonly patientCategories = defaultPatientCategories;
@@ -45,11 +50,8 @@ export class ExerciseState {
     public readonly ecoLog: readonly EocLogEntry[] = [];
     public readonly statusHistory: readonly StatusHistoryEntry[] = [];
     public readonly participantId: string = '';
-    public readonly tileMapProperties: TileMapProperties =
-        defaultTileMapProperties;
     public readonly statistics: readonly StatisticsEntry[] = [];
-    public readonly pretriageEnabledFlag: boolean = true;
-    public readonly bluePatientsEnabledFlag: boolean = false;
+    public readonly configuration = ExerciseConfiguration.create();
 
     /**
      * @deprecated Use {@link create} instead.

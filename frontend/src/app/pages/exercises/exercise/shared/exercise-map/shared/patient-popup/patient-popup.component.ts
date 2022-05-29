@@ -1,17 +1,19 @@
 import type { OnInit } from '@angular/core';
-import { EventEmitter, Output, Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type { UUID, Patient, PatientStatus } from 'digital-fuesim-manv-shared';
-import { healthPointsDefaults, statusNames } from 'digital-fuesim-manv-shared';
-import { map } from 'rxjs';
+import type { PatientStatus, UUID } from 'digital-fuesim-manv-shared';
+import {
+    healthPointsDefaults,
+    Patient,
+    statusNames,
+} from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
+import { map } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    selectPretriageFlag,
-    getSelectClient,
     getSelectPatient,
-    selectBluePatientsFlag,
+    selectConfiguration,
 } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
@@ -27,60 +29,53 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public patient$?: Observable<Patient>;
-    public patientStatus$?: Observable<PatientStatus>;
-    public client$ = this.store.select(
-        getSelectClient(this.apiService.ownClientId!)
-    );
+    public visibleStatus$?: Observable<PatientStatus>;
+    public pretriageStatusIsLocked$?: Observable<boolean>;
 
     public currentYear = new Date().getFullYear();
 
-    public patientStatus?: PatientStatus;
-    public pretriageFlag$ = this.store.select(selectPretriageFlag);
-    public bluePatientsFlag$ = this.store.select(selectBluePatientsFlag);
+    public configuration$ = this.store.select(selectConfiguration);
+
     public readonly pretriageOptions$: Observable<PatientStatus[]> =
-        this.bluePatientsFlag$.pipe(
-            map((bluePatientFlag) =>
-                bluePatientFlag
-                    ? ['black', 'blue', 'red', 'yellow', 'green']
-                    : ['black', 'red', 'yellow', 'green']
+        this.configuration$.pipe(
+            map((configuration) =>
+                configuration.bluePatientsEnabled
+                    ? ['white', 'black', 'blue', 'red', 'yellow', 'green']
+                    : ['white', 'black', 'red', 'yellow', 'green']
             )
         );
-
-    private readonly secondsUntilRealStatus = 5;
 
     // To use it in the template
     public readonly healthPointsDefaults = healthPointsDefaults;
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService
+        public readonly apiService: ApiService
     ) {}
 
     ngOnInit(): void {
         this.patient$ = this.store.select(getSelectPatient(this.patientId));
-        this.patientStatus$ = this.store.select(
+        this.visibleStatus$ = this.store.select(
             createSelector(
                 getSelectPatient(this.patientId),
-                selectPretriageFlag,
-                selectBluePatientsFlag,
-                (patient, pretriageFlag, bluePatientsFlag) => {
-                    const status =
-                        !pretriageFlag ||
-                        patient.treatmentTime >= this.secondsUntilRealStatus
-                            ? patient.realStatus
-                            : patient.visibleStatus;
-                    return status === 'blue' && !bluePatientsFlag
-                        ? 'red'
-                        : status;
-                }
+                selectConfiguration,
+                (patient, configuration) =>
+                    Patient.getVisibleStatus(
+                        patient,
+                        configuration.pretriageEnabled,
+                        configuration.bluePatientsEnabled
+                    )
             )
+        );
+        this.pretriageStatusIsLocked$ = this.patient$.pipe(
+            map((patient) => Patient.pretriageStatusIsLocked(patient))
         );
     }
 
-    setPretriageCategory(patientId: UUID, patientStatus: PatientStatus) {
+    setPretriageCategory(patientStatus: PatientStatus) {
         this.apiService.proposeAction({
             type: '[Patient] Set Visible Status',
-            patientId,
+            patientId: this.patientId,
             patientStatus,
         });
     }

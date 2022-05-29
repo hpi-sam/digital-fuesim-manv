@@ -35,9 +35,9 @@
                 {{ vehicle.name }}
             </td>
             <td class="align-middle">
-                <app-transfer-point-name
-                    [transferPointId]="vehicle.transfer.startTransferPointId"
-                ></app-transfer-point-name>
+                <app-start-point-name
+                    [startPoint]="vehicle.transfer.startPoint"
+                ></app-start-point-name>
             </td>
             <td class="align-middle">
                 <app-transfer-target-input
@@ -68,9 +68,9 @@
                 </span>
             </td>
             <td class="align-middle">
-                <app-transfer-point-name
-                    [transferPointId]="personnel.transfer.startTransferPointId"
-                ></app-transfer-point-name>
+                <app-start-point-name
+                    [startPoint]="personnel.transfer.startPoint"
+                ></app-start-point-name>
             </td>
             <td class="align-middle">
                 <app-transfer-target-input
