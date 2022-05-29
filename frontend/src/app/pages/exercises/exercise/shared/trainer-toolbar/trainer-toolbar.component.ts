@@ -2,27 +2,18 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import { plainToInstance } from 'class-transformer';
-import type { ExportImportFile, Constructor } from 'digital-fuesim-manv-shared';
-import {
-    StateExport,
-    StateHistoryCompound,
-    PartialExport,
-} from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
 import { MessageService } from 'src/app/core/messages/message.service';
-import { saveBlob } from 'src/app/shared/functions/save-blob';
 import type { AppState } from 'src/app/state/app.state';
 import { selectExerciseStatus } from 'src/app/state/exercise/exercise.selectors';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
+import { openEmergencyOperationsCenterModal } from '../emergency-operations-center/open-emergency-operations-center-modal';
 import { openExerciseSettingsModal } from '../exercise-settings/open-exercise-settings-modal';
 import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercise-statistics-modal';
-import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
-import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 import { openHospitalEditorModal } from '../hospital-editor/hospital-editor-modal';
-import { openEmergencyOperationsCenterModal } from '../emergency-operations-center/open-emergency-operations-center-modal';
+import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
 
 @Component({
     selector: 'app-trainer-toolbar',
@@ -115,84 +106,5 @@ export class TrainerToolbarComponent {
             .finally(() => {
                 this.router.navigate(['/']);
             });
-    }
-
-    public async exportExerciseState() {
-        const history = await this.apiService.exerciseHistory();
-        const blob = new Blob([
-            // TODO: Allow more export types
-            JSON.stringify(
-                new StateExport(
-                    getStateSnapshot(this.store).exercise,
-                    new StateHistoryCompound(
-                        history.actionsWrappers.map(
-                            (actionWrapper) => actionWrapper.action
-                        ),
-                        history.initialState
-                    )
-                )
-            ),
-        ]);
-        saveBlob(
-            blob,
-            `exercise-state-${
-                getStateSnapshot(this.store).exercise.participantId
-            }.json`
-        );
-    }
-
-    public async importExerciseState(fileList: FileList) {
-        try {
-            const importString = await fileList.item(0)?.text();
-            if (!importString) {
-                throw new Error('No file selected');
-            }
-            const importPlain = JSON.parse(importString) as ExportImportFile;
-            const type = importPlain.type;
-            if (!['complete', 'partial'].includes(type)) {
-                throw new Error(`Ungültiger Dateityp: \`type === ${type}\``);
-            }
-            const importInstance = plainToInstance(
-                (type === 'complete'
-                    ? StateExport
-                    : PartialExport) as Constructor<
-                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
-                    PartialExport | StateExport
-                >,
-                importPlain
-            );
-            switch (importInstance.type) {
-                case 'complete': {
-                    const ids = await this.apiService.importExercise(
-                        importInstance
-                    );
-                    // TODO: Better visualization
-                    this.messageService.postMessage(
-                        {
-                            color: 'success',
-                            title: 'Übung importiert',
-                            body: `Ids: Trainer: ${ids.trainerId}; Teilnehmer: ${ids.participantId}`,
-                        },
-                        'alert',
-                        null
-                    );
-                    break;
-                }
-                case 'partial': {
-                    throw new Error(
-                        'Dieser Typ kann zur Zeit nicht importiert werden.'
-                    );
-                    break;
-                }
-            }
-            // const exerciseState: ExerciseState = JSON.parse(importString);
-            // await this.apiService.importExercise(exerciseState);
-            // location.reload();
-        } catch (error: unknown) {
-            this.messageService.postError({
-                title: 'Fehler beim Importieren der Übung',
-                error,
-            });
-        }
     }
 }

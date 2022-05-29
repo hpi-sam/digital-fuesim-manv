@@ -1,11 +1,14 @@
 import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { StateExport, StateHistoryCompound } from 'digital-fuesim-manv-shared';
 import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
+import { saveBlob } from 'src/app/shared/functions/save-blob';
 import type { AppState } from 'src/app/state/app.state';
 import { selectParticipantId } from 'src/app/state/exercise/exercise.selectors';
+import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 @Component({
     selector: 'app-exercise',
@@ -52,6 +55,31 @@ export class ExerciseComponent implements OnDestroy {
             title: 'Zurück in die Zukunft!',
             color: 'info',
         });
+    }
+
+    public async exportExerciseWithHistory() {
+        const history = await this.apiService.exerciseHistory();
+        const currentState = getStateSnapshot(this.store).exercise;
+        const blob = new Blob([
+            JSON.stringify(
+                new StateExport(
+                    currentState,
+                    new StateHistoryCompound(
+                        history.actionsWrappers.map(
+                            (actionWrapper) => actionWrapper.action
+                        ),
+                        history.initialState
+                    )
+                )
+            ),
+        ]);
+        saveBlob(blob, `exercise-state-${currentState.participantId}.json`);
+    }
+
+    public exportExerciseState() {
+        const currentState = getStateSnapshot(this.store).exercise;
+        const blob = new Blob([JSON.stringify(new StateExport(currentState))]);
+        saveBlob(blob, `exercise-state-${currentState.participantId}.json`);
     }
 
     ngOnDestroy(): void {
