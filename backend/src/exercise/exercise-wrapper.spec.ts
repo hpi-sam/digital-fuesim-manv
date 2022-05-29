@@ -6,7 +6,11 @@ import { ExerciseWrapper } from './exercise-wrapper';
 describe('Exercise Wrapper', () => {
     const environment = createTestEnvironment();
     it('fails getting a role for the wrong id', () => {
-        const exercise = new ExerciseWrapper('participant', 'trainer');
+        const exercise = ExerciseWrapper.create(
+            '123456',
+            '12345678',
+            environment.databaseService
+        );
 
         expect(() => exercise.getRoleFromUsedId('wrong id')).toThrow(
             RangeError
@@ -14,7 +18,11 @@ describe('Exercise Wrapper', () => {
     });
 
     it('does nothing adding a client that is not set up', async () => {
-        const exercise = new ExerciseWrapper('participant', 'trainer');
+        const exercise = ExerciseWrapper.create(
+            '123456',
+            '12345678',
+            environment.databaseService
+        );
         // Use a websocket in order to have a ClientWrapper set up
         await environment.withWebsocket(async () => {
             // Sleep a bit to allow the socket to connect.
@@ -32,7 +40,11 @@ describe('Exercise Wrapper', () => {
     });
 
     it('does nothing removing a client that is not joined', async () => {
-        const exercise = new ExerciseWrapper('participant', 'trainer');
+        const exercise = await ExerciseWrapper.create(
+            '123456',
+            '12345678',
+            environment.databaseService
+        );
         // Use a websocket in order to have a ClientWrapper set up
         await environment.withWebsocket(async () => {
             const client = clientMap.values().next().value;
@@ -51,7 +63,11 @@ describe('Exercise Wrapper', () => {
     describe('Started Exercise', () => {
         let exercise: ExerciseWrapper | undefined;
         beforeEach(() => {
-            exercise = new ExerciseWrapper('participant', 'trainer');
+            exercise = ExerciseWrapper.create(
+                '123456',
+                '12345678',
+                environment.databaseService
+            );
             exercise.start();
         });
         afterEach(() => {
@@ -77,27 +93,35 @@ describe('Exercise Wrapper', () => {
 
     describe('Reactions to Actions', () => {
         it('calls start when matching action is sent', () => {
-            const exercise = new ExerciseWrapper('participant', 'trainer');
+            const exercise = ExerciseWrapper.create(
+                '123456',
+                '12345678',
+                environment.databaseService
+            );
 
             const startMock = jest.spyOn(ExerciseWrapper.prototype, 'start');
             startMock.mockImplementation(() => ({}));
 
             exercise.applyAction(
                 { type: '[Exercise] Start', timestamp: 0 },
-                { emitterId: 'server' }
+                (exercise as any).emitterUUID
             );
             expect(startMock).toHaveBeenCalledTimes(1);
         });
 
         it('calls start when matching action is sent', () => {
-            const exercise = new ExerciseWrapper('participant', 'trainer');
+            const exercise = ExerciseWrapper.create(
+                '123456',
+                '12345678',
+                environment.databaseService
+            );
 
             const pause = jest.spyOn(ExerciseWrapper.prototype, 'pause');
             pause.mockImplementation(() => ({}));
 
             exercise.applyAction(
                 { type: '[Exercise] Pause', timestamp: 0 },
-                { emitterId: 'server' }
+                (exercise as any).emitterUUID
             );
             expect(pause).toHaveBeenCalledTimes(1);
         });

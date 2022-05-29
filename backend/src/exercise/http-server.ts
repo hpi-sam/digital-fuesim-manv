@@ -1,6 +1,7 @@
 import type { Server as HttpServer } from 'node:http';
 import cors from 'cors';
 import type * as core from 'express-serve-static-core';
+import type { DatabaseService } from '../database/services/database-service';
 import {
     deleteExercise,
     getExercise,
@@ -11,7 +12,11 @@ import { getHealth } from './http-handler/api/health';
 
 export class ExerciseHttpServer {
     public readonly httpServer: HttpServer;
-    constructor(app: core.Express, port: number) {
+    constructor(
+        app: core.Express,
+        port: number,
+        databaseService: DatabaseService
+    ) {
         // TODO: Temporary allow all
         app.use(cors());
 
@@ -25,7 +30,7 @@ export class ExerciseHttpServer {
         });
 
         app.post('/api/exercise', (req, res) => {
-            const response = postExercise();
+            const response = postExercise(databaseService);
             res.statusCode = response.statusCode;
             res.send(response.body);
         });
@@ -36,14 +41,14 @@ export class ExerciseHttpServer {
             res.send(response.body);
         });
 
-        app.delete('/api/exercise/:exerciseId', (req, res) => {
-            const response = deleteExercise(req.params.exerciseId);
+        app.delete('/api/exercise/:exerciseId', async (req, res) => {
+            const response = await deleteExercise(req.params.exerciseId);
             res.statusCode = response.statusCode;
             res.send(response.body);
         });
 
-        app.get('/api/exercise/:exerciseId/history', (req, res) => {
-            const response = getExerciseHistory(req.params.exerciseId);
+        app.get('/api/exercise/:exerciseId/history', async (req, res) => {
+            const response = await getExerciseHistory(req.params.exerciseId);
             res.statusCode = response.statusCode;
             res.send(response.body);
         });
