@@ -30,13 +30,22 @@ function caterFor(
     catering: Mutable<Material> | Mutable<Personnel>,
     catersFor: Mutable<CatersFor>,
     patient: Mutable<Patient>,
-    pretriageEnabled: boolean
+    pretriageEnabled: boolean,
+    bluePatientsEnabled: boolean
 ) {
     // Treat not pretriaged patients as yellow.
     const status =
-        Patient.getVisibleStatus(patient, pretriageEnabled) === 'white'
+        Patient.getVisibleStatus(
+            patient,
+            pretriageEnabled,
+            bluePatientsEnabled
+        ) === 'white'
             ? 'yellow'
-            : Patient.getVisibleStatus(patient, pretriageEnabled);
+            : Patient.getVisibleStatus(
+                  patient,
+                  pretriageEnabled,
+                  bluePatientsEnabled
+              );
     if (
         (status === 'red' && catering.canCaterFor.red <= catersFor.red) ||
         (status === 'yellow' &&
@@ -77,6 +86,7 @@ function caterFor(
 
 export function calculateTreatments(state: Mutable<ExerciseState>) {
     const pretriageEnabled = state.configuration.pretriageEnabled;
+    const bluePatientsEnabled = state.configuration.bluePatientsEnabled;
     const personnels = Object.values(state.personnel).filter(
         (personnel) => personnel.position !== undefined
     );
@@ -93,8 +103,16 @@ export function calculateTreatments(state: Mutable<ExerciseState>) {
     const patients = Object.values(state.patients).filter(
         (patient) =>
             patient.position !== undefined &&
-            Patient.getVisibleStatus(patient, pretriageEnabled) !== 'black' &&
-            Patient.getVisibleStatus(patient, pretriageEnabled) !== 'blue'
+            Patient.getVisibleStatus(
+                patient,
+                pretriageEnabled,
+                bluePatientsEnabled
+            ) !== 'black' &&
+            Patient.getVisibleStatus(
+                patient,
+                pretriageEnabled,
+                bluePatientsEnabled
+            ) !== 'blue'
     );
     patients.forEach((patient) => {
         patient.isBeingTreated = false;
@@ -106,17 +124,28 @@ export function calculateTreatments(state: Mutable<ExerciseState>) {
     // We ignore whether a patient is already treated
     // and the patient is just added to the list of treated patients.
     personnels.forEach((personnel) => {
-        calculateCatering(personnel, patients, pretriageEnabled);
+        calculateCatering(
+            personnel,
+            patients,
+            pretriageEnabled,
+            bluePatientsEnabled
+        );
     });
     materials.forEach((material) => {
-        calculateCatering(material, patients, pretriageEnabled);
+        calculateCatering(
+            material,
+            patients,
+            pretriageEnabled,
+            bluePatientsEnabled
+        );
     });
 }
 
 function calculateCatering(
     catering: Material | Personnel,
     patients: Mutable<Patient>[],
-    pretriageEnabled: boolean
+    pretriageEnabled: boolean,
+    bluePatientsEnabled: boolean
 ) {
     const catersFor: CatersFor = {
         red: 0,
@@ -138,7 +167,13 @@ function calculateCatering(
         return;
     }
     if (distances[0].distance <= specificThreshold) {
-        caterFor(catering, catersFor, distances[0].patient, pretriageEnabled);
+        caterFor(
+            catering,
+            catersFor,
+            distances[0].patient,
+            pretriageEnabled,
+            bluePatientsEnabled
+        );
     }
     // The typings of groupBy are not correct (group keys could be missing if there are no such elements in the array)
     const distancesByStatus: Partial<
@@ -153,9 +188,17 @@ function calculateCatering(
     > = groupBy(
         distances,
         ({ patient }) =>
-            Patient.getVisibleStatus(patient, pretriageEnabled) === 'white'
+            Patient.getVisibleStatus(
+                patient,
+                pretriageEnabled,
+                bluePatientsEnabled
+            ) === 'white'
                 ? 'yellow'
-                : Patient.getVisibleStatus(patient, pretriageEnabled) // Treat untriaged patients as yellow
+                : Patient.getVisibleStatus(
+                      patient,
+                      pretriageEnabled,
+                      bluePatientsEnabled
+                  ) // Treat untriaged patients as yellow
     );
 
     const redPatients =
@@ -183,19 +226,43 @@ function calculateCatering(
             .map(({ patient }) => patient) ?? [];
 
     for (const patient of redPatients) {
-        if (!caterFor(catering, catersFor, patient, pretriageEnabled)) {
+        if (
+            !caterFor(
+                catering,
+                catersFor,
+                patient,
+                pretriageEnabled,
+                bluePatientsEnabled
+            )
+        ) {
             break;
         }
     }
 
     for (const patient of yellowPatients) {
-        if (!caterFor(catering, catersFor, patient, pretriageEnabled)) {
+        if (
+            !caterFor(
+                catering,
+                catersFor,
+                patient,
+                pretriageEnabled,
+                bluePatientsEnabled
+            )
+        ) {
             break;
         }
     }
 
     for (const patient of greenPatients) {
-        if (!caterFor(catering, catersFor, patient, pretriageEnabled)) {
+        if (
+            !caterFor(
+                catering,
+                catersFor,
+                patient,
+                pretriageEnabled,
+                bluePatientsEnabled
+            )
+        ) {
             break;
         }
     }

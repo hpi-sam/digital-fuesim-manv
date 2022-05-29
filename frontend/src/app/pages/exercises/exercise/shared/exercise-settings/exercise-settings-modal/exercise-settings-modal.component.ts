@@ -23,8 +23,12 @@ export class ExerciseSettingsModalComponent {
     public readonly tileMapUrlRegex =
         /^(?=.*\{x\})(?=.*\{-?y\})(?=.*\{z\}).*$/u;
 
-    public pretriageFlag$ = this.store.select(selectPretriageEnabledConfiguration);
-    public bluePatientsFlag$ = this.store.select(selectBluePatientsEnabledConfiguration);
+    public pretriageFlag$ = this.store.select(
+        selectPretriageEnabledConfiguration
+    );
+    public bluePatientsFlag$ = this.store.select(
+        selectBluePatientsEnabledConfiguration
+    );
 
     constructor(
         private readonly store: Store<AppState>,

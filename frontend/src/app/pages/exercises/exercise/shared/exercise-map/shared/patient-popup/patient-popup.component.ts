@@ -1,18 +1,13 @@
 import type { OnInit } from '@angular/core';
 import { EventEmitter, Output, Component } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-<<<<<<< HEAD
-import type { UUID, Patient, PatientStatus } from 'digital-fuesim-manv-shared';
-import { healthPointsDefaults, statusNames } from 'digital-fuesim-manv-shared';
-import { map } from 'rxjs';
-=======
 import type { UUID, PatientStatus } from 'digital-fuesim-manv-shared';
 import {
     healthPointsDefaults,
     statusNames,
     Patient,
 } from 'digital-fuesim-manv-shared';
->>>>>>> feature/399-add-pretriage-functionality
+import { map } from 'rxjs';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -20,7 +15,7 @@ import {
     selectPretriageEnabledConfiguration,
     getSelectClient,
     getSelectPatient,
-    selectBluePatientsFlag,
+    selectBluePatientsEnabledConfiguration,
 } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
@@ -44,8 +39,12 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     public currentYear = new Date().getFullYear();
 
     public patientStatus?: PatientStatus;
-    public pretriageEnabled$ = this.store.select(selectPretriageEnabledConfiguration);
-    public bluePatientsEnabled$ = this.store.select(selectBluePatientsEnabledConfiguration);
+    public pretriageEnabled$ = this.store.select(
+        selectPretriageEnabledConfiguration
+    );
+    public bluePatientsEnabled$ = this.store.select(
+        selectBluePatientsEnabledConfiguration
+    );
     public readonly pretriageOptions$: Observable<PatientStatus[]> =
         this.bluePatientsEnabled$.pipe(
             map((bluePatientFlag) =>
@@ -54,8 +53,6 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
                     : ['black', 'red', 'yellow', 'green']
             )
         );
-
-    private readonly secondsUntilRealStatus = 5;
 
     // To use it in the template
     public readonly healthPointsDefaults = healthPointsDefaults;
@@ -71,8 +68,13 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
             createSelector(
                 getSelectPatient(this.patientId),
                 selectPretriageEnabledConfiguration,
-                (patient, pretriageEnabled) =>
-                    Patient.getVisibleStatus(patient, pretriageEnabled, bluePatientsEnabled)
+                selectBluePatientsEnabledConfiguration,
+                (patient, pretriageEnabled, bluePatientsEnabled) =>
+                    Patient.getVisibleStatus(
+                        patient,
+                        pretriageEnabled,
+                        bluePatientsEnabled
+                    )
             )
         );
     }

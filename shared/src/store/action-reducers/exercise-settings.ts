@@ -52,7 +52,8 @@ export namespace ExerciseSettingsActionReducers {
         {
             action: SetBluePatientsFlagAction,
             reducer: (draftState, { bluePatientsEnabled }) => {
-                draftState.bluePatientsEnabledFlag = bluePatientsEnabled;
+                draftState.configuration.bluePatientsEnabled =
+                    bluePatientsEnabled;
                 return draftState;
             },
             rights: 'trainer',
