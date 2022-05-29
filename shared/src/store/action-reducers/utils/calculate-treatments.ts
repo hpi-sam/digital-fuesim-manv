@@ -1,5 +1,5 @@
 import { groupBy } from 'lodash-es';
-import type { Material, Personnel} from '../../../models';
+import type { Material, Personnel } from '../../../models';
 import { Patient } from '../../../models';
 import type { PatientStatus } from '../../../models/utils';
 import type { ExerciseState } from '../../../state';
@@ -30,10 +30,13 @@ function caterFor(
     catering: Mutable<Material> | Mutable<Personnel>,
     catersFor: Mutable<CatersFor>,
     patient: Mutable<Patient>,
-    pretriageEnabled: boolean,
+    pretriageEnabled: boolean
 ) {
     // Treat not pretriaged patients as yellow.
-    const status = Patient.getVisibleStatus(patient, pretriageEnabled) === 'white' ? 'yellow' : Patient.getVisibleStatus(patient, pretriageEnabled);
+    const status =
+        Patient.getVisibleStatus(patient, pretriageEnabled) === 'white'
+            ? 'yellow'
+            : Patient.getVisibleStatus(patient, pretriageEnabled);
     if (
         (status === 'red' && catering.canCaterFor.red <= catersFor.red) ||
         (status === 'yellow' &&
@@ -150,7 +153,9 @@ function calculateCatering(
     > = groupBy(
         distances,
         ({ patient }) =>
-        Patient.getVisibleStatus(patient, pretriageEnabled) === 'white' ? 'yellow' : Patient.getVisibleStatus(patient, pretriageEnabled) // Treat untriaged patients as yellow
+            Patient.getVisibleStatus(patient, pretriageEnabled) === 'white'
+                ? 'yellow'
+                : Patient.getVisibleStatus(patient, pretriageEnabled) // Treat untriaged patients as yellow
     );
 
     const redPatients =

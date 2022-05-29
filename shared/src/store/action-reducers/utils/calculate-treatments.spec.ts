@@ -55,12 +55,12 @@ function assertCatering(
 }
 
 function generatePatient(
-    visibleStatus: PatientStatus,
+    pretriageStatus: PatientStatus,
     realStatus: PatientStatus,
     position?: Position
 ): Mutable<Patient> {
     const patient = generateDummyPatient() as Mutable<Patient>;
-    patient.visibleStatus = visibleStatus;
+    patient.pretriageStatus = pretriageStatus;
     patient.realStatus = realStatus;
     if (position) {
         patient.position = { ...position };

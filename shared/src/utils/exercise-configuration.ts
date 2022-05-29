@@ -1,6 +1,6 @@
-import { getCreate } from "../models/utils";
+import { getCreate } from '../models/utils';
 
-export class ExerciseConfiguration{
+export class ExerciseConfiguration {
     public readonly pretriageEnabled: boolean = true;
 
     static readonly create = getCreate(this);

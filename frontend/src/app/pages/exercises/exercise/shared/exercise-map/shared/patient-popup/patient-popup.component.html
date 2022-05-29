@@ -29,9 +29,7 @@
                     <td>
                         <select
                             [ngModel]="patientStatus$ | async"
-                            (ngModelChange)="
-                                setPretriageCategory($event)
-                            "
+                            (ngModelChange)="setPretriageCategory($event)"
                         >
                             <option [value]="'black'">EX</option>
                             <option [value]="'blue'">SK IV</option>
