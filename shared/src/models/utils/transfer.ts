@@ -1,6 +1,7 @@
-import { IsBoolean, IsNumber, IsUUID } from 'class-validator';
+import { IsBoolean, IsNumber, IsObject, IsUUID } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { getCreate } from './get-create';
+import { StartPoint } from './start-points';
 
 export class Transfer {
     /**
@@ -9,8 +10,8 @@ export class Transfer {
     @IsNumber()
     public readonly endTimeStamp: number;
 
-    @IsUUID(4, uuidValidationOptions)
-    public readonly startTransferPointId: UUID;
+    @IsObject()
+    public readonly startPoint: StartPoint;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly targetTransferPointId: UUID;
@@ -23,12 +24,12 @@ export class Transfer {
      */
     constructor(
         endTimeStamp: number,
-        startTransferPointId: UUID,
+        startPoint: StartPoint,
         targetTransferPointId: UUID,
         isPaused: boolean
     ) {
         this.endTimeStamp = endTimeStamp;
-        this.startTransferPointId = startTransferPointId;
+        this.startPoint = startPoint;
         this.targetTransferPointId = targetTransferPointId;
         this.isPaused = isPaused;
     }

@@ -1,4 +1,5 @@
-import { IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsInt, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
+import { StartPoint } from '../../models/utils/start-points';
 import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -14,8 +15,8 @@ export class AddToTransferAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;
 
-    @IsUUID(4, uuidValidationOptions)
-    public readonly startTransferPointId!: UUID;
+    @IsObject()
+    public readonly startPoint!: StartPoint;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly targetTransferPointId!: UUID;
@@ -61,12 +62,7 @@ export namespace TransferActionReducers {
         action: AddToTransferAction,
         reducer: (
             draftState,
-            {
-                elementType,
-                elementId,
-                startTransferPointId,
-                targetTransferPointId,
-            }
+            { elementType, elementId, startPoint, targetTransferPointId }
         ) => {
             const element = getElement(draftState, elementType, elementId);
             if (element.transfer) {
@@ -74,26 +70,35 @@ export namespace TransferActionReducers {
                     `Element with id ${element.id} is already in transfer`
                 );
             }
-            const startTransferPoint = getElement(
-                draftState,
-                'transferPoints',
-                startTransferPointId
-            );
-            const connection =
-                startTransferPoint.reachableTransferPoints[
-                    targetTransferPointId
-                ];
-            if (!connection) {
-                throw new ReducerError(
-                    `TransferPoint with id ${targetTransferPointId} is not reachable from ${startTransferPointId}`
+
+            // Get the duration
+            let duration: number;
+            if (startPoint.type === 'transferPoint') {
+                const transferStartPoint = getElement(
+                    draftState,
+                    'transferPoints',
+                    startPoint.transferPointId
                 );
+                const connection =
+                    transferStartPoint.reachableTransferPoints[
+                        targetTransferPointId
+                    ];
+                if (!connection) {
+                    throw new ReducerError(
+                        `TransferPoint with id ${targetTransferPointId} is not reachable from ${transferStartPoint.id}`
+                    );
+                }
+                duration = connection.duration;
+            } else {
+                duration = startPoint.duration;
             }
-            // The element is now in transfer
+
+            // Set the element to transfer
             delete element.position;
             element.transfer = {
-                startTransferPointId,
+                startPoint,
                 targetTransferPointId,
-                endTimeStamp: draftState.currentTime + connection.duration,
+                endTimeStamp: draftState.currentTime + duration,
                 isPaused: false,
             };
             return draftState;
