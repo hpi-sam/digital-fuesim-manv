@@ -57,4 +57,7 @@
         *ngIf="personnelStatistics$ | async as statistics"
         [statistics]="statistics"
     ></app-stacked-bar-chart>
+    <br />
+    <h3>Krankenhäuser</h3>
+    <app-hospital-patients-table></app-hospital-patients-table>
 </div>

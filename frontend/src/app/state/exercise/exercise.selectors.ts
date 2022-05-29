@@ -69,6 +69,9 @@ export const selectHospitals = (state: AppState) => state.exercise.hospitals;
 export const selectTileMapProperties = (state: AppState) =>
     state.exercise.tileMapProperties;
 
+export const selectHospitalPatients = (state: AppState) =>
+    state.exercise.hospitalPatients;
+
 /**
  * @returns a selector that returns a dictionary of all elements that have a position and are in the viewport restriction
  */

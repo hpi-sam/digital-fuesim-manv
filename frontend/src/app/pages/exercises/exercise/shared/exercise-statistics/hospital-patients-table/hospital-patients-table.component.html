@@ -1,0 +1,30 @@
+<!-- TODO: make this independent from Angular material -->
+<table
+    matSort
+    (matSortChange)="sortEvent$.next($event)"
+    class="table table-striped"
+>
+    <thead>
+        <tr>
+            <!-- If you change a sort-header here, you must also update HospitalPatientsRow in the component! -->
+            <th mat-sort-header="patientStatus">Patientenkategorie</th>
+            <th mat-sort-header="vehicleType">Fahrzeugtyp</th>
+            <th mat-sort-header="startTime">Startzeit des Transports</th>
+            <th mat-sort-header="arrivalTime">Ankunftszeit</th>
+            <th mat-sort-header="hospitalId">Krankenhaus</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let row of sortedRows$ | async">
+            <td>{{ row.patientStatus }}</td>
+            <td>{{ row.vehicleType }}</td>
+            <td>{{ row.departureTime | formatDuration }}</td>
+            <td>{{ row.arrivalTime | formatDuration }}</td>
+            <td>{{ row.hospitalName }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<div *ngIf="!(sortedRows$ | async)?.length" class="text-muted">
+    Es wurden noch keine Patienten an Krankenhäuser versendet.
+</div>
