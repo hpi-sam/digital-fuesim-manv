@@ -13,8 +13,7 @@ services:
         ports:
             - 80:80
         env_file:
-            - ./.env.example
-            - ./.env
+            - .env
     db:
         image: postgres:14
         container_name: dfm_postgres
