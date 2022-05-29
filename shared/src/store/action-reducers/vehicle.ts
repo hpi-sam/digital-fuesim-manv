@@ -2,13 +2,35 @@ import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
 import { Position } from '../../models/utils';
+import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
+import type { Mutable } from '../../utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { deletePatient } from './patient';
 import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
+
+export function deleteVehicle(
+    draftState: Mutable<ExerciseState>,
+    vehicleId: UUID
+) {
+    // Check if the vehicle exists
+    getElement(draftState, 'vehicles', vehicleId);
+    // Delete related material and personnel
+    Object.entries(draftState.materials)
+        .filter(([, material]) => material.vehicleId === vehicleId)
+        .forEach(([materialId]) => delete draftState.materials[materialId]);
+    Object.entries(draftState.personnel)
+        .filter(([, personnel]) => personnel.vehicleId === vehicleId)
+        .forEach(([personnelId]) => delete draftState.personnel[personnelId]);
+    Object.entries(draftState.patients)
+        .filter(([, patients]) => patients.vehicleId === vehicleId)
+        .forEach(([patientId]) => deletePatient(draftState, patientId));
+    // Delete the vehicle
+    delete draftState.vehicles[vehicleId];
+}
 
 export class AddVehicleAction implements Action {
     @IsString()
@@ -150,24 +172,7 @@ export namespace VehicleActionReducers {
     export const removeVehicle: ActionReducer<RemoveVehicleAction> = {
         action: RemoveVehicleAction,
         reducer: (draftState, { vehicleId }) => {
-            // Check if the vehicle exists
-            getElement(draftState, 'vehicles', vehicleId);
-            // Delete related material and personnel
-            Object.entries(draftState.materials)
-                .filter(([, material]) => material.vehicleId === vehicleId)
-                .forEach(
-                    ([materialId]) => delete draftState.materials[materialId]
-                );
-            Object.entries(draftState.personnel)
-                .filter(([, personnel]) => personnel.vehicleId === vehicleId)
-                .forEach(
-                    ([personnelId]) => delete draftState.personnel[personnelId]
-                );
-            Object.entries(draftState.patients)
-                .filter(([, patients]) => patients.vehicleId === vehicleId)
-                .forEach(([patientId]) => deletePatient(draftState, patientId));
-            // Delete the vehicle
-            delete draftState.vehicles[vehicleId];
+            deleteVehicle(draftState, vehicleId);
             return draftState;
         },
         rights: 'trainer',

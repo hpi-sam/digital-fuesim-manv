@@ -85,7 +85,29 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
         ) {
             return false;
         }
-        const proposeTransfer = (targetTransferPointId: UUID) => {
+        const reachableTransferPointIds = Object.keys(
+            droppedOnTransferPoint.reachableTransferPoints
+        );
+
+        const reachableHospitalIds = Object.keys(
+            droppedOnTransferPoint.reachableHospitals
+        );
+
+        const proposeTransfer = (
+            targetId: UUID,
+            targetType: 'hospital' | 'transferPoint'
+        ) => {
+            if (targetType === 'hospital') {
+                this.apiService.proposeAction(
+                    {
+                        type: '[Hospital] Transport patient to hospital',
+                        hospitalId: targetId,
+                        vehicleId: droppedElement.value.id,
+                    },
+                    true
+                );
+                return;
+            }
             this.apiService.proposeAction(
                 {
                     type: '[Transfer] Add to transfer',
@@ -98,29 +120,52 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                     startPoint: TransferStartPoint.create(
                         droppedOnTransferPoint.id
                     ),
-                    targetTransferPointId,
+                    targetTransferPointId: targetId,
                 },
                 true
             );
         };
-        const reachableTransferPointIds = Object.keys(
-            droppedOnTransferPoint.reachableTransferPoints
-        );
-        if (reachableTransferPointIds.length === 0) {
-            return false;
+
+        // There are obvious answers to what the user wants to do
+        if (droppedElement.type === 'personnel') {
+            if (reachableTransferPointIds.length === 0) {
+                return false;
+            }
+            if (reachableTransferPointIds.length === 1) {
+                proposeTransfer(reachableTransferPointIds[0], 'transferPoint');
+                return true;
+            }
+        } else {
+            if (
+                reachableTransferPointIds.length === 0 &&
+                reachableHospitalIds.length === 0
+            ) {
+                return false;
+            }
+            if (
+                reachableTransferPointIds.length === 1 &&
+                reachableHospitalIds.length === 0
+            ) {
+                proposeTransfer(reachableTransferPointIds[0], 'transferPoint');
+                return true;
+            }
+            if (
+                reachableTransferPointIds.length === 0 &&
+                reachableHospitalIds.length === 1
+            ) {
+                proposeTransfer(reachableHospitalIds[0], 'hospital');
+                return true;
+            }
         }
-        if (reachableTransferPointIds.length === 1) {
-            // There is an obvious answer to which transfer point the vehicle should transfer to
-            proposeTransfer(reachableTransferPointIds[0]);
-            return true;
-        }
-        // Show a popup to choose the transfer point
+
+        // Show a popup to choose the transferPoint or hospital
         this.togglePopup$.next(
             this.popupHelper.getPopupOptions(
                 ChooseTransferTargetPopupComponent,
                 droppedOnFeature,
                 {
                     transferPointId: droppedOnTransferPoint.id,
+                    droppedElementType: droppedElement.type,
                     transferToCallback: proposeTransfer,
                 }
             )

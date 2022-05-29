@@ -194,6 +194,7 @@ export class DragElementService {
                         transferPoint: TransferPoint.create(
                             position,
                             {},
+                            {},
                             '???',
                             '???'
                         ),

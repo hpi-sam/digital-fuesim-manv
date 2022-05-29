@@ -48,6 +48,8 @@ export const getSelectAlarmGroup = (alarmGroupId: UUID) => (state: AppState) =>
 export const getSelectTransferPoint =
     (transferPointId: UUID) => (state: AppState) =>
         state.exercise.transferPoints[transferPointId];
+export const getSelectHospital = (hospitalId: UUID) => (state: AppState) =>
+    state.exercise.hospitals[hospitalId];
 export const getSelectViewport = (viewportId: UUID) => (state: AppState) =>
     state.exercise.viewports[viewportId];
 export const getSelectRestrictedViewport =
@@ -62,6 +64,7 @@ export const getSelectRestrictedViewport =
     };
 export const selectTransferPoints = (state: AppState) =>
     state.exercise.transferPoints;
+export const selectHospitals = (state: AppState) => state.exercise.hospitals;
 
 export const selectTileMapProperties = (state: AppState) =>
     state.exercise.tileMapProperties;
@@ -159,10 +162,24 @@ export const selectTransferLines = createSelector(
 );
 
 export function getSelectReachableTransferPoints(transferPointId: UUID) {
-    return createSelector(selectTransferPoints, (transferPoints) =>
-        Object.keys(
-            transferPoints[transferPointId].reachableTransferPoints
-        ).map((id) => transferPoints[id])
+    return createSelector(
+        selectTransferPoints,
+        getSelectTransferPoint(transferPointId),
+        (transferPoints, transferPoint) =>
+            Object.keys(transferPoint.reachableTransferPoints).map(
+                (id) => transferPoints[id]
+            )
+    );
+}
+
+export function getSelectReachableHospitals(transferPointId: UUID) {
+    return createSelector(
+        selectHospitals,
+        getSelectTransferPoint(transferPointId),
+        (hospitals, transferPoint) =>
+            Object.keys(transferPoint.reachableHospitals).map(
+                (id) => hospitals[id]
+            )
     );
 }
 
