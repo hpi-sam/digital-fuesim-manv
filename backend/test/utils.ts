@@ -170,9 +170,6 @@ export const createTestEnvironment = (): TestEnvironment => {
         // Prevent the dataSource from being closed too soon.
         await sleep(200);
         await environment.server.destroy();
-        await dataSource.destroy();
-    });
-    afterAll(async () => {
         if (dataSource.isInitialized) {
             await dataSource.destroy();
         }
@@ -182,6 +179,9 @@ export const createTestEnvironment = (): TestEnvironment => {
 };
 
 async function setupDatabase() {
+    if (!Config.useDb) {
+        return createNewDataSource('testing');
+    }
     const baselineDataSource = await createNewDataSource(
         'baseline'
     ).initialize();

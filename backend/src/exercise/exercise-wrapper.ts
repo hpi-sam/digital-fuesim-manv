@@ -370,7 +370,7 @@ export class ExerciseWrapper extends NormalType<
 
     public async getTimeLine(): Promise<ExerciseTimeline> {
         const completeHistory = [
-            ...(this.id !== undefined
+            ...(this.id && Config.useDb
                 ? await this.databaseService.transaction(
                       this.databaseService.actionWrapperService.getFindAll({
                           where: { exercise: { id: this.id } },
