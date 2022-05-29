@@ -26,84 +26,186 @@
         ></button>
     </h5>
     <div class="popover-body p-0">
-        <table class="table mb-0" style="max-width: 300px">
-            <tbody>
-                <tr *ngIf="(configuration$ | async)?.pretriageEnabled">
-                    <th>Vorsichtung</th>
-                    <td>
-                        <select
-                            [ngModel]="visibleStatus$ | async"
-                            (ngModelChange)="setPretriageCategory($event)"
-                            [disabled]="
-                                (pretriageStatusIsLocked$ | async) ?? false
-                            "
-                            class="form-select form-select-sm no-validation"
-                        >
-                            <option
-                                *ngFor="let option of pretriageOptions$ | async"
-                                [value]="option"
+        <nav #nav="ngbNav" ngbNav class="nav-tabs">
+            <ng-container ngbNavItem>
+                <a ngbNavLink>Allgemein</a>
+                <ng-template ngbNavContent>
+                    <table class="table mb-0" style="max-width: 300px">
+                        <tbody>
+                            <tr>
+                                <th scope="col">Alter</th>
+                                <td class="font-monospace">
+                                    {{ patient.biometricInformation.age }}
+                                    <small>
+                                        {{
+                                            patient.personalInformation
+                                                .birthdate
+                                        }}
+                                    </small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Geschlecht</th>
+                                <td
+                                    *appLet="
+                                        patient.biometricInformation.sex as sex
+                                    "
+                                    class="font-monospace"
+                                >
+                                    {{
+                                        sex === 'male'
+                                            ? 'männlich'
+                                            : sex === 'female'
+                                            ? 'weiblich'
+                                            : 'unbestimmt'
+                                    }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Biometrie</th>
+                                <td class="font-monospace">
+                                    {{
+                                        patient.biometricInformation
+                                            .externalFeatures
+                                    }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Adresse</th>
+                                <td class="font-monospace">
+                                    {{ patient.personalInformation.address }}
+                                </td>
+                            </tr>
+                            <ng-container
+                                *ngIf="
+                                    (apiService.currentRole$ | async) !==
+                                    'participant'
+                                "
                             >
-                                {{ statusNames[option] }}
-                            </option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="col">Alter</th>
-                    <td class="font-monospace">
-                        {{ patient.biometricInformation.age }}
-                        <small>
-                            ({{ patient.personalInformation.birthdate }})
-                        </small>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="col">Geschlecht</th>
-                    <td
-                        *appLet="patient.biometricInformation.sex as sex"
-                        class="font-monospace"
-                    >
-                        {{
-                            sex === 'male'
-                                ? 'männlich'
-                                : sex === 'female'
-                                ? 'weiblich'
-                                : 'unbestimmt'
-                        }}
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="col">Biometrie</th>
-                    <td class="font-monospace">
-                        {{ patient.biometricInformation.externalFeatures }}
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="col">Adresse</th>
-                    <td class="font-monospace">
-                        {{ patient.personalInformation.address }}
-                    </td>
-                </tr>
-                <ng-container
-                    *ngIf="(apiService.currentRole$ | async) !== 'participant'"
-                >
-                    <tr>
-                        <th scope="col">Beschreibung</th>
-                        <td class="font-monospace">
-                            <app-patient-status-display
-                                [patientStatus]="patient.patientStatusCode"
+                                <tr>
+                                    <th scope="col">Beschreibung</th>
+                                    <td class="font-monospace">
+                                        <app-patient-status-display
+                                            [patientStatus]="
+                                                patient.patientStatusCode
+                                            "
+                                        >
+                                        </app-patient-status-display>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="col">
+                                        Verletzungs-Geschwindigkeit:
+                                    </th>
+                                    <td class="font-monospace">
+                                        &times;{{ patient.timeSpeed }}
+                                    </td>
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </ng-template>
+            </ng-container>
+            <ng-container ngbNavItem>
+                <a ngbNavLink>Vorsichtung</a>
+                <ng-template ngbNavContent>
+                    <table class="table mb-0" style="max-width: 300px">
+                        <tbody>
+                            <tr
+                                *ngIf="
+                                    (configuration$ | async)?.pretriageEnabled
+                                "
                             >
-                            </app-patient-status-display>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="col">Verletzungs-Geschwindigkeit:</th>
-                        <td class="font-monospace">
-                            &times;{{ patient.timeSpeed }}
-                        </td>
-                    </tr>
-                </ng-container>
-            </tbody>
-        </table>
+                                <th>Vorsichtung</th>
+                                <td>
+                                    <select
+                                        [ngModel]="visibleStatus$ | async"
+                                        (ngModelChange)="
+                                            setPretriageCategory($event)
+                                        "
+                                        [disabled]="
+                                            (pretriageStatusIsLocked$
+                                                | async) ?? false
+                                        "
+                                        class="form-select form-select-sm no-validation"
+                                    >
+                                        <option
+                                            *ngFor="
+                                                let option of pretriageOptions$
+                                                    | async
+                                            "
+                                            [value]="option"
+                                        >
+                                            {{ statusNames[option] }}
+                                        </option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Verletzungen</th>
+                                <td class="font-monospace">
+                                    {{ patient.pretriageInformation.injuries }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">ausführlicher Body-Check</th>
+                                <td class="font-monospace">
+                                    {{ patient.pretriageInformation.bodyCheck }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Atmung</th>
+                                <td class="font-monospace">
+                                    {{ patient.pretriageInformation.breathing }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Bewusstsein</th>
+                                <td class="font-monospace">
+                                    {{ patient.pretriageInformation.awareness }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Puls</th>
+                                <td class="font-monospace">
+                                    {{ patient.pretriageInformation.pulse }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Haut</th>
+                                <td class="font-monospace">
+                                    {{ patient.pretriageInformation.skin }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Schmerzen</th>
+                                <td class="font-monospace">
+                                    {{ patient.pretriageInformation.pain }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Pupillen</th>
+                                <td class="font-monospace">
+                                    {{ patient.pretriageInformation.pupils }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Psyche</th>
+                                <td class="font-monospace">
+                                    {{ patient.pretriageInformation.psyche }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col">Hörvermögen</th>
+                                <td class="font-monospace">
+                                    {{ patient.pretriageInformation.hearing }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </ng-template>
+            </ng-container>
+        </nav>
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
     </div>
 </ng-container>
