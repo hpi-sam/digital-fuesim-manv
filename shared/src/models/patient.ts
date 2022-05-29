@@ -48,13 +48,6 @@ export class Patient {
     public readonly image: ImageProperties;
 
     /**
-     * A description of the expected patient health over time
-     * For the trainer
-     */
-    @IsString()
-    public readonly healthDescription: string;
-
-    /**
      * @deprecated Use {@link create} instead
      */
     constructor(
@@ -66,8 +59,7 @@ export class Patient {
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         currentHealthStateId: UUID,
         image: ImageProperties,
-        health: HealthPoints,
-        healthDescription: string
+        health: HealthPoints
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
@@ -77,7 +69,6 @@ export class Patient {
         this.currentHealthStateId = currentHealthStateId;
         this.image = image;
         this.health = health;
-        this.healthDescription = healthDescription;
     }
 
     /**
