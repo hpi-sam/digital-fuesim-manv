@@ -16,10 +16,6 @@
 .eslint
 .prettierrc
 
-## Backend
-
-backend/.env
-
 ## Shared
 
 shared/tsconfig.build.tsbuildinfo
