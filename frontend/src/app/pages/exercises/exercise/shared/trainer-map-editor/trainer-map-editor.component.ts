@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
@@ -24,9 +24,7 @@ import { openEditImageTemplateModal } from '../editor-panel/edit-image-template-
  * A wrapper around the map that provides trainers with more options and tools.
  */
 export class TrainerMapEditorComponent {
-    @Input() exerciseId!: string;
-
-    currentCategory = 'X';
+    public currentCategory = 'X';
 
     public readonly vehicleTemplates$ = this.store.select(
         selectVehicleTemplates
@@ -68,7 +66,7 @@ export class TrainerMapEditorComponent {
         openEditImageTemplateModal(this.ngbModalService, mapImageTemplateId);
     }
 
-    public setCurrentCategory(category: any) {
+    public setCurrentCategory(category: string) {
         this.currentCategory = category;
     }
 }

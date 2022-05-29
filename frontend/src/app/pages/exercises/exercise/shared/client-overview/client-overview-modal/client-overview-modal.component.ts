@@ -7,8 +7,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
     styleUrls: ['./client-overview-modal.component.scss'],
 })
 export class ClientOverviewModalComponent {
-    public exerciseId!: string;
-
     constructor(public activeModal: NgbActiveModal) {}
 
     public close() {

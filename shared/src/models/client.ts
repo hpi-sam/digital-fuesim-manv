@@ -1,4 +1,10 @@
-import { IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
+import {
+    IsBoolean,
+    IsOptional,
+    IsString,
+    IsUUID,
+    MaxLength,
+} from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { getCreate, Role } from './utils';
 
@@ -7,6 +13,8 @@ export class Client {
     public readonly id: UUID = uuid();
 
     @IsString()
+    // Required by database
+    @MaxLength(255)
     public readonly name: string;
 
     // TODO

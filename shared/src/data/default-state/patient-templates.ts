@@ -13,12 +13,6 @@ const defaultMaleImage: ImageProperties = {
     aspectRatio: 1,
 };
 
-// const defaultFemaleImage: ImageProperties = {
-//     url: '/assets/female-patient.svg',
-//     height: 80,
-//     aspectRatio: 1,
-// };
-
 // returns the change needed to reach the targetHealth from startHealth in the time of phases
 function calculateHealthChange(
     starthealth: number,
@@ -616,7 +610,7 @@ const yellowFor3PhasesState = PatientHealthState.create(
     ]
 );
 
-const redFor2PhasesState = PatientHealthState.create(
+const redUntilYellowFor2PhasesState = PatientHealthState.create(
     FunctionParameters.create(
         calculateHealthChange(
             healthPointsDefaults.redAverage,
@@ -648,7 +642,7 @@ const yellowUntilPhase3State = PatientHealthState.create(
     ),
     [
         {
-            matchingHealthStateId: redFor2PhasesState.id,
+            matchingHealthStateId: redUntilYellowFor2PhasesState.id,
             maximumHealth: healthPointsDefaults.redAverage,
         },
     ]
@@ -1248,7 +1242,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
             {
                 [noChangesState.id]: noChangesState,
                 [yellowUntilPhase3State.id]: yellowUntilPhase3State,
-                [redFor2PhasesState.id]: redFor2PhasesState,
+                [redUntilYellowFor2PhasesState.id]: redUntilYellowFor2PhasesState,
                 [yellowFor3PhasesState.id]: yellowFor3PhasesState,
                 [yellowStartPhase7RSDecisionState.id]:
                     yellowStartPhase7RSDecisionState,

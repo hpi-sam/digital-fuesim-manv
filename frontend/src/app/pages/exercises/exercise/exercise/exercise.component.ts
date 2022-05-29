@@ -1,44 +1,27 @@
-import type { OnDestroy, OnInit } from '@angular/core';
+import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
-import {
-    getSelectClient,
-    selectParticipantId,
-} from 'src/app/state/exercise/exercise.selectors';
+import { selectParticipantId } from 'src/app/state/exercise/exercise.selectors';
 
 @Component({
     selector: 'app-exercise',
     templateUrl: './exercise.component.html',
     styleUrls: ['./exercise.component.scss'],
 })
-export class ExerciseComponent implements OnInit, OnDestroy {
+export class ExerciseComponent implements OnDestroy {
     private readonly destroy = new Subject<void>();
-    public exerciseId?: string;
 
     public readonly participantId$ = this.store.select(selectParticipantId);
-    public client$ = this.store.select(
-        getSelectClient(this.apiService.ownClientId!)
-    );
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly activatedRoute: ActivatedRoute,
-        private readonly apiService: ApiService,
+        public readonly apiService: ApiService,
         private readonly messageService: MessageService
     ) {}
-
-    ngOnInit(): void {
-        this.activatedRoute.params
-            .pipe(takeUntil(this.destroy))
-            .subscribe((params) => {
-                this.exerciseId = params['exerciseId'] as string;
-            });
-    }
 
     public shareExercise(exerciseId: string) {
         const url = `${location.origin}/exercises/${exerciseId}`;
@@ -59,6 +42,14 @@ export class ExerciseComponent implements OnInit, OnDestroy {
         this.messageService.postMessage({
             title: 'Link wurde in die Zwischenablage kopiert',
             body: 'Sie können ihn nun teilen.',
+            color: 'info',
+        });
+    }
+
+    public leaveTimeTravel() {
+        this.apiService.stopTimeTravel();
+        this.messageService.postMessage({
+            title: 'Zurück in die Zukunft!',
             color: 'info',
         });
     }

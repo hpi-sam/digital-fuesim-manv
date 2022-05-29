@@ -68,6 +68,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ErrorResponse'
+
+    /api/exercise/{exerciseId}/history:
+        parameters:
+            - $ref: '#/components/parameters/ExerciseId'
+        get:
+            summary: Get the history of the exercise
+            operationId: getExerciseHistory
+            responses:
+                200:
+                    description: Exercise history in the payload (TODO:)
+                404:
+                    description: Exercise does not exist
 components:
     schemas:
         HealthResponse:

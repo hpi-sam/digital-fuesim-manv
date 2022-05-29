@@ -11,7 +11,7 @@
         <nav #nav="ngbNav" ngbNav [(activeId)]="activeNavId" class="nav-tabs">
             <ng-container
                 ngbNavItem="names"
-                [disabled]="(client$ | async)?.role !== 'trainer'"
+                [disabled]="(apiService.currentRole$ | async) !== 'trainer'"
             >
                 <a ngbNavLink>Namen</a>
                 <ng-template ngbNavContent>
@@ -59,90 +59,135 @@
             </ng-container>
             <ng-container
                 ngbNavItem="connections"
-                [disabled]="(client$ | async)?.role !== 'trainer'"
+                [disabled]="(apiService.currentRole$ | async) !== 'trainer'"
             >
                 <a ngbNavLink>Verbindungen</a>
                 <ng-template ngbNavContent>
                     <p
                         *ngIf="
-                            (transferPoint.reachableTransferPoints | keyvalue)
+                            (transferPoint.reachableTransferPoints | values)
+                                .length === 0 &&
+                            (transferPoint.reachableHospitals | values)
                                 .length === 0
                         "
                         class="text-muted font-bold"
                     >
                         Es sind noch keine Verbindungen vorhanden.
                     </p>
-                    <ul
-                        *ngIf="transferPoints$ | async as transferPoints"
-                        class="list-group mb-3 overflow-auto"
-                        style="height: 250px"
-                    >
-                        <li
-                            *ngFor="
-                                let reachableTransferPoint of transferPoint.reachableTransferPoints
-                                    | keyvalue;
-                                trackBy: 'key' | appTrackByProperty
-                            "
-                            class="list-group-item d-flex align-items-center flex-nowrap p-0"
+                    <div class="mb-3 overflow-auto" style="height: 250px">
+                        <ul
+                            *ngIf="transferPoints$ | async as transferPoints"
+                            class="list-group"
                         >
-                            <div
-                                [title]="
-                                    transferPoints[reachableTransferPoint.key]
-                                        .externalName +
-                                    ' (' +
-                                    transferPoints[reachableTransferPoint.key]
-                                        .internalName +
-                                    ')'
+                            <li
+                                *ngFor="
+                                    let reachableTransferPointConnection of transferPoint.reachableTransferPoints
+                                        | keyvalue;
+                                    trackBy: 'key' | appTrackByProperty
                                 "
-                                class="flex-grow-1 ps-2 pe-2 text-truncate"
-                                style="max-width: 300px"
+                                class="list-group-item d-flex align-items-center flex-nowrap p-0"
                             >
-                                <app-transfer-point-name
-                                    [transferPointId]="
-                                        reachableTransferPoint.key
+                                <div
+                                    class="flex-grow-1 ps-2 pe-2 text-truncate"
+                                    style="max-width: 300px"
+                                >
+                                    <app-transfer-point-name
+                                        [transferPointId]="
+                                            reachableTransferPointConnection.key
+                                        "
+                                    ></app-transfer-point-name>
+                                </div>
+                                <input
+                                    required
+                                    [min]="0"
+                                    [max]="24 * 60"
+                                    [ngModel]="
+                                        reachableTransferPointConnection.value
+                                            .duration /
+                                        1000 /
+                                        60
                                     "
-                                ></app-transfer-point-name>
-                            </div>
-                            <input
-                                #internalNameInput="ngModel"
-                                required
-                                [min]="0"
-                                [max]="24 * 60"
-                                [ngModel]="
-                                    reachableTransferPoint.value.duration /
-                                    1000 /
-                                    60
+                                    (ngModelChange)="
+                                        connectTransferPoint(
+                                            reachableTransferPointConnection.key,
+                                            $event * 1000 * 60
+                                        )
+                                    "
+                                    style="width: 125px"
+                                    class="form-control form-control-sm"
+                                    type="number"
+                                    step="0.1"
+                                    placeholder="Dauer"
+                                />
+                                <span class="ps-2 pe-2" title="Minuten"
+                                    >min</span
+                                >
+                                <button
+                                    class="btn btn-link text-danger text-decoration-none"
+                                    title="Verbindung löschen"
+                                    (click)="
+                                        disconnectTransferPoint(
+                                            reachableTransferPointConnection.key
+                                        )
+                                    "
+                                >
+                                    <i class="bi-trash"></i>
+                                </button>
+                            </li>
+                        </ul>
+                        <ul
+                            *ngIf="hospitals$ | async as hospitals"
+                            class="list-group"
+                        >
+                            <li
+                                *ngFor="
+                                    let reachableHospitalId of transferPoint.reachableHospitals
+                                        | keys;
+                                    trackBy: '$value' | appTrackByProperty
                                 "
-                                (ngModelChange)="
-                                    connectTransferPoint(
-                                        reachableTransferPoint.key,
-                                        $event * 1000 * 60
-                                    )
-                                "
-                                style="width: 125px"
-                                class="form-control form-control-sm"
-                                type="number"
-                                step="0.1"
-                                placeholder="Dauer"
-                            />
-                            <span class="ps-2 pe-2" title="Minuten">min</span>
-                            <button
-                                class="btn btn-link text-danger text-decoration-none"
-                                title="Verbindung löschen"
-                                (click)="
-                                    disconnectTransferPoint(
-                                        reachableTransferPoint.key
-                                    )
-                                "
+                                class="list-group-item d-flex align-items-center flex-nowrap p-0"
                             >
-                                <i class="bi-trash"></i>
-                            </button>
-                        </li>
-                    </ul>
+                                <div
+                                    [title]="
+                                        hospitals[reachableHospitalId].name
+                                    "
+                                    class="flex-grow-1 ps-2 pe-2 text-truncate"
+                                    style="max-width: 300px"
+                                >
+                                    <app-hospital-name
+                                        [hospitalId]="reachableHospitalId"
+                                    ></app-hospital-name>
+                                </div>
+                                <span
+                                    class="font-monospace text-end"
+                                    style="width: 125px"
+                                    >{{
+                                        hospitals[reachableHospitalId]
+                                            .transportDuration /
+                                            1000 /
+                                            60
+                                    }}</span
+                                >
+                                <span class="ps-2 pe-2" title="Minuten"
+                                    >min</span
+                                >
+                                <button
+                                    class="btn btn-link text-danger text-decoration-none"
+                                    title="Verbindung löschen"
+                                    (click)="
+                                        disconnectHospital(reachableHospitalId)
+                                    "
+                                >
+                                    <i class="bi-trash"></i>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
                     <div
                         *ngIf="
-                            (transferPointsToBeAdded$ | async | keyvalue)
-                                ?.length !== 0
+                            (transferPointsToBeAdded$ | async | values)
+                                ?.length !== 0 ||
+                            (hospitalsToBeAdded$ | async | values)?.length !== 0
                         "
                         ngbDropdown
                         placement="bottom-start"
@@ -163,21 +208,32 @@
                         >
                             <button
                                 *ngFor="
-                                    let _transferPoint of transferPointsToBeAdded$
+                                    let transferPoint of transferPointsToBeAdded$
                                         | async
-                                        | keyvalue;
-                                    trackBy: 'key' | appTrackByProperty
+                                        | values;
+                                    trackBy: 'id' | appTrackByProperty
                                 "
                                 ngbDropdownItem
-                                (click)="
-                                    connectTransferPoint(
-                                        _transferPoint.value.id
-                                    )
-                                "
+                                (click)="connectTransferPoint(transferPoint.id)"
                             >
                                 <app-transfer-point-name
-                                    [transferPointId]="_transferPoint.key"
+                                    [transferPointId]="transferPoint.id"
                                 ></app-transfer-point-name>
+                            </button>
+
+                            <button
+                                *ngFor="
+                                    let hospital of hospitalsToBeAdded$
+                                        | async
+                                        | values;
+                                    trackBy: 'id' | appTrackByProperty
+                                "
+                                ngbDropdownItem
+                                (click)="connectHospital(hospital.id)"
+                            >
+                                <app-hospital-name
+                                    [hospitalId]="hospital.id"
+                                ></app-hospital-name>
                             </button>
                         </div>
                     </div>
