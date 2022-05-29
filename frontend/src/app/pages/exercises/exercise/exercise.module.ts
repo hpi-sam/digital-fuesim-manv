@@ -18,6 +18,7 @@ import { ExerciseStatisticsModule } from './shared/exercise-statistics/exercise-
 import { CreateImageTemplateModalComponent } from './shared/editor-panel/create-image-template-modal/create-image-template-modal.component';
 import { EditImageTemplateModalComponent } from './shared/editor-panel/edit-image-template-modal/edit-image-template-modal.component';
 import { ImageTemplateFormComponent } from './shared/editor-panel/image-template-form/image-template-form.component';
+import { HospitalEditorModule } from './shared/hospital-editor/hospital-editor.module';
 
 @NgModule({
     declarations: [
@@ -41,6 +42,7 @@ import { ImageTemplateFormComponent } from './shared/editor-panel/image-template
         ExerciseMapModule,
         TransferOverviewModule,
         AlarmGroupOverviewModule,
+        HospitalEditorModule,
         EmergencyOperationsCenterModule,
     ],
     exports: [ExerciseComponent],

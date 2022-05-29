@@ -14,6 +14,8 @@ import { ReducerError } from '../reducer-error';
 import { calculateDistance } from './utils/calculate-distance';
 import { getElement } from './utils/get-element';
 
+// TODO check: type "TransferPoint" the T is big, in other files, the second word starts with a small letter
+
 export class AddTransferPointAction implements Action {
     @IsString()
     public readonly type = `[TransferPoint] Add TransferPoint`;
@@ -80,6 +82,26 @@ export class DisconnectTransferPointsAction implements Action {
 
     @IsUUID(4, uuidValidationOptions)
     public readonly transferPointId2!: UUID;
+}
+
+export class ConnectHospitalAction implements Action {
+    @IsString()
+    public readonly type = '[TransferPoint] Connect hospital';
+    @IsUUID(4, uuidValidationOptions)
+    public readonly hospitalId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly transferPointId!: UUID;
+}
+
+export class DisconnectHospitalAction implements Action {
+    @IsString()
+    public readonly type = '[TransferPoint] Disconnect hospital';
+    @IsUUID(4, uuidValidationOptions)
+    public readonly hospitalId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly transferPointId!: UUID;
 }
 
 export namespace TransferPointActionReducers {
@@ -221,6 +243,38 @@ export namespace TransferPointActionReducers {
             },
             rights: 'trainer',
         };
+
+    export const connectHospital: ActionReducer<ConnectHospitalAction> = {
+        action: ConnectHospitalAction,
+        reducer: (draftState, { transferPointId, hospitalId }) => {
+            // Check if hospital with this Id exists
+            getElement(draftState, 'hospitals', hospitalId);
+            const transferPoint = getElement(
+                draftState,
+                'transferPoints',
+                transferPointId
+            );
+            transferPoint.reachableHospitals[hospitalId] = true;
+            return draftState;
+        },
+        rights: 'trainer',
+    };
+
+    export const disconnectHospital: ActionReducer<DisconnectHospitalAction> = {
+        action: DisconnectHospitalAction,
+        reducer: (draftState, { hospitalId, transferPointId }) => {
+            // Check if hospital with this Id exists
+            getElement(draftState, 'hospitals', hospitalId);
+            const transferPoint = getElement(
+                draftState,
+                'transferPoints',
+                transferPointId
+            );
+            delete transferPoint.reachableHospitals[hospitalId];
+            return draftState;
+        },
+        rights: 'trainer',
+    };
 }
 
 // Helpers

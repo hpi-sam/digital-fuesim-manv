@@ -1,3 +1,5 @@
+import { createNewDataSource, testingDatabaseName } from 'database/data-source';
+import { DatabaseService } from 'database/services/database-service';
 import type {
     ClientToServerEvents,
     ExerciseIds,
@@ -8,6 +10,7 @@ import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import request from 'supertest';
+import type { DataSource } from 'typeorm';
 import { Config } from '../src/config';
 import { FuesimServer } from '../src/fuesim-server';
 import type { SocketReservedEvents } from './socket-reserved-events';
@@ -112,7 +115,11 @@ export class WebsocketClient {
 }
 
 class TestEnvironment {
-    public server: FuesimServer;
+    public server!: FuesimServer;
+    private _databaseService!: DatabaseService;
+    public get databaseService(): DatabaseService {
+        return this._databaseService;
+    }
 
     // `request.Test` extends `Promise<Response>`, therefore eslint wants the async keyword here.
     // The problem is that `Promise<request.Test>` not the same is as `request.Test` (but `Promise<T>` is equal to `Promise<Promise<T>>`).
@@ -142,25 +149,57 @@ class TestEnvironment {
         }
     }
 
-    public constructor() {
-        Config.initialize(true);
-        this.server = new FuesimServer();
+    public init(databaseService: DatabaseService) {
+        this._databaseService = databaseService;
+        this.server = new FuesimServer(this.databaseService);
     }
 }
 
 export const createTestEnvironment = (): TestEnvironment => {
+    Config.initialize(true);
     const environment = new TestEnvironment();
+    let dataSource: DataSource;
+
     // If this gets too slow, we may look into creating the server only once
-    beforeEach(() => {
-        environment.server?.destroy();
-        environment.server = new FuesimServer();
+    beforeEach(async () => {
+        dataSource = await setupDatabase();
+        const databaseService = new DatabaseService(dataSource);
+        environment.init(databaseService);
     });
-    afterEach(() => {
-        environment.server.destroy();
+    afterEach(async () => {
+        // Prevent the dataSource from being closed too soon.
+        await sleep(200);
+        await environment.server.destroy();
+        if (dataSource.isInitialized) {
+            await dataSource.destroy();
+        }
     });
 
     return environment;
 };
+
+async function setupDatabase() {
+    if (!Config.useDb) {
+        return createNewDataSource('testing');
+    }
+    const baselineDataSource = await createNewDataSource(
+        'baseline'
+    ).initialize();
+    // Re-create the test database
+    await baselineDataSource.query(
+        `DROP DATABASE IF EXISTS "${testingDatabaseName}"`
+    );
+    await baselineDataSource.query(`CREATE DATABASE "${testingDatabaseName}"`);
+    await baselineDataSource.destroy();
+
+    const testDataSource = createNewDataSource('testing');
+    await testDataSource.initialize();
+
+    // Apply the migrations on the newly created database
+    await testDataSource.runMigrations({ transaction: 'all' });
+
+    return testDataSource;
+}
 
 export async function createExercise(
     environment: TestEnvironment

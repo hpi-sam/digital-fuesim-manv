@@ -1,7 +1,7 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { TransferPoint, UUID } from 'digital-fuesim-manv-shared';
+import type { Hospital, TransferPoint, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
@@ -9,6 +9,7 @@ import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectTransferPoint,
+    selectHospitals,
     selectTransferPoints,
 } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
@@ -31,6 +32,8 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
 
     public transferPoint$?: Observable<TransferPoint>;
 
+    public hospital$?: Observable<Hospital>;
+
     public get activeNavId() {
         return activeNavId;
     }
@@ -39,6 +42,8 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     }
 
     public transferPoints$ = this.store.select(selectTransferPoints);
+
+    public hospitals$ = this.store.select(selectHospitals);
 
     /**
      * All transferPoints that are neither connected to this one nor this one itself
@@ -51,6 +56,17 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
                 ([key]) =>
                     key !== this.transferPointId &&
                     !currentTransferPoint.reachableTransferPoints[key]
+            )
+        );
+    });
+
+    public readonly hospitalsToBeAdded$ = this.store.select((state) => {
+        const transferPoints = state.exercise.transferPoints;
+        const currentTransferPoint = transferPoints[this.transferPointId];
+        const hospitals = state.exercise.hospitals;
+        return Object.fromEntries(
+            Object.entries(hospitals).filter(
+                ([key]) => !currentTransferPoint.reachableHospitals[key]
             )
         );
     });
@@ -105,6 +121,22 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
             type: '[TransferPoint] Disconnect TransferPoints',
             transferPointId1: this.transferPointId,
             transferPointId2: transferPointId,
+        });
+    }
+
+    public connectHospital(hospitalId: UUID) {
+        this.apiService.proposeAction({
+            type: '[TransferPoint] Connect hospital',
+            transferPointId: this.transferPointId,
+            hospitalId,
+        });
+    }
+
+    public disconnectHospital(hospitalId: UUID) {
+        this.apiService.proposeAction({
+            type: '[TransferPoint] Disconnect hospital',
+            transferPointId: this.transferPointId,
+            hospitalId,
         });
     }
 }

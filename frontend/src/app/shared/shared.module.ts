@@ -8,12 +8,14 @@ import { AppTrackByPropertyPipe } from './pipes/track-by-property/app-track-by-p
 import { ExerciseExistsValidatorDirective } from './validation/exercise-exists-validator.directive';
 import { ImageExistsValidatorDirective } from './validation/image-exists-validator.directive';
 import { TransferPointNameComponent } from './components/transfer-point-name/transfer-point-name.component';
+import { HospitalNameComponent } from './components/hospital-name/hospital-name.component';
 import { FormatDurationPipe } from './pipes/format-duration.pipe';
 import { LetDirective } from './directives/let.directive';
 import { UrlValidatorDirective } from './validation/url-validator.directive';
 import { ValuesPipe } from './pipes/values.pipe';
 import { ViewportNameComponent } from './components/viewport-name/viewport-name.component';
 import { IntegerValidatorDirective } from './validation/integer-validator.directive';
+import { KeysPipe } from './pipes/keys.pipe';
 
 @NgModule({
     declarations: [
@@ -25,10 +27,12 @@ import { IntegerValidatorDirective } from './validation/integer-validator.direct
         ExerciseExistsValidatorDirective,
         ImageExistsValidatorDirective,
         TransferPointNameComponent,
+        HospitalNameComponent,
         FormatDurationPipe,
         LetDirective,
         UrlValidatorDirective,
         ValuesPipe,
+        KeysPipe,
         ViewportNameComponent,
         IntegerValidatorDirective,
     ],
@@ -42,10 +46,12 @@ import { IntegerValidatorDirective } from './validation/integer-validator.direct
         ExerciseExistsValidatorDirective,
         ImageExistsValidatorDirective,
         TransferPointNameComponent,
+        HospitalNameComponent,
         FormatDurationPipe,
         LetDirective,
         UrlValidatorDirective,
         ValuesPipe,
+        KeysPipe,
         ViewportNameComponent,
         IntegerValidatorDirective,
     ],
