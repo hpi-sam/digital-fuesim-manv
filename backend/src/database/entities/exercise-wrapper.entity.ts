@@ -42,12 +42,17 @@ export class ExerciseWrapperEntity extends BaseEntity<
     @IsJSON()
     currentStateString!: string;
 
+    @Column({ type: 'integer', default: 0 })
+    @IsInt()
+    stateVersion!: number;
+
     // This is not used by typeorm as this would clash with the approach of not saving every action in RAM.
     actions?: ActionWrapperEntity[];
 
     private constructor() {
         super();
     }
+
     /**
      * Be very careful when using this. - Use {@link create} instead for most use cases.
      * This method does not guarantee a valid entity.
@@ -69,6 +74,7 @@ export class ExerciseWrapperEntity extends BaseEntity<
                 trainerId,
                 initialStateString: JSON.stringify(initialState),
                 currentStateString: JSON.stringify(currentState),
+                stateVersion: ExerciseState.currentStateVersion,
             })
         );
     }
