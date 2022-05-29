@@ -1,46 +1,46 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsString, ValidateNested } from 'class-validator';
-import { TileMapProperties } from '../../models';
+import { TileMapProperties } from '../../models/utils';
 import type { Action, ActionReducer } from '../action-reducer';
 
 export class SetTileMapPropertiesAction implements Action {
     @IsString()
-    public readonly type = '[ExerciseSettings] Set tile map properties';
+    public readonly type = '[Configuration] Set tileMapProperties';
 
     @ValidateNested()
     @Type(() => TileMapProperties)
     public readonly tileMapProperties!: TileMapProperties;
 }
 
-export class SetPretriageFlagAction implements Action {
+export class SetPretriageEnabledAction implements Action {
     @IsString()
-    public readonly type = '[ExerciseSettings] Set Pretriage Flag';
+    public readonly type = '[Configuration] Set pretriageEnabled';
 
     @IsBoolean()
     public readonly pretriageEnabled!: boolean;
 }
 
-export class SetBluePatientsFlagAction implements Action {
+export class SetBluePatientsEnabledFlagAction implements Action {
     @IsString()
-    public readonly type = '[ExerciseSettings] Set Blue Patients Flag';
+    public readonly type = '[Configuration] Set bluePatientsEnabled';
 
     @IsBoolean()
     public readonly bluePatientsEnabled!: boolean;
 }
 
-export namespace ExerciseSettingsActionReducers {
+export namespace ConfigurationActionReducers {
     export const setTileMapProperties: ActionReducer<SetTileMapPropertiesAction> =
         {
             action: SetTileMapPropertiesAction,
             reducer: (draftState, { tileMapProperties }) => {
-                draftState.tileMapProperties = tileMapProperties;
+                draftState.configuration.tileMapProperties = tileMapProperties;
                 return draftState;
             },
             rights: 'trainer',
         };
 
-    export const setPretriageFlag: ActionReducer<SetPretriageFlagAction> = {
-        action: SetPretriageFlagAction,
+    export const setPretriageFlag: ActionReducer<SetPretriageEnabledAction> = {
+        action: SetPretriageEnabledAction,
         reducer: (draftState, { pretriageEnabled }) => {
             draftState.configuration.pretriageEnabled = pretriageEnabled;
             return draftState;
@@ -48,9 +48,9 @@ export namespace ExerciseSettingsActionReducers {
         rights: 'trainer',
     };
 
-    export const setBluePatientsFlag: ActionReducer<SetBluePatientsFlagAction> =
+    export const setBluePatientsFlag: ActionReducer<SetBluePatientsEnabledFlagAction> =
         {
-            action: SetBluePatientsFlagAction,
+            action: SetBluePatientsEnabledFlagAction,
             reducer: (draftState, { bluePatientsEnabled }) => {
                 draftState.configuration.bluePatientsEnabled =
                     bluePatientsEnabled;

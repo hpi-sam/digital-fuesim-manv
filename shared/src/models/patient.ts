@@ -137,7 +137,11 @@ export class Patient {
 
     static readonly create = getCreate(this);
 
-    static readonly msUntilRealStatus: number = 120_000;
+    /**
+     * The time that is needed for personnel to automatically pretriage the patient
+     * in milliseconds
+     */
+    private static readonly pretriageTimeThreshold: number = 2 * 60 * 1000;
 
     static getVisibleStatus(
         patient: Patient,
@@ -145,10 +149,15 @@ export class Patient {
         bluePatientsEnabled: boolean
     ) {
         const status =
-            !pretriageEnabled || patient.treatmentTime >= this.msUntilRealStatus
+            !pretriageEnabled ||
+            patient.treatmentTime >= this.pretriageTimeThreshold
                 ? patient.realStatus
                 : patient.pretriageStatus;
         return status === 'blue' && !bluePatientsEnabled ? 'red' : status;
+    }
+
+    static pretriageStatusIsLocked(patient: Patient): boolean {
+        return patient.treatmentTime >= this.pretriageTimeThreshold;
     }
 
     static isInVehicle(patient: Patient): boolean {

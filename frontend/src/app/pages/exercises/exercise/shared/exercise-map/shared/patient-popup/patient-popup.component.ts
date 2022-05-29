@@ -1,20 +1,19 @@
 import type { OnInit } from '@angular/core';
-import { EventEmitter, Output, Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type { UUID, PatientStatus } from 'digital-fuesim-manv-shared';
+import type { PatientStatus, UUID } from 'digital-fuesim-manv-shared';
 import {
     healthPointsDefaults,
-    statusNames,
     Patient,
+    statusNames,
 } from 'digital-fuesim-manv-shared';
-import { map } from 'rxjs';
 import type { Observable } from 'rxjs';
+import { map } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    selectPretriageEnabledConfiguration,
-    selectBluePatientsEnabledConfiguration,
     getSelectPatient,
+    selectConfiguration,
 } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
@@ -30,22 +29,19 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public patient$?: Observable<Patient>;
-    public patientStatus$?: Observable<PatientStatus>;
+    public visibleStatus$?: Observable<PatientStatus>;
+    public pretriageStatusIsLocked$?: Observable<boolean>;
 
     public currentYear = new Date().getFullYear();
 
-    public pretriageEnabled$ = this.store.select(
-        selectPretriageEnabledConfiguration
-    );
-    public bluePatientsEnabled$ = this.store.select(
-        selectBluePatientsEnabledConfiguration
-    );
+    public configuration$ = this.store.select(selectConfiguration);
+
     public readonly pretriageOptions$: Observable<PatientStatus[]> =
-        this.bluePatientsEnabled$.pipe(
-            map((bluePatientFlag) =>
-                bluePatientFlag
-                    ? ['black', 'blue', 'red', 'yellow', 'green']
-                    : ['black', 'red', 'yellow', 'green']
+        this.configuration$.pipe(
+            map((configuration) =>
+                configuration.bluePatientsEnabled
+                    ? ['white', 'black', 'blue', 'red', 'yellow', 'green']
+                    : ['white', 'black', 'red', 'yellow', 'green']
             )
         );
 
@@ -59,18 +55,20 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
 
     ngOnInit(): void {
         this.patient$ = this.store.select(getSelectPatient(this.patientId));
-        this.patientStatus$ = this.store.select(
+        this.visibleStatus$ = this.store.select(
             createSelector(
                 getSelectPatient(this.patientId),
-                selectPretriageEnabledConfiguration,
-                selectBluePatientsEnabledConfiguration,
-                (patient, pretriageEnabled, bluePatientsEnabled) =>
+                selectConfiguration,
+                (patient, configuration) =>
                     Patient.getVisibleStatus(
                         patient,
-                        pretriageEnabled,
-                        bluePatientsEnabled
+                        configuration.pretriageEnabled,
+                        configuration.bluePatientsEnabled
                     )
             )
+        );
+        this.pretriageStatusIsLocked$ = this.patient$.pipe(
+            map((patient) => Patient.pretriageStatusIsLocked(patient))
         );
     }
 

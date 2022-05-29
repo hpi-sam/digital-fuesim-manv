@@ -51,10 +51,9 @@ export function patientTick(
             .filter((patient) => isAlive(patient.health) && patient.position)
             .map((patient) => {
                 // update the time a patient is being treated, to check for pretriage later
-                let treatmentTime = patient.treatmentTime;
-                if (patient.isBeingTreated) {
-                    treatmentTime += patientTickInterval;
-                }
+                const treatmentTime = patient.isBeingTreated
+                    ? patient.treatmentTime + patientTickInterval
+                    : patient.treatmentTime;
                 const nextHealthPoints = getNextPatientHealthPoints(
                     patient,
                     getDedicatedResources(state, patient),

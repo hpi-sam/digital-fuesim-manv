@@ -1,4 +1,3 @@
-import { defaultTileMapProperties } from './data';
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
 import { defaultPatientTemplates } from './data/default-state/patient-templates';
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
@@ -6,8 +5,9 @@ import type {
     AlarmGroup,
     Client,
     EocLogEntry,
+    Hospital,
+    HospitalPatient,
     MapImage,
-    TileMapProperties,
     Material,
     Patient,
     Personnel,
@@ -15,14 +15,12 @@ import type {
     TransferPoint,
     Vehicle,
     Viewport,
-    Hospital,
-    HospitalPatient,
 } from './models';
+import { ExerciseConfiguration } from './models/exercise-configuration';
 import type { StatisticsEntry } from './models/statistics-entry';
 import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuid } from './utils';
-import { ExerciseConfiguration } from './utils/exercise-configuration';
 
 export class ExerciseState {
     public readonly id = uuid();
@@ -52,8 +50,6 @@ export class ExerciseState {
     public readonly ecoLog: readonly EocLogEntry[] = [];
     public readonly statusHistory: readonly StatusHistoryEntry[] = [];
     public readonly participantId: string = '';
-    public readonly tileMapProperties: TileMapProperties =
-        defaultTileMapProperties;
     public readonly statistics: readonly StatisticsEntry[] = [];
     public readonly configuration = ExerciseConfiguration.create();
 
