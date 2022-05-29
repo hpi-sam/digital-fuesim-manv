@@ -98,3 +98,8 @@ Note that all changes in model and migration files have to be imported in [`src/
 If you want to, you can also disable the database.
 Set the environment variable `DFM_USE_DB` (in [`../.env`](../.env)) to `false` to achieve this.
 Note however that this results in a) all history being saved in memory instead of on disk, and b) once the backend exits, for whatever reason, all data is gone forever.
+
+### Migrations
+
+We use [state migrations](./src/database/state-migrations/) to convert outdated states to new versions.
+Look at [`migrations.ts`](./src/database/state-migrations/migrations.ts) for more information.

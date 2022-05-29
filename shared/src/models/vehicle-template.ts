@@ -28,7 +28,7 @@ export class VehicleTemplate {
     public readonly patientCapacity: number;
 
     @IsArray()
-    @IsString()
+    @IsString({ each: true })
     public readonly personnel: readonly PersonnelType[];
 
     @IsArray()
