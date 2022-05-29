@@ -66,13 +66,6 @@ export class HospitalPatient {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    /**
-     * A description of the expected patient health over time
-     * For the trainer
-     */
-    @IsString()
-    public readonly healthDescription: string;
-
     @IsDefined()
     public readonly healthStates: {
         readonly [stateId: UUID]: PatientHealthState;
@@ -112,7 +105,6 @@ export class HospitalPatient {
         currentHealthStateId: UUID,
         image: ImageProperties,
         health: HealthPoints,
-        healthDescription: string,
         treatmentTime: number
     ) {
         this.patientId = patientId;
@@ -127,7 +119,6 @@ export class HospitalPatient {
         this.currentHealthStateId = currentHealthStateId;
         this.image = image;
         this.health = health;
-        this.healthDescription = healthDescription;
         this.treatmentTime = treatmentTime;
     }
 
@@ -160,7 +151,6 @@ export class HospitalPatient {
                 patient.currentHealthStateId,
                 patient.image,
                 patient.health,
-                patient.healthDescription,
                 patient.treatmentTime
             )
         );
