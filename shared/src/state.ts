@@ -84,7 +84,7 @@ export class ExerciseState {
     @ValidateNested()
     @Type(() => VehicleTemplate)
     public readonly vehicleTemplates = defaultVehicleTemplates;
-    // TODO: validate
+    @IsObject()
     public readonly carrinyUnitImagesTemplates = carryingUnitImagesMap;
     @IsArray()
     @ValidateNested()
