@@ -93,6 +93,8 @@
                         <select
                             [ngModel]="currentCategory"
                             (ngModelChange)="setCurrentCategory($event)"
+                            class="form-select d-inline-block no-validation"
+                            style="max-width: fit-content"
                         >
                             <option [value]="'X'">X</option>
                             <option [value]="'Y'">Y</option>
