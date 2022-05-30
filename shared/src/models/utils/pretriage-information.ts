@@ -9,7 +9,7 @@ export class PretriageInformation {
     public readonly bodyCheck: string;
 
     @IsBoolean()
-    public readonly isWalkable?: boolean;
+    public readonly isWalkable: boolean;
 
     @IsString()
     public readonly breathing: string;
