@@ -10,7 +10,7 @@ import {
 import { ExerciseState } from '../../state';
 import type { ExerciseAction } from '../../store';
 import { validateExerciseAction } from '../../store';
-import { ExportImportFile } from './base-file';
+import { BaseExportImportFile } from './base-file';
 
 export class StateHistoryCompound {
     @IsArray()
@@ -35,7 +35,7 @@ export class StateHistoryCompound {
     }
 }
 
-export class StateExport extends ExportImportFile {
+export class StateExport extends BaseExportImportFile {
     @IsIn(['complete'])
     @IsString()
     public readonly type: 'complete' = 'complete';

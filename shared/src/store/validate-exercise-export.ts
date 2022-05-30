@@ -1,15 +1,11 @@
 import { plainToInstance } from 'class-transformer';
 import type { ValidationError } from 'class-validator';
 import { validateSync } from 'class-validator';
-import type { ExportImportFile } from '../export-import/file-format';
 import { PartialExport, StateExport } from '../export-import/file-format';
+import type { ExportImportFile } from '../export-import/file-format/export-import-file';
 import type { Constructor } from '../utils';
 import { validateExerciseAction } from './validate-exercise-action';
 import { defaultValidateOptions } from './validation-options';
-
-function fileIsCompleteExport(file: ExportImportFile): file is StateExport {
-    return file.type === 'complete';
-}
 
 /**
  *
@@ -39,7 +35,7 @@ export function validateExerciseExport(
         ),
         defaultValidateOptions
     );
-    if (fileIsCompleteExport(exportImportFile) && exportImportFile.history) {
+    if (exportImportFile.type === 'complete' && exportImportFile.history) {
         validationErrors.push(
             ...exportImportFile.history.actionHistory.flatMap((action) =>
                 validateExerciseAction(action)

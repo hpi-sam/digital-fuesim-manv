@@ -11,9 +11,9 @@ import {
     PatientTemplate,
     VehicleTemplate,
 } from '../../models';
-import { ExportImportFile } from './base-file';
+import { BaseExportImportFile } from './base-file';
 
-export class PartialExport extends ExportImportFile {
+export class PartialExport extends BaseExportImportFile {
     @IsIn(['partial'])
     @IsString()
     public readonly type: 'partial' = 'partial';
