@@ -1,4 +1,4 @@
-import type { ValidationArguments, ValidationOptions } from 'class-validator';
+import type { ValidationOptions, ValidationArguments } from 'class-validator';
 import { isNumber, registerDecorator } from 'class-validator';
 import type { PatientStatus } from './patient-status';
 
@@ -16,8 +16,11 @@ export const healthPointsDefaults = {
     max: 100_000,
     min: 0,
     greenMax: 100_000,
+    greenAverage: 85_000,
     yellowMax: 66_000,
+    yellowAverage: 50_000,
     redMax: 33_000,
+    redAverage: 20_000,
     blackMax: 0,
 };
 

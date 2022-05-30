@@ -102,10 +102,8 @@ export namespace ExerciseActionReducers {
                 currentPatient.currentHealthStateId = patientUpdate.nextStateId;
                 currentPatient.health = patientUpdate.nextHealthPoints;
                 currentPatient.stateTime = patientUpdate.nextStateTime;
+                currentPatient.treatmentTime = patientUpdate.treatmentTime;
                 currentPatient.realStatus = getStatus(currentPatient.health);
-                if (currentPatient.visibleStatus !== null) {
-                    currentPatient.visibleStatus = currentPatient.realStatus;
-                }
             });
             // Refresh treatments
             if (refreshTreatments) {
