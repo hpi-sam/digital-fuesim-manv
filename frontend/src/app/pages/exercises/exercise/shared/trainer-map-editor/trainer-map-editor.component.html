@@ -96,9 +96,9 @@
                             class="form-select d-inline-block no-validation"
                             style="max-width: fit-content"
                         >
-                            <option [value]="'X'">X</option>
-                            <option [value]="'Y'">Y</option>
-                            <option [value]="'Z'">Z</option>
+                            <option [value]="'X'">SK III</option>
+                            <option [value]="'Y'">SK II</option>
+                            <option [value]="'Z'">SK I</option>
                         </select>
                     </h5>
                     <!-- 20px more height than the sum of the children to have room for the scrollbar -->
@@ -141,17 +141,13 @@
                                     <img [src]="patientCategory.image.url" />
                                 </div>
                                 <div
-                                    class="p-1 text-wrap lh-1"
+                                    class="p-1 text-wrap lh-1 fs-5"
                                     style="overflow: auto"
                                 >
-                                    <small>
-                                        <app-patient-status-display
-                                            [patientStatus]="
-                                                patientCategory.name
-                                            "
-                                        >
-                                        </app-patient-status-display>
-                                    </small>
+                                    <app-patient-status-display
+                                        [patientStatus]="patientCategory.name"
+                                    >
+                                    </app-patient-status-display>
                                 </div>
                             </div>
                         </div>

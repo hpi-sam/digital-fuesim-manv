@@ -12,5 +12,5 @@ export * from './health-points';
 export { getCreate, isDevelopment } from './get-create';
 export * from './immutable-date';
 export { AlarmGroupVehicle } from './alarm-group-vehicle';
-export { PatientStatusCode } from './patient-status-code';
+export * from './patient-status-code';
 export * from './start-points';
