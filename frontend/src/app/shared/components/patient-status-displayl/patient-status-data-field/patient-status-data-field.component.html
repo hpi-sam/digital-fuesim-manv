@@ -1,0 +1,10 @@
+<span>
+    <i
+        [ngClass]="behaviourCodeMap[patientStatusDataField.behaviourCode]"
+        [ngStyle]="{
+            color: rgbColorPalette[
+                colorCodeMap[patientStatusDataField.colorCode]
+            ]
+        }"
+    ></i>
+</span>

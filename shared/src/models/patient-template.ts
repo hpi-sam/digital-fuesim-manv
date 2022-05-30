@@ -13,6 +13,7 @@ import { ImageProperties } from './utils/image-properties';
 import { PersonalInformation } from './utils/personal-information';
 import { Patient } from './patient';
 import type { FunctionParameters } from './patient-health-state';
+import { PretriageInformation } from './utils/pretriage-information';
 import type { PatientHealthState } from '.';
 
 export class PatientTemplate {
@@ -22,6 +23,10 @@ export class PatientTemplate {
     @ValidateNested()
     @Type(() => BiometricInformation)
     public readonly biometricInformation: BiometricInformation;
+
+    @ValidateNested()
+    @Type(() => PretriageInformation)
+    public readonly pretriageInformation: PretriageInformation;
 
     @ValidateNested()
     @Type(() => ImageProperties)
@@ -43,12 +48,14 @@ export class PatientTemplate {
      */
     constructor(
         biometricInformation: BiometricInformation,
+        pretriageInformation: PretriageInformation,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         image: ImageProperties,
         health: HealthPoints,
         startingHealthStateId: UUID
     ) {
         this.biometricInformation = biometricInformation;
+        this.pretriageInformation = pretriageInformation;
         this.image = image;
         this.healthStates = healthStates;
         this.health = health;
@@ -89,6 +96,7 @@ export class PatientTemplate {
                 template.biometricInformation.sex
             ),
             template.biometricInformation,
+            template.pretriageInformation,
             patientStatusCode,
             'white',
             status,
