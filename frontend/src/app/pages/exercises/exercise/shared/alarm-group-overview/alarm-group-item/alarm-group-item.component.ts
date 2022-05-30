@@ -54,9 +54,13 @@ export class AlarmGroupItemComponent {
 
     public editAlarmGroupVehicle(
         alarmGroupVehicleId: UUID,
-        time: number | null
+        time: number | null,
+        name: string | null
     ) {
         if (time === null) {
+            return;
+        }
+        if (name === null) {
             return;
         }
         this.apiService.proposeAction(
@@ -65,6 +69,7 @@ export class AlarmGroupItemComponent {
                 alarmGroupId: this.alarmGroup.id,
                 alarmGroupVehicleId,
                 time,
+                name
             },
             true
         );
@@ -76,7 +81,8 @@ export class AlarmGroupItemComponent {
             alarmGroupId: this.alarmGroup.id,
             alarmGroupVehicle: AlarmGroupVehicle.create(
                 vehicleTemplateId,
-                5 * 60 * 1000
+                5 * 60 * 1000,
+                '???'
             ),
         });
     }
