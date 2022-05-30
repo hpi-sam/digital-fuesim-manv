@@ -15,6 +15,7 @@ export function generateDummyPatient(): Patient {
             birthdate: '1.1.',
         },
         template.biometricInformation,
+        template.pretriageInformation,
         PatientStatusCode.create('ZAZAZA'),
         'green',
         'green',

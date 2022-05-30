@@ -138,6 +138,7 @@ export namespace HospitalActionReducers {
                             draftState.currentTime,
                             hospital.transportDuration + draftState.currentTime
                         );
+                    hospital.patientIds[patientId] = true;
                 }
                 deleteVehicle(draftState, vehicleId);
                 calculateTreatments(draftState);
