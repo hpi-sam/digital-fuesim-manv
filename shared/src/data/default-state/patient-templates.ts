@@ -19,6 +19,7 @@ function calculateHealthChange(
     targetHealth: number,
     phases: number
 ) {
+    // TODO: Make this dependent on the actual tick intervals during an exercise - we can never know how many ticks will happen in one state
     return (targetHealth - starthealth) / (phases * 12 * 60);
 }
 
@@ -888,7 +889,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
             },
             {
                 [noChangesState.id]: noChangesState,
-                [greenUntilPhase11State.id]: greenUntilPhase10State,
+                [greenUntilPhase11State.id]: greenUntilPhase11State,
             },
             defaultMaleImage,
             healthPointsDefaults.greenMax,
@@ -915,7 +916,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
             },
             {
                 [noChangesState.id]: noChangesState,
-                [greenUntilPhase12State.id]: greenUntilPhase10State,
+                [greenUntilPhase12State.id]: greenUntilPhase12State,
             },
             defaultMaleImage,
             healthPointsDefaults.greenMax,
@@ -1242,7 +1243,8 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
             {
                 [noChangesState.id]: noChangesState,
                 [yellowUntilPhase3State.id]: yellowUntilPhase3State,
-                [redUntilYellowFor2PhasesState.id]: redUntilYellowFor2PhasesState,
+                [redUntilYellowFor2PhasesState.id]:
+                    redUntilYellowFor2PhasesState,
                 [yellowFor3PhasesState.id]: yellowFor3PhasesState,
                 [yellowStartPhase7RSDecisionState.id]:
                     yellowStartPhase7RSDecisionState,

@@ -1,4 +1,5 @@
 import type { UUID } from 'digital-fuesim-manv-shared';
+import { RestoreError } from '../../utils/restore-error';
 
 /**
  * Such a function MUST update the initial state of the exercise with the provided {@link exerciseId} as well as every action associated with it from its current state version to the next version in a way that they are valid states/actions.
@@ -13,4 +14,8 @@ export type MigrationFunction = (exerciseId: UUID) => Promise<void>;
  */
 export const migrations: {
     [key: number]: MigrationFunction;
-} = {};
+} = {
+    2: (exerciseId: UUID) => {
+        throw new RestoreError('The migration is not possible', exerciseId);
+    },
+};
