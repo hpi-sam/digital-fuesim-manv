@@ -4,7 +4,28 @@ import { getCreate } from './get-create';
 
 type ColorCode = 'V' | 'W' | 'X' | 'Y' | 'Z';
 type BehaviourCode = 'A' | 'B' | 'C' | 'D' | 'E';
-class PatientStatusDataField {
+
+export const colorCodeMap = {
+    V: 'black',
+    W: 'blue',
+    X: 'green',
+    Y: 'yellow',
+    Z: 'red',
+} as const;
+
+// This is only for typesafety
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _colorCodeMap: { [key in ColorCode]: string } = colorCodeMap;
+
+export const behaviourCodeMap: { [key in BehaviourCode]: string } = {
+    A: 'bi-arrow-right-square-fill',
+    B: 'bi-heartbreak-fill',
+    C: 'bi-exclamation-circle-fill',
+    D: 'bi-exclamation-triangle-fill',
+    E: 'bi-x-circle-fill',
+};
+
+export class PatientStatusDataField {
     @IsString()
     public readonly colorCode: ColorCode;
 
