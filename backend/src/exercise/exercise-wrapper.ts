@@ -3,6 +3,8 @@ import type {
     ExerciseTimeline,
     Role,
     UUID,
+    StateExport,
+    ExerciseIds,
 } from 'digital-fuesim-manv-shared';
 import {
     ExerciseState,
@@ -18,9 +20,13 @@ import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.ent
 import { NormalType } from '../database/normal-type';
 import type { DatabaseService } from '../database/services/database-service';
 import { Config } from '../config';
-import { migrations } from '../database/state-migrations/migrations';
 import { RestoreError } from '../utils/restore-error';
 import { UserReadableIdGenerator } from '../utils/user-readable-id-generator';
+import type { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
+import {
+    migrateInDatabaseTo,
+    migrateInMemoryTo,
+} from '../database/state-migrations/migrations';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
@@ -54,6 +60,23 @@ export class ExerciseWrapper extends NormalType<
     public markAsModified() {
         this._changedSinceSave = true;
     }
+
+    async saveActions(
+        entityManager: EntityManager,
+        exerciseEntity: ExerciseWrapperEntity
+    ): Promise<ActionWrapperEntity[]> {
+        const entities = await Promise.all(
+            this.temporaryActionHistory.map(async (action) =>
+                action.asEntity(true, entityManager, exerciseEntity)
+            )
+        );
+        this.temporaryActionHistory.splice(
+            0,
+            this.temporaryActionHistory.length
+        );
+        return entities;
+    }
+
     async asEntity(
         save: boolean,
         entityManager?: EntityManager
@@ -97,6 +120,7 @@ export class ExerciseWrapper extends NormalType<
                         getDto(entity)
                     )(manager);
                 this.id = savedEntity.id;
+                await this.saveActions(manager, savedEntity);
                 this.markAsSaved();
                 return savedEntity;
             } else if (save && !existed) {
@@ -108,6 +132,7 @@ export class ExerciseWrapper extends NormalType<
                         getDto(entity)
                     )(manager);
                 this.id = savedEntity.id;
+                await this.saveActions(manager, savedEntity);
                 this.markAsSaved();
                 return savedEntity;
             } else if (!save && existed) {
@@ -224,6 +249,81 @@ export class ExerciseWrapper extends NormalType<
         super(databaseService);
     }
 
+    /**
+     * @param file A **valid** import file
+     */
+    static async importFromFile(
+        databaseService: DatabaseService,
+        file: StateExport,
+        exerciseIds: ExerciseIds
+    ): Promise<ExerciseWrapper> {
+        const importOperations = async (manager: EntityManager | undefined) => {
+            let exercise = new ExerciseWrapper(
+                exerciseIds.participantId,
+                exerciseIds.trainerId,
+                [],
+                databaseService,
+                ExerciseState.currentStateVersion,
+                file.history?.initialState ?? file.currentState,
+                file.currentState
+            );
+            const actions = (file.history?.actionHistory ?? []).map(
+                (action) =>
+                    new ActionWrapper(
+                        databaseService,
+                        action,
+                        exercise.emitterId,
+                        exercise
+                    )
+            );
+            exercise.temporaryActionHistory.push(...actions);
+            if (manager === undefined) {
+                // eslint-disable-next-line require-atomic-updates
+                exercise = await migrateInMemoryTo(
+                    ExerciseState.currentStateVersion,
+                    exercise.stateVersion,
+                    exercise
+                );
+            } else {
+                const exerciseEntity = await exercise.save(manager);
+                await migrateInDatabaseTo(
+                    ExerciseState.currentStateVersion,
+                    exercise.stateVersion,
+                    exerciseEntity.id,
+                    manager
+                );
+                // eslint-disable-next-line require-atomic-updates
+                exercise = ExerciseWrapper.createFromEntity(
+                    await databaseService.exerciseWrapperService.getFindById(
+                        exerciseEntity.id
+                    )(manager),
+                    databaseService
+                );
+                // Reset actions to apply them (they are removed when saving the entity to the database)
+                exercise.temporaryActionHistory.push(...actions);
+            }
+            exercise.restore();
+            exercise.applyAction(
+                {
+                    type: '[Exercise] Set Participant Id',
+                    participantId: exerciseIds.participantId,
+                },
+                exercise.emitterId,
+                undefined
+            );
+            exercise.tickCounter = actions.filter(
+                (action) => action.action.type === '[Exercise] Tick'
+            ).length;
+            if (manager !== undefined) {
+                await exercise.save(manager);
+            }
+            return exercise;
+        };
+        return Config.useDb
+            ? databaseService.transaction(importOperations)
+            : importOperations(undefined);
+    }
+
     static create(
         participantId: string,
         trainerId: string,
@@ -250,7 +350,7 @@ export class ExerciseWrapper extends NormalType<
         return exercise;
     }
 
-    private async restore(): Promise<void> {
+    private restore(): void {
         if (this.stateVersion !== ExerciseState.currentStateVersion) {
             throw new RestoreError(
                 `The exercise was created with an incompatible version of the state (got version ${this.stateVersion}, required version ${ExerciseState.currentStateVersion})`,
@@ -258,10 +358,10 @@ export class ExerciseWrapper extends NormalType<
             );
         }
         this.validateInitialState();
-        await this.restoreState();
+        this.restoreState();
     }
 
-    private async restoreState() {
+    private restoreState() {
         this.currentState = this.initialState;
         this.temporaryActionHistory.forEach((action) => {
             this.validateAction(action.action);
@@ -271,11 +371,13 @@ export class ExerciseWrapper extends NormalType<
         this.incrementIdGenerator.setCurrent(
             this.temporaryActionHistory.length
         );
-        // Remove all actions to not save them again
-        this.temporaryActionHistory.splice(
-            0,
-            this.temporaryActionHistory.length
-        );
+        // Remove all actions to not save them again (if database is active)
+        if (Config.useDb) {
+            this.temporaryActionHistory.splice(
+                0,
+                this.temporaryActionHistory.length
+            );
+        }
         // Pause exercise
         if (this.currentState.statusHistory.at(-1)?.status === 'running')
             this.reduce(
@@ -286,7 +388,7 @@ export class ExerciseWrapper extends NormalType<
                 this.emitterId
             );
         // Remove all clients from state
-        Object.values(this.currentState.clients).forEach(async (client) => {
+        Object.values(this.currentState.clients).forEach((client) => {
             const removeClientAction: ExerciseAction = {
                 type: '[Client] Remove client',
                 clientId: client.id,
@@ -307,14 +409,14 @@ export class ExerciseWrapper extends NormalType<
                         ),
                     },
                 })(manager);
-            for (const exercise of outdatedExercises) {
-                do {
-                    // eslint-disable-next-line no-await-in-loop
-                    await migrations[++exercise.stateVersion](exercise.id);
-                } while (
-                    exercise.stateVersion !== ExerciseState.currentStateVersion
+            outdatedExercises.forEach(async (exercise) => {
+                await migrateInDatabaseTo(
+                    ExerciseState.currentStateVersion,
+                    exercise.stateVersion,
+                    exercise.id,
+                    manager
                 );
-            }
+            });
 
             const exercises = await Promise.all(
                 (

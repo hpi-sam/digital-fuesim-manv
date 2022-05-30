@@ -37,6 +37,39 @@
                     Aufzeichnung verlassen
                 </button>
             </ng-template>
+            <div ngbDropdown class="d-inline-block float-end">
+                <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    ngbDropdownToggle
+                >
+                    <i class="bi-cloud-download me-2"> </i>
+                    Exportieren
+                </button>
+                <!-- "position: absolute" is only set with a delay by "ngbDropdownMenu", therefore the map canvas has the wrong height when it is initialized -->
+                <div ngbDropdownMenu class="position-absolute">
+                    <button
+                        ngbDropdownItem
+                        (click)="exportExerciseWithHistory()"
+                    >
+                        <i class="bi-clock-history me-2"> </i>
+                        Kompletten Verlauf
+                    </button>
+                    <button ngbDropdownItem (click)="exportExerciseState()">
+                        <i class="bi-cloud-download me-2"> </i>
+                        Aktuellen Zustand
+                        <span
+                            *ngIf="
+                                apiService.timeConstraints$
+                                    | async as timeConstraints
+                            "
+                            class="text-muted"
+                        >
+                            um {{ timeConstraints.current | formatDuration }}
+                        </span>
+                    </button>
+                </div>
+            </div>
         </h2>
     </div>
 
