@@ -66,6 +66,9 @@ export const selectTransferPoints = (state: AppState) =>
     state.exercise.transferPoints;
 export const selectHospitals = (state: AppState) => state.exercise.hospitals;
 
+export const selectHospitalPatients = (state: AppState) =>
+    state.exercise.hospitalPatients;
+
 export const selectTileMapProperties = (state: AppState) =>
     state.exercise.configuration.tileMapProperties;
 export const selectConfiguration = (state: AppState) =>
