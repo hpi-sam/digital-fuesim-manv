@@ -106,37 +106,5 @@ export class ActionWrapper extends NormalType<
         super(databaseService);
         if (id) this.id = id;
         this.index = index ?? exercise.incrementIdGenerator.next();
-        // // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-        // constructor(services: ServiceProvider) {
-        //     super(services);
-        // }
-
-        // static async create(
-        //     action: ExerciseAction,
-        //     emitter: Omit<CreateActionEmitter, 'exerciseId'>,
-        //     exercise: ExerciseWrapper,
-        //     services: ServiceProvider,
-        //     entityManager?: EntityManager
-        // ): Promise<ActionWrapper> {
-        //     const create = async (manager: EntityManager) => {
-        //         const exerciseEntity = await exercise.asEntity(true, manager);
-        //         const entity = await ActionWrapperEntity.create(
-        //             action,
-        //             { ...emitter, exerciseId: exerciseEntity.id },
-        //             services,
-        //             manager
-        //         );
-
-        //         const normal = await ActionWrapper.createFromEntity(
-        //             entity,
-        //             services,
-        //             manager
-        //         );
-
-        //         return normal;
-        //     };
-        //     return entityManager
-        //         ? create(entityManager)
-        //         : services.transaction(create);
     }
 }

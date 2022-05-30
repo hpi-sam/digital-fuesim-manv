@@ -20,10 +20,13 @@ import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.ent
 import { NormalType } from '../database/normal-type';
 import type { DatabaseService } from '../database/services/database-service';
 import { Config } from '../config';
-import { migrateTo } from '../database/state-migrations/migrations';
 import { RestoreError } from '../utils/restore-error';
 import { UserReadableIdGenerator } from '../utils/user-readable-id-generator';
 import type { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
+import {
+    migrateInDatabaseTo,
+    migrateInMemoryTo,
+} from '../database/state-migrations/migrations';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
@@ -264,41 +267,39 @@ export class ExerciseWrapper extends NormalType<
                 file.history?.initialState ?? file.currentState,
                 file.currentState
             );
-            const actions: ActionWrapper[] = [];
-            for (const action of file.history?.actionHistory ?? []) {
-                // Make sure to create the actions in order
-                actions.push(
+            const actions = (file.history?.actionHistory ?? []).map(
+                (action) =>
                     new ActionWrapper(
                         databaseService,
                         action,
                         exercise.emitterId,
                         exercise
                     )
-                );
-            }
-            exercise.temporaryActionHistory.push(...actions);
-            let exerciseEntity: ExerciseWrapperEntity;
-            if (manager !== undefined) {
-                exerciseEntity = await exercise.save(manager);
-            }
-            // Update exercise & reload it from the database
-            const migrationResult = await migrateTo(
-                ExerciseState.currentStateVersion,
-                exercise.stateVersion,
-                manager !== undefined ? exerciseEntity!.id : exercise,
-                manager
             );
-            exercise =
-                manager !== undefined
-                    ? ExerciseWrapper.createFromEntity(
-                          await databaseService.exerciseWrapperService.getFindById(
-                              exerciseEntity!.id
-                          )(manager),
-                          databaseService
-                      )
-                    : (migrationResult as ExerciseWrapper);
-            // Reset actions to apply them (if they have been removed by saving to the database)
-            if (Config.useDb) {
+            exercise.temporaryActionHistory.push(...actions);
+            if (manager === undefined) {
+                // eslint-disable-next-line require-atomic-updates
+                exercise = await migrateInMemoryTo(
+                    ExerciseState.currentStateVersion,
+                    exercise.stateVersion,
+                    exercise
+                );
+            } else {
+                const exerciseEntity = await exercise.save(manager);
+                await migrateInDatabaseTo(
+                    ExerciseState.currentStateVersion,
+                    exercise.stateVersion,
+                    exerciseEntity.id,
+                    manager
+                );
+                // eslint-disable-next-line require-atomic-updates
+                exercise = ExerciseWrapper.createFromEntity(
+                    await databaseService.exerciseWrapperService.getFindById(
+                        exerciseEntity.id
+                    )(manager),
+                    databaseService
+                );
+                // Reset actions to apply them (they are removed when saving the entity to the database)
                 exercise.temporaryActionHistory.push(...actions);
             }
             exercise.restore();
@@ -409,7 +410,7 @@ export class ExerciseWrapper extends NormalType<
                     },
                 })(manager);
             outdatedExercises.forEach(async (exercise) => {
-                await migrateTo(
+                await migrateInDatabaseTo(
                     ExerciseState.currentStateVersion,
                     exercise.stateVersion,
                     exercise.id,
