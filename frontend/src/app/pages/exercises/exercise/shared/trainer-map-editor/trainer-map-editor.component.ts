@@ -7,7 +7,7 @@ import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectMapImagesTemplates,
-    selectPatientTemplates,
+    selectPatientCategories,
     selectVehicleTemplates,
 } from 'src/app/state/exercise/exercise.selectors';
 import { DragElementService } from '../core/drag-element.service';
@@ -24,12 +24,14 @@ import { openEditImageTemplateModal } from '../editor-panel/edit-image-template-
  * A wrapper around the map that provides trainers with more options and tools.
  */
 export class TrainerMapEditorComponent {
+    public currentCategory = 'X';
+
     public readonly vehicleTemplates$ = this.store.select(
         selectVehicleTemplates
     );
 
-    public readonly patientTemplates$ = this.store.select(
-        selectPatientTemplates
+    public readonly patientCategories$ = this.store.select(
+        selectPatientCategories
     );
 
     public readonly mapImageTemplates$ = this.store.select(
@@ -62,5 +64,9 @@ export class TrainerMapEditorComponent {
 
     public editMapImageTemplate(mapImageTemplateId: UUID) {
         openEditImageTemplateModal(this.ngbModalService, mapImageTemplateId);
+    }
+
+    public setCurrentCategory(category: string) {
+        this.currentCategory = category;
     }
 }

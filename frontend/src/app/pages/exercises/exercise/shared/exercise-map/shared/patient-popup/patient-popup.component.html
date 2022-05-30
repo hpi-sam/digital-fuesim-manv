@@ -88,6 +88,15 @@
                     *ngIf="(apiService.currentRole$ | async) !== 'participant'"
                 >
                     <tr>
+                        <th scope="col">Beschreibung</th>
+                        <td class="font-monospace">
+                            <app-patient-status-display
+                                [patientStatus]="patient.patientStatusCode"
+                            >
+                            </app-patient-status-display>
+                        </td>
+                    </tr>
+                    <tr>
                         <th scope="col">Verletzungs-Geschwindigkeit:</th>
                         <td class="font-monospace">
                             &times;{{ patient.timeSpeed }}

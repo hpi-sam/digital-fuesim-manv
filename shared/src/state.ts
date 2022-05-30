@@ -9,7 +9,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
-import { defaultPatientTemplates } from './data/default-state/patient-templates';
+import { defaultPatientCategories } from './data/default-state/patient-templates';
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
 import type {
     AlarmGroup,
@@ -29,13 +29,13 @@ import { StatisticsEntry } from './models/statistics-entry';
 import {
     EocLogEntry,
     StatusHistoryEntry,
-    PatientTemplate,
     VehicleTemplate,
     MapImageTemplate,
 } from './models';
 import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuidValidationOptions, uuid } from './utils';
+import { PatientCategory } from './models/patient-category';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -75,8 +75,8 @@ export class ExerciseState {
     public readonly clients: { readonly [key: UUID]: Client } = {};
     @IsArray()
     @ValidateNested()
-    @Type(() => PatientTemplate)
-    public readonly patientTemplates = defaultPatientTemplates;
+    @Type(() => PatientCategory)
+    public readonly patientCategories = defaultPatientCategories;
     @IsArray()
     @ValidateNested()
     @Type(() => VehicleTemplate)

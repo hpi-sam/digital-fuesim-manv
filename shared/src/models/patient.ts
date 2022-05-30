@@ -20,6 +20,7 @@ import {
     Position,
 } from './utils';
 import { BiometricInformation } from './utils/biometric-information';
+import { PatientStatusCode } from './utils/patient-status-code';
 import { PersonalInformation } from './utils/personal-information';
 import type { PatientHealthState } from '.';
 
@@ -34,6 +35,14 @@ export class Patient {
     @ValidateNested()
     @Type(() => BiometricInformation)
     public readonly biometricInformation: BiometricInformation;
+
+    /**
+     * A description of the expected patient behaviour over time
+     * For the trainer
+     */
+    @ValidateNested()
+    @Type(() => PatientStatusCode)
+    public readonly patientStatusCode: PatientStatusCode;
 
     // TODO
     @IsString()
@@ -54,6 +63,7 @@ export class Patient {
         // TODO: Specify patient data (e.g. injuries, name, etc.)
         personalInformation: PersonalInformation,
         biometricInformation: BiometricInformation,
+        patientStatusCode: PatientStatusCode,
         pretriageStatus: PatientStatus,
         realStatus: PatientStatus,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
@@ -63,6 +73,7 @@ export class Patient {
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
+        this.patientStatusCode = patientStatusCode;
         this.pretriageStatus = pretriageStatus;
         this.realStatus = realStatus;
         this.healthStates = healthStates;
