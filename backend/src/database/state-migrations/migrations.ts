@@ -23,11 +23,12 @@ export type InMemoryMigrationFunction = (
     exerciseWrapper: ExerciseWrapper
 ) => Promise<ExerciseWrapper>;
 
-export type MigrationFunctions = [
-    DbMigrationFunction,
-    InMemoryMigrationFunction
-];
+export interface MigrationFunctions {
+    database: DbMigrationFunction;
+    inMemory: InMemoryMigrationFunction;
+}
 
+// TODO: It'd probably be better not to export this
 /**
  * This object MUST provide entries for every positive integer greater than 1 and less than or equal to ExerciseState.currentStateVersion.
  * A function with key `k` MUST be able to transform a valid exercise of state version `k-1` to a valid exercise of state version `k`.
@@ -35,17 +36,17 @@ export type MigrationFunctions = [
 export const migrations: {
     [key: number]: MigrationFunctions;
 } = {
-    2: [
-        (_entityManager: EntityManager, exerciseId: UUID) => {
+    2: {
+        database: (_entityManager: EntityManager, exerciseId: UUID) => {
             throw new RestoreError('The migration is not possible', exerciseId);
         },
-        (exerciseWrapper: ExerciseWrapper) => {
+        inMemory: (exerciseWrapper: ExerciseWrapper) => {
             throw new RestoreError(
                 'The migration is not possible',
                 exerciseWrapper.id ?? 'unknown id'
             );
         },
-    ],
+    },
 };
 
 export async function migrateInDatabaseTo(
@@ -57,7 +58,7 @@ export async function migrateInDatabaseTo(
     let currentVersion = currentStateVersion;
     while (++currentVersion <= targetStateVersion) {
         // eslint-disable-next-line no-await-in-loop
-        await migrations[currentVersion][0](entityManager, exerciseId);
+        await migrations[currentVersion].database(entityManager, exerciseId);
     }
 }
 
@@ -70,7 +71,9 @@ export async function migrateInMemoryTo(
     let currentExercise = exercise;
     while (++currentVersion <= targetStateVersion) {
         // eslint-disable-next-line no-await-in-loop
-        currentExercise = await migrations[currentVersion][1](currentExercise);
+        currentExercise = await migrations[currentVersion].inMemory(
+            currentExercise
+        );
     }
     return currentExercise;
 }
