@@ -1058,7 +1058,8 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
             {
                 [noChangesState.id]: noChangesState,
                 [yellowUntilPhase3State.id]: yellowUntilPhase3State,
-                [redUntilYellowFor2PhasesState.id]: redUntilYellowFor2PhasesState,
+                [redUntilYellowFor2PhasesState.id]:
+                    redUntilYellowFor2PhasesState,
                 [yellowFor3PhasesState.id]: yellowFor3PhasesState,
                 [yellowStartPhase7RSDecisionState.id]:
                     yellowStartPhase7RSDecisionState,
