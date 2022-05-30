@@ -9,7 +9,8 @@ import { ReducerError } from '../reducer-error';
 import { getElement } from './utils/get-element';
 
 /**
- * Personnel/Vehicle in transfer will arrive now at new transferPoint
+ * Personnel/Vehicle in transfer will arrive immediately at new targetTransferPoint
+ * Transfer gets deleted afterwards
  * @param elementId of an element that is in transfer
  */
 export function letElementArrive(
@@ -18,7 +19,7 @@ export function letElementArrive(
     elementId: UUID
 ) {
     const element = getElement(draftState, elementType, elementId);
-    // check
+    // check that element is in transfer, this should be always the case where this function is used
     if (!element.transfer) {
         throw getNotInTransferError(element.id);
     }
@@ -72,7 +73,7 @@ export class EditTransferAction implements Action {
     /**
      * How much time in ms should be added to the transfer time.
      * If it is negative, the transfer time will be decreased.
-     * If the time ist set to a time in the past it will be set to the current time.
+     * If the time is set to a time in the past it will be set to the current time.
      */
     public readonly timeToAdd?: number;
 }
@@ -192,9 +193,7 @@ export namespace TransferActionReducers {
             if (!element.transfer) {
                 throw getNotInTransferError(element.id);
             }
-            // let first an element arrive at the targetted transferPoint before deleting the transfer
             letElementArrive(draftState, elementType, elementId);
-            delete draftState.transferPoints[targetTransferPointId];
             return draftState;
         },
         rights: 'trainer',

@@ -222,32 +222,32 @@ export namespace TransferPointActionReducers {
             reducer: (draftState, { transferPointId }) => {
                 // check if transferPoint exists
                 getElement(draftState, 'transferPoints', transferPointId);
-                // TODO: make it dynamic
+                // TODO: make it dynamic (if at any time something else is able to transfer this part needs to be changed accordingly)
                 // Let all vehicles and personnel arrive that are on transfer to this transferPoint before deleting it
-                for (const _vehicleId of Object.keys(draftState.vehicles)) {
+                for (const vehicleId of Object.keys(draftState.vehicles)) {
                     const vehicle = getElement(
                         draftState,
                         'vehicles',
-                        _vehicleId
+                        vehicleId
                     );
                     if (
                         vehicle.transfer?.targetTransferPointId ===
                         transferPointId
                     ) {
-                        letElementArrive(draftState, 'vehicles', _vehicleId);
+                        letElementArrive(draftState, 'vehicles', vehicleId);
                     }
                 }
-                for (const _personnelId of Object.keys(draftState.personnel)) {
+                for (const personnelId of Object.keys(draftState.personnel)) {
                     const personnel = getElement(
                         draftState,
                         'personnel',
-                        _personnelId
+                        personnelId
                     );
                     if (
                         personnel.transfer?.targetTransferPointId ===
                         transferPointId
                     ) {
-                        letElementArrive(draftState, 'personnel', _personnelId);
+                        letElementArrive(draftState, 'personnel', personnelId);
                     }
                 }
                 // TODO: If we can assume that the transfer points are always connected to each other,
