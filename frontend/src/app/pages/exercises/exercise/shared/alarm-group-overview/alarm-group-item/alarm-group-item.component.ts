@@ -69,7 +69,7 @@ export class AlarmGroupItemComponent {
                 alarmGroupId: this.alarmGroup.id,
                 alarmGroupVehicleId,
                 time,
-                name
+                name,
             },
             true
         );

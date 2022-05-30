@@ -90,15 +90,20 @@
         >
         </app-vehicle-template-display>
         <input
-        #nameInput="ngModel"
-        [ngModel]="alarmGroupVehicle.name"
-        (ngModelChange)="editAlarmGroupVehicle(alarmGroupVehicle.id, alarmGroupVehicle.time, $event)"
-        required
-        placeholder="Name"
-        type="text"
-        class="form-control d-inline-block fw-bold"
-        
-    />
+            #nameInput="ngModel"
+            [ngModel]="alarmGroupVehicle.name"
+            (ngModelChange)="
+                editAlarmGroupVehicle(
+                    alarmGroupVehicle.id,
+                    alarmGroupVehicle.time,
+                    $event
+                )
+            "
+            required
+            placeholder="Name"
+            type="text"
+            class="form-control d-inline-block fw-bold"
+        />
     </div>
 </div>
 <ng-template #noAlarmGroupVehicles>
