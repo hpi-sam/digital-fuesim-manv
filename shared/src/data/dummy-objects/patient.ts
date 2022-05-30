@@ -1,8 +1,9 @@
 import { FunctionParameters, Patient, PatientHealthState } from '../../models';
-import { defaultPatientTemplates } from '../default-state/patient-templates';
+import { PatientStatusCode } from '../../models/utils/patient-status-code';
+import { defaultPatientCategories } from '../default-state/patient-templates';
 
 export function generateDummyPatient(): Patient {
-    const template = defaultPatientTemplates[0];
+    const template = defaultPatientCategories[0].patientTemplates[0];
     const healthState = PatientHealthState.create(
         FunctionParameters.create(-10_000, 0, 0, 0),
         []
@@ -14,12 +15,13 @@ export function generateDummyPatient(): Patient {
             birthdate: '1.1.',
         },
         template.biometricInformation,
+        template.pretriageInformation,
+        PatientStatusCode.create('ZAZAZA'),
         'green',
         'green',
         { [healthState.id]: healthState },
         healthState.id,
         template.image,
-        template.health,
-        ''
+        template.health
     );
 }

@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import type { Mutable, TileMapProperties } from 'digital-fuesim-manv-shared';
-import { cloneDeep } from 'lodash';
+import { cloneDeepMutable } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectTileMapProperties } from 'src/app/state/exercise/exercise.selectors';
+import {
+    selectConfiguration,
+    selectTileMapProperties,
+} from 'src/app/state/exercise/exercise.selectors';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 @Component({
@@ -14,25 +16,39 @@ import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
     styleUrls: ['./exercise-settings-modal.component.scss'],
 })
 export class ExerciseSettingsModalComponent {
-    public tileMapProperties: Mutable<TileMapProperties>;
+    public tileMapProperties = cloneDeepMutable(
+        selectTileMapProperties(getStateSnapshot(this.store))
+    );
 
     public readonly tileMapUrlRegex =
         /^(?=.*\{x\})(?=.*\{-?y\})(?=.*\{z\}).*$/u;
 
+    public configuration$ = this.store.select(selectConfiguration);
+
     constructor(
-        store: Store<AppState>,
+        private readonly store: Store<AppState>,
         public readonly activeModal: NgbActiveModal,
         private readonly apiService: ApiService
-    ) {
-        this.tileMapProperties = cloneDeep(
-            selectTileMapProperties(getStateSnapshot(store))
-        );
-    }
+    ) {}
 
     public updateTileMapProperties() {
         this.apiService.proposeAction({
-            type: '[ExerciseSettings] Set tile map properties',
+            type: '[Configuration] Set tileMapProperties',
             tileMapProperties: this.tileMapProperties,
+        });
+    }
+
+    public setPretriageFlag(pretriageEnabled: boolean) {
+        this.apiService.proposeAction({
+            type: '[Configuration] Set pretriageEnabled',
+            pretriageEnabled,
+        });
+    }
+
+    public setBluePatientsFlag(bluePatientsEnabled: boolean) {
+        this.apiService.proposeAction({
+            type: '[Configuration] Set bluePatientsEnabled',
+            bluePatientsEnabled,
         });
     }
 

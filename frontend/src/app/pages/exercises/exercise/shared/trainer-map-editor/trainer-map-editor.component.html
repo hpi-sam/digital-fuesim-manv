@@ -88,7 +88,19 @@
                     </div>
                 </li>
                 <li class="list-group-item">
-                    <h5>Patienten</h5>
+                    <h5>
+                        Patienten
+                        <select
+                            [ngModel]="currentCategory"
+                            (ngModelChange)="setCurrentCategory($event)"
+                            class="form-select d-inline-block no-validation"
+                            style="max-width: fit-content"
+                        >
+                            <option [value]="'X'">SK III</option>
+                            <option [value]="'Y'">SK II</option>
+                            <option [value]="'Z'">SK I</option>
+                        </select>
+                    </h5>
                     <!-- 20px more height than the sum of the children to have room for the scrollbar -->
                     <div
                         class="overflow-auto w-100 d-flex flex-wrap"
@@ -101,34 +113,42 @@
                     >
                         <div
                             *ngFor="
-                                let patientTemplate of patientTemplates$ | async
-                            "
-                            class="d-inline-block card text-center flex-shrink-0"
-                            style="
-                                width: 10rem;
-                                text-overflow: ellipsis;
-                                height: 110px;
-                            "
-                            (mousedown)="
-                                dragElementService.onMouseDown($event, {
-                                    type: 'patient',
-                                    template: patientTemplate
-                                })
+                                let patientCategory of patientCategories$
+                                    | async
                             "
                         >
                             <div
-                                class="preview-image-container small-image card-img-top"
+                                *ngIf="
+                                    patientCategory.name.firstField
+                                        .colorCode === currentCategory
+                                "
+                                class="d-inline-block card text-center flex-shrink-0"
+                                style="
+                                    width: 10rem;
+                                    text-overflow: ellipsis;
+                                    height: 110px;
+                                "
+                                (mousedown)="
+                                    dragElementService.onMouseDown($event, {
+                                        type: 'patient',
+                                        template: patientCategory
+                                    })
+                                "
                             >
-                                <img [src]="patientTemplate.image.url" />
-                            </div>
-                            <div
-                                [title]="patientTemplate.name"
-                                class="p-1 text-wrap lh-1"
-                                style="overflow: auto"
-                            >
-                                <small>
-                                    {{ patientTemplate.name }}
-                                </small>
+                                <div
+                                    class="preview-image-container small-image card-img-top"
+                                >
+                                    <img [src]="patientCategory.image.url" />
+                                </div>
+                                <div
+                                    class="p-1 text-wrap lh-1 fs-5"
+                                    style="overflow: auto"
+                                >
+                                    <app-patient-status-display
+                                        [patientStatus]="patientCategory.name"
+                                    >
+                                    </app-patient-status-display>
+                                </div>
                             </div>
                         </div>
                     </div>

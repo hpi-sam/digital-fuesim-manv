@@ -9,16 +9,16 @@ import {
 } from 'class-validator';
 import { countBy } from 'lodash-es';
 import type { Client, Patient, Vehicle } from '../../models';
-import { Personnel, TransferPoint, Viewport } from '../../models';
+import { Personnel, Viewport } from '../../models';
 import { StatusHistoryEntry } from '../../models/status-history-entry';
-import { getStatus, Position } from '../../models/utils';
+import { getStatus } from '../../models/utils';
 import type { AreaStatistics } from '../../models/utils/area-statistics';
 import type { ExerciseState } from '../../state';
-import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
 import { uuid } from '../../utils';
 import { PatientUpdate } from '../../utils/patient-updates';
 import type { Action, ActionReducer } from '../action-reducer';
+import { letElementArrive } from './transfer';
 import { calculateTreatments } from './utils/calculate-treatments';
 
 export class PauseExerciseAction implements Action {
@@ -102,10 +102,8 @@ export namespace ExerciseActionReducers {
                 currentPatient.currentHealthStateId = patientUpdate.nextStateId;
                 currentPatient.health = patientUpdate.nextHealthPoints;
                 currentPatient.stateTime = patientUpdate.nextStateTime;
+                currentPatient.treatmentTime = patientUpdate.treatmentTime;
                 currentPatient.realStatus = getStatus(currentPatient.health);
-                if (currentPatient.visibleStatus !== null) {
-                    currentPatient.visibleStatus = currentPatient.realStatus;
-                }
             });
             // Refresh treatments
             if (refreshTreatments) {
@@ -153,16 +151,7 @@ function refreshTransfer(
         if (element.transfer.endTimeStamp > draftState.currentTime) {
             return;
         }
-        // Personnel/Vehicle arrived at new transferPoint
-        const targetTransferPoint =
-            draftState.transferPoints[element.transfer.targetTransferPointId];
-        element.position = Position.create(
-            targetTransferPoint.position.x,
-            targetTransferPoint.position.y +
-                //  Position it in the upper half of the transferPoint)
-                imageSizeToPosition(TransferPoint.image.height / 3)
-        );
-        delete element.transfer;
+        letElementArrive(draftState, key, element.id);
     });
 }
 
