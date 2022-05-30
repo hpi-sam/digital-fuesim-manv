@@ -11,6 +11,7 @@ import { Position } from '../../models/utils';
 import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
+import { letElementArrive } from './transfer';
 import { calculateDistance } from './utils/calculate-distance';
 import { getElement } from './utils/get-element';
 
@@ -219,8 +220,36 @@ export namespace TransferPointActionReducers {
         {
             action: RemoveTransferPointAction,
             reducer: (draftState, { transferPointId }) => {
+                // check if transferPoint exists
                 getElement(draftState, 'transferPoints', transferPointId);
-                delete draftState.transferPoints[transferPointId];
+                // TODO: make it dynamic (if at any time something else is able to transfer this part needs to be changed accordingly)
+                // Let all vehicles and personnel arrive that are on transfer to this transferPoint before deleting it
+                for (const vehicleId of Object.keys(draftState.vehicles)) {
+                    const vehicle = getElement(
+                        draftState,
+                        'vehicles',
+                        vehicleId
+                    );
+                    if (
+                        vehicle.transfer?.targetTransferPointId ===
+                        transferPointId
+                    ) {
+                        letElementArrive(draftState, 'vehicles', vehicleId);
+                    }
+                }
+                for (const personnelId of Object.keys(draftState.personnel)) {
+                    const personnel = getElement(
+                        draftState,
+                        'personnel',
+                        personnelId
+                    );
+                    if (
+                        personnel.transfer?.targetTransferPointId ===
+                        transferPointId
+                    ) {
+                        letElementArrive(draftState, 'personnel', personnelId);
+                    }
+                }
                 // TODO: If we can assume that the transfer points are always connected to each other,
                 // we could just iterate over draftState.transferPoints[transferPointId].reachableTransferPoints
                 for (const _transferPointId of Object.keys(
@@ -238,7 +267,7 @@ export namespace TransferPointActionReducers {
                         ];
                     }
                 }
-                // TODO: Remove the vehicles and personnel in transit
+                delete draftState.transferPoints[transferPointId];
                 return draftState;
             },
             rights: 'trainer',
