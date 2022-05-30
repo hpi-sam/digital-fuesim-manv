@@ -50,12 +50,7 @@ and Fry1989
 and Fry1989  
 <https://commons.wikimedia.org/wiki/File:MUTCD_RS-094.svg> (edited)
 
-[carrying-unit-with-male-patient.svg](carrying-unit.svg):  
-<https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
-and Fry1989  
-<https://commons.wikimedia.org/wiki/File:MUTCD_RS-094.svg> (edited)
-
-[carrying-unit-with-female-patient.svg](carrying-unit.svg):  
+[carrying-unit-with-patient.svg](carrying-unit.svg):  
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
 and Fry1989  
 <https://commons.wikimedia.org/wiki/File:MUTCD_RS-094.svg> (edited)
