@@ -9,9 +9,9 @@
             <!-- If you change a sort-header here, you must also update HospitalPatientsRow in the component! -->
             <th mat-sort-header="patientStatus">Patientenkategorie</th>
             <th mat-sort-header="vehicleType">Fahrzeugtyp</th>
-            <th mat-sort-header="startTime">Startzeit des Transports</th>
+            <th mat-sort-header="departureTime">Abfahrtszeit</th>
             <th mat-sort-header="arrivalTime">Ankunftszeit</th>
-            <th mat-sort-header="hospitalId">Krankenhaus</th>
+            <th mat-sort-header="hospitalName">Krankenhaus</th>
         </tr>
     </thead>
     <tbody>
@@ -26,5 +26,5 @@
 </table>
 
 <div *ngIf="!(sortedRows$ | async)?.length" class="text-muted">
-    Es wurden noch keine Patienten an Krankenhäuser versendet.
+    Es wurden noch keine Patienten an Krankenhäuser transportiert.
 </div>

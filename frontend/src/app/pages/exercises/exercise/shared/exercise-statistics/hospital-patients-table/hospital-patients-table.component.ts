@@ -32,8 +32,7 @@ export class HospitalPatientsTableComponent {
                             _hospital.patientIds[hospitalPatient.patientId]
                     );
                     const row: HospitalPatientsRow = {
-                        hospitalName:
-                            hospital?.name ?? 'unbekanntes Krankenhaus',
+                        hospitalName: hospital!.name,
                         arrivalTime: hospitalPatient.arrivalTime,
                         departureTime: hospitalPatient.startTime,
                         patientStatus: statusNames[hospitalPatient.realStatus],
@@ -49,8 +48,8 @@ export class HospitalPatientsTableComponent {
             this.unsortedRows$,
             this.sortEvent$.pipe(
                 startWith({
-                    active: 'hospitalName',
-                    direction: '',
+                    active: 'departureTime',
+                    direction: 'asc',
                 } as Sort)
             ),
         ]).pipe(
