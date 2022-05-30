@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import {
     IsBoolean,
     IsDefined,
-    IsNotIn,
     IsNumber,
     IsOptional,
     IsString,
@@ -13,15 +12,15 @@ import {
 } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import {
-    Position,
-    PatientStatus,
-    HealthPoints,
-    ImageProperties,
-    healthPointsDefaults,
     getCreate,
+    HealthPoints,
+    healthPointsDefaults,
+    ImageProperties,
+    PatientStatus,
+    Position,
 } from './utils';
-import { PersonalInformation } from './utils/personal-information';
 import { BiometricInformation } from './utils/biometric-information';
+import { PersonalInformation } from './utils/personal-information';
 import type { PatientHealthState } from '.';
 
 export class Patient {
@@ -37,8 +36,8 @@ export class Patient {
     public readonly biometricInformation: BiometricInformation;
 
     // TODO
-    @IsNotIn([undefined])
-    public readonly visibleStatus: PatientStatus | null;
+    @IsString()
+    public readonly pretriageStatus: PatientStatus;
 
     // TODO
     @IsString()
@@ -49,36 +48,27 @@ export class Patient {
     public readonly image: ImageProperties;
 
     /**
-     * A description of the expected patient health over time
-     * For the trainer
-     */
-    @IsString()
-    public readonly healthDescription: string;
-
-    /**
      * @deprecated Use {@link create} instead
      */
     constructor(
         // TODO: Specify patient data (e.g. injuries, name, etc.)
         personalInformation: PersonalInformation,
         biometricInformation: BiometricInformation,
-        visibleStatus: PatientStatus | null,
+        pretriageStatus: PatientStatus,
         realStatus: PatientStatus,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         currentHealthStateId: UUID,
         image: ImageProperties,
-        health: HealthPoints,
-        healthDescription: string
+        health: HealthPoints
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
-        this.visibleStatus = visibleStatus;
+        this.pretriageStatus = pretriageStatus;
         this.realStatus = realStatus;
         this.healthStates = healthStates;
         this.currentHealthStateId = currentHealthStateId;
         this.image = image;
         this.health = health;
-        this.healthDescription = healthDescription;
     }
 
     /**
@@ -131,7 +121,34 @@ export class Patient {
     @Min(0)
     public readonly timeSpeed: number = 1;
 
+    @IsNumber()
+    @Min(0)
+    public treatmentTime = 0;
+
     static readonly create = getCreate(this);
+
+    /**
+     * The time that is needed for personnel to automatically pretriage the patient
+     * in milliseconds
+     */
+    private static readonly pretriageTimeThreshold: number = 2 * 60 * 1000;
+
+    static getVisibleStatus(
+        patient: Patient,
+        pretriageEnabled: boolean,
+        bluePatientsEnabled: boolean
+    ) {
+        const status =
+            !pretriageEnabled ||
+            patient.treatmentTime >= this.pretriageTimeThreshold
+                ? patient.realStatus
+                : patient.pretriageStatus;
+        return status === 'blue' && !bluePatientsEnabled ? 'red' : status;
+    }
+
+    static pretriageStatusIsLocked(patient: Patient): boolean {
+        return patient.treatmentTime >= this.pretriageTimeThreshold;
+    }
 
     static isInVehicle(patient: Patient): boolean {
         return patient.position === undefined;
