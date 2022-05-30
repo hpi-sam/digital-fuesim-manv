@@ -301,6 +301,7 @@ export class ExerciseWrapper extends NormalType<
             if (Config.useDb) {
                 exercise.temporaryActionHistory.push(...actions);
             }
+            exercise.restore();
             exercise.applyAction(
                 {
                     type: '[Exercise] Set Participant Id',
@@ -309,7 +310,6 @@ export class ExerciseWrapper extends NormalType<
                 exercise.emitterId,
                 undefined
             );
-            exercise.restore();
             exercise.tickCounter = actions.filter(
                 (action) => action.action.type === '[Exercise] Tick'
             ).length;
