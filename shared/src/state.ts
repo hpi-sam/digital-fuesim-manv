@@ -30,7 +30,8 @@ import {
     EocLogEntry,
     StatusHistoryEntry,
     VehicleTemplate,
-    MapImageTemplate} from './models';
+    MapImageTemplate,
+} from './models';
 import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuidValidationOptions, uuid } from './utils';
@@ -122,5 +123,5 @@ export class ExerciseState {
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 1;
+    static readonly currentStateVersion = 2;
 }

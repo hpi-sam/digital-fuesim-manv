@@ -307,14 +307,14 @@ export class ExerciseWrapper extends NormalType<
                         ),
                     },
                 })(manager);
-            outdatedExercises.forEach(async (exercise) => {
+            for (const exercise of outdatedExercises) {
                 do {
                     // eslint-disable-next-line no-await-in-loop
                     await migrations[++exercise.stateVersion](exercise.id);
                 } while (
                     exercise.stateVersion !== ExerciseState.currentStateVersion
                 );
-            });
+            }
 
             const exercises = await Promise.all(
                 (
