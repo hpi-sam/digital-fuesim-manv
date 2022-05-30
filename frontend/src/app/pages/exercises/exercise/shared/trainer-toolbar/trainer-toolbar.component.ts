@@ -7,6 +7,7 @@ import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confir
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectExerciseStatus } from 'src/app/state/exercise/exercise.selectors';
+import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 import { openEmergencyOperationsCenterModal } from '../emergency-operations-center/open-emergency-operations-center-modal';
@@ -68,6 +69,15 @@ export class TrainerToolbarComponent {
     }
 
     public async startExercise() {
+        if (getStateSnapshot(this.store).exercise.currentTime === 0) {
+            const confirmStart = await this.confirmationModalService.confirm({
+                title: 'Übung starten',
+                description: 'Möchten Sie die Übung wirklich starten?',
+            });
+            if (!confirmStart) {
+                return;
+            }
+        }
         this.apiService.proposeAction({
             type: '[Exercise] Start',
             timestamp: Date.now(),
