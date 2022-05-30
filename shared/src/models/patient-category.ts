@@ -1,11 +1,12 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsString, ValidateNested } from 'class-validator';
+import { IsArray, ValidateNested } from 'class-validator';
 import { PatientTemplate } from './patient-template';
 import { getCreate, ImageProperties } from './utils';
 import { PatientStatusCode } from './utils/patient-status-code';
 
 export class PatientCategory {
-    @IsString()
+    @ValidateNested()
+    @Type(() => PatientStatusCode)
     public readonly name: PatientStatusCode;
 
     @ValidateNested()
