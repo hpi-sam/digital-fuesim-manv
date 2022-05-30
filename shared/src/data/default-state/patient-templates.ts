@@ -19,6 +19,7 @@ function calculateHealthChange(
     targetHealth: number,
     phases: number
 ) {
+    // TODO: Make this dependent on the actual tick intervals during an exercise - we can never know how many ticks will happen in one state
     return (targetHealth - starthealth) / (phases * 12 * 60);
 }
 
