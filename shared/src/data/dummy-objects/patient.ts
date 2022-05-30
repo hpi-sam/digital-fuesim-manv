@@ -19,7 +19,6 @@ export function generateDummyPatient(): Patient {
         { [healthState.id]: healthState },
         healthState.id,
         template.image,
-        template.health,
-        ''
+        template.health
     );
 }

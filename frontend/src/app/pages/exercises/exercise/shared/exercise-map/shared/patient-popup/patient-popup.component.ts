@@ -1,12 +1,20 @@
 import type { OnInit } from '@angular/core';
-import { EventEmitter, Output, Component } from '@angular/core';
-import { Store } from '@ngrx/store';
-import type { UUID, Patient } from 'digital-fuesim-manv-shared';
-import { healthPointsDefaults, statusNames } from 'digital-fuesim-manv-shared';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { createSelector, Store } from '@ngrx/store';
+import type { PatientStatus, UUID } from 'digital-fuesim-manv-shared';
+import {
+    healthPointsDefaults,
+    Patient,
+    statusNames,
+} from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
+import { map } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { getSelectPatient } from 'src/app/state/exercise/exercise.selectors';
+import {
+    getSelectPatient,
+    selectConfiguration,
+} from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({
@@ -21,8 +29,21 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public patient$?: Observable<Patient>;
+    public visibleStatus$?: Observable<PatientStatus>;
+    public pretriageStatusIsLocked$?: Observable<boolean>;
 
     public currentYear = new Date().getFullYear();
+
+    public configuration$ = this.store.select(selectConfiguration);
+
+    public readonly pretriageOptions$: Observable<PatientStatus[]> =
+        this.configuration$.pipe(
+            map((configuration) =>
+                configuration.bluePatientsEnabled
+                    ? ['white', 'black', 'blue', 'red', 'yellow', 'green']
+                    : ['white', 'black', 'red', 'yellow', 'green']
+            )
+        );
 
     // To use it in the template
     public readonly healthPointsDefaults = healthPointsDefaults;
@@ -34,6 +55,29 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
 
     ngOnInit(): void {
         this.patient$ = this.store.select(getSelectPatient(this.patientId));
+        this.visibleStatus$ = this.store.select(
+            createSelector(
+                getSelectPatient(this.patientId),
+                selectConfiguration,
+                (patient, configuration) =>
+                    Patient.getVisibleStatus(
+                        patient,
+                        configuration.pretriageEnabled,
+                        configuration.bluePatientsEnabled
+                    )
+            )
+        );
+        this.pretriageStatusIsLocked$ = this.patient$.pipe(
+            map((patient) => Patient.pretriageStatusIsLocked(patient))
+        );
+    }
+
+    setPretriageCategory(patientStatus: PatientStatus) {
+        this.apiService.proposeAction({
+            type: '[Patient] Set Visible Status',
+            patientId: this.patientId,
+            patientStatus,
+        });
     }
 
     public get statusNames() {

@@ -1,7 +1,6 @@
 import { Type } from 'class-transformer';
 import {
     IsDefined,
-    IsNotIn,
     IsNumber,
     IsString,
     IsUUID,
@@ -12,14 +11,14 @@ import {
 import type { Mutable } from '../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../utils';
 import {
-    PatientStatus,
-    HealthPoints,
-    ImageProperties,
-    healthPointsDefaults,
     getCreate,
+    HealthPoints,
+    healthPointsDefaults,
+    ImageProperties,
+    PatientStatus,
 } from './utils';
-import { PersonalInformation } from './utils/personal-information';
 import { BiometricInformation } from './utils/biometric-information';
+import { PersonalInformation } from './utils/personal-information';
 import type { Patient, PatientHealthState } from '.';
 
 export class HospitalPatient {
@@ -56,8 +55,8 @@ export class HospitalPatient {
     public readonly biometricInformation: BiometricInformation;
 
     // TODO
-    @IsNotIn([undefined])
-    public readonly visibleStatus: PatientStatus | null;
+    @IsString()
+    public readonly pretriageStatus: PatientStatus;
 
     // TODO
     @IsString()
@@ -66,13 +65,6 @@ export class HospitalPatient {
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
-
-    /**
-     * A description of the expected patient health over time
-     * For the trainer
-     */
-    @IsString()
-    public readonly healthDescription: string;
 
     @IsDefined()
     public readonly healthStates: {
@@ -93,6 +85,10 @@ export class HospitalPatient {
     @Min(healthPointsDefaults.min)
     public readonly health: HealthPoints;
 
+    @IsNumber()
+    @Min(0)
+    public treatmentTime = 0;
+
     /**
      * @deprecated Use {@link create} instead
      */
@@ -103,13 +99,13 @@ export class HospitalPatient {
         arrivalTime: number,
         personalInformation: PersonalInformation,
         biometricInformation: BiometricInformation,
-        visibleStatus: PatientStatus | null,
+        pretriageStatus: PatientStatus,
         realStatus: PatientStatus,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         currentHealthStateId: UUID,
         image: ImageProperties,
         health: HealthPoints,
-        healthDescription: string
+        treatmentTime: number
     ) {
         this.patientId = patientId;
         this.vehicleType = vehicleType;
@@ -117,13 +113,13 @@ export class HospitalPatient {
         this.arrivalTime = arrivalTime;
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
-        this.visibleStatus = visibleStatus;
+        this.pretriageStatus = pretriageStatus;
         this.realStatus = realStatus;
         this.healthStates = healthStates;
         this.currentHealthStateId = currentHealthStateId;
         this.image = image;
         this.health = health;
-        this.healthDescription = healthDescription;
+        this.treatmentTime = treatmentTime;
     }
 
     static readonly create = getCreate(this);
@@ -149,13 +145,13 @@ export class HospitalPatient {
                 arrivalTime,
                 patient.personalInformation,
                 patient.biometricInformation,
-                patient.visibleStatus,
+                patient.pretriageStatus,
                 patient.realStatus,
                 patient.healthStates,
                 patient.currentHealthStateId,
                 patient.image,
                 patient.health,
-                patient.healthDescription
+                patient.treatmentTime
             )
         );
     }

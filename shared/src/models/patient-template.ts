@@ -1,11 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-    IsBoolean,
-    IsDefined,
-    IsString,
-    IsUUID,
-    ValidateNested,
-} from 'class-validator';
+import { IsDefined, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import {
     BiometricInformation,
@@ -27,9 +21,6 @@ export class PatientTemplate {
     @ValidateNested()
     @Type(() => BiometricInformation)
     public readonly biometricInformation: BiometricInformation;
-
-    @IsBoolean()
-    public readonly isPreTriaged: boolean;
 
     @ValidateNested()
     @Type(() => ImageProperties)
@@ -55,7 +46,6 @@ export class PatientTemplate {
     constructor(
         name: string,
         biometricInformation: BiometricInformation,
-        isPreTriaged: boolean,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         image: ImageProperties,
         health: HealthPoints,
@@ -63,7 +53,6 @@ export class PatientTemplate {
     ) {
         this.name = name;
         this.biometricInformation = biometricInformation;
-        this.isPreTriaged = isPreTriaged;
         this.image = image;
         this.healthStates = healthStates;
         this.health = health;
@@ -101,13 +90,12 @@ export class PatientTemplate {
                 template.biometricInformation.sex
             ),
             template.biometricInformation,
-            template.isPreTriaged ? status : null,
+            'white',
             status,
             healthStates,
             template.startingHealthStateId,
             template.image,
-            template.health,
-            template.name
+            template.health
         );
     }
 }
