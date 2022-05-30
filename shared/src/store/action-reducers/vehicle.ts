@@ -306,16 +306,12 @@ export namespace VehicleActionReducers {
                         draftState.personnel[personnelId].position = undefined;
                     });
                     if (
+                        // Tragetrupp has only animation for one patient, not for multiple (right now each Tragetrupp it can only transport one patient)
                         vehicle.vehicleType === 'Tragetrupp' &&
-                        Object.keys(vehicle.patientIds).length >= 1
+                        Object.keys(vehicle.patientIds).length === 1
                     ) {
-                        if (patient.biometricInformation.sex === 'female') {
-                            vehicle.image =
-                                draftState.carrinyUnitImagesTemplates.female;
-                        } else {
-                            vehicle.image =
-                                draftState.carrinyUnitImagesTemplates.male;
-                        }
+                        vehicle.image =
+                            draftState.carrinyUnitImagesTemplates.withPatient;
                     }
                 }
             }

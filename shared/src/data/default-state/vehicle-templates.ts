@@ -40,14 +40,8 @@ const carryingUnitImage: ImageProperties = {
     aspectRatio: carryingUnitAspectRatio,
 };
 
-const carryingUnitWithFemalePatientImage: ImageProperties = {
-    url: '/assets/carrying-unit-with-female-patient.svg',
-    height: carrinyUnitHeight,
-    aspectRatio: carryingUnitAspectRatio,
-};
-
-const carryingUnitWithMalePatientImage: ImageProperties = {
-    url: '/assets/carrying-unit-with-male-patient.svg',
+const carryingUnitWithPatientImage: ImageProperties = {
+    url: '/assets/carrying-unit-with-patient.svg',
     height: carrinyUnitHeight,
     aspectRatio: carryingUnitAspectRatio,
 };
@@ -196,6 +190,5 @@ export const carryingUnitImagesMap: {
     [key: string]: ImageProperties;
 } = {
     default: carryingUnitImage,
-    female: carryingUnitWithFemalePatientImage,
-    male: carryingUnitWithMalePatientImage,
+    withPatient: carryingUnitWithPatientImage,
 };
