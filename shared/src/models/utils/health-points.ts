@@ -16,8 +16,11 @@ export const healthPointsDefaults = {
     max: 100_000,
     min: 0,
     greenMax: 100_000,
+    greenAverage: 85_000,
     yellowMax: 66_000,
+    yellowAverage: 50_000,
     redMax: 33_000,
+    redAverage: 20_000,
     blackMax: 0,
 };
 
