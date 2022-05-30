@@ -58,7 +58,10 @@ export class SendAlarmGroupInterfaceComponent {
                             type: '[Vehicle] Add vehicle',
                             materials: vehicleParameters.materials,
                             personnel: vehicleParameters.personnel,
-                            vehicle: vehicleParameters.vehicle,
+                            vehicle: {
+                                ...vehicleParameters.vehicle,
+                                name: alarmGroupVehicle.name,
+                            },
                         }),
                         this.apiService.proposeAction({
                             type: '[Transfer] Add to transfer',
