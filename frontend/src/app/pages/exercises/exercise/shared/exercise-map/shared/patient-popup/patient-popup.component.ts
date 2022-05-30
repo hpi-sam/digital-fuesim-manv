@@ -36,6 +36,12 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
 
     public configuration$ = this.store.select(selectConfiguration);
 
+    public pretriageHeaderName$: Observable<string> = this.configuration$.pipe(
+        map((configuration) =>
+            configuration.pretriageEnabled ? 'Vorsichtung' : 'Erstbefund'
+        )
+    );
+
     public readonly pretriageOptions$: Observable<PatientStatus[]> =
         this.configuration$.pipe(
             map((configuration) =>
