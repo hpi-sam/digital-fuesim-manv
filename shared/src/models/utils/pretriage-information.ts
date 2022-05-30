@@ -1,4 +1,5 @@
 import { IsString } from 'class-validator';
+import { getCreate } from './get-create';
 
 export class PretriageInformation {
     @IsString()
@@ -31,6 +32,9 @@ export class PretriageInformation {
     @IsString()
     public readonly hearing: string;
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(
         injuries: string,
         bodyCheck: string,
@@ -54,4 +58,6 @@ export class PretriageInformation {
         this.psyche = psyche;
         this.hearing = hearing;
     }
+
+    static create = getCreate(this);
 }
