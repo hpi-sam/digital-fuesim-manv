@@ -848,7 +848,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
             },
             {
                 [noChangesState.id]: noChangesState,
-                [greenUntilPhase11State.id]: greenUntilPhase10State,
+                [greenUntilPhase11State.id]: greenUntilPhase11State,
             },
             defaultMaleImage,
             healthPointsDefaults.greenMax,
@@ -862,7 +862,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
             },
             {
                 [noChangesState.id]: noChangesState,
-                [greenUntilPhase12State.id]: greenUntilPhase10State,
+                [greenUntilPhase12State.id]: greenUntilPhase12State,
             },
             defaultMaleImage,
             healthPointsDefaults.greenMax,
