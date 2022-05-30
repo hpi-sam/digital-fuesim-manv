@@ -11,8 +11,8 @@ export const selectViewports = (state: AppState) => state.exercise.viewports;
 export const selectMapImages = (state: AppState) => state.exercise.mapImages;
 export const selectVehicleTemplates = (state: AppState) =>
     state.exercise.vehicleTemplates;
-export const selectPatientTemplates = (state: AppState) =>
-    state.exercise.patientTemplates;
+export const selectPatientCategories = (state: AppState) =>
+    state.exercise.patientCategories;
 export const selectMapImagesTemplates = (state: AppState) =>
     state.exercise.mapImageTemplates;
 export const getSelectMapImageTemplate =
@@ -66,12 +66,13 @@ export const selectTransferPoints = (state: AppState) =>
     state.exercise.transferPoints;
 export const selectHospitals = (state: AppState) => state.exercise.hospitals;
 
-export const selectTileMapProperties = (state: AppState) =>
-    state.exercise.tileMapProperties;
-
 export const selectHospitalPatients = (state: AppState) =>
     state.exercise.hospitalPatients;
 
+export const selectTileMapProperties = (state: AppState) =>
+    state.exercise.configuration.tileMapProperties;
+export const selectConfiguration = (state: AppState) =>
+    state.exercise.configuration;
 /**
  * @returns a selector that returns a dictionary of all elements that have a position and are in the viewport restriction
  */

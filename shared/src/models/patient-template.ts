@@ -1,12 +1,7 @@
 import { Type } from 'class-transformer';
-import {
-    IsBoolean,
-    IsDefined,
-    IsString,
-    IsUUID,
-    ValidateNested,
-} from 'class-validator';
+import { IsDefined, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
+import type { PatientStatusCode } from './utils';
 import {
     BiometricInformation,
     getCreate,
@@ -28,9 +23,6 @@ export class PatientTemplate {
     @Type(() => BiometricInformation)
     public readonly biometricInformation: BiometricInformation;
 
-    @IsBoolean()
-    public readonly isPreTriaged: boolean;
-
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
@@ -46,24 +38,17 @@ export class PatientTemplate {
     @IsValidHealthPoint()
     public readonly health: HealthPoints;
 
-    @IsString()
-    public readonly name: string;
-
     /**
      * @deprecated Use {@link create} instead
      */
     constructor(
-        name: string,
         biometricInformation: BiometricInformation,
-        isPreTriaged: boolean,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         image: ImageProperties,
         health: HealthPoints,
         startingHealthStateId: UUID
     ) {
-        this.name = name;
         this.biometricInformation = biometricInformation;
-        this.isPreTriaged = isPreTriaged;
         this.image = image;
         this.healthStates = healthStates;
         this.health = health;
@@ -72,7 +57,10 @@ export class PatientTemplate {
 
     static readonly create = getCreate(this);
 
-    public static generatePatient(template: PatientTemplate): Patient {
+    public static generatePatient(
+        template: PatientTemplate,
+        patientStatusCode: PatientStatusCode
+    ): Patient {
         // Randomize function parameters
         const healthStates = Object.fromEntries(
             Object.entries(template.healthStates).map(([stateId, state]) => {
@@ -101,13 +89,13 @@ export class PatientTemplate {
                 template.biometricInformation.sex
             ),
             template.biometricInformation,
-            template.isPreTriaged ? status : null,
+            patientStatusCode,
+            'white',
             status,
             healthStates,
             template.startingHealthStateId,
             template.image,
-            template.health,
-            template.name
+            template.health
         );
     }
 }

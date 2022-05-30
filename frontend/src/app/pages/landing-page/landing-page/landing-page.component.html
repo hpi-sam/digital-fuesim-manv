@@ -40,13 +40,25 @@
     <div class="p-5 mb-4 bg-light rounded-3">
         <div class="display-6">Neue Übung erstellen</div>
         <br />
-        <button
-            (click)="createExercise()"
-            class="btn btn-primary btn-lg mb-3"
-            data-cy="createExerciseButton"
-        >
-            Übung erstellen
-        </button>
+        <div class="mb-3">
+            <button
+                (click)="createExercise()"
+                class="btn btn-primary btn-lg"
+                data-cy="createExerciseButton"
+            >
+                Übung erstellen
+            </button>
+            <label class="btn btn-outline-primary btn-lg ms-5">
+                <i class="bi-cloud-upload me-2"> </i>
+                Übung importieren
+                <input
+                    (input)="importExerciseState($any($event.target).files)"
+                    type="file"
+                    accept="application/json"
+                    class="d-none"
+                />
+            </label>
+        </div>
 
         <p *ngIf="exerciseHasBeenCreated" class="mb-0">
             Sie haben eine Übung mit der Übungsleitungs-ID

@@ -8,13 +8,14 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import { defaultTileMapProperties } from './data';
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
-import { defaultPatientTemplates } from './data/default-state/patient-templates';
+import { defaultPatientCategories } from './data/default-state/patient-templates';
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
 import type {
     AlarmGroup,
     Client,
+    Hospital,
+    HospitalPatient,
     MapImage,
     Material,
     Patient,
@@ -22,21 +23,19 @@ import type {
     TransferPoint,
     Vehicle,
     Viewport,
-    Hospital,
-    HospitalPatient,
 } from './models';
+import { ExerciseConfiguration } from './models/exercise-configuration';
 import { StatisticsEntry } from './models/statistics-entry';
 import {
     EocLogEntry,
-    TileMapProperties,
     StatusHistoryEntry,
-    PatientTemplate,
     VehicleTemplate,
     MapImageTemplate,
 } from './models';
 import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuidValidationOptions, uuid } from './utils';
+import { PatientCategory } from './models/patient-category';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -76,8 +75,8 @@ export class ExerciseState {
     public readonly clients: { readonly [key: UUID]: Client } = {};
     @IsArray()
     @ValidateNested()
-    @Type(() => PatientTemplate)
-    public readonly patientTemplates = defaultPatientTemplates;
+    @Type(() => PatientCategory)
+    public readonly patientCategories = defaultPatientCategories;
     @IsArray()
     @ValidateNested()
     @Type(() => VehicleTemplate)
@@ -96,13 +95,13 @@ export class ExerciseState {
     public readonly statusHistory: readonly StatusHistoryEntry[] = [];
     @IsString()
     public readonly participantId: string = '';
-    @ValidateNested()
-    @Type(() => TileMapProperties)
-    public readonly tileMapProperties: TileMapProperties = defaultTileMapProperties;
     @IsArray()
     @ValidateNested()
     @Type(() => StatisticsEntry)
     public readonly statistics: readonly StatisticsEntry[] = [];
+    @ValidateNested()
+    @Type(() => ExerciseConfiguration)
+    public readonly configuration = ExerciseConfiguration.create();
 
     /**
      * @deprecated Use {@link create} instead.
@@ -126,5 +125,5 @@ export class ExerciseState {
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 1;
+    static readonly currentStateVersion = 2;
 }
