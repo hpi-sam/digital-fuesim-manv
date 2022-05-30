@@ -1,35 +1,94 @@
 <div class="pt-2">
-    <button (click)="openExerciseSettings()" class="btn btn-primary">
+    <button (click)="openExerciseSettings()" class="btn btn-outline-primary">
         <i class="bi bi-gear-fill"></i>
         Einstellungen
     </button>
-    <button (click)="openClientOverview()" class="btn btn-primary ms-3">
-        Teilnehmerübersicht
-    </button>
-    <button (click)="openTransferOverview()" class="btn btn-primary ms-3">
-        Transferübersicht
-    </button>
-    <button (click)="openAlarmGroupOverview()" class="btn btn-primary ms-3">
-        Alarmierungsgruppen
-    </button>
-    <button (click)="openHospitalEditor()" class="btn btn-primary ms-3">
-        Krankenhäuser
-    </button>
-    <button
-        (click)="openEmergencyOperationsCenter()"
-        class="btn btn-primary ms-3"
-    >
-        Leitstelle
-    </button>
-    <button
-        (click)="openExerciseStatisticsModal()"
-        class="btn btn-primary ms-3"
-    >
-        Statistiken
-    </button>
-    <button (click)="apiService.startTimeTravel()" class="btn btn-primary ms-3">
-        Aufzeichnung
-    </button>
+
+    <div ngbDropdown placement="top-start" class="d-inline-block">
+        <button
+            type="button"
+            class="btn btn-outline-primary ms-3"
+            ngbDropdownToggle
+        >
+            Erstellung
+        </button>
+        <div ngbDropdownMenu>
+            <button
+                ngbDropdownItem
+                (click)="openAlarmGroupOverview()"
+                class="btn btn-primary"
+            >
+                Alarmierungsgruppen
+            </button>
+            <button
+                ngbDropdownItem
+                (click)="openHospitalEditor()"
+                class="btn btn-primary"
+            >
+                Krankenhäuser
+            </button>
+        </div>
+    </div>
+
+    <div ngbDropdown placement="top-start" class="d-inline-block">
+        <button
+            type="button"
+            class="btn btn-outline-primary ms-3"
+            ngbDropdownToggle
+        >
+            Durchführung
+        </button>
+        <div ngbDropdownMenu>
+            <button
+                ngbDropdownItem
+                (click)="openClientOverview()"
+                class="btn btn-primary"
+            >
+                Teilnehmerübersicht
+            </button>
+            <button
+                ngbDropdownItem
+                (click)="openTransferOverview()"
+                class="btn btn-primary"
+            >
+                Transferübersicht
+            </button>
+            <button
+                ngbDropdownItem
+                (click)="openEmergencyOperationsCenter()"
+                class="btn btn-primary"
+            >
+                Leitstelle
+            </button>
+        </div>
+    </div>
+
+    <div ngbDropdown placement="top-start" class="d-inline-block">
+        <button
+            type="button"
+            class="btn btn-outline-primary ms-3"
+            ngbDropdownToggle
+        >
+            Auswertung
+        </button>
+        <div ngbDropdownMenu>
+            <button
+                ngbDropdownItem
+                (click)="openExerciseStatisticsModal()"
+                class="btn btn-primary"
+            >
+                Statistiken
+            </button>
+            <button
+                ngbDropdownItem
+                (click)="apiService.startTimeTravel()"
+                class="btn btn-primary"
+            >
+                Aufzeichnung
+            </button>
+        </div>
+    </div>
+
     <button
         *ngIf="(exerciseStatus$ | async) === 'running'"
         (click)="pauseExercise()"
