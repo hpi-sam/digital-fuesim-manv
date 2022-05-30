@@ -107,7 +107,11 @@
                 </ng-template>
             </ng-container>
             <ng-container ngbNavItem>
-                <a ngbNavLink>{{ pretriageHeaderName$ | async }}</a>
+                <a ngbNavLink>{{
+                    (configuration$ | async)?.pretriageEnabled
+                        ? 'Vorsichtung'
+                        : 'Erstbefund'
+                }}</a>
                 <ng-template ngbNavContent>
                     <table class="table mb-0" style="max-width: 300px">
                         <tbody>
