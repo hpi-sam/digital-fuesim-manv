@@ -14,7 +14,9 @@ export class ImageStyleHelper extends StyleHelper<Style, Feature> {
     constructor(
         private readonly getImageProperties: (
             feature: Feature
-        ) => ImageProperties
+        ) => ImageProperties & {
+            rotation?: number;
+        }
     ) {
         super();
     }
@@ -29,6 +31,7 @@ export class ImageStyleHelper extends StyleHelper<Style, Feature> {
                 // this gives a massive performance boost
                 // See https://github.com/openlayers/openlayers/issues/11133#issuecomment-638987210
                 color: rasterizeVectorImage ? 'white' : undefined,
+                rotation: imageProperties.rotation,
             }),
         });
     }
