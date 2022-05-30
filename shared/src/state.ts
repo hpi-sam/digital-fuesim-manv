@@ -99,6 +99,8 @@ export class ExerciseState {
     @ValidateNested()
     @Type(() => StatisticsEntry)
     public readonly statistics: readonly StatisticsEntry[] = [];
+    @ValidateNested()
+    @Type(() => ExerciseConfiguration)
     public readonly configuration = ExerciseConfiguration.create();
 
     /**

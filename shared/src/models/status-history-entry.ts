@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsDate, IsString, IsUUID } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
 import { getCreate, ImmutableDate } from './utils';
@@ -14,6 +15,7 @@ export class StatusHistoryEntry {
      * The time from which on this status was set.
      */
     @IsDate()
+    @Type(() => Date)
     public readonly startTimestamp: ImmutableDate;
 
     /**

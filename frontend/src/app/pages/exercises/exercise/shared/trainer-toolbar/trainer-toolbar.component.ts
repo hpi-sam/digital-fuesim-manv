@@ -7,13 +7,13 @@ import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confir
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectExerciseStatus } from 'src/app/state/exercise/exercise.selectors';
+import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
+import { openEmergencyOperationsCenterModal } from '../emergency-operations-center/open-emergency-operations-center-modal';
 import { openExerciseSettingsModal } from '../exercise-settings/open-exercise-settings-modal';
 import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercise-statistics-modal';
-import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
-import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 import { openHospitalEditorModal } from '../hospital-editor/hospital-editor-modal';
-import { openEmergencyOperationsCenterModal } from '../emergency-operations-center/open-emergency-operations-center-modal';
+import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
 
 @Component({
     selector: 'app-trainer-toolbar',
