@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsBoolean, IsString } from 'class-validator';
 import { getCreate } from './get-create';
 
 export class PretriageInformation {
@@ -7,6 +7,9 @@ export class PretriageInformation {
 
     @IsString()
     public readonly bodyCheck: string;
+
+    @IsBoolean()
+    public readonly isWalkable: boolean;
 
     @IsString()
     public readonly breathing: string;
@@ -37,6 +40,7 @@ export class PretriageInformation {
      */
     constructor(
         injuries: string,
+        isWalkable: boolean,
         bodyCheck: string,
         breathing: string,
         awareness: string,
@@ -48,6 +52,7 @@ export class PretriageInformation {
         hearing: string
     ) {
         this.injuries = injuries;
+        this.isWalkable = isWalkable;
         this.bodyCheck = bodyCheck;
         this.breathing = breathing;
         this.awareness = awareness;

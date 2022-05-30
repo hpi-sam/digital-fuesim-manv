@@ -831,6 +831,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'ängstlich',
                 hearing: 'unauffällig',
+                isWalkable: true,
             },
             { [noChangesState.id]: noChangesState },
             defaultMaleImage,
@@ -859,6 +860,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'teilnahmslos',
                 hearing: 'unauffällig',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -886,6 +888,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'hysterisch',
                 hearing: 'schwerhörig',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -913,6 +916,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'hysterisch',
                 hearing: 'schwerhörig',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -944,6 +948,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'teilnahmslos',
                 hearing: 'unauffällig',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -972,6 +977,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'aufgeregt',
                 hearing: 'unauffällig',
+                isWalkable: true,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1006,6 +1012,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'aufgeregt',
                 hearing: 'unauffällig',
+                isWalkable: true,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1038,6 +1045,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'ängstlich',
                 hearing: 'unauffällig',
+                isWalkable: true,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1075,6 +1083,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'sehr aufgeregt',
                 hearing: 'unauffällig',
+                isWalkable: true,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1111,6 +1120,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'aufgeregt',
                 hearing: 'unauffällig',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1143,6 +1153,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'aufgeregt',
                 hearing: 'unauffällig',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1176,6 +1187,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'aufgeregt',
                 hearing: 'unauffällig',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1210,6 +1222,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'hysterisch',
                 hearing: 'unauffällig',
+                isWalkable: false,
             },
             { [noChangesState.id]: noChangesState },
             defaultMaleImage,
@@ -1239,6 +1252,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'aggressiv',
                 hearing: 'unauffällig',
+                isWalkable: true,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1280,6 +1294,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'hysterisch',
                 hearing: 'unauffällig',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1314,6 +1329,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'teilnahmslos',
                 hearing: 'unauffällig',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1342,6 +1358,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'teilnahmslos',
                 hearing: 'unauffällig',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1370,6 +1387,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'rechts weit',
                 psyche: 'entfällt',
                 hearing: 'entfällt',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1398,6 +1416,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'teilnahmslos',
                 hearing: 'unauffällig',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1431,6 +1450,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'teilnahmslos',
                 hearing: 'unauffällig',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1466,6 +1486,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'teilnahmslos',
                 hearing: 'unauffällig',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
@@ -1499,6 +1520,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 pupils: 'isocor',
                 psyche: 'ängstlich',
                 hearing: 'unauffällig',
+                isWalkable: false,
             },
             {
                 [noChangesState.id]: noChangesState,
