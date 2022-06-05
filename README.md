@@ -5,6 +5,7 @@ This is the codebase for a digital implementation of the FüSim MANV (Führungss
 **You can try it out at [https://fuesim-manv.de/](https://fuesim-manv.de/)**.
 
 ![image](https://user-images.githubusercontent.com/18506183/172071147-24b9aabe-51ee-4105-a5a4-6cbf8063eece.png)
+_A screenshot of a part of an MCI exercise with initially ca. 50 patients at the Brandenburg Gate._
 
 The concept is as follows:
 
@@ -12,7 +13,7 @@ The concept is as follows:
 -   _Participants_ can then join the exercise.
 -   The _trainer_ can restrict the participants to a specific _viewport_. The _participant_ cannot move out of this area.
 -   _Vehicles_ (including _material_, _personnel_ and (sometimes) _patients_) can be transferred to other areas via _transferPoints_.
--   After the exercise is started, _patients_ that are not adequately treated by _personnel_ and _material_ can deteriorate and die. The goal of the _participants\_\_ is to prevent the \_patients_ from dying and transport them to the _hospitals_. To do this effectively they have to communicate with each other (via real radio devices, or remote via third-party services) and make the right decisions.
+-   After the exercise is started, _patients_ that are not adequately treated by _personnel_ and _material_ can deteriorate and die. The goal of the _participants_ is to prevent the _patients_ from dying and transport them to the _hospitals_. To do this effectively they have to communicate with each other (via real radio devices, or remote via third-party services) and make the right decisions.
 -   Afterward, the exercise can be evaluated via statistics and a "time-travel" feature.
 
 This simulation has been designed in cooperation with the [BABZ](https://www.bbk.bund.de/DE/Themen/Akademie-BABZ/akademie-babz_node.html) of the [Federal Office for Civil Protection and Disaster Assistance Germany](https://www.bbk.bund.de/DE/Home/home_node.html) and [Malteser Berlin](https://www.malteser-berlin.de/). Do only use this simulation for training purposes.
