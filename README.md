@@ -1,10 +1,28 @@
-# digital-fuesim-manv
+# Digitale FüSim MANV
 
-The official code for BP2021HG1
+This is the codebase for a digital implementation of the FüSim MANV (Führungssimulation Massenanfall von Verletzen), a German simulation for training medical leaders on how to manage [Mass Casualty Incidents](https://en.wikipedia.org/wiki/Mass-casualty_incident).
 
-You can find the (internal) documentation for this project [here](https://github.com/hpi-sam/BP2021HG1).
+**You can try it out at [https://fuesim-manv.de/](https://fuesim-manv.de/)**.
 
-The (internal) project-board is [here](https://github.com/orgs/hpi-sam/projects/4).
+The concept is as follows:
+
+-   A _trainer_ creates an exercise, which consists of _patients_, _vehicles_, _viewports_, _transferPoints_ and other objects placed on a map.
+-   _Participants_ can then join the exercise.
+-   The _trainer_ can restrict the participants to a specific _viewport_. The _participant_ cannot move out of this area.
+-   _Vehicles_ (including _material_, _personnel_ and (sometimes) _patients_) can be transferred to other areas via _transferPoints_.
+-   After the exercise is started, _patients_ that are not adequately treated by _personnel_ and _material_ can deteriorate and die. The goal of the _participants\_\_ is to prevent the \_patients_ from dying and transport them to the _hospitals_. To do this effectively they have to communicate with each other (via real radio devices, or remote via third-party services) and make the right decisions.
+-   Afterward, the exercise can be evaluated via statistics and a "time-travel" feature.
+
+This simulation has been designed in cooperation with the [BABZ](https://www.bbk.bund.de/DE/Themen/Akademie-BABZ/akademie-babz_node.html) of the [Federal Office for Civil Protection and Disaster Assistance Germany](https://www.bbk.bund.de/DE/Home/home_node.html) and [Malteser Berlin](https://www.malteser-berlin.de/). Do only use this simulation for training purposes.
+
+The simulation is implemented as a web application with an Angular frontend and NodeJS backend.
+
+This project is currently developed as a [bachelor project](https://hpi.de/en/studies/before-your-studies/degree-programs/bachelor.html) at the HPI. You can find the official project website [here](https://hpi.de/teaching/bachelor-projects/digitales-fuehrungssimulationstraining.html).
+
+## Links for collaborators
+
+-   [(internal) documentation](https://github.com/hpi-sam/BP2021HG1)
+-   [(internal) project-board](https://github.com/orgs/hpi-sam/projects/4).
 
 ## Installation
 
