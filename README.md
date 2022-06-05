@@ -4,6 +4,8 @@ This is the codebase for a digital implementation of the FüSim MANV (Führungss
 
 **You can try it out at [https://fuesim-manv.de/](https://fuesim-manv.de/)**.
 
+![image](https://user-images.githubusercontent.com/18506183/172071147-24b9aabe-51ee-4105-a5a4-6cbf8063eece.png)
+
 The concept is as follows:
 
 -   A _trainer_ creates an exercise, which consists of _patients_, _vehicles_, _viewports_, _transferPoints_ and other objects placed on a map.
