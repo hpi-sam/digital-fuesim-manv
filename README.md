@@ -16,11 +16,11 @@ The concept is as follows:
 -   After the exercise is started, _patients_ that are not adequately treated by _personnel_ and _material_ can deteriorate and die. The goal of the _participants_ is to prevent the _patients_ from dying and transport them to the _hospitals_. To do this effectively they have to communicate with each other (via real radio devices, or remote via third-party services) and make the right decisions.
 -   Afterward, the exercise can be evaluated via statistics and a "time-travel" feature.
 
-This simulation has been designed in cooperation with the [BABZ](https://www.bbk.bund.de/DE/Themen/Akademie-BABZ/akademie-babz_node.html) of the [Federal Office for Civil Protection and Disaster Assistance Germany](https://www.bbk.bund.de/DE/Home/home_node.html) and [Malteser Berlin](https://www.malteser-berlin.de/). Do only use this simulation for training purposes.
+This simulation has been designed in cooperation with the [BABZ](https://www.bbk.bund.de/DE/Themen/Akademie-BABZ/akademie-babz_node.html) of the [Federal Office of Civil Protection and Disaster Assistance Germany](https://www.bbk.bund.de/DE/Home/home_node.html) and [Malteser Berlin](https://www.malteser-berlin.de/).
 
 The simulation is implemented as a web application with an Angular frontend and NodeJS backend.
 
-This project is currently developed as a [bachelor project](https://hpi.de/en/studies/before-your-studies/degree-programs/bachelor.html) at the HPI. You can find the official project website [here](https://hpi.de/teaching/bachelor-projects/digitales-fuehrungssimulationstraining.html).
+This project is currently developed as a [bachelor project](https://hpi.de/en/studies/before-your-studies/degree-programs/bachelor.html) at the [HPI](https://hpi.de/). You can find the official project website [here](https://hpi.de/teaching/bachelor-projects/digitales-fuehrungssimulationstraining.html).
 
 ## Links for collaborators
 
