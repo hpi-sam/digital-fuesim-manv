@@ -12,11 +12,11 @@ The concept is as follows:
 -   A _trainer_ creates an exercise, which consists of _patients_, _vehicles_, _viewports_, _transferPoints_ and other objects placed on a map.
 -   _Participants_ can then join the exercise.
 -   The _trainer_ can restrict the participants to a specific _viewport_. The _participant_ cannot move out of this area.
--   _Vehicles_ (including _material_, _personnel_ and (sometimes) _patients_) can be transferred to other areas via _transferPoints_.
+-   _Vehicles_ (containing _material_, _personnel_ and (sometimes) _patients_) can be transferred to other areas via _transferPoints_.
 -   After the exercise is started, _patients_ that are not adequately treated by _personnel_ and _material_ can deteriorate and die. The goal of the _participants_ is to prevent the _patients_ from dying and transport them to the _hospitals_. To do this effectively they have to communicate with each other (via real radio devices, or remote via third-party services) and make the right decisions.
 -   Afterward, the exercise can be evaluated via statistics and a "time-travel" feature.
 
-This simulation has been designed in cooperation with the [BABZ](https://www.bbk.bund.de/DE/Themen/Akademie-BABZ/akademie-babz_node.html) of the [Federal Office of Civil Protection and Disaster Assistance Germany](https://www.bbk.bund.de/DE/Home/home_node.html) and [Malteser Berlin](https://www.malteser-berlin.de/).
+This simulation has been designed in cooperation with and with support from the [Federal Academy for Civil Protection and Civil Defence](https://www.bbk.bund.de/DE/Themen/Akademie-BABZ/akademie-babz_node.html) of the [Federal Office of Civil Protection and Disaster Assistance Germany](https://www.bbk.bund.de/DE/Home/home_node.html), who are the original copyright holders of the analog "FüSim MANV" simulation system, and the [Malteser Hilfsdienst e.V. Berlin](https://www.malteser-berlin.de/).
 
 The simulation is implemented as a web application with an Angular frontend and NodeJS backend.
 
