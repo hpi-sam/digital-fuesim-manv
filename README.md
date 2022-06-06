@@ -1,6 +1,6 @@
 # Digitale FüSim MANV
 
-This is the codebase for a digital implementation of the FüSim MANV (Führungssimulation Massenanfall von Verletzen), a German simulation for training medical leaders on how to manage [Mass Casualty Incidents](https://en.wikipedia.org/wiki/Mass-casualty_incident).
+This is the codebase for a digital implementation of the "FüSim MANV" (Führungssimulation Massenanfall von Verletzen), a German simulation system for training emergency medical services leadership personnel on how to manage [Mass Casualty Incidents](https://en.wikipedia.org/wiki/Mass-casualty_incident).
 
 **You can try it out at [https://fuesim-manv.de/](https://fuesim-manv.de/)**.
 
