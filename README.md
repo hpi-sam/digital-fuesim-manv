@@ -1,10 +1,31 @@
-# digital-fuesim-manv
+# Digitale FüSim MANV
 
-The official code for BP2021HG1
+This is the codebase for a digital implementation of the "FüSim MANV" (Führungssimulation Massenanfall von Verletzen), a German simulation system for training emergency medical services leadership personnel on how to manage [Mass Casualty Incidents](https://en.wikipedia.org/wiki/Mass-casualty_incident).
 
-You can find the (internal) documentation for this project [here](https://github.com/hpi-sam/BP2021HG1).
+**You can try it out at [https://fuesim-manv.de/](https://fuesim-manv.de/)**.
 
-The (internal) project-board is [here](https://github.com/orgs/hpi-sam/projects/4).
+![image](https://user-images.githubusercontent.com/18506183/172071147-24b9aabe-51ee-4105-a5a4-6cbf8063eece.png)
+_A screenshot of a part of an MCI exercise with initially ca. 50 patients at the Brandenburg Gate._
+
+The concept is as follows:
+
+-   A _trainer_ creates an exercise, which consists of _patients_, _vehicles_, _viewports_, _transferPoints_ and other objects placed on a map.
+-   _Participants_ can then join the exercise.
+-   The _trainer_ can restrict the participants to a specific _viewport_. The _participant_ cannot move out of this area.
+-   _Vehicles_ (containing _material_, _personnel_ and (sometimes) _patients_) can be transferred to other areas via _transferPoints_.
+-   After the exercise is started, _patients_ that are not adequately treated by _personnel_ and _material_ can deteriorate and die. The goal of the _participants_ is to prevent the _patients_ from dying and transport them to the _hospitals_. To do this effectively they have to communicate with each other (via real radio devices, or remote via third-party services) and make the right decisions.
+-   Afterward, the exercise can be evaluated via statistics and a "time-travel" feature.
+
+This simulation has been designed in cooperation with and with support from the [Federal Academy for Civil Protection and Civil Defence](https://www.bbk.bund.de/DE/Themen/Akademie-BABZ/akademie-babz_node.html) of the [Federal Office of Civil Protection and Disaster Assistance Germany](https://www.bbk.bund.de/DE/Home/home_node.html), who are the original copyright holders of the analog "FüSim MANV" simulation system, and the [Malteser Hilfsdienst e.V. Berlin](https://www.malteser-berlin.de/).
+
+The simulation is implemented as a web application with an Angular frontend and NodeJS backend.
+
+This project is currently developed as a [bachelor project](https://hpi.de/en/studies/before-your-studies/degree-programs/bachelor.html) at the [HPI](https://hpi.de/). You can find the official project website [here](https://hpi.de/teaching/bachelor-projects/digitales-fuehrungssimulationstraining.html).
+
+## Links for collaborators
+
+-   [(internal) documentation](https://github.com/hpi-sam/BP2021HG1)
+-   [(internal) project-board](https://github.com/orgs/hpi-sam/projects/4).
 
 ## Installation
 
