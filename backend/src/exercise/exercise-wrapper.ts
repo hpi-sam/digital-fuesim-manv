@@ -620,6 +620,7 @@ export class ExerciseWrapper extends NormalType<
             initialState: this.initialState,
             actionsWrappers: completeHistory.map((action) => ({
                 action: action.action,
+                emitterId: action.emitterId,
                 time: action.index,
             })),
         };
