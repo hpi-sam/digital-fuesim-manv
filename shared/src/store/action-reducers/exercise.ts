@@ -98,7 +98,7 @@ export namespace ExerciseActionReducers {
             draftState.currentTime += tickInterval;
             // Refresh patient status
             patientUpdates.forEach((patientUpdate) => {
-                const currentPatient = draftState.patients[patientUpdate.id];
+                const currentPatient = draftState.patients[patientUpdate.id]!;
                 currentPatient.currentHealthStateId = patientUpdate.nextStateId;
                 currentPatient.health = patientUpdate.nextHealthPoints;
                 currentPatient.stateTime = patientUpdate.nextStateTime;

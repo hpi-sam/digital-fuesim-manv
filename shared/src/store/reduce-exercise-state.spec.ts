@@ -36,7 +36,10 @@ describe('exerciseReducer', () => {
     });
 
     it('should apply simple actions', () => {
-        const viewports = [generateViewport(), generateViewport()];
+        const viewports: [Viewport, Viewport] = [
+            generateViewport(),
+            generateViewport(),
+        ];
         addViewport(viewports[0]);
         expect(state.viewports[viewports[0].id]).toEqual(viewports[0]);
         addViewport(viewports[1]);

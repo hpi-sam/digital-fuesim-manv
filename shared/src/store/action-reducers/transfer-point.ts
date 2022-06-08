@@ -256,12 +256,14 @@ export namespace TransferPointActionReducers {
                     draftState.transferPoints
                 )) {
                     const transferPoint =
-                        draftState.transferPoints[_transferPointId];
+                        draftState.transferPoints[_transferPointId]!;
                     for (const connectedTransferPointId of Object.keys(
                         transferPoint.reachableTransferPoints
                     )) {
                         const connectedTransferPoint =
-                            draftState.transferPoints[connectedTransferPointId];
+                            draftState.transferPoints[
+                                connectedTransferPointId
+                            ]!;
                         delete connectedTransferPoint.reachableTransferPoints[
                             transferPointId
                         ];
