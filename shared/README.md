@@ -17,3 +17,7 @@ Keep in mind to add new exports to the `index.ts` file in the folder.
 ## Updates to state types
 
 Note that whenever the state types get updated you have to update `ExerciseState.currentStateVersion` in [`state.ts`](./src/state.ts).
+
+## IsDevelopment
+
+To check whether the current environment is in development or production mode, a global environment variable is assumed to be set. Look at [`utils/is-development.ts`](./src/utils/is-development.ts) for further information.

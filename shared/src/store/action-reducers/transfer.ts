@@ -3,7 +3,7 @@ import type { ExerciseState } from '../..';
 import { imageSizeToPosition, Position, TransferPoint } from '../..';
 import { StartPoint } from '../../models/utils/start-points';
 import type { Mutable } from '../../utils';
-import { UUID, uuidValidationOptions } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { getElement } from './utils/get-element';
@@ -144,7 +144,7 @@ export namespace TransferActionReducers {
             // Set the element to transfer
             delete element.position;
             element.transfer = {
-                startPoint,
+                startPoint: cloneDeepMutable(startPoint),
                 targetTransferPointId,
                 endTimeStamp: draftState.currentTime + duration,
                 isPaused: false,

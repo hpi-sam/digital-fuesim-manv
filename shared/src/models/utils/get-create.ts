@@ -1,7 +1,5 @@
 import type { Constructor } from '../../utils';
-
-// @ts-expect-error It is not guaranteed to run in node environment, but if it does we want to check for development mode
-export const isDevelopment = process?.env?.NODE_ENV === 'development';
+import { isDevelopment } from '../../utils/is-development';
 
 /**
  * Models must be JSON objects. This means they mustn't have any functions.

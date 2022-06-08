@@ -51,6 +51,22 @@ export interface Action {
  * const anAction: ExerciseAction = { type: 'some action' };
  * exerciseReducerMap[anAction.type](draftState, anAction);
  * ```
+ *
+ *
+ * Be aware that the action is immutable!
+ * [TypeScript allows assigning immutable objects to properties of mutable objects](https://github.com/microsoft/TypeScript/issues/13347).
+ * Therefore you must always clone parts of the action before assigning them to the draftState.
+ * The same could also apply for objects created inside the reducer function - like with a `Model.create()`, which by default returns an immutable object.
+ *
+ * Example:
+ * ```ts
+ * const reducerFunction = (draftState, anAction) =>  {
+ *     draftState.someObject = cloneDeepMutable(anAction.someObject);
+ *     draftState.someOtherObject = cloneDeepMutable(SomeOtherObject.create());
+ *     return draftState;
+ * }
+ * ```
+ *
  */
 type ReducerFunction<A extends Action> = (
     // These functions can only work with a mutable state object, because we expect them to be executed in immers produce context.

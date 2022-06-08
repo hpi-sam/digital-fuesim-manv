@@ -5,7 +5,7 @@ import { Position } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
-import { UUID, uuidValidationOptions } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { deletePatient } from './patient';
@@ -109,9 +109,9 @@ export namespace VehicleActionReducers {
         reducer: (draftState, { vehicle, materials, personnel }) => {
             if (
                 materials.some(
-                    (currentMaterial) =>
-                        currentMaterial.vehicleId !== vehicle.id ||
-                        vehicle.materialIds[currentMaterial.id] === undefined
+                    (material) =>
+                        material.vehicleId !== vehicle.id ||
+                        vehicle.materialIds[material.id] === undefined
                 ) ||
                 Object.keys(vehicle.materialIds).length !== materials.length
             ) {
@@ -131,12 +131,12 @@ export namespace VehicleActionReducers {
                     'Vehicle personnel ids do not match personnel ids'
                 );
             }
-            draftState.vehicles[vehicle.id] = vehicle;
-            for (const currentMaterial of materials) {
-                draftState.materials[currentMaterial.id] = currentMaterial;
+            draftState.vehicles[vehicle.id] = cloneDeepMutable(vehicle);
+            for (const material of materials) {
+                draftState.materials[material.id] = cloneDeepMutable(material);
             }
             for (const person of personnel) {
-                draftState.personnel[person.id] = person;
+                draftState.personnel[person.id] = cloneDeepMutable(person);
             }
             return draftState;
         },
@@ -147,7 +147,7 @@ export namespace VehicleActionReducers {
         action: MoveVehicleAction,
         reducer: (draftState, { vehicleId, targetPosition }) => {
             const vehicle = getElement(draftState, 'vehicles', vehicleId);
-            vehicle.position = targetPosition;
+            vehicle.position = cloneDeepMutable(targetPosition);
             return draftState;
         },
         rights: 'participant',
