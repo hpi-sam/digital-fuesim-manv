@@ -9,7 +9,7 @@ export { ImageProperties } from './image-properties';
 export * from './tile-map-properties';
 export * from './biometric-information';
 export * from './health-points';
-export { getCreate, isDevelopment } from './get-create';
+export * from './get-create';
 export * from './immutable-date';
 export { AlarmGroupVehicle } from './alarm-group-vehicle';
 export * from './patient-status-code';

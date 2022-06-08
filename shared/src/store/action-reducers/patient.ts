@@ -101,7 +101,7 @@ export namespace PatientActionReducers {
         action: MovePatientAction,
         reducer: (draftState, { patientId, targetPosition }) => {
             const patient = getElement(draftState, 'patients', patientId);
-            patient.position = targetPosition;
+            patient.position = cloneDeepMutable(targetPosition);
             calculateTreatments(draftState);
             return draftState;
         },
