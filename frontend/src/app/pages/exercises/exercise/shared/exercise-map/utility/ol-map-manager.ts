@@ -19,13 +19,21 @@ import OlMap from 'ol/Map';
 import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import type { Observable } from 'rxjs';
-import { debounceTime, pairwise, startWith, Subject, takeUntil } from 'rxjs';
+import {
+    combineLatest,
+    debounceTime,
+    pairwise,
+    startWith,
+    Subject,
+    takeUntil,
+} from 'rxjs';
 import type { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectRestrictedViewport,
     getSelectVisibleElements,
     selectCateringLines,
+    selectExerciseStatus,
     selectMapImages,
     selectTileMapProperties,
     selectTransferLines,
@@ -166,14 +174,8 @@ export class OlMapManager {
         TranslateHelper.registerTranslateEvents(viewportTranslate);
         ModifyHelper.registerModifyEvents(viewportModify);
 
-        if (this.apiService.getCurrentRole() === 'timeTravel') {
-            viewportTranslate.setActive(false);
-            translateInteraction.setActive(false);
-            viewportModify.setActive(false);
-        }
-
         const alwaysInteractions = [translateInteraction];
-        const interactions =
+        const customInteractions =
             this.apiService.getCurrentRole() === 'trainer'
                 ? [...alwaysInteractions, viewportTranslate, viewportModify]
                 : alwaysInteractions;
@@ -182,7 +184,7 @@ export class OlMapManager {
             interactions: defaultInteractions({
                 pinchRotate: false,
                 altShiftDragRotate: false,
-            }).extend(interactions),
+            }).extend(customInteractions),
             // We use Angular buttons instead
             controls: [],
             target: this.openLayersContainer,
@@ -344,6 +346,35 @@ export class OlMapManager {
         this.registerDropHandler(translateInteraction);
         this.registerDropHandler(viewportTranslate);
         this.registerViewportRestriction();
+
+        // Register handlers that disable or enable certain interactions
+        combineLatest([
+            this.store.select(selectExerciseStatus),
+            this.apiService.currentRole$,
+        ])
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(([status, currentRole]) => {
+                const showPausedOverlay =
+                    status !== 'running' && currentRole === 'participant';
+                customInteractions.forEach((interaction) => {
+                    interaction.setActive(
+                        !showPausedOverlay && currentRole !== 'timeTravel'
+                    );
+                });
+                this.setPopupsEnabled(!showPausedOverlay);
+                this.getOlViewportElement().style.filter = showPausedOverlay
+                    ? 'brightness(50%)'
+                    : '';
+            });
+    }
+
+    private popupsEnabled = true;
+    private setPopupsEnabled(enabled: boolean) {
+        this.popupsEnabled = enabled;
+        if (!enabled) {
+            // Close all open popups
+            this.changePopup$.next(undefined);
+        }
     }
 
     private registerViewportRestriction() {
@@ -426,6 +457,9 @@ export class OlMapManager {
 
     private registerPopupTriggers(translateInteraction: Translate) {
         this.olMap.on('singleclick', (event) => {
+            if (!this.popupsEnabled) {
+                return;
+            }
             this.olMap.forEachFeatureAtPixel(
                 event.pixel,
                 (feature, layer) => {
@@ -513,6 +547,12 @@ export class OlMapManager {
             renderBuffer,
             source: new VectorSource<LayerGeometry>(),
         });
+    }
+
+    private getOlViewportElement(): HTMLElement {
+        return this.olMap
+            .getTargetElement()
+            .querySelectorAll('.ol-viewport')[0] as HTMLElement;
     }
 
     /**
