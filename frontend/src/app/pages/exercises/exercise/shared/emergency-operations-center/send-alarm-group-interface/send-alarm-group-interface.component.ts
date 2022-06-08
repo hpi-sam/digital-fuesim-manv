@@ -66,18 +66,17 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                         alarmGroupVehicle.vehicleTemplateId
                     )(getStateSnapshot(this.store));
 
-                    const vehicleParameters =
-                        createVehicleParameters(vehicleTemplate);
+                    const vehicleParameters = createVehicleParameters({
+                        ...vehicleTemplate,
+                        name: alarmGroupVehicle.name,
+                    });
 
                     return [
                         this.apiService.proposeAction({
                             type: '[Vehicle] Add vehicle',
                             materials: vehicleParameters.materials,
                             personnel: vehicleParameters.personnel,
-                            vehicle: {
-                                ...vehicleParameters.vehicle,
-                                name: alarmGroupVehicle.name,
-                            },
+                            vehicle: vehicleParameters.vehicle,
                         }),
                         this.apiService.proposeAction({
                             type: '[Transfer] Add to transfer',
