@@ -2,7 +2,7 @@ import type {
     ExerciseState,
     ExerciseTimeline,
 } from 'digital-fuesim-manv-shared';
-import { applyAction, cloneDeepMutable } from 'digital-fuesim-manv-shared';
+import { applyAction } from 'digital-fuesim-manv-shared';
 import produce from 'immer';
 import { environment } from 'src/environments/environment';
 import { TimeLineCache } from './time-line-cache';
