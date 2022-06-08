@@ -15,6 +15,7 @@
         "deployment": "npm run setup:ci && npm run build:deployment && npm run prune:deployment",
         "setup:ci": "npm ci && cd shared && npm ci && npm run build && cd ../frontend && npm ci && cd ../backend && npm ci",
         "prettier": "cat .gitignore .prettierignore >> .prettierignore-ci && prettier --ignore-path .prettierignore-ci --loglevel warn --write \"**/*\" --ignore-unknown",
+        "prettier:windows": "type .gitignore .prettierignore >> .prettierignore-ci && prettier --ignore-path .prettierignore-ci --loglevel warn --write \"**/*\" --ignore-unknown",
         "prettier:check": "cat .gitignore .prettierignore >> .prettierignore-ci && prettier --ignore-path .prettierignore-ci --loglevel warn --check \"**/*\" --ignore-unknown",
         "lint": "concurrently \"cd shared && npm run lint\" \"cd frontend && npm run lint\" \"cd backend && npm run lint\"",
         "lint:fix": "concurrently \"cd shared && npm run lint:fix\" \"cd frontend && npm run lint:fix\" \"cd backend && npm run lint:fix\"",
