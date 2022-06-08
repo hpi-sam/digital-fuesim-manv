@@ -45,7 +45,7 @@ This project is currently developed as a [bachelor project](https://hpi.de/en/st
 ### Option 1
 
 If you are using [vscode](https://code.visualstudio.com/), you can run the [task](https://code.visualstudio.com/docs/editor/tasks) `Start all` to start everything in one go.
-Note that this _tries_ to start the database using `docker-compose`. In case this fails please start the database in another way (see [this section in the backend README](./backend/README.md#database)).
+Note that this _tries_ to start the database using `docker compose`. In case this fails please start the database in another way (see [this section in the backend README](./backend/README.md#database)).
 
 ### Option 2
 
@@ -58,12 +58,12 @@ Note that this _tries_ to start the database using `docker-compose`. In case thi
 
 You need to have [`docker`](https://www.docker.com/) installed.
 
-### With docker-compose (recommended)
+### With docker compose (recommended)
 
-1. [`docker-compose`](https://docs.docker.com/compose/) needs to be installed. Note that, depending on your setup, you may use `docker compose` instead of `docker-compose`. In this case, just replace the dash (`-`) in the commands with a space. For more information, see the [relevant section of the documentation](https://docs.docker.com/compose/#compose-v2-and-the-new-docker-compose-command).
-2. Run `docker-compose up -d` in the root directory. This also starts the database. If you don't want to start the database run `docker-compose up -d digital-fuesim-manv` instead.
+1. [`docker compose`](https://docs.docker.com/compose/) needs to be installed. Note that, depending on your setup, you may use `docker-compose` instead of `docker compose`. In this case, just replace the space in the commands with a dash (`-`). For more information, see the [relevant section of the documentation](https://docs.docker.com/compose/#compose-v2-and-the-new-docker-compose-command).
+2. Run `docker compose up -d` in the root directory. This also starts the database. If you don't want to start the database run `docker compose up -d digital-fuesim-manv` instead.
 
-### Without docker-compose
+### Without docker compose
 
 1. Execute `docker run -p -d 80:80 digitalfuesimmanv/dfm`.
 
@@ -75,8 +75,8 @@ Note the database requirements depicted in [the installation section](#installat
 
 #### Option 1
 
-1. Uncomment the build section of [the docker-compose file](./docker-compose.yml).
-2. Run `docker-compose build`
+1. Uncomment the build section of [the docker compose file](./docker-compose.yml).
+2. Run `docker compose build`
 
 #### Option 2
 
