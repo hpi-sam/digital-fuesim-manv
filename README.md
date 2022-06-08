@@ -60,7 +60,7 @@ You need to have [`docker`](https://www.docker.com/) installed.
 
 ### With docker-compose (recommended)
 
-1. [`docker-compose`](https://docs.docker.com/compose/) needs to be installed.
+1. [`docker-compose`](https://docs.docker.com/compose/) needs to be installed. Note that, depending on your setup, you may use `docker compose` instead of `docker-compose`. In this case, just replace the dash (`-`) in the commands with a space. For more information, see the [relevant section of the documentation](https://docs.docker.com/compose/#compose-v2-and-the-new-docker-compose-command).
 2. Run `docker-compose up -d` in the root directory. This also starts the database. If you don't want to start the database run `docker-compose up -d digital-fuesim-manv` instead.
 
 ### Without docker-compose
