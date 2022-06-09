@@ -2,7 +2,7 @@
 
 # TODO: checking if this whole script gets executed correctly
 
-echo "Info: HTTPS is enabled via DFM_SSL_ENABLE"
+echo "Info: HTTPS is enabled via DFM_ENABLE_SSL"
 
 if [[ -z "${DFM_DOMAIN}" ]]; then
     echo "Error: Domain not set"
@@ -36,11 +36,12 @@ set -e
 if [[ -f "${DFM_CERTS_PATH}/cert.pem" && -f "${DFM_CERTS_PATH}/key.pem" && -f "${DFM_CERTS_PATH}/fullchain.pem" ]]; then
     echo "Sucess: all needed cert files exist"
 else
-    echo "Erro: Not all necessary certs exits in ${DFM_CERTS_PATH}, maybe acme.sh couldn't connect to letsencrypt or letsencrypt couldn't reach this server over http port 80"
+    echo "Error: Not all necessary certs exits in ${DFM_CERTS_PATH}, maybe acme.sh couldn't connect to letsencrypt or letsencrypt couldn't reach this server over http port 80"
     exit 1
 fi
 
 if ${DFM_ENABLE_HSTS}; then
+    echo "Info: HSTS is enabled via DFM_ENABLE_HSTS"
     cp -a /etc/nginx/conf.d/hsts.template /etc/nginx/conf.d/hsts
 fi
 

@@ -33,8 +33,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR $PRODUCTION_PATH
 
 # setting DEFAULT_VARIABLES
-ENV DFM_SSL_ENABLE=false
+ENV DFM_ENABLE_SSL=false
 ENV DFM_ENABLE_HSTS=false
+ENV DFM_DEBUG=false
 
 # install necessary packages
 RUN apt-get update && \
