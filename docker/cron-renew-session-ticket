@@ -11,5 +11,5 @@ nginx -s reload
 # look into OCSP nginx
 # Otherwise the first access (at least on Firefox) will result in "Secure Connection Failed"
 set +e
-curl https://${DOMAIN} > /dev/null 2>&1
+curl https://${DFM_DOMAIN} > /dev/null 2>&1
 set -e

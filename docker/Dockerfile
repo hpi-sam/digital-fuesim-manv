@@ -33,8 +33,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR $PRODUCTION_PATH
 
 # setting DEFAULT_VARIABLES
-ENV SSL_ENABLE=false
-ENV ENABLE_HSTS=false
+ENV DFM_SSL_ENABLE=false
+ENV DFM_ENABLE_HSTS=false
 
 # install necessary packages
 RUN apt-get update && \
@@ -61,7 +61,7 @@ RUN curl https://raw.githubusercontent.com/acmesh-official/acme.sh/master/acme.s
 # install acme.sh
 RUN cd / && /acme.sh --install --config-home /ssl/acme.sh/config --cert-home /ssl/acme.sh/certs && \
     # remove acme.sh install script
-    rm -r /acme.sh && \
+    rm /acme.sh && \
     # we need the following to be able to use acme.sh in command line (without using explicit path)
     ln -s  /root/.acme.sh/acme.sh  /usr/local/bin/acme.sh
 

@@ -10,8 +10,8 @@ echo "" > /etc/nginx/conf.d/hsts
 # start nginx, needed here already for acme.sh to verify cerst via http
 nginx
 
-# only *.conf files in /etc/nginx/conf.d are enabled, others have to explicitly included
-if ${SSL_ENABLE}; then
+# only *.conf files in /etc/nginx/conf.d/ are enabled, others have to be explicitly included
+if ${DFM_SSL_ENABLE}; then
     source /ssl.sh
     cp -a /etc/nginx/conf.d/http-redirect.template /etc/nginx/conf.d/http.conf
     cp -a /etc/nginx/conf.d/https.template /etc/nginx/conf.d/https.conf
@@ -30,7 +30,7 @@ nginx -s reload
 # look into OCSP nginx
 # Otherwise the first access (at least on Firefox) will result in "Secure Connection Failed"
 set +e
-curl https://${DOMAIN} > /dev/null 2>&1
+curl https://${DFM_DOMAIN} > /dev/null 2>&1
 set -e
 
 npm run migration:run:prod
