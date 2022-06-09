@@ -1,8 +1,6 @@
 import type { Server as HttpServer } from 'node:http';
 import cors from 'cors';
-// TODO: How bad is that?
-// eslint-disable-next-line @typescript-eslint/no-shadow
-import type { Express, Request } from 'express';
+import type { Express, Request as ExpressRequest } from 'express';
 import express from 'express';
 import type { DatabaseService } from '../database/services/database-service';
 import {
@@ -27,26 +25,30 @@ export class ExerciseHttpServer {
         // This is used for the Cypress CI.
         secureHttp(app, 'get', '/api/health', () => getHealth());
 
-        secureHttp(app, 'post', '/api/exercise', async (req: Request) =>
+        secureHttp(app, 'post', '/api/exercise', async (req: ExpressRequest) =>
             postExercise(databaseService, req.body)
         );
 
-        secureHttp(app, 'get', '/api/exercise/:exerciseId', (req: Request) =>
-            getExercise(req.params.exerciseId)
+        secureHttp(
+            app,
+            'get',
+            '/api/exercise/:exerciseId',
+            (req: ExpressRequest) => getExercise(req.params.exerciseId)
         );
 
         secureHttp(
             app,
             'delete',
             '/api/exercise/:exerciseId',
-            async (req: Request) => deleteExercise(req.params.exerciseId)
+            async (req: ExpressRequest) => deleteExercise(req.params.exerciseId)
         );
 
         secureHttp(
             app,
             'get',
             '/api/exercise/:exerciseId/history',
-            async (req: Request) => getExerciseHistory(req.params.exerciseId)
+            async (req: ExpressRequest) =>
+                getExerciseHistory(req.params.exerciseId)
         );
 
         this.httpServer = app.listen(port);

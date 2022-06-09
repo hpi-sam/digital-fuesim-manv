@@ -1,6 +1,4 @@
-// TODO: How bad is that?
-// eslint-disable-next-line @typescript-eslint/no-shadow
-import type { Express, Request } from 'express';
+import type { Express, Request as ExpressRequest } from 'express';
 import type { HttpResponse } from './utils';
 
 export type HttpMethod =
@@ -20,7 +18,7 @@ export async function secureHttp<
     method: Method,
     route: string,
     operation: (
-        req: Request
+        req: ExpressRequest
     ) => HttpResponse<Result> | Promise<HttpResponse<Result>>
 ) {
     // TODO: Better type `req` to verify the arguments
