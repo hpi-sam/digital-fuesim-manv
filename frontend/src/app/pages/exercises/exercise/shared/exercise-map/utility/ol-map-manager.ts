@@ -184,6 +184,7 @@ export class OlMapManager {
             interactions: defaultInteractions({
                 pinchRotate: false,
                 altShiftDragRotate: false,
+                keyboard: true,
             }).extend(customInteractions),
             // We use Angular buttons instead
             controls: [],
