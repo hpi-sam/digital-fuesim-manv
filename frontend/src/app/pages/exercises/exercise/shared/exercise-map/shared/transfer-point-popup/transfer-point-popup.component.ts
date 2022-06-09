@@ -50,7 +50,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
      */
     public readonly transferPointsToBeAdded$ = this.store.select((state) => {
         const transferPoints = state.exercise.transferPoints;
-        const currentTransferPoint = transferPoints[this.transferPointId];
+        const currentTransferPoint = transferPoints[this.transferPointId]!;
         return Object.fromEntries(
             Object.entries(transferPoints).filter(
                 ([key]) =>
@@ -62,7 +62,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
 
     public readonly hospitalsToBeAdded$ = this.store.select((state) => {
         const transferPoints = state.exercise.transferPoints;
-        const currentTransferPoint = transferPoints[this.transferPointId];
+        const currentTransferPoint = transferPoints[this.transferPointId]!;
         const hospitals = state.exercise.hospitals;
         return Object.fromEntries(
             Object.entries(hospitals).filter(

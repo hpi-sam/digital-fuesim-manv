@@ -31,7 +31,8 @@ export class AreaStatisticsService {
                                 areaId === null
                                     ? statisticEntry.exercise
                                     : // If the viewport didn't exist yet
-                                      statisticEntry.viewports[areaId],
+                                      // TODO: Is this ! correct?
+                                      statisticEntry.viewports[areaId]!,
                             exerciseTime: statisticEntry.exerciseTime,
                         }))
                         .filter((entry) => entry.value !== undefined)

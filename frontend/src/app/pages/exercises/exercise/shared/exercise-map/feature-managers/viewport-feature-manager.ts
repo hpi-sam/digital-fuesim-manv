@@ -25,8 +25,8 @@ export function isInViewport(
     viewport: Viewport
 ): boolean {
     return Viewport.isInViewport(viewport, {
-        x: coordinate[0],
-        y: coordinate[1],
+        x: coordinate[0]!,
+        y: coordinate[1]!,
     });
 }
 
@@ -47,10 +47,16 @@ export class ViewportFeatureManager
             olMap,
             layer,
             (targetPositions, viewport) => {
+                // We need at least on targetPosition
+                if (targetPositions.length < 1) {
+                    throw new Error(
+                        'Got unexpectedly empty targetPositions array'
+                    );
+                }
                 apiService.proposeAction({
                     type: '[Viewport] Move viewport',
                     viewportId: viewport.id,
-                    targetPosition: targetPositions[0],
+                    targetPosition: targetPositions[0]!,
                 });
             },
             createLineString
@@ -75,6 +81,12 @@ export class ViewportFeatureManager
     override createFeature(element: Viewport): Feature<LineString> {
         const feature = super.createFeature(element);
         this.modifyHelper.onModifyEnd(feature, (newPositions) => {
+            // We need at least 3 coordinates as `newPositions`
+            if (newPositions.length < 3) {
+                throw new Error(
+                    `Got unexpectedly short newPositions array: ${newPositions}`
+                );
+            }
             // Skip when not all coordinates are properly set.
             if (
                 !newPositions.every(
@@ -89,8 +101,8 @@ export class ViewportFeatureManager
             }
             const lineString = newPositions;
 
-            const topLeft = lineString[0];
-            const bottomRight = lineString[2];
+            const topLeft = lineString[0]!;
+            const bottomRight = lineString[2]!;
             this.apiService.proposeAction({
                 type: '[Viewport] Resize viewport',
                 viewportId: element.id,

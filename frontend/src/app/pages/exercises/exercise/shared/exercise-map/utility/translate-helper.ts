@@ -42,15 +42,15 @@ export class TranslateHelper<T extends LineString | Point = Point> {
             if (isCoordinateArray(coordinates)) {
                 callback(
                     coordinates.map((coordinate) =>
-                        Position.create(coordinate[0], coordinate[1])
+                        Position.create(coordinate[0]!, coordinate[1]!)
                     ) as T extends Point ? never : Position[]
                 );
                 return;
             }
             callback(
                 Position.create(
-                    coordinates[0],
-                    coordinates[1]
+                    coordinates[0]!,
+                    coordinates[1]!
                 ) as T extends Point ? Position : never
             );
         });

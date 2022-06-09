@@ -49,7 +49,7 @@ export class TimeJumpHelper {
                 lastAppliedActionIndex < actions.length;
                 lastAppliedActionIndex++
             ) {
-                const action = actions[lastAppliedActionIndex];
+                const action = actions[lastAppliedActionIndex]!;
                 // If an action has been applied and adds part of it to the state (e.g. add a new element from the action),
                 // this part is immutable, because the action is immutable.
                 // If we try to mutate this part later on, we get an error because we modified the action, which is an immutable object

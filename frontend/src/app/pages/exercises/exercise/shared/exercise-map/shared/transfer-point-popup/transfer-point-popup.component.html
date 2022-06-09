@@ -149,7 +149,7 @@
                             >
                                 <div
                                     [title]="
-                                        hospitals[reachableHospitalId].name
+                                        hospitals[reachableHospitalId]!.name
                                     "
                                     class="flex-grow-1 ps-2 pe-2 text-truncate"
                                     style="max-width: 300px"
@@ -162,7 +162,7 @@
                                     class="font-monospace text-end"
                                     style="width: 125px"
                                     >{{
-                                        hospitals[reachableHospitalId]
+                                        hospitals[reachableHospitalId]!
                                             .transportDuration /
                                             1000 /
                                             60
