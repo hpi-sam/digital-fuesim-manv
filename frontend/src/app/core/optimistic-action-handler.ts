@@ -2,6 +2,7 @@ import type {
     Immutable,
     ImmutableJsonObject,
 } from 'digital-fuesim-manv-shared';
+import { isEqual } from 'lodash';
 
 /**
  * This class handels optimistic actions on a state.
@@ -17,26 +18,6 @@ export class OptimisticActionHandler<
     ImmutableAction extends Immutable<Action> = Immutable<Action>,
     ImmutableState extends Immutable<State> = Immutable<State>
 > {
-    /**
-     * The actions that should be proposed to the server after the waiting period has passed
-     */
-    private readonly proposeActionQueue: {
-        action: ImmutableAction;
-        optimistic: boolean;
-        resolve: (
-            response: PromiseLike<ServerResponse> | ServerResponse
-        ) => void;
-    }[] = [];
-    /**
-     * The actions that have been send from the server and should be performed since the start of the current waiting period
-     */
-    private performActionQueue: ImmutableAction[] = [];
-
-    /**
-     * Whether we are waiting for the response to an optimistic action
-     */
-    private isWaiting = false;
-
     constructor(
         /**
          * This function has to set the state synchronously to another value
@@ -44,10 +25,15 @@ export class OptimisticActionHandler<
         private readonly setState: (state: ImmutableState) => void,
         /**
          * Returns the current state synchronously
+         * It is expected that the first `getState` is in sync with the server
          */
         private readonly getState: () => ImmutableState,
         /**
          * Applies (reduces) the action to the state
+         * It could happen that the action is not applicable to the state.
+         * This happens e.g. if an optimistic action is applied, but the server state changed in the meantime.
+         * In this case the action can just be ignored.
+         *
          */
         private readonly applyAction: (action: ImmutableAction) => void,
         /**
@@ -59,6 +45,32 @@ export class OptimisticActionHandler<
     ) {}
 
     /**
+     * The state that is only assembled by the first `getState` and actions that came from the server
+     */
+    private saveState = this.getState();
+
+    /**
+     * The actions that have already been optimistically applied to the state and have been send to the server
+     * The first element is the action that was first applied to the state
+     */
+    private readonly optimisticallyAppliedActions: ImmutableAction[] = [];
+
+    /**
+     * Remove the first action in {@link optimisticallyAppliedActions} that is deepEqual to the given @param action
+     * @returns true if an action was removed, false otherwise
+     */
+    private removeFirstOptimisticAction(action: ImmutableAction) {
+        const actionIndexInQueue = this.optimisticallyAppliedActions.findIndex(
+            (optimisticAction) => isEqual(optimisticAction, action)
+        );
+        if (actionIndexInQueue > 0) {
+            this.optimisticallyAppliedActions.splice(actionIndexInQueue, 1);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      *
      * @param proposedAction the action that should be proposed to the server
      * @param beOptimistic wether the action should be applied before the server responds (in a way that the state doesn't get corrupted because of another action order on the server side)
@@ -68,45 +80,22 @@ export class OptimisticActionHandler<
         proposedAction: A,
         beOptimistic: boolean
     ): Promise<ServerResponse> {
-        if (this.isWaiting) {
-            // directly apply the action if it's optimistic
-            if (beOptimistic) {
-                // the state we will reset to later has already been saved by the action we are currently waiting for
-                this.applyAction(proposedAction);
-            }
-            // return the eventual response of the server to the action proposal
-            return new Promise((resolve) => {
-                // save to propose the action later
-                this.proposeActionQueue.push({
-                    action: proposedAction,
-                    optimistic: beOptimistic,
-                    resolve,
-                });
-            });
-        }
         if (!beOptimistic) {
-            // we just send the action to the server
-            // if the action changes the state, we will be notified via a performAction call instead of this response
             return this.sendAction(proposedAction);
         }
-        this.isWaiting = true;
-        const state = this.getState();
+        this.optimisticallyAppliedActions.push(proposedAction);
         this.applyAction(proposedAction);
         const response = await this.sendAction(proposedAction);
-        // we reset the state to the state before the action was applied
-        this.setState(state);
-        this.isWaiting = false;
-        // we apply all the actions from the server (in order) that were sent in the meantime
-        this.performActionQueue.forEach((action) => this.applyAction(action));
-        this.performActionQueue = [];
-        // we propose the actions that were proposed in the meantime
-        // if another optimistic update is made during the loop
-        // proposeActionQueue would gain elements in the back. we don't want to iterate over them
-        const proposedActionLength = this.proposeActionQueue.length;
-        for (let i = 0; i < proposedActionLength; i++) {
-            const { action, optimistic, resolve } =
-                this.proposeActionQueue.shift()!;
-            resolve(this.proposeAction(action, optimistic));
+        // Remove the response from the queue if it is still in there
+        // We assume the proposed actions are resolved in the same order they were proposed
+        if (this.removeFirstOptimisticAction(proposedAction)) {
+            // TODO: reset the state if the response is not successful
+            // Reset the state
+            this.setState(this.saveState);
+            // Apply the server action and afterwards the remaining optimistic actions
+            this.optimisticallyAppliedActions.forEach((_action) => {
+                this.applyAction(_action);
+            });
         }
         return response;
     }
@@ -117,9 +106,34 @@ export class OptimisticActionHandler<
      * @param action
      */
     public performAction<A extends ImmutableAction>(action: A) {
-        if (this.isWaiting) {
-            this.performActionQueue.push(action);
+        if (this.optimisticallyAppliedActions.length <= 0) {
+            this.applyAction(action);
+            this.saveState = this.getState();
+            return;
         }
-        this.applyAction(action);
+        if (isEqual(this.optimisticallyAppliedActions[0], action)) {
+            // Remove the already applied action
+            this.optimisticallyAppliedActions.shift();
+            // The state is already up to date
+            this.saveState = this.getState();
+            return;
+        }
+        console.log(
+            'C',
+            this.optimisticallyAppliedActions,
+            action,
+            this.saveState
+        );
+
+        // Remove the first matching optimisticAction (if there is one) from the queue
+        this.removeFirstOptimisticAction(action);
+        // Reset the state
+        this.setState(this.saveState);
+        // Apply the server action and afterwards the remaining optimistic actions
+        [action, ...this.optimisticallyAppliedActions].forEach((_action) => {
+            this.applyAction(_action);
+        });
+        // Save the state
+        this.saveState = this.getState();
     }
 }

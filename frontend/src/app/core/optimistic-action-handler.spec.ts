@@ -111,7 +111,7 @@ describe('OptimisticActionHandler', () => {
             type: 'addLetter',
             letter: 'a',
         });
-        expect(wordStateManager.state.word).toEqual('aa');
+        expect(wordStateManager.state.word).toEqual('a');
         wordStateManager.respondToProposedAction({ success: true });
         await proposedAction;
         expect(wordStateManager.state.word).toEqual('a');
@@ -130,10 +130,11 @@ describe('OptimisticActionHandler', () => {
             type: 'addLetter',
             letter: 'b',
         });
-        expect(wordStateManager.state.word).toEqual('ab');
+        expect(wordStateManager.state.word).toEqual('ba');
+        // TODO: this is against the design contract (perform the action first, then respond to the proposed action)
         wordStateManager.respondToProposedAction({ success: true });
         await proposedAction;
-        expect(wordStateManager.state.word).toEqual('b');
+        expect(wordStateManager.state.word).toEqual('ba');
         // this is the response from the server for the optimistic action sent at the beginning
         optimisticActionHandler.performAction({
             type: 'addLetter',
@@ -185,7 +186,7 @@ describe('OptimisticActionHandler', () => {
         expect(wordStateManager.state.word).toEqual('ac');
 
         optimisticActionHandler.performAction(actionA);
-        expect(wordStateManager.state.word).toEqual('aca');
+        expect(wordStateManager.state.word).toEqual('ac');
 
         wordStateManager.respondToProposedAction({ success: true });
         await optimisticProposalA;
@@ -194,19 +195,20 @@ describe('OptimisticActionHandler', () => {
         // expectAsync(normalProposalB).toBePending();
         // expectAsync(optimisticProposalC).toBePending();
         // expectAsync(normalProposalD).toBePending();
+        console.log('___________');
 
         optimisticActionHandler.performAction(actionB);
-        expect(wordStateManager.state.word).toEqual('acb');
+        expect(wordStateManager.state.word).toEqual('abc');
 
         wordStateManager.respondToProposedAction({ success: true });
         await normalProposalB;
-        expect(wordStateManager.state.word).toEqual('acb');
+        expect(wordStateManager.state.word).toEqual('abc');
         // TODO: convert from jasmine to jest
         // expectAsync(optimisticProposalC).toBePending();
         // expectAsync(normalProposalD).toBePending();
 
         optimisticActionHandler.performAction(actionC);
-        expect(wordStateManager.state.word).toEqual('acbc');
+        expect(wordStateManager.state.word).toEqual('abc');
 
         wordStateManager.respondToProposedAction({ success: true });
         await optimisticProposalC;
