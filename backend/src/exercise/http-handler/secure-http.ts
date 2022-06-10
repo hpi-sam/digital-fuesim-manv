@@ -1,4 +1,7 @@
-import type { Express, Request as ExpressRequest } from 'express';
+import type {
+    Request as ExpressRequest,
+    Response as ExpressResponse,
+} from 'express';
 import type { HttpResponse } from './utils';
 
 export type HttpMethod =
@@ -10,19 +13,13 @@ export type HttpMethod =
     | 'post'
     | 'put';
 
-export async function secureHttp<
-    Method extends HttpMethod,
-    Result extends object | undefined
->(
-    app: Express,
-    method: Method,
-    route: string,
+export function secureHttp<Result extends object | undefined>(
     operation: (
         req: ExpressRequest
     ) => HttpResponse<Result> | Promise<HttpResponse<Result>>
-) {
+): (req: ExpressRequest, res: ExpressResponse) => Promise<void> {
     // TODO: Better type `req` to verify the arguments
-    app[method](route, async (req, res) => {
+    return async (req: ExpressRequest, res: ExpressResponse) => {
         let response: HttpResponse<Result>;
         try {
             response = await operation(req);
@@ -48,5 +45,5 @@ export async function secureHttp<
         }
         res.statusCode = response.statusCode;
         res.send(response.body);
-    });
+    };
 }
