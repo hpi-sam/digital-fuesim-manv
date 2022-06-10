@@ -68,13 +68,13 @@ The credentials and other parameters of the database must match the [`.env` file
 
 There are two main ways to start the database.
 
-##### Option 1 using `docker-compose` (recommended)
+##### Option 1 using `docker compose` (recommended)
 
-(All `docker-compose` commands have to be run in the project root directory, all `npm` scripts have to be run in the `backend/` folder.)
+(All `docker compose` commands have to be run in the project root directory, all `npm` scripts have to be run in the `backend/` folder.)
 
 1. Setup your environment file. If you don't have another service running on port 5432 you can use the default settings (otherwise just use another port as your `DFM_DB_PORT`), apart from the password where you should use a good one, and the host which should be changed from `db` to `localhost` in case you want to run the backend and the database on your host machine.
-2. Make sure to have `docker-compose` installed, refer to [the relevant section of the root README for this](../README.md#starting-for-deployment-using-docker).
-3. If you want to start both the server and the database using `docker-compose`, use `docker-compose up -d`, in case you only want to start the database, use `docker-compose up -d db`.
+2. Make sure to have `docker compose` installed, refer to [the relevant section of the root README for this](../README.md#starting-for-deployment-using-docker).
+3. If you want to start both the server and the database using `docker compose`, use `docker compose up -d`, in case you only want to start the database, use `docker compose up -d db`.
    In the latter case you probably need the database exposed to your host machine. For this, uncomment the `ports` section of the [`docker-compose.yml`](../docker-compose.yml).
 4. Run all pending migrations, [see below](#npm-scripts).
 
