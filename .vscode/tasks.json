@@ -31,7 +31,7 @@
         {
             "label": "Start database",
             "type": "shell",
-            "command": "docker-compose up db"
+            "command": "docker compose up db || docker-compose up db"
         },
         {
             "label": "Start frontend",
