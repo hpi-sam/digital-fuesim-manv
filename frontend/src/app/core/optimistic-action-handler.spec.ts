@@ -1,4 +1,10 @@
+import type { SocketResponse } from 'digital-fuesim-manv-shared';
 import { OptimisticActionHandler } from './optimistic-action-handler';
+
+class AddLetterAction {
+    public readonly type = 'addLetter';
+    constructor(public readonly letter: string) {}
+}
 
 /**
  * A helper class for testing the optimistic action handler.
@@ -12,215 +18,232 @@ class WordStateManager {
     /**
      * Applies an action to the (immutable) state
      */
-    public applyAction(action: { type: 'addLetter'; letter: string }) {
+    public applyAction(action: AddLetterAction) {
         this.state = { word: this.state.word + action.letter };
     }
 
     /**
      * The proposed actions that are still waiting for a response
      */
-    private readonly proposedActionQueue: {
-        resolve: (value: { success: boolean }) => void;
-    }[] = [];
+    private readonly proposedActions = new Map<
+        number,
+        (value: SocketResponse) => void
+    >();
+
     /**
      * (Would) Send a proposed action to the server
      */
-    public async sendAction(action: {
-        type: 'addLetter';
-        letter: string;
-    }): Promise<{ success: boolean }> {
+    public async sendAction(
+        key: number,
+        action: AddLetterAction
+    ): Promise<SocketResponse> {
+        if (this.proposedActions.has(key)) {
+            throw new Error(`Action with key ${key} already sent`);
+        }
         return new Promise((resolve) => {
-            this.proposedActionQueue.push({
-                resolve,
-            });
+            this.proposedActions.set(key, resolve);
         });
     }
 
     /**
      * Responds to the first proposed action that hasn't been responded to yet
+     * Be aware that the callbacks to the response promise have not been called yet
      */
-    public respondToProposedAction(response: { success: boolean }) {
-        this.proposedActionQueue.shift()!.resolve(response);
+    public respondToProposedAction(key: number, response: SocketResponse) {
+        const callback = this.proposedActions.get(key);
+        if (!callback) {
+            throw new Error(`No action with key ${key} found`);
+        }
+        callback(response);
+        this.proposedActions.delete(key);
+    }
+
+    public allActionsWereRespondedTo() {
+        return this.proposedActions.size === 0;
     }
 }
 
+const successResponse: SocketResponse = { success: true };
+const errorResponse: SocketResponse = { success: false, message: 'error' };
+
 describe('OptimisticActionHandler', () => {
+    let actionKey = 0;
     let wordStateManager = new WordStateManager();
     let optimisticActionHandler: OptimisticActionHandler<
-        {
-            type: 'addLetter';
-            letter: string;
-        },
+        AddLetterAction,
         { word: string },
-        { success: boolean }
+        SocketResponse
     >;
 
+    /**
+     * Use this function to test the optimistic action handlers ability to propose actions.
+     * @returns an object with the response and nested functions that simulate the server response
+     */
+    function proposeAction(action: AddLetterAction, beOptimistic: boolean) {
+        const key = actionKey;
+        // TODO: We currently assume that the action is send synchronously
+        const response = optimisticActionHandler.proposeAction(
+            action,
+            beOptimistic
+        );
+        return {
+            response,
+            performAction: () => {
+                optimisticActionHandler.performAction(action);
+                return {
+                    resolveProposal: async () => {
+                        wordStateManager.respondToProposedAction(
+                            key,
+                            successResponse
+                        );
+                        await response;
+                    },
+                };
+            },
+            rejectProposal: async () => {
+                wordStateManager.respondToProposedAction(key, errorResponse);
+                await response;
+            },
+        };
+    }
+
+    function performAction(action: AddLetterAction) {
+        optimisticActionHandler.performAction(action);
+    }
+
     beforeEach(() => {
+        actionKey = 0;
         wordStateManager = new WordStateManager();
         optimisticActionHandler = new OptimisticActionHandler(
             (newState) => (wordStateManager.state = newState),
             () => wordStateManager.state,
             (action) => wordStateManager.applyAction(action),
-            async (action) => wordStateManager.sendAction(action)
+            async (action) => wordStateManager.sendAction(actionKey++, action)
         );
     });
 
-    it.each([true, false])(
-        'should correctly apply not optimistic proposed actions when response is %p',
-        async (success) => {
-            const proposedAction = optimisticActionHandler.proposeAction(
-                {
-                    type: 'addLetter',
-                    letter: 'a',
-                },
-                false
+    afterEach(() => {
+        expect(wordStateManager.allActionsWereRespondedTo()).toBe(true);
+    });
+
+    it.each([
+        { success: true, optimistic: true },
+        { success: true, optimistic: false },
+        { success: false, optimistic: true },
+        { success: false, optimistic: false },
+    ])(
+        'returns the response of a proposed action with %p',
+        async ({ success, optimistic }) => {
+            const actionProposal = proposeAction(
+                new AddLetterAction('a'),
+                optimistic
             );
-            wordStateManager.respondToProposedAction({ success });
-            expect(await proposedAction).toEqual({ success });
-            // the state should only be updated via the performAction call
-            expect(wordStateManager.state.word).toEqual('');
+            if (success) {
+                // This await here is not really necessary, because we await the response
+                await actionProposal.performAction().resolveProposal();
+                expect(await actionProposal.response).toEqual(successResponse);
+                expect(wordStateManager.state.word).toEqual('a');
+            } else {
+                await actionProposal.rejectProposal();
+                expect(await actionProposal.response).toEqual(errorResponse);
+                expect(wordStateManager.state.word).toEqual('');
+            }
         }
     );
 
-    it('should correctly perform actions', async () => {
-        optimisticActionHandler.performAction({
-            type: 'addLetter',
-            letter: 'a',
-        });
+    it('correctly performs actions', async () => {
+        performAction(new AddLetterAction('a'));
         expect(wordStateManager.state.word).toEqual('a');
 
-        optimisticActionHandler.performAction({
-            type: 'addLetter',
-            letter: 'b',
-        });
+        performAction(new AddLetterAction('b'));
         expect(wordStateManager.state.word).toEqual('ab');
     });
 
-    it('should correctly apply optimistic actions', async () => {
-        const proposedAction = optimisticActionHandler.proposeAction(
-            {
-                type: 'addLetter',
-                letter: 'a',
-            },
-            true
-        );
-        // should be synchronously applied
+    it('correctly proposes a single optimistic action', async () => {
+        const actionProposal = proposeAction(new AddLetterAction('a'), true);
+        // Should be synchronously applied
         expect(wordStateManager.state.word).toEqual('a');
-        // the response from the server to the proposed action
-        optimisticActionHandler.performAction({
-            type: 'addLetter',
-            letter: 'a',
-        });
+        const performedActionProposal = actionProposal.performAction();
         expect(wordStateManager.state.word).toEqual('a');
-        wordStateManager.respondToProposedAction({ success: true });
-        await proposedAction;
+        await performedActionProposal.resolveProposal();
         expect(wordStateManager.state.word).toEqual('a');
     });
 
-    it('should keep the right order when applying optimistic updates and performed updates', async () => {
-        const proposedAction = optimisticActionHandler.proposeAction(
-            {
-                type: 'addLetter',
-                letter: 'a',
-            },
-            true
-        );
+    it('correctly handles a single optimistic proposals that fails', async () => {
+        const actionProposal = proposeAction(new AddLetterAction('a'), true);
         expect(wordStateManager.state.word).toEqual('a');
-        optimisticActionHandler.performAction({
-            type: 'addLetter',
-            letter: 'b',
-        });
+        await actionProposal.rejectProposal();
+        expect(wordStateManager.state.word).toEqual('');
+    });
+
+    it('correctly handles multiple equal optimistic proposals', async () => {
+        const actionProposal1 = proposeAction(new AddLetterAction('a'), true);
+        expect(wordStateManager.state.word).toEqual('a');
+        const actionProposal2 = proposeAction(new AddLetterAction('a'), true);
+        expect(wordStateManager.state.word).toEqual('aa');
+
+        const performedActionProposal1 = actionProposal1.performAction();
+        expect(wordStateManager.state.word).toEqual('aa');
+        const performedActionProposal2 = actionProposal2.performAction();
+        expect(wordStateManager.state.word).toEqual('aa');
+
+        await performedActionProposal1.resolveProposal();
+        expect(wordStateManager.state.word).toEqual('aa');
+        await performedActionProposal2.resolveProposal();
+        expect(wordStateManager.state.word).toEqual('aa');
+    });
+
+    it('correctly handles multiple equal optimistic proposals if one fails', async () => {
+        const actionProposal1 = proposeAction(new AddLetterAction('a'), true);
+        expect(wordStateManager.state.word).toEqual('a');
+        const actionProposal2 = proposeAction(new AddLetterAction('a'), true);
+        expect(wordStateManager.state.word).toEqual('aa');
+
+        const performedActionProposal1 = actionProposal1.performAction();
+        expect(wordStateManager.state.word).toEqual('aa');
+
+        await performedActionProposal1.resolveProposal();
+        expect(wordStateManager.state.word).toEqual('aa');
+        await actionProposal2.rejectProposal();
+        expect(wordStateManager.state.word).toEqual('a');
+    });
+
+    it('correctly handles an optimistic update with a performAction from the server in between', async () => {
+        const actionProposal = proposeAction(new AddLetterAction('a'), true);
+        expect(wordStateManager.state.word).toEqual('a');
+        performAction(new AddLetterAction('b'));
         expect(wordStateManager.state.word).toEqual('ba');
-        // TODO: this is against the design contract (perform the action first, then respond to the proposed action)
-        wordStateManager.respondToProposedAction({ success: true });
-        await proposedAction;
+        const performedActionProposal = actionProposal.performAction();
         expect(wordStateManager.state.word).toEqual('ba');
-        // this is the response from the server for the optimistic action sent at the beginning
-        optimisticActionHandler.performAction({
-            type: 'addLetter',
-            letter: 'a',
-        });
+        await performedActionProposal.resolveProposal();
         expect(wordStateManager.state.word).toEqual('ba');
     });
 
-    it('should perform already proposed actions after the optimistic update is done', async () => {
-        const actionA = {
-            type: 'addLetter',
-            letter: 'a',
-        } as const;
-        const actionB = {
-            type: 'addLetter',
-            letter: 'b',
-        } as const;
-        const actionC = {
-            type: 'addLetter',
-            letter: 'c',
-        } as const;
-        const actionD = {
-            type: 'addLetter',
-            letter: 'd',
-        } as const;
-
-        const optimisticProposalA = optimisticActionHandler.proposeAction(
-            actionA,
-            true
-        );
+    it('correctly handles multiple optimistic and non-optimistic proposals', async () => {
+        // Propose actions
+        const actionProposalA = proposeAction(new AddLetterAction('a'), true);
         expect(wordStateManager.state.word).toEqual('a');
 
-        const normalProposalB = optimisticActionHandler.proposeAction(
-            actionB,
-            false
-        );
+        const actionProposalB = proposeAction(new AddLetterAction('b'), false);
         expect(wordStateManager.state.word).toEqual('a');
 
-        const optimisticProposalC = optimisticActionHandler.proposeAction(
-            actionC,
-            true
-        );
+        const actionProposalC = proposeAction(new AddLetterAction('c'), true);
         expect(wordStateManager.state.word).toEqual('ac');
 
-        const normalProposalD = optimisticActionHandler.proposeAction(
-            actionD,
-            false
-        );
+        const actionProposalD = proposeAction(new AddLetterAction('d'), false);
         expect(wordStateManager.state.word).toEqual('ac');
 
-        optimisticActionHandler.performAction(actionA);
+        // The server reacts to the proposals
+        await actionProposalA.performAction().resolveProposal();
         expect(wordStateManager.state.word).toEqual('ac');
 
-        wordStateManager.respondToProposedAction({ success: true });
-        await optimisticProposalA;
-        expect(wordStateManager.state.word).toEqual('ac');
-        // TODO: convert from jasmine to jest
-        // expectAsync(normalProposalB).toBePending();
-        // expectAsync(optimisticProposalC).toBePending();
-        // expectAsync(normalProposalD).toBePending();
-        console.log('___________');
-
-        optimisticActionHandler.performAction(actionB);
+        await actionProposalB.performAction().resolveProposal();
         expect(wordStateManager.state.word).toEqual('abc');
 
-        wordStateManager.respondToProposedAction({ success: true });
-        await normalProposalB;
-        expect(wordStateManager.state.word).toEqual('abc');
-        // TODO: convert from jasmine to jest
-        // expectAsync(optimisticProposalC).toBePending();
-        // expectAsync(normalProposalD).toBePending();
-
-        optimisticActionHandler.performAction(actionC);
+        await actionProposalC.performAction().resolveProposal();
         expect(wordStateManager.state.word).toEqual('abc');
 
-        wordStateManager.respondToProposedAction({ success: true });
-        await optimisticProposalC;
-        expect(wordStateManager.state.word).toEqual('abc');
-        // TODO: convert from jasmine to jest
-        // expectAsync(normalProposalD).toBePending();
-
-        optimisticActionHandler.performAction(actionD);
-        expect(wordStateManager.state.word).toEqual('abcd');
-
-        wordStateManager.respondToProposedAction({ success: true });
-        await normalProposalD;
+        await actionProposalD.performAction().resolveProposal();
         expect(wordStateManager.state.word).toEqual('abcd');
     });
 });
