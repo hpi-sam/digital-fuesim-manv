@@ -1,6 +1,7 @@
 import type {
     Immutable,
     ImmutableJsonObject,
+    SocketResponse,
 } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash';
 
@@ -14,7 +15,7 @@ import { isEqual } from 'lodash';
 export class OptimisticActionHandler<
     Action extends ImmutableJsonObject,
     State extends ImmutableJsonObject,
-    ServerResponse,
+    ServerResponse extends SocketResponse,
     ImmutableAction extends Immutable<Action> = Immutable<Action>,
     ImmutableState extends Immutable<State> = Immutable<State>
 > {
@@ -63,7 +64,7 @@ export class OptimisticActionHandler<
         const actionIndexInQueue = this.optimisticallyAppliedActions.findIndex(
             (optimisticAction) => isEqual(optimisticAction, action)
         );
-        if (actionIndexInQueue > 0) {
+        if (actionIndexInQueue >= 0) {
             this.optimisticallyAppliedActions.splice(actionIndexInQueue, 1);
             return true;
         }
@@ -86,17 +87,23 @@ export class OptimisticActionHandler<
         this.optimisticallyAppliedActions.push(proposedAction);
         this.applyAction(proposedAction);
         const response = await this.sendAction(proposedAction);
-        // Remove the response from the queue if it is still in there
-        // We assume the proposed actions are resolved in the same order they were proposed
-        if (this.removeFirstOptimisticAction(proposedAction)) {
-            // TODO: reset the state if the response is not successful
-            // Reset the state
-            this.setState(this.saveState);
-            // Apply the server action and afterwards the remaining optimistic actions
-            this.optimisticallyAppliedActions.forEach((_action) => {
-                this.applyAction(_action);
-            });
+        if (response.success) {
+            // If the response is successful the actions has already been removed by the `performAction` function before.
+            return response;
         }
+        // Remove the action from the applied actions
+        const actionHasBeenRemoved =
+            this.removeFirstOptimisticAction(proposedAction);
+        console.assert(
+            actionHasBeenRemoved,
+            'The optimistic action could not be removed',
+            proposedAction,
+            this.optimisticallyAppliedActions
+        );
+        this.setState(this.saveState);
+        this.optimisticallyAppliedActions.forEach((_action) => {
+            this.applyAction(_action);
+        });
         return response;
     }
 
