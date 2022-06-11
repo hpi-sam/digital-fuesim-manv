@@ -6,11 +6,12 @@ import type {
 import { isEqual } from 'lodash';
 
 /**
- * This class handels optimistic actions on a state.
+ * This class handles optimistic actions on a state.
  * The following assertions have to be met:
  * - the state is immutable and can only be modified via {@link setState } and {@link applyAction }
  * - {@link  applyAction} on the same state is a pure function
  * - if a proposedAction succeeds, the action should be applied to the state via {@link performAction}
+ *     - this performAction must be called before the action resolves successfully
  */
 export class OptimisticActionHandler<
     Action extends ImmutableJsonObject,
@@ -46,13 +47,16 @@ export class OptimisticActionHandler<
     ) {}
 
     /**
-     * The state that is only assembled by the first `getState` and actions that came from the server
+     * The state that is confirmed to be valid by the server.
+     * It is only assembled by the first `getState` and actions that came from the server via {@link performAction}
      */
-    private saveState = this.getState();
+    private serverState = this.getState();
 
     /**
      * The actions that have already been optimistically applied to the state and have been send to the server
      * The first element is the action that was first applied to the state
+     *
+     * {@link getState()} === {@link serverState} + ...{@link optimisticallyAppliedActions}
      */
     private readonly optimisticallyAppliedActions: ImmutableAction[] = [];
 
@@ -61,12 +65,11 @@ export class OptimisticActionHandler<
      * @returns true if an action was removed, false otherwise
      */
     private removeFirstOptimisticAction(action: ImmutableAction) {
-        const actionIndexInQueue = this.optimisticallyAppliedActions.findIndex(
-            (optimisticAction) => isEqual(optimisticAction, action)
-        );
-        if (actionIndexInQueue >= 0) {
-            this.optimisticallyAppliedActions.splice(actionIndexInQueue, 1);
-            return true;
+        for (let i = 0; i < this.optimisticallyAppliedActions.length; i++) {
+            if (isEqual(this.optimisticallyAppliedActions[i], action)) {
+                this.optimisticallyAppliedActions.splice(i, 1);
+                return true;
+            }
         }
         return false;
     }
@@ -92,15 +95,8 @@ export class OptimisticActionHandler<
             return response;
         }
         // Remove the action from the applied actions
-        const actionHasBeenRemoved =
-            this.removeFirstOptimisticAction(proposedAction);
-        console.assert(
-            actionHasBeenRemoved,
-            'The optimistic action could not be removed',
-            proposedAction,
-            this.optimisticallyAppliedActions
-        );
-        this.setState(this.saveState);
+        this.removeFirstOptimisticAction(proposedAction);
+        this.setState(this.serverState);
         this.optimisticallyAppliedActions.forEach((_action) => {
             this.applyAction(_action);
         });
@@ -113,34 +109,39 @@ export class OptimisticActionHandler<
      * @param action
      */
     public performAction<A extends ImmutableAction>(action: A) {
-        if (this.optimisticallyAppliedActions.length <= 0) {
+        // This is a shortcut to improve performance for obvious cases - If you remove it the code is still correct
+        if (this.optimisticallyAppliedActions.length === 0) {
             this.applyAction(action);
-            this.saveState = this.getState();
+            this.serverState = this.getState();
             return;
         }
-        if (isEqual(this.optimisticallyAppliedActions[0], action)) {
+
+        // This is a shortcut to improve performance for obvious cases - If you remove it the code is still correct
+        if (
+            // If there are more optimistic actions, the state would already be correct, but we have no way to set the correct saveState
+            this.optimisticallyAppliedActions.length === 1 &&
+            isEqual(this.optimisticallyAppliedActions[0], action)
+        ) {
             // Remove the already applied action
             this.optimisticallyAppliedActions.shift();
             // The state is already up to date
-            this.saveState = this.getState();
+            this.serverState = this.getState();
             return;
         }
-        console.log(
-            'C',
-            this.optimisticallyAppliedActions,
-            action,
-            this.saveState
-        );
 
-        // Remove the first matching optimisticAction (if there is one) from the queue
+        // Here comes the general and "safe" way:
+
+        // Remove the first matching optimisticAction (if there is one)
         this.removeFirstOptimisticAction(action);
         // Reset the state
-        this.setState(this.saveState);
-        // Apply the server action and afterwards the remaining optimistic actions
-        [action, ...this.optimisticallyAppliedActions].forEach((_action) => {
+        this.setState(this.serverState);
+        // Apply the server action
+        this.applyAction(action);
+        // Save the state
+        this.serverState = this.getState();
+        // Apply the remaining optimistic actions
+        this.optimisticallyAppliedActions.forEach((_action) => {
             this.applyAction(_action);
         });
-        // Save the state
-        this.saveState = this.getState();
     }
 }

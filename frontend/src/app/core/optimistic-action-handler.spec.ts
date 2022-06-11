@@ -151,7 +151,7 @@ describe('OptimisticActionHandler', () => {
         }
     );
 
-    it('correctly performs actions', async () => {
+    it('performs actions', async () => {
         performAction(new AddLetterAction('a'));
         expect(wordStateManager.state.word).toEqual('a');
 
@@ -159,7 +159,7 @@ describe('OptimisticActionHandler', () => {
         expect(wordStateManager.state.word).toEqual('ab');
     });
 
-    it('correctly proposes a single optimistic action', async () => {
+    it('proposes a single optimistic proposal', async () => {
         const actionProposal = proposeAction(new AddLetterAction('a'), true);
         // Should be synchronously applied
         expect(wordStateManager.state.word).toEqual('a');
@@ -169,14 +169,14 @@ describe('OptimisticActionHandler', () => {
         expect(wordStateManager.state.word).toEqual('a');
     });
 
-    it('correctly handles a single optimistic proposals that fails', async () => {
+    it('handles a single optimistic proposals that fails', async () => {
         const actionProposal = proposeAction(new AddLetterAction('a'), true);
         expect(wordStateManager.state.word).toEqual('a');
         await actionProposal.rejectProposal();
         expect(wordStateManager.state.word).toEqual('');
     });
 
-    it('correctly handles multiple equal optimistic proposals', async () => {
+    it('handles multiple equal optimistic proposals', async () => {
         const actionProposal1 = proposeAction(new AddLetterAction('a'), true);
         expect(wordStateManager.state.word).toEqual('a');
         const actionProposal2 = proposeAction(new AddLetterAction('a'), true);
@@ -193,7 +193,7 @@ describe('OptimisticActionHandler', () => {
         expect(wordStateManager.state.word).toEqual('aa');
     });
 
-    it('correctly handles multiple equal optimistic proposals if one fails', async () => {
+    it('handles multiple equal optimistic proposals if one fails', async () => {
         const actionProposal1 = proposeAction(new AddLetterAction('a'), true);
         expect(wordStateManager.state.word).toEqual('a');
         const actionProposal2 = proposeAction(new AddLetterAction('a'), true);
@@ -208,7 +208,7 @@ describe('OptimisticActionHandler', () => {
         expect(wordStateManager.state.word).toEqual('a');
     });
 
-    it('correctly handles an optimistic update with a performAction from the server in between', async () => {
+    it('handles an optimistic proposal with a performAction from the server in between', async () => {
         const actionProposal = proposeAction(new AddLetterAction('a'), true);
         expect(wordStateManager.state.word).toEqual('a');
         performAction(new AddLetterAction('b'));
@@ -219,7 +219,7 @@ describe('OptimisticActionHandler', () => {
         expect(wordStateManager.state.word).toEqual('ba');
     });
 
-    it('correctly handles multiple optimistic and non-optimistic proposals', async () => {
+    it('handles multiple optimistic and non-optimistic proposals', async () => {
         // Propose actions
         const actionProposalA = proposeAction(new AddLetterAction('a'), true);
         expect(wordStateManager.state.word).toEqual('a');
@@ -245,5 +245,73 @@ describe('OptimisticActionHandler', () => {
 
         await actionProposalD.performAction().resolveProposal();
         expect(wordStateManager.state.word).toEqual('abcd');
+    });
+
+    it('handles a complicated sequence of actions', async () => {
+        const actionProposalA = proposeAction(new AddLetterAction('a'), true);
+        expect(wordStateManager.state.word).toEqual('a');
+        performAction(new AddLetterAction('b'));
+        expect(wordStateManager.state.word).toEqual('ba');
+        performAction(new AddLetterAction('c'));
+        expect(wordStateManager.state.word).toEqual('bca');
+        performAction(new AddLetterAction('c'));
+        expect(wordStateManager.state.word).toEqual('bcca');
+        const actionProposalD1 = proposeAction(new AddLetterAction('d'), false);
+        expect(wordStateManager.state.word).toEqual('bcca');
+        const actionProposalD2 = proposeAction(new AddLetterAction('d'), true);
+        expect(wordStateManager.state.word).toEqual('bccad');
+        performAction(new AddLetterAction('e'));
+        expect(wordStateManager.state.word).toEqual('bccead');
+        const performedActionProposalA = actionProposalA.performAction();
+        expect(wordStateManager.state.word).toEqual('bccead');
+        const performedActionProposalB = actionProposalD1.performAction();
+        expect(wordStateManager.state.word).toEqual('bccead');
+        await actionProposalD2.rejectProposal();
+        expect(wordStateManager.state.word).toEqual('bccead');
+        await performedActionProposalB.resolveProposal();
+        expect(wordStateManager.state.word).toEqual('bccead');
+        performAction(new AddLetterAction('c'));
+        expect(wordStateManager.state.word).toEqual('bcceadc');
+        await performedActionProposalA.resolveProposal();
+        expect(wordStateManager.state.word).toEqual('bcceadc');
+    });
+
+    it('handles multiple optimistic proposals with a performAction', async () => {
+        const actionProposalA = proposeAction(new AddLetterAction('a'), true);
+        expect(wordStateManager.state.word).toEqual('a');
+        const actionProposalB = proposeAction(new AddLetterAction('b'), true);
+        expect(wordStateManager.state.word).toEqual('ab');
+        const actionProposalC = proposeAction(new AddLetterAction('c'), true);
+        expect(wordStateManager.state.word).toEqual('abc');
+
+        // There is no way for us to know whether this is the proposal to our optimistic action or an additional action from the server -> remove it
+        performAction(new AddLetterAction('b'));
+        expect(wordStateManager.state.word).toEqual('bac');
+
+        await actionProposalA.performAction().resolveProposal();
+        expect(wordStateManager.state.word).toEqual('bac');
+        await actionProposalB.performAction().resolveProposal();
+        expect(wordStateManager.state.word).toEqual('babc');
+        await actionProposalC.performAction().resolveProposal();
+        expect(wordStateManager.state.word).toEqual('babc');
+    });
+
+    it('handles multiple optimistic proposals with a performAction and an rejected proposal', async () => {
+        const actionProposalA = proposeAction(new AddLetterAction('a'), true);
+        expect(wordStateManager.state.word).toEqual('a');
+        const actionProposalB = proposeAction(new AddLetterAction('b'), true);
+        expect(wordStateManager.state.word).toEqual('ab');
+        const actionProposalC = proposeAction(new AddLetterAction('c'), true);
+        expect(wordStateManager.state.word).toEqual('abc');
+
+        performAction(new AddLetterAction('b'));
+        expect(wordStateManager.state.word).toEqual('bac');
+
+        await actionProposalA.performAction().resolveProposal();
+        expect(wordStateManager.state.word).toEqual('bac');
+        await actionProposalB.rejectProposal();
+        expect(wordStateManager.state.word).toEqual('bac');
+        await actionProposalC.performAction().resolveProposal();
+        expect(wordStateManager.state.word).toEqual('bac');
     });
 });
