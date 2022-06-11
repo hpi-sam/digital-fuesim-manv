@@ -41,10 +41,17 @@ export class ApiService {
             this.isTimeTraveling
                 ? (this.presentState = exercise)
                 : this.store.dispatch(setExerciseState(exercise)),
-        () =>
-            this.isTimeTraveling
-                ? this.presentState!
-                : getStateSnapshot(this.store).exercise,
+        () => {
+            // TODO: this is called synchronously, because at this time isTimeTraveling is not defined, an error occurs.
+            // Probably the best solution would be to do refactor all of the time travel and
+            try {
+                return this.isTimeTraveling
+                    ? this.presentState!
+                    : getStateSnapshot(this.store).exercise;
+            } catch {
+                return getStateSnapshot(this.store).exercise;
+            }
+        },
         (action) => {
             if (!this.isTimeTraveling) {
                 this.store.dispatch(applyServerAction(action));

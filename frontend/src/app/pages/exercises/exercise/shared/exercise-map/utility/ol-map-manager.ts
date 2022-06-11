@@ -19,14 +19,7 @@ import OlMap from 'ol/Map';
 import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import type { Observable } from 'rxjs';
-import {
-    combineLatest,
-    debounceTime,
-    pairwise,
-    startWith,
-    Subject,
-    takeUntil,
-} from 'rxjs';
+import { combineLatest, pairwise, startWith, Subject, takeUntil } from 'rxjs';
 import type { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
@@ -430,14 +423,7 @@ export class OlMapManager {
         featureManager.togglePopup$?.subscribe(this.changePopup$);
         // Propagate the changes on an element to the featureManager
         elementDictionary$
-            .pipe(
-                // TODO: this is workaround for not emitting synchronously
-                // currently, the setState of the optimistic update and the actions that are reapplied each bring the state to synchronously emit
-                debounceTime(0),
-                startWith({}),
-                pairwise(),
-                takeUntil(this.destroy$)
-            )
+            .pipe(startWith({}), pairwise(), takeUntil(this.destroy$))
             .subscribe(([oldElementDictionary, newElementDictionary]) => {
                 // run outside angular zone for better performance
                 this.ngZone.runOutsideAngular(() => {

@@ -35,7 +35,6 @@ export class OptimisticActionHandler<
          * It could happen that the action is not applicable to the state.
          * This happens e.g. if an optimistic action is applied, but the server state changed in the meantime.
          * In this case the action can just be ignored.
-         *
          */
         private readonly applyAction: (action: ImmutableAction) => void,
         /**
@@ -62,28 +61,39 @@ export class OptimisticActionHandler<
 
     /**
      * Remove the first action in {@link optimisticallyAppliedActions} that is deepEqual to the given @param action
-     * @returns true if an action was removed, false otherwise
      */
     private removeFirstOptimisticAction(action: ImmutableAction) {
         for (let i = 0; i < this.optimisticallyAppliedActions.length; i++) {
-            if (isEqual(this.optimisticallyAppliedActions[i], action)) {
+            if (
+                this.actionsAreEqual(
+                    this.optimisticallyAppliedActions[i],
+                    action
+                )
+            ) {
                 this.optimisticallyAppliedActions.splice(i, 1);
-                return true;
+                return;
             }
         }
-        return false;
     }
 
     /**
      *
      * @param proposedAction the action that should be proposed to the server
      * @param beOptimistic wether the action should be applied before the server responds (in a way that the state doesn't get corrupted because of another action order on the server side)
+     * The actions of optimistically applied actions must not be changed by the server.
+     * This means that e.g. all actions with nondeterministic values that are added by the server must be send with {@link beOptimistic} = false.
      * @returns the response of the server
      */
     public async proposeAction<A extends ImmutableAction>(
         proposedAction: A,
         beOptimistic: boolean
     ): Promise<ServerResponse> {
+        // TODO: This should not be hardcoded like this but enforced via typings
+        if ((proposedAction as any).timestamp && beOptimistic) {
+            throw Error(
+                'Actions with non-deterministic values must not be proposed optimistically'
+            );
+        }
         if (!beOptimistic) {
             return this.sendAction(proposedAction);
         }
@@ -117,10 +127,11 @@ export class OptimisticActionHandler<
         }
 
         // This is a shortcut to improve performance for obvious cases - If you remove it the code is still correct
+
         if (
             // If there are more optimistic actions, the state would already be correct, but we have no way to set the correct saveState
             this.optimisticallyAppliedActions.length === 1 &&
-            isEqual(this.optimisticallyAppliedActions[0], action)
+            this.actionsAreEqual(this.optimisticallyAppliedActions[0], action)
         ) {
             // Remove the already applied action
             this.optimisticallyAppliedActions.shift();
@@ -128,7 +139,6 @@ export class OptimisticActionHandler<
             this.serverState = this.getState();
             return;
         }
-
         // Here comes the general and "safe" way:
 
         // Remove the first matching optimisticAction (if there is one)
@@ -143,5 +153,20 @@ export class OptimisticActionHandler<
         this.optimisticallyAppliedActions.forEach((_action) => {
             this.applyAction(_action);
         });
+    }
+
+    /**
+     * This is a workaround until https://www.typescriptlang.org/tsconfig#exactOptionalPropertyTypes is activated in our codebase
+     * If we send an action where an optional property is deleted, it is not equal to the action with this property set to undefined.
+     */
+    private actionsAreEqual(
+        action1: ImmutableAction,
+        action2: ImmutableAction
+    ) {
+        return isEqual(
+            // This removes all undefined values from the action
+            JSON.parse(JSON.stringify(action1)),
+            JSON.parse(JSON.stringify(action2))
+        );
     }
 }
