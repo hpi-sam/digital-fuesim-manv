@@ -1,5 +1,11 @@
 <div class="modal-header">
-    <h4 class="modal-title">Statistiken</h4>
+    <h4 class="modal-title">
+        Statistiken
+
+        <button class="btn btn-sm btn-primary" (click)="refreshStatistics()">
+            <i class="bi-arrow-clockwise"></i>
+        </button>
+    </h4>
     <button type="button" class="btn-close" (click)="close()"></button>
 </div>
 <div class="modal-body">

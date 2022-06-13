@@ -29,10 +29,16 @@ export class ExerciseStatisticsModalComponent {
         public activeModal: NgbActiveModal,
         private readonly store: Store<AppState>,
         public readonly areaStatisticsService: AreaStatisticsService
-    ) {}
+    ) {
+        this.refreshStatistics();
+    }
 
     public close() {
         this.activeModal.close();
+    }
+
+    public refreshStatistics() {
+        this.areaStatisticsService.updateStatistics();
     }
 
     // Patient statistics
