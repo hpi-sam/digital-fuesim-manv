@@ -9,6 +9,9 @@ import { DatabaseService } from './database/services/database-service';
 import { FuesimServer } from './fuesim-server';
 
 async function main() {
+    console.log(
+        'This is a work in progress version of digital-fuesim-manv for the thesis of @ClFeSc'
+    );
     Config.initialize();
 
     const dataSource = createNewDataSource();
