@@ -240,7 +240,7 @@ export class ExerciseWrapper extends NormalType<
     constructor(
         public readonly participantId: string,
         public readonly trainerId: string,
-        public readonly temporaryActionHistory: ActionWrapper[],
+        public temporaryActionHistory: ActionWrapper[],
         databaseService: DatabaseService,
         private readonly stateVersion: number,
         private readonly initialState = ExerciseState.create(),
@@ -276,7 +276,7 @@ export class ExerciseWrapper extends NormalType<
                         exercise
                     )
             );
-            exercise.temporaryActionHistory.push(...actions);
+            exercise.temporaryActionHistory = actions;
             if (manager === undefined) {
                 // eslint-disable-next-line require-atomic-updates
                 exercise = await migrateInMemoryTo(
@@ -300,7 +300,8 @@ export class ExerciseWrapper extends NormalType<
                     databaseService
                 );
                 // Reset actions to apply them (they are removed when saving the entity to the database)
-                exercise.temporaryActionHistory.push(...actions);
+                // eslint-disable-next-line require-atomic-updates
+                exercise.temporaryActionHistory = actions;
             }
             exercise.restore();
             exercise.applyAction(
@@ -429,22 +430,17 @@ export class ExerciseWrapper extends NormalType<
                         databaseService
                     );
                     // Load all actions
-                    exercise.temporaryActionHistory.splice(
-                        0,
-                        exercise.temporaryActionHistory.length,
-                        ...(
-                            await databaseService.actionWrapperService.getFindAll(
-                                {
-                                    where: { exercise: { id: exercise.id } },
-                                    order: { index: 'ASC' },
-                                }
-                            )(manager)
-                        ).map((actionEntity) =>
-                            ActionWrapper.createFromEntity(
-                                actionEntity,
-                                databaseService,
-                                exercise
-                            )
+                    // eslint-disable-next-line require-atomic-updates
+                    exercise.temporaryActionHistory = (
+                        await databaseService.actionWrapperService.getFindAll({
+                            where: { exercise: { id: exercise.id } },
+                            order: { index: 'ASC' },
+                        })(manager)
+                    ).map((actionEntity) =>
+                        ActionWrapper.createFromEntity(
+                            actionEntity,
+                            databaseService,
+                            exercise
                         )
                     );
                     return exercise;
