@@ -29,12 +29,15 @@
         "class-validator": "^0.13.2",
         "immer": "^9.0.12",
         "lodash-es": "^4.17.21",
+        "rbush": "^3.0.1",
+        "rbush-knn": "^3.0.1",
         "reflect-metadata": "^0.1.13",
         "uuid": "^8.3.2"
     },
     "devDependencies": {
         "@types/jest": "^27.4.1",
         "@types/lodash-es": "^4.17.6",
+        "@types/rbush": "^3.0.0",
         "@types/uuid": "^8.3.4",
         "@types/validator": "^13.7.2",
         "@typescript-eslint/eslint-plugin": "5.18.0",

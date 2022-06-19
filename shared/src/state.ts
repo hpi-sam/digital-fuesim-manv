@@ -36,6 +36,7 @@ import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuidValidationOptions, uuid } from './utils';
 import { PatientCategory } from './models/patient-category';
+import { PatientsDataStructure } from './models/patients-datastructure';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -99,6 +100,9 @@ export class ExerciseState {
     @ValidateNested()
     @Type(() => StatisticsEntry)
     public readonly statistics: readonly StatisticsEntry[] = [];
+    @ValidateNested()
+    @Type(() => PatientsDataStructure)
+    public readonly patientsDataStructure = PatientsDataStructure.create();
     @ValidateNested()
     @Type(() => ExerciseConfiguration)
     public readonly configuration = ExerciseConfiguration.create();
