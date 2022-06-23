@@ -12,15 +12,16 @@ interface CatersFor {
     green: number;
 }
 
-/**
- * Maximum distance to treat the exact nearest patient
- */
-const specificThreshold = 0.5;
-
-/**
- * Maximum distance to treat any patient
- */
-const generalThreshold = 5;
+export const patientTreatmentThresholds = {
+    /**
+     * Maximum distance to treat the exact nearest patient
+     */
+    specificThreshold: 0.5,
+    /**
+     * Maximum distance to treat any patient
+     */
+    generalThreshold: 5,
+};
 
 /**
  * Tries to assign the {@link patient} to {@link catering} (side effect).
@@ -149,7 +150,10 @@ function calculateCatering(
             distance: calculateDistance(catering.position!, patient.position!),
             patient,
         }))
-        .filter(({ distance }) => distance <= generalThreshold)
+        .filter(
+            ({ distance }) =>
+                distance <= patientTreatmentThresholds.generalThreshold
+        )
         .sort(
             ({ distance: distanceA }, { distance: distanceB }) =>
                 distanceA - distanceB
@@ -158,7 +162,7 @@ function calculateCatering(
         // No patients in the radius.
         return;
     }
-    if (distances[0].distance <= specificThreshold) {
+    if (distances[0].distance <= patientTreatmentThresholds.specificThreshold) {
         caterFor(
             catering,
             catersFor,
