@@ -81,6 +81,7 @@ describe('validateExerciseAction', () => {
                         x: '0' as unknown as number,
                         y: 0,
                     },
+                    isAutomaticPatientField: false,
                 },
             })
         ).not.toEqual([]);
@@ -122,6 +123,7 @@ describe('validateExerciseAction', () => {
                         y: 0,
                         z: 0,
                     } as unknown as Position,
+                    isAutomaticPatientField: false,
                 },
             })
         ).not.toEqual([]);
