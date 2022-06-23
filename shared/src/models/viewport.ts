@@ -23,7 +23,7 @@ export class Viewport {
     public readonly name: string;
 
     @IsBoolean()
-    public readonly isAutomaticPatientField: boolean = false;
+    public readonly isAutomaticPatientField: boolean;
 
     /**
      * @param position top-left position
@@ -33,7 +33,7 @@ export class Viewport {
         position: Position,
         size: Size,
         name: string,
-        isAutomaticPatientField = true
+        isAutomaticPatientField: boolean
     ) {
         this.position = position;
         this.size = size;

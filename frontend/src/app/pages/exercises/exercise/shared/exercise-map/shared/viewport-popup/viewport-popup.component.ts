@@ -52,4 +52,21 @@ export class ViewportPopupComponent implements OnInit {
             this.closePopup.emit();
         }
     }
+
+    public async changeAutomation(currentStatus: boolean) {
+        const response = await this.apiService.proposeAction({
+            type: '[Viewport] Change automation',
+            viewportId: this.viewportId,
+            activateAutomation: currentStatus,
+        });
+        if (response.success) {
+            this.messageService.postMessage({
+                title: currentStatus
+                    ? 'Ansicht wird nun automatisiert'
+                    : 'Ansicht wird nicht mehr automatisiert',
+                color: 'success',
+            });
+            this.closePopup.emit();
+        }
+    }
 }

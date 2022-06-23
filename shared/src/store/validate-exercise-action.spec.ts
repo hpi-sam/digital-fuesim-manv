@@ -23,7 +23,8 @@ describe('validateExerciseAction', () => {
                         height: 1,
                         width: 1,
                     },
-                    ''
+                    '',
+                    false
                 ),
             })
         ).toEqual([]);
