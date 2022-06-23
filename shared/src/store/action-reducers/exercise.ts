@@ -19,6 +19,7 @@ import { uuid } from '../../utils';
 import { PatientUpdate } from '../../utils/patient-updates';
 import type { Action, ActionReducer } from '../action-reducer';
 import { letElementArrive } from './transfer';
+import { automaticPatientFields } from './utils/automatic-patient-fields/automatic-patient-fields';
 import { calculateTreatments } from './utils/calculate-treatments';
 
 export class PauseExerciseAction implements Action {
@@ -94,8 +95,16 @@ export namespace ExerciseActionReducers {
             draftState,
             { patientUpdates, refreshTreatments, tickInterval }
         ) => {
+            // eslint-disable-next-line no-console
+            console.time('tick');
             // Refresh the current time
             draftState.currentTime += tickInterval;
+            // Refresh automated viewports
+            // eslint-disable-next-line no-console
+            console.time('auto');
+            automaticPatientFields(draftState);
+            // eslint-disable-next-line no-console
+            console.timeEnd('auto');
             // Refresh patient status
             patientUpdates.forEach((patientUpdate) => {
                 const currentPatient = draftState.patients[patientUpdate.id];
@@ -106,9 +115,10 @@ export namespace ExerciseActionReducers {
                 currentPatient.realStatus = getStatus(currentPatient.health);
             });
             // Refresh treatments
-            if (refreshTreatments) {
-                calculateTreatments(draftState);
-            }
+            // TODO: Re-enable this condition!
+            // if (refreshTreatments) {
+            calculateTreatments(draftState);
+            // }
             // Refresh transfers
             refreshTransfer(draftState, 'vehicles', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);
@@ -118,6 +128,8 @@ export namespace ExerciseActionReducers {
             if (draftState.currentTime % (10 * tickInterval) === 0) {
                 updateStatistics(draftState);
             }
+            // eslint-disable-next-line no-console
+            console.timeEnd('tick');
             return draftState;
         },
         rights: 'server',
