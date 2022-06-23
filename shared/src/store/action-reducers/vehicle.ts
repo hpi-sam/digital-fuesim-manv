@@ -180,58 +180,8 @@ export namespace VehicleActionReducers {
 
     export const unloadVehicle: ActionReducer<UnloadVehicleAction> = {
         action: UnloadVehicleAction,
-        reducer: (draftState, { vehicleId }) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
-            const unloadPosition = vehicle.position;
-            if (!unloadPosition) {
-                throw new ReducerError(
-                    `Vehicle with id ${vehicleId} is currently in transfer`
-                );
-            }
-            const materials = Object.keys(vehicle.materialIds).map(
-                (materialId) => draftState.materials[materialId]
-            );
-            const personnel = Object.keys(vehicle.personnelIds).map(
-                (personnelId) => draftState.personnel[personnelId]
-            );
-            const patients = Object.keys(vehicle.patientIds).map(
-                (patientId) => draftState.patients[patientId]
-            );
-            const vehicleWidthInPosition = imageSizeToPosition(
-                vehicle.image.aspectRatio * vehicle.image.height
-            );
-            const space =
-                vehicleWidthInPosition /
-                (personnel.length + materials.length + patients.length + 1);
-            let x = unloadPosition.x - vehicleWidthInPosition / 2;
-            for (const patient of patients) {
-                x += space;
-                patient.position ??= {
-                    x,
-                    y: unloadPosition.y,
-                };
-                delete vehicle.patientIds[patient.id];
-            }
-            for (const person of personnel) {
-                x += space;
-                if (!Personnel.isInVehicle(person)) {
-                    continue;
-                }
-                person.position ??= {
-                    x,
-                    y: unloadPosition.y,
-                };
-            }
-            for (const currentMaterial of materials) {
-                x += space;
-                currentMaterial.position ??= {
-                    x,
-                    y: unloadPosition.y,
-                };
-            }
-            calculateTreatments(draftState);
-            return draftState;
-        },
+        reducer: (draftState, { vehicleId }) =>
+            unloadVehicleReducer(draftState, vehicleId),
         rights: 'participant',
     };
 
@@ -306,4 +256,60 @@ export namespace VehicleActionReducers {
         },
         rights: 'participant',
     };
+}
+
+export function unloadVehicleReducer(
+    state: Mutable<ExerciseState>,
+    vehicleId: UUID
+): Mutable<ExerciseState> {
+    const vehicle = getElement(state, 'vehicles', vehicleId);
+    const unloadPosition = vehicle.position;
+    if (!unloadPosition) {
+        throw new ReducerError(
+            `Vehicle with id ${vehicleId} is currently in transfer`
+        );
+    }
+    const materials = Object.keys(vehicle.materialIds).map(
+        (materialId) => state.materials[materialId]
+    );
+    const personnel = Object.keys(vehicle.personnelIds).map(
+        (personnelId) => state.personnel[personnelId]
+    );
+    const patients = Object.keys(vehicle.patientIds).map(
+        (patientId) => state.patients[patientId]
+    );
+    const vehicleWidthInPosition = imageSizeToPosition(
+        vehicle.image.aspectRatio * vehicle.image.height
+    );
+    const space =
+        vehicleWidthInPosition /
+        (personnel.length + materials.length + patients.length + 1);
+    let x = unloadPosition.x - vehicleWidthInPosition / 2;
+    for (const patient of patients) {
+        x += space;
+        patient.position ??= {
+            x,
+            y: unloadPosition.y,
+        };
+        delete vehicle.patientIds[patient.id];
+    }
+    for (const person of personnel) {
+        x += space;
+        if (!Personnel.isInVehicle(person)) {
+            continue;
+        }
+        person.position ??= {
+            x,
+            y: unloadPosition.y,
+        };
+    }
+    for (const currentMaterial of materials) {
+        x += space;
+        currentMaterial.position ??= {
+            x,
+            y: unloadPosition.y,
+        };
+    }
+    calculateTreatments(state);
+    return state;
 }

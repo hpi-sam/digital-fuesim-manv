@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { getCreate, Position, Size } from './utils';
 import type { ImageProperties } from './utils';
@@ -22,14 +22,23 @@ export class Viewport {
     @IsString()
     public readonly name: string;
 
+    @IsBoolean()
+    public readonly isAutomaticPatientField: boolean = false;
+
     /**
      * @param position top-left position
      * @deprecated Use {@link create} instead
      */
-    constructor(position: Position, size: Size, name: string) {
+    constructor(
+        position: Position,
+        size: Size,
+        name: string,
+        isAutomaticPatientField = true
+    ) {
         this.position = position;
         this.size = size;
         this.name = name;
+        this.isAutomaticPatientField = isAutomaticPatientField;
     }
 
     static readonly create = getCreate(this);
