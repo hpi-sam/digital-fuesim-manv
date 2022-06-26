@@ -1,7 +1,8 @@
 import { createSelector } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { ExerciseState, Viewport } from 'digital-fuesim-manv-shared';
+import { ExerciseState, Patient, Viewport } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
+import type { ViewportMetadata } from 'src/app/pages/exercises/exercise/shared/exercise-map/shared/viewport-popup/viewport-popup.component';
 import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
@@ -184,6 +185,86 @@ export function getSelectReachableHospitals(transferPointId: UUID) {
             Object.keys(transferPoint.reachableHospitals).map(
                 (id) => hospitals[id]
             )
+    );
+}
+
+export function getSelectViewportMetadata(viewportId: UUID) {
+    return createSelector(
+        getSelectViewport(viewportId),
+        selectPatients,
+        selectPersonnel,
+        selectMaterials,
+        selectVehicles,
+        selectConfiguration,
+        (
+            viewport,
+            patients,
+            personnel,
+            materials,
+            vehicles,
+            configuration
+        ): ViewportMetadata => {
+            const patientsInViewport = Object.values(patients).filter(
+                (patient) =>
+                    patient.position &&
+                    Viewport.isInViewport(viewport, patient.position)
+            );
+            const personnelInViewport = Object.values(personnel).filter(
+                (thisPersonnel) =>
+                    thisPersonnel.position &&
+                    Viewport.isInViewport(viewport, thisPersonnel.position)
+            );
+            const materialsInViewport = Object.values(materials).filter(
+                (material) =>
+                    material.position &&
+                    Viewport.isInViewport(viewport, material.position)
+            );
+            const vehiclesInViewport = Object.values(vehicles).filter(
+                (vehicle) =>
+                    vehicle.position &&
+                    Viewport.isInViewport(viewport, vehicle.position)
+            );
+
+            const metadata: ViewportMetadata = {
+                materials: 0,
+                patients: {
+                    black: { nonWalkable: 0, walkable: 0 },
+                    blue: { nonWalkable: 0, walkable: 0 },
+                    green: { nonWalkable: 0, walkable: 0 },
+                    red: { nonWalkable: 0, walkable: 0 },
+                    white: { nonWalkable: 0, walkable: 0 },
+                    yellow: { nonWalkable: 0, walkable: 0 },
+                },
+                personnel: { gf: 0, notarzt: 0, notSan: 0, rettSan: 0, san: 0 },
+                vehicles: {},
+            };
+            patientsInViewport.forEach(
+                (patient) =>
+                    metadata.patients[
+                        Patient.getVisibleStatus(
+                            patient,
+                            configuration.pretriageEnabled,
+                            configuration.bluePatientsEnabled
+                        )
+                    ][
+                        patient.pretriageInformation.isWalkable
+                            ? 'walkable'
+                            : 'nonWalkable'
+                    ]++
+            );
+            personnelInViewport.forEach(
+                (thisPersonnel) =>
+                    metadata.personnel[thisPersonnel.personnelType]++
+            );
+            materialsInViewport.forEach(() => metadata.materials++);
+            vehiclesInViewport.forEach((vehicle) => {
+                if (!metadata.vehicles[vehicle.vehicleType]) {
+                    metadata.vehicles[vehicle.vehicleType] = 0;
+                }
+                metadata.vehicles[vehicle.vehicleType]++;
+            });
+            return metadata;
+        }
     );
 }
 

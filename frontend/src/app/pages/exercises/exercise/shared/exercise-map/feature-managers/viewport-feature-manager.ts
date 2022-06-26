@@ -132,7 +132,12 @@ export class ViewportFeatureManager
         feature: Feature<any>
     ): void {
         super.onFeatureClicked(event, feature);
-        if (this.apiService.getCurrentRole() !== 'trainer') {
+        const viewport = this.getElementFromFeature(feature)!.value;
+        if (
+            this.apiService.getCurrentRole() !== 'trainer' &&
+            // Allow participants to see popup of automated viewports
+            !viewport.isAutomaticPatientField
+        ) {
             return;
         }
         const zoom = this.olMap.getView().getZoom()!;
