@@ -1,7 +1,8 @@
 import { createSelector } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { ExerciseState, Viewport } from 'digital-fuesim-manv-shared';
+import { ExerciseState, Patient, Viewport } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
+import type { ViewportMetadata } from 'src/app/pages/exercises/exercise/shared/exercise-map/shared/viewport-popup/viewport-popup.component';
 import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
@@ -88,11 +89,29 @@ export function getSelectVisibleElements<
         [Id in keyof Elements]: WithPosition<Elements[Id]>;
     } = { [Id in keyof Elements]: WithPosition<Elements[Id]> }
 >(key: Key, clientId?: UUID | null) {
-    return (state: AppState): ElementsWithPosition => {
-        const viewport = clientId
-            ? getSelectRestrictedViewport(clientId)(state)
-            : undefined;
-        return pickBy(
+    return (state: AppState): ElementsWithPosition =>
+        getSelectElementsInViewport(
+            key,
+            clientId ? getSelectRestrictedViewport(clientId)(state) : undefined
+        )(state) as ElementsWithPosition;
+}
+/**
+ * @returns a selector that returns a dictionary of all elements that have a position and are in the specified viewport
+ */
+export function getSelectElementsInViewport<
+    Key extends
+        | 'materials'
+        | 'patients'
+        | 'personnel'
+        | 'transferPoints'
+        | 'vehicles',
+    Elements extends AppState['exercise'][Key] = AppState['exercise'][Key],
+    ElementsWithPosition extends {
+        [Id in keyof Elements]: WithPosition<Elements[Id]>;
+    } = { [Id in keyof Elements]: WithPosition<Elements[Id]> }
+>(key: Key, viewport?: Viewport | null) {
+    return (state: AppState): ElementsWithPosition =>
+        pickBy(
             state.exercise[key],
             (element) =>
                 // is not in transfer
@@ -100,7 +119,6 @@ export function getSelectVisibleElements<
                 // no viewport restriction
                 (!viewport || Viewport.isInViewport(viewport, element.position))
         ) as ElementsWithPosition;
-    };
 }
 
 export const selectClients = (state: AppState) => state.exercise.clients;
@@ -184,6 +202,68 @@ export function getSelectReachableHospitals(transferPointId: UUID) {
             Object.keys(transferPoint.reachableHospitals).map(
                 (id) => hospitals[id]
             )
+    );
+}
+
+export function getSelectViewportMetadata(viewportId: UUID) {
+    return createSelector(
+        getSelectViewport(viewportId),
+        selectConfiguration,
+        (state: AppState) => state,
+        (viewport, configuration, state): ViewportMetadata => {
+            const patientsInViewport = Object.values(
+                getSelectElementsInViewport('patients', viewport)(state)
+            );
+            const personnelInViewport = Object.values(
+                getSelectElementsInViewport('personnel', viewport)(state)
+            );
+            const materialsInViewport = Object.values(
+                getSelectElementsInViewport('materials', viewport)(state)
+            );
+            const vehiclesInViewport = Object.values(
+                getSelectElementsInViewport('vehicles', viewport)(state)
+            );
+
+            const metadata: ViewportMetadata = {
+                materials: 0,
+                patients: {
+                    black: { nonWalkable: 0, walkable: 0 },
+                    blue: { nonWalkable: 0, walkable: 0 },
+                    green: { nonWalkable: 0, walkable: 0 },
+                    red: { nonWalkable: 0, walkable: 0 },
+                    white: { nonWalkable: 0, walkable: 0 },
+                    yellow: { nonWalkable: 0, walkable: 0 },
+                },
+                personnel: { gf: 0, notarzt: 0, notSan: 0, rettSan: 0, san: 0 },
+                vehicles: {},
+            };
+            patientsInViewport.forEach(
+                (patient) =>
+                    metadata.patients[
+                        Patient.getVisibleStatus(
+                            patient,
+                            configuration.pretriageEnabled,
+                            configuration.bluePatientsEnabled
+                        )
+                    ][
+                        patient.pretriageInformation.isWalkable
+                            ? 'walkable'
+                            : 'nonWalkable'
+                    ]++
+            );
+            personnelInViewport.forEach(
+                (thisPersonnel) =>
+                    metadata.personnel[thisPersonnel.personnelType]++
+            );
+            materialsInViewport.forEach(() => metadata.materials++);
+            vehiclesInViewport.forEach((vehicle) => {
+                if (!metadata.vehicles[vehicle.vehicleType]) {
+                    metadata.vehicles[vehicle.vehicleType] = 0;
+                }
+                metadata.vehicles[vehicle.vehicleType]++;
+            });
+            return metadata;
+        }
     );
 }
 

@@ -23,7 +23,7 @@ import { unloadAndPositionVehicles } from './vehicles';
 
 export function automaticPatientFields(state: Mutable<ExerciseState>): void {
     Object.values(state.viewports)
-        .filter((viewport) => viewport.isAutomaticPatientField)
+        .filter((viewport) => viewport.isAutomatedPatientField)
         .forEach((viewport) => automaticPatientField(state, viewport));
 }
 

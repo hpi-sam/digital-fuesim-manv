@@ -179,7 +179,8 @@ export class DragElementService {
                                 height,
                                 width,
                             },
-                            'Einsatzabschnitt'
+                            'Einsatzabschnitt',
+                            false
                         ),
                     },
                     true

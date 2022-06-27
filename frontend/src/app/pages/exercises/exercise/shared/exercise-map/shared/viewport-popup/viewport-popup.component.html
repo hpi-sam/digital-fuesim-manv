@@ -7,29 +7,216 @@
             class="btn-close float-end"
         ></button>
     </h5>
-    <div class="popover-body" style="width: 350px; height: 300px">
-        <ng-container *ngIf="(apiService.currentRole$ | async) === 'trainer'">
-            <div class="form-group pb-3">
-                <label class="form-label">Name</label>
-                <input
-                    #nameInput="ngModel"
-                    [(ngModel)]="name"
-                    required
-                    type="text"
-                    class="form-control"
-                />
-                <app-display-validation
-                    [ngModelInput]="nameInput"
-                ></app-display-validation>
-            </div>
-
-            <button
-                [disabled]="nameInput.invalid"
-                (click)="saveName()"
-                class="btn btn-warning"
+    <div class="popover-body" style="width: 350px">
+        <nav #nav="ngbNav" ngbNav [(activeId)]="activeNavId" class="nav-tabs">
+            <ng-container
+                *ngIf="(apiService.currentRole$ | async) === 'trainer'"
             >
-                Speichern
-            </button>
-        </ng-container>
+                <ng-container ngbNavItem="settings">
+                    <a ngbNavLink>Einstellungen</a>
+                    <ng-template ngbNavContent>
+                        <div class="card">
+                            <div class="card-header">
+                                Allgemeine Einstellungen
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group pb-3">
+                                    <label class="form-label">Name</label>
+                                    <input
+                                        #nameInput="ngModel"
+                                        [(ngModel)]="name"
+                                        required
+                                        type="text"
+                                        class="form-control"
+                                    />
+                                    <app-display-validation
+                                        [ngModelInput]="nameInput"
+                                    ></app-display-validation>
+                                </div>
+
+                                <button
+                                    [disabled]="nameInput.invalid"
+                                    (click)="saveName()"
+                                    class="btn btn-warning"
+                                >
+                                    Speichern
+                                </button>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="card">
+                            <div class="card-header">Automatisierung</div>
+                            <div class="card-body">
+                                Diese Ansicht automatisieren
+                                <div class="form-switch">
+                                    <input
+                                        [ngModel]="
+                                            viewport.isAutomatedPatientField
+                                        "
+                                        (ngModelChange)="
+                                            changeAutomation($event)
+                                        "
+                                        class="form-check-input"
+                                        type="checkbox"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ng-container>
+            </ng-container>
+            <ng-container ngbNavItem="info">
+                <a ngbNavLink>Informationen</a>
+                <ng-template ngbNavContent
+                    ><ng-container
+                        *ngIf="
+                            viewport.isAutomatedPatientField &&
+                            (viewportMetadata$ | async) as metadata
+                        "
+                    >
+                        <div class="card">
+                            <div class="card-header">Patienten</div>
+                            <div class="card-body">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                                Sichtungskategorie
+                                            </th>
+                                            <th scope="col">Gehfähig</th>
+                                            <th scope="col">Nicht gehfähig</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- TODO: Sortieren -->
+                                        <ng-container
+                                            *ngFor="
+                                                let category of metadata.patients
+                                                    | keyvalue;
+                                                trackBy: 'key'
+                                                    | appTrackByProperty
+                                            "
+                                        >
+                                            <tr
+                                                *ngIf="
+                                                    category.value.walkable +
+                                                        category.value
+                                                            .nonWalkable >
+                                                    0
+                                                "
+                                            >
+                                                <th scope="row">
+                                                    <span
+                                                        *ngIf="
+                                                            category.key as displayedStatus
+                                                        "
+                                                        [ngStyle]="{
+                                                            'background-color':
+                                                                displayedStatus
+                                                        }"
+                                                        [class.text-dark]="
+                                                            displayedStatus ===
+                                                                'yellow' ||
+                                                            displayedStatus ===
+                                                                'white'
+                                                        "
+                                                        class="badge rounded-pill font-monospace"
+                                                    >
+                                                        {{
+                                                            statusNames[
+                                                                displayedStatus
+                                                            ]
+                                                        }}
+                                                    </span>
+                                                </th>
+                                                <td>
+                                                    {{
+                                                        category.value.walkable
+                                                    }}
+                                                </td>
+                                                <td>
+                                                    {{
+                                                        category.value
+                                                            .nonWalkable
+                                                    }}
+                                                </td>
+                                            </tr></ng-container
+                                        >
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="card">
+                            <div class="card-header">Rettungsmittel</div>
+                            <div class="card-body">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Typ</th>
+                                            <th scope="col">Anzahl</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- TODO: Sortieren -->
+                                        <ng-container
+                                            *ngFor="
+                                                let category of metadata.personnel
+                                                    | keyvalue;
+                                                trackBy: 'key'
+                                                    | appTrackByProperty
+                                            "
+                                        >
+                                            <tr *ngIf="category.value > 0">
+                                                <th scope="row">
+                                                    {{
+                                                        personnelTypeNames[
+                                                            category.key
+                                                        ]
+                                                    }}
+                                                </th>
+                                                <td>
+                                                    {{ category.value }}
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                        <!-- TODO: Add some indication that this is a different section -->
+                                        <ng-container
+                                            *ngFor="
+                                                let category of metadata.vehicles
+                                                    | keyvalue;
+                                                trackBy: 'key'
+                                                    | appTrackByProperty
+                                            "
+                                        >
+                                            <tr *ngIf="category.value > 0">
+                                                <th scope="row">
+                                                    {{ category.key }}
+                                                </th>
+                                                <td>
+                                                    {{ category.value }}
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                        <tr *ngIf="metadata.materials > 0">
+                                            <th scope="row">Material</th>
+                                            <td>{{ metadata.materials }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <div
+                        *ngIf="!viewport.isAutomatedPatientField"
+                        class="text-muted"
+                    >
+                        Diese Ansicht wird zur Zeit nicht automatisiert.
+                    </div>
+                </ng-template>
+            </ng-container>
+        </nav>
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
     </div>
 </ng-container>

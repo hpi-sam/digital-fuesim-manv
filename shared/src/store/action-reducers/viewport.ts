@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Viewport } from '../../models';
 import { Position, Size } from '../../models/utils';
 import { uuidValidationOptions, UUID } from '../../utils';
@@ -55,6 +55,17 @@ export class RenameViewportAction implements Action {
     public readonly newName!: string;
 }
 
+export class ChangeViewportAutomation implements Action {
+    @IsString()
+    public readonly type = '[Viewport] Change automation';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly viewportId!: UUID;
+
+    @IsBoolean()
+    public readonly activateAutomation!: boolean;
+}
+
 export namespace ViewportActionReducers {
     export const addViewport: ActionReducer<AddViewportAction> = {
         action: AddViewportAction,
@@ -105,4 +116,19 @@ export namespace ViewportActionReducers {
         },
         rights: 'trainer',
     };
+
+    export const changeViewportAutomation: ActionReducer<ChangeViewportAutomation> =
+        {
+            action: ChangeViewportAutomation,
+            reducer: (draftState, { viewportId, activateAutomation }) => {
+                const viewport = getElement(
+                    draftState,
+                    'viewports',
+                    viewportId
+                );
+                viewport.isAutomatedPatientField = activateAutomation;
+                return draftState;
+            },
+            rights: 'trainer',
+        };
 }
