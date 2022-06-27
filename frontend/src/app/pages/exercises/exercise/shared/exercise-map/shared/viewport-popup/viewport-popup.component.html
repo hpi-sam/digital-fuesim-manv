@@ -90,7 +90,7 @@
                                     </thead>
                                     <tbody>
                                         <!-- TODO: Sortieren -->
-                                        <tr
+                                        <ng-container
                                             *ngFor="
                                                 let category of metadata.patients
                                                     | keyvalue;
@@ -98,37 +98,51 @@
                                                     | appTrackByProperty
                                             "
                                         >
-                                            <th scope="row">
-                                                <span
-                                                    *ngIf="
-                                                        category.key as displayedStatus
-                                                    "
-                                                    [ngStyle]="{
-                                                        'background-color':
-                                                            displayedStatus
-                                                    }"
-                                                    [class.text-dark]="
-                                                        displayedStatus ===
-                                                            'yellow' ||
-                                                        displayedStatus ===
-                                                            'white'
-                                                    "
-                                                    class="badge rounded-pill font-monospace"
-                                                >
+                                            <tr
+                                                *ngIf="
+                                                    category.value.walkable +
+                                                        category.value
+                                                            .nonWalkable >
+                                                    0
+                                                "
+                                            >
+                                                <th scope="row">
+                                                    <span
+                                                        *ngIf="
+                                                            category.key as displayedStatus
+                                                        "
+                                                        [ngStyle]="{
+                                                            'background-color':
+                                                                displayedStatus
+                                                        }"
+                                                        [class.text-dark]="
+                                                            displayedStatus ===
+                                                                'yellow' ||
+                                                            displayedStatus ===
+                                                                'white'
+                                                        "
+                                                        class="badge rounded-pill font-monospace"
+                                                    >
+                                                        {{
+                                                            statusNames[
+                                                                displayedStatus
+                                                            ]
+                                                        }}
+                                                    </span>
+                                                </th>
+                                                <td>
                                                     {{
-                                                        statusNames[
-                                                            displayedStatus
-                                                        ]
+                                                        category.value.walkable
                                                     }}
-                                                </span>
-                                            </th>
-                                            <td>
-                                                {{ category.value.walkable }}
-                                            </td>
-                                            <td>
-                                                {{ category.value.nonWalkable }}
-                                            </td>
-                                        </tr>
+                                                </td>
+                                                <td>
+                                                    {{
+                                                        category.value
+                                                            .nonWalkable
+                                                    }}
+                                                </td>
+                                            </tr></ng-container
+                                        >
                                     </tbody>
                                 </table>
                             </div>
@@ -146,7 +160,7 @@
                                     </thead>
                                     <tbody>
                                         <!-- TODO: Sortieren -->
-                                        <tr
+                                        <ng-container
                                             *ngFor="
                                                 let category of metadata.personnel
                                                     | keyvalue;
@@ -154,19 +168,21 @@
                                                     | appTrackByProperty
                                             "
                                         >
-                                            <th scope="row">
-                                                {{
-                                                    personnelTypeNames[
-                                                        category.key
-                                                    ]
-                                                }}
-                                            </th>
-                                            <td>
-                                                {{ category.value }}
-                                            </td>
-                                        </tr>
+                                            <tr *ngIf="category.value > 0">
+                                                <th scope="row">
+                                                    {{
+                                                        personnelTypeNames[
+                                                            category.key
+                                                        ]
+                                                    }}
+                                                </th>
+                                                <td>
+                                                    {{ category.value }}
+                                                </td>
+                                            </tr>
+                                        </ng-container>
                                         <!-- TODO: Add some indication that this is a different section -->
-                                        <tr
+                                        <ng-container
                                             *ngFor="
                                                 let category of metadata.vehicles
                                                     | keyvalue;
@@ -174,14 +190,16 @@
                                                     | appTrackByProperty
                                             "
                                         >
-                                            <th scope="row">
-                                                {{ category.key }}
-                                            </th>
-                                            <td>
-                                                {{ category.value }}
-                                            </td>
-                                        </tr>
-                                        <tr>
+                                            <tr *ngIf="category.value > 0">
+                                                <th scope="row">
+                                                    {{ category.key }}
+                                                </th>
+                                                <td>
+                                                    {{ category.value }}
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                        <tr *ngIf="metadata.materials > 0">
                                             <th scope="row">Material</th>
                                             <td>{{ metadata.materials }}</td>
                                         </tr>
