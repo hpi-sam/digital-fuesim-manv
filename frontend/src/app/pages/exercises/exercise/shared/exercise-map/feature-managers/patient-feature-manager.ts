@@ -51,7 +51,7 @@ export class PatientFeatureManager extends ElementFeatureManager<
                     normalZoom,
             };
         },
-        0.1,
+        0.05,
         'top'
     );
 

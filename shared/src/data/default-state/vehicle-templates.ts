@@ -31,6 +31,21 @@ const rthImage: ImageProperties = {
     aspectRatio: 310 / 130,
 };
 
+const carrinyUnitHeight = 210;
+const carryingUnitAspectRatio = 1;
+
+const carryingUnitImage: ImageProperties = {
+    url: '/assets/carrying-unit.svg',
+    height: carrinyUnitHeight,
+    aspectRatio: carryingUnitAspectRatio,
+};
+
+const carryingUnitWithPatientImage: ImageProperties = {
+    url: '/assets/carrying-unit-with-patient.svg',
+    height: carrinyUnitHeight,
+    aspectRatio: carryingUnitAspectRatio,
+};
+
 const rtwVehicleTemplate = VehicleTemplate.create(
     'RTW',
     `RTW-???`,
@@ -153,10 +168,27 @@ const rthVehicleTemplate = VehicleTemplate.create(
     ]
 );
 
+const carryingUnitTemplate = VehicleTemplate.create(
+    'Tragetrupp',
+    `Tragetrupp-???`,
+    carryingUnitImage,
+    1,
+    [],
+    []
+);
+
 export const defaultVehicleTemplates: readonly VehicleTemplate[] = [
     rtwVehicleTemplate,
     ktwVehicleTemplate,
     gwSanVehicleTemplate,
     nefVehicleTemplate,
+    carryingUnitTemplate,
     rthVehicleTemplate,
 ];
+
+export const carryingUnitImagesMap: {
+    [key: string]: ImageProperties;
+} = {
+    default: carryingUnitImage,
+    withPatient: carryingUnitWithPatientImage,
+};

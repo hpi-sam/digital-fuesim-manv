@@ -10,6 +10,7 @@ import {
     postExercise,
 } from './http-handler/api/exercise';
 import { getHealth } from './http-handler/api/health';
+import { secureHttp } from './http-handler/secure-http';
 
 export class ExerciseHttpServer {
     public readonly httpServer: HttpServer;
@@ -26,35 +27,52 @@ export class ExerciseHttpServer {
         // This endpoint is used to determine whether the API itself is running.
         // It should be independent from any other services that may or may not be running.
         // This is used for the Cypress CI.
-        app.get('/api/health', (req, res) => {
-            const response = getHealth();
-            res.statusCode = response.statusCode;
-            res.send(response.body);
-        });
+        app.get(
+            '/api/health',
+            secureHttp((req, res) => {
+                const response = getHealth();
+                res.statusCode = response.statusCode;
+                res.send(response.body);
+            })
+        );
 
-        app.post('/api/exercise', async (req, res) => {
-            const response = await postExercise(databaseService, req.body);
-            res.statusCode = response.statusCode;
-            res.send(response.body);
-        });
+        app.post(
+            '/api/exercise',
+            secureHttp(async (req, res) => {
+                const response = await postExercise(databaseService, req.body);
+                res.statusCode = response.statusCode;
+                res.send(response.body);
+            })
+        );
 
-        app.get('/api/exercise/:exerciseId', (req, res) => {
-            const response = getExercise(req.params.exerciseId);
-            res.statusCode = response.statusCode;
-            res.send(response.body);
-        });
+        app.get(
+            '/api/exercise/:exerciseId',
+            secureHttp((req, res) => {
+                const response = getExercise(req.params.exerciseId);
+                res.statusCode = response.statusCode;
+                res.send(response.body);
+            })
+        );
 
-        app.delete('/api/exercise/:exerciseId', async (req, res) => {
-            const response = await deleteExercise(req.params.exerciseId);
-            res.statusCode = response.statusCode;
-            res.send(response.body);
-        });
+        app.delete(
+            '/api/exercise/:exerciseId',
+            secureHttp(async (req, res) => {
+                const response = await deleteExercise(req.params.exerciseId);
+                res.statusCode = response.statusCode;
+                res.send(response.body);
+            })
+        );
 
-        app.get('/api/exercise/:exerciseId/history', async (req, res) => {
-            const response = await getExerciseHistory(req.params.exerciseId);
-            res.statusCode = response.statusCode;
-            res.send(response.body);
-        });
+        app.get(
+            '/api/exercise/:exerciseId/history',
+            secureHttp(async (req, res) => {
+                const response = await getExerciseHistory(
+                    req.params.exerciseId
+                );
+                res.statusCode = response.statusCode;
+                res.send(response.body);
+            })
+        );
 
         this.httpServer = app.listen(port);
     }

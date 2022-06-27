@@ -229,6 +229,12 @@ export namespace VehicleActionReducers {
                     y: unloadPosition.y,
                 };
             }
+            if (
+                vehicle.vehicleType === 'Tragetrupp' &&
+                Object.keys(vehicle.patientIds).length === 0
+            ) {
+                vehicle.image = draftState.carrinyUnitImagesTemplates.default;
+            }
             calculateTreatments(draftState);
             return draftState;
         },
@@ -299,6 +305,14 @@ export namespace VehicleActionReducers {
                         // If a personnel is in transfer, this doesn't change that
                         draftState.personnel[personnelId].position = undefined;
                     });
+                    if (
+                        // Tragetrupp has only animation for one patient, not for multiple (right now each Tragetrupp it can only transport one patient)
+                        vehicle.vehicleType === 'Tragetrupp' &&
+                        Object.keys(vehicle.patientIds).length === 1
+                    ) {
+                        vehicle.image =
+                            draftState.carrinyUnitImagesTemplates.withPatient;
+                    }
                 }
             }
             calculateTreatments(draftState);
