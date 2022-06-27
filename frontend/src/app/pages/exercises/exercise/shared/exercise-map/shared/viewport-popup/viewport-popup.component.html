@@ -52,7 +52,7 @@
                                 <div class="form-switch">
                                     <input
                                         [ngModel]="
-                                            viewport.isAutomaticPatientField
+                                            viewport.isAutomatedPatientField
                                         "
                                         (ngModelChange)="
                                             changeAutomation($event)
@@ -71,7 +71,7 @@
                 <ng-template ngbNavContent
                     ><ng-container
                         *ngIf="
-                            viewport.isAutomaticPatientField &&
+                            viewport.isAutomatedPatientField &&
                             (viewportMetadata$ | async) as metadata
                         "
                     >
@@ -192,7 +192,7 @@
                     </ng-container>
 
                     <div
-                        *ngIf="!viewport.isAutomaticPatientField"
+                        *ngIf="!viewport.isAutomatedPatientField"
                         class="text-muted"
                     >
                         Diese Ansicht wird zur Zeit nicht automatisiert.

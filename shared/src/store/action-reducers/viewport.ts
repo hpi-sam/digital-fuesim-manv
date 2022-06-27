@@ -126,7 +126,7 @@ export namespace ViewportActionReducers {
                     'viewports',
                     viewportId
                 );
-                viewport.isAutomaticPatientField = activateAutomation;
+                viewport.isAutomatedPatientField = activateAutomation;
                 return draftState;
             },
             rights: 'trainer',

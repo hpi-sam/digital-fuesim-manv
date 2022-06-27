@@ -1,4 +1,4 @@
-import type { OnInit } from '@angular/core';
+import type { OnDestroy, OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type {
@@ -41,7 +41,7 @@ let activeNavId: 'info' | 'settings';
     templateUrl: './viewport-popup.component.html',
     styleUrls: ['./viewport-popup.component.scss'],
 })
-export class ViewportPopupComponent implements OnInit {
+export class ViewportPopupComponent implements OnInit, OnDestroy {
     // These properties are only set after OnInit
     public viewportId!: UUID;
     private readonly destroy$ = new Subject<void>();
@@ -66,6 +66,11 @@ export class ViewportPopupComponent implements OnInit {
         public readonly apiService: ApiService,
         private readonly messageService: MessageService
     ) {}
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.closePopup.emit();
+    }
 
     async ngOnInit() {
         this.viewport$ = this.store.select(getSelectViewport(this.viewportId));
@@ -97,7 +102,7 @@ export class ViewportPopupComponent implements OnInit {
                 title: 'Ansicht erfolgreich umbenannt',
                 color: 'success',
             });
-            this.destroy();
+            this.closePopup.emit();
         }
     }
 
@@ -115,22 +120,13 @@ export class ViewportPopupComponent implements OnInit {
                 color: 'success',
             });
             // TODO: What should happen here?
-            // this.destroy();
+            // this.closePopup.emit();
         }
     }
 
-    public destroy() {
-        this.destroy$.next();
-        this.closePopup.emit();
-    }
-
-    public get statusNames() {
-        // To trick Angular
-        return statusNames as { [key: string]: string };
-    }
-
-    public get personnelTypeNames() {
-        // To trick Angular
-        return personnelTypeNames as { [key: string]: string };
-    }
+    // To trick Angular
+    public readonly statusNames = statusNames as { [key: string]: string };
+    public readonly personnelTypeNames = personnelTypeNames as {
+        [key: string]: string;
+    };
 }

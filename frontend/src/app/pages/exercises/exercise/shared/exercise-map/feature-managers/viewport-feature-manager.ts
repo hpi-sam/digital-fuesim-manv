@@ -136,7 +136,7 @@ export class ViewportFeatureManager
         if (
             this.apiService.getCurrentRole() !== 'trainer' &&
             // Allow participants to see popup of automated viewports
-            !viewport.isAutomaticPatientField
+            !viewport.isAutomatedPatientField
         ) {
             return;
         }
