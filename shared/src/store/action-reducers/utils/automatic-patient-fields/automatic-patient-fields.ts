@@ -51,11 +51,6 @@ function automaticPatientField(
             )
     );
 
-    if (patientIdsToCaterFor.length === 0) {
-        // There are no patients. We have nothing to do.
-        return;
-    }
-
     unloadAndPositionVehicles(state, viewport);
 
     /**
@@ -86,6 +81,11 @@ function automaticPatientField(
         presentAvailablePersonnelIds,
         presentAvailableMaterialIds
     );
+
+    if (patientIdsToCaterFor.length === 0) {
+        // There are no patients. We have nothing to do.
+        return;
+    }
 
     // Remove personnel and material that cannot treat
     const presentAvailableCateringPersonnelIds =
