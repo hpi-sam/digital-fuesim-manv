@@ -109,48 +109,14 @@ export namespace TransferActionReducers {
         reducer: (
             draftState,
             { elementType, elementId, startPoint, targetTransferPointId }
-        ) => {
-            // check if transferPoint exists
-            getElement(draftState, 'transferPoints', targetTransferPointId);
-            const element = getElement(draftState, elementType, elementId);
-            if (element.transfer) {
-                throw new ReducerError(
-                    `Element with id ${element.id} is already in transfer`
-                );
-            }
-
-            // Get the duration
-            let duration: number;
-            if (startPoint.type === 'transferPoint') {
-                const transferStartPoint = getElement(
-                    draftState,
-                    'transferPoints',
-                    startPoint.transferPointId
-                );
-                const connection =
-                    transferStartPoint.reachableTransferPoints[
-                        targetTransferPointId
-                    ];
-                if (!connection) {
-                    throw new ReducerError(
-                        `TransferPoint with id ${targetTransferPointId} is not reachable from ${transferStartPoint.id}`
-                    );
-                }
-                duration = connection.duration;
-            } else {
-                duration = startPoint.duration;
-            }
-
-            // Set the element to transfer
-            delete element.position;
-            element.transfer = {
+        ) =>
+            addToTransferReducer(
+                draftState,
+                elementType,
+                elementId,
                 startPoint,
-                targetTransferPointId,
-                endTimeStamp: draftState.currentTime + duration,
-                isPaused: false,
-            };
-            return draftState;
-        },
+                targetTransferPointId
+            ),
         rights: 'participant',
     };
 
@@ -216,4 +182,51 @@ export namespace TransferActionReducers {
 
 function getNotInTransferError(elementId: UUID) {
     return new ReducerError(`Element with id ${elementId} is not in transfer`);
+}
+
+export function addToTransferReducer(
+    state: Mutable<ExerciseState>,
+    elementType: 'personnel' | 'vehicles',
+    elementId: UUID,
+    startPoint: StartPoint,
+    targetTransferPointId: UUID
+) {
+    // check if transferPoint exists
+    getElement(state, 'transferPoints', targetTransferPointId);
+    const element = getElement(state, elementType, elementId);
+    if (element.transfer) {
+        throw new ReducerError(
+            `Element with id ${element.id} is already in transfer`
+        );
+    }
+
+    // Get the duration
+    let duration: number;
+    if (startPoint.type === 'transferPoint') {
+        const transferStartPoint = getElement(
+            state,
+            'transferPoints',
+            startPoint.transferPointId
+        );
+        const connection =
+            transferStartPoint.reachableTransferPoints[targetTransferPointId];
+        if (!connection) {
+            throw new ReducerError(
+                `TransferPoint with id ${targetTransferPointId} is not reachable from ${transferStartPoint.id}`
+            );
+        }
+        duration = connection.duration;
+    } else {
+        duration = startPoint.duration;
+    }
+
+    // Set the element to transfer
+    delete element.position;
+    element.transfer = {
+        startPoint,
+        targetTransferPointId,
+        endTimeStamp: state.currentTime + duration,
+        isPaused: false,
+    };
+    return state;
 }

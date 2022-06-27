@@ -14,7 +14,7 @@ describe('exerciseReducer', () => {
             name: 'Test',
             size: { width: 100, height: 100 },
             position: { x: 0, y: 0 },
-            isAutomatedPatientField: false,
+            automatedPatientFieldConfig: false,
         } as const;
     }
 
