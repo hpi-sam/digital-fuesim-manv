@@ -7,8 +7,7 @@
             class="btn-close float-end"
         ></button>
     </h5>
-    <!-- TODO: Fix height -->
-    <div class="popover-body" style="width: 350px; height: 400px">
+    <div class="popover-body" style="width: 350px">
         <nav #nav="ngbNav" ngbNav [(activeId)]="activeNavId" class="nav-tabs">
             <ng-container
                 *ngIf="(apiService.currentRole$ | async) === 'trainer'"
