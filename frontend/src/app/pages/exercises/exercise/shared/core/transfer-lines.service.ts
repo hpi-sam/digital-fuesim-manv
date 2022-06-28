@@ -12,6 +12,9 @@ export class TransferLinesService {
         return this._displayTransferLines;
     }
     public set displayTransferLines(value: boolean) {
+        if (this._displayTransferLines === value) {
+            return;
+        }
         this._displayTransferLines = value;
         this.displayTransferLines$.next(value);
     }
