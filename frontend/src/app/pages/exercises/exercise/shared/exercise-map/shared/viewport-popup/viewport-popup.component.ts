@@ -108,7 +108,7 @@ export class ViewportPopupComponent implements OnInit, OnDestroy {
 
     public async changeAutomation(currentStatus: boolean) {
         const response = await this.apiService.proposeAction({
-            type: '[Viewport] Change automation',
+            type: '[Viewport] Change automation activation state',
             viewportId: this.viewportId,
             activateAutomation: currentStatus,
         });

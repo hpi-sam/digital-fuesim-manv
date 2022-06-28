@@ -165,7 +165,7 @@ function getOrderVehiclesByCatering(
             { canCaterFor: leftPersonnel },
             { canCaterFor: rightPersonnel }
         );
-        if (personnelCompare === 0) {
+        if (personnelCompare !== 0) {
             return personnelCompare;
         }
 
