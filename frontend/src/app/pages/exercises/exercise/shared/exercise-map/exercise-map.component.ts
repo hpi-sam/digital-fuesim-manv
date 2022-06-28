@@ -80,6 +80,16 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 this.fullscreenEnabled = document.fullscreenElement !== null;
             }
         );
+        this.olMapManager!.olMap.on('moveend', (event) => {
+            console.log('da');
+
+            const zoom = this.olMapManager!.olMap.getView().getZoom() ?? 0;
+            console.log(zoom);
+
+            if (this.apiService.getCurrentRole() !== 'participant') {
+                this.transferLinesService.displayTransferLines = zoom < 20;
+            }
+        });
     }
 
     public fullscreenEnabled = false;
