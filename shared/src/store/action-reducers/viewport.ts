@@ -3,9 +3,8 @@ import { IsBoolean, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Viewport } from '../../models';
 import { Position, Size } from '../../models/utils';
 import { AutomatedViewportConfig } from '../../models/utils/automated-viewport-config';
-import { uuidValidationOptions, UUID } from '../../utils';
+import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
 import { getElement } from './utils/get-element';
 
 export class AddViewportAction implements Action {
@@ -156,15 +155,10 @@ export namespace ViewportActionReducers {
                     'viewports',
                     viewportId
                 );
-                if (viewport.automatedPatientFieldConfig === undefined) {
-                    throw new ReducerError(
-                        `Viewport ${viewportId} must be automated!`
-                    );
-                }
                 // Don't allow to change the activation state here
                 const previousActivation =
                     viewport.automatedPatientFieldConfig.isAutomated;
-                viewport.automatedPatientFieldConfig = config;
+                viewport.automatedPatientFieldConfig = cloneDeepMutable(config);
                 viewport.automatedPatientFieldConfig.isAutomated =
                     previousActivation;
                 return draftState;

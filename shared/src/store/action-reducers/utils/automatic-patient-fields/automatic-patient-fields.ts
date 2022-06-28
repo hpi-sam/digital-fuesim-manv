@@ -24,7 +24,7 @@ import { unloadAndPositionVehicles } from './vehicles';
 
 export function automaticPatientFields(state: Mutable<ExerciseState>): void {
     Object.values(state.viewports)
-        .filter((viewport) => viewport.automatedPatientFieldConfig)
+        .filter((viewport) => viewport.automatedPatientFieldConfig.isAutomated)
         .forEach((viewport) => automaticPatientField(state, viewport));
 }
 
@@ -178,7 +178,7 @@ function automaticPatientField(
             state,
             viewport,
             vehicleIds,
-            presentAvailablePersonnelIds,
+            presentAvailableCateringPersonnelIds,
             patientIdsToCaterFor
         );
     } while (transferredAPatient);

@@ -74,6 +74,10 @@ export const selectTileMapProperties = (state: AppState) =>
     state.exercise.configuration.tileMapProperties;
 export const selectConfiguration = (state: AppState) =>
     state.exercise.configuration;
+
+export const getSelectAutomatedViewportConfiguration =
+    (viewportId: UUID) => (state: AppState) =>
+        state.exercise.viewports[viewportId].automatedPatientFieldConfig;
 /**
  * @returns a selector that returns a dictionary of all elements that have a position and are in the viewport restriction
  */

@@ -14,4 +14,4 @@ export * from './immutable-date';
 export { AlarmGroupVehicle } from './alarm-group-vehicle';
 export * from './patient-status-code';
 export * from './start-points';
-export { AutomatedViewportConfig } from './automated-viewport-config';
+export * from './automated-viewport-config';
