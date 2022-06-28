@@ -1,4 +1,5 @@
 import type { Viewport } from '../models';
+import { AutomatedViewportConfig } from '../models/utils/automated-viewport-config';
 import { ExerciseState } from '../state';
 import type { UUID } from '../utils';
 import { uuid } from '../utils';
@@ -14,7 +15,10 @@ describe('exerciseReducer', () => {
             name: 'Test',
             size: { width: 100, height: 100 },
             position: { x: 0, y: 0 },
-            isAutomatedPatientField: false,
+            automatedPatientFieldConfig: AutomatedViewportConfig.create(
+                'none',
+                false
+            ),
         } as const;
     }
 

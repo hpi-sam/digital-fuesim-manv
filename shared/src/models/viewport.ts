@@ -1,8 +1,9 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { getCreate, Position, Size } from './utils';
 import type { ImageProperties } from './utils';
+import { AutomatedViewportConfig } from './utils/automated-viewport-config';
 
 export class Viewport {
     @IsUUID(4, uuidValidationOptions)
@@ -22,8 +23,9 @@ export class Viewport {
     @IsString()
     public readonly name: string;
 
-    @IsBoolean()
-    public readonly isAutomatedPatientField: boolean;
+    @ValidateNested()
+    @Type(() => AutomatedViewportConfig)
+    public readonly automatedPatientFieldConfig: AutomatedViewportConfig;
 
     /**
      * @param position top-left position
@@ -33,12 +35,12 @@ export class Viewport {
         position: Position,
         size: Size,
         name: string,
-        isAutomatedPatientField: boolean
+        isAutomatedPatientField: AutomatedViewportConfig
     ) {
         this.position = position;
         this.size = size;
         this.name = name;
-        this.isAutomatedPatientField = isAutomatedPatientField;
+        this.automatedPatientFieldConfig = isAutomatedPatientField;
     }
 
     static readonly create = getCreate(this);

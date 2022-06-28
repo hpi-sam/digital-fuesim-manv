@@ -7,6 +7,7 @@ export { MapImage } from './map-image';
 export { MapImageTemplate } from './map-image-template';
 export { Material } from './material';
 export { Patient } from './patient';
+export { PatientCategory } from './patient-category';
 export * from './patient-health-state';
 export { PatientTemplate } from './patient-template';
 export { Personnel } from './personnel';

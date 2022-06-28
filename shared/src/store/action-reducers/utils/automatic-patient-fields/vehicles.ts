@@ -1,14 +1,14 @@
 import type { Vehicle } from '../../../../models';
 import { Viewport, Material, Personnel } from '../../../../models';
 import type { ExerciseState } from '../../../../state';
-import type { Mutable } from '../../../../utils';
+import type { Mutable, UUID } from '../../../../utils';
 import { unloadVehicleReducer } from '../../vehicle';
 import { calculateGrid, vehicleSpacing, offset } from './utils';
 
 export function unloadAndPositionVehicles(
     state: Mutable<ExerciseState>,
     viewport: Viewport
-): void {
+): UUID[] {
     const vehicles = Object.values(state.vehicles).filter(
         (vehicle) =>
             vehicle.position &&
@@ -17,6 +17,7 @@ export function unloadAndPositionVehicles(
     const vehiclesToUnload = getVehiclesToUnload(state, vehicles);
     positionVehicles(viewport, vehicles);
     unloadVehicles(state, vehiclesToUnload);
+    return vehicles.map((vehicle) => vehicle.id);
 }
 
 function unloadVehicles(

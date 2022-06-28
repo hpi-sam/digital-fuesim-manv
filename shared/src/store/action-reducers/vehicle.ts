@@ -190,70 +190,13 @@ export namespace VehicleActionReducers {
         reducer: (
             draftState,
             { vehicleId, elementToBeLoadedId, elementToBeLoadedType }
-        ) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
-            switch (elementToBeLoadedType) {
-                case 'material': {
-                    const material = getElement(
-                        draftState,
-                        'materials',
-                        elementToBeLoadedId
-                    );
-                    if (!vehicle.materialIds[elementToBeLoadedId]) {
-                        throw new ReducerError(
-                            `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
-                        );
-                    }
-                    material.position = undefined;
-                    break;
-                }
-                case 'personnel': {
-                    const personnel = getElement(
-                        draftState,
-                        'personnel',
-                        elementToBeLoadedId
-                    );
-                    if (personnel.transfer !== undefined) {
-                        throw new ReducerError(
-                            `Personnel with id ${elementToBeLoadedId} is currently in transfer`
-                        );
-                    }
-                    if (!vehicle.personnelIds[elementToBeLoadedId]) {
-                        throw new ReducerError(
-                            `Personnel with id ${personnel.id} is not assignable to the vehicle with id ${vehicle.id}`
-                        );
-                    }
-                    personnel.position = undefined;
-                    break;
-                }
-                case 'patient': {
-                    const patient = getElement(
-                        draftState,
-                        'patients',
-                        elementToBeLoadedId
-                    );
-                    if (
-                        Object.keys(vehicle.patientIds).length >=
-                        vehicle.patientCapacity
-                    ) {
-                        throw new ReducerError(
-                            `Vehicle with id ${vehicle.id} is already full`
-                        );
-                    }
-                    vehicle.patientIds[elementToBeLoadedId] = true;
-                    patient.position = undefined;
-                    Object.keys(vehicle.materialIds).forEach((materialId) => {
-                        draftState.materials[materialId].position = undefined;
-                    });
-                    Object.keys(vehicle.personnelIds).forEach((personnelId) => {
-                        // If a personnel is in transfer, this doesn't change that
-                        draftState.personnel[personnelId].position = undefined;
-                    });
-                }
-            }
-            calculateTreatments(draftState);
-            return draftState;
-        },
+        ) =>
+            loadVehicleReducer(
+                draftState,
+                vehicleId,
+                elementToBeLoadedId,
+                elementToBeLoadedType
+            ),
         rights: 'participant',
     };
 }
@@ -309,6 +252,72 @@ export function unloadVehicleReducer(
             x,
             y: unloadPosition.y,
         };
+    }
+    calculateTreatments(state);
+    return state;
+}
+
+export function loadVehicleReducer(
+    state: Mutable<ExerciseState>,
+    vehicleId: UUID,
+    elementToBeLoadedId: UUID,
+    elementToBeLoadedType: 'material' | 'patient' | 'personnel'
+) {
+    const vehicle = getElement(state, 'vehicles', vehicleId);
+    switch (elementToBeLoadedType) {
+        case 'material': {
+            const material = getElement(
+                state,
+                'materials',
+                elementToBeLoadedId
+            );
+            if (!vehicle.materialIds[elementToBeLoadedId]) {
+                throw new ReducerError(
+                    `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
+                );
+            }
+            material.position = undefined;
+            break;
+        }
+        case 'personnel': {
+            const personnel = getElement(
+                state,
+                'personnel',
+                elementToBeLoadedId
+            );
+            if (personnel.transfer !== undefined) {
+                throw new ReducerError(
+                    `Personnel with id ${elementToBeLoadedId} is currently in transfer`
+                );
+            }
+            if (!vehicle.personnelIds[elementToBeLoadedId]) {
+                throw new ReducerError(
+                    `Personnel with id ${personnel.id} is not assignable to the vehicle with id ${vehicle.id}`
+                );
+            }
+            personnel.position = undefined;
+            break;
+        }
+        case 'patient': {
+            const patient = getElement(state, 'patients', elementToBeLoadedId);
+            if (
+                Object.keys(vehicle.patientIds).length >=
+                vehicle.patientCapacity
+            ) {
+                throw new ReducerError(
+                    `Vehicle with id ${vehicle.id} is already full`
+                );
+            }
+            vehicle.patientIds[elementToBeLoadedId] = true;
+            patient.position = undefined;
+            Object.keys(vehicle.materialIds).forEach((materialId) => {
+                state.materials[materialId].position = undefined;
+            });
+            Object.keys(vehicle.personnelIds).forEach((personnelId) => {
+                // If a personnel is in transfer, this doesn't change that
+                state.personnel[personnelId].position = undefined;
+            });
+        }
     }
     calculateTreatments(state);
     return state;

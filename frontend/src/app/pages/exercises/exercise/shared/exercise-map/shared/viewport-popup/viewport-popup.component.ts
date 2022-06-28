@@ -6,17 +6,32 @@ import type {
     PersonnelType,
     UUID,
     Viewport,
+    TransferPoint,
+    Hospital,
+    AutomatedViewportConfig,
+    TransferMode,
 } from 'digital-fuesim-manv-shared';
-import { personnelTypeNames, statusNames } from 'digital-fuesim-manv-shared';
+import {
+    cloneDeepMutable,
+    statusNames,
+    personnelTypeNames,
+    transferModeNames,
+} from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { Subject, takeUntil, firstValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
+    getSelectAutomatedViewportConfiguration,
+    getSelectElementsInViewport,
+    getSelectReachableTransferPoints,
     getSelectViewport,
     getSelectViewportMetadata,
+    selectHospitals,
 } from 'src/app/state/exercise/exercise.selectors';
+import type { WithPosition } from '../../../utility/types/with-position';
+import type { PopupComponent } from '../../utility/popup-manager';
 
 export interface ViewportMetadata {
     patients: {
@@ -41,7 +56,9 @@ let activeNavId: 'info' | 'settings';
     templateUrl: './viewport-popup.component.html',
     styleUrls: ['./viewport-popup.component.scss'],
 })
-export class ViewportPopupComponent implements OnInit, OnDestroy {
+export class ViewportPopupComponent
+    implements PopupComponent, OnInit, OnDestroy
+{
     // These properties are only set after OnInit
     public viewportId!: UUID;
     private readonly destroy$ = new Subject<void>();
@@ -58,6 +75,18 @@ export class ViewportPopupComponent implements OnInit, OnDestroy {
     public viewport$?: Observable<Viewport>;
 
     public viewportMetadata$?: Observable<ViewportMetadata>;
+
+    public transferPointsInViewport$?: Observable<{
+        [id: UUID]: WithPosition<TransferPoint>;
+    }>;
+
+    public reachableTransferPoints$?: Observable<TransferPoint[]>;
+
+    public hospitals$?: Observable<{ [id: UUID]: Hospital }>;
+
+    public viewportConfig$?: Observable<AutomatedViewportConfig>;
+
+    public viewportConfig?: AutomatedViewportConfig;
 
     public name?: string;
 
@@ -77,6 +106,35 @@ export class ViewportPopupComponent implements OnInit, OnDestroy {
         this.viewportMetadata$ = this.store.select(
             getSelectViewportMetadata(this.viewportId)
         );
+        this.viewport$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
+                (thisViewport) =>
+                    (this.transferPointsInViewport$ = this.store.select(
+                        getSelectElementsInViewport(
+                            'transferPoints',
+                            thisViewport
+                        )
+                    ))
+            );
+        this.viewport$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
+                (thisViewport) =>
+                    (this.reachableTransferPoints$ = thisViewport
+                        .automatedPatientFieldConfig.sourceTransferPointId
+                        ? this.store.select(
+                              getSelectReachableTransferPoints(
+                                  thisViewport.automatedPatientFieldConfig
+                                      .sourceTransferPointId
+                              )
+                          )
+                        : undefined)
+            );
+        this.hospitals$ = this.store.select(selectHospitals);
+        this.viewportConfig$ = this.store.select(
+            getSelectAutomatedViewportConfiguration(this.viewportId)
+        );
 
         this.apiService.currentRole$
             .pipe(takeUntil(this.destroy$))
@@ -89,6 +147,9 @@ export class ViewportPopupComponent implements OnInit, OnDestroy {
         // Set the initial form values
         const viewport = await firstValueFrom(this.viewport$);
         this.name = viewport.name;
+        this.viewportConfig$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((config) => (this.viewportConfig = config));
     }
 
     public async saveName() {
@@ -106,9 +167,9 @@ export class ViewportPopupComponent implements OnInit, OnDestroy {
         }
     }
 
-    public async changeAutomation(currentStatus: boolean) {
+    public async changeAutomationActivation(currentStatus: boolean) {
         const response = await this.apiService.proposeAction({
-            type: '[Viewport] Change automation',
+            type: '[Viewport] Change automation activation state',
             viewportId: this.viewportId,
             activateAutomation: currentStatus,
         });
@@ -124,9 +185,62 @@ export class ViewportPopupComponent implements OnInit, OnDestroy {
         }
     }
 
+    public async changeAutomationConfig(
+        type: 'hospital' | 'source' | 'targetTransfer' | 'transferMode',
+        id?: UUID
+    ) {
+        const currentConfig = cloneDeepMutable(this.viewportConfig);
+        if (currentConfig === undefined) return;
+        switch (type) {
+            case 'hospital':
+                currentConfig.targetHospitalId = id;
+                if (
+                    id === undefined &&
+                    currentConfig.transferMode === 'hospital'
+                )
+                    currentConfig.transferMode = 'none';
+                break;
+            case 'source':
+                if (currentConfig.sourceTransferPointId !== id) {
+                    currentConfig.targetTransferPointId = undefined;
+                    if (currentConfig.transferMode === 'transfer')
+                        currentConfig.transferMode = 'none';
+                }
+                currentConfig.sourceTransferPointId = id;
+                break;
+            case 'targetTransfer':
+                currentConfig.targetTransferPointId = id;
+                if (
+                    id === undefined &&
+                    currentConfig.transferMode === 'transfer'
+                )
+                    currentConfig.transferMode = 'none';
+                break;
+            case 'transferMode':
+                currentConfig.transferMode = id as TransferMode;
+                break;
+        }
+        const response = await this.apiService.proposeAction({
+            type: '[Viewport] Update automation',
+            viewportId: this.viewportId,
+            config: currentConfig,
+        });
+        if (response.success) {
+            this.messageService.postMessage({
+                title: 'Automatisierungseinstellungen wurden aktualisiert',
+                color: 'success',
+            });
+            // TODO: What should happen here?
+            // this.closePopup.emit();
+        }
+    }
+
     // To trick Angular
     public readonly statusNames = statusNames as { [key: string]: string };
     public readonly personnelTypeNames = personnelTypeNames as {
+        [key: string]: string;
+    };
+    public readonly transferModeNames = transferModeNames as {
         [key: string]: string;
     };
 }
