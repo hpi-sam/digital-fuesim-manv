@@ -26,17 +26,14 @@ export function positionWalkableOrGreenPatients(
     const patients = patientIds.map((patientId) => state.patients[patientId]);
     const walkablePatients = patients.filter(
         (patient) =>
-            (patient.pretriageInformation.isWalkable &&
+            patient.pretriageInformation.isWalkable &&
+            ['white', 'green'].includes(
                 Patient.getVisibleStatus(
                     patient,
                     state.configuration.pretriageEnabled,
                     state.configuration.bluePatientsEnabled
-                ) === 'white') ||
-            Patient.getVisibleStatus(
-                patient,
-                state.configuration.pretriageEnabled,
-                state.configuration.bluePatientsEnabled
-            ) === 'green'
+                )
+            )
     );
     if (walkablePatients.length === 0) {
         return { width: 0, height: 0 };

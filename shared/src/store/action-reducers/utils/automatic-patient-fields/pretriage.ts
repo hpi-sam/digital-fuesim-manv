@@ -48,7 +48,7 @@ export function pretriage(
             personnel[i].position.x -= 2 * distance;
         }
         // Remove personnel pretriaging non-walkable patients from list of available personnel
-        if (patientsToPretriage[i].pretriageInformation.isWalkable) {
+        if (!patientsToPretriage[i].pretriageInformation.isWalkable) {
             removeFromArray(personnelIds, personnel[i].id);
         }
     }

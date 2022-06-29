@@ -11,3 +11,4 @@
 -   Add a state migration
 -   Improve UI table view (see comments in `frontend/src/app/pages/exercises/exercise/shared/exercise-map/shared/viewport-popup/viewport-popup.component.html`)
 -   Better display data, especially for clients restricted to the automated viewport
+-   Fix problem where walkable patients are no longer pretriaged when a material axis exists
