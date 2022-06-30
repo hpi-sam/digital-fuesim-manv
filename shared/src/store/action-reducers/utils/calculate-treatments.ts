@@ -34,12 +34,28 @@ function couldCaterFor(
     catering: Mutable<Material> | Mutable<Personnel>,
     catersFor: Mutable<CatersFor>
 ) {
-    // TODO: make it so that e.g. 1 red counts as 2 yellows
+    // TODO: maybe make blue patients treatable and count them as red patients
+    // and maybe make this personnel only be able to treat one blue patient or other patients
+
+    // TODO: understand why it seems to be not necessary (could be that just the lines are not shown - try it putting e.g. a material on top of a dead patient)
+    // black and blue patients can't be treated
+    if (status === 'black' || status === 'blue') {
+        return false;
+    }
+    // if logicalOperator === 'and' catering capacity is calculated cumulatively
+    const canCaterForRed = catering.canCaterFor.red;
+    const canCaterForYellow =
+        catering.canCaterFor.logicalOperator === 'and'
+            ? canCaterForRed + catering.canCaterFor.yellow
+            : catering.canCaterFor.yellow;
+    const canCaterForGreen =
+        catering.canCaterFor.logicalOperator === 'and'
+            ? canCaterForYellow + catering.canCaterFor.green
+            : catering.canCaterFor.green;
     if (
-        (status === 'red' && catering.canCaterFor.red <= catersFor.red) ||
-        (status === 'yellow' &&
-            catering.canCaterFor.yellow <= catersFor.yellow) ||
-        (status === 'green' && catering.canCaterFor.green <= catersFor.green)
+        (status === 'red' && canCaterForRed <= catersFor.red) ||
+        (status === 'yellow' && canCaterForYellow <= catersFor.yellow) ||
+        (status === 'green' && canCaterForGreen <= catersFor.green)
     ) {
         // Capacity for the status of the patient is no longer there.
         return false;
@@ -51,7 +67,7 @@ function couldCaterFor(
                 (catersFor.red > 0 || catersFor.green > 0)) ||
             (status === 'green' && (catersFor.yellow > 0 || catersFor.red > 0)))
     ) {
-        // We are already treating someone of another category and cannot treat multiple categories.
+        // We are already treating someone of another category and cannot treat multiple categories as logcialOperator === 'or'.
         return false;
     }
     return true;
@@ -75,10 +91,14 @@ function caterFor(
         bluePatientsEnabled
     );
     const status = visibleStatus === 'white' ? 'yellow' : visibleStatus;
+
     // checks if not already full
     if (!couldCaterFor(status, catering, catersFor)) return false;
+
     catering.assignedPatientIds[patient.id] = true;
+
     patient.isBeingTreated = true;
+
     // save catering.id in patient for more efficient calculating
     if (isPersonnel(catering)) {
         patient.assignedPersonnelIds[catering.id] = true;
@@ -370,7 +390,7 @@ function calculateCatering(
                   catering.canCaterFor.yellow,
                   catering.canCaterFor.red
               )
-            : // else: logicalOperator is 'and'
+            : // logicalOperator === 'and', capacity is cumulative
               catering.canCaterFor.green +
               catering.canCaterFor.yellow +
               catering.canCaterFor.red;
@@ -427,10 +447,12 @@ function calculateCatering(
                         // TODO: removing the ! makes the code break, but it should just recalculate for every patient again?!
                         !patientIdsOfCateredForPatients[patientData.id]
                 );
+
         if (patientsDataInGeneralThreshold.length === 0) {
             // No patients in the generalThreshold radius.
             return;
         }
+
         const patientsInGeneralThreshold: Mutable<Patient>[] = [];
         for (const currentpatientDataInGeneralThreshold of patientsDataInGeneralThreshold) {
             patientsInGeneralThreshold.push(

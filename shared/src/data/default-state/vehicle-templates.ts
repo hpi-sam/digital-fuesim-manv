@@ -39,10 +39,10 @@ const rtwVehicleTemplate = VehicleTemplate.create(
     ['notSan', 'rettSan'],
     [
         {
-            logicalOperator: 'or',
-            green: 2,
-            yellow: 1,
-            red: 1,
+            logicalOperator: 'and',
+            green: 0,
+            yellow: 0,
+            red: 2,
         },
     ]
 );
@@ -55,10 +55,10 @@ const ktwVehicleTemplate = VehicleTemplate.create(
     ['san', 'rettSan'],
     [
         {
-            logicalOperator: 'or',
-            green: 2,
-            yellow: 1,
-            red: 1,
+            logicalOperator: 'and',
+            green: 0,
+            yellow: 0,
+            red: 2,
         },
     ]
 );
@@ -72,51 +72,51 @@ const gwSanVehicleTemplate = VehicleTemplate.create(
     [
         {
             logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
+            green: 0,
+            yellow: 0,
+            red: 2,
         },
         {
             logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
+            green: 0,
+            yellow: 0,
+            red: 2,
         },
         {
             logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
+            green: 0,
+            yellow: 0,
+            red: 2,
         },
         {
             logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
+            green: 0,
+            yellow: 0,
+            red: 2,
         },
         {
             logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
+            green: 0,
+            yellow: 0,
+            red: 2,
         },
         {
             logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
+            green: 0,
+            yellow: 0,
+            red: 2,
         },
         {
             logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
+            green: 0,
+            yellow: 0,
+            red: 2,
         },
         {
             logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
+            green: 0,
+            yellow: 0,
+            red: 2,
         },
     ]
 );
@@ -129,9 +129,9 @@ const nefVehicleTemplate = VehicleTemplate.create(
     ['notarzt', 'notSan'],
     [
         {
-            logicalOperator: 'or',
-            green: 2,
-            yellow: 2,
+            logicalOperator: 'and',
+            green: 0,
+            yellow: 0,
             red: 2,
         },
     ]
@@ -145,10 +145,10 @@ const rthVehicleTemplate = VehicleTemplate.create(
     ['notarzt', 'notSan'],
     [
         {
-            logicalOperator: 'or',
-            green: 2,
-            yellow: 1,
-            red: 1,
+            logicalOperator: 'and',
+            green: 0,
+            yellow: 0,
+            red: 2,
         },
     ]
 );
