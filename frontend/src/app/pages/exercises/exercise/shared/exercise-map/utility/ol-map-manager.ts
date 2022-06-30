@@ -216,15 +216,14 @@ export class OlMapManager {
         });
 
         // FeatureManagers
+        this.registerFeatureElementManager(
+            new TransferLinesFeatureManager(transferLinesLayer),
+            this.store.select(selectTransferLines)
+        );
+        transferLinesService.displayTransferLines$.subscribe((display) => {
+            transferLinesLayer.setVisible(display);
+        });
         if (this.apiService.getCurrentRole() === 'trainer') {
-            this.registerFeatureElementManager(
-                new TransferLinesFeatureManager(transferLinesLayer),
-                this.store.select(selectTransferLines)
-            );
-            transferLinesService.displayTransferLines$.subscribe((display) => {
-                transferLinesLayer.setVisible(display);
-            });
-
             const deleteHelper = new DeleteFeatureManager(
                 this.store,
                 deleteFeatureLayer,
@@ -381,6 +380,7 @@ export class OlMapManager {
                 view.set('extent', undefined);
                 view.setMinZoom(0);
                 if (!viewport) {
+                    this.tryToFitViewToViewports(true);
                     // We are no longer restricted to a viewport.
                     // Therefore, no new restrictions have to be set.
                     return;
@@ -580,7 +580,15 @@ export class OlMapManager {
         const padding = 25;
         view.fit([minX, minY, maxX, maxY], {
             padding: [padding, padding, padding, padding],
-            duration: animate ? 1000 : undefined,
+            duration: animate ? 4000 : undefined,
+            callback: () => {
+                setTimeout(() => {
+                    view.animate({
+                        zoom: (view.getZoom() ?? OlMapManager.defaultZoom) - 1,
+                        duration: 2000,
+                    });
+                }, 500);
+            },
         });
     }
 

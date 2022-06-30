@@ -1,6 +1,11 @@
 <!-- We want keyboard events to go to the OpenLayers map, not the container -> tabindex="-1" -->
-<div #openLayersContainer class="h-100 w-100 position-relative" tabindex="-1">
-    <div
+<div
+    #openLayersContainer
+    class="h-100 w-100 position-relative"
+    style="min-width: 1920px"
+    tabindex="-1"
+>
+    <!-- <div
         class="position-absolute btn-group-vertical"
         style="z-index: 10"
         (click)="$event.stopPropagation()"
@@ -20,10 +25,7 @@
             <i class="bi-zoom-out"></i>
         </button>
         <button
-            *ngIf="
-                (apiService.currentRole$ | async) !== 'participant' &&
-                (restrictedToViewport$ | async) === undefined
-            "
+            *ngIf="(restrictedToViewport$ | async) === undefined"
             (click)="olMapManager?.tryToFitViewToViewports()"
             class="btn btn-sm btn-light"
             title="Alle Ansichten anzeigen"
@@ -40,7 +42,7 @@
                 [class.bi-fullscreen-exit]="fullscreenEnabled"
             ></i>
         </button>
-    </div>
+    </div> -->
 </div>
 
 <!-- position-relative because openLayers deals with the positioning -->

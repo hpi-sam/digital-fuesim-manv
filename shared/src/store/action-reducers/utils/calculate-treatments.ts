@@ -82,56 +82,56 @@ function caterFor(
 export function calculateTreatments(state: Mutable<ExerciseState>) {
     const pretriageEnabled = state.configuration.pretriageEnabled;
     const bluePatientsEnabled = state.configuration.bluePatientsEnabled;
-    // const personnels = Object.values(state.personnel).filter(
-    //     (personnel) => personnel.position !== undefined
-    // );
-    // const materials = Object.values(state.materials).filter(
-    //     (material) => material.position !== undefined
-    // );
-    // // Unassign all patients as we are calculating everything from scratch.
-    // personnels.forEach((personnel) => {
-    //     personnel.assignedPatientIds = {};
-    // });
-    // materials.forEach((material) => {
-    //     material.assignedPatientIds = {};
-    // });
-    // const patients = Object.values(state.patients).filter((patient) => {
-    //     const visibleStatus = Patient.getVisibleStatus(
-    //         patient,
-    //         pretriageEnabled,
-    //         bluePatientsEnabled
-    //     );
-    //     return (
-    //         patient.position !== undefined &&
-    //         visibleStatus !== 'black' &&
-    //         visibleStatus !== 'blue'
-    //     );
-    // });
-    // patients.forEach((patient) => {
-    //     patient.isBeingTreated = false;
-    // });
-    // if (patients.length === 0) {
-    //     // Don't treat anyone. No one (alive) is there.
-    //     return;
-    // }
-    // // We ignore whether a patient is already treated
-    // // and the patient is just added to the list of treated patients.
-    // personnels.forEach((personnel) => {
-    //     calculateCatering(
-    //         personnel,
-    //         patients,
-    //         pretriageEnabled,
-    //         bluePatientsEnabled
-    //     );
-    // });
-    // materials.forEach((material) => {
-    //     calculateCatering(
-    //         material,
-    //         patients,
-    //         pretriageEnabled,
-    //         bluePatientsEnabled
-    //     );
-    // });
+    const personnels = Object.values(state.personnel).filter(
+        (personnel) => personnel.position !== undefined
+    );
+    const materials = Object.values(state.materials).filter(
+        (material) => material.position !== undefined
+    );
+    // Unassign all patients as we are calculating everything from scratch.
+    personnels.forEach((personnel) => {
+        personnel.assignedPatientIds = {};
+    });
+    materials.forEach((material) => {
+        material.assignedPatientIds = {};
+    });
+    const patients = Object.values(state.patients).filter((patient) => {
+        const visibleStatus = Patient.getVisibleStatus(
+            patient,
+            pretriageEnabled,
+            bluePatientsEnabled
+        );
+        return (
+            patient.position !== undefined &&
+            visibleStatus !== 'black' &&
+            visibleStatus !== 'blue'
+        );
+    });
+    patients.forEach((patient) => {
+        patient.isBeingTreated = false;
+    });
+    if (patients.length === 0) {
+        // Don't treat anyone. No one (alive) is there.
+        return;
+    }
+    // We ignore whether a patient is already treated
+    // and the patient is just added to the list of treated patients.
+    personnels.forEach((personnel) => {
+        calculateCatering(
+            personnel,
+            patients,
+            pretriageEnabled,
+            bluePatientsEnabled
+        );
+    });
+    materials.forEach((material) => {
+        calculateCatering(
+            material,
+            patients,
+            pretriageEnabled,
+            bluePatientsEnabled
+        );
+    });
     return;
 }
 

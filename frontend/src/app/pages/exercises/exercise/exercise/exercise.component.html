@@ -1,42 +1,28 @@
 <div
     *ngIf="apiService.currentRole$ | async as role"
-    class="p-2 d-flex flex-column"
+    class="d-flex flex-column"
     style="height: 100vh"
 >
-    <div class="container">
+    <div *ngIf="role === 'trainer'" class="container">
         <h2>
             Übung:
             <span class="font-monospace fw-bold user-select-all">{{
                 participantId$ | async
             }}</span>
-            <ng-container *ngIf="role !== 'timeTravel'; else timeTravelButton">
-                <app-exercise-state-badge
-                    class="ms-3"
-                ></app-exercise-state-badge>
-                <button
-                    *ngIf="participantId$ | async as participantId"
-                    (click)="shareExercise(participantId)"
-                    class="btn btn-light ms-3"
-                >
-                    Teilnehmerlink teilen
-                </button>
-                <button
-                    *ngIf="role !== 'participant'"
-                    (click)="shareExercise(apiService.exerciseId!)"
-                    class="btn btn-outline-warning ms-3"
-                >
-                    Übungsleiterlink teilen
-                </button>
-            </ng-container>
-            <ng-template #timeTravelButton>
-                <button
-                    class="btn btn-outline-primary ms-3"
-                    (click)="leaveTimeTravel()"
-                >
-                    <i class="bi-box-arrow-left"></i>
-                    Aufzeichnung verlassen
-                </button>
-            </ng-template>
+            <app-exercise-state-badge class="ms-3"></app-exercise-state-badge>
+            <button
+                *ngIf="participantId$ | async as participantId"
+                (click)="shareExercise(participantId)"
+                class="btn btn-light ms-3"
+            >
+                Teilnehmerlink teilen
+            </button>
+            <button
+                (click)="shareExercise(apiService.exerciseId!)"
+                class="btn btn-outline-warning ms-3"
+            >
+                Übungsleiterlink teilen
+            </button>
             <div ngbDropdown class="d-inline-block float-end">
                 <button
                     type="button"

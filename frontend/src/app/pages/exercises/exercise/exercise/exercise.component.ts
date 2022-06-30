@@ -18,7 +18,6 @@ import type { AppState } from 'src/app/state/app.state';
 import { selectParticipantId } from 'src/app/state/exercise/exercise.selectors';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { environment } from 'src/environments/environment';
-import { SimulatedParticipant } from './simulated-participant';
 
 @Component({
     selector: 'app-exercise',
@@ -30,16 +29,17 @@ export class ExerciseComponent implements OnDestroy {
 
     public readonly participantId$ = this.store.select(selectParticipantId);
 
-    private readonly simulatedParticipant = new SimulatedParticipant(
-        this.store,
-        this.apiService
-    );
-
     constructor(
         private readonly store: Store<AppState>,
         public readonly apiService: ApiService,
         private readonly messageService: MessageService
-    ) {}
+    ) {
+        console.log(
+            `participantId: ${
+                getStateSnapshot(this.store).exercise.participantId
+            }`
+        );
+    }
 
     public shareExercise(exerciseId: string) {
         const url = `${location.origin}/exercises/${exerciseId}`;

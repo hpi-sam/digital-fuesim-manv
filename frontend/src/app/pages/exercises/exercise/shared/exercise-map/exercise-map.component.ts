@@ -86,7 +86,7 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
             const zoom = this.olMapManager!.olMap.getView().getZoom() ?? 0;
             console.log(zoom);
 
-            if (this.apiService.getCurrentRole() !== 'participant') {
+            if (true || this.apiService.getCurrentRole() !== 'participant') {
                 this.transferLinesService.displayTransferLines = zoom < 20;
             }
         });
