@@ -120,7 +120,6 @@ export class ExerciseState {
         );
     }
 
-    // TODO: Increase this number
     /**
      * **Important**
      *
