@@ -11,7 +11,6 @@ import { HospitalPatient } from '../../models/hospital-patient';
 import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { deleteVehicle } from './vehicle';
-import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 
 export class AddHospitalAction implements Action {
@@ -141,7 +140,6 @@ export namespace HospitalActionReducers {
                     hospital.patientIds[patientId] = true;
                 }
                 deleteVehicle(draftState, vehicleId);
-                calculateTreatments(draftState);
                 return draftState;
             },
             rights: 'participant',

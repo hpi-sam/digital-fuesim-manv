@@ -8,11 +8,12 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { countBy } from 'lodash-es';
-import type { Client, Patient, Vehicle } from '../../models';
+import type { Client, Vehicle, Patient } from '../../models';
 import { Personnel, Viewport } from '../../models';
 import { StatusHistoryEntry } from '../../models/status-history-entry';
 import { getStatus } from '../../models/utils';
 import type { AreaStatistics } from '../../models/utils/area-statistics';
+import { DataStructure } from '../../models/utils/datastructure';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { uuid } from '../../utils';
@@ -96,6 +97,20 @@ export namespace ExerciseActionReducers {
         ) => {
             // Refresh the current time
             draftState.currentTime += tickInterval;
+
+            const patientsDataStructure =
+                DataStructure.getDataStructureFromState(draftState, 'patients');
+            const personnelDataStructure =
+                DataStructure.getDataStructureFromState(
+                    draftState,
+                    'personnel'
+                );
+            const materialsDataStructure =
+                DataStructure.getDataStructureFromState(
+                    draftState,
+                    'materials'
+                );
+
             // Refresh patient status
             patientUpdates.forEach((patientUpdate) => {
                 const currentPatient = draftState.patients[patientUpdate.id];
@@ -104,11 +119,20 @@ export namespace ExerciseActionReducers {
                 currentPatient.stateTime = patientUpdate.nextStateTime;
                 currentPatient.treatmentTime = patientUpdate.treatmentTime;
                 currentPatient.realStatus = getStatus(currentPatient.health);
+
+                // Refresh treatments
+                if (refreshTreatments) {
+                    calculateTreatments(
+                        draftState,
+                        currentPatient,
+                        currentPatient.position,
+                        patientsDataStructure,
+                        personnelDataStructure,
+                        materialsDataStructure
+                    );
+                }
             });
-            // Refresh treatments
-            if (refreshTreatments) {
-                calculateTreatments(draftState);
-            }
+
             // Refresh transfers
             refreshTransfer(draftState, 'vehicles', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);

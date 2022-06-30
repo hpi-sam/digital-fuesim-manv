@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
 import { PatientStatus, Position } from '../../models/utils';
+import { DataStructure } from '../../models/utils/datastructure';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
@@ -91,7 +92,39 @@ export namespace PatientActionReducers {
                 );
             }
             draftState.patients[patient.id] = cloneDeepMutable(patient);
-            calculateTreatments(draftState);
+
+            if (patient.position === undefined) {
+                throw new ReducerError(
+                    `Patient with id ${patient.id} can't be added without a position`
+                );
+            }
+
+            let patientsDataStructure = DataStructure.getDataStructureFromState(
+                draftState,
+                'patients'
+            );
+            patientsDataStructure = DataStructure.addElement(
+                patientsDataStructure,
+                patient.id,
+                patient.position
+            );
+            DataStructure.writeDataStructureToState(
+                draftState,
+                'patients',
+                patientsDataStructure
+            );
+            calculateTreatments(
+                draftState,
+                patient,
+                patient.position,
+                patientsDataStructure,
+                DataStructure.getDataStructureFromState(
+                    draftState,
+                    'personnel'
+                ),
+                DataStructure.getDataStructureFromState(draftState, 'materials')
+            );
+
             return draftState;
         },
         rights: 'trainer',
@@ -101,8 +134,42 @@ export namespace PatientActionReducers {
         action: MovePatientAction,
         reducer: (draftState, { patientId, targetPosition }) => {
             const patient = getElement(draftState, 'patients', patientId);
+            const startPosition = patient.position;
+
+            if (startPosition === undefined) {
+                throw new ReducerError(
+                    `Patient with id ${patient.id} can't be moved, as its position is undefined`
+                );
+            }
+
             patient.position = targetPosition;
-            calculateTreatments(draftState);
+
+            let patientsDataStructure = DataStructure.getDataStructureFromState(
+                draftState,
+                'patients'
+            );
+            patientsDataStructure = DataStructure.moveElement(
+                patientsDataStructure,
+                patient.id,
+                [startPosition, targetPosition]
+            );
+            calculateTreatments(
+                draftState,
+                patient,
+                [startPosition, targetPosition],
+                patientsDataStructure,
+                DataStructure.getDataStructureFromState(
+                    draftState,
+                    'personnel'
+                ),
+                DataStructure.getDataStructureFromState(draftState, 'materials')
+            );
+            DataStructure.writeDataStructureToState(
+                draftState,
+                'patients',
+                patientsDataStructure
+            );
+
             return draftState;
         },
         rights: 'participant',
@@ -111,9 +178,36 @@ export namespace PatientActionReducers {
     export const removePatient: ActionReducer<RemovePatientAction> = {
         action: RemovePatientAction,
         reducer: (draftState, { patientId }) => {
-            getElement(draftState, 'patients', patientId);
+            const patient = getElement(draftState, 'patients', patientId);
+
+            if (patient.position === undefined) {
+                throw new ReducerError(
+                    `Patient with id ${patient.id} can't be removed, as its position is undefined, if removed while being inside a vehicle, something went wrong`
+                );
+            }
+
+            let patientsDataStructure = DataStructure.getDataStructureFromState(
+                draftState,
+                'patients'
+            );
+            patientsDataStructure = DataStructure.removeElement(
+                patientsDataStructure,
+                patient.id,
+                patient.position
+            );
+            DataStructure.writeDataStructureToState(
+                draftState,
+                'patients',
+                patientsDataStructure
+            );
+
+            patient.position = undefined;
+
+            // remove any treatments this patient received (deletes patient from personnel and material assignedPatientIds UUIDSet)
+            calculateTreatments(draftState, patient, patient.position);
+
             deletePatient(draftState, patientId);
-            calculateTreatments(draftState);
+
             return draftState;
         },
         rights: 'trainer',
@@ -124,6 +218,25 @@ export namespace PatientActionReducers {
         reducer: (draftState, { patientId, patientStatus }) => {
             const patient = getElement(draftState, 'patients', patientId);
             patient.pretriageStatus = patientStatus;
+
+            if (patient.position === undefined) {
+                throw new ReducerError(
+                    `visibleStatus of Patient with id ${patient.id} can't be set, as its position is undefined`
+                );
+            }
+
+            calculateTreatments(
+                draftState,
+                patient,
+                patient.position,
+                DataStructure.getDataStructureFromState(draftState, 'patients'),
+                DataStructure.getDataStructureFromState(
+                    draftState,
+                    'personnel'
+                ),
+                DataStructure.getDataStructureFromState(draftState, 'materials')
+            );
+
             return draftState;
         },
         rights: 'participant',

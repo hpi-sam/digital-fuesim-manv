@@ -10,7 +10,7 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { UUID, uuid, UUIDSet, uuidValidationOptions } from '../utils';
 import {
     getCreate,
     HealthPoints,
@@ -130,6 +130,14 @@ export class Patient {
      */
     @IsBoolean()
     public readonly isBeingTreated: boolean = false;
+
+    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
+    @IsDefined()
+    public readonly assignedPersonnelIds: UUIDSet = {};
+
+    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
+    @IsDefined()
+    public readonly assignedMaterialIds: UUIDSet = {};
     /**
      * The speed with which the patients healthStatus changes
      * if it is 0.5 every patient changes half as fast (slow motion)
@@ -155,6 +163,10 @@ export class Patient {
         pretriageEnabled: boolean,
         bluePatientsEnabled: boolean
     ) {
+        // if (patient.treatmentTime !== 0) {
+        //     console.log(patient);
+        //     patient.treatmentTime = 0;
+        // }
         const status =
             !pretriageEnabled ||
             patient.treatmentTime >= this.pretriageTimeThreshold

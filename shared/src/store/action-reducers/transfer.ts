@@ -1,11 +1,13 @@
 import { IsInt, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
-import type { ExerciseState } from '../..';
+import type { ExerciseState, Personnel } from '../..';
 import { imageSizeToPosition, Position, TransferPoint } from '../..';
+import { DataStructure } from '../../models/utils/datastructure';
 import { StartPoint } from '../../models/utils/start-points';
 import type { Mutable } from '../../utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
+import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 
 /**
@@ -35,6 +37,33 @@ export function letElementArrive(
             imageSizeToPosition(TransferPoint.image.height / 3)
     );
     delete element.transfer;
+
+    if (elementType === 'personnel') {
+        const patientsDataStructure = DataStructure.getDataStructureFromState(
+            draftState,
+            'patients'
+        );
+        const personnelDataStructure = DataStructure.getDataStructureFromState(
+            draftState,
+            'personnel'
+        );
+        DataStructure.addElement(
+            personnelDataStructure,
+            element.id,
+            element.position
+        );
+        DataStructure.writeDataStructureToState(
+            draftState,
+            'personnel',
+            personnelDataStructure
+        );
+        calculateTreatments(
+            draftState,
+            element as Personnel,
+            element.position,
+            patientsDataStructure
+        );
+    }
 }
 
 export class AddToTransferAction implements Action {
@@ -141,14 +170,41 @@ export namespace TransferActionReducers {
                 duration = startPoint.duration;
             }
 
+            if (elementType === 'personnel') {
+                // TODO: is there a possibility not having a position but being added to transfer?
+                if (element.position !== undefined) {
+                    const personnelDataStructure =
+                        DataStructure.getDataStructureFromState(
+                            draftState,
+                            'personnel'
+                        );
+                    DataStructure.removeElement(
+                        personnelDataStructure,
+                        element.id,
+                        element.position
+                    );
+                    DataStructure.writeDataStructureToState(
+                        draftState,
+                        'personnel',
+                        personnelDataStructure
+                    );
+                    calculateTreatments(
+                        draftState,
+                        element as Personnel,
+                        undefined
+                    );
+                }
+            }
+
             // Set the element to transfer
-            delete element.position;
+            element.position = undefined;
             element.transfer = {
                 startPoint,
                 targetTransferPointId,
                 endTimeStamp: draftState.currentTime + duration,
                 isPaused: false,
             };
+
             return draftState;
         },
         rights: 'participant',

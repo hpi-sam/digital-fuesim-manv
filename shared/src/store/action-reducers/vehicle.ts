@@ -2,9 +2,10 @@ import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
 import { Position } from '../../models/utils';
+import { DataStructure } from '../../models/utils/datastructure';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
-import type { Mutable } from '../../utils';
+import type { Mutable, UUIDSet } from '../../utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -200,10 +201,27 @@ export namespace VehicleActionReducers {
             const vehicleWidthInPosition = imageSizeToPosition(
                 vehicle.image.aspectRatio * vehicle.image.height
             );
+            let patientsDataStructure = DataStructure.getDataStructureFromState(
+                draftState,
+                'patients'
+            );
+            let personnelDataStructure =
+                DataStructure.getDataStructureFromState(
+                    draftState,
+                    'personnel'
+                );
+            let materialsDataStructure =
+                DataStructure.getDataStructureFromState(
+                    draftState,
+                    'materials'
+                );
             const space =
                 vehicleWidthInPosition /
                 (personnel.length + materials.length + patients.length + 1);
             let x = unloadPosition.x - vehicleWidthInPosition / 2;
+
+            // first undload all patients, personnel and material and add them to their dataStructure
+
             for (const patient of patients) {
                 x += space;
                 patient.position ??= {
@@ -211,7 +229,13 @@ export namespace VehicleActionReducers {
                     y: unloadPosition.y,
                 };
                 delete vehicle.patientIds[patient.id];
+                patientsDataStructure = DataStructure.addElement(
+                    patientsDataStructure,
+                    patient.id,
+                    patient.position
+                );
             }
+
             for (const person of personnel) {
                 x += space;
                 if (!Personnel.isInVehicle(person)) {
@@ -221,15 +245,91 @@ export namespace VehicleActionReducers {
                     x,
                     y: unloadPosition.y,
                 };
+                personnelDataStructure = DataStructure.addElement(
+                    personnelDataStructure,
+                    person.id,
+                    person.position
+                );
             }
-            for (const currentMaterial of materials) {
+
+            for (const material of materials) {
                 x += space;
-                currentMaterial.position ??= {
+                material.position ??= {
                     x,
                     y: unloadPosition.y,
                 };
+                materialsDataStructure = DataStructure.addElement(
+                    materialsDataStructure,
+                    material.id,
+                    material.position
+                );
             }
-            calculateTreatments(draftState);
+
+            // now that everything is unloaded the dataStructure we will calculate the treatment for them
+
+            /**
+             * has the Ids of every personnel and material that we calculated already, does not have to recalculated when calculating all material and personnel around each patient
+             */
+            const elementIdsToBeSkipped: Mutable<UUIDSet> = {};
+
+            for (const person of personnel) {
+                calculateTreatments(
+                    draftState,
+                    person,
+                    person.position,
+                    patientsDataStructure
+                );
+                elementIdsToBeSkipped[person.id] = true;
+            }
+
+            for (const material of materials) {
+                calculateTreatments(
+                    draftState,
+                    material,
+                    material.position,
+                    patientsDataStructure
+                );
+                elementIdsToBeSkipped[material.id] = true;
+            }
+
+            for (const patient of patients) {
+                calculateTreatments(
+                    draftState,
+                    patient,
+                    patient.position,
+                    patientsDataStructure,
+                    personnelDataStructure,
+                    materialsDataStructure,
+                    elementIdsToBeSkipped
+                );
+            }
+
+            // only if at least one patient was unloaded, we need to write this change into the dataStructure in state
+            if (patients.length > 0) {
+                DataStructure.writeDataStructureToState(
+                    draftState,
+                    'patients',
+                    patientsDataStructure
+                );
+            }
+
+            // only if at least one personnel was unloaded, we need to write this change into the dataStructure in state
+            if (personnel.length > 0) {
+                DataStructure.writeDataStructureToState(
+                    draftState,
+                    'personnel',
+                    personnelDataStructure
+                );
+            }
+
+            // only if at least one material was unloaded, we need to write this change into the dataStructure in state
+            if (materials.length > 0) {
+                DataStructure.writeDataStructureToState(
+                    draftState,
+                    'materials',
+                    materialsDataStructure
+                );
+            }
             return draftState;
         },
         rights: 'participant',
@@ -254,7 +354,37 @@ export namespace VehicleActionReducers {
                             `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
+
+                    if (material.position === undefined) {
+                        throw new ReducerError(
+                            `Material with id ${material.id} can't be loaded into vehicle with id ${vehicle.id}, as its position is undefined`
+                        );
+                    }
+
+                    let materialsDataStructure =
+                        DataStructure.getDataStructureFromState(
+                            draftState,
+                            'materials'
+                        );
+                    materialsDataStructure = DataStructure.removeElement(
+                        materialsDataStructure,
+                        material.id,
+                        material.position
+                    );
+                    DataStructure.writeDataStructureToState(
+                        draftState,
+                        'materials',
+                        materialsDataStructure
+                    );
+
                     material.position = undefined;
+
+                    // remove any treatments from this material
+                    calculateTreatments(
+                        draftState,
+                        material,
+                        material.position
+                    );
                     break;
                 }
                 case 'personnel': {
@@ -273,7 +403,37 @@ export namespace VehicleActionReducers {
                             `Personnel with id ${personnel.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
+
+                    if (personnel.position === undefined) {
+                        throw new ReducerError(
+                            `Personnel with id ${personnel.id} can't be loaded into vehicle with id ${vehicle.id}, as its position is undefined, if personnel should be in transfer, something has gone wrong`
+                        );
+                    }
+
+                    let personnelDataStructure =
+                        DataStructure.getDataStructureFromState(
+                            draftState,
+                            'personnel'
+                        );
+                    personnelDataStructure = DataStructure.removeElement(
+                        personnelDataStructure,
+                        personnel.id,
+                        personnel.position
+                    );
+                    DataStructure.writeDataStructureToState(
+                        draftState,
+                        'personnel',
+                        personnelDataStructure
+                    );
+
                     personnel.position = undefined;
+
+                    // remove any treatments from this personnel
+                    calculateTreatments(
+                        draftState,
+                        personnel,
+                        personnel.position
+                    );
                     break;
                 }
                 case 'patient': {
@@ -291,17 +451,122 @@ export namespace VehicleActionReducers {
                         );
                     }
                     vehicle.patientIds[elementToBeLoadedId] = true;
+                    let patientsDataStructure =
+                        DataStructure.getDataStructureFromState(
+                            draftState,
+                            'patients'
+                        );
+
+                    if (patient.position === undefined) {
+                        throw new ReducerError(
+                            `Patient with id ${patient.id} can't be loaded into vehicle with id ${vehicle.id}, as its position is undefined`
+                        );
+                    }
+
+                    patientsDataStructure = DataStructure.removeElement(
+                        patientsDataStructure,
+                        patient.id,
+                        patient.position
+                    );
+                    DataStructure.writeDataStructureToState(
+                        draftState,
+                        'patients',
+                        patientsDataStructure
+                    );
+
                     patient.position = undefined;
-                    Object.keys(vehicle.materialIds).forEach((materialId) => {
-                        draftState.materials[materialId].position = undefined;
-                    });
-                    Object.keys(vehicle.personnelIds).forEach((personnelId) => {
-                        // If a personnel is in transfer, this doesn't change that
-                        draftState.personnel[personnelId].position = undefined;
-                    });
+
+                    // remove any treatments this patient received
+                    calculateTreatments(draftState, patient, patient.position);
+
+                    const materialIds = Object.keys(vehicle.materialIds);
+                    // if this vehicle has material associated with it load them in
+                    if (materialIds.length > 0) {
+                        let materialsDataStructure =
+                            DataStructure.getDataStructureFromState(
+                                draftState,
+                                'materials'
+                            );
+                        for (const materialId of materialIds) {
+                            const material = getElement(
+                                draftState,
+                                'materials',
+                                materialId
+                            );
+
+                            if (material.position === undefined) {
+                                throw new ReducerError(
+                                    `Material with id ${material.id} can't be loaded into vehicle with id ${vehicle.id}, as its position is undefined`
+                                );
+                            }
+
+                            materialsDataStructure =
+                                DataStructure.removeElement(
+                                    materialsDataStructure,
+                                    material.id,
+                                    material.position
+                                );
+
+                            material.position = undefined;
+
+                            // remove any treatments from this material
+                            calculateTreatments(
+                                draftState,
+                                material,
+                                material.position
+                            );
+                        }
+                        DataStructure.writeDataStructureToState(
+                            draftState,
+                            'materials',
+                            materialsDataStructure
+                        );
+                    }
+
+                    const personnelIds = Object.keys(vehicle.personnelIds);
+                    // if this vehicle has personnel associated with it load all in (except personnel being in transfer)
+                    if (personnelIds.length > 0) {
+                        // TODO: right now the dataStructure would be read and written from the state, even when all personnel is in transfer
+                        let personnelDataStructure =
+                            DataStructure.getDataStructureFromState(
+                                draftState,
+                                'personnel'
+                            );
+                        for (const personnelId of personnelIds) {
+                            const personnel = getElement(
+                                draftState,
+                                'personnel',
+                                personnelId
+                            );
+                            // only load personnel from dataStructure if it had a position before and is not in transfer
+                            if (
+                                personnel.position !== undefined &&
+                                personnel.transfer === undefined
+                            ) {
+                                personnelDataStructure =
+                                    DataStructure.removeElement(
+                                        personnelDataStructure,
+                                        personnel.id,
+                                        personnel.position
+                                    );
+                                personnel.position = undefined;
+                                // remove any treatments from this material
+                                calculateTreatments(
+                                    draftState,
+                                    personnel,
+                                    personnel.position
+                                );
+                            }
+                        }
+                        DataStructure.writeDataStructureToState(
+                            draftState,
+                            'personnel',
+                            personnelDataStructure
+                        );
+                    }
                 }
             }
-            calculateTreatments(draftState);
+
             return draftState;
         },
         rights: 'participant',

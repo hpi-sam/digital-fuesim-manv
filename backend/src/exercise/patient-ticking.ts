@@ -96,13 +96,14 @@ function getDedicatedResources(
             san: 0,
         };
     }
-    const material = Object.values(state.materials).filter((thisMaterial) =>
-        Object.keys(thisMaterial.assignedPatientIds).includes(patient.id)
-    ).length;
-    const treatingPersonnel = Object.values(state.personnel).filter(
-        (thisPersonnel) =>
-            Object.keys(thisPersonnel.assignedPatientIds).includes(patient.id)
+
+    const material = Object.keys(patient.assignedMaterialIds).length;
+
+    // TODO: check if this is efficient and maybe do it via for each assignedPersonnelId state.personnel[assignedPersonnelId]
+    const treatingPersonnel = Object.values(state.personnel).filter(() =>
+        Object.keys(patient.assignedPersonnelIds)
     );
+
     const notarzt = treatingPersonnel.filter(
         (thisPersonnel) => thisPersonnel.personnelType === 'notarzt'
     ).length;

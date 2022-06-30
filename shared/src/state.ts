@@ -36,7 +36,8 @@ import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuidValidationOptions, uuid } from './utils';
 import { PatientCategory } from './models/patient-category';
-import { PatientsDataStructure } from './models/patients-datastructure';
+import type { DataStructureElementType } from './models/utils/datastructure';
+import { DataStructure } from './models/utils/datastructure';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -100,9 +101,16 @@ export class ExerciseState {
     @ValidateNested()
     @Type(() => StatisticsEntry)
     public readonly statistics: readonly StatisticsEntry[] = [];
-    @ValidateNested()
-    @Type(() => PatientsDataStructure)
-    public readonly patientsDataStructure = PatientsDataStructure.create();
+
+    @IsObject()
+    public readonly dataStructures: {
+        readonly [key in DataStructureElementType]: DataStructure;
+    } = {
+        materials: DataStructure.create(),
+        patients: DataStructure.create(),
+        personnel: DataStructure.create(),
+    };
+
     @ValidateNested()
     @Type(() => ExerciseConfiguration)
     public readonly configuration = ExerciseConfiguration.create();
