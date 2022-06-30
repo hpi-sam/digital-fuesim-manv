@@ -116,9 +116,11 @@ export namespace ExerciseActionReducers {
             });
             // Refresh treatments
             // TODO: Re-enable this condition!
-            // if (refreshTreatments) {
-            calculateTreatments(draftState);
-            // }
+            console.time('treat');
+            if (refreshTreatments) {
+                calculateTreatments(draftState);
+            }
+            console.timeEnd('treat');
             // Refresh transfers
             refreshTransfer(draftState, 'vehicles', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);

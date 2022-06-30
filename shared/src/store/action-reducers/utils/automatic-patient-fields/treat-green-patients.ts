@@ -24,17 +24,18 @@ export function positionWalkableOrGreenPatients(
     patientIds: UUID[]
 ): Size {
     const patients = patientIds.map((patientId) => state.patients[patientId]);
-    const walkablePatients = patients.filter(
-        (patient) =>
+    const walkablePatients = patients.filter((patient) => {
+        const patientStatus = Patient.getVisibleStatus(
+            patient,
+            state.configuration.pretriageEnabled,
+            state.configuration.bluePatientsEnabled
+        );
+        const walkableWhite =
             patient.pretriageInformation.isWalkable &&
-            ['white', 'green'].includes(
-                Patient.getVisibleStatus(
-                    patient,
-                    state.configuration.pretriageEnabled,
-                    state.configuration.bluePatientsEnabled
-                )
-            )
-    );
+            patientStatus === 'white';
+        const green = patientStatus === 'green';
+        return walkableWhite || green;
+    });
     if (walkablePatients.length === 0) {
         return { width: 0, height: 0 };
     }
