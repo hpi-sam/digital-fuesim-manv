@@ -185,13 +185,26 @@ export class DataStructure {
         maxNumberOfElements?: number
     ) {
         // TODO: check if knn does circle for maxDistance
-        return knn(
-            dataStructure,
-            position.x,
-            position.y,
-            maxNumberOfElements,
-            undefined,
-            radius
-        ) as DataStructureElement[];
+        // if radius is negative, we will return nothing (empty array)
+        // if radius is zero, only objects directly on top of it
+        // using search instead of knn, as knn interprets zero as the same as Infinity
+        // TODO: maybe just treat zero as nothing can be found and return an empty array
+        return radius < 0
+            ? []
+            : radius === 0
+            ? dataStructure.search({
+                  minX: position.x,
+                  minY: position.y,
+                  maxX: position.x,
+                  maxY: position.y,
+              })
+            : (knn(
+                  dataStructure,
+                  position.x,
+                  position.y,
+                  maxNumberOfElements,
+                  undefined,
+                  radius
+              ) as DataStructureElement[]);
     }
 }
