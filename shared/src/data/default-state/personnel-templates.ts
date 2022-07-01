@@ -50,7 +50,7 @@ const notarztPersonnelTemplate = PersonnelTemplate.create(
     },
     // TODO: give notarzt aura
     CanCaterFor.create(2, 2, 2, 'and'),
-    20,
+    15,
     0,
     true
 );

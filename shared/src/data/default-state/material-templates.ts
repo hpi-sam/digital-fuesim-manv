@@ -9,7 +9,7 @@ const defaultMaterialTemplate = MaterialTemplate.create(
         height: 40,
         aspectRatio: 1,
     },
-    CanCaterFor.create(2, 2, 2, 'or'),
+    CanCaterFor.create(2, 0, 0, 'and'),
     0.5,
     5,
     false

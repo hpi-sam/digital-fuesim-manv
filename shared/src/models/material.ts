@@ -63,20 +63,19 @@ export class Material {
         vehicleName: string,
         materialType: MaterialType,
         assignedPatientIds: UUIDSet,
-        position?: Position,
-        auraMode: boolean = false
+        position?: Position
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
         this.assignedPatientIds = assignedPatientIds;
         this.position = position;
-        this.auraMode = auraMode;
         this.image = materialTemplateMap[materialType]?.image;
         this.canCaterFor = materialTemplateMap[materialType]?.canCaterFor;
         this.generalThreshold =
             materialTemplateMap[materialType]?.generalThreshold;
         this.specificThreshold =
             materialTemplateMap[materialType]?.specificThreshold;
+        this.auraMode = materialTemplateMap[materialType]?.auraMode;
     }
 
     static readonly create = getCreate(this);
