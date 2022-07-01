@@ -41,9 +41,17 @@ export class PersonnelFeatureManager extends ElementFeatureManager<
                   width: 5,
                   fillColor: 'rgba(255, 255, 255, 0.1)' as ColorLike,
                   lineDash: [0, 20, 20, 20],
-                  radius: 200,
+                  radius:
+                      Math.max(
+                          personnel.specificThreshold,
+                          personnel.generalThreshold
+                      ) *
+                      (normalZoom - 3) *
+                      2,
+                  // TODO: find out why around 40, 40 = (normalZoom - 3) * 2, normalZoom being 23
               }
-            : {
+            : // all personnel in non auraMode have no circle
+              {
                   color: 'rgba(0, 0, 0, 0)' as ColorLike,
                   width: 0,
                   fillColor: 'rgba(0, 0, 0, 0)' as ColorLike,
