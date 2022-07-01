@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsString, ValidateNested } from 'class-validator';
 import {
     CanCaterFor,
     ImageProperties,
@@ -15,6 +15,9 @@ export class PersonnelTemplate {
     @Type(() => CanCaterFor)
     public readonly canCaterFor: CanCaterFor;
 
+    @IsBoolean()
+    public readonly auraMode: boolean;
+
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
@@ -25,11 +28,13 @@ export class PersonnelTemplate {
     constructor(
         personnelType: PersonnelType,
         image: ImageProperties,
-        canCaterFor: CanCaterFor
+        canCaterFor: CanCaterFor,
+        auraMode: boolean
     ) {
         this.personnelType = personnelType;
         this.image = image;
         this.canCaterFor = canCaterFor;
+        this.auraMode = auraMode;
     }
 
     static readonly create = getCreate(this);

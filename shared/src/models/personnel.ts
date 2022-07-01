@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+    IsBoolean,
     IsDefined,
     IsOptional,
     IsString,
@@ -39,6 +40,9 @@ export class Personnel {
     @Type(() => CanCaterFor)
     public readonly canCaterFor: CanCaterFor;
 
+    @IsBoolean()
+    public readonly auraMode: boolean;
+
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
@@ -75,6 +79,7 @@ export class Personnel {
         // Only assign this when the parameter is set appropriately
         this.image = personnelTemplateMap[personnelType]?.image;
         this.canCaterFor = personnelTemplateMap[personnelType]?.canCaterFor;
+        this.auraMode = personnelTemplateMap[personnelType]?.auraMode;
     }
 
     static readonly create = getCreate(this);

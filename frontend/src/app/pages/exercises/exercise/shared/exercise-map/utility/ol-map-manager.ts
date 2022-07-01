@@ -33,6 +33,7 @@ import {
     getSelectRestrictedViewport,
     getSelectVisibleElements,
     selectCateringLines,
+    selectAuraCateringLines,
     selectExerciseStatus,
     selectMapImages,
     selectTileMapProperties,
@@ -120,6 +121,7 @@ export class OlMapManager {
         const transferPointLayer = this.createElementLayer(600);
         const vehicleLayer = this.createElementLayer(1000);
         const cateringLinesLayer = this.createElementLayer<LineString>();
+        const auraCateringLinesLayer = this.createElementLayer<LineString>();
         const transferLinesLayer = this.createElementLayer<LineString>();
         const patientLayer = this.createElementLayer();
         const personnelLayer = this.createElementLayer();
@@ -199,6 +201,7 @@ export class OlMapManager {
                 transferPointLayer,
                 vehicleLayer,
                 cateringLinesLayer,
+                auraCateringLinesLayer,
                 patientLayer,
                 personnelLayer,
                 materialLayer,
@@ -328,9 +331,20 @@ export class OlMapManager {
             this.store.select(selectMapImages)
         );
 
+        // normal lines of catering objects
         this.registerFeatureElementManager(
-            new CateringLinesFeatureManager(cateringLinesLayer),
+            new CateringLinesFeatureManager(cateringLinesLayer, 0.1, '#0dcaf0'),
             this.store.select(selectCateringLines)
+        );
+
+        // lines of objects with an aura
+        this.registerFeatureElementManager(
+            new CateringLinesFeatureManager(
+                auraCateringLinesLayer,
+                0.1,
+                '#ff0000'
+            ),
+            this.store.select(selectAuraCateringLines)
         );
 
         this.registerFeatureElementManager(

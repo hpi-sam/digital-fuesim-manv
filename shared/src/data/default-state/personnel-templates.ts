@@ -9,7 +9,8 @@ const sanPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(0, 0, 5, 'or')
+    CanCaterFor.create(0, 0, 5, 'or'),
+    false
 );
 
 const rettSanPersonnelTemplate = PersonnelTemplate.create(
@@ -19,7 +20,8 @@ const rettSanPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(1, 2, 0, 'and')
+    CanCaterFor.create(1, 2, 0, 'and'),
+    false
 );
 
 const notSanPersonnelTemplate = PersonnelTemplate.create(
@@ -29,7 +31,8 @@ const notSanPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(2, 1, 0, 'and')
+    CanCaterFor.create(2, 1, 0, 'and'),
+    false
 );
 
 const notarztPersonnelTemplate = PersonnelTemplate.create(
@@ -40,7 +43,8 @@ const notarztPersonnelTemplate = PersonnelTemplate.create(
         aspectRatio: 1,
     },
     // TODO: give notarzt aura
-    CanCaterFor.create(2, 2, 2, 'and')
+    CanCaterFor.create(2, 2, 2, 'and'),
+    true
 );
 
 const gfPersonnelTemplate = PersonnelTemplate.create(
@@ -50,7 +54,8 @@ const gfPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(0, 0, 0, 'or')
+    CanCaterFor.create(0, 0, 0, 'or'),
+    false
 );
 
 export const personnelTemplateMap: {

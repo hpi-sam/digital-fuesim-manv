@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+    IsBoolean,
     IsDefined,
     IsOptional,
     IsString,
@@ -27,6 +28,9 @@ export class Material {
     @Type(() => CanCaterFor)
     public readonly canCaterFor: CanCaterFor;
 
+    @IsBoolean()
+    public readonly auraMode: boolean;
+
     /**
      * if undefined, is in vehicle with {@link vehicleId}
      */
@@ -51,13 +55,15 @@ export class Material {
         vehicleName: string,
         canCaterFor: CanCaterFor,
         assignedPatientIds: UUIDSet,
-        position?: Position
+        position?: Position,
+        auraMode: boolean = false
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
         this.canCaterFor = canCaterFor;
         this.assignedPatientIds = assignedPatientIds;
         this.position = position;
+        this.auraMode = auraMode;
     }
 
     static readonly create = getCreate(this);
