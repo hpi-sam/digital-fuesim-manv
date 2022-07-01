@@ -2,9 +2,11 @@ import { Type } from 'class-transformer';
 import {
     IsBoolean,
     IsDefined,
+    IsNumber,
     IsOptional,
     IsString,
     IsUUID,
+    Min,
     ValidateNested,
 } from 'class-validator';
 import { personnelTemplateMap } from '../data/default-state/personnel-templates';
@@ -39,6 +41,14 @@ export class Personnel {
     @ValidateNested()
     @Type(() => CanCaterFor)
     public readonly canCaterFor: CanCaterFor;
+
+    @IsNumber()
+    @Min(0)
+    public readonly specificThreshold: number;
+
+    @IsNumber()
+    @Min(0)
+    public readonly generalThreshold: number;
 
     @IsBoolean()
     public readonly auraMode: boolean;
@@ -79,6 +89,10 @@ export class Personnel {
         // Only assign this when the parameter is set appropriately
         this.image = personnelTemplateMap[personnelType]?.image;
         this.canCaterFor = personnelTemplateMap[personnelType]?.canCaterFor;
+        this.generalThreshold =
+            personnelTemplateMap[personnelType]?.generalThreshold;
+        this.specificThreshold =
+            personnelTemplateMap[personnelType]?.specificThreshold;
         this.auraMode = personnelTemplateMap[personnelType]?.auraMode;
     }
 

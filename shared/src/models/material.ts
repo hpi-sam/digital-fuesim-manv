@@ -2,13 +2,17 @@ import { Type } from 'class-transformer';
 import {
     IsBoolean,
     IsDefined,
+    IsNumber,
     IsOptional,
     IsString,
     IsUUID,
+    Min,
     ValidateNested,
 } from 'class-validator';
+import { materialTemplateMap } from '../data/default-state/material-templates';
 import { uuid, UUID, UUIDSet, uuidValidationOptions } from '../utils';
 import { CanCaterFor, getCreate, ImageProperties, Position } from './utils';
+import type { MaterialType } from './utils/material-type';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
@@ -28,6 +32,14 @@ export class Material {
     @Type(() => CanCaterFor)
     public readonly canCaterFor: CanCaterFor;
 
+    @IsNumber()
+    @Min(0)
+    public readonly specificThreshold: number;
+
+    @IsNumber()
+    @Min(0)
+    public readonly generalThreshold: number;
+
     @IsBoolean()
     public readonly auraMode: boolean;
 
@@ -41,11 +53,7 @@ export class Material {
 
     @ValidateNested()
     @Type(() => ImageProperties)
-    public readonly image: ImageProperties = {
-        url: './assets/material.svg',
-        height: 40,
-        aspectRatio: 1,
-    };
+    public readonly image: ImageProperties;
 
     /**
      * @deprecated Use {@link create} instead
@@ -53,17 +61,22 @@ export class Material {
     constructor(
         vehicleId: UUID,
         vehicleName: string,
-        canCaterFor: CanCaterFor,
+        materialType: MaterialType,
         assignedPatientIds: UUIDSet,
         position?: Position,
         auraMode: boolean = false
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
-        this.canCaterFor = canCaterFor;
         this.assignedPatientIds = assignedPatientIds;
         this.position = position;
         this.auraMode = auraMode;
+        this.image = materialTemplateMap[materialType]?.image;
+        this.canCaterFor = materialTemplateMap[materialType]?.canCaterFor;
+        this.generalThreshold =
+            materialTemplateMap[materialType]?.generalThreshold;
+        this.specificThreshold =
+            materialTemplateMap[materialType]?.specificThreshold;
     }
 
     static readonly create = getCreate(this);

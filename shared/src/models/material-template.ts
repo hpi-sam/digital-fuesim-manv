@@ -6,16 +6,12 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import {
-    CanCaterFor,
-    ImageProperties,
-    getCreate,
-    PersonnelType,
-} from './utils';
+import { CanCaterFor, ImageProperties, getCreate } from './utils';
+import { MaterialType } from './utils/material-type';
 
-export class PersonnelTemplate {
+export class MaterialTemplate {
     @IsString()
-    public readonly personnelType: PersonnelType;
+    public readonly materialType: MaterialType;
 
     @ValidateNested()
     @Type(() => CanCaterFor)
@@ -40,14 +36,14 @@ export class PersonnelTemplate {
      * @deprecated Use {@link create} instead
      */
     constructor(
-        personnelType: PersonnelType,
+        materialType: MaterialType,
         image: ImageProperties,
         canCaterFor: CanCaterFor,
         specificThreshold: number,
         generalThreshold: number,
         auraMode: boolean
     ) {
-        this.personnelType = personnelType;
+        this.materialType = materialType;
         this.image = image;
         this.canCaterFor = canCaterFor;
         this.specificThreshold = specificThreshold;

@@ -10,6 +10,8 @@ const sanPersonnelTemplate = PersonnelTemplate.create(
         aspectRatio: 1,
     },
     CanCaterFor.create(0, 0, 5, 'or'),
+    0.5,
+    5,
     false
 );
 
@@ -21,6 +23,8 @@ const rettSanPersonnelTemplate = PersonnelTemplate.create(
         aspectRatio: 1,
     },
     CanCaterFor.create(1, 2, 0, 'and'),
+    0.5,
+    5,
     false
 );
 
@@ -32,6 +36,8 @@ const notSanPersonnelTemplate = PersonnelTemplate.create(
         aspectRatio: 1,
     },
     CanCaterFor.create(2, 1, 0, 'and'),
+    0.5,
+    5,
     false
 );
 
@@ -44,6 +50,8 @@ const notarztPersonnelTemplate = PersonnelTemplate.create(
     },
     // TODO: give notarzt aura
     CanCaterFor.create(2, 2, 2, 'and'),
+    20,
+    0,
     true
 );
 
@@ -55,6 +63,8 @@ const gfPersonnelTemplate = PersonnelTemplate.create(
         aspectRatio: 1,
     },
     CanCaterFor.create(0, 0, 0, 'or'),
+    0,
+    0,
     false
 );
 

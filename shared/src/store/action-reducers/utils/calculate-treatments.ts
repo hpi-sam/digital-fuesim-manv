@@ -6,6 +6,8 @@ import type { Mutable, UUIDSet } from '../../../utils';
 import type { MyRBush } from '../../../models/utils/datastructure';
 import { DataStructure } from '../../../models/utils/datastructure';
 import { ReducerError } from '../../reducer-error';
+import { personnelTemplateMap } from '../../../data/default-state/personnel-templates';
+import { materialTemplateMap } from '../../../data/default-state/material-templates';
 import { getElement } from './get-element';
 
 interface CatersFor {
@@ -16,15 +18,45 @@ interface CatersFor {
 
 // TODO: set to reasonable distance
 /**
- * Maximum distance to treat the exact nearest patient
+ * Maximum distance of any personnel or material to treat the exact nearest patient
  */
-const specificThreshold = 1;
+let specificThreshold = 0;
 
 // TODO: set to reasonable distance
 /**
- * Maximum distance to treat any patient
+ * Maximum distance of any personnel or material to treat a patient
  */
-const generalThreshold = 5;
+let generalThreshold = 0;
+
+// going through every template and getting the highest specificThreshold
+for (const personnelTemplate of Object.values(personnelTemplateMap)) {
+    specificThreshold = Math.max(
+        specificThreshold,
+        personnelTemplate.specificThreshold
+    );
+}
+
+for (const materialTemplate of Object.values(materialTemplateMap)) {
+    specificThreshold = Math.max(
+        specificThreshold,
+        materialTemplate.specificThreshold
+    );
+}
+
+// going through every template and getting the highest generalThreshold
+for (const personnelTemplate of Object.values(personnelTemplateMap)) {
+    generalThreshold = Math.max(
+        generalThreshold,
+        personnelTemplate.generalThreshold
+    );
+}
+
+for (const materialTemplate of Object.values(materialTemplateMap)) {
+    generalThreshold = Math.max(
+        generalThreshold,
+        materialTemplate.generalThreshold
+    );
+}
 
 /**
  * checking wether a material or personnel could check for a patient with {@link status} if already {@link catersFor} x patients
@@ -404,7 +436,7 @@ function calculateCatering(
         DataStructure.findAllElementsInCircle(
             patientsDataStructure,
             catering.position,
-            specificThreshold,
+            catering.specificThreshold,
             maxPatientsCouldCaterFor
         );
 
@@ -438,7 +470,7 @@ function calculateCatering(
             DataStructure.findAllElementsInCircle(
                 patientsDataStructure,
                 catering.position,
-                generalThreshold,
+                catering.generalThreshold,
                 maxPatientsCouldCaterFor
             )
                 // filter out every patient in the specificThreshold
