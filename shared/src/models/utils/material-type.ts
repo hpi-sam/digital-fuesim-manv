@@ -1,2 +1,2 @@
 // TODO: Material settings (imageBlobId, name, type, capacity)
-export type MaterialType = 'default';
+export type MaterialType = 'big' | 'default';

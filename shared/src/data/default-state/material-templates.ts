@@ -15,8 +15,22 @@ const defaultMaterialTemplate = MaterialTemplate.create(
     false
 );
 
+const bigMaterialTemplate = MaterialTemplate.create(
+    'big',
+    {
+        url: '/assets/material.svg',
+        height: 80,
+        aspectRatio: 1,
+    },
+    CanCaterFor.create(2, 2, 0, 'and'),
+    15,
+    0,
+    true
+);
+
 export const materialTemplateMap: {
     [key in MaterialType]: MaterialTemplate;
 } = {
     default: defaultMaterialTemplate,
+    big: bigMaterialTemplate,
 };
