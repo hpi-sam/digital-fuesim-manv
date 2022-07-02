@@ -16,47 +16,38 @@ interface CatersFor {
     green: number;
 }
 
-// TODO: set to reasonable distance
-/**
- * Maximum distance of any personnel or material to treat the exact nearest patient
- */
-let specificThreshold = 0;
+function setMaximumThreshold() {
+    let result = 0;
 
-// TODO: set to reasonable distance
+    console.log('setMaximumThreshold() called');
+
+    // going through every template and getting the highest specificThreshold
+    for (const personnelTemplate of Object.values(personnelTemplateMap)) {
+        result = Math.max(result, personnelTemplate.specificThreshold);
+    }
+
+    for (const materialTemplate of Object.values(materialTemplateMap)) {
+        result = Math.max(result, materialTemplate.specificThreshold);
+    }
+
+    // going through every template and getting the highest generalThreshold
+    for (const personnelTemplate of Object.values(personnelTemplateMap)) {
+        result = Math.max(result, personnelTemplate.generalThreshold);
+    }
+
+    for (const materialTemplate of Object.values(materialTemplateMap)) {
+        result = Math.max(result, materialTemplate.generalThreshold);
+    }
+
+    return result;
+}
+
 /**
  * Maximum distance of any personnel or material to treat a patient
  */
-let generalThreshold = 0;
+const maximumThreshold = setMaximumThreshold();
 
-// going through every template and getting the highest specificThreshold
-for (const personnelTemplate of Object.values(personnelTemplateMap)) {
-    specificThreshold = Math.max(
-        specificThreshold,
-        personnelTemplate.specificThreshold
-    );
-}
-
-for (const materialTemplate of Object.values(materialTemplateMap)) {
-    specificThreshold = Math.max(
-        specificThreshold,
-        materialTemplate.specificThreshold
-    );
-}
-
-// going through every template and getting the highest generalThreshold
-for (const personnelTemplate of Object.values(personnelTemplateMap)) {
-    generalThreshold = Math.max(
-        generalThreshold,
-        personnelTemplate.generalThreshold
-    );
-}
-
-for (const materialTemplate of Object.values(materialTemplateMap)) {
-    generalThreshold = Math.max(
-        generalThreshold,
-        materialTemplate.generalThreshold
-    );
-}
+console.log(maximumThreshold);
 
 /**
  * checking wether a material or personnel could check for a patient with {@link status} if already {@link catersFor} x patients
@@ -204,7 +195,7 @@ function calculateCateringForDataStructure(
     const elementsInGeneralThreshold = DataStructure.findAllElementsInCircle(
         dataStructure,
         position,
-        generalThreshold
+        maximumThreshold
     ).filter((elementData) => !elementIdsToBeSkipped[elementData.id]);
 
     for (const datastructureElement of elementsInGeneralThreshold) {
