@@ -18,6 +18,10 @@ import { ElementFeatureManager, createPoint } from './element-feature-manager';
 export class MaterialFeatureManager extends ElementFeatureManager<
     WithPosition<Material>
 > {
+    // TODO: find out if the scale in nameStyleHelper and auraStyleHelper should maybe be independent
+    // and if scale is dependent on normalZoom
+    private readonly scale = 0.025;
+
     private readonly imageStyleHelper = new ImageStyleHelper(
         (feature) => this.getElementFromFeature(feature)!.value.image
     );
@@ -29,7 +33,7 @@ export class MaterialFeatureManager extends ElementFeatureManager<
                 offsetY: material.image.height / 2 / normalZoom,
             };
         },
-        0.025,
+        this.scale,
         'top'
     );
 
@@ -39,16 +43,14 @@ export class MaterialFeatureManager extends ElementFeatureManager<
             ? {
                   color: 'rgba(255, 255, 255, 0.6)' as ColorLike,
                   width: 5,
-                  fillColor: 'rgba(255, 255, 255, 0.1)' as ColorLike,
+                  // TODO: make it non interactable - is also on top of e.g. patients
+                  // fillColor: 'rgba(0, 0, 0, 0)' as ColorLike,
                   lineDash: [0, 20, 20, 20],
                   radius:
                       Math.max(
                           material.specificThreshold,
                           material.generalThreshold
-                      ) *
-                      (normalZoom - 3) *
-                      2,
-                  // TODO: find out why around 40, 40 = (normalZoom - 3) * 2, normalZoom being 23
+                      ) / this.scale,
               }
             : // all personnel in non auraMode have no circle
               {
@@ -58,7 +60,7 @@ export class MaterialFeatureManager extends ElementFeatureManager<
                   lineDash: [0],
                   radius: 0,
               };
-    }, 0.025);
+    }, this.scale);
 
     constructor(
         store: Store<AppState>,

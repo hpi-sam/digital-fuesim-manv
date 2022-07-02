@@ -1,6 +1,6 @@
 import type { Feature } from 'ol';
 import type { ColorLike } from 'ol/colorlike';
-import { Circle, Fill, Style } from 'ol/style';
+import { Circle, Style } from 'ol/style';
 import Stroke from 'ol/style/Stroke';
 import { StyleHelper } from './style-helper';
 
@@ -9,7 +9,8 @@ export class AuraStyleHelper extends StyleHelper<Style, Feature> {
         private readonly getCircleProperties: (feature: Feature) => {
             color: ColorLike;
             width: number;
-            fillColor: ColorLike;
+            // TODO: make it non interactable - is also on top of e.g. patients
+            // fillColor: ColorLike;
             lineDash: number[];
             radius: number;
         },
@@ -22,15 +23,18 @@ export class AuraStyleHelper extends StyleHelper<Style, Feature> {
         return new Style({
             image: new Circle({
                 radius: this.getCircleProperties(feature).radius,
+                // TODO: make it non interactable - is also on top of e.g. patients
                 stroke: new Stroke({
                     color: this.getCircleProperties(feature).color,
                     width: this.getCircleProperties(feature).width,
                     lineDash: this.getCircleProperties(feature).lineDash,
                 }),
-                fill: new Fill({
-                    color: this.getCircleProperties(feature).fillColor,
-                }),
+                // TODO: make it non interactable - is also on top of e.g. patients
+                // fill: new Fill({
+                //     color: this.getCircleProperties(feature).fillColor,
+                // }),
             }),
+            // put it behind the personnel or material
             zIndex: 0,
         });
     }
