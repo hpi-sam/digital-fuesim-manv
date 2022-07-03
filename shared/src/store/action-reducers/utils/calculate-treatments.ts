@@ -19,8 +19,6 @@ interface CatersFor {
 function setMaximumThreshold() {
     let result = 0;
 
-    console.log('setMaximumThreshold() called');
-
     // going through every template and getting the highest specificThreshold
     for (const personnelTemplate of Object.values(personnelTemplateMap)) {
         result = Math.max(result, personnelTemplate.specificThreshold);
@@ -46,8 +44,6 @@ function setMaximumThreshold() {
  * Maximum distance of any personnel or material to treat a patient
  */
 const maximumThreshold = setMaximumThreshold();
-
-console.log(maximumThreshold);
 
 /**
  * checking wether a material or personnel could check for a patient with {@link status} if already {@link catersFor} x patients
