@@ -3,48 +3,25 @@ import type {
     HealthPoints,
     Patient,
     PersonnelType,
-    UUID,
 } from 'digital-fuesim-manv-shared';
 import { healthPointsDefaults, isAlive } from 'digital-fuesim-manv-shared';
+import type { PatientUpdate } from 'digital-fuesim-manv-shared/dist/utils/patient-updates';
 
 /**
  * The count of assigned personnel and material that cater for a {@link Patient}.
  */
 type Catering = { [key in PersonnelType | 'material']: number };
 
-interface PatientTickResult {
-    /**
-     * The id of the patient
-     */
-    id: UUID;
-    /**
-     * The new {@link HealthPoints} the patient should have
-     */
-    nextHealthPoints: HealthPoints;
-    /**
-     * The next {@link PatientHealthState} the patient should be in
-     */
-    nextStateId: UUID;
-    /**
-     * The new state time of the patient
-     */
-    nextStateTime: number;
-    /**
-     * The time a patient was treated overall
-     */
-    treatmentTime: number;
-}
-
 /**
  * Apply the patient tick to the {@link state}
  * @param state The {@link ExerciseState} the patient tick should be applied on later
  * @param patientTickInterval The interval in ms between calls to this function
- * @returns An array of {@link PatientTickResult}s to apply to the {@link state} in a reducer
+ * @returns An array of {@link PatientUpdate}s to apply to the {@link state} in a reducer
  */
 export function patientTick(
     state: ExerciseState,
     patientTickInterval: number
-): PatientTickResult[] {
+): PatientUpdate[] {
     return (
         Object.values(state.patients)
             // Only look at patients that are alive and have a position, i.e. are not in a vehicle
