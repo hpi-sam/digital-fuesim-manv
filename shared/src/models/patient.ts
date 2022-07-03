@@ -40,6 +40,7 @@ export class Patient {
     @ValidateNested()
     @Type(() => PretriageInformation)
     public readonly pretriageInformation: PretriageInformation;
+
     /**
      * A description of the expected patient behaviour over time
      * For the trainer
@@ -56,37 +57,17 @@ export class Patient {
     @IsString()
     public readonly realStatus: PatientStatus;
 
+    /**
+     * TODO: maybe use getter and setter for {@link needsNewCalculateTreatments} and combine it with getVisibleStatus
+     * when visibleStatus would change, set this to true, for refreshTreatments in exerciseTickAction
+     * will be set to false when next calculateTreatments was called for this patient
+     */
+    @IsBoolean()
+    public readonly needsNewCalculateTreatments: boolean = false;
+
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
-
-    /**
-     * @deprecated Use {@link create} instead
-     */
-    constructor(
-        // TODO: Specify patient data (e.g. injuries, name, etc.)
-        personalInformation: PersonalInformation,
-        biometricInformation: BiometricInformation,
-        pretriageInformation: PretriageInformation,
-        patientStatusCode: PatientStatusCode,
-        pretriageStatus: PatientStatus,
-        realStatus: PatientStatus,
-        healthStates: { readonly [stateId: UUID]: PatientHealthState },
-        currentHealthStateId: UUID,
-        image: ImageProperties,
-        health: HealthPoints
-    ) {
-        this.personalInformation = personalInformation;
-        this.biometricInformation = biometricInformation;
-        this.pretriageInformation = pretriageInformation;
-        this.patientStatusCode = patientStatusCode;
-        this.pretriageStatus = pretriageStatus;
-        this.realStatus = realStatus;
-        this.healthStates = healthStates;
-        this.currentHealthStateId = currentHealthStateId;
-        this.image = image;
-        this.health = health;
-    }
 
     /**
      * Exclusive-or to {@link vehicleId}
@@ -95,6 +76,7 @@ export class Patient {
     @Type(() => Position)
     @IsOptional()
     public readonly position?: Position;
+
     /**
      * Exclusive-or to {@link position}
      */
@@ -118,6 +100,7 @@ export class Patient {
      */
     @IsUUID(4, uuidValidationOptions)
     public readonly currentHealthStateId: UUID;
+
     /**
      * See {@link HealthPoints} for context of this property.
      */
@@ -150,23 +133,47 @@ export class Patient {
     @Min(0)
     public treatmentTime = 0;
 
-    static readonly create = getCreate(this);
-
     /**
      * The time that is needed for personnel to automatically pretriage the patient
      * in milliseconds
      */
     private static readonly pretriageTimeThreshold: number = 2 * 60 * 1000;
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
+        // TODO: Specify patient data (e.g. injuries, name, etc.)
+        personalInformation: PersonalInformation,
+        biometricInformation: BiometricInformation,
+        pretriageInformation: PretriageInformation,
+        patientStatusCode: PatientStatusCode,
+        pretriageStatus: PatientStatus,
+        realStatus: PatientStatus,
+        healthStates: { readonly [stateId: UUID]: PatientHealthState },
+        currentHealthStateId: UUID,
+        image: ImageProperties,
+        health: HealthPoints
+    ) {
+        this.personalInformation = personalInformation;
+        this.biometricInformation = biometricInformation;
+        this.pretriageInformation = pretriageInformation;
+        this.patientStatusCode = patientStatusCode;
+        this.pretriageStatus = pretriageStatus;
+        this.realStatus = realStatus;
+        this.healthStates = healthStates;
+        this.currentHealthStateId = currentHealthStateId;
+        this.image = image;
+        this.health = health;
+    }
+
+    static readonly create = getCreate(this);
+
     static getVisibleStatus(
         patient: Patient,
         pretriageEnabled: boolean,
         bluePatientsEnabled: boolean
     ) {
-        // if (patient.treatmentTime !== 0) {
-        //     console.log(patient);
-        //     patient.treatmentTime = 0;
-        // }
         const status =
             !pretriageEnabled ||
             patient.treatmentTime >= this.pretriageTimeThreshold

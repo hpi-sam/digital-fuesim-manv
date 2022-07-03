@@ -8,8 +8,8 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { countBy } from 'lodash-es';
-import type { Client, Vehicle, Patient } from '../../models';
-import { Personnel, Viewport } from '../../models';
+import type { Client, Vehicle } from '../../models';
+import { Patient, Personnel, Viewport } from '../../models';
 import { StatusHistoryEntry } from '../../models/status-history-entry';
 import { getStatus } from '../../models/utils';
 import type { AreaStatistics } from '../../models/utils/area-statistics';
@@ -114,14 +114,41 @@ export namespace ExerciseActionReducers {
             // Refresh patient status
             patientUpdates.forEach((patientUpdate) => {
                 const currentPatient = draftState.patients[patientUpdate.id];
+
+                const visibleStatusBefore = Patient.getVisibleStatus(
+                    currentPatient,
+                    draftState.configuration.pretriageEnabled,
+                    draftState.configuration.bluePatientsEnabled
+                );
+
                 currentPatient.currentHealthStateId = patientUpdate.nextStateId;
                 currentPatient.health = patientUpdate.nextHealthPoints;
                 currentPatient.stateTime = patientUpdate.nextStateTime;
                 currentPatient.treatmentTime = patientUpdate.treatmentTime;
                 currentPatient.realStatus = getStatus(currentPatient.health);
 
-                // Refresh treatments
-                if (refreshTreatments) {
+                /**
+                 * if visibleStatus would change setting {@link needsNewCalculateTreatments} to true,
+                 * as when {@link refreshTreatments} is also true, this patient needs new treatment calculation
+                 */
+                if (
+                    visibleStatusBefore !==
+                    Patient.getVisibleStatus(
+                        currentPatient,
+                        draftState.configuration.pretriageEnabled,
+                        draftState.configuration.bluePatientsEnabled
+                    )
+                ) {
+                    currentPatient.needsNewCalculateTreatments = true;
+                }
+
+                /**
+                 * Refresh treatments of this patient every refreshTreatmentInterval and only when the visibleStatus of a patient really changed
+                 */
+                if (
+                    refreshTreatments &&
+                    currentPatient.needsNewCalculateTreatments
+                ) {
                     calculateTreatments(
                         draftState,
                         currentPatient,
@@ -130,6 +157,9 @@ export namespace ExerciseActionReducers {
                         personnelDataStructure,
                         materialsDataStructure
                     );
+                    /**
+                     * calculateTreatments() will set {@link needsNewCalculateTreatments} to false again
+                     */
                 }
             });
 

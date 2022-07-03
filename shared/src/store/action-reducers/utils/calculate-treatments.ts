@@ -302,7 +302,7 @@ export function calculateTreatments(
             );
         }
         // element is patient: calculating for every personnel and material around the patient position(s)
-        // TODO: seems to not work (patient moving, adding and probably deleting)
+
         // if patient moved (has startPosition and targetPosition)
         if (isPositionArray(positions)) {
             // recalculating catering for every personnel around the position a patient was
@@ -372,6 +372,12 @@ export function calculateTreatments(
                 elementIdsToBeSkipped
             );
         }
+
+        /**
+         * patient got new treatment and updated all possible personnel and material, therefore setting {@link needsNewCalculateTreatments} to false
+         */
+        getElement(state, 'patients', element.id).needsNewCalculateTreatments =
+            false;
     }
 }
 

@@ -213,6 +213,7 @@ export class ExerciseWrapper extends NormalType<
             /**
              * refresh every {@link refreshTreatmentInterval} * {@link tickInterval} ms seconds
              */
+            // TODO: Refactor this so that `refreshTreatments` is done the same way
             refreshTreatments:
                 this.tickCounter % this.refreshTreatmentInterval === 0,
             tickInterval: this.tickInterval,
