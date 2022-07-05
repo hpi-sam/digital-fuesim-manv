@@ -1,0 +1,9 @@
+<span
+    class="badge rounded-pill"
+    [ngStyle]="{
+        'background-color': status
+    }"
+    [class.text-dark]="status === 'yellow' || status === 'white'"
+>
+    {{ statusNames[status] }}
+</span>

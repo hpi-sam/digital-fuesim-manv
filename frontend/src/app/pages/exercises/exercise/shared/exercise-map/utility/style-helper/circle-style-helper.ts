@@ -22,7 +22,7 @@ export class CircleStyleHelper extends StyleHelper<Style, Feature> {
                 radius: this.radius,
                 stroke: new Stroke({
                     color: 'white',
-                    width: 0.1,
+                    width: 1,
                 }),
                 fill: new Fill({
                     color,
