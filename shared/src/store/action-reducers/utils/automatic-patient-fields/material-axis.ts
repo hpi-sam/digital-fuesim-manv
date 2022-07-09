@@ -109,7 +109,7 @@ function positionPersonnelOnAxis(
                 axisInformation.top.y -
                 Math.floor(index / 2) * spacing.y +
                 0.5 * spacing.y -
-                // Minimally move personnel done to not have identical distances
+                // Minimally move personnel down to not have identical distances
                 offset,
         };
         if (index % 2 === 0) result.innerRightLineCount++;
