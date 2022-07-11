@@ -24,10 +24,11 @@ export function transportPatient(
     }
     const vehicleForTransport = vehicleIds
         .map((vehicleId) => state.vehicles[vehicleId])
-        .filter((vehicle) =>
-            Object.keys(vehicle.personnelIds).every((personnelId) =>
-                personnelIds.includes(personnelId)
-            )
+        .filter(
+            (vehicle) =>
+                Object.keys(vehicle.personnelIds).every((personnelId) =>
+                    personnelIds.includes(personnelId)
+                ) && vehicle.patientCapacity > 0
         )
         .sort(
             (left, right) => -getOrderVehiclesByCatering(state)(left, right)
