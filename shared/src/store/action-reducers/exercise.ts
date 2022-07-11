@@ -95,16 +95,13 @@ export namespace ExerciseActionReducers {
             draftState,
             { patientUpdates, refreshTreatments, tickInterval }
         ) => {
+            performance.clearMarks();
+            performance.clearMeasures();
             // eslint-disable-next-line no-console
-            console.time('tick');
+            // console.time('tick');
+            performance.mark('tick');
             // Refresh the current time
             draftState.currentTime += tickInterval;
-            // Refresh automated viewports
-            // eslint-disable-next-line no-console
-            console.time('auto');
-            automaticPatientFields(draftState);
-            // eslint-disable-next-line no-console
-            console.timeEnd('auto');
             // Refresh patient status
             patientUpdates.forEach((patientUpdate) => {
                 const currentPatient = draftState.patients[patientUpdate.id];
@@ -114,13 +111,23 @@ export namespace ExerciseActionReducers {
                 currentPatient.treatmentTime = patientUpdate.treatmentTime;
                 currentPatient.realStatus = getStatus(currentPatient.health);
             });
-            // Refresh treatments
-            // TODO: Re-enable this condition!
-            console.time('treat');
+            // eslint-disable-next-line no-console
+            // console.time('treat-or-auto');
             if (refreshTreatments) {
+                performance.mark('treat');
+                // Refresh treatments
                 calculateTreatments(draftState);
+                performance.measure('treat', 'treat');
+                // console.log('treat');
+            } else {
+                performance.mark('auto');
+                // Only refresh automated viewports when no treatments are calculated for better performance
+                automaticPatientFields(draftState);
+                performance.measure('auto', 'auto');
+                // console.log('auto ');
             }
-            console.timeEnd('treat');
+            // eslint-disable-next-line no-console
+            // console.timeEnd('treat-or-auto');
             // Refresh transfers
             refreshTransfer(draftState, 'vehicles', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);
@@ -131,7 +138,13 @@ export namespace ExerciseActionReducers {
                 updateStatistics(draftState);
             }
             // eslint-disable-next-line no-console
-            console.timeEnd('tick');
+            // console.timeEnd('tick');
+            performance.measure('tick', 'tick');
+            performances.push(
+                ...(performance.getEntriesByType(
+                    'measure'
+                ) as PerformanceMeasure[])
+            );
             return draftState;
         },
         rights: 'server',
@@ -146,6 +159,8 @@ export namespace ExerciseActionReducers {
         rights: 'server',
     };
 }
+
+export const performances: PerformanceMeasure[] = [];
 
 function refreshTransfer(
     draftState: Mutable<ExerciseState>,

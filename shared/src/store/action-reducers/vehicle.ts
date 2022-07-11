@@ -203,7 +203,8 @@ export namespace VehicleActionReducers {
 
 export function unloadVehicleReducer(
     state: Mutable<ExerciseState>,
-    vehicleId: UUID
+    vehicleId: UUID,
+    doCalculateTreatments = true
 ): Mutable<ExerciseState> {
     const vehicle = getElement(state, 'vehicles', vehicleId);
     const unloadPosition = vehicle.position;
@@ -253,7 +254,7 @@ export function unloadVehicleReducer(
             y: unloadPosition.y,
         };
     }
-    calculateTreatments(state);
+    if (doCalculateTreatments) calculateTreatments(state);
     return state;
 }
 
@@ -261,7 +262,8 @@ export function loadVehicleReducer(
     state: Mutable<ExerciseState>,
     vehicleId: UUID,
     elementToBeLoadedId: UUID,
-    elementToBeLoadedType: 'material' | 'patient' | 'personnel'
+    elementToBeLoadedType: 'material' | 'patient' | 'personnel',
+    doCalculateTreatments = true
 ) {
     const vehicle = getElement(state, 'vehicles', vehicleId);
     switch (elementToBeLoadedType) {
@@ -319,6 +321,6 @@ export function loadVehicleReducer(
             });
         }
     }
-    calculateTreatments(state);
+    if (doCalculateTreatments) calculateTreatments(state);
     return state;
 }

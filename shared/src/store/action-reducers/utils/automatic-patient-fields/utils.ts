@@ -216,6 +216,14 @@ export function getComparePatients(
     };
 }
 
+export function assureCanCater(caterer: { canCaterFor: CanCaterFor }): boolean {
+    return (
+        caterer.canCaterFor.green > 0 ||
+        caterer.canCaterFor.yellow > 0 ||
+        caterer.canCaterFor.red > 0
+    );
+}
+
 export function getElementIdsFromState<
     T extends { position?: Position; id: UUID }
 >(
@@ -226,7 +234,6 @@ export function getElementIdsFromState<
     additionalSort?: (left: T, right: T) => number
 ): UUID[] {
     return (Object.values(state[type]) as T[])
-        .sort((a, b) => a.id.localeCompare(b.id))
         .filter(
             (element) =>
                 element.position !== undefined &&
@@ -234,6 +241,7 @@ export function getElementIdsFromState<
                 (additionalCondition === undefined ||
                     additionalCondition(element))
         )
+        .sort((a, b) => a.id.localeCompare(b.id))
         .sort(additionalSort ?? ((_left: T, _right: T) => 0))
         .map((element) => element.id);
 }

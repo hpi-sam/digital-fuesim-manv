@@ -1,14 +1,17 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsInt, IsString, Min } from 'class-validator';
 import { getCreate } from './get-create';
 
 export class CanCaterFor {
-    @IsNumber()
+    @IsInt()
+    @Min(0)
     public readonly red: number;
 
-    @IsNumber()
+    @IsInt()
+    @Min(0)
     public readonly yellow: number;
 
-    @IsNumber()
+    @IsInt()
+    @Min(0)
     public readonly green: number;
 
     // TODO

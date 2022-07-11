@@ -2,7 +2,6 @@ import type { Viewport } from '../../../../models';
 import { Patient } from '../../../../models';
 import type { ExerciseState } from '../../../../state';
 import type { Immutable, Mutable, UUID } from '../../../../utils';
-import { cloneDeepMutable } from '../../../../utils';
 import type {
     PersonnelOnAxis,
     PatientsOnAxis,
@@ -78,7 +77,12 @@ function positionPersonnelOnAxis(
     personnelIds: UUID[],
     axisInformation: AxisInformation
 ): PersonnelOnAxis {
-    const result: PersonnelOnAxis = cloneDeepMutable(emptyPersonnelResult);
+    const result: PersonnelOnAxis = {
+        innerLeftLineCount: 0,
+        innerRightLineCount: 0,
+        outerLeftLineCount: 0,
+        outerRightLineCount: 0,
+    };
     const personnel = personnelIds
         .map((personnelId) => state.personnel[personnelId])
         .filter(
@@ -173,7 +177,10 @@ function positionPatientsOnAxis(
     patients: Mutable<Patient>[],
     axisInformation: AxisInformation
 ): PatientsOnAxis {
-    const result: PatientsOnAxis = cloneDeepMutable(emptyPatientResult);
+    const result: PatientsOnAxis = {
+        leftLineCount: 0,
+        rightLineCount: 0,
+    };
     patients.forEach((patient, index) => {
         patient.position = {
             x:

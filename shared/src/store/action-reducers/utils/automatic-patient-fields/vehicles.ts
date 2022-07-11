@@ -24,7 +24,9 @@ function unloadVehicles(
     state: Mutable<ExerciseState>,
     vehicles: Vehicle[]
 ): void {
-    vehicles.forEach((vehicle) => unloadVehicleReducer(state, vehicle.id));
+    vehicles.forEach((vehicle) =>
+        unloadVehicleReducer(state, vehicle.id, false)
+    );
 }
 
 function positionVehicles(
@@ -68,25 +70,13 @@ function getVehiclesToUnload(
     state: ExerciseState,
     vehicles: Vehicle[]
 ): Vehicle[] {
-    return vehicles.filter((vehicle) => {
-        const materials = Object.keys(vehicle.materialIds).map(
-            (materialId) => state.materials[materialId]
-        );
-        const materialsInVehicle = materials.filter((material) =>
-            Material.isInVehicle(material)
-        );
-        if (materialsInVehicle.length > 0) {
-            return true;
-        }
-        const personnel = Object.keys(vehicle.personnelIds).map(
-            (personnelId) => state.personnel[personnelId]
-        );
-        const personnelInVehicle = personnel.filter((thisPersonnel) =>
-            Personnel.isInVehicle(thisPersonnel)
-        );
-        if (personnelInVehicle.length > 0) {
-            return true;
-        }
-        return false;
-    });
+    return vehicles.filter(
+        (vehicle) =>
+            Object.keys(vehicle.materialIds).some((materialId) =>
+                Material.isInVehicle(state.materials[materialId])
+            ) ||
+            Object.keys(vehicle.personnelIds).some((personnelId) =>
+                Personnel.isInVehicle(state.personnel[personnelId])
+            )
+    );
 }

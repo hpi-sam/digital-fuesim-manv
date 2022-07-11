@@ -16,6 +16,7 @@ import {
     treatGreenPatients,
 } from './treat-green-patients';
 import {
+    assureCanCater,
     compareCaterer,
     getElementIdsFromState,
     getMaterialDistribution,
@@ -92,20 +93,12 @@ function automaticPatientField(
 
         // Remove personnel and material that cannot treat
         const presentAvailableCateringPersonnelIds =
-            presentAvailablePersonnelIds.filter(
-                (personnelId) =>
-                    state.personnel[personnelId].canCaterFor.red +
-                        state.personnel[personnelId].canCaterFor.yellow +
-                        state.personnel[personnelId].canCaterFor.green >
-                    0
+            presentAvailablePersonnelIds.filter((personnelId) =>
+                assureCanCater(state.personnel[personnelId])
             );
         const presentAvailableCateringMaterialIds =
-            presentAvailableMaterialIds.filter(
-                (materialId) =>
-                    state.materials[materialId].canCaterFor.red +
-                        state.materials[materialId].canCaterFor.yellow +
-                        state.materials[materialId].canCaterFor.green >
-                    0
+            presentAvailableMaterialIds.filter((materialId) =>
+                assureCanCater(state.materials[materialId])
             );
 
         // TODO: Decide what to do with this
