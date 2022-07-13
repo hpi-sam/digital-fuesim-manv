@@ -48,7 +48,6 @@ const notarztPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    // TODO: give notarzt aura
     CanCaterFor.create(2, 2, 2, 'and'),
     15,
     0,

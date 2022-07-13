@@ -406,21 +406,6 @@ function calculateCatering(
     }
 
     /**
-     * maximum number of patients catering (personnel/material) could treat at the same time
-     */
-    const maxPatientsCouldCaterFor =
-        catering.canCaterFor.logicalOperator === 'or'
-            ? Math.max(
-                  catering.canCaterFor.green,
-                  catering.canCaterFor.yellow,
-                  catering.canCaterFor.red
-              )
-            : // logicalOperator === 'and', capacity is cumulative
-              catering.canCaterFor.green +
-              catering.canCaterFor.yellow +
-              catering.canCaterFor.red;
-
-    /**
      * saving patientIds of patients that got already treated in specificThreshold, to filter them out when getting patients in generalThreshold
      */
     const patientIdsOfCateredForPatients: Mutable<UUIDSet> = {};
@@ -429,8 +414,7 @@ function calculateCatering(
         DataStructure.findAllElementsInCircle(
             patientsDataStructure,
             catering.position,
-            catering.specificThreshold,
-            maxPatientsCouldCaterFor
+            catering.specificThreshold
         );
 
     // having the override circle, if the nearest patients it in the specificThreshold he will be treated, only distance counts
@@ -463,8 +447,7 @@ function calculateCatering(
             DataStructure.findAllElementsInCircle(
                 patientsDataStructure,
                 catering.position,
-                catering.generalThreshold,
-                maxPatientsCouldCaterFor
+                catering.generalThreshold
             )
                 // filter out every patient in the specificThreshold
                 .filter(
