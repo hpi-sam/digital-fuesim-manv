@@ -100,6 +100,18 @@
                             <option [value]="'Y'">SK II</option>
                             <option [value]="'Z'">SK I</option>
                         </select>
+                        <label class="btn btn-outline-primary ms-5">
+                            <i class="bi-cloud-upload me-2"> </i>
+                            Patienten aus CSV importieren
+                            <input
+                                (input)="
+                                    importPatientsCSV($any($event.target).files)
+                                "
+                                type="file"
+                                accept="application/csv"
+                                class="d-none"
+                            />
+                        </label>
                     </h5>
                     <!-- 20px more height than the sum of the children to have room for the scrollbar -->
                     <div

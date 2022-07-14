@@ -3,7 +3,9 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { TransferPoint, Viewport } from 'digital-fuesim-manv-shared';
+
 import { ApiService } from 'src/app/core/api.service';
+import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectMapImagesTemplates,
@@ -14,6 +16,8 @@ import { DragElementService } from '../core/drag-element.service';
 import { TransferLinesService } from '../core/transfer-lines.service';
 import { openCreateImageTemplateModal } from '../editor-panel/create-image-template-modal/open-create-image-template-modal';
 import { openEditImageTemplateModal } from '../editor-panel/edit-image-template-modal/open-edit-image-template-modal';
+import { createPatientCatgories } from '../utility/create-patient-categories';
+import { parsePatientData } from '../utility/parse-csv';
 
 @Component({
     selector: 'app-trainer-map-editor',
@@ -47,7 +51,8 @@ export class TrainerMapEditorComponent {
         private readonly store: Store<AppState>,
         public readonly dragElementService: DragElementService,
         public readonly transferLinesService: TransferLinesService,
-        private readonly ngbModalService: NgbModal
+        private readonly ngbModalService: NgbModal,
+        private readonly messageService: MessageService
     ) {}
 
     public readonly viewportTemplate = {
@@ -68,5 +73,32 @@ export class TrainerMapEditorComponent {
 
     public setCurrentCategory(category: string) {
         this.currentCategory = category;
+    }
+
+    public async importPatientsCSV(fileList: FileList) {
+        try {
+            const importString = await fileList.item(0)?.text();
+            if (importString === undefined) {
+                // The file dialog has been aborted.
+                return;
+            }
+            createPatientCatgories(
+                parsePatientData(importString),
+                this.apiService
+            );
+            this.messageService.postMessage(
+                {
+                    color: 'success',
+                    title: 'Patienten importiert',
+                    body: 'Sie können die importierten Patienten nun verwenden',
+                },
+                'toast'
+            );
+        } catch (error: unknown) {
+            this.messageService.postError({
+                title: 'Fehler beim Importieren der Übung',
+                error,
+            });
+        }
     }
 }

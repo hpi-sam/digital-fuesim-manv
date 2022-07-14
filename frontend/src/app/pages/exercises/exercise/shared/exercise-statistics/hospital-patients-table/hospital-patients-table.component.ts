@@ -35,7 +35,12 @@ export class HospitalPatientsTableComponent {
                         hospitalName: hospital!.name,
                         arrivalTime: hospitalPatient.arrivalTime,
                         departureTime: hospitalPatient.startTime,
-                        patientStatus: statusNames[hospitalPatient.realStatus],
+                        patientStatus:
+                            statusNames[
+                                hospitalPatient.healthStates[
+                                    hospitalPatient.currentHealthStateId
+                                ].status
+                            ],
                         vehicleType: hospitalPatient.vehicleType,
                     };
                     return row;

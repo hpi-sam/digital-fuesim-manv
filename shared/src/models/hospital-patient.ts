@@ -4,19 +4,12 @@ import {
     IsNumber,
     IsString,
     IsUUID,
-    Max,
     Min,
     ValidateNested,
 } from 'class-validator';
 import type { Mutable } from '../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../utils';
-import {
-    getCreate,
-    HealthPoints,
-    healthPointsDefaults,
-    ImageProperties,
-    PatientStatus,
-} from './utils';
+import { getCreate, ImageProperties, PatientStatus } from './utils';
 import { BiometricInformation } from './utils/biometric-information';
 import { PersonalInformation } from './utils/personal-information';
 import type { Patient, PatientHealthState } from '.';
@@ -58,10 +51,6 @@ export class HospitalPatient {
     @IsString()
     public readonly pretriageStatus: PatientStatus;
 
-    // TODO
-    @IsString()
-    public readonly realStatus: PatientStatus;
-
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
@@ -76,14 +65,6 @@ export class HospitalPatient {
      */
     @IsUUID(4, uuidValidationOptions)
     public readonly currentHealthStateId: UUID;
-
-    /**
-     * See {@link HealthPoints} for context of this property.
-     */
-    @IsNumber()
-    @Max(healthPointsDefaults.max)
-    @Min(healthPointsDefaults.min)
-    public readonly health: HealthPoints;
 
     @IsNumber()
     @Min(0)
@@ -100,11 +81,9 @@ export class HospitalPatient {
         personalInformation: PersonalInformation,
         biometricInformation: BiometricInformation,
         pretriageStatus: PatientStatus,
-        realStatus: PatientStatus,
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         currentHealthStateId: UUID,
         image: ImageProperties,
-        health: HealthPoints,
         treatmentTime: number
     ) {
         this.patientId = patientId;
@@ -114,11 +93,9 @@ export class HospitalPatient {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
         this.pretriageStatus = pretriageStatus;
-        this.realStatus = realStatus;
         this.healthStates = healthStates;
         this.currentHealthStateId = currentHealthStateId;
         this.image = image;
-        this.health = health;
         this.treatmentTime = treatmentTime;
     }
 
@@ -146,11 +123,9 @@ export class HospitalPatient {
                 patient.personalInformation,
                 patient.biometricInformation,
                 patient.pretriageStatus,
-                patient.realStatus,
                 patient.healthStates,
                 patient.currentHealthStateId,
                 patient.image,
-                patient.health,
                 patient.treatmentTime
             )
         );

@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import {
+    IsNumber,
+    IsString,
+    IsUUID,
+    Min,
+    ValidateNested,
+} from 'class-validator';
 import { Patient } from '../../models';
 import { PatientStatus, Position } from '../../models/utils';
 import type { ExerciseState } from '../../state';
@@ -53,6 +59,18 @@ export class SetVisibleStatusAction implements Action {
 
     @IsString()
     public readonly patientStatus!: PatientStatus;
+}
+
+export class SetPatientChangeSpeedAction implements Action {
+    @IsString()
+    public readonly type = '[Patient] Set Change Speed';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly patientId!: UUID;
+
+    @IsNumber()
+    @Min(0)
+    public readonly changeSpeed!: number;
 }
 
 export namespace PatientActionReducers {
@@ -127,5 +145,15 @@ export namespace PatientActionReducers {
             return draftState;
         },
         rights: 'participant',
+    };
+
+    export const setChangeSpeed: ActionReducer<SetPatientChangeSpeedAction> = {
+        action: SetPatientChangeSpeedAction,
+        reducer: (draftState, { patientId, changeSpeed }) => {
+            const patient = getElement(draftState, 'patients', patientId);
+            patient.changeSpeed = changeSpeed;
+            return draftState;
+        },
+        rights: 'trainer',
     };
 }

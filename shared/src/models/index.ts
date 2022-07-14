@@ -9,6 +9,7 @@ export { Material } from './material';
 export { Patient } from './patient';
 export * from './patient-health-state';
 export { PatientTemplate } from './patient-template';
+export { PatientCategory } from './patient-category';
 export { Personnel } from './personnel';
 export { StatusHistoryEntry } from './status-history-entry';
 export { TransferPoint } from './transfer-point';

@@ -7,6 +7,7 @@ import { MapImageTemplatesActionReducers } from './map-image-templates';
 import { MapImagesActionReducers } from './map-images';
 import { MaterialActionReducers } from './material';
 import { PatientActionReducers } from './patient';
+import { PatientCategoriesActionReducers } from './patient-categories';
 import { PersonnelActionReducers } from './personnel';
 import { TransferActionReducers } from './transfer';
 import { TransferPointActionReducers } from './transfer-point';
@@ -22,6 +23,7 @@ const actionReducers = {
     ...MaterialActionReducers,
     ...MapImagesActionReducers,
     ...PatientActionReducers,
+    ...PatientCategoriesActionReducers,
     ...PersonnelActionReducers,
     ...VehicleActionReducers,
     ...ViewportActionReducers,

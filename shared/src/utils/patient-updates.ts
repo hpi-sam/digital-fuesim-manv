@@ -1,16 +1,13 @@
-import { IsNumber, IsUUID, Min } from 'class-validator';
-import { HealthPoints, IsValidHealthPoint } from '../models/utils';
+import { IsNumber, IsObject, IsString, IsUUID, Min } from 'class-validator';
+import { Catering } from '../models/utils';
 import { UUID, uuidValidationOptions } from './uuid';
 
 export class PatientUpdate {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID;
 
-    @IsValidHealthPoint()
-    public readonly nextHealthPoints: HealthPoints;
-
-    @IsUUID(4, uuidValidationOptions)
-    public readonly nextStateId: UUID;
+    @IsString()
+    public readonly nextStateId: string;
 
     @IsNumber()
     public readonly nextStateTime: number;
@@ -19,17 +16,20 @@ export class PatientUpdate {
     @Min(0)
     public treatmentTime: number;
 
+    @IsObject()
+    public newTreatment: Catering;
+
     constructor(
         id: UUID,
-        nextHealthPoints: HealthPoints,
-        nextStateId: UUID,
+        nextStateId: string,
         nextStateTime: number,
-        treatmentTime: number
+        treatmentTime: number,
+        newTreatment: Catering
     ) {
         this.id = id;
-        this.nextHealthPoints = nextHealthPoints;
         this.nextStateId = nextStateId;
         this.nextStateTime = nextStateTime;
         this.treatmentTime = treatmentTime;
+        this.newTreatment = newTreatment;
     }
 }

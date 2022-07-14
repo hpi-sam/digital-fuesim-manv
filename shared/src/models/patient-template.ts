@@ -1,19 +1,12 @@
 import { Type } from 'class-transformer';
-import { IsDefined, IsUUID, ValidateNested } from 'class-validator';
+import { IsDefined, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import type { PatientStatusCode } from './utils';
-import {
-    BiometricInformation,
-    getCreate,
-    getStatus,
-    HealthPoints,
-    IsValidHealthPoint,
-} from './utils';
+import { BiometricInformation, getCreate } from './utils';
 import { ImageProperties } from './utils/image-properties';
 import { PersonalInformation } from './utils/personal-information';
 import { Patient } from './patient';
-import type { FunctionParameters } from './patient-health-state';
-import { PretriageInformation } from './utils/pretriage-information';
+import { ConditionParameters } from './patient-health-state';
 import type { PatientHealthState } from '.';
 
 export class PatientTemplate {
@@ -25,40 +18,29 @@ export class PatientTemplate {
     public readonly biometricInformation: BiometricInformation;
 
     @ValidateNested()
-    @Type(() => PretriageInformation)
-    public readonly pretriageInformation: PretriageInformation;
-
-    @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
     @IsDefined()
     public readonly healthStates: {
-        readonly [stateId: UUID]: PatientHealthState;
+        readonly [stateId: string]: PatientHealthState;
     };
 
-    @IsUUID(4, uuidValidationOptions)
-    public readonly startingHealthStateId: UUID;
-
-    @IsValidHealthPoint()
-    public readonly health: HealthPoints;
+    @IsString()
+    public readonly startingHealthStateId: string;
 
     /**
      * @deprecated Use {@link create} instead
      */
     constructor(
         biometricInformation: BiometricInformation,
-        pretriageInformation: PretriageInformation,
-        healthStates: { readonly [stateId: UUID]: PatientHealthState },
+        healthStates: { readonly [stateId: string]: PatientHealthState },
         image: ImageProperties,
-        health: HealthPoints,
-        startingHealthStateId: UUID
+        startingHealthStateId: string
     ) {
         this.biometricInformation = biometricInformation;
-        this.pretriageInformation = pretriageInformation;
         this.image = image;
         this.healthStates = healthStates;
-        this.health = health;
         this.startingHealthStateId = startingHealthStateId;
     }
 
@@ -71,39 +53,50 @@ export class PatientTemplate {
         // Randomize function parameters
         const healthStates = Object.fromEntries(
             Object.entries(template.healthStates).map(([stateId, state]) => {
-                const functionParameters = Object.fromEntries(
-                    Object.entries(state.functionParameters).map(
-                        ([key, value]) => [
-                            key as keyof FunctionParameters,
-                            randomizeValue(value, 0.2),
-                        ]
-                        // The signatures for Object.fromEntries and Object.entries are not made for literals...
-                    ) as [keyof FunctionParameters, any][]
-                ) as FunctionParameters;
+                const randomizedNextStateConditions = Object.values(
+                    state.nextStateConditions
+                ).map((condition) => {
+                    let newEarliestTime = condition.earliestTime;
+                    if (newEarliestTime) {
+                        newEarliestTime = randomizeValue(newEarliestTime, 0.2);
+                    }
+                    let newLatestTime = condition.latestTime;
+                    if (newLatestTime) {
+                        newLatestTime = randomizeValue(newLatestTime, 0.2);
+                    }
+                    return ConditionParameters.create(
+                        newEarliestTime,
+                        newLatestTime,
+                        condition.isBeingTreated,
+                        condition.requiredMaterialAmount,
+                        condition.requiredNotArztAmount,
+                        condition.requiredNotSanAmount,
+                        condition.requiredRettSanAmount,
+                        condition.requiredSanAmount,
+                        condition.matchingHealthStateId
+                    );
+                });
+
                 // The function parameters will randomize by 20%
                 return [
                     stateId,
                     {
                         ...state,
-                        functionParameters,
+                        nextStateConditions: randomizedNextStateConditions,
                     },
                 ];
             })
         );
-        const status = getStatus(template.health);
         return Patient.create(
             PersonalInformation.generatePersonalInformation(
                 template.biometricInformation.sex
             ),
             template.biometricInformation,
-            template.pretriageInformation,
             patientStatusCode,
             'white',
-            status,
             healthStates,
             template.startingHealthStateId,
-            template.image,
-            template.health
+            template.image
         );
     }
 }

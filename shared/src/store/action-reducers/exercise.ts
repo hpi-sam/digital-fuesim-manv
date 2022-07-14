@@ -8,10 +8,9 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { countBy } from 'lodash-es';
-import type { Client, Patient, Vehicle } from '../../models';
-import { Personnel, Viewport } from '../../models';
+import type { Client, Vehicle } from '../../models';
+import { Patient, Personnel, Viewport } from '../../models';
 import { StatusHistoryEntry } from '../../models/status-history-entry';
-import { getStatus } from '../../models/utils';
 import type { AreaStatistics } from '../../models/utils/area-statistics';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
@@ -100,10 +99,24 @@ export namespace ExerciseActionReducers {
             patientUpdates.forEach((patientUpdate) => {
                 const currentPatient = draftState.patients[patientUpdate.id];
                 currentPatient.currentHealthStateId = patientUpdate.nextStateId;
-                currentPatient.health = patientUpdate.nextHealthPoints;
                 currentPatient.stateTime = patientUpdate.nextStateTime;
                 currentPatient.treatmentTime = patientUpdate.treatmentTime;
-                currentPatient.realStatus = getStatus(currentPatient.health);
+                if (currentPatient.treatmentHistory.length === 0) {
+                    for (let i = 0; i <= 60 / tickInterval; i++) {
+                        currentPatient.treatmentHistory.push({
+                            gf: 0,
+                            material: 0,
+                            notarzt: 0,
+                            notSan: 0,
+                            rettSan: 0,
+                            san: 0,
+                        });
+                    }
+                }
+                currentPatient.treatmentHistory.shift();
+                currentPatient.treatmentHistory.push(
+                    patientUpdate.newTreatment
+                );
             });
             // Refresh treatments
             if (refreshTreatments) {
@@ -160,7 +173,9 @@ function updateStatistics(draftState: Mutable<ExerciseState>): void {
         Object.values(draftState.clients),
         Object.values(draftState.patients),
         Object.values(draftState.vehicles),
-        Object.values(draftState.personnel)
+        Object.values(draftState.personnel),
+        draftState.configuration.pretriageEnabled,
+        draftState.configuration.bluePatientsEnabled
     );
 
     const viewportStatistics = Object.fromEntries(
@@ -184,7 +199,9 @@ function updateStatistics(draftState: Mutable<ExerciseState>): void {
                     (personnel) =>
                         personnel.position &&
                         Viewport.isInViewport(viewport, personnel.position)
-                )
+                ),
+                draftState.configuration.pretriageEnabled,
+                draftState.configuration.bluePatientsEnabled
             ),
         ])
     );
@@ -201,13 +218,21 @@ function generateAreaStatistics(
     clients: Client[],
     patients: Patient[],
     vehicles: Vehicle[],
-    personnel: Personnel[]
+    personnel: Personnel[],
+    pretriageEnabled: boolean,
+    bluPatientsEnabled: boolean
 ): AreaStatistics {
     return {
         numberOfActiveParticipants: clients.filter(
             (client) => !client.isInWaitingRoom && client.role === 'participant'
         ).length,
-        patients: countBy(patients, (patient) => patient.realStatus),
+        patients: countBy(patients, (patient) =>
+            Patient.getVisibleStatus(
+                patient,
+                pretriageEnabled,
+                bluPatientsEnabled
+            )
+        ),
         vehicles: countBy(vehicles, (vehicle) => vehicle.vehicleType),
         personnel: countBy(
             personnel.filter(
