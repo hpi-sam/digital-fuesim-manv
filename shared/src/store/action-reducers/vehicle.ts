@@ -268,7 +268,8 @@ export namespace VehicleActionReducers {
             // now that everything is unloaded the dataStructure we will calculate the treatment for them
 
             /**
-             * has the Ids of every personnel and material that we calculated already, does not have to recalculated when calculating all material and personnel around each patient
+             * has the Ids of every personnel and material that we calculated already, does not have to recalculated.
+             * Without this set of skipped UUIDs all material and personnel around each patient that was unloaded would be calculated more again
              */
             const elementIdsToBeSkipped: Mutable<UUIDSet> = {};
 
@@ -549,7 +550,9 @@ export namespace VehicleActionReducers {
                                         personnel.id,
                                         personnel.position
                                     );
+
                                 personnel.position = undefined;
+
                                 // remove any treatments from this material
                                 calculateTreatments(
                                     draftState,

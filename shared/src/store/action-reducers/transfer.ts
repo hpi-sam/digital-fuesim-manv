@@ -188,6 +188,7 @@ export namespace TransferActionReducers {
                         'personnel',
                         personnelDataStructure
                     );
+                    // remove any treatment this personnel did
                     calculateTreatments(
                         draftState,
                         element as Personnel,
