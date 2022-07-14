@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsString, ValidateNested } from 'class-validator';
-import { isEqual, unionWith } from 'lodash-es';
 import { PatientCategory } from '../../models/patient-category';
 import { cloneDeepMutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -21,30 +20,8 @@ export namespace PatientCategoriesActionReducers {
         {
             action: ImportPatientCategoriesFromCSVAction,
             reducer: (draftState, { patientCategories }) => {
-                draftState.patientCategories = unionWith(
-                    draftState.patientCategories,
-                    cloneDeepMutable(patientCategories),
-                    (category1, category2) =>
-                        isEqual(category1.name, category2.name)
-                );
-
-                // const newPatientCategories: PatientCategory[] = [];
-                // cloneDeepMutable(patientCategories).forEach((addedCategory) => {
-                //     const currentCategory = draftState.patientCategories.find(
-                //         (existingCategory) =>
-                //             isEqual(addedCategory.name, existingCategory.name)
-                //     );
-                //     if (currentCategory) {
-                //         addedCategory.patientTemplates.forEach((template) => {
-                //             currentCategory!.patientTemplates.push(template);
-                //         });
-                //         newPatientCategories.push(currentCategory);
-                //     } else {
-                //         newPatientCategories.push(addedCategory);
-                //     }
-                // });
-                // draftState.patientCategories = newPatientCategories;
-
+                draftState.patientCategories =
+                    cloneDeepMutable(patientCategories);
                 return draftState;
             },
             rights: 'trainer',
