@@ -10,8 +10,8 @@ const sanPersonnelTemplate = PersonnelTemplate.create(
         aspectRatio: 1,
     },
     CanCaterFor.create(0, 0, 5, 'or'),
-    0.5,
-    5,
+    2.5,
+    5.5,
     false
 );
 
@@ -23,7 +23,7 @@ const rettSanPersonnelTemplate = PersonnelTemplate.create(
         aspectRatio: 1,
     },
     CanCaterFor.create(1, 2, 0, 'and'),
-    0.5,
+    2.5,
     5,
     false
 );
@@ -36,8 +36,8 @@ const notSanPersonnelTemplate = PersonnelTemplate.create(
         aspectRatio: 1,
     },
     CanCaterFor.create(2, 1, 0, 'and'),
-    0.5,
-    5,
+    2.5,
+    5.5,
     false
 );
 

@@ -10,8 +10,8 @@ const defaultMaterialTemplate = MaterialTemplate.create(
         aspectRatio: 1,
     },
     CanCaterFor.create(2, 0, 0, 'and'),
-    0.5,
-    5,
+    2.5,
+    5.5,
     false
 );
 
