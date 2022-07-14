@@ -26,9 +26,10 @@ const defaultImage: ImageProperties = {
 export function parsePatientData(importString: string) {
     const patientData: PatientData[] = [];
 
-    const splitString = importString.split(';');
-    // first 103 entries are just the headers
-    for (let i = 103; i + 100 < splitString.length; i += 103) {
+    const splitString = importString.split('|');
+    // first 106 entries are the headers
+    for (let i = 106; i + 100 < splitString.length; i += 106) {
+        // 0, 1, 2 are orginasational data for anaolg training
         // 3 and 4 are personalInformation that will be randomly generated
         const biometricInformation = BiometricInformation.create(
             splitString[i + 7],
@@ -39,8 +40,10 @@ export function parsePatientData(importString: string) {
                 ? 'female'
                 : 'diverse'
         );
+
+        // 8, 9 are more organisational data
         const pretriageInformation = PretriageInformation.create(
-            splitString[i + 27],
+            splitString[i + 28],
             splitString[i + 29] + splitString[i + 30],
             !(splitString[i + 56] === 'G'),
             // XABCDE
@@ -63,7 +66,7 @@ export function parsePatientData(importString: string) {
                 splitString[i + 22],
                 splitString[i + 23],
                 splitString[i + 24],
-                splitString[i + 28]
+                splitString[i + 27]
             ),
             Exposure.create(splitString[i + 25], splitString[i + 26])
         );
@@ -71,15 +74,15 @@ export function parsePatientData(importString: string) {
         // 31 - 55 are data for images. These are currently ignored
 
         const statusCode =
-            splitString[i + 57] +
-            splitString[i + 58] +
-            splitString[i + 59] +
-            splitString[i + 60] +
             splitString[i + 61] +
-            splitString[i + 62];
+            splitString[i + 62] +
+            splitString[i + 63] +
+            splitString[i + 64] +
+            splitString[i + 65] +
+            splitString[i + 66];
 
         const healthStates = generateHealthStates(
-            splitString.slice(i + 63, i + 98),
+            splitString.slice(i + 67, i + 104),
             pretriageInformation
         );
 
@@ -230,25 +233,16 @@ function generateHealthStates(
     return healthStates;
 }
 
-function getColor(color: string) {
-    switch (color.toLowerCase()) {
-        case 'grün':
-            return 'green';
-        case 'gelb':
-            return 'yellow';
-        case 'rot':
-            return 'red';
-        case 'rot transportpriorität':
-            return 'red';
-        case 'schwarz':
-            return 'black';
-        case '':
-            return 'black';
-        case 'blau':
-            return 'blue';
-        default:
-            throw new Error('Wrong color format in SK entries');
+function getColor(colorString: string) {
+    if (colorString === '') {
+        return 'black';
     }
+    const colorRegExp = /grün|gelb|rot|schwarz|blau/u;
+    const color = colorRegExp.exec(colorString.toLowerCase());
+    if (!color!) {
+        throw new Error('Wrong color format in SK entries');
+    }
+    return color[0] as ColorCategory;
 }
 
 function getCondition(
@@ -256,7 +250,7 @@ function getCondition(
     time: number,
     healthstateName: string
 ) {
-    const conditionRegExp = /NotArzt|NotSan|RettSan|RettH|Abtransportiert/u;
+    const conditionRegExp = /NotArzt|NotSan|RettSan|RettH|ABTRANSPORTIERT/u;
     const condition = conditionRegExp.exec(conditionString);
     if (condition!) {
         switch (condition[0]) {
@@ -286,7 +280,7 @@ function getCondition(
                 };
             default:
                 // TODO: We want to ignore some cases (like Abtransportiert). This works for now but can probably be improved
-                return { matchingHealthStateId: 'Phase1State' };
+                return { latestTime: -1, matchingHealthStateId: 'Phase1State' };
         }
     }
     throw new Error('Wrong condition format in SK entries');
