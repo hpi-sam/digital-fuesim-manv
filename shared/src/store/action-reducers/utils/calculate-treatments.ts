@@ -19,6 +19,12 @@ interface CatersFor {
 function setMaximumThreshold() {
     let result = 0;
 
+    // TODO: maybe make this independent of the personnelTemplateMap
+    // making this a global number, using Math.max() whenever adding a personnel or material to an exercise,
+    // could stay too high when all personnel of a specific type is delted from map
+    // right now personnelTemplates are not exported or imported, but already existing personnel/materials thresholds could be changed in import/export
+    // global number would have to be updated when importing
+
     // going through every template and getting the highest specificThreshold
     for (const personnelTemplate of Object.values(personnelTemplateMap)) {
         result = Math.max(result, personnelTemplate.specificThreshold);
