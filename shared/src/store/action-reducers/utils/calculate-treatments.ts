@@ -184,15 +184,6 @@ function isMaterial(
     );
 }
 
-function isPositionArray(
-    positions: Position | [Position, Position]
-): positions is [Position, Position] {
-    return (
-        (positions as [Position, Position])[0] !== undefined &&
-        (positions as [Position, Position])[1] !== undefined
-    );
-}
-
 /**
  *
  * @param dataStructure being of elementType
@@ -271,8 +262,9 @@ function removeTreatmentsOfElement(
     }
 }
 
+// TODO: remove positionsArray, as startPosition is not needed anymore (new parameter: elementMoved or so is needed, as patient needs to )
 /**
- * @param positions when a patient was moved, positions needs to have old position and new position
+ * @param position when a patient was moved, positions needs to have old position and new position
  *                  when positions is undefined, it means all treatments from this element should be removed
  * @param personnelDataStructure only needed when element is a patient
  * @param materialsDataStructure only needed when element is a patient
@@ -281,14 +273,14 @@ function removeTreatmentsOfElement(
 export function calculateTreatments(
     state: Mutable<ExerciseState>,
     element: Material | Patient | Personnel,
-    positions: Position | [Position, Position] | undefined,
+    position: Position | undefined,
     patientsDataStructure?: MyRBush,
     personnelDataStructure?: MyRBush,
     materialsDataStructure?: MyRBush,
-    elementIdsToBeSkipped: UUIDSet = {}
+    elementIdsToBeSkipped: Mutable<UUIDSet> = {}
 ) {
-    // if position is undefined, the element is no longer in a position (get it?!) to be treated or treat a patient
-    if (positions === undefined) {
+    // if position is undefined, the element is no longer in a position (get it?!) to be treated or treat a patient, therefore any treatment given or received is removed
+    if (position === undefined) {
         removeTreatmentsOfElement(state, element);
         return;
     }
@@ -324,75 +316,55 @@ export function calculateTreatments(
         }
         // element is patient: calculating for every personnel and material around the patient position(s)
 
-        // if patient moved (has startPosition and targetPosition)
-        if (isPositionArray(positions)) {
-            // recalculating catering for every personnel around the position a patient was
-            calculateCateringForDataStructure(
+        // recalculating catering for every personnel that treated this patient
+        for (const personnelId of Object.keys(element.assignedPersonnelIds)) {
+            calculateCatering(
                 state,
+                getElement(state, 'personnel', personnelId),
                 pretriageEnabled,
                 bluePatientsEnabled,
-                patientsDataStructure,
-                personnelDataStructure,
-                positions[0],
-                'personnel',
-                elementIdsToBeSkipped
+                patientsDataStructure
             );
-            // calculating catering for every personnel around the position the patient is now
-            calculateCateringForDataStructure(
-                state,
-                pretriageEnabled,
-                bluePatientsEnabled,
-                patientsDataStructure,
-                personnelDataStructure,
-                positions[1],
-                'personnel',
-                elementIdsToBeSkipped
-            );
-            // recalculating catering for every material around the position a patient was
-            calculateCateringForDataStructure(
-                state,
-                pretriageEnabled,
-                bluePatientsEnabled,
-                patientsDataStructure,
-                materialsDataStructure,
-                positions[0],
-                'materials',
-                elementIdsToBeSkipped
-            );
-            // calculating catering for every material around the position the patient is now
-            calculateCateringForDataStructure(
-                state,
-                pretriageEnabled,
-                bluePatientsEnabled,
-                patientsDataStructure,
-                materialsDataStructure,
-                positions[1],
-                'materials',
-                elementIdsToBeSkipped
-            );
-        } else {
-            // else: patient was not moved and had no position before (was added/unloaded)
-            calculateCateringForDataStructure(
-                state,
-                pretriageEnabled,
-                bluePatientsEnabled,
-                patientsDataStructure,
-                personnelDataStructure,
-                positions,
-                'personnel',
-                elementIdsToBeSkipped
-            );
-            calculateCateringForDataStructure(
-                state,
-                pretriageEnabled,
-                bluePatientsEnabled,
-                patientsDataStructure,
-                materialsDataStructure,
-                positions,
-                'materials',
-                elementIdsToBeSkipped
-            );
+            // saving personnelIds of personnel that already got calculated - makes small movements of patients more efficient
+            elementIdsToBeSkipped[personnelId] = true;
         }
+
+        // recalculating catering for every material that treated this patient
+        for (const materialId of Object.keys(element.assignedMaterialIds)) {
+            calculateCatering(
+                state,
+                getElement(state, 'materials', materialId),
+                pretriageEnabled,
+                bluePatientsEnabled,
+                patientsDataStructure
+            );
+            // saving materialIds of material that already got calculated - makes small movements of patients more efficient
+            elementIdsToBeSkipped[materialId] = true;
+        }
+
+        // calculating catering for every personnel around the position the patient is now
+        calculateCateringForDataStructure(
+            state,
+            pretriageEnabled,
+            bluePatientsEnabled,
+            patientsDataStructure,
+            personnelDataStructure,
+            position,
+            'personnel',
+            elementIdsToBeSkipped
+        );
+
+        // calculating catering for every material around the position the patient is now
+        calculateCateringForDataStructure(
+            state,
+            pretriageEnabled,
+            bluePatientsEnabled,
+            patientsDataStructure,
+            materialsDataStructure,
+            position,
+            'materials',
+            elementIdsToBeSkipped
+        );
 
         /**
          * patient got new treatment and updated all possible personnel and material, therefore setting {@link needsNewCalculateTreatments} to false

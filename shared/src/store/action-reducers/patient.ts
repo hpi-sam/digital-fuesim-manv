@@ -138,7 +138,7 @@ export namespace PatientActionReducers {
 
             if (startPosition === undefined) {
                 throw new ReducerError(
-                    `Patient with id ${patient.id} can't be moved, as its position is undefined`
+                    `Patient with id ${patient.id} can't be moved, as its position is undefined - needs a valid position to move from`
                 );
             }
 
@@ -153,10 +153,11 @@ export namespace PatientActionReducers {
                 patient.id,
                 [startPosition, targetPosition]
             );
+
             calculateTreatments(
                 draftState,
                 patient,
-                [startPosition, targetPosition],
+                targetPosition,
                 patientsDataStructure,
                 DataStructure.getDataStructureFromState(
                     draftState,
@@ -164,6 +165,7 @@ export namespace PatientActionReducers {
                 ),
                 DataStructure.getDataStructureFromState(draftState, 'materials')
             );
+
             DataStructure.writeDataStructureToState(
                 draftState,
                 'patients',
