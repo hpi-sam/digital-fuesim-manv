@@ -62,19 +62,40 @@ function couldCaterFor(
         return false;
     }
     // if logicalOperator === 'and' catering capacity is calculated cumulatively
-    const canCaterForRed = catering.canCaterFor.red;
-    const canCaterForYellow =
-        catering.canCaterFor.logicalOperator === 'and'
-            ? canCaterForRed + catering.canCaterFor.yellow
-            : catering.canCaterFor.yellow;
-    const canCaterForGreen =
-        catering.canCaterFor.logicalOperator === 'and'
-            ? canCaterForYellow + catering.canCaterFor.green
-            : catering.canCaterFor.green;
+
+    // needed for cumulative calculations to calculate the number of patients treated over the normal canCaterFor that are also treated
+    const xTooManyGreens =
+        catering.canCaterFor.green < catersFor.green
+            ? catersFor.green - catering.canCaterFor.green
+            : 0;
+    const xTooManyYellows =
+        catering.canCaterFor.yellow < catersFor.yellow
+            ? catersFor.yellow - catering.canCaterFor.yellow
+            : 0;
+
+    const couldCaterForXMoreReds =
+        catering.canCaterFor.red -
+        catersFor.red +
+        (catering.canCaterFor.logicalOperator === 'and'
+            ? -xTooManyYellows - xTooManyGreens
+            : 0);
+    const couldCaterForXMoreYellows =
+        catering.canCaterFor.yellow -
+        catersFor.yellow +
+        (catering.canCaterFor.logicalOperator === 'and'
+            ? couldCaterForXMoreReds + xTooManyYellows
+            : 0);
+    const couldCaterForXMoreGreens =
+        catering.canCaterFor.green -
+        catersFor.green +
+        (catering.canCaterFor.logicalOperator === 'and'
+            ? couldCaterForXMoreYellows + xTooManyGreens
+            : 0);
+
     if (
-        (status === 'red' && canCaterForRed <= catersFor.red) ||
-        (status === 'yellow' && canCaterForYellow <= catersFor.yellow) ||
-        (status === 'green' && canCaterForGreen <= catersFor.green)
+        (status === 'red' && couldCaterForXMoreReds < 1) ||
+        (status === 'yellow' && couldCaterForXMoreYellows < 1) ||
+        (status === 'green' && couldCaterForXMoreGreens < 1)
     ) {
         // Capacity for the status of the patient is no longer there.
         return false;
@@ -543,7 +564,7 @@ function calculateCatering(
         }
 
         // treat every green patient, closest first, until the capacity is full
-        // NOTE: only treats green patients, if no yellow patients got treated by this catering when catersFor.logicalOperator is set to 'or'
+        // NOTE: only treats green patients, if no yellow or red patients got treated by this catering when catersFor.logicalOperator is set to 'or'
         for (const patient of greenPatients) {
             if (
                 !caterFor(
