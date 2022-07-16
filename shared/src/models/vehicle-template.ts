@@ -7,10 +7,9 @@ import {
     IsArray,
 } from 'class-validator';
 import { uuidValidationOptions, UUID, uuid } from '../utils';
-import { Material } from './material';
 import type { PersonnelType } from './utils';
-import { CanCaterFor, ImageProperties, getCreate } from './utils';
-import { MaterialType } from './utils/material-type';
+import { ImageProperties, getCreate } from './utils';
+import type { MaterialType } from './utils/material-type';
 
 export class VehicleTemplate {
     @IsUUID(4, uuidValidationOptions)
@@ -34,8 +33,7 @@ export class VehicleTemplate {
     public readonly personnel: readonly PersonnelType[];
 
     @IsArray()
-    @ValidateNested()
-    @Type(() => CanCaterFor)
+    @IsString({ each: true })
     public readonly materials: readonly MaterialType[];
 
     /**
