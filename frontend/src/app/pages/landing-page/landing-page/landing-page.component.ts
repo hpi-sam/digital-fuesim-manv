@@ -52,7 +52,9 @@ export class LandingPageComponent {
             });
     }
 
+    public importingExercise = false;
     public async importExerciseState(fileList: FileList) {
+        this.importingExercise = true;
         try {
             const importString = await fileList.item(0)?.text();
             if (importString === undefined) {
@@ -104,6 +106,8 @@ export class LandingPageComponent {
                 title: 'Fehler beim Importieren der Übung',
                 error,
             });
+        } finally {
+            this.importingExercise = false;
         }
     }
 
