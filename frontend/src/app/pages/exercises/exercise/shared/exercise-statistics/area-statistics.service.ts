@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { UUID } from 'digital-fuesim-manv-shared';
-import type { AreaStatistics } from 'digital-fuesim-manv-shared/dist/models/utils/area-statistics';
+import type { AreaStatistics, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { BehaviorSubject, map, switchMap } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
@@ -24,18 +23,20 @@ export class AreaStatisticsService {
     public readonly areaStatistics$: Observable<AreaStatisticsEntry[]> =
         this.areaId$.pipe(
             switchMap((areaId) =>
-                this.store.select((state) =>
-                    state.exercise.statistics
-                        .map((statisticEntry) => ({
-                            value:
-                                areaId === null
-                                    ? statisticEntry.exercise
-                                    : // If the viewport didn't exist yet
-                                      // TODO: Is this ! correct?
-                                      statisticEntry.viewports[areaId]!,
-                            exerciseTime: statisticEntry.exerciseTime,
-                        }))
-                        .filter((entry) => entry.value !== undefined)
+                this.store.select(
+                    (state) =>
+                        state.exercise.statistics
+                            .map((statisticEntry) => ({
+                                value:
+                                    areaId === null
+                                        ? statisticEntry.exercise
+                                        : // THis is filtered out in the next step, if the viewport didn't exist yet
+                                          statisticEntry.viewports[areaId],
+                                exerciseTime: statisticEntry.exerciseTime,
+                            }))
+                            .filter(
+                                (entry) => entry.value !== undefined
+                            ) as AreaStatisticsEntry[]
                 )
             )
         );
