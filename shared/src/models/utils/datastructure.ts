@@ -12,7 +12,6 @@ import {
     uuidValidationOptions,
     ImmutableJsonObject,
 } from '../../utils';
-import { ReducerError } from '../../store/reducer-error';
 
 /**
  * default nodeSize, important to be identitical for JSON import and export, see https://github.com/mourner/rbush#export-and-import
@@ -68,7 +67,6 @@ export class DataStructure {
         this.dataStructureAsJSON = new MyRBush(
             nodeSize
         ).toJSON() as ImmutableJsonObject;
-        // this.elementType = elementType;
     }
 
     /**
@@ -109,6 +107,7 @@ export class DataStructure {
     ) {
         // TODO: check maybe if element got added sucessfully,
         // maybe lazy via length checking (something got added)
+
         dataStructure.insert({
             position,
             id: elementId,
@@ -125,34 +124,17 @@ export class DataStructure {
         position: Position
     ) {
         // TODO: check maybe if element got deleted sucessfully,
-        // as function remove does nothing when datum does not exist in quadtree
         // maybe lazy via length checking (something got deleted)
 
-        // TODO: maybe make removal more efficient, maybe using search before (right now position is not taken into account)
-        const item = dataStructure
-            .search({
-                minX: position.x,
-                minY: position.y,
-                maxX: position.x,
-                maxY: position.y,
-            })
-            .find(
-                (dataStructureElement) => dataStructureElement.id === elementId
-            );
-        if (item === undefined) {
-            throw new ReducerError(
-                'removeElement was called but element was not found in dataStructure'
-            );
-        }
         // remove via id
-        // dataStructure.remove(
-        //     {
-        //         position,
-        //         id: elementId,
-        //     },
-        //     (a, b) => a.id === b.id
-        // );
-        dataStructure.remove(item);
+        // TODO: own removal, right now removing seems to take , with help of position
+        dataStructure.remove(
+            {
+                position,
+                id: elementId,
+            },
+            (a, b) => a.id === b.id
+        );
         return dataStructure;
     }
 
@@ -166,9 +148,15 @@ export class DataStructure {
     ) {
         // TODO: check maybe if element got moved sucessfully
 
-        // TODO: check if first remove or first insert is better
-        DataStructure.addElement(dataStructure, elementId, positions[1]);
+        // TODO: not much difference if first remove or first insert, first removing could mitigate node splitting
+        // https://github.com/mourner/rbush/blob/04e07dbe398ed24d75aba105baa451670e65fce5/index.js#L280
+        // nodes should be filled at least 40% of {@link nodeSize}, as patients, material and personnel are probably most of the time close together
+        // and taking small movements into account, using remove first could mitigate the node splitting
+        // benchmarks of 15 min. with 3200 personnel, material and patients distributed in one 200 by 100 viewport moving around was not very clear
+
         DataStructure.removeElement(dataStructure, elementId, positions[0]);
+        DataStructure.addElement(dataStructure, elementId, positions[1]);
+
         return dataStructure;
     }
 
@@ -184,10 +172,10 @@ export class DataStructure {
         radius: number,
         maxNumberOfElements?: number
     ) {
-        // TODO: check if knn does circle for maxDistance
         // if radius is negative, we will return nothing (empty array)
         // if radius is zero, only objects directly on top of it
-        // using search instead of knn, as knn interprets zero as the same as Infinity
+        // using search instead of knn, as knn interprets zero as the same as infinite radius
+
         // TODO: maybe just treat zero as nothing can be found and return an empty array
         return radius < 0
             ? []
