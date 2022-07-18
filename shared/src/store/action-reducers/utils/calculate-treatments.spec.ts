@@ -59,7 +59,7 @@ function generatePatient(
     realStatus: PatientStatus,
     position?: Position
 ): Mutable<Patient> {
-    const patient = generateDummyPatient() as Mutable<Patient>;
+    const patient = cloneDeepMutable(generateDummyPatient());
     patient.pretriageStatus = pretriageStatus;
     patient.realStatus = realStatus;
     if (position) {
