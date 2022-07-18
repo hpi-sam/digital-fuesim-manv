@@ -48,14 +48,22 @@
             >
                 Übung erstellen
             </button>
-            <label class="btn btn-outline-primary btn-lg ms-5">
+            <label
+                class="btn btn-outline-primary btn-lg ms-5"
+                [class.disabled]="importingExercise"
+            >
                 <i class="bi-cloud-upload me-2"> </i>
                 Übung importieren
+                <span
+                    *ngIf="importingExercise"
+                    class="spinner-border spinner-border-sm"
+                ></span>
                 <input
                     (input)="importExerciseState($any($event.target).files)"
                     type="file"
                     accept="application/json"
                     class="d-none"
+                    [disabled]="importingExercise"
                 />
             </label>
         </div>
