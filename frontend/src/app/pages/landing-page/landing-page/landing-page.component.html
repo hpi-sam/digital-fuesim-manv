@@ -51,6 +51,10 @@
             <label class="btn btn-outline-primary btn-lg ms-5">
                 <i class="bi-cloud-upload me-2"> </i>
                 Übung importieren
+                <span
+                    *ngIf="importingExercise"
+                    class="spinner-border spinner-border-sm"
+                ></span>
                 <input
                     (input)="importExerciseState($any($event.target).files)"
                     type="file"
