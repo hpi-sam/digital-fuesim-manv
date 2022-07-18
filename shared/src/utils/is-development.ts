@@ -2,7 +2,12 @@
 declare global {
     const process: {
         env: {
-            NODE_ENV: 'development' | 'production';
+            NODE_ENV:
+                | string
+                | 'development'
+                | 'production'
+                | 'staging'
+                | 'testing';
         };
     };
 }
