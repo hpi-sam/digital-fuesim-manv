@@ -21,6 +21,10 @@ export function reduceExerciseState(
     state: ExerciseState,
     action: ExerciseAction
 ): ExerciseState {
+    if (isDevelopment) {
+        // Make sure that the action isn't mutated in the reducer
+        freeze(action, true);
+    }
     // use immer to convert mutating operations to immutable ones (https://immerjs.github.io/immer/produce)
     return produce(state, (draftState) => applyAction(draftState, action));
 }
