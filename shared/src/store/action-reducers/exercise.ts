@@ -98,18 +98,24 @@ export namespace ExerciseActionReducers {
             // Refresh the current time
             draftState.currentTime += tickInterval;
 
-            const patientsDataStructure =
-                DataStructure.getDataStructureFromState(draftState, 'patients');
-            const personnelDataStructure =
-                DataStructure.getDataStructureFromState(
-                    draftState,
-                    'personnel'
-                );
-            const materialsDataStructure =
-                DataStructure.getDataStructureFromState(
-                    draftState,
-                    'materials'
-                );
+            const patientsDataStructure = refreshTreatments
+                ? DataStructure.getDataStructureFromState(
+                      draftState,
+                      'patients'
+                  )
+                : undefined;
+            const personnelDataStructure = refreshTreatments
+                ? DataStructure.getDataStructureFromState(
+                      draftState,
+                      'personnel'
+                  )
+                : undefined;
+            const materialsDataStructure = refreshTreatments
+                ? DataStructure.getDataStructureFromState(
+                      draftState,
+                      'materials'
+                  )
+                : undefined;
 
             // Refresh patient status
             patientUpdates.forEach((patientUpdate) => {
