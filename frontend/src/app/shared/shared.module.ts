@@ -18,6 +18,7 @@ import { ImageExistsValidatorDirective } from './validation/image-exists-validat
 import { IntegerValidatorDirective } from './validation/integer-validator.directive';
 import { OnlyNumbersValidatorDirective } from './validation/only-numbers-validator.directive';
 import { UrlValidatorDirective } from './validation/url-validator.directive';
+import { PatientStatusBadgeComponent } from './components/patient-status-badge/patient-status-badge.component';
 
 @NgModule({
     declarations: [
@@ -39,6 +40,7 @@ import { UrlValidatorDirective } from './validation/url-validator.directive';
         ViewportNameComponent,
         IntegerValidatorDirective,
         PatientStatusDataFieldComponent,
+        PatientStatusBadgeComponent,
     ],
     imports: [CommonModule],
     exports: [
@@ -59,6 +61,7 @@ import { UrlValidatorDirective } from './validation/url-validator.directive';
         KeysPipe,
         ViewportNameComponent,
         IntegerValidatorDirective,
+        PatientStatusBadgeComponent,
     ],
 })
 export class SharedModule {}
