@@ -85,79 +85,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
         ) {
             return false;
         }
-        const reachableTransferPointIds = Object.keys(
-            droppedOnTransferPoint.reachableTransferPoints
-        );
-
-        const reachableHospitalIds = Object.keys(
-            droppedOnTransferPoint.reachableHospitals
-        );
-
-        const proposeTransfer = (
-            targetId: UUID,
-            targetType: 'hospital' | 'transferPoint'
-        ) => {
-            if (targetType === 'hospital') {
-                this.apiService.proposeAction(
-                    {
-                        type: '[Hospital] Transport patient to hospital',
-                        hospitalId: targetId,
-                        vehicleId: droppedElement.value.id,
-                    },
-                    true
-                );
-                return;
-            }
-            this.apiService.proposeAction(
-                {
-                    type: '[Transfer] Add to transfer',
-                    // TODO: The type should already be correct
-                    elementType:
-                        droppedElement.type === 'vehicle'
-                            ? 'vehicles'
-                            : 'personnel',
-                    elementId: droppedElement.value.id,
-                    startPoint: TransferStartPoint.create(
-                        droppedOnTransferPoint.id
-                    ),
-                    targetTransferPointId: targetId,
-                },
-                true
-            );
-        };
-
-        // There are obvious answers to what the user wants to do
-        if (droppedElement.type === 'personnel') {
-            if (reachableTransferPointIds.length === 0) {
-                return false;
-            }
-            if (reachableTransferPointIds.length === 1) {
-                proposeTransfer(reachableTransferPointIds[0], 'transferPoint');
-                return true;
-            }
-        } else {
-            if (
-                reachableTransferPointIds.length === 0 &&
-                reachableHospitalIds.length === 0
-            ) {
-                return false;
-            }
-            if (
-                reachableTransferPointIds.length === 1 &&
-                reachableHospitalIds.length === 0
-            ) {
-                proposeTransfer(reachableTransferPointIds[0], 'transferPoint');
-                return true;
-            }
-            if (
-                reachableTransferPointIds.length === 0 &&
-                reachableHospitalIds.length === 1
-            ) {
-                proposeTransfer(reachableHospitalIds[0], 'hospital');
-                return true;
-            }
-        }
-
+        // We always want to show the chooseTransferPopup to
         // Show a popup to choose the transferPoint or hospital
         this.togglePopup$.next(
             this.popupHelper.getPopupOptions(
@@ -166,7 +94,38 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                 {
                     transferPointId: droppedOnTransferPoint.id,
                     droppedElementType: droppedElement.type,
-                    transferToCallback: proposeTransfer,
+                    transferToCallback: (
+                        targetId: UUID,
+                        targetType: 'hospital' | 'transferPoint'
+                    ) => {
+                        if (targetType === 'hospital') {
+                            this.apiService.proposeAction(
+                                {
+                                    type: '[Hospital] Transport patient to hospital',
+                                    hospitalId: targetId,
+                                    vehicleId: droppedElement.value.id,
+                                },
+                                true
+                            );
+                            return;
+                        }
+                        this.apiService.proposeAction(
+                            {
+                                type: '[Transfer] Add to transfer',
+                                // TODO: The type should already be correct
+                                elementType:
+                                    droppedElement.type === 'vehicle'
+                                        ? 'vehicles'
+                                        : 'personnel',
+                                elementId: droppedElement.value.id,
+                                startPoint: TransferStartPoint.create(
+                                    droppedOnTransferPoint.id
+                                ),
+                                targetTransferPointId: targetId,
+                            },
+                            true
+                        );
+                    },
                 }
             )
         );
