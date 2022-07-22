@@ -586,6 +586,8 @@ export class ExerciseWrapper extends NormalType<
 
     public async deleteExercise() {
         this.clients.forEach((client) => client.disconnect());
+        // Pause the exercise to stop the tick
+        this.pause();
         exerciseMap.delete(this.participantId);
         exerciseMap.delete(this.trainerId);
         if (this.id !== undefined && Config.useDb) {
@@ -620,6 +622,7 @@ export class ExerciseWrapper extends NormalType<
             initialState: this.initialState,
             actionsWrappers: completeHistory.map((action) => ({
                 action: action.action,
+                emitterId: action.emitterId,
                 time: action.index,
             })),
         };

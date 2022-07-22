@@ -122,27 +122,53 @@
                             >
                                 <th>Vorsichtung</th>
                                 <td>
-                                    <select
-                                        [ngModel]="visibleStatus$ | async"
-                                        (ngModelChange)="
-                                            setPretriageCategory($event)
-                                        "
-                                        [disabled]="
-                                            (pretriageStatusIsLocked$
-                                                | async) ?? false
-                                        "
-                                        class="form-select form-select-sm no-validation"
+                                    <div
+                                        ngbDropdown
+                                        placement="bottom-end"
+                                        class="d-inline-block float-end"
                                     >
-                                        <option
-                                            *ngFor="
-                                                let option of pretriageOptions$
-                                                    | async
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            style="min-width: 150px"
+                                            ngbDropdownToggle
+                                            [disabled]="
+                                                (pretriageStatusIsLocked$
+                                                    | async) ?? false
                                             "
-                                            [value]="option"
                                         >
-                                            {{ statusNames[option] }}
-                                        </option>
-                                    </select>
+                                            <app-patient-status-badge
+                                                *ngIf="
+                                                    visibleStatus$
+                                                        | async as currentStatus
+                                                "
+                                                [status]="currentStatus"
+                                            >
+                                            </app-patient-status-badge>
+                                        </button>
+                                        <div
+                                            ngbDropdownMenu
+                                            class="position-absolute"
+                                        >
+                                            <button
+                                                *ngFor="
+                                                    let option of pretriageOptions$
+                                                        | async
+                                                "
+                                                ngbDropdownItem
+                                                (click)="
+                                                    setPretriageCategory(option)
+                                                "
+                                                class="btn-outline-secondary"
+                                            >
+                                                <app-patient-status-badge
+                                                    [status]="option"
+                                                    class="float-end"
+                                                >
+                                                </app-patient-status-badge>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
