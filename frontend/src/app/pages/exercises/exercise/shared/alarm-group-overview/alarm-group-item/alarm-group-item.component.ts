@@ -2,7 +2,9 @@ import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { AlarmGroup, AlarmGroupVehicle } from 'digital-fuesim-manv-shared';
+import { debounce } from 'lodash';
 import { ApiService } from 'src/app/core/api.service';
+import { debounceTimeout } from 'src/app/shared/variables/debounce-timeout';
 import type { AppState } from 'src/app/state/app.state';
 import { selectVehicleTemplates } from 'src/app/state/exercise/exercise.selectors';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
@@ -24,7 +26,7 @@ export class AlarmGroupItemComponent {
         selectVehicleTemplates
     );
 
-    public renameAlarmGroup(name: string | null) {
+    public readonly renameAlarmGroup = debounce((name: string | null) => {
         if (name === null) {
             return;
         }
@@ -36,7 +38,7 @@ export class AlarmGroupItemComponent {
             },
             true
         );
-    }
+    }, debounceTimeout);
 
     public removeAlarmGroup() {
         this.apiService.proposeAction({
@@ -53,28 +55,31 @@ export class AlarmGroupItemComponent {
         });
     }
 
-    public editAlarmGroupVehicle(
-        alarmGroupVehicleId: UUID,
-        time: number | null,
-        name: string | null
-    ) {
-        if (time === null) {
-            return;
-        }
-        if (name === null) {
-            return;
-        }
-        this.apiService.proposeAction(
-            {
-                type: '[AlarmGroup] Edit AlarmGroupVehicle',
-                alarmGroupId: this.alarmGroup.id,
-                alarmGroupVehicleId,
-                time,
-                name,
-            },
-            true
-        );
-    }
+    public readonly editAlarmGroupVehicle = debounce(
+        (
+            alarmGroupVehicleId: UUID,
+            time: number | null,
+            name: string | null
+        ) => {
+            if (time === null) {
+                return;
+            }
+            if (name === null) {
+                return;
+            }
+            this.apiService.proposeAction(
+                {
+                    type: '[AlarmGroup] Edit AlarmGroupVehicle',
+                    alarmGroupId: this.alarmGroup.id,
+                    alarmGroupVehicleId,
+                    time,
+                    name,
+                },
+                true
+            );
+        },
+        debounceTimeout
+    );
 
     public createAlarmGroupVehicle(vehicleTemplateId: UUID) {
         const vehicleTemplate = getStateSnapshot(

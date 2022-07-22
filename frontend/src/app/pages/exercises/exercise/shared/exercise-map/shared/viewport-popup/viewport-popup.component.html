@@ -13,7 +13,8 @@
                 <label class="form-label">Name</label>
                 <input
                     #nameInput="ngModel"
-                    [(ngModel)]="name"
+                    [ngModel]="viewport.name"
+                    (ngModelChange)="renameViewport($event)"
                     required
                     type="text"
                     class="form-control"
@@ -22,14 +23,6 @@
                     [ngModelInput]="nameInput"
                 ></app-display-validation>
             </div>
-
-            <button
-                [disabled]="nameInput.invalid"
-                (click)="saveName()"
-                class="btn btn-warning"
-            >
-                Speichern
-            </button>
         </ng-container>
     </div>
 </ng-container>

@@ -19,7 +19,12 @@
                         <label class="form-label">Interner Name</label>
                         <input
                             #internalNameInput="ngModel"
-                            [(ngModel)]="internalName"
+                            [ngModel]="transferPoint.internalName"
+                            (ngModelChange)="
+                                renameTransferPoint({
+                                    internalName: $event
+                                })
+                            "
                             [maxlength]="16"
                             required
                             type="text"
@@ -34,7 +39,12 @@
                         <label class="form-label">Externer Name</label>
                         <input
                             #externalNameInput="ngModel"
-                            [(ngModel)]="externalName"
+                            [ngModel]="transferPoint.externalName"
+                            (ngModelChange)="
+                                renameTransferPoint({
+                                    externalName: $event
+                                })
+                            "
                             [maxlength]="30"
                             required
                             type="text"
@@ -44,17 +54,6 @@
                             [ngModelInput]="externalNameInput"
                         ></app-display-validation>
                     </div>
-
-                    <button
-                        [disabled]="
-                            internalNameInput.invalid ||
-                            externalNameInput.invalid
-                        "
-                        (click)="saveTransferPointNames()"
-                        class="btn btn-warning"
-                    >
-                        Speichern
-                    </button>
                 </ng-template>
             </ng-container>
             <ng-container

@@ -3,9 +3,11 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID, Vehicle } from 'digital-fuesim-manv-shared';
 import { Material, Patient, Personnel } from 'digital-fuesim-manv-shared';
+import { debounce } from 'lodash';
 import type { Observable } from 'rxjs';
-import { combineLatest, firstValueFrom, map, switchMap } from 'rxjs';
+import { combineLatest, map, switchMap } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
+import { debounceTimeout } from 'src/app/shared/variables/debounce-timeout';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectMaterial,
@@ -28,8 +30,6 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
 
     public vehicle$?: Observable<Vehicle>;
     public vehicleIsCompletelyUnloaded$?: Observable<boolean>;
-
-    public name?: string;
 
     constructor(
         private readonly store: Store<AppState>,
@@ -73,18 +73,15 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                 areInVehicle.every((isInVehicle) => !isInVehicle)
             )
         );
-
-        const vehicle = await firstValueFrom(this.vehicle$);
-        this.name = vehicle.name;
     }
 
-    public renameVehicle() {
+    public readonly renameVehicle = debounce((name: string) => {
         this.apiService.proposeAction({
             type: '[Vehicle] Rename vehicle',
             vehicleId: this.vehicleId,
-            name: this.name!,
+            name,
         });
-    }
+    }, debounceTimeout);
 
     public unloadVehicle() {
         this.apiService.proposeAction({

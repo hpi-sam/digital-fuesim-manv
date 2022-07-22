@@ -2,10 +2,12 @@ import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { MapImage, UUID } from 'digital-fuesim-manv-shared';
+import { debounce } from 'lodash';
 import type { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
+import { debounceTimeout } from 'src/app/shared/variables/debounce-timeout';
 import type { AppState } from 'src/app/state/app.state';
 import { getSelectMapImage } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
@@ -24,9 +26,6 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     public mapImage$?: Observable<MapImage>;
 
     public url?: string;
-    public height?: number;
-    // TODO: Allow changing this (with effect)
-    public aspectRatio?: number;
 
     constructor(
         private readonly store: Store<AppState>,
@@ -40,8 +39,6 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
         // Set the initial form values
         const mapImage = await firstValueFrom(this.mapImage$);
         this.url = mapImage.image.url;
-        this.height = mapImage.image.height;
-        this.aspectRatio = mapImage.image.aspectRatio;
     }
 
     public async saveUrl() {
@@ -59,15 +56,11 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
         }
     }
 
-    public async resizeImage(
-        targetHeight: number | null,
-        targetAspectRatio: number | null
-    ) {
+    public readonly resizeImage = debounce(async (newHeight: number) => {
         const response = await this.apiService.proposeAction({
             type: '[MapImage] Scale MapImage',
             mapImageId: this.mapImageId,
-            newHeight: targetHeight ?? this.height!,
-            newAspectRatio: targetAspectRatio ?? this.aspectRatio!,
+            newHeight,
         });
         if (response.success) {
             this.messageService.postMessage({
@@ -75,5 +68,5 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
                 color: 'success',
             });
         }
-    }
+    }, debounceTimeout);
 }

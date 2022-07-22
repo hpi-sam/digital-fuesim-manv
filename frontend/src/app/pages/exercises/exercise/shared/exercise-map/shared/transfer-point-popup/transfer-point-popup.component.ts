@@ -2,10 +2,11 @@ import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { Hospital, TransferPoint, UUID } from 'digital-fuesim-manv-shared';
+import { debounce } from 'lodash';
 import type { Observable } from 'rxjs';
-import { firstValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
+import { debounceTimeout } from 'src/app/shared/variables/debounce-timeout';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectTransferPoint,
@@ -78,44 +79,47 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
         private readonly messageService: MessageService
     ) {}
 
-    public internalName?: string;
-    public externalName?: string;
-
     async ngOnInit() {
         this.transferPoint$ = this.store.select(
             getSelectTransferPoint(this.transferPointId)
         );
-
-        // Set the initial form values
-        const transferPoint = await firstValueFrom(this.transferPoint$);
-        this.internalName = transferPoint.internalName;
-        this.externalName = transferPoint.externalName;
     }
 
-    public async saveTransferPointNames() {
-        const response = await this.apiService.proposeAction({
-            type: '[TransferPoint] Rename TransferPoint',
-            transferPointId: this.transferPointId,
-            internalName: this.internalName!,
-            externalName: this.externalName!,
-        });
-        if (response.success) {
-            this.messageService.postMessage({
-                title: 'Transferpunkt erfolgreich umbenannt',
-                color: 'success',
+    public readonly renameTransferPoint = debounce(
+        async ({
+            internalName,
+            externalName,
+        }: {
+            internalName?: string;
+            externalName?: string;
+        }) => {
+            const response = await this.apiService.proposeAction({
+                type: '[TransferPoint] Rename TransferPoint',
+                transferPointId: this.transferPointId,
+                internalName,
+                externalName,
             });
-            this.closePopup.emit();
-        }
-    }
+            if (response.success) {
+                this.messageService.postMessage({
+                    title: 'Transferpunkt erfolgreich umbenannt',
+                    color: 'success',
+                });
+            }
+        },
+        debounceTimeout
+    );
 
-    public connectTransferPoint(transferPointId: UUID, duration?: number) {
-        this.apiService.proposeAction({
-            type: '[TransferPoint] Connect TransferPoints',
-            transferPointId1: this.transferPointId,
-            transferPointId2: transferPointId,
-            duration,
-        });
-    }
+    public readonly connectTransferPoint = debounce(
+        (transferPointId: UUID, duration?: number) => {
+            this.apiService.proposeAction({
+                type: '[TransferPoint] Connect TransferPoints',
+                transferPointId1: this.transferPointId,
+                transferPointId2: transferPointId,
+                duration,
+            });
+        },
+        debounceTimeout
+    );
 
     public disconnectTransferPoint(transferPointId: UUID) {
         this.apiService.proposeAction({
