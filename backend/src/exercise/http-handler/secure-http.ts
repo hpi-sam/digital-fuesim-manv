@@ -17,14 +17,16 @@ export function secureHttp<Result extends object | undefined>(
     operation: () => HttpResponse<Result> | Promise<HttpResponse<Result>>
 ): (req: ExpressRequest, res: ExpressResponse) => Promise<void> {
     return async (_req: ExpressRequest, res: ExpressResponse) => {
-        let response: HttpResponse<Result>;
         try {
-            response = await operation();
+            const response = await operation();
+            res.statusCode = response.statusCode;
+            res.send(response.body);
         } catch (error: unknown) {
             // Try sending 500 response
             try {
                 const message = `An error occurred on http request: ${error}`;
                 console.warn(message);
+                res.statusCode = 500;
                 res.send({
                     statusCode: 500,
                     body: { message },
@@ -38,9 +40,6 @@ export function secureHttp<Result extends object | undefined>(
                     `An error occurred while handling above http error and trying to respond to client: ${innerError}`
                 );
             }
-            return;
         }
-        res.statusCode = response.statusCode;
-        res.send(response.body);
     };
 }
