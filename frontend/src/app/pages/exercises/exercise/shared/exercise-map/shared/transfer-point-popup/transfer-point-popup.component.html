@@ -58,21 +58,19 @@
                 </ng-template>
             </ng-container>
             <ng-container
-                ngbNavItem="connections"
+                ngbNavItem="transferPoints"
                 [disabled]="(apiService.currentRole$ | async) !== 'trainer'"
             >
-                <a ngbNavLink>Verbindungen</a>
+                <a ngbNavLink>Transferpunkte</a>
                 <ng-template ngbNavContent>
                     <p
                         *ngIf="
                             (transferPoint.reachableTransferPoints | values)
-                                .length === 0 &&
-                            (transferPoint.reachableHospitals | values)
                                 .length === 0
                         "
                         class="text-muted font-bold"
                     >
-                        Es sind noch keine Verbindungen vorhanden.
+                        Es sind noch keine Transferpunkte verbunden.
                     </p>
                     <div class="mb-3 overflow-auto" style="height: 250px">
                         <ul
@@ -135,6 +133,65 @@
                                 </button>
                             </li>
                         </ul>
+                    </div>
+                    <div
+                        *ngIf="
+                            (transferPointsToBeAdded$ | async | values)
+                                ?.length !== 0
+                        "
+                        ngbDropdown
+                        placement="bottom-start"
+                        autoClose="outside"
+                        class="d-inline-block"
+                    >
+                        <button
+                            ngbDropdownToggle
+                            type="button"
+                            class="btn btn-outline-primary"
+                        >
+                            <span class="bi-plus me-1"></span>
+                            Hinzufügen
+                        </button>
+                        <div
+                            ngbDropdownMenu
+                            class="overflow-auto"
+                            style="max-height: 150px"
+                        >
+                            <button
+                                *ngFor="
+                                    let transferPoint of transferPointsToBeAdded$
+                                        | async
+                                        | values;
+                                    trackBy: 'id' | appTrackByProperty
+                                "
+                                ngbDropdownItem
+                                (click)="connectTransferPoint(transferPoint.id)"
+                            >
+                                <span class="bi-plus me-1"></span>
+                                <app-transfer-point-name
+                                    [transferPointId]="transferPoint.id"
+                                ></app-transfer-point-name>
+                            </button>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
+            <ng-container
+                ngbNavItem="hospitals"
+                [disabled]="(apiService.currentRole$ | async) !== 'trainer'"
+            >
+                <a ngbNavLink>Krankenhäuser</a>
+                <ng-template ngbNavContent>
+                    <p
+                        *ngIf="
+                            (transferPoint.reachableHospitals | values)
+                                .length === 0
+                        "
+                        class="text-muted font-bold"
+                    >
+                        Es sind noch keine Krankenhäuser verbunden.
+                    </p>
+                    <div class="mb-3 overflow-auto" style="height: 250px">
                         <ul
                             *ngIf="hospitals$ | async as hospitals"
                             class="list-group"
@@ -185,8 +242,6 @@
                     </div>
                     <div
                         *ngIf="
-                            (transferPointsToBeAdded$ | async | values)
-                                ?.length !== 0 ||
                             (hospitalsToBeAdded$ | async | values)?.length !== 0
                         "
                         ngbDropdown
@@ -199,6 +254,7 @@
                             type="button"
                             class="btn btn-outline-primary"
                         >
+                            <span class="bi-plus me-1"></span>
                             Hinzufügen
                         </button>
                         <div
@@ -206,21 +262,6 @@
                             class="overflow-auto"
                             style="max-height: 150px"
                         >
-                            <button
-                                *ngFor="
-                                    let transferPoint of transferPointsToBeAdded$
-                                        | async
-                                        | values;
-                                    trackBy: 'id' | appTrackByProperty
-                                "
-                                ngbDropdownItem
-                                (click)="connectTransferPoint(transferPoint.id)"
-                            >
-                                <app-transfer-point-name
-                                    [transferPointId]="transferPoint.id"
-                                ></app-transfer-point-name>
-                            </button>
-
                             <button
                                 *ngFor="
                                     let hospital of hospitalsToBeAdded$
@@ -231,6 +272,7 @@
                                 ngbDropdownItem
                                 (click)="connectHospital(hospital.id)"
                             >
+                                <span class="bi-plus me-1"></span>
                                 <app-hospital-name
                                     [hospitalId]="hospital.id"
                                 ></app-hospital-name>

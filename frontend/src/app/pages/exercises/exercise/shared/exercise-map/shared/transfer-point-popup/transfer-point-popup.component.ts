@@ -14,10 +14,11 @@ import {
 } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
+type NavIds = 'hospitals' | 'names' | 'transferPoints';
 /**
  * We want to remember the last selected nav item, so the user doesn't have to manually select it again.
  */
-let activeNavId: 'connections' | 'names' = 'names';
+let activeNavId: NavIds = 'names';
 
 @Component({
     selector: 'app-transfer-point-popup',
@@ -37,7 +38,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     public get activeNavId() {
         return activeNavId;
     }
-    public set activeNavId(value: 'connections' | 'names') {
+    public set activeNavId(value: NavIds) {
         activeNavId = value;
     }
 
