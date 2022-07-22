@@ -14,15 +14,12 @@ export type HttpMethod =
     | 'put';
 
 export function secureHttp<Result extends object | undefined>(
-    operation: (
-        req: ExpressRequest
-    ) => HttpResponse<Result> | Promise<HttpResponse<Result>>
+    operation: () => HttpResponse<Result> | Promise<HttpResponse<Result>>
 ): (req: ExpressRequest, res: ExpressResponse) => Promise<void> {
-    // TODO: Better type `req` to verify the arguments
-    return async (req: ExpressRequest, res: ExpressResponse) => {
+    return async (_req: ExpressRequest, res: ExpressResponse) => {
         let response: HttpResponse<Result>;
         try {
-            response = await operation(req);
+            response = await operation();
         } catch (error: unknown) {
             // Try sending 500 response
             try {

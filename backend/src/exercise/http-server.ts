@@ -23,26 +23,18 @@ export class ExerciseHttpServer {
         // This endpoint is used to determine whether the API itself is running.
         // It should be independent from any other services that may or may not be running.
         // This is used for the Cypress CI.
-        app.get('/api/health', secureHttp(getHealth));
-
-        app.post(
-            '/api/exercise',
-            secureHttp(async (req) => postExercise(databaseService, req.body))
+        app.get('/api/health', (req) => secureHttp(getHealth));
+        app.post('/api/exercise', (req) =>
+            secureHttp(async () => postExercise(databaseService, req.body))
         );
-
-        app.get(
-            '/api/exercise/:exerciseId',
-            secureHttp((req) => getExercise(req.params.exerciseId))
+        app.get('/api/exercise/:exerciseId', (req) =>
+            secureHttp(() => getExercise(req.params.exerciseId))
         );
-
-        app.delete(
-            '/api/exercise/:exerciseId',
-            secureHttp(async (req) => deleteExercise(req.params.exerciseId))
+        app.delete('/api/exercise/:exerciseId', (req) =>
+            secureHttp(async () => deleteExercise(req.params.exerciseId))
         );
-
-        app.get(
-            '/api/exercise/:exerciseId/history',
-            secureHttp(async (req) => getExerciseHistory(req.params.exerciseId))
+        app.get('/api/exercise/:exerciseId/history', (req) =>
+            secureHttp(async () => getExerciseHistory(req.params.exerciseId))
         );
 
         this.httpServer = app.listen(port);
