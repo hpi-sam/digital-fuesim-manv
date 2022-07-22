@@ -8,7 +8,7 @@ import { createExercise, createTestEnvironment } from '../test/utils';
 describe('Exercise saving', () => {
     const environment = createTestEnvironment();
 
-    // TODO: This test heavily relies on implementation detail.
+    // TODO: This test heavily relies on implementation details.
     // When refactoring any part of the application that may impact this test and make it fail, it's ok to change it.
     // The problem that should be catched by it:
     // The `FuesimServer` saves all actions every ten seconds.
