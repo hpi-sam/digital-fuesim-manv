@@ -106,8 +106,9 @@ export class ExerciseState {
     /**
      * @deprecated Use {@link create} instead.
      */
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-useless-constructor
-    constructor() {}
+    constructor(participantId: string) {
+        this.participantId = participantId;
+    }
 
     static readonly create = getCreate(this);
 

@@ -32,7 +32,7 @@ describe('exerciseReducer', () => {
     }
 
     beforeEach(() => {
-        state = ExerciseState.create();
+        state = ExerciseState.create('123456');
     });
 
     it('should apply simple actions', () => {

@@ -6,7 +6,8 @@ import {
 } from 'digital-fuesim-manv-shared';
 import { applyServerAction, setExerciseState } from './exercise.actions';
 
-export const initialState = ExerciseState.create();
+// TODO: Is this correct?
+export const initialState = ExerciseState.create('');
 
 export const exerciseReducer = createReducer(
     initialState,

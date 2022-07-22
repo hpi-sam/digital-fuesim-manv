@@ -24,7 +24,7 @@ export async function postExercise(
                   participantId,
                   trainerId,
                   databaseService,
-                  ExerciseState.create()
+                  ExerciseState.create(participantId)
               )
             : await importExercise(
                   importObject,

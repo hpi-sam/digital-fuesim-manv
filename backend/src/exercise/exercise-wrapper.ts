@@ -245,7 +245,7 @@ export class ExerciseWrapper extends NormalType<
         public readonly temporaryActionHistory: ActionWrapper[],
         databaseService: DatabaseService,
         private readonly stateVersion: number,
-        private readonly initialState = ExerciseState.create(),
+        private readonly initialState = ExerciseState.create(participantId),
         private currentState: ExerciseState = initialState
     ) {
         super(databaseService);
@@ -260,14 +260,20 @@ export class ExerciseWrapper extends NormalType<
         exerciseIds: ExerciseIds
     ): Promise<ExerciseWrapper> {
         const importOperations = async (manager: EntityManager | undefined) => {
+            const newInitialState =
+                file.history?.initialState ?? file.currentState;
+            const newCurrentState = file.currentState;
+            // Set new participant id
+            newInitialState.participantId = exerciseIds.participantId;
+            newCurrentState.participantId = exerciseIds.participantId;
             const exercise = new ExerciseWrapper(
                 exerciseIds.participantId,
                 exerciseIds.trainerId,
                 [],
                 databaseService,
                 ExerciseState.currentStateVersion,
-                file.history?.initialState ?? file.currentState,
-                file.currentState
+                newInitialState,
+                newCurrentState
             );
             const actions = (file.history?.actionHistory ?? []).map(
                 (action) =>
@@ -280,14 +286,6 @@ export class ExerciseWrapper extends NormalType<
             );
             exercise.temporaryActionHistory.push(...actions);
             exercise.restore();
-            exercise.applyAction(
-                {
-                    type: '[Exercise] Set Participant Id',
-                    participantId: exerciseIds.participantId,
-                },
-                exercise.emitterId,
-                undefined
-            );
             exercise.tickCounter = actions.filter(
                 (action) => action.action.type === '[Exercise] Tick'
             ).length;
@@ -305,7 +303,7 @@ export class ExerciseWrapper extends NormalType<
         participantId: string,
         trainerId: string,
         databaseService: DatabaseService,
-        initialState: ExerciseState = ExerciseState.create()
+        initialState: ExerciseState = ExerciseState.create(participantId)
     ): ExerciseWrapper {
         const exercise = new ExerciseWrapper(
             participantId,
@@ -314,14 +312,6 @@ export class ExerciseWrapper extends NormalType<
             databaseService,
             ExerciseState.currentStateVersion,
             initialState
-        );
-
-        exercise.applyAction(
-            {
-                type: '[Exercise] Set Participant Id',
-                participantId,
-            },
-            exercise.emitterId
         );
 
         return exercise;

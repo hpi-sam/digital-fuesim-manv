@@ -1,5 +1,6 @@
 import type {
     ExerciseState,
+    Mutable,
     StateExport,
     UUID,
 } from 'digital-fuesim-manv-shared';
@@ -147,11 +148,11 @@ export function migrateStateExportTo(
     migrationFunctions.state.forEach((migrateStateFunction) => {
         stateExport.currentState = migrateStateFunction(
             stateExport.currentState
-        ) as ExerciseState;
+        ) as Mutable<ExerciseState>;
         if (stateExport.history) {
             stateExport.history.initialState = migrateStateFunction(
                 stateExport.history.initialState
-            ) as ExerciseState;
+            ) as Mutable<ExerciseState>;
         }
     });
     if (stateExport.history) {
