@@ -12,7 +12,7 @@ export class KeysPipe implements PipeTransform {
     // Accepts undefined and null too, to make it easier to use in templates with e.g. | async
     transform<Value extends { [key: string]: any } | null | undefined>(
         object: Value
-        // The keys must be strings, we don't want to allow number indexing here (see https://github.com/microsoft/TypeScript/issues/41966#issuecomment-745434551)
+        // To be consistent with `Object.keys()` it is necessary to only allow string or string literals as keys (see https://github.com/microsoft/TypeScript/issues/41966#issuecomment-745434551)
     ): Value extends null | undefined ? Value : (string & keyof Value)[] {
         if (!object) {
             return object as any;

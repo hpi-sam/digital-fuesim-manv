@@ -12,25 +12,6 @@ import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
 import type { AppState } from '../app.state';
 
-/**
- *
- * @param maybeValue A value that may be set, but may also be `undefined`
- * @returns `maybeValue` in case it's not `undefined`
- * @throws {@link TypeError} in case `maybeValue` is `undefined` -- disabled for now, only logs the error and returns `undefined` anyway
- */
-function errorIfNotExists<T extends object>(maybeValue: T | undefined): T {
-    if (maybeValue === undefined) {
-        // TODO: Make it so that the optimistic update handler doesn't do this strange stuff.
-        console.error(
-            'Note that the following error may occur in the context of optimistic updates'
-        );
-        // TODO: Throw when this never happens
-        console.error(new TypeError('A value was unexpectedly undefined'));
-    }
-    // TODO: Remove this type assertion once we can again safely throw above
-    return maybeValue!;
-}
-
 export const selectViewports = (state: AppState) => state.exercise.viewports;
 export const selectMapImages = (state: AppState) => state.exercise.mapImages;
 export const selectVehicleTemplates = (state: AppState) =>
@@ -41,11 +22,9 @@ export const selectMapImagesTemplates = (state: AppState) =>
     state.exercise.mapImageTemplates;
 export const getSelectMapImageTemplate =
     (mapImageTemplateId: UUID) => (state: AppState) =>
-        errorIfNotExists(
-            state.exercise.mapImageTemplates.find(
-                (template) => template.id === mapImageTemplateId
-            )
-        );
+        state.exercise.mapImageTemplates.find(
+            (template) => template.id === mapImageTemplateId
+        )!;
 
 export const selectPatients = (state: AppState) => state.exercise.patients;
 export const selectVehicles = (state: AppState) => state.exercise.vehicles;
@@ -53,32 +32,30 @@ export const selectPersonnel = (state: AppState) => state.exercise.personnel;
 export const selectAlarmGroups = (state: AppState) =>
     state.exercise.alarmGroups;
 export const getSelectPersonnel = (personnelId: UUID) => (state: AppState) =>
-    errorIfNotExists(state.exercise.personnel[personnelId]);
+    state.exercise.personnel[personnelId]!;
 export const selectMaterials = (state: AppState) => state.exercise.materials;
 export const getSelectMaterial = (materialId: UUID) => (state: AppState) =>
-    errorIfNotExists(state.exercise.materials[materialId]);
+    state.exercise.materials[materialId]!;
 export const getSelectPatient = (patientId: UUID) => (state: AppState) =>
-    errorIfNotExists(state.exercise.patients[patientId]);
+    state.exercise.patients[patientId]!;
 export const getSelectMapImage = (mapImageId: UUID) => (state: AppState) =>
-    errorIfNotExists(state.exercise.mapImages[mapImageId]);
+    state.exercise.mapImages[mapImageId]!;
 export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
-    errorIfNotExists(state.exercise.vehicles[vehicleId]);
+    state.exercise.vehicles[vehicleId]!;
 export const getSelectVehicleTemplate =
     (vehicleTemplateId: UUID) => (state: AppState) =>
-        errorIfNotExists(
-            state.exercise.vehicleTemplates.find(
-                (vehicleTemplate) => vehicleTemplate.id === vehicleTemplateId
-            )
-        );
+        state.exercise.vehicleTemplates.find(
+            (vehicleTemplate) => vehicleTemplate.id === vehicleTemplateId
+        )!;
 export const getSelectAlarmGroup = (alarmGroupId: UUID) => (state: AppState) =>
-    errorIfNotExists(state.exercise.alarmGroups[alarmGroupId]);
+    state.exercise.alarmGroups[alarmGroupId]!;
 export const getSelectTransferPoint =
     (transferPointId: UUID) => (state: AppState) =>
-        errorIfNotExists(state.exercise.transferPoints[transferPointId]);
+        state.exercise.transferPoints[transferPointId]!;
 export const getSelectHospital = (hospitalId: UUID) => (state: AppState) =>
-    errorIfNotExists(state.exercise.hospitals[hospitalId]);
+    state.exercise.hospitals[hospitalId]!;
 export const getSelectViewport = (viewportId: UUID) => (state: AppState) =>
-    errorIfNotExists(state.exercise.viewports[viewportId]);
+    state.exercise.viewports[viewportId]!;
 export const getSelectRestrictedViewport =
     (clientId?: UUID | null) => (state: AppState) => {
         if (!clientId) {
@@ -132,7 +109,7 @@ export function getSelectVisibleElements<
 
 export const selectClients = (state: AppState) => state.exercise.clients;
 export const getSelectClient = (clientId: UUID) => (state: AppState) =>
-    errorIfNotExists(state.exercise.clients[clientId]);
+    state.exercise.clients[clientId]!;
 
 export const selectExerciseStatus = (state: AppState) =>
     ExerciseState.getStatus(state.exercise);

@@ -121,10 +121,9 @@ export class DragElementService {
             return;
         }
         // Get the position of the mouse on the map
-        const coordinate = this.olMap.getCoordinateFromPixel(
+        const [x, y] = this.olMap.getCoordinateFromPixel(
             this.olMap.getEventPixel(event)
-        );
-        const [x, y] = [coordinate[0]!, coordinate[1]!];
+        ) as [number, number];
         const position = { x, y };
         // create the element
         switch (this.transferringTemplate.type) {

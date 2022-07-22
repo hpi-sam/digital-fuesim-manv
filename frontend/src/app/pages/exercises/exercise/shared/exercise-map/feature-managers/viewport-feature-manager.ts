@@ -47,12 +47,6 @@ export class ViewportFeatureManager
             olMap,
             layer,
             (targetPositions, viewport) => {
-                // We need at least on targetPosition
-                if (targetPositions.length < 1) {
-                    throw new Error(
-                        'Got unexpectedly empty targetPositions array'
-                    );
-                }
                 apiService.proposeAction({
                     type: '[Viewport] Move viewport',
                     viewportId: viewport.id,
