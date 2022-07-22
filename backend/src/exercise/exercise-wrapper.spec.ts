@@ -109,7 +109,7 @@ describe('Exercise Wrapper', () => {
             expect(startMock).toHaveBeenCalledTimes(1);
         });
 
-        it('calls start when matching action is sent', () => {
+        it('calls pause when matching action is sent', () => {
             const exercise = ExerciseWrapper.create(
                 '123456',
                 '12345678',
@@ -118,6 +118,12 @@ describe('Exercise Wrapper', () => {
 
             const pause = jest.spyOn(ExerciseWrapper.prototype, 'pause');
             pause.mockImplementation(() => ({}));
+
+            // We have to start the exercise before it can be paused
+            exercise.applyAction(
+                { type: '[Exercise] Start', timestamp: 0 },
+                (exercise as any).emitterUUID
+            );
 
             exercise.applyAction(
                 { type: '[Exercise] Pause', timestamp: 0 },

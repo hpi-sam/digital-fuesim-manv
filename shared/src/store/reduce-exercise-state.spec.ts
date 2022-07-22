@@ -48,4 +48,43 @@ describe('exerciseReducer', () => {
     it('should throw an error if an action is unsuccessful', () => {
         expect(() => removeViewport(uuid())).toThrow(ReducerError);
     });
+
+    describe('exercise starting/stopping', () => {
+        function pauseExercise() {
+            state = reduceExerciseState(state, {
+                type: '[Exercise] Pause',
+                timestamp: 0,
+            });
+        }
+        function startExercise() {
+            state = reduceExerciseState(state, {
+                type: '[Exercise] Start',
+                timestamp: 0,
+            });
+        }
+        it('does not start the exercise twice', () => {
+            startExercise();
+            expect(startExercise).toThrow(ReducerError);
+        });
+        it('does not pause a not started exercise', () => {
+            expect(pauseExercise).toThrow(ReducerError);
+        });
+        it('does not pause a not running exercise', () => {
+            startExercise();
+            pauseExercise();
+            expect(pauseExercise).toThrow(ReducerError);
+        });
+        it('correctly starts and stops an exercise', () => {
+            const expectStatus = (
+                expected: 'notStarted' | 'paused' | 'running'
+            ) => {
+                expect(ExerciseState.getStatus(state)).toBe(expected);
+            };
+            expectStatus('notStarted');
+            startExercise();
+            expectStatus('running');
+            pauseExercise();
+            expectStatus('paused');
+        });
+    });
 });

@@ -13,11 +13,12 @@ import { Personnel, Viewport } from '../../models';
 import { StatusHistoryEntry } from '../../models/status-history-entry';
 import { getStatus } from '../../models/utils';
 import type { AreaStatistics } from '../../models/utils/area-statistics';
-import type { ExerciseState } from '../../state';
+import { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, uuid } from '../../utils';
 import { PatientUpdate } from '../../utils/patient-updates';
 import type { Action, ActionReducer } from '../action-reducer';
+import { ReducerError } from '../reducer-error';
 import { letElementArrive } from './transfer';
 import { calculateTreatments } from './utils/calculate-treatments';
 
@@ -63,6 +64,9 @@ export namespace ExerciseActionReducers {
     export const pauseExercise: ActionReducer<PauseExerciseAction> = {
         action: PauseExerciseAction,
         reducer: (draftState, { timestamp }) => {
+            if (ExerciseState.getStatus(draftState) !== 'running') {
+                throw new ReducerError('Cannot pause not running exercise');
+            }
             const statusHistoryEntry = StatusHistoryEntry.create(
                 'paused',
                 new Date(timestamp)
@@ -76,6 +80,9 @@ export namespace ExerciseActionReducers {
     export const startExercise: ActionReducer<StartExerciseAction> = {
         action: StartExerciseAction,
         reducer: (draftState, { timestamp }) => {
+            if (ExerciseState.getStatus(draftState) === 'running') {
+                throw new ReducerError('Cannot start already running exercise');
+            }
             const statusHistoryEntry = StatusHistoryEntry.create(
                 'running',
                 new Date(timestamp)
