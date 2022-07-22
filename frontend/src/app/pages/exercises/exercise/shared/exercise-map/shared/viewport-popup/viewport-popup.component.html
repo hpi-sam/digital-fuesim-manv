@@ -7,29 +7,559 @@
             class="btn-close float-end"
         ></button>
     </h5>
-    <div class="popover-body" style="width: 350px; height: 300px">
-        <ng-container *ngIf="(apiService.currentRole$ | async) === 'trainer'">
-            <div class="form-group pb-3">
-                <label class="form-label">Name</label>
-                <input
-                    #nameInput="ngModel"
-                    [(ngModel)]="name"
-                    required
-                    type="text"
-                    class="form-control"
-                />
-                <app-display-validation
-                    [ngModelInput]="nameInput"
-                ></app-display-validation>
-            </div>
+    <div class="popover-body" style="width: 375px">
+        <nav #nav="ngbNav" ngbNav [(activeId)]="activeNavId" class="nav-tabs">
+            <ng-container ngbNavItem="settings">
+                <a ngbNavLink>Einstellungen</a>
+                <ng-template ngbNavContent>
+                    <ng-container
+                        *ngIf="(apiService.currentRole$ | async) === 'trainer'"
+                    >
+                        <div class="card">
+                            <div class="card-header">
+                                Allgemeine Einstellungen
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group pb-3">
+                                    <label class="form-label">Name</label>
+                                    <input
+                                        #nameInput="ngModel"
+                                        [(ngModel)]="name"
+                                        required
+                                        type="text"
+                                        class="form-control"
+                                    />
+                                    <app-display-validation
+                                        [ngModelInput]="nameInput"
+                                    ></app-display-validation>
+                                </div>
 
-            <button
-                [disabled]="nameInput.invalid"
-                (click)="saveName()"
-                class="btn btn-warning"
-            >
-                Speichern
-            </button>
-        </ng-container>
+                                <button
+                                    [disabled]="nameInput.invalid"
+                                    (click)="saveName()"
+                                    class="btn btn-warning"
+                                >
+                                    Speichern
+                                </button>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <br />
+                    <div class="card">
+                        <div class="card-header">Automatisierung</div>
+                        <div class="card-body">
+                            <ng-container
+                                *ngIf="
+                                    (apiService.currentRole$ | async) ===
+                                    'trainer'
+                                "
+                            >
+                                Diese Ansicht automatisieren
+                                <div class="form-switch">
+                                    <input
+                                        [ngModel]="
+                                            viewport.automatedPatientFieldConfig
+                                                .isAutomated
+                                        "
+                                        (ngModelChange)="
+                                            changeAutomationActivation($event)
+                                        "
+                                        class="form-check-input"
+                                        type="checkbox"
+                                    />
+                                </div>
+                            </ng-container>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>Quelltransferpunkt:</td>
+                                        <td>
+                                            <div
+                                                ngbDropdown
+                                                class="d-inline-block"
+                                            >
+                                                <button
+                                                    ngbDropdownToggle
+                                                    type="button"
+                                                    class="btn btn-outline-primary"
+                                                >
+                                                    <ng-container
+                                                        *ngIf="
+                                                            viewport
+                                                                .automatedPatientFieldConfig
+                                                                .sourceTransferPointId as transferPointId;
+                                                            else noSelection
+                                                        "
+                                                    >
+                                                        <app-transfer-point-name
+                                                            [transferPointId]="
+                                                                transferPointId
+                                                            "
+                                                        ></app-transfer-point-name>
+                                                    </ng-container>
+                                                </button>
+                                                <div
+                                                    ngbDropdownMenu
+                                                    class="overflow-auto"
+                                                    style="max-height: 150px"
+                                                >
+                                                    <button
+                                                        *ngFor="
+                                                            let transferPoint of transferPointsInViewport$
+                                                                | async
+                                                                | values;
+                                                            trackBy: 'id'
+                                                                | appTrackByProperty
+                                                        "
+                                                        ngbDropdownItem
+                                                        (click)="
+                                                            changeAutomationConfig(
+                                                                'source',
+                                                                transferPoint.id
+                                                            )
+                                                        "
+                                                    >
+                                                        <app-transfer-point-name
+                                                            [transferPointId]="
+                                                                transferPoint.id
+                                                            "
+                                                        ></app-transfer-point-name>
+                                                    </button>
+                                                    <button
+                                                        ngbDropdownItem
+                                                        (click)="
+                                                            changeAutomationConfig(
+                                                                'source',
+                                                                undefined
+                                                            )
+                                                        "
+                                                    >
+                                                        <ng-container
+                                                            [ngTemplateOutlet]="
+                                                                noSelection
+                                                            "
+                                                        ></ng-container>
+                                                    </button>
+                                                </div>
+                                                <ng-template #noSelection>
+                                                    <i> Keine Auswahl </i>
+                                                </ng-template>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Zieltransferpunkt:</td>
+                                        <td>
+                                            <div
+                                                ngbDropdown
+                                                class="d-inline-block"
+                                            >
+                                                <button
+                                                    ngbDropdownToggle
+                                                    type="button"
+                                                    class="btn btn-outline-primary"
+                                                >
+                                                    <ng-container
+                                                        *ngIf="
+                                                            viewport
+                                                                .automatedPatientFieldConfig
+                                                                .targetTransferPointId as transferPointId;
+                                                            else noSelection
+                                                        "
+                                                    >
+                                                        <app-transfer-point-name
+                                                            [transferPointId]="
+                                                                transferPointId
+                                                            "
+                                                        ></app-transfer-point-name>
+                                                    </ng-container>
+                                                </button>
+                                                <div
+                                                    ngbDropdownMenu
+                                                    class="overflow-auto"
+                                                    style="max-height: 150px"
+                                                >
+                                                    <button
+                                                        *ngFor="
+                                                            let transferPoint of reachableTransferPoints$
+                                                                | async;
+                                                            trackBy: 'id'
+                                                                | appTrackByProperty
+                                                        "
+                                                        ngbDropdownItem
+                                                        (click)="
+                                                            changeAutomationConfig(
+                                                                'targetTransfer',
+                                                                transferPoint.id
+                                                            )
+                                                        "
+                                                    >
+                                                        <app-transfer-point-name
+                                                            [transferPointId]="
+                                                                transferPoint.id
+                                                            "
+                                                        ></app-transfer-point-name>
+                                                    </button>
+                                                    <button
+                                                        ngbDropdownItem
+                                                        (click)="
+                                                            changeAutomationConfig(
+                                                                'targetTransfer',
+                                                                undefined
+                                                            )
+                                                        "
+                                                    >
+                                                        <ng-container
+                                                            [ngTemplateOutlet]="
+                                                                noSelection
+                                                            "
+                                                        ></ng-container>
+                                                    </button>
+                                                </div>
+                                                <ng-template #noSelection>
+                                                    <i> Keine Auswahl </i>
+                                                </ng-template>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Krankenhaus:</td>
+                                        <td>
+                                            <div
+                                                ngbDropdown
+                                                class="d-inline-block"
+                                            >
+                                                <button
+                                                    ngbDropdownToggle
+                                                    type="button"
+                                                    class="btn btn-outline-primary"
+                                                >
+                                                    <ng-container
+                                                        *ngIf="
+                                                            viewport
+                                                                .automatedPatientFieldConfig
+                                                                .targetHospitalId as hospitalId;
+                                                            else noSelection
+                                                        "
+                                                        ><app-hospital-name
+                                                            [hospitalId]="
+                                                                hospitalId
+                                                            "
+                                                        ></app-hospital-name>
+                                                    </ng-container>
+                                                </button>
+                                                <div
+                                                    ngbDropdownMenu
+                                                    class="overflow-auto"
+                                                    style="max-height: 150px"
+                                                >
+                                                    <button
+                                                        *ngFor="
+                                                            let hospital of hospitals$
+                                                                | async
+                                                                | values;
+                                                            trackBy: 'id'
+                                                                | appTrackByProperty
+                                                        "
+                                                        ngbDropdownItem
+                                                        (click)="
+                                                            changeAutomationConfig(
+                                                                'hospital',
+                                                                hospital.id
+                                                            )
+                                                        "
+                                                    >
+                                                        <app-hospital-name
+                                                            [hospitalId]="
+                                                                hospital.id
+                                                            "
+                                                        ></app-hospital-name>
+                                                    </button>
+                                                    <button
+                                                        ngbDropdownItem
+                                                        (click)="
+                                                            changeAutomationConfig(
+                                                                'hospital',
+                                                                undefined
+                                                            )
+                                                        "
+                                                    >
+                                                        <ng-container
+                                                            [ngTemplateOutlet]="
+                                                                noSelection
+                                                            "
+                                                        ></ng-container>
+                                                    </button>
+                                                </div>
+                                                <ng-template #noSelection>
+                                                    <i> Keine Auswahl </i>
+                                                </ng-template>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Abtransport:</td>
+                                        <td>
+                                            <div
+                                                ngbDropdown
+                                                class="d-inline-block"
+                                            >
+                                                <button
+                                                    ngbDropdownToggle
+                                                    type="button"
+                                                    class="btn btn-outline-primary"
+                                                >
+                                                    {{
+                                                        transferModeNames[
+                                                            viewport
+                                                                .automatedPatientFieldConfig
+                                                                .transferMode
+                                                        ]
+                                                    }}
+                                                </button>
+                                                <div
+                                                    ngbDropdownMenu
+                                                    class="overflow-auto"
+                                                    style="max-height: 150px"
+                                                >
+                                                    <!-- <button
+                                                        *ngFor="
+                                                            let mode of transferModeNames
+                                                                | keyvalue;
+                                                            trackBy: 'id'
+                                                                | appTrackByProperty
+                                                        "
+                                                        ngbDropdownItem
+                                                        (click)="
+                                                            changeAutomationConfig(
+                                                                'transferMode',
+                                                                mode.key
+                                                            )
+                                                        "
+                                                    >
+                                                        {{ mode.value }}
+                                                    </button> -->
+                                                    <button
+                                                        ngbDropdownItem
+                                                        (click)="
+                                                            changeAutomationConfig(
+                                                                'transferMode',
+                                                                'none'
+                                                            )
+                                                        "
+                                                    >
+                                                        {{
+                                                            transferModeNames[
+                                                                'none'
+                                                            ]
+                                                        }}
+                                                    </button>
+                                                    <button
+                                                        *ngIf="
+                                                            viewport
+                                                                .automatedPatientFieldConfig
+                                                                .targetHospitalId !==
+                                                            undefined
+                                                        "
+                                                        ngbDropdownItem
+                                                        (click)="
+                                                            changeAutomationConfig(
+                                                                'transferMode',
+                                                                'hospital'
+                                                            )
+                                                        "
+                                                    >
+                                                        {{
+                                                            transferModeNames[
+                                                                'hospital'
+                                                            ]
+                                                        }}
+                                                    </button>
+                                                    <button
+                                                        *ngIf="
+                                                            viewport
+                                                                .automatedPatientFieldConfig
+                                                                .targetTransferPointId !==
+                                                            undefined
+                                                        "
+                                                        ngbDropdownItem
+                                                        (click)="
+                                                            changeAutomationConfig(
+                                                                'transferMode',
+                                                                'transfer'
+                                                            )
+                                                        "
+                                                    >
+                                                        {{
+                                                            transferModeNames[
+                                                                'transfer'
+                                                            ]
+                                                        }}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
+            <ng-container ngbNavItem="info">
+                <a ngbNavLink>Informationen</a>
+                <ng-template ngbNavContent
+                    ><ng-container
+                        *ngIf="
+                            viewport.automatedPatientFieldConfig.isAutomated &&
+                            (viewportMetadata$ | async) as metadata
+                        "
+                    >
+                        <div class="card">
+                            <div class="card-header">Patienten</div>
+                            <div class="card-body">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                                Sichtungskategorie
+                                            </th>
+                                            <th scope="col">Gehfähig</th>
+                                            <th scope="col">Nicht gehfähig</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- TODO: Sortieren -->
+                                        <ng-container
+                                            *ngFor="
+                                                let category of metadata.patients
+                                                    | keyvalue;
+                                                trackBy: 'key'
+                                                    | appTrackByProperty
+                                            "
+                                        >
+                                            <tr
+                                                *ngIf="
+                                                    category.value.walkable +
+                                                        category.value
+                                                            .nonWalkable >
+                                                    0
+                                                "
+                                            >
+                                                <th scope="row">
+                                                    <span
+                                                        *ngIf="
+                                                            category.key as displayedStatus
+                                                        "
+                                                        [ngStyle]="{
+                                                            'background-color':
+                                                                displayedStatus
+                                                        }"
+                                                        [class.text-dark]="
+                                                            displayedStatus ===
+                                                                'yellow' ||
+                                                            displayedStatus ===
+                                                                'white'
+                                                        "
+                                                        class="badge rounded-pill font-monospace"
+                                                    >
+                                                        {{
+                                                            statusNames[
+                                                                displayedStatus
+                                                            ]
+                                                        }}
+                                                    </span>
+                                                </th>
+                                                <td>
+                                                    {{
+                                                        category.value.walkable
+                                                    }}
+                                                </td>
+                                                <td>
+                                                    {{
+                                                        category.value
+                                                            .nonWalkable
+                                                    }}
+                                                </td>
+                                            </tr></ng-container
+                                        >
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="card">
+                            <div class="card-header">Rettungsmittel</div>
+                            <div class="card-body">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Typ</th>
+                                            <th scope="col">Anzahl</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- TODO: Sortieren -->
+                                        <ng-container
+                                            *ngFor="
+                                                let category of metadata.personnel
+                                                    | keyvalue;
+                                                trackBy: 'key'
+                                                    | appTrackByProperty
+                                            "
+                                        >
+                                            <tr *ngIf="category.value > 0">
+                                                <th scope="row">
+                                                    {{
+                                                        personnelTypeNames[
+                                                            category.key
+                                                        ]
+                                                    }}
+                                                </th>
+                                                <td>
+                                                    {{ category.value }}
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                        <!-- TODO: Add some indication that this is a different section -->
+                                        <ng-container
+                                            *ngFor="
+                                                let category of metadata.vehicles
+                                                    | keyvalue;
+                                                trackBy: 'key'
+                                                    | appTrackByProperty
+                                            "
+                                        >
+                                            <tr *ngIf="category.value > 0">
+                                                <th scope="row">
+                                                    {{ category.key }}
+                                                </th>
+                                                <td>
+                                                    {{ category.value }}
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                        <tr *ngIf="metadata.materials > 0">
+                                            <th scope="row">Material</th>
+                                            <td>{{ metadata.materials }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <div
+                        *ngIf="
+                            !viewport.automatedPatientFieldConfig.isAutomated
+                        "
+                        class="text-muted"
+                    >
+                        Diese Ansicht wird zur Zeit nicht automatisiert.
+                    </div>
+                </ng-template>
+            </ng-container>
+        </nav>
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
     </div>
 </ng-container>

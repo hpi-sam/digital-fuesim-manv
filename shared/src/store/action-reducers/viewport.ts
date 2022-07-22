@@ -1,8 +1,9 @@
 import { Type } from 'class-transformer';
-import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Viewport } from '../../models';
 import { Position, Size } from '../../models/utils';
-import { uuidValidationOptions, UUID } from '../../utils';
+import { AutomatedViewportConfig } from '../../models/utils/automated-viewport-config';
+import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
 
@@ -55,6 +56,29 @@ export class RenameViewportAction implements Action {
     public readonly newName!: string;
 }
 
+export class ChangeViewportAutomationState implements Action {
+    @IsString()
+    public readonly type = '[Viewport] Change automation activation state';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly viewportId!: UUID;
+
+    @IsBoolean()
+    public readonly activateAutomation!: boolean;
+}
+
+export class UpdateViewportAutomation implements Action {
+    @IsString()
+    public readonly type = '[Viewport] Update automation';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly viewportId!: UUID;
+
+    @ValidateNested()
+    @Type(() => AutomatedViewportConfig)
+    public readonly config!: AutomatedViewportConfig;
+}
+
 export namespace ViewportActionReducers {
     export const addViewport: ActionReducer<AddViewportAction> = {
         action: AddViewportAction,
@@ -105,4 +129,40 @@ export namespace ViewportActionReducers {
         },
         rights: 'trainer',
     };
+
+    export const changeViewportAutomationState: ActionReducer<ChangeViewportAutomationState> =
+        {
+            action: ChangeViewportAutomationState,
+            reducer: (draftState, { viewportId, activateAutomation }) => {
+                const viewport = getElement(
+                    draftState,
+                    'viewports',
+                    viewportId
+                );
+                viewport.automatedPatientFieldConfig.isAutomated =
+                    activateAutomation;
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateViewportAutomation: ActionReducer<UpdateViewportAutomation> =
+        {
+            action: UpdateViewportAutomation,
+            reducer: (draftState, { viewportId, config }) => {
+                const viewport = getElement(
+                    draftState,
+                    'viewports',
+                    viewportId
+                );
+                // Don't allow to change the activation state here
+                const previousActivation =
+                    viewport.automatedPatientFieldConfig.isAutomated;
+                viewport.automatedPatientFieldConfig = cloneDeepMutable(config);
+                viewport.automatedPatientFieldConfig.isAutomated =
+                    previousActivation;
+                return draftState;
+            },
+            rights: 'participant',
+        };
 }

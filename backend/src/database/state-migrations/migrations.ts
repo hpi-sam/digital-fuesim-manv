@@ -1,7 +1,7 @@
 import type { UUID } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import type { ExerciseWrapper } from '../../exercise/exercise-wrapper';
-import { RestoreError } from '../../utils/restore-error';
+import { disallowMigration } from './disallow-migration';
 
 /**
  * Such a function MUST update the initial state of the exercise with the provided {@link exerciseId} as well as every action associated with it from its current state version to the next version in a way that they are valid states/actions.
@@ -36,17 +36,9 @@ export interface MigrationFunctions {
 export const migrations: {
     [key: number]: MigrationFunctions;
 } = {
-    2: {
-        database: (_entityManager: EntityManager, exerciseId: UUID) => {
-            throw new RestoreError('The migration is not possible', exerciseId);
-        },
-        inMemory: (exerciseWrapper: ExerciseWrapper) => {
-            throw new RestoreError(
-                'The migration is not possible',
-                exerciseWrapper.id ?? 'unknown id'
-            );
-        },
-    },
+    2: disallowMigration,
+    // TODO: Activate migration
+    3: disallowMigration,
 };
 
 export async function migrateInDatabaseTo(

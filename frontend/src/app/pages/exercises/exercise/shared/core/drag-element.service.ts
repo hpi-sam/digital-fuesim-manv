@@ -5,6 +5,7 @@ import type {
     ImageProperties,
     MapImageTemplate,
     VehicleTemplate,
+    PatientCategory,
 } from 'digital-fuesim-manv-shared';
 import {
     Viewport,
@@ -13,8 +14,8 @@ import {
     createVehicleParameters,
     PatientTemplate,
     MapImage,
+    AutomatedViewportConfig,
 } from 'digital-fuesim-manv-shared';
-import type { PatientCategory } from 'digital-fuesim-manv-shared/dist/models/patient-category';
 
 @Injectable({
     providedIn: 'root',
@@ -179,7 +180,8 @@ export class DragElementService {
                                 height,
                                 width,
                             },
-                            'Einsatzabschnitt'
+                            'Einsatzabschnitt',
+                            AutomatedViewportConfig.create('none', false)
                         ),
                     },
                     true

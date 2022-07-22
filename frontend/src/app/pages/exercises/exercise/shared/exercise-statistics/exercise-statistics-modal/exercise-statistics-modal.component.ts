@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import type { PatientStatus, PersonnelType } from 'digital-fuesim-manv-shared';
-import { statusNames } from 'digital-fuesim-manv-shared';
+import { statusNames, personnelTypeNames } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
 import {
@@ -122,23 +122,23 @@ export class ExerciseStatisticsModalComponent {
         // The order is important (the first key is at the bottom of the chart)
         // The colors are taken from bootstrap
         notarzt: {
-            label: 'Notarzt',
+            label: personnelTypeNames.notarzt,
             color: getRgbaColor('red', StackedBarChart.backgroundAlpha),
         },
         gf: {
-            label: 'GF',
+            label: personnelTypeNames.gf,
             color: getRgbaColor('blue', StackedBarChart.backgroundAlpha),
         },
         notSan: {
-            label: 'NotSan',
+            label: personnelTypeNames.notSan,
             color: getRgbaColor('green', StackedBarChart.backgroundAlpha),
         },
         rettSan: {
-            label: 'RettSan',
+            label: personnelTypeNames.rettSan,
             color: getRgbaColor('purple', StackedBarChart.backgroundAlpha),
         },
         san: {
-            label: 'San',
+            label: personnelTypeNames.san,
             color: getRgbaColor('yellow', StackedBarChart.backgroundAlpha),
         },
     };

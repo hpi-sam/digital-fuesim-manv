@@ -8,8 +8,10 @@ import {
 } from 'class-validator';
 import { Hospital } from '../../models';
 import { HospitalPatient } from '../../models/hospital-patient';
+import type { Mutable } from '../../utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
+import type { ExerciseState } from '../../state';
 import { deleteVehicle } from './vehicle';
 import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
@@ -117,33 +119,35 @@ export namespace HospitalActionReducers {
     export const transportPatientToHospital: ActionReducer<TransportPatientToHospitalAction> =
         {
             action: TransportPatientToHospitalAction,
-            reducer: (draftState, { hospitalId, vehicleId }) => {
-                const hospital = getElement(
+            reducer: (draftState, { hospitalId, vehicleId }) =>
+                transportPatientToHospitalReducer(
                     draftState,
-                    'hospitals',
-                    hospitalId
-                );
-                const vehicle = getElement(draftState, 'vehicles', vehicleId);
-                // TODO: Block vehicles whose material and personnel are unloaded
-                for (const patientId of Object.keys(vehicle.patientIds)) {
-                    const patient = getElement(
-                        draftState,
-                        'patients',
-                        patientId
-                    );
-                    draftState.hospitalPatients[patientId] =
-                        HospitalPatient.createFromPatient(
-                            patient,
-                            vehicle.vehicleType,
-                            draftState.currentTime,
-                            hospital.transportDuration + draftState.currentTime
-                        );
-                    hospital.patientIds[patientId] = true;
-                }
-                deleteVehicle(draftState, vehicleId);
-                calculateTreatments(draftState);
-                return draftState;
-            },
+                    hospitalId,
+                    vehicleId
+                ),
             rights: 'participant',
         };
+}
+
+export function transportPatientToHospitalReducer(
+    state: Mutable<ExerciseState>,
+    hospitalId: UUID,
+    vehicleId: UUID
+) {
+    const hospital = getElement(state, 'hospitals', hospitalId);
+    const vehicle = getElement(state, 'vehicles', vehicleId);
+    // TODO: Block vehicles whose material and personnel are unloaded
+    for (const patientId of Object.keys(vehicle.patientIds)) {
+        const patient = getElement(state, 'patients', patientId);
+        state.hospitalPatients[patientId] = HospitalPatient.createFromPatient(
+            patient,
+            vehicle.vehicleType,
+            state.currentTime,
+            hospital.transportDuration + state.currentTime
+        );
+        hospital.patientIds[patientId] = true;
+    }
+    deleteVehicle(state, vehicleId);
+    calculateTreatments(state);
+    return state;
 }

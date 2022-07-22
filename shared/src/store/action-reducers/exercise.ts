@@ -19,6 +19,7 @@ import { uuid } from '../../utils';
 import { PatientUpdate } from '../../utils/patient-updates';
 import type { Action, ActionReducer } from '../action-reducer';
 import { letElementArrive } from './transfer';
+import { automaticPatientFields } from './utils/automatic-patient-fields/automatic-patient-fields';
 import { calculateTreatments } from './utils/calculate-treatments';
 
 export class PauseExerciseAction implements Action {
@@ -94,6 +95,11 @@ export namespace ExerciseActionReducers {
             draftState,
             { patientUpdates, refreshTreatments, tickInterval }
         ) => {
+            performance.clearMarks();
+            performance.clearMeasures();
+            // eslint-disable-next-line no-console
+            // console.time('tick');
+            performance.mark('tick');
             // Refresh the current time
             draftState.currentTime += tickInterval;
             // Refresh patient status
@@ -105,10 +111,23 @@ export namespace ExerciseActionReducers {
                 currentPatient.treatmentTime = patientUpdate.treatmentTime;
                 currentPatient.realStatus = getStatus(currentPatient.health);
             });
-            // Refresh treatments
+            // eslint-disable-next-line no-console
+            // console.time('treat-or-auto');
             if (refreshTreatments) {
+                performance.mark('treat');
+                // Refresh treatments
                 calculateTreatments(draftState);
+                performance.measure('treat', 'treat');
+                // console.log('treat');
+            } else {
+                performance.mark('auto');
+                // Only refresh automated viewports when no treatments are calculated for better performance
+                automaticPatientFields(draftState);
+                performance.measure('auto', 'auto');
+                // console.log('auto ');
             }
+            // eslint-disable-next-line no-console
+            // console.timeEnd('treat-or-auto');
             // Refresh transfers
             refreshTransfer(draftState, 'vehicles', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);
@@ -118,6 +137,14 @@ export namespace ExerciseActionReducers {
             if (draftState.currentTime % (10 * tickInterval) === 0) {
                 updateStatistics(draftState);
             }
+            // eslint-disable-next-line no-console
+            // console.timeEnd('tick');
+            performance.measure('tick', 'tick');
+            performances.push(
+                ...(performance.getEntriesByType(
+                    'measure'
+                ) as PerformanceMeasure[])
+            );
             return draftState;
         },
         rights: 'server',
@@ -132,6 +159,8 @@ export namespace ExerciseActionReducers {
         rights: 'server',
     };
 }
+
+export const performances: PerformanceMeasure[] = [];
 
 function refreshTransfer(
     draftState: Mutable<ExerciseState>,

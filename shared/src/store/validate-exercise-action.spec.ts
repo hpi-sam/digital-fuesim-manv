@@ -1,5 +1,6 @@
 import type { Position } from '../models/utils';
 import { Viewport } from '../models';
+import { AutomatedViewportConfig } from '../models/utils/automated-viewport-config';
 import type { ExerciseAction } from './action-reducers';
 import { validateExerciseAction } from '.';
 
@@ -23,7 +24,8 @@ describe('validateExerciseAction', () => {
                         height: 1,
                         width: 1,
                     },
-                    ''
+                    '',
+                    AutomatedViewportConfig.create('none', false)
                 ),
             })
         ).toEqual([]);
@@ -81,6 +83,10 @@ describe('validateExerciseAction', () => {
                         x: '0' as unknown as number,
                         y: 0,
                     },
+                    automatedPatientFieldConfig: AutomatedViewportConfig.create(
+                        'none',
+                        false
+                    ),
                 },
             })
         ).not.toEqual([]);
@@ -122,6 +128,10 @@ describe('validateExerciseAction', () => {
                         y: 0,
                         z: 0,
                     } as unknown as Position,
+                    automatedPatientFieldConfig: AutomatedViewportConfig.create(
+                        'none',
+                        false
+                    ),
                 },
             })
         ).not.toEqual([]);
