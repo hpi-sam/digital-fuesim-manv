@@ -88,14 +88,14 @@ export class OptimisticActionHandler<
         proposedAction: A,
         beOptimistic: boolean
     ): Promise<ServerResponse> {
+        if (!beOptimistic) {
+            return this.sendAction(proposedAction);
+        }
         // TODO: This should not be hardcoded like this but enforced via typings
-        if ((proposedAction as any).timestamp && beOptimistic) {
+        if ((proposedAction as any).timestamp) {
             throw Error(
                 'Actions with non-deterministic values must not be proposed optimistically'
             );
-        }
-        if (!beOptimistic) {
-            return this.sendAction(proposedAction);
         }
         this.optimisticallyAppliedActions.push(proposedAction);
         this.applyAction(proposedAction);

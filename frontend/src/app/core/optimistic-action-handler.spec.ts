@@ -67,8 +67,8 @@ const successResponse: SocketResponse = { success: true };
 const errorResponse: SocketResponse = { success: false, message: 'error' };
 
 describe('OptimisticActionHandler', () => {
-    let actionKey = 0;
-    let wordStateManager = new WordStateManager();
+    let actionKey: number;
+    let wordStateManager: WordStateManager;
     let optimisticActionHandler: OptimisticActionHandler<
         AddLetterAction,
         { word: string },
@@ -151,7 +151,9 @@ describe('OptimisticActionHandler', () => {
         }
     );
 
-    it('performs actions', async () => {
+    it('performs actions', () => {
+        expect(wordStateManager.state.word).toEqual('');
+
         performAction(new AddLetterAction('a'));
         expect(wordStateManager.state.word).toEqual('a');
 
@@ -264,11 +266,11 @@ describe('OptimisticActionHandler', () => {
         expect(wordStateManager.state.word).toEqual('bccead');
         const performedActionProposalA = actionProposalA.performAction();
         expect(wordStateManager.state.word).toEqual('bccead');
-        const performedActionProposalB = actionProposalD1.performAction();
+        const performedActionProposalD1 = actionProposalD1.performAction();
         expect(wordStateManager.state.word).toEqual('bccead');
         await actionProposalD2.rejectProposal();
         expect(wordStateManager.state.word).toEqual('bccead');
-        await performedActionProposalB.resolveProposal();
+        await performedActionProposalD1.resolveProposal();
         expect(wordStateManager.state.word).toEqual('bccead');
         performAction(new AddLetterAction('c'));
         expect(wordStateManager.state.word).toEqual('bcceadc');
@@ -296,7 +298,7 @@ describe('OptimisticActionHandler', () => {
         expect(wordStateManager.state.word).toEqual('babc');
     });
 
-    it('handles multiple optimistic proposals with a performAction and an rejected proposal', async () => {
+    it('handles multiple optimistic proposals with a performAction and a rejected proposal', async () => {
         const actionProposalA = proposeAction(new AddLetterAction('a'), true);
         expect(wordStateManager.state.word).toEqual('a');
         const actionProposalB = proposeAction(new AddLetterAction('b'), true);
