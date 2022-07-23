@@ -4,7 +4,6 @@ import { Store } from '@ngrx/store';
 import type { UUID, Viewport } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
-import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import { getSelectViewport } from 'src/app/state/exercise/exercise.selectors';
 
@@ -23,25 +22,18 @@ export class ViewportPopupComponent implements OnInit {
 
     constructor(
         private readonly store: Store<AppState>,
-        public readonly apiService: ApiService,
-        private readonly messageService: MessageService
+        public readonly apiService: ApiService
     ) {}
 
-    async ngOnInit() {
+    ngOnInit() {
         this.viewport$ = this.store.select(getSelectViewport(this.viewportId));
     }
 
-    public async renameViewport(newName: string) {
-        const response = await this.apiService.proposeAction({
+    public renameViewport(newName: string) {
+        this.apiService.proposeAction({
             type: '[Viewport] Rename viewport',
             viewportId: this.viewportId,
             newName,
         });
-        if (response.success) {
-            this.messageService.postMessage({
-                title: 'Ansicht erfolgreich umbenannt',
-                color: 'success',
-            });
-        }
     }
 }

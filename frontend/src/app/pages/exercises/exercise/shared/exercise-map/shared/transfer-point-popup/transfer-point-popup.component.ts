@@ -4,7 +4,6 @@ import { Store } from '@ngrx/store';
 import type { Hospital, TransferPoint, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
-import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectTransferPoint,
@@ -73,35 +72,28 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
 
     constructor(
         public readonly apiService: ApiService,
-        private readonly store: Store<AppState>,
-        private readonly messageService: MessageService
+        private readonly store: Store<AppState>
     ) {}
 
-    async ngOnInit() {
+    ngOnInit() {
         this.transferPoint$ = this.store.select(
             getSelectTransferPoint(this.transferPointId)
         );
     }
 
-    public async renameTransferPoint({
+    public renameTransferPoint({
         internalName,
         externalName,
     }: {
         internalName?: string;
         externalName?: string;
     }) {
-        const response = await this.apiService.proposeAction({
+        this.apiService.proposeAction({
             type: '[TransferPoint] Rename TransferPoint',
             transferPointId: this.transferPointId,
             internalName,
             externalName,
         });
-        if (response.success) {
-            this.messageService.postMessage({
-                title: 'Transferpunkt erfolgreich umbenannt',
-                color: 'success',
-            });
-        }
     }
 
     public connectTransferPoint(transferPointId: UUID, duration?: number) {
