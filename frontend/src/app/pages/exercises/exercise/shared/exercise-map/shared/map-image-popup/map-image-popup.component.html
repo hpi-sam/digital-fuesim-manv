@@ -40,7 +40,7 @@
                 <input
                     #heightInput="ngModel"
                     [ngModel]="mapImage.image.height"
-                    (ngModelChange)="resizeImage($event)"
+                    (appSaveOnTyping)="resizeImage($event)"
                     required
                     min="1"
                     step="1"

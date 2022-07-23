@@ -20,7 +20,7 @@
                         <input
                             #internalNameInput="ngModel"
                             [ngModel]="transferPoint.internalName"
-                            (ngModelChange)="
+                            (appSaveOnTyping)="
                                 renameTransferPoint({
                                     internalName: $event
                                 })
@@ -40,7 +40,7 @@
                         <input
                             #externalNameInput="ngModel"
                             [ngModel]="transferPoint.externalName"
-                            (ngModelChange)="
+                            (appSaveOnTyping)="
                                 renameTransferPoint({
                                     externalName: $event
                                 })
@@ -104,7 +104,7 @@
                                         1000 /
                                         60
                                     "
-                                    (ngModelChange)="
+                                    (appSaveOnTyping)="
                                         connectTransferPoint(
                                             reachableTransferPointConnection.key,
                                             $event * 1000 * 60

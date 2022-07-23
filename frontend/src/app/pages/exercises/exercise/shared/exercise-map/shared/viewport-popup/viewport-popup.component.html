@@ -14,7 +14,7 @@
                 <input
                     #nameInput="ngModel"
                     [ngModel]="viewport.name"
-                    (ngModelChange)="renameViewport($event)"
+                    (appSaveOnTyping)="renameViewport($event)"
                     required
                     type="text"
                     class="form-control"

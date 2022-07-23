@@ -2,11 +2,9 @@ import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID, Viewport } from 'digital-fuesim-manv-shared';
-import { debounce } from 'lodash';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
-import { debounceTimeout } from 'src/app/shared/variables/debounce-timeout';
 import type { AppState } from 'src/app/state/app.state';
 import { getSelectViewport } from 'src/app/state/exercise/exercise.selectors';
 
@@ -33,7 +31,7 @@ export class ViewportPopupComponent implements OnInit {
         this.viewport$ = this.store.select(getSelectViewport(this.viewportId));
     }
 
-    public readonly renameViewport = debounce(async (newName: string) => {
+    public async renameViewport(newName: string) {
         const response = await this.apiService.proposeAction({
             type: '[Viewport] Rename viewport',
             viewportId: this.viewportId,
@@ -45,5 +43,5 @@ export class ViewportPopupComponent implements OnInit {
                 color: 'success',
             });
         }
-    }, debounceTimeout);
+    }
 }

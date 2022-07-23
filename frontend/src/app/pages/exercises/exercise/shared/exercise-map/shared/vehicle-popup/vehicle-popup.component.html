@@ -17,7 +17,7 @@
                 <input
                     #nameInput="ngModel"
                     [ngModel]="vehicle.name"
-                    (ngModelChange)="renameVehicle($event)"
+                    (appSaveOnTyping)="renameVehicle($event)"
                     [maxlength]="16"
                     required
                     type="text"

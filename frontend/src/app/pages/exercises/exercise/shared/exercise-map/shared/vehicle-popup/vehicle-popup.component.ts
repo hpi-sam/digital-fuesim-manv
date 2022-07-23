@@ -3,11 +3,9 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID, Vehicle } from 'digital-fuesim-manv-shared';
 import { Material, Patient, Personnel } from 'digital-fuesim-manv-shared';
-import { debounce } from 'lodash';
 import type { Observable } from 'rxjs';
 import { combineLatest, map, switchMap } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
-import { debounceTimeout } from 'src/app/shared/variables/debounce-timeout';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectMaterial,
@@ -75,13 +73,13 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
         );
     }
 
-    public readonly renameVehicle = debounce((name: string) => {
+    public renameVehicle(name: string) {
         this.apiService.proposeAction({
             type: '[Vehicle] Rename vehicle',
             vehicleId: this.vehicleId,
             name,
         });
-    }, debounceTimeout);
+    }
 
     public unloadVehicle() {
         this.apiService.proposeAction({

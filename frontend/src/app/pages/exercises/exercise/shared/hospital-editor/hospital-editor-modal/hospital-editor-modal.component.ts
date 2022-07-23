@@ -3,9 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { Hospital } from 'digital-fuesim-manv-shared';
-import { debounce } from 'lodash';
 import { ApiService } from 'src/app/core/api.service';
-import { debounceTimeout } from 'src/app/shared/variables/debounce-timeout';
 import type { AppState } from 'src/app/state/app.state';
 import { selectHospitals } from 'src/app/state/exercise/exercise.selectors';
 
@@ -30,27 +28,24 @@ export class HospitalEditorModalComponent {
         });
     }
 
-    public readonly editTransportDurationToHospital = debounce(
-        (hospitalId: UUID, transportDuration: number) => {
-            this.apiService.proposeAction({
-                type: '[Hospital] Edit transportDuration to hospital',
-                hospitalId,
-                transportDuration,
-            });
-        },
-        debounceTimeout
-    );
+    public editTransportDurationToHospital(
+        hospitalId: UUID,
+        transportDuration: number
+    ) {
+        this.apiService.proposeAction({
+            type: '[Hospital] Edit transportDuration to hospital',
+            hospitalId,
+            transportDuration,
+        });
+    }
 
-    public readonly renameHospital = debounce(
-        (hospitalId: UUID, name: string) => {
-            this.apiService.proposeAction({
-                type: '[Hospital] Rename hospital',
-                hospitalId,
-                name,
-            });
-        },
-        debounceTimeout
-    );
+    public renameHospital(hospitalId: UUID, name: string) {
+        this.apiService.proposeAction({
+            type: '[Hospital] Rename hospital',
+            hospitalId,
+            name,
+        });
+    }
 
     public removeHospital(hospitalId: UUID) {
         this.apiService.proposeAction({

@@ -2,11 +2,9 @@ import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { Hospital, TransferPoint, UUID } from 'digital-fuesim-manv-shared';
-import { debounce } from 'lodash';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
-import { debounceTimeout } from 'src/app/shared/variables/debounce-timeout';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectTransferPoint,
@@ -85,41 +83,35 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
         );
     }
 
-    public readonly renameTransferPoint = debounce(
-        async ({
+    public async renameTransferPoint({
+        internalName,
+        externalName,
+    }: {
+        internalName?: string;
+        externalName?: string;
+    }) {
+        const response = await this.apiService.proposeAction({
+            type: '[TransferPoint] Rename TransferPoint',
+            transferPointId: this.transferPointId,
             internalName,
             externalName,
-        }: {
-            internalName?: string;
-            externalName?: string;
-        }) => {
-            const response = await this.apiService.proposeAction({
-                type: '[TransferPoint] Rename TransferPoint',
-                transferPointId: this.transferPointId,
-                internalName,
-                externalName,
+        });
+        if (response.success) {
+            this.messageService.postMessage({
+                title: 'Transferpunkt erfolgreich umbenannt',
+                color: 'success',
             });
-            if (response.success) {
-                this.messageService.postMessage({
-                    title: 'Transferpunkt erfolgreich umbenannt',
-                    color: 'success',
-                });
-            }
-        },
-        debounceTimeout
-    );
+        }
+    }
 
-    public readonly connectTransferPoint = debounce(
-        (transferPointId: UUID, duration?: number) => {
-            this.apiService.proposeAction({
-                type: '[TransferPoint] Connect TransferPoints',
-                transferPointId1: this.transferPointId,
-                transferPointId2: transferPointId,
-                duration,
-            });
-        },
-        debounceTimeout
-    );
+    public connectTransferPoint(transferPointId: UUID, duration?: number) {
+        this.apiService.proposeAction({
+            type: '[TransferPoint] Connect TransferPoints',
+            transferPointId1: this.transferPointId,
+            transferPointId2: transferPointId,
+            duration,
+        });
+    }
 
     public disconnectTransferPoint(transferPointId: UUID) {
         this.apiService.proposeAction({
