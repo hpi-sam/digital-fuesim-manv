@@ -103,6 +103,9 @@ export class ApiService {
         return this.timeTravelHelper?.timeConstraints;
     }
 
+    // TODO: It is suboptimal to differentiate between null and undefined.
+    // But because this distinction is only used in this class and better exposed via
+    // isTimeTraveling and getCurrentRole, this is ok for now.
     /**
      * The id of the client that is currently joined to the exercise with {@link exerciseId}
      * undefined: the client is not joined to an exercise
