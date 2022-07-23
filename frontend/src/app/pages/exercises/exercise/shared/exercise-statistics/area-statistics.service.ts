@@ -30,7 +30,7 @@ export class AreaStatisticsService {
                                 value:
                                     areaId === null
                                         ? statisticEntry.exercise
-                                        : // THis is filtered out in the next step, if the viewport didn't exist yet
+                                        : // This is filtered out in the next step, if the viewport didn't exist yet
                                           statisticEntry.viewports[areaId],
                                 exerciseTime: statisticEntry.exerciseTime,
                             }))

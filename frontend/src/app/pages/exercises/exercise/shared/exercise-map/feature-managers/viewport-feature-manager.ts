@@ -75,12 +75,6 @@ export class ViewportFeatureManager
     override createFeature(element: Viewport): Feature<LineString> {
         const feature = super.createFeature(element);
         this.modifyHelper.onModifyEnd(feature, (newPositions) => {
-            // We need at least 3 coordinates as `newPositions`
-            if (newPositions.length < 3) {
-                throw new Error(
-                    `Got unexpectedly short newPositions array: ${newPositions}`
-                );
-            }
             // Skip when not all coordinates are properly set.
             if (
                 !newPositions.every(
@@ -95,6 +89,7 @@ export class ViewportFeatureManager
             }
             const lineString = newPositions;
 
+            // We expect the viewport LineString to have 4 points.
             const topLeft = lineString[0]!;
             const bottomRight = lineString[2]!;
             this.apiService.proposeAction({
