@@ -1,7 +1,4 @@
-import type {
-    Request as ExpressRequest,
-    Response as ExpressResponse,
-} from 'express';
+import type { Response as ExpressResponse } from 'express';
 import type { HttpResponse } from './utils';
 
 export type HttpMethod =
@@ -13,33 +10,32 @@ export type HttpMethod =
     | 'post'
     | 'put';
 
-export function secureHttp<Result extends object | undefined>(
-    operation: () => HttpResponse<Result> | Promise<HttpResponse<Result>>
-): (req: ExpressRequest, res: ExpressResponse) => Promise<void> {
-    return async (_req: ExpressRequest, res: ExpressResponse) => {
+export async function secureHttp<Result extends object | undefined>(
+    operation: () => HttpResponse<Result> | Promise<HttpResponse<Result>>,
+    res: ExpressResponse
+): Promise<void> {
+    try {
+        const response = await operation();
+        res.statusCode = response.statusCode;
+        res.send(response.body);
+    } catch (error: unknown) {
+        // Try sending 500 response
         try {
-            const response = await operation();
-            res.statusCode = response.statusCode;
-            res.send(response.body);
-        } catch (error: unknown) {
-            // Try sending 500 response
-            try {
-                const message = `An error occurred on http request: ${error}`;
-                console.warn(message);
-                res.statusCode = 500;
-                res.send({
-                    statusCode: 500,
-                    body: { message },
-                });
-            } catch (innerError: unknown) {
-                // Nothing works. Log if in production mode, otherwise re-throw inner error
-                if (process.env.NODE_ENV !== 'production') {
-                    throw innerError;
-                }
-                console.warn(
-                    `An error occurred while handling above http error and trying to respond to client: ${innerError}`
-                );
+            const message = `An error occurred on http request: ${error}`;
+            console.warn(message);
+            res.statusCode = 500;
+            res.send({
+                statusCode: 500,
+                body: { message },
+            });
+        } catch (innerError: unknown) {
+            // Nothing works. Log if in production mode, otherwise re-throw inner error
+            if (process.env.NODE_ENV !== 'production') {
+                throw innerError;
             }
+            console.warn(
+                `An error occurred while handling above http error and trying to respond to client: ${innerError}`
+            );
         }
-    };
+    }
 }
