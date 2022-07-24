@@ -1,0 +1,33 @@
+<div class="card">
+    <h5 class="card-header">Leitstellen-Log</h5>
+
+    <div *ngIf="eocLogEntries$ | async as eocLogEntries" class="card-body">
+        <div *ngIf="eocLogEntries.length === 0">Noch keine Log-Einträge</div>
+        <div *ngIf="eocLogEntries.length > 0">
+            <ng-container *ngFor="let eocLogEntry of eocLogEntries">
+                {{ eocLogEntry.timestamp }}
+                <hr />
+                {{ eocLogEntry.exerciseTimestamp | formatDuration }}
+                <hr />
+                {{ eocLogEntry.clientName }}
+                <hr />
+                {{ eocLogEntry.message }}
+                <hr />
+                <hr />
+            </ng-container>
+        </div>
+        <div>
+            Neuen Eintrag verfassen
+            <br /><br />
+            <textarea [(ngModel)]="message" maxlength="65535"></textarea>
+            <br />
+            <button
+                type="button"
+                class="btn btn-primary"
+                (click)="addEocLogEntry()"
+            >
+                Speichern
+            </button>
+        </div>
+    </div>
+</div>
