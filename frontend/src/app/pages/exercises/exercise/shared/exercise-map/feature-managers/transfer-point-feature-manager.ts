@@ -132,7 +132,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                 return false;
             }
             if (reachableTransferPointIds.length === 1) {
-                proposeTransfer(reachableTransferPointIds[0], 'transferPoint');
+                proposeTransfer(reachableTransferPointIds[0]!, 'transferPoint');
                 return true;
             }
         } else {
@@ -146,14 +146,14 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                 reachableTransferPointIds.length === 1 &&
                 reachableHospitalIds.length === 0
             ) {
-                proposeTransfer(reachableTransferPointIds[0], 'transferPoint');
+                proposeTransfer(reachableTransferPointIds[0]!, 'transferPoint');
                 return true;
             }
             if (
                 reachableTransferPointIds.length === 0 &&
                 reachableHospitalIds.length === 1
             ) {
-                proposeTransfer(reachableHospitalIds[0], 'hospital');
+                proposeTransfer(reachableHospitalIds[0]!, 'hospital');
                 return true;
             }
         }

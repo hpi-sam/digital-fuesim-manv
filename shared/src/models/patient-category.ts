@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, ValidateNested } from 'class-validator';
+import { ArrayNotEmpty, IsArray, ValidateNested } from 'class-validator';
 import { PatientTemplate } from './patient-template';
 import { getCreate, ImageProperties } from './utils';
 import { PatientStatusCode } from './utils/patient-status-code';
@@ -14,6 +14,7 @@ export class PatientCategory {
     public readonly image: ImageProperties;
 
     @IsArray()
+    @ArrayNotEmpty()
     @ValidateNested({ each: true })
     @Type(() => PatientTemplate)
     public readonly patientTemplates: readonly PatientTemplate[] = [];

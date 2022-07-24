@@ -80,7 +80,7 @@ export class TimeTravelComponent implements OnDestroy {
     }
 
     public readonly replaySpeedOptions = [1, 2, 4, 8, 16];
-    public replaySpeed = this.replaySpeedOptions[0];
+    public replaySpeed = this.replaySpeedOptions[0]!;
 
     public setReplaySpeed(speed: number) {
         this.replaySpeed = speed;

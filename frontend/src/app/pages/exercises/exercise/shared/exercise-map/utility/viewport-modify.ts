@@ -41,11 +41,22 @@ export function createViewportModify(
                 const corners = modifyGeometry.geometry.getCoordinates();
                 const { originIndex, cornerIndex } =
                     originCornerDict[modifyGeometry.modifyCorner];
-                const origin = corners[originIndex];
-                const corner = corners[cornerIndex];
+                // The corners array must be big enough.
+                if (
+                    corners.length <= originIndex ||
+                    corners.length <= cornerIndex
+                ) {
+                    throw new Error(
+                        `corners must be at least as big to satisfy originIndex (${originIndex}) and cornerIndex (${cornerIndex}): ${corners}`
+                    );
+                }
+                const origin = corners[originIndex]!;
+                const corner = corners[cornerIndex]!;
                 modifyGeometry.geometry.scale(
-                    (mouseCoordinate[0] - origin[0]) / (corner[0] - origin[0]),
-                    (origin[1] - mouseCoordinate[1]) / (origin[1] - corner[1]),
+                    (mouseCoordinate[0]! - origin[0]!) /
+                        (corner[0]! - origin[0]!),
+                    (origin[1]! - mouseCoordinate[1]!) /
+                        (origin[1]! - corner[1]!),
                     origin
                 );
             });

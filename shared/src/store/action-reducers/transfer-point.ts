@@ -252,16 +252,16 @@ export namespace TransferPointActionReducers {
                 }
                 // TODO: If we can assume that the transfer points are always connected to each other,
                 // we could just iterate over draftState.transferPoints[transferPointId].reachableTransferPoints
-                for (const _transferPointId of Object.keys(
+                for (const transferPoint of Object.values(
                     draftState.transferPoints
                 )) {
-                    const transferPoint =
-                        draftState.transferPoints[_transferPointId];
                     for (const connectedTransferPointId of Object.keys(
                         transferPoint.reachableTransferPoints
                     )) {
                         const connectedTransferPoint =
-                            draftState.transferPoints[connectedTransferPointId];
+                            draftState.transferPoints[
+                                connectedTransferPointId
+                            ]!;
                         delete connectedTransferPoint.reachableTransferPoints[
                             transferPointId
                         ];

@@ -10,7 +10,8 @@
     <button
         *ngFor="
             let reachableTransferPoint of reachableTransferPoints$ | async;
-            trackBy: 'id' | appTrackByProperty
+            trackBy: 'id'
+                | appTrackByProperty: (reachableTransferPoints$ | async)
         "
         (click)="transferTo(reachableTransferPoint.id, 'transferPoint')"
         type="button"
@@ -31,7 +32,8 @@
         <button
             *ngFor="
                 let reachableHospital of reachableHospitals$ | async;
-                trackBy: 'id' | appTrackByProperty
+                trackBy: 'id'
+                    | appTrackByProperty: (reachableHospitals$ | async)
             "
             (click)="transferTo(reachableHospital.id, 'hospital')"
             type="button"

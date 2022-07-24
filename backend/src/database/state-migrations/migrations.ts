@@ -58,7 +58,7 @@ export async function migrateInDatabaseTo(
     let currentVersion = currentStateVersion;
     while (++currentVersion <= targetStateVersion) {
         // eslint-disable-next-line no-await-in-loop
-        await migrations[currentVersion].database(entityManager, exerciseId);
+        await migrations[currentVersion]!.database(entityManager, exerciseId);
     }
 }
 
@@ -71,7 +71,7 @@ export async function migrateInMemoryTo(
     let currentExercise = exercise;
     while (++currentVersion <= targetStateVersion) {
         // eslint-disable-next-line no-await-in-loop
-        currentExercise = await migrations[currentVersion].inMemory(
+        currentExercise = await migrations[currentVersion]!.inMemory(
             currentExercise
         );
     }

@@ -22,11 +22,11 @@ export function handleChanges<
     const oldKeys = Object.keys(oldDictionary);
     oldKeys
         .filter((key) => newDictionary[key] === undefined)
-        .forEach((key) => deleteHandler(oldDictionary[key]));
+        .forEach((key) => deleteHandler(oldDictionary[key]!));
     const newKeys = Object.keys(newDictionary);
     newKeys
         .filter((key) => oldDictionary[key] === undefined)
-        .forEach((key) => createHandler(newDictionary[key]));
+        .forEach((key) => createHandler(newDictionary[key]!));
     newKeys
         .filter(
             (key) =>
@@ -34,6 +34,6 @@ export function handleChanges<
                 oldDictionary[key] !== newDictionary[key]
         )
         .forEach((key) =>
-            changeHandler(oldDictionary[key], newDictionary[key])
+            changeHandler(oldDictionary[key]!, newDictionary[key]!)
         );
 }
