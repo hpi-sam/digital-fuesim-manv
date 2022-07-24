@@ -24,10 +24,7 @@ export class AlarmGroupItemComponent {
         selectVehicleTemplates
     );
 
-    public renameAlarmGroup(name: string | null) {
-        if (name === null) {
-            return;
-        }
+    public renameAlarmGroup(name: string) {
         this.apiService.proposeAction(
             {
                 type: '[AlarmGroup] Rename AlarmGroup',

@@ -44,4 +44,13 @@
             ></app-hospital-name>
         </button>
     </ng-container>
+    <div
+        *ngIf="
+            (reachableTransferPoints$ | async)?.length === 0 &&
+            (reachableHospitals$ | async)?.length === 0
+        "
+        class="text-muted p-1 fst-italic"
+    >
+        Keine Aktion möglich.
+    </div>
 </div>

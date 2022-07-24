@@ -44,11 +44,13 @@ export class RenameTransferPointAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly transferPointId!: UUID;
 
+    @IsOptional()
     @IsString()
-    public readonly internalName!: string;
+    public readonly internalName?: string;
 
+    @IsOptional()
     @IsString()
-    public readonly externalName!: string;
+    public readonly externalName?: string;
 }
 
 export class RemoveTransferPointAction implements Action {
@@ -141,8 +143,13 @@ export namespace TransferPointActionReducers {
                     'transferPoints',
                     transferPointId
                 );
-                transferPoint.internalName = internalName;
-                transferPoint.externalName = externalName;
+                // Empty strings are ignored
+                if (internalName) {
+                    transferPoint.internalName = internalName;
+                }
+                if (externalName) {
+                    transferPoint.externalName = externalName;
+                }
                 return draftState;
             },
             rights: 'trainer',

@@ -5,6 +5,7 @@ import { PatientStatusDataFieldComponent } from './components/patient-status-dis
 import { PatientStatusDisplayComponent } from './components/patient-status-displayl/patient-status-display/patient-status-display.component';
 import { TransferPointNameComponent } from './components/transfer-point-name/transfer-point-name.component';
 import { ViewportNameComponent } from './components/viewport-name/viewport-name.component';
+import { AppSaveOnTypingDirective } from './directives/app-save-on-typing.directive';
 import { AutofocusDirective } from './directives/autofocus.directive';
 import { LetDirective } from './directives/let.directive';
 import { FormatDurationPipe } from './pipes/format-duration.pipe';
@@ -23,6 +24,7 @@ import { PatientStatusBadgeComponent } from './components/patient-status-badge/p
 @NgModule({
     declarations: [
         AutofocusDirective,
+        AppSaveOnTypingDirective,
         DisplayValidationComponent,
         ExactMatchValidatorDirective,
         OnlyNumbersValidatorDirective,
@@ -45,6 +47,7 @@ import { PatientStatusBadgeComponent } from './components/patient-status-badge/p
     imports: [CommonModule],
     exports: [
         AutofocusDirective,
+        AppSaveOnTypingDirective,
         DisplayValidationComponent,
         ExactMatchValidatorDirective,
         OnlyNumbersValidatorDirective,
