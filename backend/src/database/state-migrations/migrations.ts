@@ -1,7 +1,7 @@
-import type { UUID } from 'digital-fuesim-manv-shared';
+import type { StateExport, UUID } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import type { ExerciseWrapper } from '../../exercise/exercise-wrapper';
-import { RestoreError } from '../../utils/restore-error';
+import { impossibleMigration } from './impossible-migration';
 
 /**
  * Such a function MUST update the initial state of the exercise with the provided {@link exerciseId} as well as every action associated with it from its current state version to the next version in a way that they are valid states/actions.
@@ -23,9 +23,19 @@ export type InMemoryMigrationFunction = (
     exerciseWrapper: ExerciseWrapper
 ) => Promise<ExerciseWrapper>;
 
+/**
+ * Such a function MUST update the current state, and, if present, the initial state and the action history of the provided {@link stateExport} from its current state version to the next version in a way that they are valid states/actions.
+ * It MAY throw a {@link RestoreError} in a case where upgrading is impossible and a terminal incompatibility with older exercises is necessary.
+ * It MUST NOT use the database or any other resources like the exerciseMap.
+ */
+export type StateExportMigrationFunction = (
+    stateExport: StateExport
+) => Promise<StateExport>;
+
 export interface MigrationFunctions {
     database: DbMigrationFunction;
     inMemory: InMemoryMigrationFunction;
+    stateExport: StateExportMigrationFunction;
 }
 
 // TODO: It'd probably be better not to export this
@@ -36,17 +46,7 @@ export interface MigrationFunctions {
 export const migrations: {
     [key: number]: MigrationFunctions;
 } = {
-    2: {
-        database: (_entityManager: EntityManager, exerciseId: UUID) => {
-            throw new RestoreError('The migration is not possible', exerciseId);
-        },
-        inMemory: (exerciseWrapper: ExerciseWrapper) => {
-            throw new RestoreError(
-                'The migration is not possible',
-                exerciseWrapper.id ?? 'unknown id'
-            );
-        },
-    },
+    2: impossibleMigration,
 };
 
 export async function migrateInDatabaseTo(
@@ -76,4 +76,20 @@ export async function migrateInMemoryTo(
         );
     }
     return currentExercise;
+}
+
+export async function migrateStateExportTo(
+    targetStateVersion: number,
+    currentStateVersion: number,
+    stateExport: StateExport
+): Promise<StateExport> {
+    let currentVersion = currentStateVersion;
+    let currentStateExport = stateExport;
+    while (++currentVersion <= targetStateVersion) {
+        // eslint-disable-next-line no-await-in-loop
+        currentStateExport = await migrations[currentVersion]!.stateExport(
+            currentStateExport
+        );
+    }
+    return currentStateExport;
 }

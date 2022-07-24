@@ -18,7 +18,7 @@ export class StateHistoryCompound {
 
     @ValidateNested()
     @Type(() => ExerciseState)
-    public readonly initialState: ExerciseState;
+    public initialState: ExerciseState;
 
     public validateActions(): (ValidationError | string)[][] {
         return this.actionHistory.map((action) =>
@@ -42,7 +42,7 @@ export class StateExport extends BaseExportImportFile {
 
     @ValidateNested()
     @Type(() => ExerciseState)
-    public readonly currentState: ExerciseState;
+    public currentState: ExerciseState;
 
     @IsOptional()
     @ValidateNested()

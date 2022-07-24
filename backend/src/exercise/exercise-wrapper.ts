@@ -1,10 +1,12 @@
+import type { EntityManager } from 'typeorm';
+import { LessThan } from 'typeorm';
 import type {
     ExerciseAction,
-    ExerciseTimeline,
-    Role,
-    UUID,
     StateExport,
     ExerciseIds,
+    Role,
+    UUID,
+    ExerciseTimeline,
 } from 'digital-fuesim-manv-shared';
 import {
     ExerciseState,
@@ -12,8 +14,6 @@ import {
     validateExerciseState,
     validateExerciseAction,
 } from 'digital-fuesim-manv-shared';
-import type { EntityManager } from 'typeorm';
-import { LessThan } from 'typeorm';
 import { IncrementIdGenerator } from '../utils/increment-id-generator';
 import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
 import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
@@ -243,10 +243,21 @@ export class ExerciseWrapper extends NormalType<
         public readonly temporaryActionHistory: ActionWrapper[],
         databaseService: DatabaseService,
         private readonly stateVersion: number,
-        private readonly initialState = ExerciseState.create(),
+        private initialState = ExerciseState.create(),
         private currentState: ExerciseState = initialState
     ) {
         super(databaseService);
+    }
+
+    public migrateStates(
+        update: (
+            initialState: unknown,
+            currentState: unknown
+        ) => { initialState: unknown; currentState: unknown }
+    ): void {
+        const result = update(this.initialState, this.currentState);
+        this.initialState = result.initialState as ExerciseState;
+        this.currentState = result.currentState as ExerciseState;
     }
 
     /**
@@ -409,14 +420,16 @@ export class ExerciseWrapper extends NormalType<
                         ),
                     },
                 })(manager);
-            outdatedExercises.forEach(async (exercise) => {
-                await migrateInDatabaseTo(
-                    ExerciseState.currentStateVersion,
-                    exercise.stateVersion,
-                    exercise.id,
-                    manager
-                );
-            });
+            await Promise.all(
+                outdatedExercises.map(async (exercise) => {
+                    await migrateInDatabaseTo(
+                        ExerciseState.currentStateVersion,
+                        exercise.stateVersion,
+                        exercise.id,
+                        manager
+                    );
+                })
+            );
 
             const exercises = await Promise.all(
                 (
