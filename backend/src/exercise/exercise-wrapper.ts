@@ -23,10 +23,7 @@ import { Config } from '../config';
 import { RestoreError } from '../utils/restore-error';
 import { UserReadableIdGenerator } from '../utils/user-readable-id-generator';
 import type { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
-import {
-    migrateInDatabaseTo,
-    migrateInMemoryTo,
-} from '../database/state-migrations/migrations';
+import { migrateInDatabaseTo } from '../database/state-migrations/migrations';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
@@ -243,21 +240,10 @@ export class ExerciseWrapper extends NormalType<
         public readonly temporaryActionHistory: ActionWrapper[],
         databaseService: DatabaseService,
         private readonly stateVersion: number,
-        private initialState = ExerciseState.create(),
+        private readonly initialState = ExerciseState.create(),
         private currentState: ExerciseState = initialState
     ) {
         super(databaseService);
-    }
-
-    public migrateStates(
-        update: (
-            initialState: unknown,
-            currentState: unknown
-        ) => { initialState: unknown; currentState: unknown }
-    ): void {
-        const result = update(this.initialState, this.currentState);
-        this.initialState = result.initialState as ExerciseState;
-        this.currentState = result.currentState as ExerciseState;
     }
 
     /**
@@ -269,7 +255,7 @@ export class ExerciseWrapper extends NormalType<
         exerciseIds: ExerciseIds
     ): Promise<ExerciseWrapper> {
         const importOperations = async (manager: EntityManager | undefined) => {
-            let exercise = new ExerciseWrapper(
+            const exercise = new ExerciseWrapper(
                 exerciseIds.participantId,
                 exerciseIds.trainerId,
                 [],
@@ -288,31 +274,6 @@ export class ExerciseWrapper extends NormalType<
                     )
             );
             exercise.temporaryActionHistory.push(...actions);
-            if (manager === undefined) {
-                // eslint-disable-next-line require-atomic-updates
-                exercise = await migrateInMemoryTo(
-                    ExerciseState.currentStateVersion,
-                    exercise.stateVersion,
-                    exercise
-                );
-            } else {
-                const exerciseEntity = await exercise.save(manager);
-                await migrateInDatabaseTo(
-                    ExerciseState.currentStateVersion,
-                    exercise.stateVersion,
-                    exerciseEntity.id,
-                    manager
-                );
-                // eslint-disable-next-line require-atomic-updates
-                exercise = ExerciseWrapper.createFromEntity(
-                    await databaseService.exerciseWrapperService.getFindById(
-                        exerciseEntity.id
-                    )(manager),
-                    databaseService
-                );
-                // Reset actions to apply them (they are removed when saving the entity to the database)
-                exercise.temporaryActionHistory.push(...actions);
-            }
             exercise.restore();
             exercise.applyAction(
                 {

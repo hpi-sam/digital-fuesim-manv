@@ -1,15 +1,9 @@
 import { RestoreError } from '../../utils/restore-error';
-import type { MigrationFunctions } from './migrations';
+import type { Migrations } from './migrations';
 
-export const impossibleMigration: MigrationFunctions = {
+export const impossibleMigration: Migrations = {
     database: (_entityManager, exerciseId) => {
         throw new RestoreError('The migration is not possible', exerciseId);
-    },
-    inMemory: (exerciseWrapper) => {
-        throw new RestoreError(
-            'The migration is not possible',
-            exerciseWrapper.id ?? 'unknown id'
-        );
     },
     stateExport: (stateExport) => {
         throw new RestoreError(
