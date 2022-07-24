@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
+import type { ImmutableDate } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -21,6 +22,12 @@ export class EocLogInterfaceComponent {
         private readonly store: Store<AppState>,
         private readonly messageService: MessageService
     ) {}
+
+    public formatDate(dateString: ImmutableDate): string {
+        // The date is actually provided as a string, regardless of the actual type
+        const date = new Date(dateString as unknown as string);
+        return date.toLocaleString();
+    }
 
     public async addEocLogEntry() {
         const clientId = this.apiService.ownClientId;

@@ -1,33 +1,43 @@
+<!-- How bad is this? -->
+<!-- eslint-disable @angular-eslint/template/no-call-expression -->
 <div class="card">
     <h5 class="card-header">Leitstellen-Log</h5>
 
     <div *ngIf="eocLogEntries$ | async as eocLogEntries" class="card-body">
         <div *ngIf="eocLogEntries.length === 0">Noch keine Log-Einträge</div>
-        <div *ngIf="eocLogEntries.length > 0">
+        <ng-container *ngIf="eocLogEntries.length > 0">
             <ng-container *ngFor="let eocLogEntry of eocLogEntries">
-                {{ eocLogEntry.timestamp }}
-                <hr />
-                {{ eocLogEntry.exerciseTimestamp | formatDuration }}
-                <hr />
-                {{ eocLogEntry.clientName }}
-                <hr />
-                {{ eocLogEntry.message }}
-                <hr />
-                <hr />
+                <div class="card">
+                    <h5 class="card-header">
+                        {{ eocLogEntry.exerciseTimestamp | formatDuration }} ({{
+                            formatDate(eocLogEntry.timestamp)
+                        }}) von
+                        {{ eocLogEntry.clientName }}
+                    </h5>
+                    <div class="card-body">
+                        {{ eocLogEntry.message }}
+                    </div>
+                </div>
+                <br />
             </ng-container>
-        </div>
-        <div>
-            Neuen Eintrag verfassen
-            <br /><br />
-            <textarea [(ngModel)]="message" maxlength="65535"></textarea>
-            <br />
-            <button
-                type="button"
-                class="btn btn-primary"
-                (click)="addEocLogEntry()"
-            >
-                Speichern
-            </button>
+        </ng-container>
+        <div class="card">
+            <h5 class="card-header">Neuen Eintrag verfassen</h5>
+            <div class="card-body">
+                <textarea
+                    [(ngModel)]="message"
+                    maxlength="65535"
+                    class="form-control no-validation"
+                ></textarea>
+                <br />
+                <button
+                    type="button"
+                    class="btn btn-warning"
+                    (click)="addEocLogEntry()"
+                >
+                    Speichern
+                </button>
+            </div>
         </div>
     </div>
 </div>
