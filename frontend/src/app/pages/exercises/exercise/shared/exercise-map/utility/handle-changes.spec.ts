@@ -43,7 +43,7 @@ describe('HandleChanges', () => {
     });
 
     it('should correctly handle the deletion of an element', () => {
-        const newDictionary = { a: oldDictionary['a'] };
+        const newDictionary = { a: oldDictionary['a']! };
         handleChanges(
             oldDictionary,
             newDictionary,

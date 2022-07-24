@@ -159,10 +159,10 @@ export namespace VehicleActionReducers {
             const vehicle = getElement(draftState, 'vehicles', vehicleId);
             vehicle.name = name;
             for (const personnelId of Object.keys(vehicle.personnelIds)) {
-                draftState.personnel[personnelId].vehicleName = name;
+                draftState.personnel[personnelId]!.vehicleName = name;
             }
             for (const materialId of Object.keys(vehicle.materialIds)) {
-                draftState.materials[materialId].vehicleName = name;
+                draftState.materials[materialId]!.vehicleName = name;
             }
             return draftState;
         },
@@ -189,13 +189,13 @@ export namespace VehicleActionReducers {
                 );
             }
             const materials = Object.keys(vehicle.materialIds).map(
-                (materialId) => draftState.materials[materialId]
+                (materialId) => draftState.materials[materialId]!
             );
             const personnel = Object.keys(vehicle.personnelIds).map(
-                (personnelId) => draftState.personnel[personnelId]
+                (personnelId) => draftState.personnel[personnelId]!
             );
             const patients = Object.keys(vehicle.patientIds).map(
-                (patientId) => draftState.patients[patientId]
+                (patientId) => draftState.patients[patientId]!
             );
             const vehicleWidthInPosition = imageSizeToPosition(
                 vehicle.image.aspectRatio * vehicle.image.height
@@ -293,11 +293,11 @@ export namespace VehicleActionReducers {
                     vehicle.patientIds[elementToBeLoadedId] = true;
                     patient.position = undefined;
                     Object.keys(vehicle.materialIds).forEach((materialId) => {
-                        draftState.materials[materialId].position = undefined;
+                        draftState.materials[materialId]!.position = undefined;
                     });
                     Object.keys(vehicle.personnelIds).forEach((personnelId) => {
                         // If a personnel is in transfer, this doesn't change that
-                        draftState.personnel[personnelId].position = undefined;
+                        draftState.personnel[personnelId]!.position = undefined;
                     });
                 }
             }

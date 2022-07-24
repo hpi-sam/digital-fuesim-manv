@@ -85,6 +85,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
         ) {
             return false;
         }
+
         // Always show the chooseTransferPopup
         // Show a popup to choose the transferPoint or hospital
         this.togglePopup$.next(

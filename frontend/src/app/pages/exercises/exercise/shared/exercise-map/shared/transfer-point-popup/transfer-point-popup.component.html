@@ -80,7 +80,10 @@
                                 *ngFor="
                                     let reachableTransferPointConnection of transferPoint.reachableTransferPoints
                                         | keyvalue;
-                                    trackBy: 'key' | appTrackByProperty
+                                    trackBy: 'key'
+                                        | appTrackByProperty
+                                            : (transferPoint.reachableTransferPoints
+                                                  | keyvalue)
                                 "
                                 class="list-group-item d-flex align-items-center flex-nowrap p-0"
                             >
@@ -199,13 +202,16 @@
                                 *ngFor="
                                     let reachableHospitalId of transferPoint.reachableHospitals
                                         | keys;
-                                    trackBy: '$value' | appTrackByProperty
+                                    trackBy: '$value'
+                                        | appTrackByProperty
+                                            : (transferPoint.reachableHospitals
+                                                  | keys)
                                 "
                                 class="list-group-item d-flex align-items-center flex-nowrap p-0"
                             >
                                 <div
                                     [title]="
-                                        hospitals[reachableHospitalId].name
+                                        hospitals[reachableHospitalId]!.name
                                     "
                                     class="flex-grow-1 ps-2 pe-2 text-truncate"
                                     style="max-width: 300px"
@@ -218,7 +224,7 @@
                                     class="font-monospace text-end"
                                     style="width: 125px"
                                     >{{
-                                        hospitals[reachableHospitalId]
+                                        hospitals[reachableHospitalId]!
                                             .transportDuration /
                                             1000 /
                                             60
@@ -266,7 +272,11 @@
                                     let hospital of hospitalsToBeAdded$
                                         | async
                                         | values;
-                                    trackBy: 'id' | appTrackByProperty
+                                    trackBy: 'id'
+                                        | appTrackByProperty
+                                            : (hospitalsToBeAdded$
+                                                  | async
+                                                  | values)
                                 "
                                 ngbDropdownItem
                                 (click)="connectHospital(hospital.id)"
