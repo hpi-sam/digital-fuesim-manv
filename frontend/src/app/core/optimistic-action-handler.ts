@@ -66,7 +66,7 @@ export class OptimisticActionHandler<
         for (let i = 0; i < this.optimisticallyAppliedActions.length; i++) {
             if (
                 this.actionsAreEqual(
-                    this.optimisticallyAppliedActions[i],
+                    this.optimisticallyAppliedActions[i]!,
                     action
                 )
             ) {
@@ -131,7 +131,7 @@ export class OptimisticActionHandler<
         if (
             // If there are more optimistic actions, the state would already be correct, but we have no way to set the correct saveState
             this.optimisticallyAppliedActions.length === 1 &&
-            this.actionsAreEqual(this.optimisticallyAppliedActions[0], action)
+            this.actionsAreEqual(this.optimisticallyAppliedActions[0]!, action)
         ) {
             // Remove the already applied action
             this.optimisticallyAppliedActions.shift();
