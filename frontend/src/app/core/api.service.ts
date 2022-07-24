@@ -89,8 +89,9 @@ export class ApiService {
             this.messageService.postError({
                 title: 'Zeitreise ist nicht aktiviert.',
             });
+            return;
         }
-        this.timeTravelHelper?.jumpToTime(exerciseTime);
+        this.timeTravelHelper.jumpToTime(exerciseTime);
     }
 
     public timeConstraints$: Observable<TimeConstraints | undefined> =
