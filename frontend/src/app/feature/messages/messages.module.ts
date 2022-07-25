@@ -1,24 +1,21 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { AlertsComponent } from './alerts/alerts.component';
-import { MessageBodyComponent } from './message-body/message-body.component';
-import { ToastsComponent } from './toasts/toasts.component';
 import { CustomTimerProgressBarComponent } from './custom-timer-progress-bar/custom-timer-progress-bar.component';
-import { AppShowMoreComponent } from './show-more/app-show-more.component';
+import { DisplayMessagesComponent } from './display-messages/display-messages.component';
 import { LogToStringPipe } from './log-to-string/log-to-string.pipe';
+import { MessageBodyComponent } from './message-body/message-body.component';
+import { AppShowMoreComponent } from './show-more/app-show-more.component';
 
 @NgModule({
-    imports: [CommonModule, BrowserAnimationsModule, SharedModule],
+    imports: [CommonModule, SharedModule],
     declarations: [
         AppShowMoreComponent,
-        AlertsComponent,
-        ToastsComponent,
+        DisplayMessagesComponent,
         MessageBodyComponent,
         CustomTimerProgressBarComponent,
         LogToStringPipe,
     ],
-    exports: [AlertsComponent, ToastsComponent],
+    exports: [DisplayMessagesComponent],
 })
 export class MessagesModule {}

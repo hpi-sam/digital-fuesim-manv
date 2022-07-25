@@ -16,13 +16,11 @@ describe('HandleChanges', () => {
 
     it('should not call any handler if the dictionaries are equal', () => {
         const newDictionary = oldDictionary;
-        handleChanges(
-            oldDictionary,
-            newDictionary,
+        handleChanges(oldDictionary, newDictionary, {
             createHandler,
             deleteHandler,
-            changeHandler
-        );
+            changeHandler,
+        });
         expect(createHandler).not.toHaveBeenCalled();
         expect(deleteHandler).not.toHaveBeenCalled();
         expect(changeHandler).not.toHaveBeenCalled();
@@ -30,13 +28,11 @@ describe('HandleChanges', () => {
 
     it('should correctly handle the addition of an element', () => {
         const newDictionary = { ...oldDictionary, c: { id: 'c' } };
-        handleChanges(
-            oldDictionary,
-            newDictionary,
+        handleChanges(oldDictionary, newDictionary, {
             createHandler,
             deleteHandler,
-            changeHandler
-        );
+            changeHandler,
+        });
         expect(createHandler).toHaveBeenCalledWith({ id: 'c' });
         expect(deleteHandler).not.toHaveBeenCalled();
         expect(changeHandler).not.toHaveBeenCalled();
@@ -44,13 +40,11 @@ describe('HandleChanges', () => {
 
     it('should correctly handle the deletion of an element', () => {
         const newDictionary = { a: oldDictionary['a']! };
-        handleChanges(
-            oldDictionary,
-            newDictionary,
+        handleChanges(oldDictionary, newDictionary, {
             createHandler,
             deleteHandler,
-            changeHandler
-        );
+            changeHandler,
+        });
         expect(createHandler).not.toHaveBeenCalled();
         expect(deleteHandler).toHaveBeenCalledWith({ id: 'b' });
         expect(changeHandler).not.toHaveBeenCalled();
@@ -58,13 +52,11 @@ describe('HandleChanges', () => {
 
     it('should correctly handle the change of an element', () => {
         const newDictionary = { ...oldDictionary, b: { id: 'bb' } };
-        handleChanges(
-            oldDictionary,
-            newDictionary,
+        handleChanges(oldDictionary, newDictionary, {
             createHandler,
             deleteHandler,
-            changeHandler
-        );
+            changeHandler,
+        });
         expect(createHandler).not.toHaveBeenCalled();
         expect(deleteHandler).not.toHaveBeenCalled();
         expect(changeHandler).toHaveBeenCalledWith({ id: 'b' }, { id: 'bb' });
