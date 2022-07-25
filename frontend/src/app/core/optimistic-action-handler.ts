@@ -66,11 +66,7 @@ export class OptimisticActionHandler<
         for (let i = 0; i < this.optimisticallyAppliedActions.length; i++) {
             if (
                 this.actionsAreEqual(
-<<<<<<< HEAD
-                    this.optimisticallyAppliedActions[i],
-=======
                     this.optimisticallyAppliedActions[i]!,
->>>>>>> dev
                     action
                 )
             ) {
@@ -92,17 +88,6 @@ export class OptimisticActionHandler<
         proposedAction: A,
         beOptimistic: boolean
     ): Promise<ServerResponse> {
-<<<<<<< HEAD
-        // TODO: This should not be hardcoded like this but enforced via typings
-        if ((proposedAction as any).timestamp && beOptimistic) {
-            throw Error(
-                'Actions with non-deterministic values must not be proposed optimistically'
-            );
-        }
-        if (!beOptimistic) {
-            return this.sendAction(proposedAction);
-        }
-=======
         if (!beOptimistic) {
             return this.sendAction(proposedAction);
         }
@@ -112,7 +97,6 @@ export class OptimisticActionHandler<
                 'Actions with non-deterministic values must not be proposed optimistically'
             );
         }
->>>>>>> dev
         this.optimisticallyAppliedActions.push(proposedAction);
         this.applyAction(proposedAction);
         const response = await this.sendAction(proposedAction);
