@@ -54,8 +54,9 @@ export interface Action {
  *
  *
  * Be aware that the action is immutable!
- * [TypeScript allows assigning immutable objects to properties of mutable objects](https://github.com/microsoft/TypeScript/issues/13347).
- * Therefore you must always clone parts of the action before assigning them to the draftState.
+ * [While TypeScript allows assigning immutable objects to properties of mutable objects](https://github.com/microsoft/TypeScript/issues/13347),
+ * we have an eslint rule that shields against this.
+ * You must always clone parts of the action before assigning them to the draftState.
  * The same could also apply for objects created inside the reducer function - like with a `Model.create()`, which by default returns an immutable object.
  *
  * Example:

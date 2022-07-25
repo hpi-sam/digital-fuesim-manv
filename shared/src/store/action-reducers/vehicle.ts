@@ -5,7 +5,12 @@ import { Position } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import {
+    cloneDeepMutable,
+    StrictObject,
+    UUID,
+    uuidValidationOptions,
+} from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { deletePatient } from './patient';
@@ -113,7 +118,8 @@ export namespace VehicleActionReducers {
                         material.vehicleId !== vehicle.id ||
                         vehicle.materialIds[material.id] === undefined
                 ) ||
-                Object.keys(vehicle.materialIds).length !== materials.length
+                StrictObject.keys(vehicle.materialIds).length !==
+                    materials.length
             ) {
                 throw new ReducerError(
                     'Vehicle material ids do not match material ids'
@@ -125,7 +131,8 @@ export namespace VehicleActionReducers {
                         currentPersonnel.vehicleId !== vehicle.id ||
                         vehicle.personnelIds[currentPersonnel.id] === undefined
                 ) ||
-                Object.keys(vehicle.personnelIds).length !== personnel.length
+                StrictObject.keys(vehicle.personnelIds).length !==
+                    personnel.length
             ) {
                 throw new ReducerError(
                     'Vehicle personnel ids do not match personnel ids'

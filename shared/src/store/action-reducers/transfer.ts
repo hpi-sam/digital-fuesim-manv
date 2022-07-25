@@ -28,11 +28,13 @@ export function letElementArrive(
         'transferPoints',
         element.transfer.targetTransferPointId
     );
-    element.position = Position.create(
-        targetTransferPoint.position.x,
-        targetTransferPoint.position.y +
-            //  Position it in the upper half of the transferPoint)
-            imageSizeToPosition(TransferPoint.image.height / 3)
+    element.position = cloneDeepMutable(
+        Position.create(
+            targetTransferPoint.position.x,
+            targetTransferPoint.position.y +
+                //  Position it in the upper half of the transferPoint)
+                imageSizeToPosition(TransferPoint.image.height / 3)
+        )
     );
     delete element.transfer;
 }
