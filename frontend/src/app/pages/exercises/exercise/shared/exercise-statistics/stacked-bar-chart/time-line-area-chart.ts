@@ -47,11 +47,11 @@ export class StackedBarChart {
         this.chart.data.datasets.splice(newDatasets.length);
         // Add new datasets and update the values of the existing ones
         newDatasets.forEach((newDataset, index) => {
-            if (!this.chart.data.datasets[index]) {
+            const oldDataset = this.chart.data.datasets[index];
+            if (!oldDataset) {
                 this.chart.data.datasets[index] = newDataset;
                 return;
             }
-            const oldDataset = this.chart.data.datasets[index];
             // Remove all properties
             Object.keys(oldDataset).forEach((key) => {
                 delete oldDataset[key as keyof ChartDataset];

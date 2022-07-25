@@ -3,7 +3,7 @@ import { PatientStatusCode } from '../../models/utils/patient-status-code';
 import { defaultPatientCategories } from '../default-state/patient-templates';
 
 export function generateDummyPatient(): Patient {
-    const template = defaultPatientCategories[0].patientTemplates[0];
+    const template = defaultPatientCategories[0]!.patientTemplates[0]!;
     const healthState = PatientHealthState.create(
         FunctionParameters.create(-10_000, 0, 0, 0),
         []

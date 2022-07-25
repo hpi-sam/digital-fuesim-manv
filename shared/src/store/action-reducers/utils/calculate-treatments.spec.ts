@@ -35,19 +35,19 @@ function assertCatering(
                 expectedAssignedPatients[patientId] = true;
             });
             expect(
-                newState[catering.catererType][catering.catererId]
+                newState[catering.catererType][catering.catererId]!
                     .assignedPatientIds
             ).toStrictEqual(expectedAssignedPatients);
             draftState[catering.catererType][
                 catering.catererId
-            ].assignedPatientIds = {};
+            ]!.assignedPatientIds = {};
         });
         const patientIds = caterings.flatMap((catering) => catering.patientIds);
         patientIds.forEach((patientId) => {
-            expect(newState.patients[patientId].isBeingTreated).toStrictEqual(
+            expect(newState.patients[patientId]!.isBeingTreated).toStrictEqual(
                 true
             );
-            draftState.patients[patientId].isBeingTreated = false;
+            draftState.patients[patientId]!.isBeingTreated = false;
         });
         return draftState;
     });
@@ -59,11 +59,11 @@ function generatePatient(
     realStatus: PatientStatus,
     position?: Position
 ): Mutable<Patient> {
-    const patient = generateDummyPatient() as Mutable<Patient>;
+    const patient = cloneDeepMutable(generateDummyPatient());
     patient.pretriageStatus = pretriageStatus;
     patient.realStatus = realStatus;
     if (position) {
-        patient.position = { ...position };
+        patient.position = cloneDeepMutable(position);
     }
     return patient;
 }
@@ -73,7 +73,7 @@ function generatePersonnel(position?: Position) {
         Personnel.create(uuid(), 'RTW 3/83/1', 'notSan', {})
     );
     if (position) {
-        personnel.position = { ...position };
+        personnel.position = cloneDeepMutable(position);
     }
     return personnel;
 }
@@ -88,7 +88,7 @@ function generateMaterial(position?: Position) {
         )
     );
     if (position) {
-        material.position = { ...position };
+        material.position = cloneDeepMutable(position);
     }
     return material;
 }
@@ -350,7 +350,9 @@ describe('calculate treatment', () => {
                     Position.create(2, 2)
                 );
                 const material = generateMaterial(Position.create(0, 0));
-                material.canCaterFor = CanCaterFor.create(1, 0, 1, 'and');
+                material.canCaterFor = cloneDeepMutable(
+                    CanCaterFor.create(1, 0, 1, 'and')
+                );
 
                 ids.material = material.id;
                 ids.greenPatient = greenPatient.id;

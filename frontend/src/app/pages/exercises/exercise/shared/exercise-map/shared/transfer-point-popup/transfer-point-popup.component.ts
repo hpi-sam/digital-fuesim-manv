@@ -3,9 +3,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { Hospital, TransferPoint, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import { firstValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
-import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectTransferPoint,
@@ -14,10 +12,11 @@ import {
 } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
+type NavIds = 'hospitals' | 'names' | 'transferPoints';
 /**
  * We want to remember the last selected nav item, so the user doesn't have to manually select it again.
  */
-let activeNavId: 'connections' | 'names' = 'names';
+let activeNavId: NavIds = 'names';
 
 @Component({
     selector: 'app-transfer-point-popup',
@@ -37,7 +36,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     public get activeNavId() {
         return activeNavId;
     }
-    public set activeNavId(value: 'connections' | 'names') {
+    public set activeNavId(value: NavIds) {
         activeNavId = value;
     }
 
@@ -50,7 +49,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
      */
     public readonly transferPointsToBeAdded$ = this.store.select((state) => {
         const transferPoints = state.exercise.transferPoints;
-        const currentTransferPoint = transferPoints[this.transferPointId];
+        const currentTransferPoint = transferPoints[this.transferPointId]!;
         return Object.fromEntries(
             Object.entries(transferPoints).filter(
                 ([key]) =>
@@ -62,7 +61,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
 
     public readonly hospitalsToBeAdded$ = this.store.select((state) => {
         const transferPoints = state.exercise.transferPoints;
-        const currentTransferPoint = transferPoints[this.transferPointId];
+        const currentTransferPoint = transferPoints[this.transferPointId]!;
         const hospitals = state.exercise.hospitals;
         return Object.fromEntries(
             Object.entries(hospitals).filter(
@@ -73,38 +72,28 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
 
     constructor(
         public readonly apiService: ApiService,
-        private readonly store: Store<AppState>,
-        private readonly messageService: MessageService
+        private readonly store: Store<AppState>
     ) {}
 
-    public internalName?: string;
-    public externalName?: string;
-
-    async ngOnInit() {
+    ngOnInit() {
         this.transferPoint$ = this.store.select(
             getSelectTransferPoint(this.transferPointId)
         );
-
-        // Set the initial form values
-        const transferPoint = await firstValueFrom(this.transferPoint$);
-        this.internalName = transferPoint.internalName;
-        this.externalName = transferPoint.externalName;
     }
 
-    public async saveTransferPointNames() {
-        const response = await this.apiService.proposeAction({
+    public renameTransferPoint({
+        internalName,
+        externalName,
+    }: {
+        internalName?: string;
+        externalName?: string;
+    }) {
+        this.apiService.proposeAction({
             type: '[TransferPoint] Rename TransferPoint',
             transferPointId: this.transferPointId,
-            internalName: this.internalName!,
-            externalName: this.externalName!,
+            internalName,
+            externalName,
         });
-        if (response.success) {
-            this.messageService.postMessage({
-                title: 'Transferpunkt erfolgreich umbenannt',
-                color: 'success',
-            });
-            this.closePopup.emit();
-        }
     }
 
     public connectTransferPoint(transferPointId: UUID, duration?: number) {

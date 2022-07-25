@@ -134,7 +134,7 @@ export function calculateTreatments(state: Mutable<ExerciseState>) {
 }
 
 function calculateCatering(
-    catering: Material | Personnel,
+    catering: Mutable<Material | Personnel>,
     patients: Mutable<Patient>[],
     pretriageEnabled: boolean,
     bluePatientsEnabled: boolean
@@ -158,11 +158,11 @@ function calculateCatering(
         // No patients in the radius.
         return;
     }
-    if (distances[0].distance <= specificThreshold) {
+    if (distances[0]!.distance <= specificThreshold) {
         caterFor(
             catering,
             catersFor,
-            distances[0].patient,
+            distances[0]!.patient,
             pretriageEnabled,
             bluePatientsEnabled
         );

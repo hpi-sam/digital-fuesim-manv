@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
-import { uuidValidationOptions, UUID } from '../../utils';
+import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
@@ -23,7 +23,7 @@ export namespace MaterialActionReducers {
         action: MoveMaterialAction,
         reducer: (draftState, { materialId, targetPosition }) => {
             const material = getElement(draftState, 'materials', materialId);
-            material.position = targetPosition;
+            material.position = cloneDeepMutable(targetPosition);
             calculateTreatments(draftState);
             return draftState;
         },

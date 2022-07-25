@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { TransferPoint } from '../../models';
 import { Position } from '../../models/utils';
-import { uuidValidationOptions, UUID } from '../../utils';
+import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { letElementArrive } from './transfer';
@@ -44,11 +44,13 @@ export class RenameTransferPointAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly transferPointId!: UUID;
 
+    @IsOptional()
     @IsString()
-    public readonly internalName!: string;
+    public readonly internalName?: string;
 
+    @IsOptional()
     @IsString()
-    public readonly externalName!: string;
+    public readonly externalName?: string;
 }
 
 export class RemoveTransferPointAction implements Action {
@@ -109,7 +111,8 @@ export namespace TransferPointActionReducers {
     export const addTransferPoint: ActionReducer<AddTransferPointAction> = {
         action: AddTransferPointAction,
         reducer: (draftState, { transferPoint }) => {
-            draftState.transferPoints[transferPoint.id] = transferPoint;
+            draftState.transferPoints[transferPoint.id] =
+                cloneDeepMutable(transferPoint);
             return draftState;
         },
         rights: 'trainer',
@@ -123,7 +126,7 @@ export namespace TransferPointActionReducers {
                 'transferPoints',
                 transferPointId
             );
-            transferPoint.position = targetPosition;
+            transferPoint.position = cloneDeepMutable(targetPosition);
             return draftState;
         },
         rights: 'trainer',
@@ -141,8 +144,13 @@ export namespace TransferPointActionReducers {
                     'transferPoints',
                     transferPointId
                 );
-                transferPoint.internalName = internalName;
-                transferPoint.externalName = externalName;
+                // Empty strings are ignored
+                if (internalName) {
+                    transferPoint.internalName = internalName;
+                }
+                if (externalName) {
+                    transferPoint.externalName = externalName;
+                }
                 return draftState;
             },
             rights: 'trainer',
@@ -252,16 +260,16 @@ export namespace TransferPointActionReducers {
                 }
                 // TODO: If we can assume that the transfer points are always connected to each other,
                 // we could just iterate over draftState.transferPoints[transferPointId].reachableTransferPoints
-                for (const _transferPointId of Object.keys(
+                for (const transferPoint of Object.values(
                     draftState.transferPoints
                 )) {
-                    const transferPoint =
-                        draftState.transferPoints[_transferPointId];
                     for (const connectedTransferPointId of Object.keys(
                         transferPoint.reachableTransferPoints
                     )) {
                         const connectedTransferPoint =
-                            draftState.transferPoints[connectedTransferPointId];
+                            draftState.transferPoints[
+                                connectedTransferPointId
+                            ]!;
                         delete connectedTransferPoint.reachableTransferPoints[
                             transferPointId
                         ];

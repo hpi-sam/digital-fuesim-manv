@@ -12,6 +12,7 @@ import { StatusHistoryEntry } from '../../models/status-history-entry';
 import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
+import { cloneDeepMutable, uuid } from '../../utils';
 import { PatientUpdate } from '../../utils/patient-updates';
 import type { Action, ActionReducer } from '../action-reducer';
 import { letElementArrive } from './transfer';
@@ -63,7 +64,7 @@ export namespace ExerciseActionReducers {
                 'paused',
                 new Date(timestamp)
             );
-            draftState.statusHistory.push(statusHistoryEntry);
+            draftState.statusHistory.push(cloneDeepMutable(statusHistoryEntry));
             return draftState;
         },
         rights: 'trainer',
@@ -77,7 +78,7 @@ export namespace ExerciseActionReducers {
                 new Date(timestamp)
             );
 
-            draftState.statusHistory.push(statusHistoryEntry);
+            draftState.statusHistory.push(cloneDeepMutable(statusHistoryEntry));
 
             return draftState;
         },
@@ -94,7 +95,7 @@ export namespace ExerciseActionReducers {
             draftState.currentTime += tickInterval;
             // Refresh patient status
             patientUpdates.forEach((patientUpdate) => {
-                const currentPatient = draftState.patients[patientUpdate.id];
+                const currentPatient = draftState.patients[patientUpdate.id]!;
                 currentPatient.currentHealthStateId = patientUpdate.nextStateId;
                 currentPatient.health = patientUpdate.nextHealthPoints;
                 currentPatient.stateTime = patientUpdate.nextStateTime;

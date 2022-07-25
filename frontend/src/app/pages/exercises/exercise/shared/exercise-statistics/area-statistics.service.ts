@@ -33,11 +33,13 @@ export class AreaStatisticsService {
                         value:
                             areaId === null
                                 ? statisticEntry.exercise
-                                : // If the viewport didn't exist yet
+                                : // This is filtered out in the next step, if the viewport didn't exist yet
                                   statisticEntry.viewports[areaId],
                         exerciseTime: statisticEntry.exerciseTime,
                     }))
-                    .filter((entry) => entry.value !== undefined)
+                    .filter(
+                        (entry) => entry.value !== undefined
+                    ) as AreaStatisticsEntry[]
             )
         );
 

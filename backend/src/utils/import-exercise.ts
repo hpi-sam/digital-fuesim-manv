@@ -1,11 +1,13 @@
 import { plainToInstance } from 'class-transformer';
-import type { DatabaseService } from 'database/services/database-service';
 import type { ExerciseIds } from 'digital-fuesim-manv-shared';
 import {
+    ExerciseState,
     ReducerError,
     StateExport,
     validateExerciseExport,
 } from 'digital-fuesim-manv-shared';
+import type { DatabaseService } from '../database/services/database-service';
+import { migrateStateExportTo } from '../database/state-migrations/migrations';
 import { ExerciseWrapper } from '../exercise/exercise-wrapper';
 import type { HttpResponse } from '../exercise/http-handler/utils';
 
@@ -14,12 +16,17 @@ export async function importExercise(
     ids: ExerciseIds,
     databaseService: DatabaseService
 ): Promise<ExerciseWrapper | HttpResponse<ExerciseIds>> {
+    const migratedImportObject = await migrateStateExportTo(
+        ExerciseState.currentStateVersion,
+        importObject.dataVersion,
+        importObject
+    );
     // console.log(
     //     inspect(importObject.history, { depth: 2, colors: true })
     // );
     const importInstance = plainToInstance(
         StateExport,
-        importObject
+        migratedImportObject
         // TODO: verify that this is indeed not required
         // // Workaround for https://github.com/typestack/class-transformer/issues/876
         // { enableImplicitConversion: true }
@@ -27,7 +34,7 @@ export async function importExercise(
     // console.log(
     //     inspect(importInstance.history, { depth: 2, colors: true })
     // );
-    const validationErrors = validateExerciseExport(importObject);
+    const validationErrors = validateExerciseExport(importInstance);
     if (validationErrors.length > 0) {
         return {
             statusCode: 400,

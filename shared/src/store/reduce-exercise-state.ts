@@ -1,4 +1,4 @@
-import { produce } from 'immer';
+import { freeze, produce } from 'immer';
 import type { ExerciseState } from '../state';
 import type { Mutable } from '../utils';
 import type { ExerciseAction } from './action-reducers';
@@ -17,6 +17,8 @@ export function reduceExerciseState(
     state: ExerciseState,
     action: ExerciseAction
 ): ExerciseState {
+    // Make sure that the state isn't mutated in the reducer (short circuits if the state is already frozen)
+    freeze(state, true);
     // use immer to convert mutating operations to immutable ones (https://immerjs.github.io/immer/produce)
     return produce(state, (draftState) => applyAction(draftState, action));
 }
@@ -32,6 +34,8 @@ export function applyAction(
     draftState: Mutable<ExerciseState>,
     action: ExerciseAction
 ) {
+    // Make sure that the action isn't mutated in the reducer (short circuits if the action is already frozen)
+    freeze(action, true);
     return exerciseActionTypeDictionary[action.type].reducer(
         draftState,
         // typescript doesn't narrow action and the reducer to the correct ones based on action.type

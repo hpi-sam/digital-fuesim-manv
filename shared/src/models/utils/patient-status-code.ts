@@ -15,7 +15,7 @@ export const colorCodeMap = {
 
 // This is only for typesafety
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _colorCodeMap: { [key in ColorCode]: string } = colorCodeMap;
+const _colorCodeMap: { readonly [key in ColorCode]: string } = colorCodeMap;
 
 export const behaviourCodeMap: { [key in BehaviourCode]: string } = {
     A: 'bi-arrow-right-square-fill',

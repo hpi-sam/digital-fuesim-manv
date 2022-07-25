@@ -51,11 +51,11 @@ export class ImagePopupHelper {
             this.olMap.getPixelFromCoordinate(featureCoordinates);
         // Go from the center of the point in each direction and check wether the feature is at this pixel.
         const pixelBoundingBox = {
-            width: this.getIntervallLength(featurePixel[0], (x) =>
-                this.hasFeatureAtPixel(feature, [x, featurePixel[1]])
+            width: this.getIntervallLength(featurePixel[0]!, (x) =>
+                this.hasFeatureAtPixel(feature, [x, featurePixel[1]!])
             ),
-            height: this.getIntervallLength(featurePixel[1], (y) =>
-                this.hasFeatureAtPixel(feature, [featurePixel[0], y])
+            height: this.getIntervallLength(featurePixel[1]!, (y) =>
+                this.hasFeatureAtPixel(feature, [featurePixel[0]!, y])
             ),
         };
         return this.pixelToCoordinateBoundingBox(pixelBoundingBox, 1);
@@ -128,19 +128,19 @@ export class ImagePopupHelper {
         const coordinateExtend = {
             width:
                 Math.abs(
-                    zeroPixel[0] -
+                    zeroPixel[0]! -
                         this.olMap.getCoordinateFromPixel([
                             boundingBox.width,
                             0,
-                        ])[0]
+                        ])[0]!
                 ) + padding,
             height:
                 Math.abs(
-                    zeroPixel[1] -
+                    zeroPixel[1]! -
                         this.olMap.getCoordinateFromPixel([
                             0,
                             boundingBox.height,
-                        ])[1]
+                        ])[1]!
                 ) + padding,
         };
         return coordinateExtend;

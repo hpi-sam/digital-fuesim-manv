@@ -84,9 +84,9 @@ describe('Exercise Wrapper', () => {
             applySpy.mockClear();
             await sleep(tickInterval * 2.01);
             expect(applySpy).toHaveBeenCalledTimes(2);
-            let action = applySpy.mock.calls[0][0];
+            let action = applySpy.mock.calls[0]![0];
             expect(action.type).toBe('[Exercise] Tick');
-            action = applySpy.mock.calls[1][0];
+            action = applySpy.mock.calls[1]![0];
             expect(action.type).toBe('[Exercise] Tick');
         });
     });
