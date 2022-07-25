@@ -123,7 +123,7 @@ export class DragElementService {
         // Get the position of the mouse on the map
         const [x, y] = this.olMap.getCoordinateFromPixel(
             this.olMap.getEventPixel(event)
-        );
+        ) as [number, number];
         const position = { x, y };
         // create the element
         switch (this.transferringTemplate.type) {
@@ -148,7 +148,7 @@ export class DragElementService {
                                     this.transferringTemplate.template
                                         .patientTemplates.length
                             )
-                        ],
+                        ]!,
                         this.transferringTemplate.template.name
                     );
                     this.apiService.proposeAction(

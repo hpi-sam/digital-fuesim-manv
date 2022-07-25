@@ -35,19 +35,19 @@ function assertCatering(
                 expectedAssignedPatients[patientId] = true;
             });
             expect(
-                newState[catering.catererType][catering.catererId]
+                newState[catering.catererType][catering.catererId]!
                     .assignedPatientIds
             ).toStrictEqual(expectedAssignedPatients);
             draftState[catering.catererType][
                 catering.catererId
-            ].assignedPatientIds = {};
+            ]!.assignedPatientIds = {};
         });
         const patientIds = caterings.flatMap((catering) => catering.patientIds);
         patientIds.forEach((patientId) => {
-            expect(newState.patients[patientId].isBeingTreated).toStrictEqual(
+            expect(newState.patients[patientId]!.isBeingTreated).toStrictEqual(
                 true
             );
-            draftState.patients[patientId].isBeingTreated = false;
+            draftState.patients[patientId]!.isBeingTreated = false;
         });
         return draftState;
     });

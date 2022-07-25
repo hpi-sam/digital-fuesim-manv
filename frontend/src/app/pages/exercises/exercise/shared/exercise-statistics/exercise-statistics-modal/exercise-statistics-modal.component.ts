@@ -80,7 +80,7 @@ export class ExerciseStatisticsModalComponent {
             return generateRandomRgbaColor(StackedBarChart.backgroundAlpha);
         }
         return getRgbaColor(
-            this.colorKeys[index],
+            this.colorKeys[index]!,
             StackedBarChart.backgroundAlpha
         );
     }

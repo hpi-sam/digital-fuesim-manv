@@ -11,18 +11,10 @@ import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import request from 'supertest';
 import type { DataSource } from 'typeorm';
+import type { HttpMethod } from '../src/exercise/http-handler/secure-http';
 import { Config } from '../src/config';
 import { FuesimServer } from '../src/fuesim-server';
 import type { SocketReservedEvents } from './socket-reserved-events';
-
-export type HttpMethod =
-    | 'delete'
-    | 'get'
-    | 'head'
-    | 'options'
-    | 'patch'
-    | 'post'
-    | 'put';
 
 export interface ExerciseCreationResponse {
     readonly participantId: string;

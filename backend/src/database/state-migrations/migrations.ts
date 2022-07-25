@@ -1,52 +1,42 @@
-import type { UUID } from 'digital-fuesim-manv-shared';
+import type {
+    ExerciseState,
+    StateExport,
+    UUID,
+} from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
-import type { ExerciseWrapper } from '../../exercise/exercise-wrapper';
 import { RestoreError } from '../../utils/restore-error';
+import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
+import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity';
+import { impossibleMigration } from './impossible-migration';
 
 /**
- * Such a function MUST update the initial state of the exercise with the provided {@link exerciseId} as well as every action associated with it from its current state version to the next version in a way that they are valid states/actions.
- * It MAY throw a {@link RestoreError} in a case where upgrading is impossible and a terminal incompatibility with older exercises is necessary.
- * It MUST update the respective updates to the exercise and its associated objects in the database.
- * All database interaction MUST use the provided {@link EntityManager}.
+ * Such a function gets the already migrated initial state of the exercise and an array of all actions (not yet migrated).
+ * It is expected that afterwards the actions in the provided array are migrated.
+ * It is not allowed to modify the order of the actions, to add an action or to remove an action.
+ * To indicate that an action should be removed it can be replaced by `null`.
+ * It may throw a {@link RestoreError} when a migration is not possible.
  */
-export type DbMigrationFunction = (
-    entityManager: EntityManager,
-    exerciseId: UUID
-) => Promise<void>;
+type MigrateActionsFunction = (
+    initialState: object,
+    actions: (object | null)[]
+) => void;
 
 /**
- * Such a function MUST update the initial state of the provided {@link exerciseWrapper} as well as every action associated with it from its current state version to the next version in a way that they are valid states/actions.
- * It MAY throw a {@link RestoreError} in a case where upgrading is impossible and a terminal incompatibility with older exercises is necessary.
- * It MUST NOT use the database.
+ * Such a function gets the not yet migrated state and is expected to return a migrated version of it.
+ * It may throw a {@link RestoreError} when a migration is not possible.
  */
-export type InMemoryMigrationFunction = (
-    exerciseWrapper: ExerciseWrapper
-) => Promise<ExerciseWrapper>;
+type MigrateStateFunction = (state: object) => object;
 
-export interface MigrationFunctions {
-    database: DbMigrationFunction;
-    inMemory: InMemoryMigrationFunction;
+export interface Migration {
+    actions: MigrateActionsFunction | null;
+    state: MigrateStateFunction | null;
 }
 
 // TODO: It'd probably be better not to export this
-/**
- * This object MUST provide entries for every positive integer greater than 1 and less than or equal to ExerciseState.currentStateVersion.
- * A function with key `k` MUST be able to transform a valid exercise of state version `k-1` to a valid exercise of state version `k`.
- */
 export const migrations: {
-    [key: number]: MigrationFunctions;
+    [key: number]: Migration;
 } = {
-    2: {
-        database: (_entityManager: EntityManager, exerciseId: UUID) => {
-            throw new RestoreError('The migration is not possible', exerciseId);
-        },
-        inMemory: (exerciseWrapper: ExerciseWrapper) => {
-            throw new RestoreError(
-                'The migration is not possible',
-                exerciseWrapper.id ?? 'unknown id'
-            );
-        },
-    },
+    2: impossibleMigration,
 };
 
 export async function migrateInDatabaseTo(
@@ -55,25 +45,146 @@ export async function migrateInDatabaseTo(
     exerciseId: UUID,
     entityManager: EntityManager
 ): Promise<void> {
-    let currentVersion = currentStateVersion;
-    while (++currentVersion <= targetStateVersion) {
-        // eslint-disable-next-line no-await-in-loop
-        await migrations[currentVersion].database(entityManager, exerciseId);
+    const migrationFunctions = getMigrationFunctions(
+        currentStateVersion,
+        targetStateVersion
+    );
+    const stateMigrationFunctions = migrationFunctions.state;
+    const originalStates = await entityManager.findOne(ExerciseWrapperEntity, {
+        where: { id: exerciseId },
+        select: { initialStateString: true, currentStateString: true },
+    });
+    if (originalStates === null) {
+        throw new RestoreError(
+            'Cannot find exercise to convert in database',
+            exerciseId
+        );
+    }
+    let initialState: object | null = null,
+        currentState: object | null = null;
+    if (stateMigrationFunctions.length > 0) {
+        initialState = JSON.parse(originalStates.initialStateString);
+        currentState = JSON.parse(originalStates.currentStateString);
+        stateMigrationFunctions.forEach((stateMigrationFunction) => {
+            initialState = stateMigrationFunction(initialState!);
+            currentState = stateMigrationFunction(currentState!);
+        });
+    }
+    const actionsMigrationFunctions = migrationFunctions.actions;
+    let actions: (object | null)[] | null = null;
+    if (actionsMigrationFunctions.length > 0) {
+        const originalActions = await entityManager.find(ActionWrapperEntity, {
+            where: { exercise: { id: exerciseId } },
+            select: { actionString: true },
+            order: { index: 'ASC' },
+        });
+        actions = originalActions.map((originalAction) =>
+            JSON.parse(originalAction.actionString)
+        );
+        initialState ??= JSON.parse(originalStates.initialStateString);
+        actionsMigrationFunctions.forEach((actionsMigrationFunction) => {
+            actionsMigrationFunction(initialState!, actions!);
+        });
+    }
+    const patch: Partial<ExerciseWrapperEntity> = {
+        stateVersion: targetStateVersion,
+    };
+    if (currentState !== null) {
+        patch.initialStateString = JSON.stringify(initialState);
+        patch.currentStateString = JSON.stringify(currentState);
+    }
+    await entityManager.update(
+        ExerciseWrapperEntity,
+        { id: exerciseId },
+        patch
+    );
+    if (actions !== null) {
+        let patchedActionsIndex = 0;
+        const indicesToRemove: number[] = [];
+        const actionsToUpdate: { index: number; actionString: string }[] = [];
+        actions.forEach((action, i) => {
+            if (action === null) {
+                indicesToRemove.push(i);
+                return;
+            }
+            actionsToUpdate.push({
+                index: patchedActionsIndex++,
+                actionString: JSON.stringify(action),
+            });
+        });
+        if (indicesToRemove.length > 0) {
+            await entityManager
+                .createQueryBuilder()
+                .delete()
+                .from(ActionWrapperEntity)
+                // eslint-disable-next-line unicorn/string-content
+                .where('index IN (:...ids)', { ids: indicesToRemove })
+                .execute();
+        }
+        if (actionsToUpdate.length > 0) {
+            await Promise.all(
+                actionsToUpdate.map(async ({ index, actionString }) =>
+                    entityManager.update(
+                        ActionWrapperEntity,
+                        { index },
+                        { actionString }
+                    )
+                )
+            );
+        }
     }
 }
 
-export async function migrateInMemoryTo(
+export function migrateStateExportTo(
     targetStateVersion: number,
     currentStateVersion: number,
-    exercise: ExerciseWrapper
-): Promise<ExerciseWrapper> {
-    let currentVersion = currentStateVersion;
-    let currentExercise = exercise;
-    while (++currentVersion <= targetStateVersion) {
-        // eslint-disable-next-line no-await-in-loop
-        currentExercise = await migrations[currentVersion].inMemory(
-            currentExercise
-        );
+    stateExport: StateExport
+): StateExport {
+    const migrationFunctions = getMigrationFunctions(
+        currentStateVersion,
+        targetStateVersion
+    );
+    migrationFunctions.state.forEach((migrateStateFunction) => {
+        stateExport.currentState = migrateStateFunction(
+            stateExport.currentState
+        ) as ExerciseState;
+        if (stateExport.history) {
+            stateExport.history.initialState = migrateStateFunction(
+                stateExport.history.initialState
+            ) as ExerciseState;
+        }
+    });
+    if (stateExport.history) {
+        migrationFunctions.actions.forEach((fn) => {
+            fn(
+                stateExport.history!.initialState,
+                stateExport.history!.actionHistory
+            );
+        });
+        stateExport.history.actionHistory.filter((action) => action !== null);
     }
-    return currentExercise;
+    return stateExport;
+}
+
+function getMigrationFunctions(
+    initialVersion: number,
+    targetVersion: number
+): { actions: MigrateActionsFunction[]; state: MigrateStateFunction[] } {
+    const necessaryMigrations = Object.entries(migrations)
+        .filter(
+            ([key]) =>
+                Number.parseInt(key) > initialVersion &&
+                Number.parseInt(key) <= targetVersion
+        )
+        .map(([, migration]) => migration);
+    return {
+        actions: necessaryMigrations
+            .filter((migration) => migration.actions !== null)
+            .map((migration) => migration.actions) as MigrateActionsFunction[],
+        state: necessaryMigrations
+            .filter((thisFunctions) => thisFunctions.state !== null)
+            .map(
+                (thisFunctions) => thisFunctions.state
+            ) as MigrateStateFunction[],
+    };
 }

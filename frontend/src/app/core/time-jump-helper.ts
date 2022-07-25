@@ -49,7 +49,7 @@ export class TimeJumpHelper {
                 lastAppliedActionIndex < actions.length;
                 lastAppliedActionIndex++
             ) {
-                applyAction(draftState, actions[lastAppliedActionIndex]);
+                applyAction(draftState, actions[lastAppliedActionIndex]!);
 
                 // TODO: We actually want the last action after which currentTime <= exerciseTime
                 // Maybe look whether the action is a tick action and if so, check how much time would go by

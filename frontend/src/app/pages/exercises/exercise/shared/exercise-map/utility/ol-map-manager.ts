@@ -33,6 +33,7 @@ import {
     selectViewports,
 } from 'src/app/state/exercise/exercise.selectors';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
@@ -50,7 +51,6 @@ import {
     ViewportFeatureManager,
 } from '../feature-managers/viewport-feature-manager';
 import type { FeatureManager } from './feature-manager';
-import { handleChanges } from './handle-changes';
 import { ModifyHelper } from './modify-helper';
 import type { OpenPopupOptions } from './popup-manager';
 import { TranslateHelper } from './translate-helper';
@@ -427,17 +427,17 @@ export class OlMapManager {
             .subscribe(([oldElementDictionary, newElementDictionary]) => {
                 // run outside angular zone for better performance
                 this.ngZone.runOutsideAngular(() => {
-                    handleChanges(
-                        oldElementDictionary,
-                        newElementDictionary,
-                        (element) => featureManager.onElementCreated(element),
-                        (element) => featureManager.onElementDeleted(element),
-                        (oldElement, newElement) =>
+                    handleChanges(oldElementDictionary, newElementDictionary, {
+                        createHandler: (element) =>
+                            featureManager.onElementCreated(element),
+                        deleteHandler: (element) =>
+                            featureManager.onElementDeleted(element),
+                        changeHandler: (oldElement, newElement) =>
                             featureManager.onElementChanged(
                                 oldElement,
                                 newElement
-                            )
-                    );
+                            ),
+                    });
                 });
             });
     }

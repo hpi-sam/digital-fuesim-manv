@@ -1,3 +1,4 @@
+import type { Coordinate } from 'ol/coordinate';
 import type { Positioning } from '../../utility/types/positioning';
 
 /**
@@ -8,38 +9,38 @@ import type { Positioning } from '../../utility/types/positioning';
  * @returns the position and the positioning of the popup so that it is fully visible on the viewport and doesn't overlap with the feature
  */
 export function calculatePopupPositioning(
-    featureCenter: number[],
+    featureCenter: Coordinate,
     constraints: { width: number; height: number },
-    viewCenter: number[]
+    viewCenter: Coordinate
 ): {
-    position: number[];
+    position: Coordinate;
     positioning: Positioning;
 } {
     const offset = [constraints.width / 2, constraints.height / 2];
     const position = [0, 0];
 
-    if (featureCenter[1] < viewCenter[1]) {
-        position[0] = featureCenter[0];
-        position[1] = featureCenter[1] + offset[1];
+    if (featureCenter[1]! < viewCenter[1]!) {
+        position[0] = featureCenter[0]!;
+        position[1] = featureCenter[1]! + offset[1]!;
         return { position, positioning: 'bottom-center' };
     }
 
     if (
-        Math.abs(featureCenter[0] - viewCenter[0]) <
-        Math.abs(featureCenter[1] - viewCenter[1])
+        Math.abs(featureCenter[0]! - viewCenter[0]!) <
+        Math.abs(featureCenter[1]! - viewCenter[1]!)
     ) {
-        position[0] = featureCenter[0];
-        position[1] = featureCenter[1] - offset[1];
+        position[0] = featureCenter[0]!;
+        position[1] = featureCenter[1]! - offset[1]!;
         return { position, positioning: 'top-center' };
     }
 
-    if (featureCenter[0] < viewCenter[0]) {
-        position[0] = featureCenter[0] + offset[0];
-        position[1] = featureCenter[1];
+    if (featureCenter[0]! < viewCenter[0]!) {
+        position[0] = featureCenter[0]! + offset[0]!;
+        position[1] = featureCenter[1]!;
         return { position, positioning: 'center-left' };
     }
 
-    position[0] = featureCenter[0] - offset[0];
-    position[1] = featureCenter[1];
+    position[0] = featureCenter[0]! - offset[0]!;
+    position[1] = featureCenter[1]!;
     return { position, positioning: 'center-right' };
 }
