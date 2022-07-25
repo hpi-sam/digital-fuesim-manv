@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsString, ValidateNested } from 'class-validator';
 import { TileMapProperties } from '../../models/utils';
+import { cloneDeepMutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 
 export class SetTileMapPropertiesAction implements Action {
@@ -33,7 +34,8 @@ export namespace ConfigurationActionReducers {
         {
             action: SetTileMapPropertiesAction,
             reducer: (draftState, { tileMapProperties }) => {
-                draftState.configuration.tileMapProperties = tileMapProperties;
+                draftState.configuration.tileMapProperties =
+                    cloneDeepMutable(tileMapProperties);
                 return draftState;
             },
             rights: 'trainer',
