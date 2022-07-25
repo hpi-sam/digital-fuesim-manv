@@ -29,13 +29,13 @@ export interface SocketData {}
 export type SocketResponse<T = undefined> =
     | (T extends undefined
           ? {
-                success: true;
+                readonly success: true;
             }
           : {
-                success: true;
-                payload: T;
+                readonly success: true;
+                readonly payload: T;
             })
     | {
-          success: false;
-          message: string;
+          readonly success: false;
+          readonly message: string;
       };

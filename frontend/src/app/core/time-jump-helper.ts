@@ -2,7 +2,7 @@ import type {
     ExerciseState,
     ExerciseTimeline,
 } from 'digital-fuesim-manv-shared';
-import { applyAction, cloneDeepMutable } from 'digital-fuesim-manv-shared';
+import { applyAction } from 'digital-fuesim-manv-shared';
 import produce from 'immer';
 import { environment } from 'src/environments/environment';
 import { TimeLineCache } from './time-line-cache';
@@ -49,16 +49,7 @@ export class TimeJumpHelper {
                 lastAppliedActionIndex < actions.length;
                 lastAppliedActionIndex++
             ) {
-                const action = actions[lastAppliedActionIndex]!;
-                // If an action has been applied and adds part of it to the state (e.g. add a new element from the action),
-                // this part is immutable, because the action is immutable.
-                // If we try to mutate this part later on, we get an error because we modified the action, which is an immutable object
-                // (enforced via Object.freeze).
-                // To mitigate this, we clone the action to make it mutable.
-                // TODO: Think more about Should this maybe even be another requirement in the reducers (Mutable actions)?
-                // this could still fail because of a `Object.frozen` error (the action applies an immutable object to the state)
-                const unfrozenAction = cloneDeepMutable(action);
-                applyAction(draftState, unfrozenAction);
+                applyAction(draftState, actions[lastAppliedActionIndex]!);
 
                 // TODO: We actually want the last action after which currentTime <= exerciseTime
                 // Maybe look whether the action is a tick action and if so, check how much time would go by

@@ -4,7 +4,12 @@ import { Patient } from '../../models';
 import { PatientStatus, Position } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
-import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
+import {
+    cloneDeepMutable,
+    StrictObject,
+    UUID,
+    uuidValidationOptions,
+} from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { calculateTreatments } from './utils/calculate-treatments';
@@ -60,7 +65,7 @@ export namespace PatientActionReducers {
         action: AddPatientAction,
         reducer: (draftState, { patient }) => {
             if (
-                Object.entries(patient.healthStates).some(
+                StrictObject.entries(patient.healthStates).some(
                     ([id, healthState]) => healthState.id !== id
                 )
             ) {
@@ -68,7 +73,7 @@ export namespace PatientActionReducers {
                     "Not all health state's ids match their key id"
                 );
             }
-            Object.values(patient.healthStates).forEach((healthState) => {
+            StrictObject.values(patient.healthStates).forEach((healthState) => {
                 healthState.nextStateConditions.forEach(
                     (nextStateCondition) => {
                         if (
@@ -101,7 +106,7 @@ export namespace PatientActionReducers {
         action: MovePatientAction,
         reducer: (draftState, { patientId, targetPosition }) => {
             const patient = getElement(draftState, 'patients', patientId);
-            patient.position = targetPosition;
+            patient.position = cloneDeepMutable(targetPosition);
             calculateTreatments(draftState);
             return draftState;
         },

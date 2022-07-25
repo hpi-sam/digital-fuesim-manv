@@ -10,6 +10,7 @@ import type {
     StateExport,
 } from 'digital-fuesim-manv-shared';
 import { reduceExerciseState } from 'digital-fuesim-manv-shared';
+import { freeze } from 'immer';
 import type { Observable } from 'rxjs';
 import { BehaviorSubject, lastValueFrom, map, of, switchMap } from 'rxjs';
 import type { AppState } from '../state/app.state';
@@ -168,6 +169,8 @@ export class ApiService {
             });
             throw error;
         });
+        // Freeze to prevent accidental modification
+        freeze(exerciseTimeLine, true);
         if (!this.activatingTimeTravel) {
             // The timeTravel has been stopped during the retrieval of the timeline
             return;
@@ -236,7 +239,7 @@ export class ApiService {
             this.httpClient.get<ExerciseTimeline>(
                 `${httpOrigin}/api/exercise/${this.exerciseId}/history`
             )
-        );
+        ).then((value) => freeze(value, true));
     }
 
     public async deleteExercise(trainerId: string) {
