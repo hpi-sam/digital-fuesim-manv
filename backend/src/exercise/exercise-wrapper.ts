@@ -40,15 +40,19 @@ export class ExerciseWrapper extends NormalType<
         return this._changedSinceSave;
     }
 
+    private numberOfActionsToBeSaved = 0;
+
     /**
      * Mark this exercise as being up-to-date in the database
      */
     public markAsSaved() {
-        this._changedSinceSave = false;
-        this.temporaryActionHistory.splice(
-            0,
-            this.temporaryActionHistory.length
-        );
+        this.temporaryActionHistory.splice(0, this.numberOfActionsToBeSaved);
+        this._changedSinceSave = this.temporaryActionHistory.length > 0;
+        this.numberOfActionsToBeSaved = 0;
+    }
+
+    public markAsAboutToBeSaved() {
+        this.numberOfActionsToBeSaved = this.temporaryActionHistory.length;
     }
 
     /**
@@ -79,6 +83,7 @@ export class ExerciseWrapper extends NormalType<
         entityManager?: EntityManager
     ): Promise<ExerciseWrapperEntity> {
         const operations = async (manager: EntityManager) => {
+            if (save) this.markAsAboutToBeSaved();
             const getFromDatabase = async () =>
                 this.databaseService.exerciseWrapperService.getFindById(
                     this.id!
