@@ -2,41 +2,17 @@ import type {
     ExerciseState,
     ExerciseTimeline,
 } from 'digital-fuesim-manv-shared';
-import { BehaviorSubject, distinctUntilChanged, map } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { TimeJumpHelper } from './time-jump-helper';
 
 export class TimeTravelHelper {
+    private readonly timeJumpHelper = new TimeJumpHelper(this.exerciseTimeLine);
+
     constructor(
-        /**
-         * Gets the state of the exercise at the real present time
-         */
-        private readonly getPresentState: () => ExerciseState,
-        private readonly setState: (state: ExerciseState) => void,
-        private readonly getTimeLine: () => Promise<ExerciseTimeline>
-    ) {}
-
-    public timeConstraints?: TimeConstraints;
-    public readonly timeConstraints$ = new BehaviorSubject<
-        TimeConstraints | undefined
-    >(this.timeConstraints);
-    setTimeConstraints(timeConstraints: TimeConstraints | undefined) {
-        this.timeConstraints = timeConstraints;
-        this.timeConstraints$.next(this.timeConstraints);
-    }
-
-    public get isTimeTraveling(): boolean {
-        return this.timeConstraints !== undefined;
-    }
-    public readonly isTimeTraveling$ = this.timeConstraints$.pipe(
-        map(() => this.isTimeTraveling),
-        distinctUntilChanged()
-    );
-
-    private timeJumpHelper?: TimeJumpHelper;
-
-    public async startTimeTravel() {
-        const exerciseTimeLine = await this.getExerciseTimeline();
-        const presentState = this.getPresentState();
+        presentState: ExerciseState,
+        private readonly exerciseTimeLine: ExerciseTimeline,
+        private readonly setState: (state: ExerciseState) => void
+    ) {
         // Travel to the start of the exercise
         this.setTimeConstraints({
             start: exerciseTimeLine.initialState.currentTime,
@@ -47,15 +23,17 @@ export class TimeTravelHelper {
         this.timeJumpHelper = new TimeJumpHelper(exerciseTimeLine);
     }
 
-    public stopTimeTravel() {
-        this.setTimeConstraints(undefined);
-        this.exerciseTimeline = undefined;
-        // Clean up the cache
-        this.timeJumpHelper = undefined;
+    // Initially set in constructor
+    public timeConstraints!: TimeConstraints;
+    public readonly timeConstraints$ = new BehaviorSubject<TimeConstraints>(
+        this.timeConstraints
+    );
+    private setTimeConstraints(timeConstraints: TimeConstraints) {
+        this.timeConstraints = timeConstraints;
+        this.timeConstraints$.next(this.timeConstraints);
     }
 
     /**
-     *
      * @param exerciseTime The time to travel to, if it isn't in the timeConstraints, it will be clamped appropriately
      */
     public async jumpToTime(exerciseTime: number): Promise<void> {
@@ -72,12 +50,6 @@ export class TimeTravelHelper {
         });
         // Update the exercise store with the state
         this.setState(this.timeJumpHelper.getStateAtTime(clampedTime));
-    }
-
-    private exerciseTimeline?: ExerciseTimeline;
-    private async getExerciseTimeline(): Promise<ExerciseTimeline> {
-        this.exerciseTimeline ??= await this.getTimeLine();
-        return this.exerciseTimeline;
     }
 }
 
