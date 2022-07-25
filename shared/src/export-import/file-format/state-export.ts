@@ -15,7 +15,7 @@ import { BaseExportImportFile } from './base-file';
 
 export class StateHistoryCompound {
     @IsArray()
-    public readonly actionHistory: ExerciseAction[];
+    public actionHistory: ExerciseAction[];
 
     @ValidateNested()
     @Type(() => ExerciseState)

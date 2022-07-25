@@ -8,6 +8,7 @@ import type { EntityManager } from 'typeorm';
 import { RestoreError } from '../../utils/restore-error';
 import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
 import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity';
+import { removeSetParticipantIdAction3 } from './3-remove-set-participant-id-action';
 import { impossibleMigration } from './impossible-migration';
 
 /**
@@ -38,6 +39,7 @@ export const migrations: {
     [key: number]: Migration;
 } = {
     2: impossibleMigration,
+    3: removeSetParticipantIdAction3,
 };
 
 export async function migrateInDatabaseTo(
@@ -162,7 +164,10 @@ export function migrateStateExportTo(
                 stateExport.history!.actionHistory
             );
         });
-        stateExport.history.actionHistory.filter((action) => action !== null);
+        stateExport.history.actionHistory =
+            stateExport.history.actionHistory.filter(
+                (action) => action !== null
+            );
     }
     return stateExport;
 }
