@@ -27,14 +27,14 @@ type MigrateActionsFunction = (
  */
 type MigrateStateFunction = (state: object) => object;
 
-export interface MigrationSpecification {
+export interface Migration {
     actions: MigrateActionsFunction | null;
     state: MigrateStateFunction | null;
 }
 
 // TODO: It'd probably be better not to export this
 export const migrations: {
-    [key: number]: MigrationSpecification;
+    [key: number]: Migration;
 } = {
     2: impossibleMigration,
 };
@@ -45,7 +45,7 @@ export async function migrateInDatabaseTo(
     exerciseId: UUID,
     entityManager: EntityManager
 ): Promise<void> {
-    const migrationFunctions = getRelevantFunctions(
+    const migrationFunctions = getMigrationFunctions(
         currentStateVersion,
         targetStateVersion
     );
@@ -99,15 +99,18 @@ export async function migrateInDatabaseTo(
         patch
     );
     if (actions !== null) {
-        let index = 0;
+        let patchedActionsIndex = 0;
         const indicesToRemove: number[] = [];
-        const actionsToUpdate: [number, string][] = [];
+        const actionsToUpdate: { index: number; actionString: string }[] = [];
         actions.forEach((action, i) => {
             if (action === null) {
                 indicesToRemove.push(i);
                 return;
             }
-            actionsToUpdate.push([index++, JSON.stringify(action)]);
+            actionsToUpdate.push({
+                index: patchedActionsIndex++,
+                actionString: JSON.stringify(action),
+            });
         });
         if (indicesToRemove.length > 0) {
             await entityManager
@@ -120,11 +123,11 @@ export async function migrateInDatabaseTo(
         }
         if (actionsToUpdate.length > 0) {
             await Promise.all(
-                actionsToUpdate.map(async (action) =>
+                actionsToUpdate.map(async ({ index, actionString }) =>
                     entityManager.update(
                         ActionWrapperEntity,
-                        { index: action[0] },
-                        { actionString: action[1] }
+                        { index },
+                        { actionString }
                     )
                 )
             );
@@ -137,16 +140,16 @@ export function migrateStateExportTo(
     currentStateVersion: number,
     stateExport: StateExport
 ): StateExport {
-    const migrationFunctions = getRelevantFunctions(
+    const migrationFunctions = getMigrationFunctions(
         currentStateVersion,
         targetStateVersion
     );
-    migrationFunctions.state.forEach((fn) => {
-        stateExport.currentState = fn(
+    migrationFunctions.state.forEach((migrateStateFunction) => {
+        stateExport.currentState = migrateStateFunction(
             stateExport.currentState
         ) as ExerciseState;
         if (stateExport.history) {
-            stateExport.history.initialState = fn(
+            stateExport.history.initialState = migrateStateFunction(
                 stateExport.history.initialState
             ) as ExerciseState;
         }
@@ -163,11 +166,11 @@ export function migrateStateExportTo(
     return stateExport;
 }
 
-function getRelevantFunctions(
+function getMigrationFunctions(
     initialVersion: number,
     targetVersion: number
 ): { actions: MigrateActionsFunction[]; state: MigrateStateFunction[] } {
-    const functions = Object.entries(migrations)
+    const necessaryMigrations = Object.entries(migrations)
         .filter(
             ([key]) =>
                 Number.parseInt(key) > initialVersion &&
@@ -175,12 +178,10 @@ function getRelevantFunctions(
         )
         .map(([, migration]) => migration);
     return {
-        actions: functions
-            .filter((thisFunctions) => thisFunctions.actions !== null)
-            .map(
-                (thisFunctions) => thisFunctions.actions
-            ) as MigrateActionsFunction[],
-        state: functions
+        actions: necessaryMigrations
+            .filter((migration) => migration.actions !== null)
+            .map((migration) => migration.actions) as MigrateActionsFunction[],
+        state: necessaryMigrations
             .filter((thisFunctions) => thisFunctions.state !== null)
             .map(
                 (thisFunctions) => thisFunctions.state

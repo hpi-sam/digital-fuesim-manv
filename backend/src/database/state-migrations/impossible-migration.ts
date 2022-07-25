@@ -1,8 +1,8 @@
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { RestoreError } from '../../utils/restore-error';
-import type { MigrationSpecification } from './migrations';
+import type { Migration } from './migrations';
 
-export const impossibleMigration: MigrationSpecification = {
+export const impossibleMigration: Migration = {
     actions: (initialState, actions) => {
         throw new RestoreError(
             'The migration is not possible',
