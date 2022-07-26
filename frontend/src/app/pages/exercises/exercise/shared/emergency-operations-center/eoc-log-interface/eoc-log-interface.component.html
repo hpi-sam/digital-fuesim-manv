@@ -19,8 +19,8 @@
         </button>
     </div>
     <ng-container *ngIf="eocLogEntries$ | async as eocLogEntries">
-        <div *ngIf="eocLogEntries.length === 0" class="text-muted">
-            Noch keine Einträge vorhanden.
+        <div *ngIf="eocLogEntries.length === 0" class="text-muted p-3">
+            Es sind noch keine Einträge vorhanden.
         </div>
 
         <ul
