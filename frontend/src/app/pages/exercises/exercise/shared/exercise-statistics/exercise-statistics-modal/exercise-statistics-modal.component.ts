@@ -13,6 +13,7 @@ import {
 import { formatDuration } from 'src/app/shared/functions/format-duration';
 import type { AppState } from 'src/app/state/app.state';
 import { selectViewports } from 'src/app/state/exercise/exercise.selectors';
+import { StatisticsService } from '../../core/statistics/statistics.service';
 import { AreaStatisticsService } from '../area-statistics.service';
 import type { StackedBarChartStatistics } from '../stacked-bar-chart/stacked-bar-chart.component';
 import { StackedBarChart } from '../stacked-bar-chart/time-line-area-chart';
@@ -28,17 +29,14 @@ export class ExerciseStatisticsModalComponent {
     constructor(
         public activeModal: NgbActiveModal,
         private readonly store: Store<AppState>,
+        public readonly statisticsService: StatisticsService,
         public readonly areaStatisticsService: AreaStatisticsService
     ) {
-        this.refreshStatistics();
+        this.statisticsService.updateStatistics();
     }
 
     public close() {
         this.activeModal.close();
-    }
-
-    public refreshStatistics() {
-        this.areaStatisticsService.updateStatistics();
     }
 
     // Patient statistics
@@ -56,7 +54,7 @@ export class ExerciseStatisticsModalComponent {
     };
 
     public patientsStatistics$: Observable<StackedBarChartStatistics> =
-        this.areaStatisticsService.decimatedAreaStatistics$.pipe(
+        this.areaStatisticsService.areaStatistics$.pipe(
             map((statistics) => ({
                 datasets: Object.entries(this.patientColors).map(
                     ([status, backgroundColor]) => ({
@@ -92,7 +90,7 @@ export class ExerciseStatisticsModalComponent {
     }
 
     public vehiclesStatistics$: Observable<StackedBarChartStatistics> =
-        this.areaStatisticsService.decimatedAreaStatistics$.pipe(
+        this.areaStatisticsService.areaStatistics$.pipe(
             map((statistics) => {
                 // Get all vehicle types
                 const vehicleTypes = new Set<string>();
@@ -150,7 +148,7 @@ export class ExerciseStatisticsModalComponent {
     };
 
     public personnelStatistics$: Observable<StackedBarChartStatistics> =
-        this.areaStatisticsService.decimatedAreaStatistics$.pipe(
+        this.areaStatisticsService.areaStatistics$.pipe(
             map((statistics) => ({
                 datasets: Object.entries(this.personnelConfig).map(
                     ([personnelType, { color, label }]) => ({

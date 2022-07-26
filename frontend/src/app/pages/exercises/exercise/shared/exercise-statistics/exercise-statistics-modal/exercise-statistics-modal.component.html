@@ -1,11 +1,5 @@
 <div class="modal-header">
-    <h4 class="modal-title">
-        Statistiken
-
-        <button class="btn btn-sm btn-primary" (click)="refreshStatistics()">
-            <i class="bi-arrow-clockwise"></i>
-        </button>
-    </h4>
+    <h4 class="modal-title">Statistiken</h4>
     <button type="button" class="btn-close" (click)="close()"></button>
 </div>
 <div class="modal-body">
@@ -13,9 +7,9 @@
         <ng-container ngbNavItem="areas">
             <a ngbNavLink>Einsatzbereiche</a>
             <ng-template ngbNavContent>
-                <div ngbDropdown>
+                <div ngbDropdown class="d-inline-block">
                     <button
-                        class="btn btn-outline-primary"
+                        class="btn btn-outline-primary me-3"
                         title="Bereich für Statistik auswählen"
                         ngbDropdownToggle
                     >
@@ -50,6 +44,19 @@
                         </button>
                     </div>
                 </div>
+                <button
+                    class="btn btn-sm btn-primary"
+                    (click)="statisticsService.updateStatistics()"
+                    [disabled]="statisticsService.updatingStatistics"
+                >
+                    <span
+                        *ngIf="statisticsService.updatingStatistics"
+                        class="spinner-border spinner-border-sm"
+                    ></span>
+                    Aktualisieren
+                </button>
+
+                <br />
                 <br />
                 <h3>Patienten</h3>
                 <app-stacked-bar-chart
