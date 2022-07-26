@@ -12,7 +12,7 @@ import { StatusHistoryEntry } from '../../models/status-history-entry';
 import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
-import { cloneDeepMutable, uuid } from '../../utils';
+import { cloneDeepMutable } from '../../utils';
 import { PatientUpdate } from '../../utils/patient-updates';
 import type { Action, ActionReducer } from '../action-reducer';
 import { letElementArrive } from './transfer';
