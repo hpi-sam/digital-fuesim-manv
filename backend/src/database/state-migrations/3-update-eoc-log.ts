@@ -43,6 +43,7 @@ function convertEocLogEntryInPlace(
         message: string;
         clientName: string;
     }
+    delete (entry as any).timestamp;
     (entry as EocLogEntry3).exerciseTimestamp = Math.floor(
         (entry as { exerciseTimestamp: Date }).exerciseTimestamp.getTime() /
             1000
