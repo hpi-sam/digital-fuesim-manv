@@ -35,7 +35,7 @@ const rtwVehicleTemplate = VehicleTemplate.create(
     'RTW',
     `RTW-???`,
     rtwImage,
-    2,
+    1,
     ['notSan', 'rettSan'],
     [
         {
