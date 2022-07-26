@@ -1,4 +1,4 @@
-import { IsInt, IsString, MaxLength } from 'class-validator';
+import { IsString, MaxLength } from 'class-validator';
 import { EocLogEntry } from '../../models';
 import type { Action, ActionReducer } from '../action-reducer';
 
@@ -11,16 +11,13 @@ export class AddLogEntryAction implements Action {
     @IsString()
     @MaxLength(65535)
     public readonly message!: string;
-    @IsInt()
-    public readonly timestamp!: number;
 }
 
 export namespace EmergencyOperationCenterActionReducers {
     export const addLogEntry: ActionReducer<AddLogEntryAction> = {
         action: AddLogEntryAction,
-        reducer: (draftState, { name, message, timestamp }) => {
+        reducer: (draftState, { name, message }) => {
             const logEntry = EocLogEntry.create(
-                new Date(timestamp),
                 draftState.currentTime,
                 message,
                 name
