@@ -86,7 +86,7 @@ export class ExerciseState {
     @IsArray()
     @ValidateNested()
     @Type(() => EocLogEntry)
-    public readonly ecoLog: readonly EocLogEntry[] = [];
+    public readonly eocLog: readonly EocLogEntry[] = [];
     @IsString()
     public readonly participantId: string = '';
     @IsArray()
@@ -110,5 +110,5 @@ export class ExerciseState {
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 3;
+    static readonly currentStateVersion = 4;
 }

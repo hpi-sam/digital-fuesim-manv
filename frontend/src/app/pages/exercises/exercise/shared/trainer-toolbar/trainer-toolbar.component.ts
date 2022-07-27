@@ -7,7 +7,10 @@ import { ApiService } from 'src/app/core/api.service';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectExerciseStatus } from 'src/app/state/exercise/exercise.selectors';
+import {
+    getSelectClient,
+    selectExerciseStatus,
+} from 'src/app/state/exercise/exercise.selectors';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
@@ -63,9 +66,14 @@ export class TrainerToolbarComponent {
     }
 
     public async pauseExercise() {
-        this.apiService.proposeAction({
+        const response = await this.apiService.proposeAction({
             type: '[Exercise] Pause',
         });
+        if (response.success) {
+            this.sendLogAction(
+                `Übung wurde pausiert. (${this.getCurrentDate()})`
+            );
+        }
     }
 
     public async startExercise() {
@@ -81,8 +89,33 @@ export class TrainerToolbarComponent {
                 return;
             }
         }
-        this.apiService.proposeAction({
+        const response = await this.apiService.proposeAction({
             type: '[Exercise] Start',
+        });
+        if (response.success) {
+            this.sendLogAction(
+                `Übung wurde gestartet. (${this.getCurrentDate()})`
+            );
+        }
+    }
+
+    private sendLogAction(message: string) {
+        this.apiService.proposeAction({
+            type: '[Emergency Operation Center] Add Log Entry',
+            name: getSelectClient(this.apiService.ownClientId!)(
+                getStateSnapshot(this.store)
+            ).name,
+            message,
+        });
+    }
+
+    private getCurrentDate(): string {
+        return new Date().toLocaleDateString('de-De', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
         });
     }
 
