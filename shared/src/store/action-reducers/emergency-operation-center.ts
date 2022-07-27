@@ -1,6 +1,7 @@
 import { IsString, MaxLength } from 'class-validator';
 import { EocLogEntry } from '../../models';
 import type { Action, ActionReducer } from '../action-reducer';
+import { cloneDeepMutable } from '../../utils';
 
 export class AddLogEntryAction implements Action {
     @IsString()
@@ -22,7 +23,7 @@ export namespace EmergencyOperationCenterActionReducers {
                 message,
                 name
             );
-            draftState.eocLog.push(logEntry);
+            draftState.eocLog.push(cloneDeepMutable(logEntry));
             return draftState;
         },
         rights: 'trainer',
