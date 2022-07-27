@@ -6,7 +6,7 @@ import {
 } from 'digital-fuesim-manv-shared';
 import { applyServerAction, setExerciseState } from './exercise.actions';
 
-// TODO: Is this correct?
+// We don't really care about this state as per design contract we only access it after a real exercise is loaded
 export const initialState = ExerciseState.create('');
 
 export const exerciseReducer = createReducer(

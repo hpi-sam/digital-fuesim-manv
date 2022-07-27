@@ -1,5 +1,4 @@
-// TODO: Why is no direct import possible?
-import type { Action } from 'digital-fuesim-manv-shared/dist/store/action-reducer';
+import type { Action } from 'digital-fuesim-manv-shared';
 import type { Migration } from './migrations';
 
 export const removeSetParticipantIdAction3: Migration = {
