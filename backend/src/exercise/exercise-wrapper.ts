@@ -356,7 +356,7 @@ export class ExerciseWrapper extends NormalType<
             );
         }
         // Pause exercise
-        if (ExerciseState.getStatus(this.currentState) === 'running')
+        if (this.currentState.currentStatus === 'running')
             this.reduce(
                 {
                     type: '[Exercise] Pause',

@@ -12,7 +12,7 @@ import type { Client, Patient, Vehicle } from '../../models';
 import { Personnel, Viewport } from '../../models';
 import { getStatus } from '../../models/utils';
 import type { AreaStatistics } from '../../models/utils/area-statistics';
-import { ExerciseState } from '../../state';
+import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { uuid } from '../../utils';
 import { PatientUpdate } from '../../utils/patient-updates';
@@ -59,7 +59,7 @@ export namespace ExerciseActionReducers {
     export const pauseExercise: ActionReducer<PauseExerciseAction> = {
         action: PauseExerciseAction,
         reducer: (draftState) => {
-            if (ExerciseState.getStatus(draftState) !== 'running') {
+            if (draftState.currentStatus !== 'running') {
                 throw new ReducerError('Cannot pause not running exercise');
             }
             draftState.currentStatus = 'paused';
@@ -71,7 +71,7 @@ export namespace ExerciseActionReducers {
     export const startExercise: ActionReducer<StartExerciseAction> = {
         action: StartExerciseAction,
         reducer: (draftState) => {
-            if (ExerciseState.getStatus(draftState) === 'running') {
+            if (draftState.currentStatus === 'running') {
                 throw new ReducerError('Cannot start already running exercise');
             }
             draftState.currentStatus = 'running';

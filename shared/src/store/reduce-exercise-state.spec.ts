@@ -1,4 +1,5 @@
 import type { Viewport } from '../models';
+import type { ExerciseStatus } from '../models/utils';
 import { ExerciseState } from '../state';
 import type { UUID } from '../utils';
 import { uuid } from '../utils';
@@ -53,13 +54,11 @@ describe('exerciseReducer', () => {
         function pauseExercise() {
             state = reduceExerciseState(state, {
                 type: '[Exercise] Pause',
-                timestamp: 0,
             });
         }
         function startExercise() {
             state = reduceExerciseState(state, {
                 type: '[Exercise] Start',
-                timestamp: 0,
             });
         }
         it('does not start the exercise twice', () => {
@@ -75,10 +74,8 @@ describe('exerciseReducer', () => {
             expect(pauseExercise).toThrow(ReducerError);
         });
         it('correctly starts and stops an exercise', () => {
-            const expectStatus = (
-                expected: 'notStarted' | 'paused' | 'running'
-            ) => {
-                expect(ExerciseState.getStatus(state)).toBe(expected);
+            const expectStatus = (expected: ExerciseStatus) => {
+                expect(state.currentStatus).toBe(expected);
             };
             expectStatus('notStarted');
             startExercise();

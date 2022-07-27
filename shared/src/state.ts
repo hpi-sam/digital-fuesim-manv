@@ -105,14 +105,6 @@ export class ExerciseState {
 
     static readonly create = getCreate(this);
 
-    static getStatus(state: ExerciseState): ExerciseStatus {
-        return state.currentStatus;
-        // return (
-        //     state.statusHistory[state.statusHistory.length - 1]?.status ??
-        //     'notStarted'
-        // );
-    }
-
     /**
      * **Important**
      *
