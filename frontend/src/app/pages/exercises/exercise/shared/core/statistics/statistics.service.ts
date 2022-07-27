@@ -73,6 +73,9 @@ export class StatisticsService {
             ) {
                 statistics.push(this.generateStatisticsEntry(statisticsState));
             }
+            if (maximumExerciseTime < statisticsState.currentTime) {
+                break;
+            }
             if (i % 100 === 0) {
                 // Do not block the main thread for too long
                 // eslint-disable-next-line no-await-in-loop
