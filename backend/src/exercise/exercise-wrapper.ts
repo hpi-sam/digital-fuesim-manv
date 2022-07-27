@@ -356,11 +356,10 @@ export class ExerciseWrapper extends NormalType<
             );
         }
         // Pause exercise
-        if (this.currentState.statusHistory.at(-1)?.status === 'running')
+        if (ExerciseState.getStatus(this.currentState) === 'running')
             this.reduce(
                 {
                     type: '[Exercise] Pause',
-                    timestamp: Date.now(),
                 },
                 this.emitterId
             );

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
+import { ExerciseState } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
 import { MessageService } from 'src/app/core/messages/message.service';
@@ -64,12 +65,14 @@ export class TrainerToolbarComponent {
     public async pauseExercise() {
         this.apiService.proposeAction({
             type: '[Exercise] Pause',
-            timestamp: Date.now(),
         });
     }
 
     public async startExercise() {
-        if (getStateSnapshot(this.store).exercise.currentTime === 0) {
+        if (
+            ExerciseState.getStatus(getStateSnapshot(this.store).exercise) ===
+            'notStarted'
+        ) {
             const confirmStart = await this.confirmationModalService.confirm({
                 title: 'Übung starten',
                 description: 'Möchten Sie die Übung wirklich starten?',
@@ -80,7 +83,6 @@ export class TrainerToolbarComponent {
         }
         this.apiService.proposeAction({
             type: '[Exercise] Start',
-            timestamp: Date.now(),
         });
     }
 

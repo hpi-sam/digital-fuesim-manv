@@ -10,12 +10,11 @@ import {
 import { countBy } from 'lodash-es';
 import type { Client, Patient, Vehicle } from '../../models';
 import { Personnel, Viewport } from '../../models';
-import { StatusHistoryEntry } from '../../models/status-history-entry';
 import { getStatus } from '../../models/utils';
 import type { AreaStatistics } from '../../models/utils/area-statistics';
 import { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
-import { cloneDeepMutable, uuid } from '../../utils';
+import { uuid } from '../../utils';
 import { PatientUpdate } from '../../utils/patient-updates';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -25,15 +24,11 @@ import { calculateTreatments } from './utils/calculate-treatments';
 export class PauseExerciseAction implements Action {
     @IsString()
     public readonly type = '[Exercise] Pause';
-    @IsInt()
-    public readonly timestamp!: number;
 }
 
 export class StartExerciseAction implements Action {
     @IsString()
     public readonly type = '[Exercise] Start';
-    @IsInt()
-    public readonly timestamp!: number;
 }
 
 export class ExerciseTickAction implements Action {
@@ -63,15 +58,11 @@ export class SetParticipantIdAction implements Action {
 export namespace ExerciseActionReducers {
     export const pauseExercise: ActionReducer<PauseExerciseAction> = {
         action: PauseExerciseAction,
-        reducer: (draftState, { timestamp }) => {
+        reducer: (draftState) => {
             if (ExerciseState.getStatus(draftState) !== 'running') {
                 throw new ReducerError('Cannot pause not running exercise');
             }
-            const statusHistoryEntry = StatusHistoryEntry.create(
-                'paused',
-                new Date(timestamp)
-            );
-            draftState.statusHistory.push(cloneDeepMutable(statusHistoryEntry));
+            draftState.currentStatus = 'paused';
             return draftState;
         },
         rights: 'trainer',
@@ -79,17 +70,11 @@ export namespace ExerciseActionReducers {
 
     export const startExercise: ActionReducer<StartExerciseAction> = {
         action: StartExerciseAction,
-        reducer: (draftState, { timestamp }) => {
+        reducer: (draftState) => {
             if (ExerciseState.getStatus(draftState) === 'running') {
                 throw new ReducerError('Cannot start already running exercise');
             }
-            const statusHistoryEntry = StatusHistoryEntry.create(
-                'running',
-                new Date(timestamp)
-            );
-
-            draftState.statusHistory.push(cloneDeepMutable(statusHistoryEntry));
-
+            draftState.currentStatus = 'running';
             return draftState;
         },
         rights: 'trainer',

@@ -4,6 +4,7 @@ export { Size } from './size';
 export { Role } from './role';
 export { PersonnelType } from './personnel-type';
 export { CanCaterFor } from './cater-for';
+export * from './exercise-status';
 export { Transfer } from './transfer';
 export { ImageProperties } from './image-properties';
 export * from './tile-map-properties';
