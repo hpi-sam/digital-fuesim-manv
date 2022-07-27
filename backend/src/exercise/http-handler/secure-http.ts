@@ -22,7 +22,12 @@ export async function secureHttp<Result extends object | undefined>(
         // Try sending 500 response
         try {
             const message = `An error occurred on http request: ${error}`;
-            console.warn(message);
+            console.warn(
+                message,
+                error instanceof Error && error.stack
+                    ? `at ${error.stack}`
+                    : 'no error or no stack'
+            );
             res.statusCode = 500;
             res.send({
                 statusCode: 500,

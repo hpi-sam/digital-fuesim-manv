@@ -51,9 +51,9 @@ describe('Exercise saving', () => {
 
         expect(saveMock).toHaveBeenCalledTimes(2);
 
-        // One saved exercise, one saved action (set participant id), two actions added while saving
+        // One saved exercise, two actions added while saving
         expect(
             savedEntities.length + exercise.temporaryActionHistory.length
-        ).toBe(4);
+        ).toBe(3);
     });
 });

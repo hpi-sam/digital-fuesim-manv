@@ -106,8 +106,9 @@ export class ExerciseState {
     /**
      * @deprecated Use {@link create} instead.
      */
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-useless-constructor
-    constructor() {}
+    constructor(participantId: string) {
+        this.participantId = participantId;
+    }
 
     static readonly create = getCreate(this);
 
@@ -125,5 +126,5 @@ export class ExerciseState {
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 3;
+    static readonly currentStateVersion = 4;
 }

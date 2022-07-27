@@ -9,7 +9,7 @@ import type { Mutable, UUID, UUIDSet } from '../../../utils';
 import { uuid, cloneDeepMutable } from '../../../utils';
 import { calculateTreatments } from './calculate-treatments';
 
-const emptyState = ExerciseState.create();
+const emptyState = ExerciseState.create('123456');
 
 interface Catering {
     /**
