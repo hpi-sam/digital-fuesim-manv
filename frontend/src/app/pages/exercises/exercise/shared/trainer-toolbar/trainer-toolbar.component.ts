@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import { ExerciseState } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
 import { MessageService } from 'src/app/core/messages/message.service';
@@ -78,8 +77,7 @@ export class TrainerToolbarComponent {
 
     public async startExercise() {
         if (
-            ExerciseState.getStatus(getStateSnapshot(this.store).exercise) ===
-            'notStarted'
+            getStateSnapshot(this.store).exercise.currentStatus === 'notStarted'
         ) {
             const confirmStart = await this.confirmationModalService.confirm({
                 title: 'Übung starten',
