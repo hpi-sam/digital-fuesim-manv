@@ -1,5 +1,6 @@
 import type {
     ExerciseState,
+    Mutable,
     StateExport,
     UUID,
 } from 'digital-fuesim-manv-shared';
@@ -8,6 +9,7 @@ import { RestoreError } from '../../utils/restore-error';
 import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
 import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity';
 import { updateEocLog3 } from './3-update-eoc-log';
+import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
 import { impossibleMigration } from './impossible-migration';
 
 /**
@@ -39,6 +41,7 @@ export const migrations: {
 } = {
     2: impossibleMigration,
     3: updateEocLog3,
+    4: removeSetParticipantIdAction4,
 };
 
 export async function migrateInDatabaseTo(
@@ -149,11 +152,11 @@ export function migrateStateExportTo(
     migrationFunctions.state.forEach((migrateStateFunction) => {
         stateExport.currentState = migrateStateFunction(
             stateExport.currentState
-        ) as ExerciseState;
+        ) as Mutable<ExerciseState>;
         if (stateExport.history) {
             stateExport.history.initialState = migrateStateFunction(
                 stateExport.history.initialState
-            ) as ExerciseState;
+            ) as Mutable<ExerciseState>;
         }
     });
     if (stateExport.history) {
@@ -163,7 +166,10 @@ export function migrateStateExportTo(
                 stateExport.history!.actionHistory
             );
         });
-        stateExport.history.actionHistory.filter((action) => action !== null);
+        stateExport.history.actionHistory =
+            stateExport.history.actionHistory.filter(
+                (action) => action !== null
+            );
     }
     return stateExport;
 }
