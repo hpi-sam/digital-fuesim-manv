@@ -11,6 +11,8 @@ import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
+    getSelectClient,
+    getSelectTransferPoint,
     getSelectVehicleTemplate,
     selectAlarmGroups,
     selectTransferPoints,
@@ -58,6 +60,9 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
     }
 
     public sendAlarmGroup(alarmGroup: AlarmGroup) {
+        const targetTransferPoint = getSelectTransferPoint(
+            this.targetTransferPointId!
+        )(getStateSnapshot(this.store));
         // TODO: Refactor this into one action (uuid generation is currently not possible in the reducer)
         Promise.all(
             Object.values(alarmGroup.alarmGroupVehicles).flatMap(
@@ -86,7 +91,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                                 alarmGroup.name,
                                 alarmGroupVehicle.time
                             ),
-                            targetTransferPointId: targetTransferPointId!,
+                            targetTransferPointId: targetTransferPoint.id,
                         }),
                     ];
                 }
@@ -98,6 +103,13 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                     color: 'success',
                 });
             }
+            this.apiService.proposeAction({
+                type: '[Emergency Operation Center] Add Log Entry',
+                message: `Alarmgruppe ${alarmGroup.name} wurde alarmiert zu ${targetTransferPoint.externalName}!`,
+                name: getSelectClient(this.apiService.ownClientId!)(
+                    getStateSnapshot(this.store)
+                ).name,
+            });
         });
     }
 

@@ -88,7 +88,7 @@ export class ExerciseState {
     @IsArray()
     @ValidateNested()
     @Type(() => EocLogEntry)
-    public readonly ecoLog: readonly EocLogEntry[] = [];
+    public readonly eocLog: readonly EocLogEntry[] = [];
     @IsArray()
     @ValidateNested()
     @Type(() => StatusHistoryEntry)

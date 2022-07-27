@@ -8,7 +8,8 @@ import type { EntityManager } from 'typeorm';
 import { RestoreError } from '../../utils/restore-error';
 import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
 import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity';
-import { removeSetParticipantIdAction3 } from './3-remove-set-participant-id-action';
+import { updateEocLog3 } from './3-update-eoc-log';
+import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
 import { impossibleMigration } from './impossible-migration';
 
 /**
@@ -39,7 +40,8 @@ export const migrations: {
     [key: number]: Migration;
 } = {
     2: impossibleMigration,
-    3: removeSetParticipantIdAction3,
+    3: updateEocLog3,
+    4: removeSetParticipantIdAction4,
 };
 
 export async function migrateInDatabaseTo(
