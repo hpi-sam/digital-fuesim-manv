@@ -1,9 +1,4 @@
-import type {
-    Client,
-    EocLogEntry,
-    ImmutableDate,
-    UUID,
-} from 'digital-fuesim-manv-shared';
+import type { Client, EocLogEntry, UUID } from 'digital-fuesim-manv-shared';
 import type { Migration } from './migrations';
 
 export const updateEocLog3: Migration = {
@@ -38,16 +33,13 @@ function convertEocLogEntryInPlace(
 ): EocLogEntry {
     interface EocLogEntry3 {
         id: UUID;
-        timestamp: ImmutableDate;
         exerciseTimestamp: number;
         message: string;
         clientName: string;
     }
-    delete (entry as any).timestamp;
-    (entry as EocLogEntry3).exerciseTimestamp = Math.floor(
-        (entry as { exerciseTimestamp: Date }).exerciseTimestamp.getTime() /
-            1000
-    );
+    delete (entry as { timestamp?: number }).timestamp;
+    // There were no semantics on the old exerciseTimestamps, so just replace them.
+    (entry as EocLogEntry3).exerciseTimestamp = 0;
     (entry as EocLogEntry3).message = (entry as EocLogEntry3).message.slice(
         0,
         65535
