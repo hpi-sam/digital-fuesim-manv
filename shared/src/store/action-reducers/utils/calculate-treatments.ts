@@ -134,7 +134,7 @@ export function calculateTreatments(state: Mutable<ExerciseState>) {
 }
 
 function calculateCatering(
-    catering: Material | Personnel,
+    catering: Mutable<Material | Personnel>,
     patients: Mutable<Patient>[],
     pretriageEnabled: boolean,
     bluePatientsEnabled: boolean

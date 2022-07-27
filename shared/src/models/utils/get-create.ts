@@ -1,13 +1,11 @@
 import type { Constructor } from '../../utils';
 
-// @ts-expect-error It is not guaranteed to run in node environment, but if it does we want to check for development mode
-export const isDevelopment = process?.env?.NODE_ENV === 'development';
-
 /**
  * Models must be JSON objects. This means they mustn't have any functions.
  * The `prototype` of a class contains functions (e.g. `constructor`).
  * We still need the constructor to create a new instance of the class with a prototype, to be able to use `class-validator`.
  * We solve this by using a static factory function `create` in the class.
+ * In addition this instance is frozen, to prevent accidental mutation.
  *
  * @example
  * ```typescript
@@ -24,16 +22,14 @@ export const isDevelopment = process?.env?.NODE_ENV === 'development';
  *   }
  * ```
  * @param aClass The class whose static create method is to be returned
- * @returns a function that creates a new instance of {@link aClass} without a prototype
+ * @returns a function that creates a new immutable instance of {@link aClass} without a prototype
  */
 export function getCreate<T extends Constructor>(aClass: T) {
     return (...args: ConstructorParameters<T>): InstanceType<T> => {
         const instance = {
             ...new aClass(...args),
         };
-        if (isDevelopment) {
-            Object.freeze(instance);
-        }
+        Object.freeze(instance);
         return instance;
     };
 }

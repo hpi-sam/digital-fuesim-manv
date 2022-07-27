@@ -15,7 +15,7 @@ import { getStatus } from '../../models/utils';
 import type { AreaStatistics } from '../../models/utils/area-statistics';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
-import { uuid } from '../../utils';
+import { cloneDeepMutable, uuid } from '../../utils';
 import { PatientUpdate } from '../../utils/patient-updates';
 import type { Action, ActionReducer } from '../action-reducer';
 import { letElementArrive } from './transfer';
@@ -67,7 +67,7 @@ export namespace ExerciseActionReducers {
                 'paused',
                 new Date(timestamp)
             );
-            draftState.statusHistory.push(statusHistoryEntry);
+            draftState.statusHistory.push(cloneDeepMutable(statusHistoryEntry));
             return draftState;
         },
         rights: 'trainer',
@@ -81,7 +81,7 @@ export namespace ExerciseActionReducers {
                 new Date(timestamp)
             );
 
-            draftState.statusHistory.push(statusHistoryEntry);
+            draftState.statusHistory.push(cloneDeepMutable(statusHistoryEntry));
 
             return draftState;
         },
@@ -202,7 +202,7 @@ function generateAreaStatistics(
     patients: Patient[],
     vehicles: Vehicle[],
     personnel: Personnel[]
-): AreaStatistics {
+): Mutable<AreaStatistics> {
     return {
         numberOfActiveParticipants: clients.filter(
             (client) => !client.isInWaitingRoom && client.role === 'participant'

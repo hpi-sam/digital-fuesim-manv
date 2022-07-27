@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { MapImage } from '../../models';
 import { Position } from '../../models/utils';
-import { UUID, uuidValidationOptions } from '../../utils';
+import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
 
@@ -78,7 +78,7 @@ export namespace MapImagesActionReducers {
     export const addMapImage: ActionReducer<AddMapImageAction> = {
         action: AddMapImageAction,
         reducer: (draftState, { mapImage }) => {
-            draftState.mapImages[mapImage.id] = mapImage;
+            draftState.mapImages[mapImage.id] = cloneDeepMutable(mapImage);
             return draftState;
         },
         rights: 'trainer',
@@ -88,7 +88,7 @@ export namespace MapImagesActionReducers {
         action: MoveMapImageAction,
         reducer: (draftState, { mapImageId, targetPosition }) => {
             const mapImage = getElement(draftState, 'mapImages', mapImageId);
-            mapImage.position = targetPosition;
+            mapImage.position = cloneDeepMutable(targetPosition);
             return draftState;
         },
         rights: 'trainer',
