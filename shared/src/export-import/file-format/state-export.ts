@@ -10,15 +10,16 @@ import {
 import { ExerciseState } from '../../state';
 import type { ExerciseAction } from '../../store';
 import { validateExerciseAction } from '../../store';
+import { Mutable } from '../../utils';
 import { BaseExportImportFile } from './base-file';
 
 export class StateHistoryCompound {
     @IsArray()
-    public readonly actionHistory: ExerciseAction[];
+    public actionHistory: ExerciseAction[];
 
     @ValidateNested()
     @Type(() => ExerciseState)
-    public readonly initialState: ExerciseState;
+    public initialState: Mutable<ExerciseState>;
 
     public validateActions(): (ValidationError | string)[][] {
         return this.actionHistory.map((action) =>
@@ -28,7 +29,7 @@ export class StateHistoryCompound {
 
     public constructor(
         actionHistory: ExerciseAction[],
-        initialState: ExerciseState
+        initialState: Mutable<ExerciseState>
     ) {
         this.actionHistory = actionHistory;
         this.initialState = initialState;
@@ -42,7 +43,7 @@ export class StateExport extends BaseExportImportFile {
 
     @ValidateNested()
     @Type(() => ExerciseState)
-    public readonly currentState: ExerciseState;
+    public currentState: Mutable<ExerciseState>;
 
     @IsOptional()
     @ValidateNested()
@@ -50,7 +51,7 @@ export class StateExport extends BaseExportImportFile {
     public readonly history?: StateHistoryCompound;
 
     public constructor(
-        currentState: ExerciseState,
+        currentState: Mutable<ExerciseState>,
         stateHistory?: StateHistoryCompound
     ) {
         super();

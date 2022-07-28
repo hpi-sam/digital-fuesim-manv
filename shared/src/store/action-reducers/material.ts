@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
 import { DataStructureInState } from '../../models/utils/datastructure';
-import { uuidValidationOptions, UUID } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { calculateTreatments } from './utils/calculate-treatments';
@@ -25,6 +25,7 @@ export namespace MaterialActionReducers {
         action: MoveMaterialAction,
         reducer: (draftState, { materialId, targetPosition }) => {
             const material = getElement(draftState, 'materials', materialId);
+
             const startPosition = material.position;
 
             if (startPosition === undefined) {
@@ -33,7 +34,7 @@ export namespace MaterialActionReducers {
                 );
             }
 
-            material.position = targetPosition;
+            material.position = cloneDeepMutable(targetPosition);
 
             let materialsDataStructure =
                 DataStructureInState.getDataStructureFromState(

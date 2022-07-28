@@ -88,10 +88,10 @@ export class MovementAnimator<T extends LineString | Point> {
         lerpFactor: number
     ): Coordinate {
         return [
-            startCoordinate[0] +
-                (endCoordinate[0] - startCoordinate[0]) * lerpFactor,
-            startCoordinate[1] +
-                (endCoordinate[1] - startCoordinate[1]) * lerpFactor,
+            startCoordinate[0]! +
+                (endCoordinate[0]! - startCoordinate[0]!) * lerpFactor,
+            startCoordinate[1]! +
+                (endCoordinate[1]! - startCoordinate[1]!) * lerpFactor,
         ];
     }
 
@@ -124,13 +124,24 @@ export class MovementAnimator<T extends LineString | Point> {
             this.olMap.render();
             return;
         }
+        // If we have coordinate arrays, there must be at least as many endCoordinates as startCoordinates
+        if (
+            this.isCoordinateArrayPair(positions) &&
+            positions.startPosition.length > positions.endPosition.length
+        ) {
+            throw new Error(
+                `Got unexpected too few endPositions: ${JSON.stringify(
+                    positions
+                )}`
+            );
+        }
         // The next position is calculated by a linear interpolation between the start and end position(s)
         const nextPosition = (
             this.isCoordinateArrayPair(positions)
                 ? positions.startPosition.map((startPos, index) =>
                       this.interpolate(
                           startPos,
-                          positions.endPosition[index],
+                          positions.endPosition[index]!,
                           progress
                       )
                   )

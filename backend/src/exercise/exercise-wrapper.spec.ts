@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
-import { createTestEnvironment, sleep } from '../../test/utils';
+import { sleep } from 'digital-fuesim-manv-shared';
+import { createTestEnvironment } from '../../test/utils';
 import { clientMap } from './client-map';
 import { ExerciseWrapper } from './exercise-wrapper';
 
@@ -84,9 +85,9 @@ describe('Exercise Wrapper', () => {
             applySpy.mockClear();
             await sleep(tickInterval * 2.01);
             expect(applySpy).toHaveBeenCalledTimes(2);
-            let action = applySpy.mock.calls[0][0];
+            let action = applySpy.mock.calls[0]![0];
             expect(action.type).toBe('[Exercise] Tick');
-            action = applySpy.mock.calls[1][0];
+            action = applySpy.mock.calls[1]![0];
             expect(action.type).toBe('[Exercise] Tick');
         });
     });
@@ -103,13 +104,13 @@ describe('Exercise Wrapper', () => {
             startMock.mockImplementation(() => ({}));
 
             exercise.applyAction(
-                { type: '[Exercise] Start', timestamp: 0 },
+                { type: '[Exercise] Start' },
                 (exercise as any).emitterUUID
             );
             expect(startMock).toHaveBeenCalledTimes(1);
         });
 
-        it('calls start when matching action is sent', () => {
+        it('calls pause when matching action is sent', () => {
             const exercise = ExerciseWrapper.create(
                 '123456',
                 '12345678',
@@ -119,8 +120,14 @@ describe('Exercise Wrapper', () => {
             const pause = jest.spyOn(ExerciseWrapper.prototype, 'pause');
             pause.mockImplementation(() => ({}));
 
+            // We have to start the exercise before it can be paused
             exercise.applyAction(
-                { type: '[Exercise] Pause', timestamp: 0 },
+                { type: '[Exercise] Start' },
+                (exercise as any).emitterUUID
+            );
+
+            exercise.applyAction(
+                { type: '[Exercise] Pause' },
                 (exercise as any).emitterUUID
             );
             expect(pause).toHaveBeenCalledTimes(1);

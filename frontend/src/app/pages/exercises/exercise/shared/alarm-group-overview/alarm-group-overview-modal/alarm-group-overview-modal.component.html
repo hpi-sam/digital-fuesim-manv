@@ -20,7 +20,7 @@
             class="list-group-item"
             *ngFor="
                 let alarmGroup of alarmGroups;
-                trackBy: 'key' | appTrackByProperty
+                trackBy: 'id' | appTrackByProperty: alarmGroups
             "
         >
             <app-alarm-group-item

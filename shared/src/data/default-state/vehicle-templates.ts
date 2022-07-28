@@ -31,18 +31,49 @@ const rthImage: ImageProperties = {
     aspectRatio: 310 / 130,
 };
 
+const carryingUnitImage: ImageProperties = {
+    url: '/assets/carrying-unit.svg',
+    height: 210,
+    aspectRatio: 1,
+};
+
 const rtwVehicleTemplate = VehicleTemplate.create(
     'RTW',
-    `RTW-???`,
+    `RTW ???`,
     rtwImage,
-    2,
+    1,
     ['notSan', 'rettSan'],
     ['default']
 );
 
 const ktwVehicleTemplate = VehicleTemplate.create(
     'KTW',
-    `KTW-???`,
+    `KTW ???`,
+    ktwImage,
+    1,
+    ['san', 'rettSan'],
+    [
+        {
+            logicalOperator: 'or',
+            green: 2,
+            yellow: 1,
+            red: 1,
+        },
+    ]
+);
+
+const carryingUnitVehicleTemplate = VehicleTemplate.create(
+    'Tragetrupp',
+    `Tragetrupp ???`,
+    carryingUnitImage,
+    1,
+    [],
+    []
+);
+
+const ktwKatSchutzVehicleTemplate = VehicleTemplate.create(
+    'KTW (KatSchutz)',
+    `KTW (KatSchutz) ???`,
     ktwImage,
     2,
     ['san', 'rettSan'],
@@ -51,7 +82,7 @@ const ktwVehicleTemplate = VehicleTemplate.create(
 
 const gwSanVehicleTemplate = VehicleTemplate.create(
     'GW-San',
-    `GW-San-???`,
+    `GW-San ???`,
     gwSanImage,
     0,
     ['gf', 'rettSan', 'rettSan', 'san', 'san', 'notarzt'],
@@ -69,7 +100,7 @@ const gwSanVehicleTemplate = VehicleTemplate.create(
 
 const nefVehicleTemplate = VehicleTemplate.create(
     'NEF',
-    `NEF-???`,
+    `NEF ???`,
     nefImage,
     0,
     ['notarzt', 'notSan'],
@@ -78,7 +109,7 @@ const nefVehicleTemplate = VehicleTemplate.create(
 
 const rthVehicleTemplate = VehicleTemplate.create(
     'RTH',
-    `RTH-???`,
+    `RTH ???`,
     rthImage,
     1,
     ['notarzt', 'notSan'],
@@ -88,7 +119,9 @@ const rthVehicleTemplate = VehicleTemplate.create(
 export const defaultVehicleTemplates: readonly VehicleTemplate[] = [
     rtwVehicleTemplate,
     ktwVehicleTemplate,
+    ktwKatSchutzVehicleTemplate,
     gwSanVehicleTemplate,
     nefVehicleTemplate,
+    carryingUnitVehicleTemplate,
     rthVehicleTemplate,
 ];

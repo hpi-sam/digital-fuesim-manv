@@ -1,6 +1,11 @@
 import { createSelector } from '@ngrx/store';
-import type { UUID } from 'digital-fuesim-manv-shared';
-import { ExerciseState, Viewport } from 'digital-fuesim-manv-shared';
+import type {
+    UUID,
+    Vehicle,
+    Transfer,
+    Personnel,
+} from 'digital-fuesim-manv-shared';
+import { Viewport } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
 import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
@@ -19,7 +24,7 @@ export const getSelectMapImageTemplate =
     (mapImageTemplateId: UUID) => (state: AppState) =>
         state.exercise.mapImageTemplates.find(
             (template) => template.id === mapImageTemplateId
-        );
+        )!;
 
 export const selectPatients = (state: AppState) => state.exercise.patients;
 export const selectVehicles = (state: AppState) => state.exercise.vehicles;
@@ -27,31 +32,30 @@ export const selectPersonnel = (state: AppState) => state.exercise.personnel;
 export const selectAlarmGroups = (state: AppState) =>
     state.exercise.alarmGroups;
 export const getSelectPersonnel = (personnelId: UUID) => (state: AppState) =>
-    state.exercise.personnel[personnelId];
+    state.exercise.personnel[personnelId]!;
 export const selectMaterials = (state: AppState) => state.exercise.materials;
 export const getSelectMaterial = (materialId: UUID) => (state: AppState) =>
-    state.exercise.materials[materialId];
+    state.exercise.materials[materialId]!;
 export const getSelectPatient = (patientId: UUID) => (state: AppState) =>
-    state.exercise.patients[patientId];
+    state.exercise.patients[patientId]!;
 export const getSelectMapImage = (mapImageId: UUID) => (state: AppState) =>
-    state.exercise.mapImages[mapImageId];
+    state.exercise.mapImages[mapImageId]!;
 export const getSelectVehicle = (vehicleId: UUID) => (state: AppState) =>
-    state.exercise.vehicles[vehicleId];
-// TODO: Refactor the !
+    state.exercise.vehicles[vehicleId]!;
 export const getSelectVehicleTemplate =
     (vehicleTemplateId: UUID) => (state: AppState) =>
         state.exercise.vehicleTemplates.find(
             (vehicleTemplate) => vehicleTemplate.id === vehicleTemplateId
         )!;
 export const getSelectAlarmGroup = (alarmGroupId: UUID) => (state: AppState) =>
-    state.exercise.alarmGroups[alarmGroupId];
+    state.exercise.alarmGroups[alarmGroupId]!;
 export const getSelectTransferPoint =
     (transferPointId: UUID) => (state: AppState) =>
-        state.exercise.transferPoints[transferPointId];
+        state.exercise.transferPoints[transferPointId]!;
 export const getSelectHospital = (hospitalId: UUID) => (state: AppState) =>
-    state.exercise.hospitals[hospitalId];
+    state.exercise.hospitals[hospitalId]!;
 export const getSelectViewport = (viewportId: UUID) => (state: AppState) =>
-    state.exercise.viewports[viewportId];
+    state.exercise.viewports[viewportId]!;
 export const getSelectRestrictedViewport =
     (clientId?: UUID | null) => (state: AppState) => {
         if (!clientId) {
@@ -73,6 +77,7 @@ export const selectTileMapProperties = (state: AppState) =>
     state.exercise.configuration.tileMapProperties;
 export const selectConfiguration = (state: AppState) =>
     state.exercise.configuration;
+export const selectEocLogEntries = (state: AppState) => state.exercise.eocLog;
 /**
  * @returns a selector that returns a dictionary of all elements that have a position and are in the viewport restriction
  */
@@ -105,10 +110,10 @@ export function getSelectVisibleElements<
 
 export const selectClients = (state: AppState) => state.exercise.clients;
 export const getSelectClient = (clientId: UUID) => (state: AppState) =>
-    state.exercise.clients[clientId];
+    state.exercise.clients[clientId]!;
 
 export const selectExerciseStatus = (state: AppState) =>
-    ExerciseState.getStatus(state.exercise);
+    state.exercise.currentStatus;
 
 export const selectParticipantId = (state: AppState) =>
     state.exercise.participantId;
@@ -156,7 +161,7 @@ export const selectAuraCateringLines = createSelector(
                     return [];
                 }
                 return Object.keys(element.assignedPatientIds)
-                    .map((patientId) => patients[patientId])
+                    .map((patientId) => patients[patientId]!)
                     .filter((patient) => patient.position !== undefined)
                     .map((patient) => ({
                         id: `${element.id}:${patient.id}` as const,
@@ -182,7 +187,7 @@ export const selectTransferLines = createSelector(
                     ([connectedId, { duration }]) => ({
                         id: `${transferPoint.id}:${connectedId}` as const,
                         startPosition: transferPoint.position,
-                        endPosition: transferPoints[connectedId].position,
+                        endPosition: transferPoints[connectedId]!.position,
                         duration,
                     })
                 )
@@ -202,7 +207,7 @@ export function getSelectReachableTransferPoints(transferPointId: UUID) {
         getSelectTransferPoint(transferPointId),
         (transferPoints, transferPoint) =>
             Object.keys(transferPoint.reachableTransferPoints).map(
-                (id) => transferPoints[id]
+                (id) => transferPoints[id]!
             )
     );
 }
@@ -213,7 +218,7 @@ export function getSelectReachableHospitals(transferPointId: UUID) {
         getSelectTransferPoint(transferPointId),
         (hospitals, transferPoint) =>
             Object.keys(transferPoint.reachableHospitals).map(
-                (id) => hospitals[id]
+                (id) => hospitals[id]!
             )
     );
 }
@@ -223,7 +228,7 @@ export const selectVehiclesInTransfer = createSelector(
     (vehicles) =>
         Object.values(vehicles).filter(
             (vehicle) => vehicle.transfer !== undefined
-        )
+        ) as (Vehicle & { transfer: Transfer })[]
 );
 
 export const selectPersonnelInTransfer = createSelector(
@@ -231,7 +236,7 @@ export const selectPersonnelInTransfer = createSelector(
     (personnel) =>
         Object.values(personnel).filter(
             (_personnel) => _personnel.transfer !== undefined
-        )
+        ) as (Personnel & { transfer: Transfer })[]
 );
 
 export const selectCurrentTime = (state: AppState) =>

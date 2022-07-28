@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
 import { DataStructureInState } from '../../models/utils/datastructure';
-import { UUID, uuidValidationOptions } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { calculateTreatments } from './utils/calculate-treatments';
@@ -25,6 +25,7 @@ export namespace PersonnelActionReducers {
         action: MovePersonnelAction,
         reducer: (draftState, { personnelId, targetPosition }) => {
             const personnel = getElement(draftState, 'personnel', personnelId);
+
             const startPosition = personnel.position;
 
             if (startPosition === undefined) {
@@ -33,7 +34,7 @@ export namespace PersonnelActionReducers {
                 );
             }
 
-            personnel.position = targetPosition;
+            personnel.position = cloneDeepMutable(targetPosition);
 
             let personnelDataStructure =
                 DataStructureInState.getDataStructureFromState(

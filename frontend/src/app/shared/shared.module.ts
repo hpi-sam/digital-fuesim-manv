@@ -5,6 +5,7 @@ import { PatientStatusDataFieldComponent } from './components/patient-status-dis
 import { PatientStatusDisplayComponent } from './components/patient-status-displayl/patient-status-display/patient-status-display.component';
 import { TransferPointNameComponent } from './components/transfer-point-name/transfer-point-name.component';
 import { ViewportNameComponent } from './components/viewport-name/viewport-name.component';
+import { AppSaveOnTypingDirective } from './directives/app-save-on-typing.directive';
 import { AutofocusDirective } from './directives/autofocus.directive';
 import { LetDirective } from './directives/let.directive';
 import { FormatDurationPipe } from './pipes/format-duration.pipe';
@@ -18,10 +19,12 @@ import { ImageExistsValidatorDirective } from './validation/image-exists-validat
 import { IntegerValidatorDirective } from './validation/integer-validator.directive';
 import { OnlyNumbersValidatorDirective } from './validation/only-numbers-validator.directive';
 import { UrlValidatorDirective } from './validation/url-validator.directive';
+import { PatientStatusBadgeComponent } from './components/patient-status-badge/patient-status-badge.component';
 
 @NgModule({
     declarations: [
         AutofocusDirective,
+        AppSaveOnTypingDirective,
         DisplayValidationComponent,
         ExactMatchValidatorDirective,
         OnlyNumbersValidatorDirective,
@@ -39,10 +42,12 @@ import { UrlValidatorDirective } from './validation/url-validator.directive';
         ViewportNameComponent,
         IntegerValidatorDirective,
         PatientStatusDataFieldComponent,
+        PatientStatusBadgeComponent,
     ],
     imports: [CommonModule],
     exports: [
         AutofocusDirective,
+        AppSaveOnTypingDirective,
         DisplayValidationComponent,
         ExactMatchValidatorDirective,
         OnlyNumbersValidatorDirective,
@@ -59,6 +64,7 @@ import { UrlValidatorDirective } from './validation/url-validator.directive';
         KeysPipe,
         ViewportNameComponent,
         IntegerValidatorDirective,
+        PatientStatusBadgeComponent,
     ],
 })
 export class SharedModule {}

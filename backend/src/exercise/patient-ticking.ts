@@ -123,7 +123,7 @@ function getNextPatientHealthPoints(
     const rettSan = treatedBy.rettSan;
     // TODO: Sans should be able to treat patients too.
     const functionParameters =
-        patient.healthStates[patient.currentHealthStateId].functionParameters;
+        patient.healthStates[patient.currentHealthStateId]!.functionParameters;
     // TODO: anything the personnel needs material
     // TODO: But a personnel should probably be able to treat a patient a bit without material - e.g. free airways, just press something on a strongly bleeding wound, etc.
     // -> find a better heuristic
@@ -164,7 +164,7 @@ function getNextPatientHealthPoints(
  * @returns The next {@link PatientHealthState} id.
  */
 function getNextStateId(patient: Patient) {
-    const currentState = patient.healthStates[patient.currentHealthStateId];
+    const currentState = patient.healthStates[patient.currentHealthStateId]!;
     for (const nextConditions of currentState.nextStateConditions) {
         if (
             (nextConditions.earliestTime === undefined ||

@@ -8,10 +8,10 @@ import {
 } from 'class-validator';
 import { Hospital } from '../../models';
 import { HospitalPatient } from '../../models/hospital-patient';
-import { UUID, uuidValidationOptions } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
-import { deleteVehicle } from './vehicle';
 import { getElement } from './utils/get-element';
+import { deleteVehicle } from './vehicle';
 
 export class AddHospitalAction implements Action {
     @IsString()
@@ -63,7 +63,7 @@ export namespace HospitalActionReducers {
     export const addHospital: ActionReducer<AddHospitalAction> = {
         action: AddHospitalAction,
         reducer: (draftState, { hospital }) => {
-            draftState.hospitals[hospital.id] = hospital;
+            draftState.hospitals[hospital.id] = cloneDeepMutable(hospital);
             return draftState;
         },
         rights: 'trainer',
