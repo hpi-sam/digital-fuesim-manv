@@ -10,7 +10,8 @@ import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
 import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity';
 import { updateEocLog3 } from './3-update-eoc-log';
 import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
-import { removeStateHistory5 } from './5-remove-state-history';
+import { removeStatistics5 } from './5-remove-statistics';
+import { removeStateHistory6 } from './6-remove-state-history';
 import { impossibleMigration } from './impossible-migration';
 
 /**
@@ -43,7 +44,8 @@ export const migrations: {
     2: impossibleMigration,
     3: updateEocLog3,
     4: removeSetParticipantIdAction4,
-    5: removeStateHistory5,
+    5: removeStatistics5,
+    6: removeStateHistory6,
 };
 
 export async function migrateInDatabaseTo(

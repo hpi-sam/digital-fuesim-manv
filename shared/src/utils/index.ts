@@ -7,3 +7,4 @@ export * from './constructor';
 export * from './merge-intersection';
 export * from './clone-deep-mutable';
 export * from './strict-object';
+export * from './sleep';

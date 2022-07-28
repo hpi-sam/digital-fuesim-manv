@@ -1,7 +1,7 @@
 import type { Action } from 'digital-fuesim-manv-shared';
 import type { Migration } from './migrations';
 
-export const removeStateHistory5: Migration = {
+export const removeStateHistory6: Migration = {
     actions: (_initialState, actions) => {
         actions.forEach((action) => {
             const actionType = (action as Action | null)?.type;

@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
-import { createTestEnvironment, sleep } from '../../test/utils';
+import { sleep } from 'digital-fuesim-manv-shared';
+import { createTestEnvironment } from '../../test/utils';
 import { clientMap } from './client-map';
 import { ExerciseWrapper } from './exercise-wrapper';
 
