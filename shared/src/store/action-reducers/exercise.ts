@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { Patient } from '../../models';
 import type { Vehicle, Personnel } from '../../models';
-import { DataStructureInState } from '../../models/utils/datastructure';
+import { SpatialTree } from '../../models/utils/datastructure';
 import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
@@ -81,22 +81,13 @@ export namespace ExerciseActionReducers {
             draftState.currentTime += tickInterval;
 
             const patientsDataStructure = refreshTreatments
-                ? DataStructureInState.getDataStructureFromState(
-                      draftState,
-                      'patients'
-                  )
+                ? SpatialTree.getFromState(draftState, 'patients')
                 : undefined;
             const personnelDataStructure = refreshTreatments
-                ? DataStructureInState.getDataStructureFromState(
-                      draftState,
-                      'personnel'
-                  )
+                ? SpatialTree.getFromState(draftState, 'personnel')
                 : undefined;
             const materialsDataStructure = refreshTreatments
-                ? DataStructureInState.getDataStructureFromState(
-                      draftState,
-                      'materials'
-                  )
+                ? SpatialTree.getFromState(draftState, 'materials')
                 : undefined;
 
             // Refresh patient status

@@ -30,8 +30,11 @@ import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuidValidationOptions, uuid } from './utils';
 import { PatientCategory } from './models/patient-category';
-import type { DataStructureElementType } from './models/utils/datastructure';
-import { DataStructureInState } from './models/utils/datastructure';
+import {
+    SpatialTreeElementType,
+    PointRBush,
+} from './models/utils/datastructure';
+import { SpatialTree } from './models/utils/datastructure';
 import { ExerciseStatus } from './models/utils/exercise-status';
 
 export class ExerciseState {
@@ -92,12 +95,12 @@ export class ExerciseState {
     public readonly participantId: string = '';
 
     @IsObject()
-    public readonly dataStructures: {
-        readonly [key in DataStructureElementType]: DataStructureInState;
+    public readonly spatialTrees: {
+        readonly [key in SpatialTreeElementType]: SpatialTree;
     } = {
-        materials: DataStructureInState.create(),
-        patients: DataStructureInState.create(),
-        personnel: DataStructureInState.create(),
+        materials: SpatialTree.create(),
+        patients: SpatialTree.create(),
+        personnel: SpatialTree.create(),
     };
 
     @ValidateNested()

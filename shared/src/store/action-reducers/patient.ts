@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
 import { PatientStatus, Position } from '../../models/utils';
-import { DataStructureInState } from '../../models/utils/datastructure';
+import { SpatialTree } from '../../models/utils/datastructure';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import {
@@ -104,17 +104,16 @@ export namespace PatientActionReducers {
                 );
             }
 
-            let patientsDataStructure =
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'patients'
-                );
-            patientsDataStructure = DataStructureInState.addElement(
+            let patientsDataStructure = SpatialTree.getFromState(
+                draftState,
+                'patients'
+            );
+            patientsDataStructure = SpatialTree.addElement(
                 patientsDataStructure,
                 patient.id,
                 patient.position
             );
-            DataStructureInState.writeDataStructureToState(
+            SpatialTree.writeToState(
                 draftState,
                 'patients',
                 patientsDataStructure
@@ -124,14 +123,8 @@ export namespace PatientActionReducers {
                 patient,
                 patient.position,
                 patientsDataStructure,
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'personnel'
-                ),
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'materials'
-                )
+                SpatialTree.getFromState(draftState, 'personnel'),
+                SpatialTree.getFromState(draftState, 'materials')
             );
 
             return draftState;
@@ -154,12 +147,11 @@ export namespace PatientActionReducers {
 
             patient.position = cloneDeepMutable(targetPosition);
 
-            let patientsDataStructure =
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'patients'
-                );
-            patientsDataStructure = DataStructureInState.moveElement(
+            let patientsDataStructure = SpatialTree.getFromState(
+                draftState,
+                'patients'
+            );
+            patientsDataStructure = SpatialTree.moveElement(
                 patientsDataStructure,
                 patient.id,
                 [startPosition, targetPosition]
@@ -170,17 +162,11 @@ export namespace PatientActionReducers {
                 patient,
                 targetPosition,
                 patientsDataStructure,
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'personnel'
-                ),
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'materials'
-                )
+                SpatialTree.getFromState(draftState, 'personnel'),
+                SpatialTree.getFromState(draftState, 'materials')
             );
 
-            DataStructureInState.writeDataStructureToState(
+            SpatialTree.writeToState(
                 draftState,
                 'patients',
                 patientsDataStructure
@@ -202,17 +188,16 @@ export namespace PatientActionReducers {
                 );
             }
 
-            let patientsDataStructure =
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'patients'
-                );
-            patientsDataStructure = DataStructureInState.removeElement(
+            let patientsDataStructure = SpatialTree.getFromState(
+                draftState,
+                'patients'
+            );
+            patientsDataStructure = SpatialTree.removeElement(
                 patientsDataStructure,
                 patient.id,
                 patient.position
             );
-            DataStructureInState.writeDataStructureToState(
+            SpatialTree.writeToState(
                 draftState,
                 'patients',
                 patientsDataStructure
@@ -246,18 +231,9 @@ export namespace PatientActionReducers {
                 draftState,
                 patient,
                 patient.position,
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'patients'
-                ),
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'personnel'
-                ),
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'materials'
-                )
+                SpatialTree.getFromState(draftState, 'patients'),
+                SpatialTree.getFromState(draftState, 'personnel'),
+                SpatialTree.getFromState(draftState, 'materials')
             );
 
             return draftState;

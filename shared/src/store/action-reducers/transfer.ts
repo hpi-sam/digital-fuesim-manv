@@ -1,7 +1,7 @@
 import { IsInt, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
 import type { ExerciseState, Personnel } from '../..';
 import { imageSizeToPosition, Position, TransferPoint } from '../..';
-import { DataStructureInState } from '../../models/utils/datastructure';
+import { SpatialTree } from '../../models/utils/datastructure';
 import { StartPoint } from '../../models/utils/start-points';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
@@ -41,22 +41,20 @@ export function letElementArrive(
     delete element.transfer;
 
     if (elementType === 'personnel') {
-        const patientsDataStructure =
-            DataStructureInState.getDataStructureFromState(
-                draftState,
-                'patients'
-            );
-        const personnelDataStructure =
-            DataStructureInState.getDataStructureFromState(
-                draftState,
-                'personnel'
-            );
-        DataStructureInState.addElement(
+        const patientsDataStructure = SpatialTree.getFromState(
+            draftState,
+            'patients'
+        );
+        const personnelDataStructure = SpatialTree.getFromState(
+            draftState,
+            'personnel'
+        );
+        SpatialTree.addElement(
             personnelDataStructure,
             element.id,
             element.position
         );
-        DataStructureInState.writeDataStructureToState(
+        SpatialTree.writeToState(
             draftState,
             'personnel',
             personnelDataStructure
@@ -177,17 +175,16 @@ export namespace TransferActionReducers {
             if (elementType === 'personnel') {
                 // TODO: is there a possibility not having a position but being added to transfer?
                 if (element.position !== undefined) {
-                    const personnelDataStructure =
-                        DataStructureInState.getDataStructureFromState(
-                            draftState,
-                            'personnel'
-                        );
-                    DataStructureInState.removeElement(
+                    const personnelDataStructure = SpatialTree.getFromState(
+                        draftState,
+                        'personnel'
+                    );
+                    SpatialTree.removeElement(
                         personnelDataStructure,
                         element.id,
                         element.position
                     );
-                    DataStructureInState.writeDataStructureToState(
+                    SpatialTree.writeToState(
                         draftState,
                         'personnel',
                         personnelDataStructure

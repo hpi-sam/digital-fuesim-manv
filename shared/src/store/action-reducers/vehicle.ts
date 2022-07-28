@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
 import { Position } from '../../models/utils';
-import { DataStructureInState } from '../../models/utils/datastructure';
+import { SpatialTree } from '../../models/utils/datastructure';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable, UUIDSet } from '../../utils';
@@ -208,21 +208,18 @@ export namespace VehicleActionReducers {
             const vehicleWidthInPosition = imageSizeToPosition(
                 vehicle.image.aspectRatio * vehicle.image.height
             );
-            let patientsDataStructure =
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'patients'
-                );
-            let personnelDataStructure =
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'personnel'
-                );
-            let materialsDataStructure =
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'materials'
-                );
+            let patientsDataStructure = SpatialTree.getFromState(
+                draftState,
+                'patients'
+            );
+            let personnelDataStructure = SpatialTree.getFromState(
+                draftState,
+                'personnel'
+            );
+            let materialsDataStructure = SpatialTree.getFromState(
+                draftState,
+                'materials'
+            );
             const space =
                 vehicleWidthInPosition /
                 (personnel.length + materials.length + patients.length + 1);
@@ -237,7 +234,7 @@ export namespace VehicleActionReducers {
                     y: unloadPosition.y,
                 };
                 delete vehicle.patientIds[patient.id];
-                patientsDataStructure = DataStructureInState.addElement(
+                patientsDataStructure = SpatialTree.addElement(
                     patientsDataStructure,
                     patient.id,
                     patient.position
@@ -253,7 +250,7 @@ export namespace VehicleActionReducers {
                     x,
                     y: unloadPosition.y,
                 };
-                personnelDataStructure = DataStructureInState.addElement(
+                personnelDataStructure = SpatialTree.addElement(
                     personnelDataStructure,
                     person.id,
                     person.position
@@ -266,7 +263,7 @@ export namespace VehicleActionReducers {
                     x,
                     y: unloadPosition.y,
                 };
-                materialsDataStructure = DataStructureInState.addElement(
+                materialsDataStructure = SpatialTree.addElement(
                     materialsDataStructure,
                     material.id,
                     material.position
@@ -315,7 +312,7 @@ export namespace VehicleActionReducers {
 
             // only if at least one patient was unloaded, we need to write this change into the dataStructure in state
             if (patients.length > 0) {
-                DataStructureInState.writeDataStructureToState(
+                SpatialTree.writeToState(
                     draftState,
                     'patients',
                     patientsDataStructure
@@ -324,7 +321,7 @@ export namespace VehicleActionReducers {
 
             // only if at least one personnel was unloaded, we need to write this change into the dataStructure in state
             if (personnel.length > 0) {
-                DataStructureInState.writeDataStructureToState(
+                SpatialTree.writeToState(
                     draftState,
                     'personnel',
                     personnelDataStructure
@@ -333,7 +330,7 @@ export namespace VehicleActionReducers {
 
             // only if at least one material was unloaded, we need to write this change into the dataStructure in state
             if (materials.length > 0) {
-                DataStructureInState.writeDataStructureToState(
+                SpatialTree.writeToState(
                     draftState,
                     'materials',
                     materialsDataStructure
@@ -370,17 +367,16 @@ export namespace VehicleActionReducers {
                         );
                     }
 
-                    let materialsDataStructure =
-                        DataStructureInState.getDataStructureFromState(
-                            draftState,
-                            'materials'
-                        );
-                    materialsDataStructure = DataStructureInState.removeElement(
+                    let materialsDataStructure = SpatialTree.getFromState(
+                        draftState,
+                        'materials'
+                    );
+                    materialsDataStructure = SpatialTree.removeElement(
                         materialsDataStructure,
                         material.id,
                         material.position
                     );
-                    DataStructureInState.writeDataStructureToState(
+                    SpatialTree.writeToState(
                         draftState,
                         'materials',
                         materialsDataStructure
@@ -419,17 +415,16 @@ export namespace VehicleActionReducers {
                         );
                     }
 
-                    let personnelDataStructure =
-                        DataStructureInState.getDataStructureFromState(
-                            draftState,
-                            'personnel'
-                        );
-                    personnelDataStructure = DataStructureInState.removeElement(
+                    let personnelDataStructure = SpatialTree.getFromState(
+                        draftState,
+                        'personnel'
+                    );
+                    personnelDataStructure = SpatialTree.removeElement(
                         personnelDataStructure,
                         personnel.id,
                         personnel.position
                     );
-                    DataStructureInState.writeDataStructureToState(
+                    SpatialTree.writeToState(
                         draftState,
                         'personnel',
                         personnelDataStructure
@@ -460,11 +455,10 @@ export namespace VehicleActionReducers {
                         );
                     }
                     vehicle.patientIds[elementToBeLoadedId] = true;
-                    let patientsDataStructure =
-                        DataStructureInState.getDataStructureFromState(
-                            draftState,
-                            'patients'
-                        );
+                    let patientsDataStructure = SpatialTree.getFromState(
+                        draftState,
+                        'patients'
+                    );
 
                     if (patient.position === undefined) {
                         throw new ReducerError(
@@ -472,12 +466,12 @@ export namespace VehicleActionReducers {
                         );
                     }
 
-                    patientsDataStructure = DataStructureInState.removeElement(
+                    patientsDataStructure = SpatialTree.removeElement(
                         patientsDataStructure,
                         patient.id,
                         patient.position
                     );
-                    DataStructureInState.writeDataStructureToState(
+                    SpatialTree.writeToState(
                         draftState,
                         'patients',
                         patientsDataStructure
@@ -491,11 +485,10 @@ export namespace VehicleActionReducers {
                     const materialIds = Object.keys(vehicle.materialIds);
                     // if this vehicle has material associated with it load them in
                     if (materialIds.length > 0) {
-                        let materialsDataStructure =
-                            DataStructureInState.getDataStructureFromState(
-                                draftState,
-                                'materials'
-                            );
+                        let materialsDataStructure = SpatialTree.getFromState(
+                            draftState,
+                            'materials'
+                        );
                         for (const materialId of materialIds) {
                             const material = getElement(
                                 draftState,
@@ -509,12 +502,11 @@ export namespace VehicleActionReducers {
                                 );
                             }
 
-                            materialsDataStructure =
-                                DataStructureInState.removeElement(
-                                    materialsDataStructure,
-                                    material.id,
-                                    material.position
-                                );
+                            materialsDataStructure = SpatialTree.removeElement(
+                                materialsDataStructure,
+                                material.id,
+                                material.position
+                            );
 
                             material.position = undefined;
 
@@ -525,7 +517,7 @@ export namespace VehicleActionReducers {
                                 material.position
                             );
                         }
-                        DataStructureInState.writeDataStructureToState(
+                        SpatialTree.writeToState(
                             draftState,
                             'materials',
                             materialsDataStructure
@@ -536,11 +528,10 @@ export namespace VehicleActionReducers {
                     // if this vehicle has personnel associated with it load all in (except personnel being in transfer)
                     if (personnelIds.length > 0) {
                         // TODO: right now the dataStructure would be read and written from the state, even when all personnel is in transfer
-                        let personnelDataStructure =
-                            DataStructureInState.getDataStructureFromState(
-                                draftState,
-                                'personnel'
-                            );
+                        let personnelDataStructure = SpatialTree.getFromState(
+                            draftState,
+                            'personnel'
+                        );
                         for (const personnelId of personnelIds) {
                             const personnel = getElement(
                                 draftState,
@@ -553,7 +544,7 @@ export namespace VehicleActionReducers {
                                 personnel.transfer === undefined
                             ) {
                                 personnelDataStructure =
-                                    DataStructureInState.removeElement(
+                                    SpatialTree.removeElement(
                                         personnelDataStructure,
                                         personnel.id,
                                         personnel.position
@@ -569,7 +560,7 @@ export namespace VehicleActionReducers {
                                 );
                             }
                         }
-                        DataStructureInState.writeDataStructureToState(
+                        SpatialTree.writeToState(
                             draftState,
                             'personnel',
                             personnelDataStructure

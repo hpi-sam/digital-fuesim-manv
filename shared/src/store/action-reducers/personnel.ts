@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
-import { DataStructureInState } from '../../models/utils/datastructure';
+import { SpatialTree } from '../../models/utils/datastructure';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -36,12 +36,11 @@ export namespace PersonnelActionReducers {
 
             personnel.position = cloneDeepMutable(targetPosition);
 
-            let personnelDataStructure =
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'personnel'
-                );
-            personnelDataStructure = DataStructureInState.moveElement(
+            let personnelDataStructure = SpatialTree.getFromState(
+                draftState,
+                'personnel'
+            );
+            personnelDataStructure = SpatialTree.moveElement(
                 personnelDataStructure,
                 personnel.id,
                 [startPosition, targetPosition]
@@ -50,12 +49,9 @@ export namespace PersonnelActionReducers {
                 draftState,
                 personnel,
                 targetPosition,
-                DataStructureInState.getDataStructureFromState(
-                    draftState,
-                    'patients'
-                )
+                SpatialTree.getFromState(draftState, 'patients')
             );
-            DataStructureInState.writeDataStructureToState(
+            SpatialTree.writeToState(
                 draftState,
                 'personnel',
                 personnelDataStructure

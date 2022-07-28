@@ -3,8 +3,8 @@ import { Patient } from '../../../models';
 import type { PatientStatus, Position } from '../../../models/utils';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUIDSet } from '../../../utils';
-import type { DataStructure } from '../../../models/utils/datastructure';
-import { DataStructureInState } from '../../../models/utils/datastructure';
+import type { PointRBush } from '../../../models/utils/datastructure';
+import { SpatialTree } from '../../../models/utils/datastructure';
 import { ReducerError } from '../../reducer-error';
 import { maxGlobalThreshold } from '../../../state-helpers/max-global-threshold';
 import { getElement } from './get-element';
@@ -164,18 +164,17 @@ function calculateCateringForDataStructure(
     state: Mutable<ExerciseState>,
     pretriageEnabled: boolean,
     bluePatientsEnabled: boolean,
-    patientsDataStructure: DataStructure,
-    dataStructure: DataStructure,
+    patientsDataStructure: PointRBush,
+    dataStructure: PointRBush,
     position: Position,
     elementType: 'materials' | 'personnel',
     elementIdsToBeSkipped: UUIDSet = {}
 ) {
-    const elementsInGeneralThreshold =
-        DataStructureInState.findAllElementsInCircle(
-            dataStructure,
-            position,
-            maxGlobalThreshold
-        ).filter((elementData) => !elementIdsToBeSkipped[elementData.id]);
+    const elementsInGeneralThreshold = SpatialTree.findAllElementsInCircle(
+        dataStructure,
+        position,
+        maxGlobalThreshold
+    ).filter((elementData) => !elementIdsToBeSkipped[elementData.id]);
 
     for (const datastructureElement of elementsInGeneralThreshold) {
         calculateCatering(
@@ -245,9 +244,9 @@ export function calculateTreatments(
     state: Mutable<ExerciseState>,
     element: Material | Patient | Personnel,
     position: Position | undefined,
-    patientsDataStructure?: DataStructure,
-    personnelDataStructure?: DataStructure,
-    materialsDataStructure?: DataStructure,
+    patientsDataStructure?: PointRBush,
+    personnelDataStructure?: PointRBush,
+    materialsDataStructure?: PointRBush,
     elementIdsToBeSkipped: Mutable<UUIDSet> = {}
 ) {
     // if position is undefined, the element is no longer in a position (get it?!) to be treated or treat a patient, therefore any treatment given or received is removed
@@ -350,7 +349,7 @@ function calculateCatering(
     catering: Material | Personnel,
     pretriageEnabled: boolean,
     bluePatientsEnabled: boolean,
-    patientsDataStructure: DataStructure
+    patientsDataStructure: PointRBush
 ) {
     // reset treatment of this catering (material/personal) and start over again
     // TODO: maybe use diff (only removing ones that are not treated anymore) - low priority as this is not much cost, as all ids are known
@@ -385,7 +384,7 @@ function calculateCatering(
 
     if (catering.specificThreshold > 0) {
         const patientsDataInSpecificThreshold =
-            DataStructureInState.findAllElementsInCircle(
+            SpatialTree.findAllElementsInCircle(
                 patientsDataStructure,
                 catering.position,
                 catering.specificThreshold
@@ -420,7 +419,7 @@ function calculateCatering(
             couldCaterFor('green', catering, catersFor))
     ) {
         const patientsDataInGeneralThreshold =
-            DataStructureInState.findAllElementsInCircle(
+            SpatialTree.findAllElementsInCircle(
                 patientsDataStructure,
                 catering.position,
                 catering.generalThreshold
