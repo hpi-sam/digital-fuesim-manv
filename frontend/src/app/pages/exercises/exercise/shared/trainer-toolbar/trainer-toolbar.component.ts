@@ -67,7 +67,6 @@ export class TrainerToolbarComponent {
     public async pauseExercise() {
         const response = await this.apiService.proposeAction({
             type: '[Exercise] Pause',
-            timestamp: Date.now(),
         });
         if (response.success) {
             this.sendLogAction(
@@ -77,7 +76,9 @@ export class TrainerToolbarComponent {
     }
 
     public async startExercise() {
-        if (getStateSnapshot(this.store).exercise.currentTime === 0) {
+        if (
+            getStateSnapshot(this.store).exercise.currentStatus === 'notStarted'
+        ) {
             const confirmStart = await this.confirmationModalService.confirm({
                 title: 'Übung starten',
                 description: 'Möchten Sie die Übung wirklich starten?',
@@ -88,7 +89,6 @@ export class TrainerToolbarComponent {
         }
         const response = await this.apiService.proposeAction({
             type: '[Exercise] Start',
-            timestamp: Date.now(),
         });
         if (response.success) {
             this.sendLogAction(

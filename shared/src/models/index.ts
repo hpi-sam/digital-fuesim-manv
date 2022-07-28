@@ -10,7 +10,6 @@ export { Patient } from './patient';
 export * from './patient-health-state';
 export { PatientTemplate } from './patient-template';
 export { Personnel } from './personnel';
-export { StatusHistoryEntry } from './status-history-entry';
 export { TransferPoint } from './transfer-point';
 export { Vehicle } from './vehicle';
 export { VehicleTemplate } from './vehicle-template';

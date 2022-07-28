@@ -5,7 +5,7 @@ import type {
     Transfer,
     Personnel,
 } from 'digital-fuesim-manv-shared';
-import { Viewport, ExerciseState } from 'digital-fuesim-manv-shared';
+import { Viewport } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
 import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
@@ -113,7 +113,7 @@ export const getSelectClient = (clientId: UUID) => (state: AppState) =>
     state.exercise.clients[clientId]!;
 
 export const selectExerciseStatus = (state: AppState) =>
-    ExerciseState.getStatus(state.exercise);
+    state.exercise.currentStatus;
 
 export const selectParticipantId = (state: AppState) =>
     state.exercise.participantId;

@@ -25,16 +25,12 @@ import type {
     Viewport,
 } from './models';
 import { ExerciseConfiguration } from './models/exercise-configuration';
-import {
-    EocLogEntry,
-    StatusHistoryEntry,
-    VehicleTemplate,
-    MapImageTemplate,
-} from './models';
+import { EocLogEntry, VehicleTemplate, MapImageTemplate } from './models';
 import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuidValidationOptions, uuid } from './utils';
 import { PatientCategory } from './models/patient-category';
+import { ExerciseStatus } from './models/utils/exercise-status';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -47,6 +43,8 @@ export class ExerciseState {
     @IsInt()
     @Min(0)
     public readonly currentTime = 0;
+    @IsString()
+    public readonly currentStatus: ExerciseStatus = 'notStarted';
     @IsObject()
     public readonly viewports: { readonly [key: UUID]: Viewport } = {};
     @IsObject()
@@ -88,10 +86,6 @@ export class ExerciseState {
     @ValidateNested()
     @Type(() => EocLogEntry)
     public readonly eocLog: readonly EocLogEntry[] = [];
-    @IsArray()
-    @ValidateNested()
-    @Type(() => StatusHistoryEntry)
-    public readonly statusHistory: readonly StatusHistoryEntry[] = [];
     @IsString()
     public readonly participantId: string = '';
     @ValidateNested()
@@ -107,19 +101,10 @@ export class ExerciseState {
 
     static readonly create = getCreate(this);
 
-    static getStatus(
-        state: ExerciseState
-    ): StatusHistoryEntry['status'] | 'notStarted' {
-        return (
-            state.statusHistory[state.statusHistory.length - 1]?.status ??
-            'notStarted'
-        );
-    }
-
     /**
      * **Important**
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 5;
+    static readonly currentStateVersion = 6;
 }
