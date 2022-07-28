@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
 import { Position } from '../../models/utils';
-import { DataStructure } from '../../models/utils/datastructure';
+import { DataStructureInState } from '../../models/utils/datastructure';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable, UUIDSet } from '../../utils';
@@ -201,17 +201,18 @@ export namespace VehicleActionReducers {
             const vehicleWidthInPosition = imageSizeToPosition(
                 vehicle.image.aspectRatio * vehicle.image.height
             );
-            let patientsDataStructure = DataStructure.getDataStructureFromState(
-                draftState,
-                'patients'
-            );
+            let patientsDataStructure =
+                DataStructureInState.getDataStructureFromState(
+                    draftState,
+                    'patients'
+                );
             let personnelDataStructure =
-                DataStructure.getDataStructureFromState(
+                DataStructureInState.getDataStructureFromState(
                     draftState,
                     'personnel'
                 );
             let materialsDataStructure =
-                DataStructure.getDataStructureFromState(
+                DataStructureInState.getDataStructureFromState(
                     draftState,
                     'materials'
                 );
@@ -229,7 +230,7 @@ export namespace VehicleActionReducers {
                     y: unloadPosition.y,
                 };
                 delete vehicle.patientIds[patient.id];
-                patientsDataStructure = DataStructure.addElement(
+                patientsDataStructure = DataStructureInState.addElement(
                     patientsDataStructure,
                     patient.id,
                     patient.position
@@ -245,7 +246,7 @@ export namespace VehicleActionReducers {
                     x,
                     y: unloadPosition.y,
                 };
-                personnelDataStructure = DataStructure.addElement(
+                personnelDataStructure = DataStructureInState.addElement(
                     personnelDataStructure,
                     person.id,
                     person.position
@@ -258,7 +259,7 @@ export namespace VehicleActionReducers {
                     x,
                     y: unloadPosition.y,
                 };
-                materialsDataStructure = DataStructure.addElement(
+                materialsDataStructure = DataStructureInState.addElement(
                     materialsDataStructure,
                     material.id,
                     material.position
@@ -307,7 +308,7 @@ export namespace VehicleActionReducers {
 
             // only if at least one patient was unloaded, we need to write this change into the dataStructure in state
             if (patients.length > 0) {
-                DataStructure.writeDataStructureToState(
+                DataStructureInState.writeDataStructureToState(
                     draftState,
                     'patients',
                     patientsDataStructure
@@ -316,7 +317,7 @@ export namespace VehicleActionReducers {
 
             // only if at least one personnel was unloaded, we need to write this change into the dataStructure in state
             if (personnel.length > 0) {
-                DataStructure.writeDataStructureToState(
+                DataStructureInState.writeDataStructureToState(
                     draftState,
                     'personnel',
                     personnelDataStructure
@@ -325,7 +326,7 @@ export namespace VehicleActionReducers {
 
             // only if at least one material was unloaded, we need to write this change into the dataStructure in state
             if (materials.length > 0) {
-                DataStructure.writeDataStructureToState(
+                DataStructureInState.writeDataStructureToState(
                     draftState,
                     'materials',
                     materialsDataStructure
@@ -363,16 +364,16 @@ export namespace VehicleActionReducers {
                     }
 
                     let materialsDataStructure =
-                        DataStructure.getDataStructureFromState(
+                        DataStructureInState.getDataStructureFromState(
                             draftState,
                             'materials'
                         );
-                    materialsDataStructure = DataStructure.removeElement(
+                    materialsDataStructure = DataStructureInState.removeElement(
                         materialsDataStructure,
                         material.id,
                         material.position
                     );
-                    DataStructure.writeDataStructureToState(
+                    DataStructureInState.writeDataStructureToState(
                         draftState,
                         'materials',
                         materialsDataStructure
@@ -412,16 +413,16 @@ export namespace VehicleActionReducers {
                     }
 
                     let personnelDataStructure =
-                        DataStructure.getDataStructureFromState(
+                        DataStructureInState.getDataStructureFromState(
                             draftState,
                             'personnel'
                         );
-                    personnelDataStructure = DataStructure.removeElement(
+                    personnelDataStructure = DataStructureInState.removeElement(
                         personnelDataStructure,
                         personnel.id,
                         personnel.position
                     );
-                    DataStructure.writeDataStructureToState(
+                    DataStructureInState.writeDataStructureToState(
                         draftState,
                         'personnel',
                         personnelDataStructure
@@ -453,7 +454,7 @@ export namespace VehicleActionReducers {
                     }
                     vehicle.patientIds[elementToBeLoadedId] = true;
                     let patientsDataStructure =
-                        DataStructure.getDataStructureFromState(
+                        DataStructureInState.getDataStructureFromState(
                             draftState,
                             'patients'
                         );
@@ -464,12 +465,12 @@ export namespace VehicleActionReducers {
                         );
                     }
 
-                    patientsDataStructure = DataStructure.removeElement(
+                    patientsDataStructure = DataStructureInState.removeElement(
                         patientsDataStructure,
                         patient.id,
                         patient.position
                     );
-                    DataStructure.writeDataStructureToState(
+                    DataStructureInState.writeDataStructureToState(
                         draftState,
                         'patients',
                         patientsDataStructure
@@ -484,7 +485,7 @@ export namespace VehicleActionReducers {
                     // if this vehicle has material associated with it load them in
                     if (materialIds.length > 0) {
                         let materialsDataStructure =
-                            DataStructure.getDataStructureFromState(
+                            DataStructureInState.getDataStructureFromState(
                                 draftState,
                                 'materials'
                             );
@@ -502,7 +503,7 @@ export namespace VehicleActionReducers {
                             }
 
                             materialsDataStructure =
-                                DataStructure.removeElement(
+                                DataStructureInState.removeElement(
                                     materialsDataStructure,
                                     material.id,
                                     material.position
@@ -517,7 +518,7 @@ export namespace VehicleActionReducers {
                                 material.position
                             );
                         }
-                        DataStructure.writeDataStructureToState(
+                        DataStructureInState.writeDataStructureToState(
                             draftState,
                             'materials',
                             materialsDataStructure
@@ -529,7 +530,7 @@ export namespace VehicleActionReducers {
                     if (personnelIds.length > 0) {
                         // TODO: right now the dataStructure would be read and written from the state, even when all personnel is in transfer
                         let personnelDataStructure =
-                            DataStructure.getDataStructureFromState(
+                            DataStructureInState.getDataStructureFromState(
                                 draftState,
                                 'personnel'
                             );
@@ -545,7 +546,7 @@ export namespace VehicleActionReducers {
                                 personnel.transfer === undefined
                             ) {
                                 personnelDataStructure =
-                                    DataStructure.removeElement(
+                                    DataStructureInState.removeElement(
                                         personnelDataStructure,
                                         personnel.id,
                                         personnel.position
@@ -561,7 +562,7 @@ export namespace VehicleActionReducers {
                                 );
                             }
                         }
-                        DataStructure.writeDataStructureToState(
+                        DataStructureInState.writeDataStructureToState(
                             draftState,
                             'personnel',
                             personnelDataStructure

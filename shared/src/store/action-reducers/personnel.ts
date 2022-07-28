@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
-import { DataStructure } from '../../models/utils/datastructure';
+import { DataStructureInState } from '../../models/utils/datastructure';
 import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -36,11 +36,11 @@ export namespace PersonnelActionReducers {
             personnel.position = targetPosition;
 
             let personnelDataStructure =
-                DataStructure.getDataStructureFromState(
+                DataStructureInState.getDataStructureFromState(
                     draftState,
                     'personnel'
                 );
-            personnelDataStructure = DataStructure.moveElement(
+            personnelDataStructure = DataStructureInState.moveElement(
                 personnelDataStructure,
                 personnel.id,
                 [startPosition, targetPosition]
@@ -49,9 +49,12 @@ export namespace PersonnelActionReducers {
                 draftState,
                 personnel,
                 targetPosition,
-                DataStructure.getDataStructureFromState(draftState, 'patients')
+                DataStructureInState.getDataStructureFromState(
+                    draftState,
+                    'patients'
+                )
             );
-            DataStructure.writeDataStructureToState(
+            DataStructureInState.writeDataStructureToState(
                 draftState,
                 'personnel',
                 personnelDataStructure

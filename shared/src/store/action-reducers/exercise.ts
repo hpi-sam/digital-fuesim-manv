@@ -8,12 +8,12 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { countBy } from 'lodash-es';
+import { Personnel, Patient, Viewport } from '../../models';
 import type { Client, Vehicle } from '../../models';
-import { Patient, Personnel, Viewport } from '../../models';
+import { DataStructureInState } from '../../models/utils/datastructure';
 import { StatusHistoryEntry } from '../../models/status-history-entry';
 import { getStatus } from '../../models/utils';
 import type { AreaStatistics } from '../../models/utils/area-statistics';
-import { DataStructure } from '../../models/utils/datastructure';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { uuid } from '../../utils';
@@ -99,19 +99,19 @@ export namespace ExerciseActionReducers {
             draftState.currentTime += tickInterval;
 
             const patientsDataStructure = refreshTreatments
-                ? DataStructure.getDataStructureFromState(
+                ? DataStructureInState.getDataStructureFromState(
                       draftState,
                       'patients'
                   )
                 : undefined;
             const personnelDataStructure = refreshTreatments
-                ? DataStructure.getDataStructureFromState(
+                ? DataStructureInState.getDataStructureFromState(
                       draftState,
                       'personnel'
                   )
                 : undefined;
             const materialsDataStructure = refreshTreatments
-                ? DataStructure.getDataStructureFromState(
+                ? DataStructureInState.getDataStructureFromState(
                       draftState,
                       'materials'
                   )

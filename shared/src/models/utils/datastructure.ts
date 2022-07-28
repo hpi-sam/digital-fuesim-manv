@@ -30,7 +30,7 @@ export interface DataStructureElement {
     id: UUID;
 }
 
-export class MyRBush extends RBush<DataStructureElement> {
+export class DataStructure extends RBush<DataStructureElement> {
     toBBox(element: DataStructureElement) {
         return {
             minX: element.position.x,
@@ -47,7 +47,7 @@ export class MyRBush extends RBush<DataStructureElement> {
     }
 }
 
-export class DataStructure {
+export class DataStructureInState {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
 
@@ -64,7 +64,7 @@ export class DataStructure {
         // initialize
 
         // just create an empty one, as bulk loading/insertion is not needed
-        this.dataStructureAsJSON = new MyRBush(
+        this.dataStructureAsJSON = new DataStructure(
             nodeSize
         ).toJSON() as ImmutableJsonObject;
     }
@@ -77,7 +77,7 @@ export class DataStructure {
         state: Mutable<ExerciseState>,
         key: DataStructureElementType
     ) {
-        return new MyRBush(nodeSize).fromJSON(
+        return new DataStructure(nodeSize).fromJSON(
             state.dataStructures[key].dataStructureAsJSON
         );
     }
@@ -90,7 +90,7 @@ export class DataStructure {
     static writeDataStructureToState(
         state: Mutable<ExerciseState>,
         key: DataStructureElementType,
-        dataStructure: MyRBush
+        dataStructure: DataStructure
     ) {
         state.dataStructures[key].dataStructureAsJSON =
             dataStructure.toJSON() as ImmutableJsonObject;
@@ -101,7 +101,7 @@ export class DataStructure {
      *
      */
     static addElement(
-        dataStructure: MyRBush,
+        dataStructure: DataStructure,
         elementId: UUID,
         position: Position
     ) {
@@ -116,7 +116,7 @@ export class DataStructure {
      *
      */
     static removeElement(
-        dataStructure: MyRBush,
+        dataStructure: DataStructure,
         elementId: UUID,
         position: Position
     ) {
@@ -134,13 +134,17 @@ export class DataStructure {
      * @param positions [startPosition, targetPosition] of element to be moved inside the dataStructure
      */
     static moveElement(
-        dataStructure: MyRBush,
+        dataStructure: DataStructure,
         elementId: UUID,
         positions: [Position, Position]
     ) {
         // TODO: use new move function from RBush, when available: https://github.com/mourner/rbush/issues/28
-        DataStructure.removeElement(dataStructure, elementId, positions[0]);
-        DataStructure.addElement(dataStructure, elementId, positions[1]);
+        DataStructureInState.removeElement(
+            dataStructure,
+            elementId,
+            positions[0]
+        );
+        DataStructureInState.addElement(dataStructure, elementId, positions[1]);
 
         return dataStructure;
     }
@@ -148,57 +152,41 @@ export class DataStructure {
     /**
      *
      * @param position where around elements should be searched
-     * @param radius around the {@link position}
+     * @param radius around the {@link position}, must be >0
      * @param maxNumberOfElements if undefined, it will return all elements
      *
      * @returns all or {@link maxNumberOfElements} if given elements in circle sorted by distance
      */
     static findAllElementsInCircle(
-        dataStructure: MyRBush,
+        dataStructure: DataStructure,
         position: Position,
         radius: number,
         maxNumberOfElements?: number
     ) {
-        // if radius is negative, we will return nothing (empty array)
-        // if radius is zero, only objects directly on top of it
-        // using search instead of knn, as knn interprets zero as the same as infinite radius
-
-        // TODO: maybe just treat zero as nothing can be found and return an empty array
-        return radius < 0
-            ? []
-            : radius === 0
-            ? dataStructure.search({
-                  minX: position.x,
-                  minY: position.y,
-                  maxX: position.x,
-                  maxY: position.y,
-              })
-            : (knn(
+        return radius > 0
+            ? (knn(
                   dataStructure,
                   position.x,
                   position.y,
                   maxNumberOfElements,
                   undefined,
                   radius
-              ) as DataStructureElement[]);
+              ) as DataStructureElement[])
+            : ([] as DataStructureElement[]);
     }
 
     /**
      *
      * @param rectangleBorder.minPos left bottom corner of rectangle
      * @param rectangleBorder.maxPos right top corner of rectangle
+     * rectangle could also be just a point
      *
      * @returns all elements in rectanlge, but not by distance
      */
     static findAllElementsInRectangle(
-        dataStructure: MyRBush,
+        dataStructure: DataStructure,
         rectangleBorder: { minPos: Position; maxPos: Position }
     ) {
-        // if radius is negative, we will return nothing (empty array)
-        // if radius is zero, only objects directly on top of it
-        // using search instead of knn, as knn interprets zero as the same as infinite radius
-
-        // TODO: maybe just treat zero as nothing can be found and return an empty array
         return dataStructure.search({
             minX: rectangleBorder.minPos.x,
             minY: rectangleBorder.minPos.y,

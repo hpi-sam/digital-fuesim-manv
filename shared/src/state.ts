@@ -37,7 +37,7 @@ import type { UUID } from './utils';
 import { uuidValidationOptions, uuid } from './utils';
 import { PatientCategory } from './models/patient-category';
 import type { DataStructureElementType } from './models/utils/datastructure';
-import { DataStructure } from './models/utils/datastructure';
+import { DataStructureInState } from './models/utils/datastructure';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -104,11 +104,11 @@ export class ExerciseState {
 
     @IsObject()
     public readonly dataStructures: {
-        readonly [key in DataStructureElementType]: DataStructure;
+        readonly [key in DataStructureElementType]: DataStructureInState;
     } = {
-        materials: DataStructure.create(),
-        patients: DataStructure.create(),
-        personnel: DataStructure.create(),
+        materials: DataStructureInState.create(),
+        patients: DataStructureInState.create(),
+        personnel: DataStructureInState.create(),
     };
 
     @ValidateNested()

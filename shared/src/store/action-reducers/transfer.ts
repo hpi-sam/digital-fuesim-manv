@@ -1,7 +1,7 @@
 import { IsInt, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
 import type { ExerciseState, Personnel } from '../..';
 import { imageSizeToPosition, Position, TransferPoint } from '../..';
-import { DataStructure } from '../../models/utils/datastructure';
+import { DataStructureInState } from '../../models/utils/datastructure';
 import { StartPoint } from '../../models/utils/start-points';
 import type { Mutable } from '../../utils';
 import { UUID, uuidValidationOptions } from '../../utils';
@@ -39,20 +39,22 @@ export function letElementArrive(
     delete element.transfer;
 
     if (elementType === 'personnel') {
-        const patientsDataStructure = DataStructure.getDataStructureFromState(
-            draftState,
-            'patients'
-        );
-        const personnelDataStructure = DataStructure.getDataStructureFromState(
-            draftState,
-            'personnel'
-        );
-        DataStructure.addElement(
+        const patientsDataStructure =
+            DataStructureInState.getDataStructureFromState(
+                draftState,
+                'patients'
+            );
+        const personnelDataStructure =
+            DataStructureInState.getDataStructureFromState(
+                draftState,
+                'personnel'
+            );
+        DataStructureInState.addElement(
             personnelDataStructure,
             element.id,
             element.position
         );
-        DataStructure.writeDataStructureToState(
+        DataStructureInState.writeDataStructureToState(
             draftState,
             'personnel',
             personnelDataStructure
@@ -174,16 +176,16 @@ export namespace TransferActionReducers {
                 // TODO: is there a possibility not having a position but being added to transfer?
                 if (element.position !== undefined) {
                     const personnelDataStructure =
-                        DataStructure.getDataStructureFromState(
+                        DataStructureInState.getDataStructureFromState(
                             draftState,
                             'personnel'
                         );
-                    DataStructure.removeElement(
+                    DataStructureInState.removeElement(
                         personnelDataStructure,
                         element.id,
                         element.position
                     );
-                    DataStructure.writeDataStructureToState(
+                    DataStructureInState.writeDataStructureToState(
                         draftState,
                         'personnel',
                         personnelDataStructure

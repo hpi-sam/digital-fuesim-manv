@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
 import { PatientStatus, Position } from '../../models/utils';
-import { DataStructure } from '../../models/utils/datastructure';
+import { DataStructureInState } from '../../models/utils/datastructure';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
@@ -99,16 +99,17 @@ export namespace PatientActionReducers {
                 );
             }
 
-            let patientsDataStructure = DataStructure.getDataStructureFromState(
-                draftState,
-                'patients'
-            );
-            patientsDataStructure = DataStructure.addElement(
+            let patientsDataStructure =
+                DataStructureInState.getDataStructureFromState(
+                    draftState,
+                    'patients'
+                );
+            patientsDataStructure = DataStructureInState.addElement(
                 patientsDataStructure,
                 patient.id,
                 patient.position
             );
-            DataStructure.writeDataStructureToState(
+            DataStructureInState.writeDataStructureToState(
                 draftState,
                 'patients',
                 patientsDataStructure
@@ -118,11 +119,14 @@ export namespace PatientActionReducers {
                 patient,
                 patient.position,
                 patientsDataStructure,
-                DataStructure.getDataStructureFromState(
+                DataStructureInState.getDataStructureFromState(
                     draftState,
                     'personnel'
                 ),
-                DataStructure.getDataStructureFromState(draftState, 'materials')
+                DataStructureInState.getDataStructureFromState(
+                    draftState,
+                    'materials'
+                )
             );
 
             return draftState;
@@ -144,11 +148,12 @@ export namespace PatientActionReducers {
 
             patient.position = targetPosition;
 
-            let patientsDataStructure = DataStructure.getDataStructureFromState(
-                draftState,
-                'patients'
-            );
-            patientsDataStructure = DataStructure.moveElement(
+            let patientsDataStructure =
+                DataStructureInState.getDataStructureFromState(
+                    draftState,
+                    'patients'
+                );
+            patientsDataStructure = DataStructureInState.moveElement(
                 patientsDataStructure,
                 patient.id,
                 [startPosition, targetPosition]
@@ -159,14 +164,17 @@ export namespace PatientActionReducers {
                 patient,
                 targetPosition,
                 patientsDataStructure,
-                DataStructure.getDataStructureFromState(
+                DataStructureInState.getDataStructureFromState(
                     draftState,
                     'personnel'
                 ),
-                DataStructure.getDataStructureFromState(draftState, 'materials')
+                DataStructureInState.getDataStructureFromState(
+                    draftState,
+                    'materials'
+                )
             );
 
-            DataStructure.writeDataStructureToState(
+            DataStructureInState.writeDataStructureToState(
                 draftState,
                 'patients',
                 patientsDataStructure
@@ -188,16 +196,17 @@ export namespace PatientActionReducers {
                 );
             }
 
-            let patientsDataStructure = DataStructure.getDataStructureFromState(
-                draftState,
-                'patients'
-            );
-            patientsDataStructure = DataStructure.removeElement(
+            let patientsDataStructure =
+                DataStructureInState.getDataStructureFromState(
+                    draftState,
+                    'patients'
+                );
+            patientsDataStructure = DataStructureInState.removeElement(
                 patientsDataStructure,
                 patient.id,
                 patient.position
             );
-            DataStructure.writeDataStructureToState(
+            DataStructureInState.writeDataStructureToState(
                 draftState,
                 'patients',
                 patientsDataStructure
@@ -231,12 +240,18 @@ export namespace PatientActionReducers {
                 draftState,
                 patient,
                 patient.position,
-                DataStructure.getDataStructureFromState(draftState, 'patients'),
-                DataStructure.getDataStructureFromState(
+                DataStructureInState.getDataStructureFromState(
+                    draftState,
+                    'patients'
+                ),
+                DataStructureInState.getDataStructureFromState(
                     draftState,
                     'personnel'
                 ),
-                DataStructure.getDataStructureFromState(draftState, 'materials')
+                DataStructureInState.getDataStructureFromState(
+                    draftState,
+                    'materials'
+                )
             );
 
             return draftState;

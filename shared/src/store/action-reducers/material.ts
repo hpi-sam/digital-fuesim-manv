@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
-import { DataStructure } from '../../models/utils/datastructure';
+import { DataStructureInState } from '../../models/utils/datastructure';
 import { uuidValidationOptions, UUID } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -36,11 +36,11 @@ export namespace MaterialActionReducers {
             material.position = targetPosition;
 
             let materialsDataStructure =
-                DataStructure.getDataStructureFromState(
+                DataStructureInState.getDataStructureFromState(
                     draftState,
                     'materials'
                 );
-            materialsDataStructure = DataStructure.moveElement(
+            materialsDataStructure = DataStructureInState.moveElement(
                 materialsDataStructure,
                 material.id,
                 [startPosition, targetPosition]
@@ -49,9 +49,12 @@ export namespace MaterialActionReducers {
                 draftState,
                 material,
                 targetPosition,
-                DataStructure.getDataStructureFromState(draftState, 'patients')
+                DataStructureInState.getDataStructureFromState(
+                    draftState,
+                    'patients'
+                )
             );
-            DataStructure.writeDataStructureToState(
+            DataStructureInState.writeDataStructureToState(
                 draftState,
                 'materials',
                 materialsDataStructure
