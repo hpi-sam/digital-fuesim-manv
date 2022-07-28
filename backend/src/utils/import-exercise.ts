@@ -16,7 +16,7 @@ export async function importExercise(
     ids: ExerciseIds,
     databaseService: DatabaseService
 ): Promise<ExerciseWrapper | HttpResponse<ExerciseIds>> {
-    const migratedImportObject = await migrateStateExportTo(
+    const migratedImportObject = migrateStateExportTo(
         ExerciseState.currentStateVersion,
         importObject.dataVersion,
         importObject

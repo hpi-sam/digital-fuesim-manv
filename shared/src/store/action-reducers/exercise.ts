@@ -49,13 +49,6 @@ export class ExerciseTickAction implements Action {
     public readonly tickInterval!: number;
 }
 
-export class SetParticipantIdAction implements Action {
-    @IsString()
-    public readonly type = `[Exercise] Set Participant Id`;
-    @IsString()
-    public readonly participantId!: string;
-}
-
 export namespace ExerciseActionReducers {
     export const pauseExercise: ActionReducer<PauseExerciseAction> = {
         action: PauseExerciseAction,
@@ -109,15 +102,6 @@ export namespace ExerciseActionReducers {
             // Refresh transfers
             refreshTransfer(draftState, 'vehicles', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);
-            return draftState;
-        },
-        rights: 'server',
-    };
-
-    export const setParticipantId: ActionReducer<SetParticipantIdAction> = {
-        action: SetParticipantIdAction,
-        reducer: (draftState, { participantId }) => {
-            draftState.participantId = participantId;
             return draftState;
         },
         rights: 'server',
