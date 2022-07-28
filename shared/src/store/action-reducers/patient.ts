@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
 import { PatientStatus, Position } from '../../models/utils';
-import { SpatialTree } from '../../models/utils/datastructure';
+import { SpatialTree } from '../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import {
@@ -104,28 +104,13 @@ export namespace PatientActionReducers {
                 );
             }
 
-            let patientsDataStructure = SpatialTree.getFromState(
+            SpatialTree.addElement(
                 draftState,
-                'patients'
-            );
-            patientsDataStructure = SpatialTree.addElement(
-                patientsDataStructure,
+                'patients',
                 patient.id,
                 patient.position
             );
-            SpatialTree.writeToState(
-                draftState,
-                'patients',
-                patientsDataStructure
-            );
-            calculateTreatments(
-                draftState,
-                patient,
-                patient.position,
-                patientsDataStructure,
-                SpatialTree.getFromState(draftState, 'personnel'),
-                SpatialTree.getFromState(draftState, 'materials')
-            );
+            calculateTreatments(draftState, patient, patient.position);
 
             return draftState;
         },
@@ -147,30 +132,12 @@ export namespace PatientActionReducers {
 
             patient.position = cloneDeepMutable(targetPosition);
 
-            let patientsDataStructure = SpatialTree.getFromState(
-                draftState,
-                'patients'
-            );
-            patientsDataStructure = SpatialTree.moveElement(
-                patientsDataStructure,
-                patient.id,
-                [startPosition, targetPosition]
-            );
-
-            calculateTreatments(
-                draftState,
-                patient,
+            SpatialTree.moveElement(draftState, 'patients', patient.id, [
+                startPosition,
                 targetPosition,
-                patientsDataStructure,
-                SpatialTree.getFromState(draftState, 'personnel'),
-                SpatialTree.getFromState(draftState, 'materials')
-            );
+            ]);
 
-            SpatialTree.writeToState(
-                draftState,
-                'patients',
-                patientsDataStructure
-            );
+            calculateTreatments(draftState, patient, targetPosition);
 
             return draftState;
         },
@@ -188,19 +155,11 @@ export namespace PatientActionReducers {
                 );
             }
 
-            let patientsDataStructure = SpatialTree.getFromState(
-                draftState,
-                'patients'
-            );
-            patientsDataStructure = SpatialTree.removeElement(
-                patientsDataStructure,
-                patient.id,
-                patient.position
-            );
-            SpatialTree.writeToState(
+            SpatialTree.removeElement(
                 draftState,
                 'patients',
-                patientsDataStructure
+                patient.id,
+                patient.position
             );
 
             patient.position = undefined;
@@ -227,14 +186,7 @@ export namespace PatientActionReducers {
                 );
             }
 
-            calculateTreatments(
-                draftState,
-                patient,
-                patient.position,
-                SpatialTree.getFromState(draftState, 'patients'),
-                SpatialTree.getFromState(draftState, 'personnel'),
-                SpatialTree.getFromState(draftState, 'materials')
-            );
+            calculateTreatments(draftState, patient, patient.position);
 
             return draftState;
         },

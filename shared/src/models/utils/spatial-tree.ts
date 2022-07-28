@@ -1,12 +1,18 @@
 import { IsJSON } from 'class-validator';
 import RBush from 'rbush';
+/**
+ * right now knn is included via the github repo
+ * when new release is coming out (right now npm package is v3.0.1)
+ * could be switched to npm package in package.json and package-lock.json
+ * https://github.com/mourner/rbush-knn#changelog
+ */
 // @ts-expect-error doesn't have a type
 import knn from 'rbush-knn';
 import type { ExerciseState } from '../../state';
-import type { Position } from '../utils';
-import { getCreate } from '../utils';
-import type { Mutable, UUID } from '../../utils';
 import { ImmutableJsonObject } from '../../utils';
+import type { Mutable, UUID } from '../../utils';
+import type { Position } from '.';
+import { getCreate } from '.';
 
 /**
  * default nodeSize, important to be identitical for JSON import and export, see https://github.com/mourner/rbush#export-and-import
@@ -61,15 +67,26 @@ export class SpatialTree {
     constructor() {
         // initialize
 
-        // just create an empty one, as bulk loading/insertion is not needed
+        /**
+         * just create an empty one, as bulk loading/insertion is not needed
+         * if bulk loading/insertion is needed create new static function including this
+         * https://github.com/mourner/rbush#bulk-inserting-data
+         */
         this.spatialTreeAsJSON = new PointRBush(
             nodeSize
         ).toJSON() as ImmutableJsonObject;
     }
 
     /**
-     * gets the DataStructure from the state (where it is saved as JSON)
-     * @param key of the dataStructure in dataStructures
+     * gets the spatialTree from the state (where it is saved as {@link ImmutableJsonObject})
+     * @param key of the spatialTree in spatialTrees
+     *
+     * * !!! IMPORTANT !!!
+     * if you switch the spatialTree datastructure away from RBush be sure that export (write)
+     * and import (read) are constant and not linear in performance (e.g. no stringify parse)
+     * !!! IMPORTANT !!!
+     *
+     * TODO: discuss: call it readFromState or getFromState? does read imply non constant time?
      */
     static getFromState(state: ExerciseState, key: SpatialTreeElementType) {
         return new PointRBush(nodeSize).fromJSON(
@@ -78,17 +95,22 @@ export class SpatialTree {
     }
 
     /**
-     * writes the dataStructure into the state as JSON and returns the state
-     * @param key of the dataStructure in dataStructures
-     * @param dataStructure that should be saved to state (as JSON)
+     * writes the spatialTree into the state as {@link ImmutableJsonObject} and returns the state
+     * @param key of the spatialTree in spatialTrees
+     * @param spatialTree that should be saved to state (as JSON)
+     *
+     * !!! IMPORTANT !!!
+     * if you switch the spatialTree datastructure away from RBush be sure that export (write)
+     * and import (read) are constant and not linear in performance (e.g. no stringify parse)
+     * !!! IMPORTANT !!!
      */
     static writeToState(
         state: Mutable<ExerciseState>,
         key: SpatialTreeElementType,
-        dataStructure: PointRBush
+        spatialTree: PointRBush
     ) {
         state.spatialTrees[key].spatialTreeAsJSON =
-            dataStructure.toJSON() as ImmutableJsonObject;
+            spatialTree.toJSON() as ImmutableJsonObject;
         return state;
     }
 
@@ -96,48 +118,59 @@ export class SpatialTree {
      *
      */
     static addElement(
-        dataStructure: PointRBush,
+        state: Mutable<ExerciseState>,
+        key: SpatialTreeElementType,
         elementId: UUID,
         position: Position
     ) {
-        dataStructure.insert({
-            position,
-            id: elementId,
-        });
-        return dataStructure;
+        // after element is added (inserted) write spatialTree back into the state
+        return this.writeToState(
+            state,
+            key,
+            // get spatialTree fromState and add (insert) Element
+            this.getFromState(state, key).insert({
+                position,
+                id: elementId,
+            })
+        );
     }
 
     /**
      *
      */
     static removeElement(
-        dataStructure: PointRBush,
+        state: Mutable<ExerciseState>,
+        key: SpatialTreeElementType,
         elementId: UUID,
         position: Position
     ) {
-        dataStructure.remove(
-            {
-                position,
-                id: elementId,
-            },
-            (a, b) => a.id === b.id
+        // after element is removed write spatialTree back into the state
+        return this.writeToState(
+            state,
+            key,
+            // get spatialTree fromState and remove Element
+            this.getFromState(state, key).remove(
+                {
+                    position,
+                    id: elementId,
+                },
+                (a, b) => a.id === b.id
+            )
         );
-        return dataStructure;
     }
 
     /**
-     * @param positions [startPosition, targetPosition] of element to be moved inside the dataStructure
+     * @param positions [startPosition, targetPosition] of element to be moved inside the spatialTree
      */
     static moveElement(
-        dataStructure: PointRBush,
+        state: Mutable<ExerciseState>,
+        key: SpatialTreeElementType,
         elementId: UUID,
         positions: [Position, Position]
     ) {
         // TODO: use new move function from RBush, when available: https://github.com/mourner/rbush/issues/28
-        SpatialTree.removeElement(dataStructure, elementId, positions[0]);
-        SpatialTree.addElement(dataStructure, elementId, positions[1]);
-
-        return dataStructure;
+        this.removeElement(state, key, elementId, positions[0]);
+        return this.addElement(state, key, elementId, positions[1]);
     }
 
     /**
@@ -148,13 +181,15 @@ export class SpatialTree {
      * @returns all or {@link maxNumberOfElements} if given elements in circle sorted by distance
      */
     static findAllElementsInCircle(
-        dataStructure: PointRBush,
+        state: Mutable<ExerciseState>,
+        key: SpatialTreeElementType,
         position: Position,
         radius: number
     ) {
         return radius > 0
-            ? (knn(
-                  dataStructure,
+            ? // find documentation to knn here: https://github.com/mourner/rbush-knn
+              (knn(
+                  this.getFromState(state, key),
                   position.x,
                   position.y,
                   undefined,
@@ -174,10 +209,11 @@ export class SpatialTree {
      * @returns all elements in rectangle, but not by distance
      */
     static findAllElementsInRectangle(
-        dataStructure: PointRBush,
+        state: Mutable<ExerciseState>,
+        key: SpatialTreeElementType,
         rectangleBorder: { minPos: Position; maxPos: Position }
     ) {
-        return dataStructure.search({
+        return this.getFromState(state, key).search({
             minX: rectangleBorder.minPos.x,
             minY: rectangleBorder.minPos.y,
             maxX: rectangleBorder.maxPos.x,

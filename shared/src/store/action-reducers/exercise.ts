@@ -9,7 +9,6 @@ import {
 } from 'class-validator';
 import { Patient } from '../../models';
 import type { Vehicle, Personnel } from '../../models';
-import { SpatialTree } from '../../models/utils/datastructure';
 import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
@@ -80,16 +79,6 @@ export namespace ExerciseActionReducers {
             // Refresh the current time
             draftState.currentTime += tickInterval;
 
-            const patientsDataStructure = refreshTreatments
-                ? SpatialTree.getFromState(draftState, 'patients')
-                : undefined;
-            const personnelDataStructure = refreshTreatments
-                ? SpatialTree.getFromState(draftState, 'personnel')
-                : undefined;
-            const materialsDataStructure = refreshTreatments
-                ? SpatialTree.getFromState(draftState, 'materials')
-                : undefined;
-
             // Refresh patient status
             patientUpdates.forEach((patientUpdate) => {
                 const currentPatient = draftState.patients[patientUpdate.id]!;
@@ -118,6 +107,11 @@ export namespace ExerciseActionReducers {
                         draftState.configuration.bluePatientsEnabled
                     )
                 ) {
+                    /**
+                     * calculateTreatments() will set {@link currentPatient.needsNewCalculateTreatments} to false again
+                     * if
+                     * @see calculateTreatments was called with a patient
+                     */
                     currentPatient.needsNewCalculateTreatments = true;
                 }
 
@@ -131,14 +125,8 @@ export namespace ExerciseActionReducers {
                     calculateTreatments(
                         draftState,
                         currentPatient,
-                        currentPatient.position,
-                        patientsDataStructure,
-                        personnelDataStructure,
-                        materialsDataStructure
+                        currentPatient.position
                     );
-                    /**
-                     * calculateTreatments() will set {@link needsNewCalculateTreatments} to false again
-                     */
                 }
             });
 

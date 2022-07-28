@@ -1,7 +1,7 @@
 import { IsInt, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
 import type { ExerciseState, Personnel } from '../..';
 import { imageSizeToPosition, Position, TransferPoint } from '../..';
-import { SpatialTree } from '../../models/utils/datastructure';
+import { SpatialTree } from '../../models/utils/spatial-tree';
 import { StartPoint } from '../../models/utils/start-points';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
@@ -41,30 +41,13 @@ export function letElementArrive(
     delete element.transfer;
 
     if (elementType === 'personnel') {
-        const patientsDataStructure = SpatialTree.getFromState(
-            draftState,
-            'patients'
-        );
-        const personnelDataStructure = SpatialTree.getFromState(
-            draftState,
-            'personnel'
-        );
         SpatialTree.addElement(
-            personnelDataStructure,
+            draftState,
+            'personnel',
             element.id,
             element.position
         );
-        SpatialTree.writeToState(
-            draftState,
-            'personnel',
-            personnelDataStructure
-        );
-        calculateTreatments(
-            draftState,
-            element as Personnel,
-            element.position,
-            patientsDataStructure
-        );
+        calculateTreatments(draftState, element as Personnel, element.position);
     }
 }
 
@@ -173,21 +156,13 @@ export namespace TransferActionReducers {
             }
 
             if (elementType === 'personnel') {
-                // TODO: is there a possibility not having a position but being added to transfer?
+                // TODO: is there a possibility not having a position but being added to transfer as only a personnel (not being in vehicle)?
                 if (element.position !== undefined) {
-                    const personnelDataStructure = SpatialTree.getFromState(
-                        draftState,
-                        'personnel'
-                    );
                     SpatialTree.removeElement(
-                        personnelDataStructure,
-                        element.id,
-                        element.position
-                    );
-                    SpatialTree.writeToState(
                         draftState,
                         'personnel',
-                        personnelDataStructure
+                        element.id,
+                        element.position
                     );
                     // remove any treatment this personnel did
                     calculateTreatments(

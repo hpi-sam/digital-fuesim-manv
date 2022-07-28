@@ -30,11 +30,8 @@ import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuidValidationOptions, uuid } from './utils';
 import { PatientCategory } from './models/patient-category';
-import {
-    SpatialTreeElementType,
-    PointRBush,
-} from './models/utils/datastructure';
-import { SpatialTree } from './models/utils/datastructure';
+import type { SpatialTreeElementType } from './models/utils/spatial-tree';
+import { SpatialTree } from './models/utils/spatial-tree';
 import { ExerciseStatus } from './models/utils/exercise-status';
 
 export class ExerciseState {

@@ -3,9 +3,7 @@ import { Patient } from '../../../models';
 import type { PatientStatus, Position } from '../../../models/utils';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUIDSet } from '../../../utils';
-import type { PointRBush } from '../../../models/utils/datastructure';
-import { SpatialTree } from '../../../models/utils/datastructure';
-import { ReducerError } from '../../reducer-error';
+import { SpatialTree } from '../../../models/utils/spatial-tree';
 import { maxGlobalThreshold } from '../../../state-helpers/max-global-threshold';
 import { getElement } from './get-element';
 
@@ -155,34 +153,30 @@ function isMaterial(
 }
 
 /**
- *
- * @param dataStructure being of elementType
  * @param position of the patient where all elements of elementType should be recalculated
- * @param elementType used for elementType in dataStructure
+ * @param elementType used as key in {@link state.spatialTrees}
  */
-function calculateCateringForDataStructure(
+function calculateCateringForElementTypeAroundPatient(
     state: Mutable<ExerciseState>,
     pretriageEnabled: boolean,
     bluePatientsEnabled: boolean,
-    patientsDataStructure: PointRBush,
-    dataStructure: PointRBush,
     position: Position,
     elementType: 'materials' | 'personnel',
     elementIdsToBeSkipped: UUIDSet = {}
 ) {
     const elementsInGeneralThreshold = SpatialTree.findAllElementsInCircle(
-        dataStructure,
+        state,
+        elementType,
         position,
         maxGlobalThreshold
     ).filter((elementData) => !elementIdsToBeSkipped[elementData.id]);
 
-    for (const datastructureElement of elementsInGeneralThreshold) {
+    for (const elementInGeneralThreshold of elementsInGeneralThreshold) {
         calculateCatering(
             state,
-            getElement(state, elementType, datastructureElement.id),
+            getElement(state, elementType, elementInGeneralThreshold.id),
             pretriageEnabled,
-            bluePatientsEnabled,
-            patientsDataStructure
+            bluePatientsEnabled
         );
     }
 }
@@ -235,30 +229,18 @@ function removeTreatmentsOfElement(
 /**
  * @param position when a patient was moved, positions needs to have old position and new position
  *                  when positions is undefined, it means all treatments from this element should be removed
- * @param patientsDataStructure only optional when position is undefined (only wanting to remove treatment)
- * @param personnelDataStructure only needed when element is a patient
- * @param materialsDataStructure only needed when element is a patient
  * @param elementIdsToBeSkipped with this you can ignore e.g. personnel and material that was already calculated before (e.g. see unloadVehicle)
  */
 export function calculateTreatments(
     state: Mutable<ExerciseState>,
     element: Material | Patient | Personnel,
     position: Position | undefined,
-    patientsDataStructure?: PointRBush,
-    personnelDataStructure?: PointRBush,
-    materialsDataStructure?: PointRBush,
     elementIdsToBeSkipped: Mutable<UUIDSet> = {}
 ) {
     // if position is undefined, the element is no longer in a position (get it?!) to be treated or treat a patient, therefore any treatment given or received is removed
     if (position === undefined) {
         removeTreatmentsOfElement(state, element);
         return;
-    }
-
-    if (patientsDataStructure === undefined) {
-        throw new ReducerError(
-            'patientsDataStructure was not defined, but calculateTreatments was called with an element that has positions set to something, not setting patientsDataStructure is only allowed for positions === undefined'
-        );
     }
 
     const pretriageEnabled = state.configuration.pretriageEnabled;
@@ -270,20 +252,9 @@ export function calculateTreatments(
             state,
             element,
             pretriageEnabled,
-            bluePatientsEnabled,
-            patientsDataStructure
+            bluePatientsEnabled
         );
     } else {
-        if (personnelDataStructure === undefined) {
-            throw new ReducerError(
-                'personnelDataStructure was not defined, but calculateTreatments was called with element being a patient'
-            );
-        }
-        if (materialsDataStructure === undefined) {
-            throw new ReducerError(
-                'materialsDataStructure was not defined, but calculateTreatments was called with element being a patient'
-            );
-        }
         // element is patient: calculating for every personnel and material around the patient position(s)
 
         // recalculating catering for every personnel that treated this patient
@@ -292,8 +263,7 @@ export function calculateTreatments(
                 state,
                 getElement(state, 'personnel', personnelId),
                 pretriageEnabled,
-                bluePatientsEnabled,
-                patientsDataStructure
+                bluePatientsEnabled
             );
             // saving personnelIds of personnel that already got calculated - makes small movements of patients more efficient
             elementIdsToBeSkipped[personnelId] = true;
@@ -305,32 +275,27 @@ export function calculateTreatments(
                 state,
                 getElement(state, 'materials', materialId),
                 pretriageEnabled,
-                bluePatientsEnabled,
-                patientsDataStructure
+                bluePatientsEnabled
             );
             // saving materialIds of material that already got calculated - makes small movements of patients more efficient
             elementIdsToBeSkipped[materialId] = true;
         }
 
         // calculating catering for every personnel around the position the patient is now
-        calculateCateringForDataStructure(
+        calculateCateringForElementTypeAroundPatient(
             state,
             pretriageEnabled,
             bluePatientsEnabled,
-            patientsDataStructure,
-            personnelDataStructure,
             position,
             'personnel',
             elementIdsToBeSkipped
         );
 
         // calculating catering for every material around the position the patient is now
-        calculateCateringForDataStructure(
+        calculateCateringForElementTypeAroundPatient(
             state,
             pretriageEnabled,
             bluePatientsEnabled,
-            patientsDataStructure,
-            materialsDataStructure,
             position,
             'materials',
             elementIdsToBeSkipped
@@ -348,8 +313,7 @@ function calculateCatering(
     state: Mutable<ExerciseState>,
     catering: Material | Personnel,
     pretriageEnabled: boolean,
-    bluePatientsEnabled: boolean,
-    patientsDataStructure: PointRBush
+    bluePatientsEnabled: boolean
 ) {
     // reset treatment of this catering (material/personal) and start over again
     // TODO: maybe use diff (only removing ones that are not treated anymore) - low priority as this is not much cost, as all ids are known
@@ -385,7 +349,8 @@ function calculateCatering(
     if (catering.specificThreshold > 0) {
         const patientsDataInSpecificThreshold =
             SpatialTree.findAllElementsInCircle(
-                patientsDataStructure,
+                state,
+                'patients',
                 catering.position,
                 catering.specificThreshold
             );
@@ -420,7 +385,8 @@ function calculateCatering(
     ) {
         const patientsDataInGeneralThreshold =
             SpatialTree.findAllElementsInCircle(
-                patientsDataStructure,
+                state,
+                'patients',
                 catering.position,
                 catering.generalThreshold
             )

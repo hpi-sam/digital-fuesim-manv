@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
-import { SpatialTree } from '../../models/utils/datastructure';
+import { SpatialTree } from '../../models/utils/spatial-tree';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -36,26 +36,11 @@ export namespace MaterialActionReducers {
 
             material.position = cloneDeepMutable(targetPosition);
 
-            let materialsDataStructure = SpatialTree.getFromState(
-                draftState,
-                'materials'
-            );
-            materialsDataStructure = SpatialTree.moveElement(
-                materialsDataStructure,
-                material.id,
-                [startPosition, targetPosition]
-            );
-            calculateTreatments(
-                draftState,
-                material,
+            SpatialTree.moveElement(draftState, 'materials', material.id, [
+                startPosition,
                 targetPosition,
-                SpatialTree.getFromState(draftState, 'patients')
-            );
-            SpatialTree.writeToState(
-                draftState,
-                'materials',
-                materialsDataStructure
-            );
+            ]);
+            calculateTreatments(draftState, material, targetPosition);
 
             return draftState;
         },
