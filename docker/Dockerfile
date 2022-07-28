@@ -2,7 +2,7 @@
 ARG PRODUCTION_PATH="/usr/local/app"
 
 # Use official node image as the base image
-FROM node:16-bullseye-slim AS builder
+FROM node:18-bullseye-slim AS builder
 
 # needed to use PRODUCTION_PATH before the first FROM
 ARG PRODUCTION_PATH
@@ -20,7 +20,7 @@ RUN npm run deployment
 #########################
 ####  prod container ####
 # Use official node image as the base image, important to be on debian based for apt-get
-FROM node:16-bullseye-slim
+FROM node:18-bullseye-slim
 
 # needed to use PRODUCTION_PATH before the first FROM
 ARG PRODUCTION_PATH
