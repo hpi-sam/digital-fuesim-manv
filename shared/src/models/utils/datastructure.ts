@@ -105,9 +105,6 @@ export class DataStructure {
         elementId: UUID,
         position: Position
     ) {
-        // TODO: check maybe if element got added sucessfully,
-        // maybe lazy via length checking (something got added)
-
         dataStructure.insert({
             position,
             id: elementId,
@@ -123,11 +120,6 @@ export class DataStructure {
         elementId: UUID,
         position: Position
     ) {
-        // TODO: check maybe if element got deleted sucessfully,
-        // maybe lazy via length checking (something got deleted)
-
-        // remove via id
-        // TODO: own removal, right now removing seems to take , with help of position
         dataStructure.remove(
             {
                 position,
@@ -146,14 +138,7 @@ export class DataStructure {
         elementId: UUID,
         positions: [Position, Position]
     ) {
-        // TODO: check maybe if element got moved sucessfully
-
-        // TODO: not much difference if first remove or first insert, first removing could mitigate node splitting
-        // https://github.com/mourner/rbush/blob/04e07dbe398ed24d75aba105baa451670e65fce5/index.js#L280
-        // nodes should be filled at least 40% of {@link nodeSize}, as patients, material and personnel are probably most of the time close together
-        // and taking small movements into account, using remove first could mitigate the node splitting
-        // benchmarks of 15 min. with 3200 personnel, material and patients distributed in one 200 by 100 viewport moving around was not very clear
-
+        // TODO: use new move function from RBush, when available: https://github.com/mourner/rbush/issues/28
         DataStructure.removeElement(dataStructure, elementId, positions[0]);
         DataStructure.addElement(dataStructure, elementId, positions[1]);
 
@@ -165,6 +150,8 @@ export class DataStructure {
      * @param position where around elements should be searched
      * @param radius around the {@link position}
      * @param maxNumberOfElements if undefined, it will return all elements
+     *
+     * @returns all or {@link maxNumberOfElements} if given elements in circle sorted by distance
      */
     static findAllElementsInCircle(
         dataStructure: MyRBush,
@@ -194,5 +181,29 @@ export class DataStructure {
                   undefined,
                   radius
               ) as DataStructureElement[]);
+    }
+
+    /**
+     *
+     * @param rectangleBorder.minPos left bottom corner of rectangle
+     * @param rectangleBorder.maxPos right top corner of rectangle
+     *
+     * @returns all elements in rectanlge, but not by distance
+     */
+    static findAllElementsInRectangle(
+        dataStructure: MyRBush,
+        rectangleBorder: { minPos: Position; maxPos: Position }
+    ) {
+        // if radius is negative, we will return nothing (empty array)
+        // if radius is zero, only objects directly on top of it
+        // using search instead of knn, as knn interprets zero as the same as infinite radius
+
+        // TODO: maybe just treat zero as nothing can be found and return an empty array
+        return dataStructure.search({
+            minX: rectangleBorder.minPos.x,
+            minY: rectangleBorder.minPos.y,
+            maxX: rectangleBorder.maxPos.x,
+            maxY: rectangleBorder.maxPos.y,
+        });
     }
 }
