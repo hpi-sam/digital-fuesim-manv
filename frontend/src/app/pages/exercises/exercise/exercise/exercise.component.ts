@@ -1,7 +1,11 @@
 import type { OnDestroy, OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { StateExport, StateHistoryCompound } from 'digital-fuesim-manv-shared';
+import {
+    cloneDeepMutable,
+    StateExport,
+    StateHistoryCompound,
+} from 'digital-fuesim-manv-shared';
 import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
@@ -69,12 +73,12 @@ export class ExerciseComponent implements OnInit, OnDestroy {
         const blob = new Blob([
             JSON.stringify(
                 new StateExport(
-                    currentState,
+                    cloneDeepMutable(currentState),
                     new StateHistoryCompound(
                         history.actionsWrappers.map(
                             (actionWrapper) => actionWrapper.action
                         ),
-                        history.initialState
+                        cloneDeepMutable(history.initialState)
                     )
                 )
             ),
@@ -84,7 +88,9 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
     public exportExerciseState() {
         const currentState = getStateSnapshot(this.store).exercise;
-        const blob = new Blob([JSON.stringify(new StateExport(currentState))]);
+        const blob = new Blob([
+            JSON.stringify(new StateExport(cloneDeepMutable(currentState))),
+        ]);
         saveBlob(blob, `exercise-state-${currentState.participantId}.json`);
     }
 
