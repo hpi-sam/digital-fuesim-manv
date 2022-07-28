@@ -6,10 +6,12 @@ import {
     IsOptional,
     IsString,
     IsUUID,
+    Max,
     Min,
     ValidateNested,
 } from 'class-validator';
 import { materialTemplateMap } from '../data/default-state/material-templates';
+import { maxGlobalThreshold } from '../state-helpers/max-global-threshold';
 import { uuid, UUID, UUIDSet, uuidValidationOptions } from '../utils';
 import { CanCaterFor, getCreate, ImageProperties, Position } from './utils';
 import type { MaterialType } from './utils/material-type';
@@ -32,12 +34,26 @@ export class Material {
     @Type(() => CanCaterFor)
     public readonly canCaterFor: CanCaterFor;
 
+    /**
+     * when the last personnel or material matching {@link maxGlobalThreshold}
+     * has a smaller {@link specificThreshold} or {@link generalThreshold}
+     * than {@link maxGlobalThreshold}, than update {@link maxGlobalThreshold}.
+     * Important you need a migration when updating {@link maxGlobalThreshold}!
+     */
     @IsNumber()
     @Min(0)
+    @Max(maxGlobalThreshold)
     public readonly specificThreshold: number;
 
+    /**
+     * when the last personnel or material matching {@link maxGlobalThreshold}
+     * has a smaller {@link specificThreshold} or {@link generalThreshold}
+     * than {@link maxGlobalThreshold}, than update {@link maxGlobalThreshold}.
+     * Important you need a migration when updating {@link maxGlobalThreshold}!
+     */
     @IsNumber()
     @Min(0)
+    @Max(maxGlobalThreshold)
     public readonly generalThreshold: number;
 
     @IsBoolean()

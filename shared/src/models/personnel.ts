@@ -6,10 +6,12 @@ import {
     IsOptional,
     IsString,
     IsUUID,
+    Max,
     Min,
     ValidateNested,
 } from 'class-validator';
 import { personnelTemplateMap } from '../data/default-state/personnel-templates';
+import { maxGlobalThreshold } from '../state-helpers/max-global-threshold';
 import { UUID, UUIDSet, uuid, uuidValidationOptions } from '../utils';
 import {
     CanCaterFor,
@@ -42,12 +44,26 @@ export class Personnel {
     @Type(() => CanCaterFor)
     public readonly canCaterFor: CanCaterFor;
 
+    /**
+     * when the last personnel or material matching {@link maxGlobalThreshold}
+     * has a smaller {@link specificThreshold} or {@link generalThreshold}
+     * than {@link maxGlobalThreshold}, than update {@link maxGlobalThreshold}.
+     * Important you need a migration when updating {@link maxGlobalThreshold}!
+     */
     @IsNumber()
     @Min(0)
+    @Max(maxGlobalThreshold)
     public readonly specificThreshold: number;
 
+    /**
+     * when the last personnel or material matching {@link maxGlobalThreshold}
+     * has a smaller {@link specificThreshold} or {@link generalThreshold}
+     * than {@link maxGlobalThreshold}, than update {@link maxGlobalThreshold}.
+     * Important you need a migration when updating {@link maxGlobalThreshold}!
+     */
     @IsNumber()
     @Min(0)
+    @Max(maxGlobalThreshold)
     public readonly generalThreshold: number;
 
     @IsBoolean()

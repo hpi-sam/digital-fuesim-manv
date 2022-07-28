@@ -6,8 +6,7 @@ import type { Mutable, UUIDSet } from '../../../utils';
 import type { DataStructure } from '../../../models/utils/datastructure';
 import { DataStructureInState } from '../../../models/utils/datastructure';
 import { ReducerError } from '../../reducer-error';
-import { personnelTemplateMap } from '../../../data/default-state/personnel-templates';
-import { materialTemplateMap } from '../../../data/default-state/material-templates';
+import { maxGlobalThreshold } from '../../../state-helpers/max-global-threshold';
 import { getElement } from './get-element';
 
 interface CatersFor {
@@ -15,41 +14,6 @@ interface CatersFor {
     yellow: number;
     green: number;
 }
-
-function setMaximumThreshold() {
-    let result = 0;
-
-    // TODO: maybe make this independent of the personnelTemplateMap
-    // making this a global number, using Math.max() whenever adding a personnel or material to an exercise,
-    // could stay too high when all personnel of a specific type is delted from map
-    // right now personnelTemplates are not exported or imported, but already existing personnel/materials thresholds could be changed in import/export
-    // global number would have to be updated when importing
-
-    // going through every template and getting the highest specificThreshold
-    for (const personnelTemplate of Object.values(personnelTemplateMap)) {
-        result = Math.max(result, personnelTemplate.specificThreshold);
-    }
-
-    for (const materialTemplate of Object.values(materialTemplateMap)) {
-        result = Math.max(result, materialTemplate.specificThreshold);
-    }
-
-    // going through every template and getting the highest generalThreshold
-    for (const personnelTemplate of Object.values(personnelTemplateMap)) {
-        result = Math.max(result, personnelTemplate.generalThreshold);
-    }
-
-    for (const materialTemplate of Object.values(materialTemplateMap)) {
-        result = Math.max(result, materialTemplate.generalThreshold);
-    }
-
-    return result;
-}
-
-/**
- * Maximum distance of any personnel or material to treat a patient
- */
-const maximumThreshold = setMaximumThreshold();
 
 /**
  * checking wether a material or personnel could check for a patient with {@link status} if already {@link catersFor} x patients
@@ -210,7 +174,7 @@ function calculateCateringForDataStructure(
         DataStructureInState.findAllElementsInCircle(
             dataStructure,
             position,
-            maximumThreshold
+            maxGlobalThreshold
         ).filter((elementData) => !elementIdsToBeSkipped[elementData.id]);
 
     for (const datastructureElement of elementsInGeneralThreshold) {
