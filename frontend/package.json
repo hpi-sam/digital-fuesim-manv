@@ -20,8 +20,8 @@
     },
     "private": true,
     "engines": {
-        "node": ">=16",
-        "npm": ">=7"
+        "node": ">=18",
+        "npm": ">=8"
     },
     "dependencies": {
         "@angular/animations": "~14.1.0",
@@ -60,7 +60,7 @@
         "@types/chart.js": "^2.9.37",
         "@types/jest": "^28.1.6",
         "@types/lodash-es": "^4.17.6",
-        "@types/node": "^16",
+        "@types/node": "^18",
         "@typescript-eslint/eslint-plugin": "5.31.0",
         "@typescript-eslint/parser": "5.31.0",
         "cypress": "^10.3.1",
