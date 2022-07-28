@@ -25,7 +25,6 @@ import type {
     Viewport,
 } from './models';
 import { ExerciseConfiguration } from './models/exercise-configuration';
-import { StatisticsEntry } from './models/statistics-entry';
 import {
     EocLogEntry,
     StatusHistoryEntry,
@@ -95,10 +94,6 @@ export class ExerciseState {
     public readonly statusHistory: readonly StatusHistoryEntry[] = [];
     @IsString()
     public readonly participantId: string = '';
-    @IsArray()
-    @ValidateNested()
-    @Type(() => StatisticsEntry)
-    public readonly statistics: readonly StatisticsEntry[] = [];
     @ValidateNested()
     @Type(() => ExerciseConfiguration)
     public readonly configuration = ExerciseConfiguration.create();
@@ -126,5 +121,5 @@ export class ExerciseState {
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 4;
+    static readonly currentStateVersion = 5;
 }
