@@ -5,6 +5,7 @@ import { AlarmGroup, AlarmGroupVehicle } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectVehicleTemplates } from 'src/app/state/exercise/exercise.selectors';
+import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 @Component({
     selector: 'app-alarm-group-item',
@@ -23,10 +24,7 @@ export class AlarmGroupItemComponent {
         selectVehicleTemplates
     );
 
-    public renameAlarmGroup(name: string | null) {
-        if (name === null) {
-            return;
-        }
+    public renameAlarmGroup(name: string) {
         this.apiService.proposeAction(
             {
                 type: '[AlarmGroup] Rename AlarmGroup',
@@ -54,9 +52,13 @@ export class AlarmGroupItemComponent {
 
     public editAlarmGroupVehicle(
         alarmGroupVehicleId: UUID,
-        time: number | null
+        time: number | null,
+        name: string | null
     ) {
         if (time === null) {
+            return;
+        }
+        if (name === null) {
             return;
         }
         this.apiService.proposeAction(
@@ -65,18 +67,25 @@ export class AlarmGroupItemComponent {
                 alarmGroupId: this.alarmGroup.id,
                 alarmGroupVehicleId,
                 time,
+                name,
             },
             true
         );
     }
 
     public createAlarmGroupVehicle(vehicleTemplateId: UUID) {
+        const vehicleTemplate = getStateSnapshot(
+            this.store
+        ).exercise.vehicleTemplates.find(
+            (_vehicleTemplate) => _vehicleTemplate.id === vehicleTemplateId
+        )!;
         this.apiService.proposeAction({
             type: '[AlarmGroup] Add AlarmGroupVehicle',
             alarmGroupId: this.alarmGroup.id,
             alarmGroupVehicle: AlarmGroupVehicle.create(
                 vehicleTemplateId,
-                5 * 60 * 1000
+                5 * 60 * 1000,
+                vehicleTemplate.name
             ),
         });
     }

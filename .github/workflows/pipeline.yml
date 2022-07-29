@@ -46,7 +46,7 @@ jobs:
               run: cd shared && npm run build && cd ..
 
     lint:
-        timeout-minutes: 2
+        timeout-minutes: 3
         runs-on: ${{ matrix.os }}
 
         needs: build

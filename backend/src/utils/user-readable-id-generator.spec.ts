@@ -38,7 +38,7 @@ describe('user-readable-id-generator', () => {
         });
 
         it('should allow another id after freeing', () => {
-            UserReadableIdGenerator.freeId(generatedIds[0]);
+            UserReadableIdGenerator.freeId(generatedIds[0]!);
             expect(() => {
                 UserReadableIdGenerator.generateId();
             }).not.toThrow(RangeError);
@@ -47,12 +47,12 @@ describe('user-readable-id-generator', () => {
 
     describe('different length', () => {
         beforeEach(() => {
-            UserReadableIdGenerator.freeId(generatedIds[0]);
+            UserReadableIdGenerator.freeId(generatedIds[0]!);
         });
 
         it('succeeds creating an id longer than 6', () => {
             expect(UserReadableIdGenerator.generateId(8).length).toBe(8);
-            UserReadableIdGenerator.freeId(generatedIds[1]);
+            UserReadableIdGenerator.freeId(generatedIds[1]!);
             expect(UserReadableIdGenerator.generateId(50).length).toBe(50);
         });
 

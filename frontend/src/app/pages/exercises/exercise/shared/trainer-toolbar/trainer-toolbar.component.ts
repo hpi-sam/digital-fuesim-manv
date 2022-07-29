@@ -6,14 +6,18 @@ import { ApiService } from 'src/app/core/api.service';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectExerciseStatus } from 'src/app/state/exercise/exercise.selectors';
+import {
+    getSelectClient,
+    selectExerciseStatus,
+} from 'src/app/state/exercise/exercise.selectors';
+import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
+import { openEmergencyOperationsCenterModal } from '../emergency-operations-center/open-emergency-operations-center-modal';
 import { openExerciseSettingsModal } from '../exercise-settings/open-exercise-settings-modal';
 import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercise-statistics-modal';
-import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
-import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 import { openHospitalEditorModal } from '../hospital-editor/hospital-editor-modal';
-import { openEmergencyOperationsCenterModal } from '../emergency-operations-center/open-emergency-operations-center-modal';
+import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
 
 @Component({
     selector: 'app-trainer-toolbar',
@@ -61,16 +65,55 @@ export class TrainerToolbarComponent {
     }
 
     public async pauseExercise() {
-        this.apiService.proposeAction({
+        const response = await this.apiService.proposeAction({
             type: '[Exercise] Pause',
-            timestamp: Date.now(),
         });
+        if (response.success) {
+            this.sendLogAction(
+                `Übung wurde pausiert. (${this.getCurrentDate()})`
+            );
+        }
     }
 
     public async startExercise() {
-        this.apiService.proposeAction({
+        if (
+            getStateSnapshot(this.store).exercise.currentStatus === 'notStarted'
+        ) {
+            const confirmStart = await this.confirmationModalService.confirm({
+                title: 'Übung starten',
+                description: 'Möchten Sie die Übung wirklich starten?',
+            });
+            if (!confirmStart) {
+                return;
+            }
+        }
+        const response = await this.apiService.proposeAction({
             type: '[Exercise] Start',
-            timestamp: Date.now(),
+        });
+        if (response.success) {
+            this.sendLogAction(
+                `Übung wurde gestartet. (${this.getCurrentDate()})`
+            );
+        }
+    }
+
+    private sendLogAction(message: string) {
+        this.apiService.proposeAction({
+            type: '[Emergency Operation Center] Add Log Entry',
+            name: getSelectClient(this.apiService.ownClientId!)(
+                getStateSnapshot(this.store)
+            ).name,
+            message,
+        });
+    }
+
+    private getCurrentDate(): string {
+        return new Date().toLocaleDateString('de-De', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
         });
     }
 

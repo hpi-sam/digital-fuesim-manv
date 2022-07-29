@@ -1,10 +1,31 @@
-# digital-fuesim-manv
+# Digitale FüSim MANV
 
-The official code for BP2021HG1
+This is the codebase for a digital implementation of the "FüSim MANV" (Führungssimulation Massenanfall von Verletzen), a German simulation system for training emergency medical services leadership personnel on how to manage [Mass Casualty Incidents](https://en.wikipedia.org/wiki/Mass-casualty_incident).
 
-You can find the (internal) documentation for this project [here](https://github.com/hpi-sam/BP2021HG1).
+**You can try it out at [https://fuesim-manv.de/](https://fuesim-manv.de/)**.
 
-The (internal) project-board is [here](https://github.com/orgs/hpi-sam/projects/4).
+![image](https://user-images.githubusercontent.com/18506183/172071147-24b9aabe-51ee-4105-a5a4-6cbf8063eece.png)
+_A screenshot of a part of an MCI exercise with initially ca. 50 patients at the Brandenburg Gate._
+
+The concept is as follows:
+
+-   A _trainer_ creates an exercise, which consists of _patients_, _vehicles_, _viewports_, _transferPoints_ and other objects placed on a map.
+-   _Participants_ can then join the exercise.
+-   The _trainer_ can restrict the participants to a specific _viewport_. The _participant_ cannot move out of this area.
+-   _Vehicles_ (containing _material_, _personnel_ and (sometimes) _patients_) can be transferred to other areas via _transferPoints_.
+-   After the exercise is started, _patients_ that are not adequately treated by _personnel_ and _material_ can deteriorate and die. The goal of the _participants_ is to prevent the _patients_ from dying and transport them to the _hospitals_. To do this effectively they have to communicate with each other (via real radio devices, or remote via third-party services) and make the right decisions.
+-   Afterward, the exercise can be evaluated via statistics and a "time-travel" feature.
+
+This simulation has been designed in cooperation with and with support from the [Federal Academy for Civil Protection and Civil Defence](https://www.bbk.bund.de/DE/Themen/Akademie-BABZ/akademie-babz_node.html) of the [Federal Office of Civil Protection and Disaster Assistance Germany](https://www.bbk.bund.de/DE/Home/home_node.html), who are the original copyright holders of the analog "FüSim MANV" simulation system, and the [Malteser Hilfsdienst e.V. Berlin](https://www.malteser-berlin.de/).
+
+The simulation is implemented as a web application with an Angular frontend and NodeJS backend.
+
+This project is currently developed as a [bachelor project](https://hpi.de/en/studies/before-your-studies/degree-programs/bachelor.html) at the [HPI](https://hpi.de/). You can find the official project website [here](https://hpi.de/teaching/bachelor-projects/digitales-fuehrungssimulationstraining.html).
+
+## Links for collaborators
+
+-   [(internal) documentation](https://github.com/hpi-sam/BP2021HG1)
+-   [(internal) project-board](https://github.com/orgs/hpi-sam/projects/4).
 
 ## Installation
 
@@ -24,7 +45,7 @@ The (internal) project-board is [here](https://github.com/orgs/hpi-sam/projects/
 ### Option 1
 
 If you are using [vscode](https://code.visualstudio.com/), you can run the [task](https://code.visualstudio.com/docs/editor/tasks) `Start all` to start everything in one go.
-Note that this _tries_ to start the database using `docker-compose`. In case this fails please start the database in another way (see [this section in the backend README](./backend/README.md#database)).
+Note that this _tries_ to start the database using `docker compose`. In case this fails please start the database in another way (see [this section in the backend README](./backend/README.md#database)).
 
 ### Option 2
 
@@ -37,12 +58,12 @@ Note that this _tries_ to start the database using `docker-compose`. In case thi
 
 You need to have [`docker`](https://www.docker.com/) installed.
 
-### With docker-compose (recommended)
+### With docker compose (recommended)
 
-1. [`docker-compose`](https://docs.docker.com/compose/) needs to be installed.
-2. Run `docker-compose up -d` in the root directory. This also starts the database. If you don't want to start the database run `docker-compose up -d digital-fuesim-manv` instead.
+1. [`docker compose`](https://docs.docker.com/compose/) needs to be installed. Note that, depending on your setup, you may use `docker-compose` instead of `docker compose`. In this case, just replace the space in the commands with a dash (`-`). For more information, see the [relevant section of the documentation](https://docs.docker.com/compose/#compose-v2-and-the-new-docker-compose-command).
+2. Run `docker compose up -d` in the root directory. This also starts the database. If you don't want to start the database run `docker compose up -d digital-fuesim-manv` instead.
 
-### Without docker-compose
+### Without docker compose
 
 1. Execute `docker run -p -d 80:80 digitalfuesimmanv/dfm`.
 
@@ -54,8 +75,8 @@ Note the database requirements depicted in [the installation section](#installat
 
 #### Option 1
 
-1. Uncomment the build section of [the docker-compose file](./docker-compose.yml).
-2. Run `docker-compose build`
+1. Uncomment the build section of [the docker compose file](./docker-compose.yml).
+2. Run `docker compose build`
 
 #### Option 2
 
@@ -73,7 +94,7 @@ Note the database requirements depicted in [the installation section](#installat
 
 -   We are using [git lfs](https://git-lfs.github.com/). You can see the file types that currently use git lfs in [.gitattributes](.gitattributes). If you add another binary (or very large) file type to the repository you should add it there too.
 -   To see the images stored in [git lfs](https://git-lfs.github.com/) in diff views in vscode we recommend running the following command once: `git config diff.lfs.textconv cat`.
--   We are using [prettier](https://prettier.io/) as our code formatter. Run it via `npm run prettier` in the root to format all files and make the CI happy. Please use the [vscode extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
+-   We are using [prettier](https://prettier.io/) as our code formatter. Run it via `npm run prettier` or `npm run prettier:windows` in the root to format all files and make the CI happy. Please use the [vscode extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
 -   We are using [eslint](https://eslint.org/) as our linter. Run it via `npm run lint:fix` in the root to lint (and auto fix if possible) all files. Please use the [vscode extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
 
 ## Debugging

@@ -19,19 +19,21 @@ import OlMap from 'ol/Map';
 import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import type { Observable } from 'rxjs';
-import { debounceTime, pairwise, startWith, Subject, takeUntil } from 'rxjs';
+import { combineLatest, pairwise, startWith, Subject, takeUntil } from 'rxjs';
 import type { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectRestrictedViewport,
     getSelectVisibleElements,
     selectCateringLines,
+    selectExerciseStatus,
     selectMapImages,
     selectTileMapProperties,
     selectTransferLines,
     selectViewports,
 } from 'src/app/state/exercise/exercise.selectors';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
@@ -49,7 +51,6 @@ import {
     ViewportFeatureManager,
 } from '../feature-managers/viewport-feature-manager';
 import type { FeatureManager } from './feature-manager';
-import { handleChanges } from './handle-changes';
 import { ModifyHelper } from './modify-helper';
 import type { OpenPopupOptions } from './popup-manager';
 import { TranslateHelper } from './translate-helper';
@@ -166,14 +167,8 @@ export class OlMapManager {
         TranslateHelper.registerTranslateEvents(viewportTranslate);
         ModifyHelper.registerModifyEvents(viewportModify);
 
-        if (this.apiService.getCurrentRole() === 'timeTravel') {
-            viewportTranslate.setActive(false);
-            translateInteraction.setActive(false);
-            viewportModify.setActive(false);
-        }
-
         const alwaysInteractions = [translateInteraction];
-        const interactions =
+        const customInteractions =
             this.apiService.getCurrentRole() === 'trainer'
                 ? [...alwaysInteractions, viewportTranslate, viewportModify]
                 : alwaysInteractions;
@@ -182,7 +177,8 @@ export class OlMapManager {
             interactions: defaultInteractions({
                 pinchRotate: false,
                 altShiftDragRotate: false,
-            }).extend(interactions),
+                keyboard: true,
+            }).extend(customInteractions),
             // We use Angular buttons instead
             controls: [],
             target: this.openLayersContainer,
@@ -344,6 +340,35 @@ export class OlMapManager {
         this.registerDropHandler(translateInteraction);
         this.registerDropHandler(viewportTranslate);
         this.registerViewportRestriction();
+
+        // Register handlers that disable or enable certain interactions
+        combineLatest([
+            this.store.select(selectExerciseStatus),
+            this.apiService.currentRole$,
+        ])
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(([status, currentRole]) => {
+                const showPausedOverlay =
+                    status !== 'running' && currentRole === 'participant';
+                customInteractions.forEach((interaction) => {
+                    interaction.setActive(
+                        !showPausedOverlay && currentRole !== 'timeTravel'
+                    );
+                });
+                this.setPopupsEnabled(!showPausedOverlay);
+                this.getOlViewportElement().style.filter = showPausedOverlay
+                    ? 'brightness(50%)'
+                    : '';
+            });
+    }
+
+    private popupsEnabled = true;
+    private setPopupsEnabled(enabled: boolean) {
+        this.popupsEnabled = enabled;
+        if (!enabled) {
+            // Close all open popups
+            this.changePopup$.next(undefined);
+        }
     }
 
     private registerViewportRestriction() {
@@ -398,34 +423,30 @@ export class OlMapManager {
         featureManager.togglePopup$?.subscribe(this.changePopup$);
         // Propagate the changes on an element to the featureManager
         elementDictionary$
-            .pipe(
-                // TODO: this is workaround for not emitting synchronously
-                // currently, the setState of the optimistic update and the actions that are reapplied each bring the state to synchronously emit
-                debounceTime(0),
-                startWith({}),
-                pairwise(),
-                takeUntil(this.destroy$)
-            )
+            .pipe(startWith({}), pairwise(), takeUntil(this.destroy$))
             .subscribe(([oldElementDictionary, newElementDictionary]) => {
                 // run outside angular zone for better performance
                 this.ngZone.runOutsideAngular(() => {
-                    handleChanges(
-                        oldElementDictionary,
-                        newElementDictionary,
-                        (element) => featureManager.onElementCreated(element),
-                        (element) => featureManager.onElementDeleted(element),
-                        (oldElement, newElement) =>
+                    handleChanges(oldElementDictionary, newElementDictionary, {
+                        createHandler: (element) =>
+                            featureManager.onElementCreated(element),
+                        deleteHandler: (element) =>
+                            featureManager.onElementDeleted(element),
+                        changeHandler: (oldElement, newElement) =>
                             featureManager.onElementChanged(
                                 oldElement,
                                 newElement
-                            )
-                    );
+                            ),
+                    });
                 });
             });
     }
 
     private registerPopupTriggers(translateInteraction: Translate) {
         this.olMap.on('singleclick', (event) => {
+            if (!this.popupsEnabled) {
+                return;
+            }
             this.olMap.forEachFeatureAtPixel(
                 event.pixel,
                 (feature, layer) => {
@@ -513,6 +534,12 @@ export class OlMapManager {
             renderBuffer,
             source: new VectorSource<LayerGeometry>(),
         });
+    }
+
+    private getOlViewportElement(): HTMLElement {
+        return this.olMap
+            .getTargetElement()
+            .querySelectorAll('.ol-viewport')[0] as HTMLElement;
     }
 
     /**

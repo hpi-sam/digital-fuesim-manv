@@ -1,3 +1,4 @@
+import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { AlarmGroup, UUID } from 'digital-fuesim-manv-shared';
@@ -5,10 +6,13 @@ import {
     AlarmGroupStartPoint,
     createVehicleParameters,
 } from 'digital-fuesim-manv-shared';
+import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
+    getSelectClient,
+    getSelectTransferPoint,
     getSelectVehicleTemplate,
     selectAlarmGroups,
     selectTransferPoints,
@@ -23,7 +27,9 @@ let targetTransferPointId: UUID | undefined;
     templateUrl: './send-alarm-group-interface.component.html',
     styleUrls: ['./send-alarm-group-interface.component.scss'],
 })
-export class SendAlarmGroupInterfaceComponent {
+export class SendAlarmGroupInterfaceComponent implements OnDestroy {
+    private readonly destroy$ = new Subject<void>();
+
     public readonly alarmGroups$ = this.store.select(selectAlarmGroups);
 
     public readonly transferPoints$ = this.store.select(selectTransferPoints);
@@ -32,7 +38,19 @@ export class SendAlarmGroupInterfaceComponent {
         private readonly apiService: ApiService,
         private readonly store: Store<AppState>,
         private readonly messageService: MessageService
-    ) {}
+    ) {
+        // reset chosen targetTransferPoint if it gets deleted
+        this.transferPoints$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((transferPoints) => {
+                if (
+                    targetTransferPointId &&
+                    !transferPoints[targetTransferPointId]
+                ) {
+                    this.targetTransferPointId = undefined;
+                }
+            });
+    }
 
     public get targetTransferPointId() {
         return targetTransferPointId;
@@ -42,6 +60,9 @@ export class SendAlarmGroupInterfaceComponent {
     }
 
     public sendAlarmGroup(alarmGroup: AlarmGroup) {
+        const targetTransferPoint = getSelectTransferPoint(
+            this.targetTransferPointId!
+        )(getStateSnapshot(this.store));
         // TODO: Refactor this into one action (uuid generation is currently not possible in the reducer)
         Promise.all(
             Object.values(alarmGroup.alarmGroupVehicles).flatMap(
@@ -50,8 +71,10 @@ export class SendAlarmGroupInterfaceComponent {
                         alarmGroupVehicle.vehicleTemplateId
                     )(getStateSnapshot(this.store));
 
-                    const vehicleParameters =
-                        createVehicleParameters(vehicleTemplate);
+                    const vehicleParameters = createVehicleParameters({
+                        ...vehicleTemplate,
+                        name: alarmGroupVehicle.name,
+                    });
 
                     return [
                         this.apiService.proposeAction({
@@ -68,7 +91,7 @@ export class SendAlarmGroupInterfaceComponent {
                                 alarmGroup.name,
                                 alarmGroupVehicle.time
                             ),
-                            targetTransferPointId: targetTransferPointId!,
+                            targetTransferPointId: targetTransferPoint.id,
                         }),
                     ];
                 }
@@ -80,6 +103,17 @@ export class SendAlarmGroupInterfaceComponent {
                     color: 'success',
                 });
             }
+            this.apiService.proposeAction({
+                type: '[Emergency Operation Center] Add Log Entry',
+                message: `Alarmgruppe ${alarmGroup.name} wurde alarmiert zu ${targetTransferPoint.externalName}!`,
+                name: getSelectClient(this.apiService.ownClientId!)(
+                    getStateSnapshot(this.store)
+                ).name,
+            });
         });
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
     }
 }

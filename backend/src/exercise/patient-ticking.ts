@@ -29,6 +29,10 @@ interface PatientTickResult {
      * The new state time of the patient
      */
     nextStateTime: number;
+    /**
+     * The time a patient was treated overall
+     */
+    treatmentTime: number;
 }
 
 /**
@@ -46,6 +50,10 @@ export function patientTick(
             // Only look at patients that are alive and have a position, i.e. are not in a vehicle
             .filter((patient) => isAlive(patient.health) && patient.position)
             .map((patient) => {
+                // update the time a patient is being treated, to check for pretriage later
+                const treatmentTime = patient.isBeingTreated
+                    ? patient.treatmentTime + patientTickInterval
+                    : patient.treatmentTime;
                 const nextHealthPoints = getNextPatientHealthPoints(
                     patient,
                     getDedicatedResources(state, patient),
@@ -62,6 +70,7 @@ export function patientTick(
                     nextHealthPoints,
                     nextStateId,
                     nextStateTime,
+                    treatmentTime,
                 };
             })
     );
@@ -136,7 +145,7 @@ function getNextPatientHealthPoints(
     const rettSan = treatedBy.rettSan;
     // TODO: Sans should be able to treat patients too
     const functionParameters =
-        patient.healthStates[patient.currentHealthStateId].functionParameters;
+        patient.healthStates[patient.currentHealthStateId]!.functionParameters;
     // To do anything the personnel needs material
     // TODO: But a personnel should probably be able to treat a patient a bit without material - e.g. free airways, just press something on a strongly bleeding wound, etc.
     // -> find a better heuristic
@@ -177,7 +186,7 @@ function getNextPatientHealthPoints(
  * @returns The next {@link PatientHealthState} id.
  */
 function getNextStateId(patient: Patient) {
-    const currentState = patient.healthStates[patient.currentHealthStateId];
+    const currentState = patient.healthStates[patient.currentHealthStateId]!;
     for (const nextConditions of currentState.nextStateConditions) {
         if (
             (nextConditions.earliestTime === undefined ||

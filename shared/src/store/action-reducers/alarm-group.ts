@@ -9,7 +9,7 @@ import {
 import { AlarmGroup } from '../../models/alarm-group';
 import { AlarmGroupVehicle } from '../../models/utils/alarm-group-vehicle';
 import type { Mutable } from '../../utils';
-import { UUID, uuidValidationOptions } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { getElement } from './utils/get-element';
@@ -64,6 +64,9 @@ export class EditAlarmGroupVehicleAction implements Action {
     @IsNumber()
     @Min(0)
     public readonly time!: number;
+
+    @IsString()
+    public readonly name!: string;
 }
 export class RemoveAlarmGroupVehicleAction implements Action {
     @IsString()
@@ -80,7 +83,8 @@ export namespace AlarmGroupActionReducers {
     export const addAlarmGroup: ActionReducer<AddAlarmGroupAction> = {
         action: AddAlarmGroupAction,
         reducer: (draftState, { alarmGroup }) => {
-            draftState.alarmGroups[alarmGroup.id] = alarmGroup;
+            draftState.alarmGroups[alarmGroup.id] =
+                cloneDeepMutable(alarmGroup);
             return draftState;
         },
         rights: 'trainer',
@@ -120,7 +124,7 @@ export namespace AlarmGroupActionReducers {
                     alarmGroupId
                 );
                 alarmGroup.alarmGroupVehicles[alarmGroupVehicle.id] =
-                    alarmGroupVehicle;
+                    cloneDeepMutable(alarmGroupVehicle);
                 return draftState;
             },
             rights: 'trainer',
@@ -131,15 +135,19 @@ export namespace AlarmGroupActionReducers {
             action: EditAlarmGroupVehicleAction,
             reducer: (
                 draftState,
-                { alarmGroupId, alarmGroupVehicleId, time }
+                { alarmGroupId, alarmGroupVehicleId, time, name }
             ) => {
                 const alarmGroup = getElement(
                     draftState,
                     'alarmGroups',
                     alarmGroupId
                 );
-                getAlarmGroupVehicle(alarmGroup, alarmGroupVehicleId).time =
-                    time;
+                const alarmGroupVehicle = getAlarmGroupVehicle(
+                    alarmGroup,
+                    alarmGroupVehicleId
+                );
+                alarmGroupVehicle.time = time;
+                alarmGroupVehicle.name = name;
                 return draftState;
             },
             rights: 'trainer',

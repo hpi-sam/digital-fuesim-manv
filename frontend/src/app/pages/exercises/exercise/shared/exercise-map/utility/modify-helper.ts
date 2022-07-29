@@ -5,7 +5,7 @@ import type { LineString } from 'ol/geom';
 import type { Modify } from 'ol/interaction';
 
 function coordinateToPosition(coordinate: Coordinate): Position {
-    return Position.create(coordinate[0], coordinate[1]);
+    return Position.create(coordinate[0]!, coordinate[1]!);
 }
 
 export type CornerName = 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight';
@@ -59,12 +59,18 @@ export class ModifyHelper<T extends LineString = LineString> {
                 feature.dispatchEvent(event);
                 const featureGeometry = feature.getGeometry() as T;
                 const coordinates = featureGeometry.getCoordinates();
+                // We need at least 4 coordinates
+                if (coordinates.length < 4) {
+                    throw new Error(
+                        `Got unexpected short coordinates array: ${coordinates}`
+                    );
+                }
                 const mousePosition = event.mapBrowserEvent.coordinate;
                 const corner = getNearestCoordinateName(mousePosition, {
-                    topLeft: coordinates[0],
-                    topRight: coordinates[1],
-                    bottomRight: coordinates[2],
-                    bottomLeft: coordinates[3],
+                    topLeft: coordinates[0]!,
+                    topRight: coordinates[1]!,
+                    bottomRight: coordinates[2]!,
+                    bottomLeft: coordinates[3]!,
                 });
                 const modifyGeometry: ModifyGeometry = {
                     // We need to clone the geometry to be able to properly resize it
@@ -99,7 +105,7 @@ export class ModifyHelper<T extends LineString = LineString> {
             const coordinates = modifyGeometry.geometry.getCoordinates();
             callback(
                 coordinates.map((coordinate) =>
-                    Position.create(coordinate[0], coordinate[1])
+                    Position.create(coordinate[0]!, coordinate[1]!)
                 )
             );
         });

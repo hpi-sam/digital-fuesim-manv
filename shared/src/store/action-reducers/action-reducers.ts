@@ -1,7 +1,7 @@
 import { AlarmGroupActionReducers } from './alarm-group';
 import { ClientActionReducers } from './client';
 import { ExerciseActionReducers } from './exercise';
-import { ExerciseSettingsActionReducers } from './exercise-settings';
+import { ConfigurationActionReducers } from './configuration';
 import { HospitalActionReducers } from './hospital';
 import { MapImageTemplatesActionReducers } from './map-image-templates';
 import { MapImagesActionReducers } from './map-images';
@@ -12,6 +12,7 @@ import { TransferActionReducers } from './transfer';
 import { TransferPointActionReducers } from './transfer-point';
 import { VehicleActionReducers } from './vehicle';
 import { ViewportActionReducers } from './viewport';
+import { EmergencyOperationCenterActionReducers } from './emergency-operation-center';
 
 /**
  * All action reducers of the exercise must be registered here
@@ -26,11 +27,12 @@ const actionReducers = {
     ...VehicleActionReducers,
     ...ViewportActionReducers,
     ...TransferPointActionReducers,
-    ...ExerciseSettingsActionReducers,
+    ...ConfigurationActionReducers,
     ...AlarmGroupActionReducers,
     ...MapImageTemplatesActionReducers,
     ...TransferActionReducers,
     ...HospitalActionReducers,
+    ...EmergencyOperationCenterActionReducers,
 };
 
 type ExerciseActionReducer = typeof actionReducers[keyof typeof actionReducers];

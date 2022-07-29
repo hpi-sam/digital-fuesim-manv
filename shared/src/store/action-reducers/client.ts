@@ -7,7 +7,7 @@ import {
     IsBoolean,
 } from 'class-validator';
 import { Client } from '../../models';
-import { uuidValidationOptions, UUID } from '../../utils';
+import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
 
@@ -49,7 +49,7 @@ export namespace ClientActionReducers {
     export const addClient: ActionReducer<AddClientAction> = {
         action: AddClientAction,
         reducer: (draftState, { client }) => {
-            draftState.clients[client.id] = client;
+            draftState.clients[client.id] = cloneDeepMutable(client);
             return draftState;
         },
         rights: 'server',

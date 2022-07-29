@@ -1,10 +1,15 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
-import { Position } from '../../models/utils';
+import { PatientStatus, Position } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
-import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
+import {
+    cloneDeepMutable,
+    StrictObject,
+    UUID,
+    uuidValidationOptions,
+} from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { calculateTreatments } from './utils/calculate-treatments';
@@ -44,12 +49,23 @@ export class RemovePatientAction implements Action {
     public readonly patientId!: UUID;
 }
 
+export class SetVisibleStatusAction implements Action {
+    @IsString()
+    public readonly type = '[Patient] Set Visible Status';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly patientId!: UUID;
+
+    @IsString()
+    public readonly patientStatus!: PatientStatus;
+}
+
 export namespace PatientActionReducers {
     export const addPatient: ActionReducer<AddPatientAction> = {
         action: AddPatientAction,
         reducer: (draftState, { patient }) => {
             if (
-                Object.entries(patient.healthStates).some(
+                StrictObject.entries(patient.healthStates).some(
                     ([id, healthState]) => healthState.id !== id
                 )
             ) {
@@ -57,7 +73,7 @@ export namespace PatientActionReducers {
                     "Not all health state's ids match their key id"
                 );
             }
-            Object.values(patient.healthStates).forEach((healthState) => {
+            StrictObject.values(patient.healthStates).forEach((healthState) => {
                 healthState.nextStateConditions.forEach(
                     (nextStateCondition) => {
                         if (
@@ -90,7 +106,7 @@ export namespace PatientActionReducers {
         action: MovePatientAction,
         reducer: (draftState, { patientId, targetPosition }) => {
             const patient = getElement(draftState, 'patients', patientId);
-            patient.position = targetPosition;
+            patient.position = cloneDeepMutable(targetPosition);
             calculateTreatments(draftState);
             return draftState;
         },
@@ -106,5 +122,15 @@ export namespace PatientActionReducers {
             return draftState;
         },
         rights: 'trainer',
+    };
+
+    export const setVisibleStatus: ActionReducer<SetVisibleStatusAction> = {
+        action: SetVisibleStatusAction,
+        reducer: (draftState, { patientId, patientStatus }) => {
+            const patient = getElement(draftState, 'patients', patientId);
+            patient.pretriageStatus = patientStatus;
+            return draftState;
+        },
+        rights: 'participant',
     };
 }

@@ -206,14 +206,19 @@ export abstract class ElementFeatureManager<
 
     public getCenter(feature: ElementFeature): Coordinate {
         const coordinates = feature.getGeometry()!.getCoordinates();
-        return isCoordinateArray(coordinates)
-            ? [
-                  coordinates[0][0] +
-                      (coordinates[2][0] - coordinates[0][0]) / 2,
-                  coordinates[0][1] +
-                      (coordinates[2][1] - coordinates[0][1]) / 2,
-              ]
-            : coordinates;
+        if (!isCoordinateArray(coordinates)) {
+            return coordinates;
+        }
+        // We need index 0 and 2 for the center
+        if (coordinates.length < 3) {
+            throw new Error(`Unexpectedly short array: ${coordinates}`);
+        }
+        return [
+            coordinates[0]![0]! +
+                (coordinates[2]![0]! - coordinates[0]![0]!) / 2,
+            coordinates[0]![1]! +
+                (coordinates[2]![1]! - coordinates[0]![1]!) / 2,
+        ];
     }
 
     public onFeatureClicked(

@@ -88,7 +88,44 @@
                     </div>
                 </li>
                 <li class="list-group-item">
-                    <h5>Patienten</h5>
+                    <h5>
+                        Patienten
+                        <div
+                            ngbDropdown
+                            placement="bottom-end"
+                            class="d-inline-block float-end"
+                        >
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-secondary mb-2"
+                                style="min-width: 100px"
+                                ngbDropdownToggle
+                            >
+                                <app-patient-status-badge
+                                    [status]="colorCodeMap[currentCategory]"
+                                >
+                                </app-patient-status-badge>
+                            </button>
+                            <div
+                                ngbDropdownMenu
+                                class="position-absolute"
+                                style="min-width: 100px"
+                            >
+                                <button
+                                    *ngFor="let category of categories"
+                                    ngbDropdownItem
+                                    (click)="setCurrentCategory(category)"
+                                    class="btn-outline-secondary"
+                                >
+                                    <app-patient-status-badge
+                                        [status]="colorCodeMap[category]"
+                                        class="float-end"
+                                    >
+                                    </app-patient-status-badge>
+                                </button>
+                            </div>
+                        </div>
+                    </h5>
                     <!-- 20px more height than the sum of the children to have room for the scrollbar -->
                     <div
                         class="overflow-auto w-100 d-flex flex-wrap"
@@ -101,34 +138,42 @@
                     >
                         <div
                             *ngFor="
-                                let patientTemplate of patientTemplates$ | async
-                            "
-                            class="d-inline-block card text-center flex-shrink-0"
-                            style="
-                                width: 10rem;
-                                text-overflow: ellipsis;
-                                height: 110px;
-                            "
-                            (mousedown)="
-                                dragElementService.onMouseDown($event, {
-                                    type: 'patient',
-                                    template: patientTemplate
-                                })
+                                let patientCategory of patientCategories$
+                                    | async
                             "
                         >
                             <div
-                                class="preview-image-container small-image card-img-top"
+                                *ngIf="
+                                    patientCategory.name.firstField
+                                        .colorCode === currentCategory
+                                "
+                                class="d-inline-block card text-center flex-shrink-0"
+                                style="
+                                    width: 10rem;
+                                    text-overflow: ellipsis;
+                                    height: 110px;
+                                "
+                                (mousedown)="
+                                    dragElementService.onMouseDown($event, {
+                                        type: 'patient',
+                                        template: patientCategory
+                                    })
+                                "
                             >
-                                <img [src]="patientTemplate.image.url" />
-                            </div>
-                            <div
-                                [title]="patientTemplate.name"
-                                class="p-1 text-wrap lh-1"
-                                style="overflow: auto"
-                            >
-                                <small>
-                                    {{ patientTemplate.name }}
-                                </small>
+                                <div
+                                    class="preview-image-container small-image card-img-top"
+                                >
+                                    <img [src]="patientCategory.image.url" />
+                                </div>
+                                <div
+                                    class="p-1 text-wrap lh-1 fs-5"
+                                    style="overflow: auto"
+                                >
+                                    <app-patient-status-display
+                                        [patientStatus]="patientCategory.name"
+                                    >
+                                    </app-patient-status-display>
+                                </div>
                             </div>
                         </div>
                     </div>

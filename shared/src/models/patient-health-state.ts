@@ -24,15 +24,15 @@ export class FunctionParameters {
     @IsNumber()
     public readonly notarztModifier: number;
     /**
-     * Every second the health points are increased by this value multiplied by the weighted number of rettSan personnel
-     */
-    @IsNumber()
-    public readonly rettSanModifier: number;
-    /**
      * Every second the health points are increased by this value multiplied by the weighted number of notSan personnel
      */
     @IsNumber()
     public readonly notSanModifier: number;
+    /**
+     * Every second the health points are increased by this value multiplied by the weighted number of rettSan personnel
+     */
+    @IsNumber()
+    public readonly rettSanModifier: number;
 
     /**
      * @deprecated Use {@link create} instead
@@ -40,8 +40,8 @@ export class FunctionParameters {
     constructor(
         constantChange: number,
         notarztModifier: number,
-        rettSanModifier: number,
-        notSanModifier: number
+        notSanModifier: number,
+        rettSanModifier: number
     ) {
         this.constantChange = constantChange;
         this.notarztModifier = notarztModifier;

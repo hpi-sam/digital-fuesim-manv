@@ -17,7 +17,7 @@ import type { FeatureManager } from '../utility/feature-manager';
 
 function calculateTopRightViewPoint(view: View) {
     const extent = getTopRight(view.calculateExtent());
-    return new Point([extent[0], extent[1]]);
+    return new Point([extent[0]!, extent[1]!]);
 }
 
 export class DeleteFeatureManager implements FeatureManager<Feature<Point>> {

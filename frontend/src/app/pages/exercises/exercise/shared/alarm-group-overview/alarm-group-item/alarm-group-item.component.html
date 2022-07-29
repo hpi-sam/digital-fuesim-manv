@@ -2,7 +2,7 @@
     <input
         #nameInput="ngModel"
         [ngModel]="alarmGroup.name"
-        (ngModelChange)="renameAlarmGroup($event)"
+        (appSaveOnTyping)="renameAlarmGroup($event)"
         required
         placeholder="Name"
         type="text"
@@ -48,7 +48,8 @@
     <div
         *ngFor="
             let alarmGroupVehicle of alarmGroup.alarmGroupVehicles | values;
-            trackBy: 'key' | appTrackByProperty
+            trackBy: 'id'
+                | appTrackByProperty: (alarmGroup.alarmGroupVehicles | values)
         "
         class="card text-center m-1"
         style="width: 10rem; text-overflow: ellipsis; height: auto"
@@ -63,10 +64,11 @@
                 <input
                     #timeInput="ngModel"
                     [ngModel]="alarmGroupVehicle.time / 60 / 1000"
-                    (ngModelChange)="
+                    (appSaveOnTyping)="
                         editAlarmGroupVehicle(
                             alarmGroupVehicle.id,
-                            $event * 60 * 1000
+                            $event * 60 * 1000,
+                            alarmGroupVehicle.name
                         )
                     "
                     min="0"
@@ -88,6 +90,21 @@
             [vehicleTemplateId]="alarmGroupVehicle.vehicleTemplateId"
         >
         </app-vehicle-template-display>
+        <input
+            #nameInput="ngModel"
+            [ngModel]="alarmGroupVehicle.name"
+            (appSaveOnTyping)="
+                editAlarmGroupVehicle(
+                    alarmGroupVehicle.id,
+                    alarmGroupVehicle.time,
+                    $event
+                )
+            "
+            required
+            placeholder="Name"
+            type="text"
+            class="form-control form-control-sm d-inline-block fw-bold"
+        />
     </div>
 </div>
 <ng-template #noAlarmGroupVehicles>

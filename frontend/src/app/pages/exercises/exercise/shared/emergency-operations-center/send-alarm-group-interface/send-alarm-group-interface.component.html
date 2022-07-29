@@ -26,7 +26,7 @@
                 <button
                     *ngFor="
                         let transferPoint of transferPoints;
-                        trackBy: 'id' | appTrackByProperty
+                        trackBy: 'id' | appTrackByProperty: transferPoints
                     "
                     ngbDropdownItem
                     (click)="targetTransferPointId = transferPoint.id"
@@ -49,7 +49,7 @@
         <button
             *ngFor="
                 let alarmGroup of alarmGroups;
-                trackBy: 'key' | appTrackByProperty
+                trackBy: 'id' | appTrackByProperty: alarmGroups
             "
             [disabled]="!targetTransferPointId"
             (click)="sendAlarmGroup(alarmGroup)"

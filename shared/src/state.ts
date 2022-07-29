@@ -8,13 +8,14 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import { defaultTileMapProperties } from './data';
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
-import { defaultPatientTemplates } from './data/default-state/patient-templates';
+import { defaultPatientCategories } from './data/default-state/patient-templates';
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
 import type {
     AlarmGroup,
     Client,
+    Hospital,
+    HospitalPatient,
     MapImage,
     Material,
     Patient,
@@ -22,21 +23,14 @@ import type {
     TransferPoint,
     Vehicle,
     Viewport,
-    Hospital,
-    HospitalPatient,
 } from './models';
-import { StatisticsEntry } from './models/statistics-entry';
-import {
-    EocLogEntry,
-    TileMapProperties,
-    StatusHistoryEntry,
-    PatientTemplate,
-    VehicleTemplate,
-    MapImageTemplate,
-} from './models';
+import { ExerciseConfiguration } from './models/exercise-configuration';
+import { EocLogEntry, VehicleTemplate, MapImageTemplate } from './models';
 import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuidValidationOptions, uuid } from './utils';
+import { PatientCategory } from './models/patient-category';
+import { ExerciseStatus } from './models/utils/exercise-status';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -49,6 +43,8 @@ export class ExerciseState {
     @IsInt()
     @Min(0)
     public readonly currentTime = 0;
+    @IsString()
+    public readonly currentStatus: ExerciseStatus = 'notStarted';
     @IsObject()
     public readonly viewports: { readonly [key: UUID]: Viewport } = {};
     @IsObject()
@@ -76,8 +72,8 @@ export class ExerciseState {
     public readonly clients: { readonly [key: UUID]: Client } = {};
     @IsArray()
     @ValidateNested()
-    @Type(() => PatientTemplate)
-    public readonly patientTemplates = defaultPatientTemplates;
+    @Type(() => PatientCategory)
+    public readonly patientCategories = defaultPatientCategories;
     @IsArray()
     @ValidateNested()
     @Type(() => VehicleTemplate)
@@ -89,42 +85,26 @@ export class ExerciseState {
     @IsArray()
     @ValidateNested()
     @Type(() => EocLogEntry)
-    public readonly ecoLog: readonly EocLogEntry[] = [];
-    @IsArray()
-    @ValidateNested()
-    @Type(() => StatusHistoryEntry)
-    public readonly statusHistory: readonly StatusHistoryEntry[] = [];
+    public readonly eocLog: readonly EocLogEntry[] = [];
     @IsString()
     public readonly participantId: string = '';
     @ValidateNested()
-    @Type(() => TileMapProperties)
-    public readonly tileMapProperties: TileMapProperties = defaultTileMapProperties;
-    @IsArray()
-    @ValidateNested()
-    @Type(() => StatisticsEntry)
-    public readonly statistics: readonly StatisticsEntry[] = [];
+    @Type(() => ExerciseConfiguration)
+    public readonly configuration = ExerciseConfiguration.create();
 
     /**
      * @deprecated Use {@link create} instead.
      */
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-useless-constructor
-    constructor() {}
+    constructor(participantId: string) {
+        this.participantId = participantId;
+    }
 
     static readonly create = getCreate(this);
-
-    static getStatus(
-        state: ExerciseState
-    ): StatusHistoryEntry['status'] | 'notStarted' {
-        return (
-            state.statusHistory[state.statusHistory.length - 1]?.status ??
-            'notStarted'
-        );
-    }
 
     /**
      * **Important**
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 1;
+    static readonly currentStateVersion = 6;
 }

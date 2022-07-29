@@ -1,35 +1,49 @@
-import type { ExerciseIds, ExerciseTimeline } from 'digital-fuesim-manv-shared';
+import type {
+    ExerciseIds,
+    ExerciseTimeline,
+    StateExport,
+} from 'digital-fuesim-manv-shared';
 import { ExerciseState } from 'digital-fuesim-manv-shared';
+import { isEmpty } from 'lodash-es';
+import { importExercise } from '../../../utils/import-exercise';
 import type { DatabaseService } from '../../../database/services/database-service';
 import { UserReadableIdGenerator } from '../../../utils/user-readable-id-generator';
 import { exerciseMap } from '../../exercise-map';
 import { ExerciseWrapper } from '../../exercise-wrapper';
 import type { HttpResponse } from '../utils';
 
-export function postExercise(
-    databaseService: DatabaseService
-): HttpResponse<ExerciseIds> {
-    let newParticipantId: string | undefined;
-    let newTrainerId: string | undefined;
+export async function postExercise(
+    databaseService: DatabaseService,
+    importObject: StateExport
+): Promise<HttpResponse<ExerciseIds>> {
     try {
-        newParticipantId = UserReadableIdGenerator.generateId();
-        newTrainerId = UserReadableIdGenerator.generateId(8);
-        const newExercise = ExerciseWrapper.create(
-            newParticipantId,
-            newTrainerId,
-            databaseService,
-            ExerciseState.create()
-        );
-        exerciseMap.set(newParticipantId, newExercise);
-        exerciseMap.set(newTrainerId, newExercise);
+        const participantId = UserReadableIdGenerator.generateId();
+        const trainerId = UserReadableIdGenerator.generateId(8);
+        const newExerciseOrError = isEmpty(importObject)
+            ? ExerciseWrapper.create(
+                  participantId,
+                  trainerId,
+                  databaseService,
+                  ExerciseState.create(participantId)
+              )
+            : await importExercise(
+                  importObject,
+                  { participantId, trainerId },
+                  databaseService
+              );
+        if (!(newExerciseOrError instanceof ExerciseWrapper)) {
+            return newExerciseOrError;
+        }
+        exerciseMap.set(participantId, newExerciseOrError);
+        exerciseMap.set(trainerId, newExerciseOrError);
         return {
             statusCode: 201,
             body: {
-                participantId: newParticipantId,
-                trainerId: newTrainerId,
+                participantId,
+                trainerId,
             },
         };
-    } catch (error: any) {
+    } catch (error: unknown) {
         if (error instanceof RangeError) {
             return {
                 statusCode: 503,
