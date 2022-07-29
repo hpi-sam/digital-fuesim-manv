@@ -10,6 +10,8 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import {
     ExerciseState,
+    cloneDeepMutable,
+    applyAction,
     reduceExerciseState,
     validateExerciseState,
     validateExerciseAction,
@@ -328,12 +330,12 @@ export class ExerciseWrapper extends NormalType<
     }
 
     private restoreState() {
-        this.currentState = this.initialState;
-        this.temporaryActionHistory.forEach((action) => {
-            this.validateAction(action.action);
-            const state = reduceExerciseState(this.currentState, action.action);
-            this.currentState = state;
+        let currentState = cloneDeepMutable(this.initialState);
+        this.temporaryActionHistory.forEach(({ action }) => {
+            this.validateAction(action);
+            currentState = applyAction(currentState, action);
         });
+        this.currentState = currentState;
         this.incrementIdGenerator.setCurrent(
             this.temporaryActionHistory.length
         );
