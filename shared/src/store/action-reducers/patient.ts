@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
 import { PatientStatus, Position } from '../../models/utils';
 import type { ExerciseState } from '../../state';
@@ -58,6 +58,18 @@ export class SetVisibleStatusAction implements Action {
 
     @IsString()
     public readonly patientStatus!: PatientStatus;
+}
+
+export class SetUserTextAction implements Action {
+    @IsString()
+    public readonly type = '[Patient] Set User Text';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly patientId!: UUID;
+
+    @IsString()
+    @MaxLength(65535)
+    public readonly userText!: string;
 }
 
 export namespace PatientActionReducers {
@@ -129,6 +141,16 @@ export namespace PatientActionReducers {
         reducer: (draftState, { patientId, patientStatus }) => {
             const patient = getElement(draftState, 'patients', patientId);
             patient.pretriageStatus = patientStatus;
+            return draftState;
+        },
+        rights: 'participant',
+    };
+
+    export const setUserTextAction: ActionReducer<SetUserTextAction> = {
+        action: SetUserTextAction,
+        reducer: (draftState, { patientId, userText }) => {
+            const patient = getElement(draftState, 'patients', patientId);
+            patient.userText = userText;
             return draftState;
         },
         rights: 'participant',

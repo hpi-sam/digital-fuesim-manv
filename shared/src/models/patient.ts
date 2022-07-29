@@ -7,6 +7,7 @@ import {
     IsString,
     IsUUID,
     Max,
+    MaxLength,
     Min,
     ValidateNested,
 } from 'class-validator';
@@ -74,7 +75,8 @@ export class Patient {
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         currentHealthStateId: UUID,
         image: ImageProperties,
-        health: HealthPoints
+        health: HealthPoints,
+        userText: string
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
@@ -86,6 +88,7 @@ export class Patient {
         this.currentHealthStateId = currentHealthStateId;
         this.image = image;
         this.health = health;
+        this.userText = userText;
     }
 
     /**
@@ -137,6 +140,10 @@ export class Patient {
     @IsNumber()
     @Min(0)
     public readonly timeSpeed: number = 1;
+
+    @IsString()
+    @MaxLength(65535)
+    public readonly userText: string;
 
     @IsNumber()
     @Min(0)
