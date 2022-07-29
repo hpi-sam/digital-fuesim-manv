@@ -3,7 +3,7 @@ import type {
     ImmutableJsonObject,
     SocketResponse,
 } from 'digital-fuesim-manv-shared';
-import { isEqual } from 'lodash';
+import { isEqual } from 'lodash-es';
 
 /**
  * This class handles optimistic actions on a state.

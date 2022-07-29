@@ -155,8 +155,7 @@
             }
         }
     },
-    "defaultProject": "digital-fuesim-manv",
     "cli": {
-        "defaultCollection": "@angular-eslint/schematics"
+        "analytics": false
     }
 }
