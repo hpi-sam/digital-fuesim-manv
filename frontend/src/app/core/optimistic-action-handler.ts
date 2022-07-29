@@ -3,7 +3,7 @@ import type {
     ImmutableJsonObject,
     SocketResponse,
 } from 'digital-fuesim-manv-shared';
-import { isEqual } from 'lodash';
+import { isEqual } from 'lodash-es';
 
 /**
  * This class handles optimistic actions on a state.
@@ -90,12 +90,6 @@ export class OptimisticActionHandler<
     ): Promise<ServerResponse> {
         if (!beOptimistic) {
             return this.sendAction(proposedAction);
-        }
-        // TODO: This should not be hardcoded like this but enforced via typings
-        if ((proposedAction as any).timestamp) {
-            throw Error(
-                'Actions with non-deterministic values must not be proposed optimistically'
-            );
         }
         this.optimisticallyAppliedActions.push(proposedAction);
         this.applyAction(proposedAction);

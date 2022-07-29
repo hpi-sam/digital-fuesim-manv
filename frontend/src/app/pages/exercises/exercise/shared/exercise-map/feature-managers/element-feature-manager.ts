@@ -1,7 +1,6 @@
 import type { UUID, Position, Size } from 'digital-fuesim-manv-shared';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
-import GeometryType from 'ol/geom/GeometryType';
 import Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
@@ -34,7 +33,7 @@ export interface ResizableElement extends PositionableElement {
 function isLineString(
     feature: Feature<LineString | Point>
 ): feature is Feature<LineString> {
-    return feature.getGeometry()!.getType() === GeometryType.LINE_STRING;
+    return feature.getGeometry()!.getType() === 'LineString';
 }
 
 export function isCoordinateArray(

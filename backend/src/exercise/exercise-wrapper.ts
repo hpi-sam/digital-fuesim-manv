@@ -485,6 +485,18 @@ export class ExerciseWrapper extends NormalType<
             clientWrapper.disconnect();
             this.clients.delete(clientWrapper);
         });
+        if (
+            this.clients.size === 0 &&
+            this.currentState.currentStatus === 'running'
+        ) {
+            // Pause the exercise
+            this.applyAction(
+                {
+                    type: '[Exercise] Pause',
+                },
+                null
+            );
+        }
     }
 
     public start() {
