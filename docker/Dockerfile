@@ -55,7 +55,7 @@ RUN apt-get update && \
 RUN rm /etc/nginx/sites-enabled/default && rm /etc/nginx/sites-available/default
 
 
-# /ssl includes certs and acme.sh config - mount $PERISTENT_DATA_PATH as a volume for persistency
+# $PERISTENT_DATA_PATH includes certs and acme.sh config - mount $PERISTENT_DATA_PATH as a volume for persistency
 RUN mkdir -p $DFM_PERSISTENT_DATA_PATH/certs && \
     mkdir -p $DFM_PERSISTENT_DATA_PATH/acme.sh/config && mkdir -p $DFM_PERSISTENT_DATA_PATH/acme.sh/certs && \
     chown -R www-data:www-data $DFM_PERSISTENT_DATA_PATH/certs

@@ -1,1 +1,1 @@
-# empty gets build in docker-entrypoint.sh
+# plcaeholderfile - empty by default gets overwritten via docker-entrypoint.sh - cert locations depend on $PERISTENT_DATA_PATH
