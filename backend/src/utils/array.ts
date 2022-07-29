@@ -1,20 +1,18 @@
 /**
- * Add all {@link elements} to {@link array}. This mutates {@link array} and returns it.
+ * Add all {@link elements} to {@link array}. This mutates {@link array}.
  * @param array The array to append to
  * @param elements The elements to append
- * @returns The appended array
+ *
+ * @remark Use this where something like `.push(...Array(300000).fill(1))` is possible.
  */
-export function pushAll<T>(array: T[], elements: T[]): T[] {
+export function pushAll<T>(array: T[], elements: T[]): void {
     elements.forEach((element) => array.push(element));
-    return array;
 }
 
 /**
- * Make the provided {@link array} empty and return it.
+ * Make the provided {@link array} empty.
  * @param array The array to make empty (in-place)
- * @returns The emptied array
  */
-export function removeAll<T>(array: T[]): T[] {
+export function removeAll<T>(array: T[]): void {
     array.splice(0, array.length);
-    return array;
 }

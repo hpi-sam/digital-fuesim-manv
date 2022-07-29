@@ -395,9 +395,10 @@ export class ExerciseWrapper extends NormalType<
                         exerciseEntity,
                         databaseService
                     );
+                    removeAll(exercise.temporaryActionHistory);
                     // Load all actions
                     pushAll(
-                        removeAll(exercise.temporaryActionHistory),
+                        exercise.temporaryActionHistory,
                         (
                             await databaseService.actionWrapperService.getFindAll(
                                 {
