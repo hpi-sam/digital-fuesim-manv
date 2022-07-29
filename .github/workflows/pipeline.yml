@@ -291,7 +291,7 @@ jobs:
               with:
                   start: npm run start:all
                   command: npm run cy:ci
-                  wait-on: 'http://127.0.0.1:4200/health, http://127.0.0.1:3201/api/health'
+                  wait-on: 'http://localhost:4200/health, http://localhost:3201/api/health'
             - name: Archive cypress
               if: always()
               uses: actions/upload-artifact@v2
