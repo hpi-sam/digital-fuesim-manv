@@ -527,7 +527,6 @@ export class ExerciseWrapper extends NormalType<
      * @throws Error if the action is not applicable on the current state
      */
     private reduce(action: ExerciseAction, emitterId: UUID | null): void {
-        this.validateAction(action);
         const newState = reduceExerciseState(this.currentState, action);
         this.setState(newState, action, emitterId);
         if (action.type === '[Exercise] Pause') {
