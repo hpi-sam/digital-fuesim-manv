@@ -31,10 +31,6 @@ export const registerProposeActionHandler = (
                 });
                 return;
             }
-            // If the action contains a timestamp, refresh it to the current server time.
-            if ((action as any).timestamp !== undefined) {
-                (action as any).timestamp = Date.now();
-            }
             // 2. Get matching exercise wrapper & client wrapper
             const exerciseWrapper = clientWrapper.exercise;
             if (!exerciseWrapper) {

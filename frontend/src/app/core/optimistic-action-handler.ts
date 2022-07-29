@@ -91,12 +91,6 @@ export class OptimisticActionHandler<
         if (!beOptimistic) {
             return this.sendAction(proposedAction);
         }
-        // TODO: This should not be hardcoded like this but enforced via typings
-        if ((proposedAction as any).timestamp) {
-            throw Error(
-                'Actions with non-deterministic values must not be proposed optimistically'
-            );
-        }
         this.optimisticallyAppliedActions.push(proposedAction);
         this.applyAction(proposedAction);
         const response = await this.sendAction(proposedAction);
