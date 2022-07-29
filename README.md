@@ -30,7 +30,7 @@ This project is currently developed as a [bachelor project](https://hpi.de/en/st
 ## Installation
 
 1. Make sure to have [git lfs](https://git-lfs.github.com/) installed.
-2. Install [NodeJs](https://nodejs.org/) (at least version 18.x) (if you need different node versions on your machine we recommend [nvm](https://github.com/nvm-sh/nvm) or [nvm for windows](https://github.com/coreybutler/nvm-windows))
+2. Install [NodeJs](https://nodejs.org/) (at least version 16.x) (if you need different node versions on your machine we recommend [nvm](https://github.com/nvm-sh/nvm) or [nvm for windows](https://github.com/coreybutler/nvm-windows))
 3. [npm](https://www.npmjs.com/) should already come with NodeJs - if not install it
 4. Clone this repository
 5. Run `npm run setup` from the root folder
