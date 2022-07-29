@@ -9,7 +9,7 @@ export const removeStateHistory6: Migration = {
                 actionType === '[Exercise] Pause' ||
                 actionType === '[Exercise] Start'
             ) {
-                delete (action as Action).timestamp;
+                delete (action as { timestamp?: number }).timestamp;
             }
         });
     },
