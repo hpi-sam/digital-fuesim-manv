@@ -34,8 +34,11 @@ WORKDIR $PRODUCTION_PATH
 
 # setting DEFAULT_VARIABLES
 ENV DFM_ENABLE_SSL=false
+ENV DFM_FORCE_NEW_SSL_CERTS=false
 ENV DFM_ENABLE_HSTS=false
 ENV DFM_DEBUG=false
+ENV DFM_PERSISTENT_DATA_PATH="/dfm-data"
+ENV DFM_USE_DB=true
 
 # install necessary packages
 RUN apt-get update && \
@@ -51,16 +54,17 @@ RUN apt-get update && \
 # deleting default nginx conf
 RUN rm /etc/nginx/sites-enabled/default && rm /etc/nginx/sites-available/default
 
-# /ssl includes certs and acme.sh config - mount /ssl as a volume for persistency
-RUN mkdir -p /ssl/certs && \
-    mkdir -p /ssl/acme.sh/config && mkdir -p /ssl/acme.sh/certs && \
-    chown -R www-data:www-data /ssl/certs
+
+# /ssl includes certs and acme.sh config - mount $PERISTENT_DATA_PATH as a volume for persistency
+RUN mkdir -p $DFM_PERSISTENT_DATA_PATH/certs && \
+    mkdir -p $DFM_PERSISTENT_DATA_PATH/acme.sh/config && mkdir -p $DFM_PERSISTENT_DATA_PATH/acme.sh/certs && \
+    chown -R www-data:www-data $DFM_PERSISTENT_DATA_PATH/certs
 
 # download acme.sh
 RUN curl https://raw.githubusercontent.com/acmesh-official/acme.sh/master/acme.sh > /acme.sh && chmod +x /acme.sh
 
 # install acme.sh
-RUN cd / && /acme.sh --install --config-home /ssl/acme.sh/config --cert-home /ssl/acme.sh/certs && \
+RUN cd / && /acme.sh --install --config-home $DFM_PERSISTENT_DATA_PATH/acme.sh/config --cert-home $DFM_PERSISTENT_DATA_PATH/acme.sh/certs && \
     # remove acme.sh install script
     rm /acme.sh && \
     # we need the following to be able to use acme.sh in command line (without using explicit path)

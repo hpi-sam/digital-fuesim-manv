@@ -24,7 +24,7 @@ if ${DFM_ENABLE_SSL}; then
     service cron start
 
     if ${DFM_DEBUG}; then
-        # testing nginx configuration, if there is an error, it shows the filename
+        # testing nginx configuration, if there is an error it shows e.g. the filename
         nginx -t
     fi
 

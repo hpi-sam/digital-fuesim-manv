@@ -17,7 +17,7 @@ services:
         env_file:
             - .env
         volumes:
-            - ssl:/ssl
+            - dfm-data:/${DFM_PERSISTENT_DATA}
     db:
         image: postgres:14
         container_name: dfm_postgres
@@ -34,5 +34,5 @@ services:
 volumes:
     # database is in this volume
     dfm_db:
-    # needed to keep persistency with SSL
-    ssl:
+    # needed to keep persistency, right now SSL
+    dfm-data:

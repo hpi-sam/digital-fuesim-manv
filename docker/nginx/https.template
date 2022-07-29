@@ -25,9 +25,9 @@ server {
     ssl_session_ticket_key /run/session_ticket.key;
     ssl_session_timeout 1d;
 
-    ssl_certificate /ssl/certs/fullchain.pem;
-    ssl_trusted_certificate /ssl/certs/fullchain.pem;
-    ssl_certificate_key /ssl/certs/key.pem;
+    # needed this file for dynamic ${DFM_PERSISTENT_DATA_PATH}
+    include conf.d/certs;
 
-   include conf.d/locations;
+    include conf.d/locations;
+
 }
