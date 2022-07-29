@@ -6,12 +6,8 @@ export function createPatientCatgories(
     patientData: PatientData[],
     apiService: ApiService
 ) {
-    const patientCategories: PatientCategory[] = [];
-
-    patientData.forEach(({ code, templates }) =>
-        patientCategories.push(
-            PatientCategory.create(code, templates[0]!.image, templates)
-        )
+    const patientCategories = patientData.map(({ code, templates }) =>
+        PatientCategory.create(code, templates[0]!.image, templates)
     );
 
     apiService.proposeAction({

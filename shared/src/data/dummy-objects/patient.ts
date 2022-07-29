@@ -36,8 +36,8 @@ export function generateDummyPatient(): Patient {
         template.biometricInformation,
         PatientStatusCode.create('ZAZAZA'),
         'green',
-        { [healthState.id]: healthState },
-        healthState.id,
+        { [healthState.name]: healthState },
+        healthState.name,
         template.image
     );
 }

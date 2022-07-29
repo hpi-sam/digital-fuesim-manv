@@ -23,11 +23,11 @@ export class PatientTemplate {
 
     @IsDefined()
     public readonly healthStates: {
-        readonly [stateId: string]: PatientHealthState;
+        readonly [stateName: string]: PatientHealthState;
     };
 
     @IsString()
-    public readonly startingHealthStateId: string;
+    public readonly startingHealthStateName: string;
 
     /**
      * @deprecated Use {@link create} instead
@@ -36,12 +36,12 @@ export class PatientTemplate {
         biometricInformation: BiometricInformation,
         healthStates: { readonly [stateId: string]: PatientHealthState },
         image: ImageProperties,
-        startingHealthStateId: string
+        startingHealthStateName: string
     ) {
         this.biometricInformation = biometricInformation;
         this.image = image;
         this.healthStates = healthStates;
-        this.startingHealthStateId = startingHealthStateId;
+        this.startingHealthStateName = startingHealthStateName;
     }
 
     static readonly create = getCreate(this);
@@ -77,7 +77,7 @@ export class PatientTemplate {
                             condition.requiredNotSanAmount,
                             condition.requiredRettSanAmount,
                             condition.requiredSanAmount,
-                            condition.matchingHealthStateId
+                            condition.matchingHealthStateName
                         );
                     });
 
@@ -100,7 +100,7 @@ export class PatientTemplate {
             patientStatusCode,
             'white',
             healthStates,
-            template.startingHealthStateId,
+            template.startingHealthStateName,
             template.image
         );
     }

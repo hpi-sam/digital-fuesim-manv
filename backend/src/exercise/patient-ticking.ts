@@ -1,5 +1,6 @@
 import type { ExerciseState, Catering, UUID } from 'digital-fuesim-manv-shared';
 import { Patient } from 'digital-fuesim-manv-shared';
+import { cloneDeep } from 'lodash-es';
 
 interface PatientTickResult {
     /**
@@ -9,7 +10,7 @@ interface PatientTickResult {
     /**
      * The next {@link PatientHealthState} the patient should be in
      */
-    nextStateId: string;
+    nextStateName: string;
     /**
      * The new state time of the patient
      */
@@ -51,12 +52,12 @@ export function patientTick(
                     ? patient.treatmentTime + patientTickInterval
                     : patient.treatmentTime;
                 const newTreatment = getDedicatedResources(state, patient);
-                const nextStateId = getNextStateId(
+                const nextStateName = getNextStateName(
                     patient,
                     getAverageTreatment(patient.treatmentHistory, newTreatment)
                 );
                 const nextStateTime =
-                    nextStateId === patient.currentHealthStateId
+                    nextStateName === patient.currentHealthStateName
                         ? patient.stateTime +
                           patientTickInterval *
                               patient.changeSpeed *
@@ -64,7 +65,7 @@ export function patientTick(
                         : 0;
                 return {
                     id: patient.id,
-                    nextStateId,
+                    nextStateName,
                     nextStateTime,
                     treatmentTime,
                     newTreatment,
@@ -127,8 +128,8 @@ function getDedicatedResources(
  * @param patient The {@link Patient} to get the next {@link PatientHealthState} id for.
  * @returns The next {@link PatientHealthState} id.
  */
-function getNextStateId(patient: Patient, dedicatedResources: Catering) {
-    const currentState = patient.healthStates[patient.currentHealthStateId]!;
+function getNextStateName(patient: Patient, dedicatedResources: Catering) {
+    const currentState = patient.healthStates[patient.currentHealthStateName]!;
     for (const nextConditions of currentState.nextStateConditions) {
         if (
             (nextConditions.earliestTime === undefined ||
@@ -158,21 +159,21 @@ function getNextStateId(patient: Patient, dedicatedResources: Catering) {
                     dedicatedResources.notarzt >=
                     nextConditions.requiredSanAmount)
         ) {
-            return nextConditions.matchingHealthStateId;
+            return nextConditions.matchingHealthStateName;
         }
     }
-    return patient.currentHealthStateId;
+    return patient.currentHealthStateName;
 }
 
 /**
- * Get the average treatment for roughly the last minute, scaled to 100% from Percentage
+ * Get the average treatment for roughly the last minute, scaled to 100% from {@link requiredPercentage}
  */
 function getAverageTreatment(
     treatmentHistory: readonly Catering[],
     newTreatment: Catering,
     requiredPercentage: number = 0.8
 ) {
-    const averageCatering: Catering = newTreatment;
+    const averageCatering: Catering = cloneDeep(newTreatment);
     treatmentHistory.forEach((catering, index) => {
         if (index === 0) {
             return;

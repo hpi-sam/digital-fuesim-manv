@@ -5,7 +5,7 @@
             *ngIf="
                 (apiService.currentRole$ | async) === 'participant'
                     ? (visibleStatus$ | async)
-                    : patient.healthStates[patient.currentHealthStateId]!
+                    : patient.healthStates[patient.currentHealthStateName]!
                           .status as displayedStatus
             "
             [ngStyle]="{ 'background-color': displayedStatus }"
@@ -14,14 +14,7 @@
             "
             class="badge rounded-pill font-monospace"
         >
-            {{
-                (apiService.currentRole$ | async) !== 'participant'
-                    ? statusNames[
-                          patient.healthStates[patient.currentHealthStateId]!
-                              .status
-                      ]
-                    : statusNames[displayedStatus]
-            }}
+            {{ statusNames[displayedStatus] }}
         </span>
         <button
             (click)="closePopup.emit()"

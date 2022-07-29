@@ -27,8 +27,9 @@ export function parsePatientData(importString: string) {
     const patientData: PatientData[] = [];
 
     const splitString = importString.split('|');
+    const columns = 106;
     // first 106 entries are the headers
-    for (let i = 106; i + 100 < splitString.length; i += 106) {
+    for (let i = columns; i + columns - 1 < splitString.length; i += columns) {
         // 0, 1, 2 are orginasational data for anaolg training
         // 3 and 4 are personalInformation that will be randomly generated
         const biometricInformation = BiometricInformation.create(
@@ -112,25 +113,13 @@ export function parsePatientData(importString: string) {
 
 type ColorCategory = 'black' | 'blue' | 'green' | 'red' | 'yellow';
 class HealthStateData {
-    public name: string;
-    public status: ColorCategory;
-    public conditions: ConditionParameters[];
-    public startingPhase: number;
-    public finished: boolean;
-
     constructor(
-        name: string,
-        status: ColorCategory,
-        conditions: ConditionParameters[],
-        startingPhase: number,
-        finished: boolean
-    ) {
-        this.name = name;
-        this.status = status;
-        this.conditions = conditions;
-        this.startingPhase = startingPhase;
-        this.finished = finished;
-    }
+        public name: string,
+        public status: ColorCategory,
+        public conditions: ConditionParameters[],
+        public startingPhase: number,
+        public finished: boolean
+    ) {}
 }
 
 function generateHealthStates(
@@ -168,12 +157,12 @@ function generateHealthStates(
         const nextPhaseColor = getColor(healthStateInformation[3 * i + 3]!);
         // Finish all States and transfer them to two new states based on the condition
         if (conditionColor!) {
-            const conditionSuccessStateName = createHealthState(
+            const conditionSuccessStateName = createHealthStateName(
                 nextPhaseColor,
                 i + 2,
                 healthStateData
             );
-            const conditionFailureStateName = createHealthState(
+            const conditionFailureStateName = createHealthStateName(
                 conditionColor[0] as ColorCategory,
                 i + 2,
                 healthStateData
@@ -191,7 +180,7 @@ function generateHealthStates(
                     {
                         earliestTime:
                             (i + 1 - healthState.startingPhase) * phaseTime,
-                        matchingHealthStateId: conditionFailureStateName,
+                        matchingHealthStateName: conditionFailureStateName,
                     }
                 );
                 healthState.finished = true;
@@ -199,26 +188,27 @@ function generateHealthStates(
         }
         // There are no conditions -> Finish all states with a different color compared to the color of the next phase
         else {
-            const finishedHealthStateData = healthStateData.filter(
+            const unfinishedHealthStateData = healthStateData.filter(
                 (healthState) =>
                     !healthState.finished &&
                     healthState.status !== nextPhaseColor
             );
-            if (finishedHealthStateData.length > 0) {
-                const newHealthstateName = createHealthState(
-                    nextPhaseColor,
-                    i + 2,
-                    healthStateData
-                );
-                finishedHealthStateData.forEach((healthState) => {
-                    healthState.conditions.push({
-                        earliestTime:
-                            (i + 1 - healthState.startingPhase) * phaseTime,
-                        matchingHealthStateId: newHealthstateName,
-                    });
-                    healthState.finished = true;
-                });
+            if (unfinishedHealthStateData.length <= 0) {
+                break;
             }
+            const newHealthstateName = createHealthStateName(
+                nextPhaseColor,
+                i + 2,
+                healthStateData
+            );
+            unfinishedHealthStateData.forEach((healthState) => {
+                healthState.conditions.push({
+                    earliestTime:
+                        (i + 1 - healthState.startingPhase) * phaseTime,
+                    matchingHealthStateName: newHealthstateName,
+                });
+                healthState.finished = true;
+            });
         }
     }
 
@@ -233,13 +223,13 @@ function generateHealthStates(
     return healthStates;
 }
 
-function getColor(colorString: string) {
+function getColor(colorString: string): ColorCategory {
     if (colorString === '') {
         return 'black';
     }
     const colorRegExp = /grün|gelb|rot|schwarz|blau/u;
     const color = colorRegExp.exec(colorString.toLowerCase());
-    if (!color!) {
+    if (color === null) {
         throw new Error('Wrong color format in SK entries');
     }
     return color[0] as ColorCategory;
@@ -252,44 +242,44 @@ function getCondition(
 ) {
     const conditionRegExp = /NotArzt|NotSan|RettSan|RettH|ABTRANSPORTIERT/u;
     const condition = conditionRegExp.exec(conditionString);
-    if (condition!) {
-        switch (condition[0]) {
-            case 'NotArzt':
-                return {
-                    earliestTime: time,
-                    requiredNotArztAmount: 1,
-                    matchingHealthStateId: healthstateName,
-                };
-            case 'NotSan':
-                return {
-                    earliestTime: time,
-                    requiredNotSanAmount: 1,
-                    matchingHealthStateId: healthstateName,
-                };
-            case 'RettSan':
-                return {
-                    earliestTime: time,
-                    requiredRettSanAmount: 1,
-                    matchingHealthStateId: healthstateName,
-                };
-            case 'RettH':
-                return {
-                    earliestTime: time,
-                    requiredSanAmount: 1,
-                    matchingHealthStateId: healthstateName,
-                };
-            default:
-                // TODO: We want to ignore some cases (like Abtransportiert). This works for now but can probably be improved
-                return { latestTime: -1, matchingHealthStateId: 'Phase1State' };
-        }
+    if (condition === null) {
+        throw new Error('Wrong condition format in SK entries');
     }
-    throw new Error('Wrong condition format in SK entries');
+    switch (condition[0]) {
+        case 'NotArzt':
+            return {
+                earliestTime: time,
+                requiredNotArztAmount: 1,
+                matchingHealthStateName: healthstateName,
+            };
+        case 'NotSan':
+            return {
+                earliestTime: time,
+                requiredNotSanAmount: 1,
+                matchingHealthStateName: healthstateName,
+            };
+        case 'RettSan':
+            return {
+                earliestTime: time,
+                requiredRettSanAmount: 1,
+                matchingHealthStateName: healthstateName,
+            };
+        case 'RettH':
+            return {
+                earliestTime: time,
+                requiredSanAmount: 1,
+                matchingHealthStateName: healthstateName,
+            };
+        default:
+            // TODO: We want to ignore some cases (like Abtransportiert). This works for now but can probably be improved
+            return { latestTime: -1, matchingHealthStateName: 'Phase1State' };
+    }
 }
 
 /**
- * Creates a new State in healthStateData if possible and returns the id of that state
+ * Creates a new State in healthStateData if possible and returns the name of that state
  */
-function createHealthState(
+function createHealthStateName(
     color: ColorCategory,
     currentPhase: number,
     healthStateData: HealthStateData[]

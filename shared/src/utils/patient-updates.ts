@@ -7,7 +7,7 @@ export class PatientUpdate {
     public readonly id: UUID;
 
     @IsString()
-    public readonly nextStateId: string;
+    public readonly nextStateName: string;
 
     @IsNumber()
     public readonly nextStateTime: number;
@@ -21,13 +21,13 @@ export class PatientUpdate {
 
     constructor(
         id: UUID,
-        nextStateId: string,
+        nextStateName: string,
         nextStateTime: number,
         treatmentTime: number,
         newTreatment: Catering
     ) {
         this.id = id;
-        this.nextStateId = nextStateId;
+        this.nextStateName = nextStateName;
         this.nextStateTime = nextStateTime;
         this.treatmentTime = treatmentTime;
         this.newTreatment = newTreatment;

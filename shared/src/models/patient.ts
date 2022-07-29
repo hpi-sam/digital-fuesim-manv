@@ -55,8 +55,8 @@ export class Patient {
         biometricInformation: BiometricInformation,
         patientStatusCode: PatientStatusCode,
         pretriageStatus: PatientStatus,
-        healthStates: { readonly [stateId: UUID]: PatientHealthState },
-        currentHealthStateId: UUID,
+        healthStates: { readonly [stateName: string]: PatientHealthState },
+        currentHealthStateName: string,
         image: ImageProperties
     ) {
         this.personalInformation = personalInformation;
@@ -64,7 +64,7 @@ export class Patient {
         this.patientStatusCode = patientStatusCode;
         this.pretriageStatus = pretriageStatus;
         this.healthStates = healthStates;
-        this.currentHealthStateId = currentHealthStateId;
+        this.currentHealthStateName = currentHealthStateName;
         this.image = image;
     }
 
@@ -90,14 +90,14 @@ export class Patient {
 
     @IsDefined()
     public readonly healthStates: {
-        readonly [stateId: string]: PatientHealthState;
+        readonly [stateName: string]: PatientHealthState;
     } = {};
 
     /**
      * The id of the current health state in {@link healthStates}
      */
     @IsString()
-    public readonly currentHealthStateId: string;
+    public readonly currentHealthStateName: string;
     /**
      * Whether the patient is currently being treated by a personnel
      */
@@ -139,13 +139,13 @@ export class Patient {
         const status =
             !pretriageEnabled ||
             patient.treatmentTime >= this.pretriageTimeThreshold
-                ? patient.healthStates[patient.currentHealthStateId]!.status
+                ? patient.healthStates[patient.currentHealthStateName]!.status
                 : patient.pretriageStatus;
         return status === 'blue' && !bluePatientsEnabled ? 'red' : status;
     }
 
     static getPretriageInformation(patient: Patient) {
-        return patient.healthStates[patient.currentHealthStateId]!
+        return patient.healthStates[patient.currentHealthStateName]!
             .pretriageInformation;
     }
 

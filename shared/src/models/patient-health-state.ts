@@ -61,7 +61,7 @@ export class ConditionParameters {
      * The id of the patients healthState to switch to when all the conditions match
      */
     @IsString()
-    public readonly matchingHealthStateId: string;
+    public readonly matchingHealthStateName: string;
 
     /**
      * @deprecated Use {@link create} instead
@@ -75,7 +75,7 @@ export class ConditionParameters {
         requiredNotSanAmount: number | undefined,
         requiredRettSanAmount: number | undefined,
         requiredSanAmount: number | undefined,
-        matchingHealthStateId: UUID
+        matchingHealthStateName: UUID
     ) {
         this.earliestTime = earliestTime;
         this.latestTime = latestTime;
@@ -85,7 +85,7 @@ export class ConditionParameters {
         this.requiredNotSanAmount = requiredNotSanAmount;
         this.requiredRettSanAmount = requiredRettSanAmount;
         this.requiredSanAmount = requiredSanAmount;
-        this.matchingHealthStateId = matchingHealthStateId;
+        this.matchingHealthStateName = matchingHealthStateName;
     }
 
     static readonly create = getCreate(this);
@@ -93,7 +93,7 @@ export class ConditionParameters {
 
 export class PatientHealthState {
     @IsString()
-    public readonly id: string;
+    public readonly name: string;
 
     @ValidateNested()
     @Type(() => PretriageInformation)
@@ -114,12 +114,12 @@ export class PatientHealthState {
      * @deprecated Use {@link create} instead
      */
     constructor(
-        id: string,
+        name: string,
         pretriageInformation: PretriageInformation,
         status: PatientStatus,
         nextStateConditions: readonly ConditionParameters[]
     ) {
-        this.id = id;
+        this.name = name;
         this.pretriageInformation = pretriageInformation;
         this.status = status;
         this.nextStateConditions = nextStateConditions;

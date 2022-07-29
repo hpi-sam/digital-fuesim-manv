@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNumber, IsString, ValidateNested } from 'class-validator';
+import {
+    IsBoolean,
+    IsNumber,
+    IsString,
+    Min,
+    ValidateNested,
+} from 'class-validator';
 import { TileMapProperties } from '../../models/utils';
 import { cloneDeepMutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -34,6 +40,7 @@ export class SetGlobalPatientChangeSpeedAction implements Action {
     public readonly type = '[Configuration] Set globalPatientChangeSpeed';
 
     @IsNumber()
+    @Min(0)
     public readonly changeSpeed!: number;
 }
 

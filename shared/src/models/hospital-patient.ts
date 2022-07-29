@@ -57,14 +57,14 @@ export class HospitalPatient {
 
     @IsDefined()
     public readonly healthStates: {
-        readonly [stateId: UUID]: PatientHealthState;
+        readonly [stateName: string]: PatientHealthState;
     } = {};
 
     /**
      * The id of the current health state in {@link healthStates}
      */
     @IsUUID(4, uuidValidationOptions)
-    public readonly currentHealthStateId: UUID;
+    public readonly currentHealthStateName: UUID;
 
     @IsNumber()
     @Min(0)
@@ -81,8 +81,8 @@ export class HospitalPatient {
         personalInformation: PersonalInformation,
         biometricInformation: BiometricInformation,
         pretriageStatus: PatientStatus,
-        healthStates: { readonly [stateId: UUID]: PatientHealthState },
-        currentHealthStateId: UUID,
+        healthStates: { readonly [stateName: string]: PatientHealthState },
+        currentHealthStateName: string,
         image: ImageProperties,
         treatmentTime: number
     ) {
@@ -94,7 +94,7 @@ export class HospitalPatient {
         this.biometricInformation = biometricInformation;
         this.pretriageStatus = pretriageStatus;
         this.healthStates = healthStates;
-        this.currentHealthStateId = currentHealthStateId;
+        this.currentHealthStateName = currentHealthStateName;
         this.image = image;
         this.treatmentTime = treatmentTime;
     }
@@ -124,7 +124,7 @@ export class HospitalPatient {
                 patient.biometricInformation,
                 patient.pretriageStatus,
                 patient.healthStates,
-                patient.currentHealthStateId,
+                patient.currentHealthStateName,
                 patient.image,
                 patient.treatmentTime
             )

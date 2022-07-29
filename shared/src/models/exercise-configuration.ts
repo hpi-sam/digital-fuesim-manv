@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNumber, ValidateNested } from 'class-validator';
+import { IsBoolean, IsNumber, Min, ValidateNested } from 'class-validator';
 import { defaultTileMapProperties } from '../data';
 import { getCreate, TileMapProperties } from './utils';
 
@@ -10,6 +10,7 @@ export class ExerciseConfiguration {
     public readonly bluePatientsEnabled: boolean = false;
 
     @IsNumber()
+    @Min(0)
     public readonly globalPatientChangeSpeed: number = 1;
 
     @ValidateNested()

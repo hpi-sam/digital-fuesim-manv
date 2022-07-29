@@ -84,7 +84,7 @@ export namespace PatientActionReducers {
         reducer: (draftState, { patient }) => {
             if (
                 StrictObject.entries(patient.healthStates).some(
-                    ([id, healthState]) => healthState.id !== id
+                    ([name, healthState]) => healthState.name !== name
                 )
             ) {
                 throw new ReducerError(
@@ -96,21 +96,22 @@ export namespace PatientActionReducers {
                     (nextStateCondition) => {
                         if (
                             patient.healthStates[
-                                nextStateCondition.matchingHealthStateId
+                                nextStateCondition.matchingHealthStateName
                             ] === undefined
                         ) {
                             throw new ReducerError(
-                                `HealthState with id ${nextStateCondition.matchingHealthStateId} does not exist`
+                                `HealthState with id ${nextStateCondition.matchingHealthStateName} does not exist`
                             );
                         }
                     }
                 );
             });
             if (
-                patient.healthStates[patient.currentHealthStateId] === undefined
+                patient.healthStates[patient.currentHealthStateName] ===
+                undefined
             ) {
                 throw new ReducerError(
-                    `HealthState with id ${patient.currentHealthStateId} does not exist`
+                    `HealthState with id ${patient.currentHealthStateName} does not exist`
                 );
             }
             draftState.patients[patient.id] = cloneDeepMutable(patient);

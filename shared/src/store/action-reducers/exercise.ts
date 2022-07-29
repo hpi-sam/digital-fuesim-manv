@@ -79,11 +79,12 @@ export namespace ExerciseActionReducers {
             // Refresh patient status
             patientUpdates.forEach((patientUpdate) => {
                 const currentPatient = draftState.patients[patientUpdate.id]!;
-                currentPatient.currentHealthStateId = patientUpdate.nextStateId;
+                currentPatient.currentHealthStateName =
+                    patientUpdate.nextStateName;
                 currentPatient.stateTime = patientUpdate.nextStateTime;
                 currentPatient.treatmentTime = patientUpdate.treatmentTime;
                 if (currentPatient.treatmentHistory.length === 0) {
-                    for (let i = 0; i <= 60 / tickInterval; i++) {
+                    for (let i = 0; i <= (60 * 1000) / tickInterval; i++) {
                         currentPatient.treatmentHistory.push({
                             gf: 0,
                             material: 0,
