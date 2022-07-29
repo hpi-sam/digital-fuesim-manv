@@ -100,7 +100,11 @@ export class VehicleFeatureManager extends ElementFeatureManager<
         return false;
     }
 
-    override unsupportedChangeProperties = new Set(['id', 'image'] as const);
+    override unsupportedChangeProperties = new Set([
+        'id',
+        'image',
+        'images',
+    ] as const);
 
     public override onFeatureClicked(
         event: MapBrowserEvent<any>,

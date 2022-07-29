@@ -37,10 +37,16 @@ const carryingUnitImage: ImageProperties = {
     aspectRatio: 1,
 };
 
+const carryingUnitWithPatientImage: ImageProperties = {
+    url: '/assets/carrying-unit-with-patient.svg',
+    height: 210,
+    aspectRatio: 1,
+};
+
 const rtwVehicleTemplate = VehicleTemplate.create(
     'RTW',
     `RTW ???`,
-    rtwImage,
+    [rtwImage],
     1,
     ['notSan', 'rettSan'],
     [
@@ -56,7 +62,7 @@ const rtwVehicleTemplate = VehicleTemplate.create(
 const ktwVehicleTemplate = VehicleTemplate.create(
     'KTW',
     `KTW ???`,
-    ktwImage,
+    [ktwImage],
     1,
     ['san', 'rettSan'],
     [
@@ -72,7 +78,7 @@ const ktwVehicleTemplate = VehicleTemplate.create(
 const carryingUnitVehicleTemplate = VehicleTemplate.create(
     'Tragetrupp',
     `Tragetrupp ???`,
-    carryingUnitImage,
+    [carryingUnitImage, carryingUnitWithPatientImage],
     1,
     [],
     []
@@ -81,7 +87,7 @@ const carryingUnitVehicleTemplate = VehicleTemplate.create(
 const ktwKatSchutzVehicleTemplate = VehicleTemplate.create(
     'KTW (KatSchutz)',
     `KTW (KatSchutz) ???`,
-    ktwImage,
+    [ktwImage],
     2,
     ['san', 'rettSan'],
     [
@@ -97,7 +103,7 @@ const ktwKatSchutzVehicleTemplate = VehicleTemplate.create(
 const gwSanVehicleTemplate = VehicleTemplate.create(
     'GW-San',
     `GW-San ???`,
-    gwSanImage,
+    [gwSanImage],
     0,
     ['gf', 'rettSan', 'rettSan', 'san', 'san', 'notarzt'],
     [
@@ -155,7 +161,7 @@ const gwSanVehicleTemplate = VehicleTemplate.create(
 const nefVehicleTemplate = VehicleTemplate.create(
     'NEF',
     `NEF ???`,
-    nefImage,
+    [nefImage],
     0,
     ['notarzt', 'notSan'],
     [
@@ -171,7 +177,7 @@ const nefVehicleTemplate = VehicleTemplate.create(
 const rthVehicleTemplate = VehicleTemplate.create(
     'RTH',
     `RTH ???`,
-    rthImage,
+    [rthImage],
     1,
     ['notarzt', 'notSan'],
     [

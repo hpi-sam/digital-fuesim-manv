@@ -5,7 +5,9 @@ import {
     ValidateNested,
     IsNumber,
     IsArray,
+    ArrayNotEmpty,
 } from 'class-validator';
+import { ReducerError } from '../store';
 import { uuidValidationOptions, UUID, uuid } from '../utils';
 import type { PersonnelType } from './utils';
 import { CanCaterFor, ImageProperties, getCreate } from './utils';
@@ -20,9 +22,22 @@ export class VehicleTemplate {
     @IsString()
     public readonly name: string;
 
+    /**
+     * currentImage, loaded from images
+     */
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
+
+    /**
+     * If an array, at position 0 it means zero patients are loaded
+     * at position 1 one patient is loaded, etc.
+     */
+    @IsArray()
+    @ArrayNotEmpty()
+    @ValidateNested({ each: true })
+    @Type(() => ImageProperties)
+    public readonly images: ImageProperties[];
 
     @IsNumber()
     public readonly patientCapacity: number;
@@ -42,14 +57,20 @@ export class VehicleTemplate {
     constructor(
         vehicleType: string,
         name: string,
-        image: ImageProperties,
+        images: ImageProperties[],
         patientCapacity: number,
         personnel: readonly PersonnelType[],
         materials: readonly CanCaterFor[]
     ) {
+        if (images.length > patientCapacity + 1)
+            throw new ReducerError(
+                `vehicle was tried to be created, but images.length is greater than patientCapacity + 1`
+            );
+
         this.vehicleType = vehicleType;
         this.name = name;
-        this.image = image;
+        this.images = images;
+        this.image = images[0]!;
         this.patientCapacity = patientCapacity;
         this.personnel = personnel;
         this.materials = materials;

@@ -236,6 +236,13 @@ export namespace VehicleActionReducers {
                     y: unloadPosition.y,
                 };
             }
+            const newImage = vehicle.images[0];
+            if (newImage === undefined) {
+                throw new ReducerError(
+                    `vehicle was tried to be loaeded while not having ImageProperties at images[0]`
+                );
+            }
+            vehicle.image = newImage;
             calculateTreatments(draftState);
             return draftState;
         },
@@ -306,6 +313,20 @@ export namespace VehicleActionReducers {
                         // If a personnel is in transfer, this doesn't change that
                         draftState.personnel[personnelId]!.position = undefined;
                     });
+                }
+            }
+            // if there is more than a standard image
+            if (Object.keys(vehicle.images).length > 1) {
+                const numberOfPatientsInVehicle = Object.keys(
+                    vehicle.patientIds
+                ).length;
+                const newImage = vehicle.images[numberOfPatientsInVehicle];
+                if (newImage !== undefined) {
+                    vehicle.image = newImage;
+                } else {
+                    throw new ReducerError(
+                        `vehicle was tried to be unloaed while not having correct imagesPatientsLoaded`
+                    );
                 }
             }
             calculateTreatments(draftState);

@@ -1,5 +1,7 @@
 import { Type } from 'class-transformer';
 import {
+    ArrayNotEmpty,
+    IsArray,
     IsDefined,
     IsNumber,
     IsOptional,
@@ -36,9 +38,22 @@ export class Vehicle {
     @IsOptional()
     public readonly position?: Position;
 
+    /**
+     * currentImage, loaded from images
+     */
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
+
+    /**
+     * If an array, at position 0 it means zero patients are loaded
+     * at position 1 one patient is loaded, etc.
+     */
+    @IsArray()
+    @ArrayNotEmpty()
+    @ValidateNested({ each: true })
+    @Type(() => ImageProperties)
+    public readonly images: ImageProperties[];
 
     /**
      * Exclusive-or to {@link position}
@@ -64,13 +79,20 @@ export class Vehicle {
         name: string,
         materialIds: UUIDSet,
         patientCapacity: number,
-        image: ImageProperties
+        images: ImageProperties[]
     ) {
+        // TODO: check that there can't be more images than patients that can be loaded + 1
+        // if (images.length > patientCapacity + 1)
+        //     throw new ReducerError(
+        //         `vehicle was tried to be created, but imagesP.length is greater than patientCapacity + 1`
+        //     );
+
         this.vehicleType = vehicleType;
         this.name = name;
         this.materialIds = materialIds;
         this.patientCapacity = patientCapacity;
-        this.image = image;
+        this.images = images;
+        this.image = this.images[0]!;
     }
 
     static readonly create = getCreate(this);
