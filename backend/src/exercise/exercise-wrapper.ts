@@ -284,7 +284,7 @@ export class ExerciseWrapper extends NormalType<
                     )
             );
             pushAll(exercise.temporaryActionHistory, actions);
-            exercise.restore();
+            exercise.restore(true);
             exercise.tickCounter = actions.filter(
                 (action) => action.action.type === '[Exercise] Tick'
             ).length;
@@ -316,7 +316,7 @@ export class ExerciseWrapper extends NormalType<
         return exercise;
     }
 
-    private restore(): void {
+    private restore(keepActions: boolean): void {
         if (this.stateVersion !== ExerciseState.currentStateVersion) {
             throw new RestoreError(
                 `The exercise was created with an incompatible version of the state (got version ${this.stateVersion}, required version ${ExerciseState.currentStateVersion})`,
@@ -324,10 +324,10 @@ export class ExerciseWrapper extends NormalType<
             );
         }
         this.validateInitialState();
-        this.restoreState();
+        this.restoreState(keepActions);
     }
 
-    private restoreState() {
+    private restoreState(keepActions: boolean) {
         this.currentState = this.initialState;
         this.temporaryActionHistory.forEach((action) => {
             this.validateAction(action.action);
@@ -337,8 +337,8 @@ export class ExerciseWrapper extends NormalType<
         this.incrementIdGenerator.setCurrent(
             this.temporaryActionHistory.length
         );
-        // Remove all actions to not save them again (if database is active)
-        if (Config.useDb) {
+        // Remove all actions to not save them again (if database is active and this is intended behavior in this context)
+        if (Config.useDb && !keepActions) {
             this.temporaryActionHistory.splice(
                 0,
                 this.temporaryActionHistory.length
@@ -418,7 +418,7 @@ export class ExerciseWrapper extends NormalType<
                 })
             );
             await Promise.all(
-                exercises.map(async (exercise) => exercise.restore())
+                exercises.map(async (exercise) => exercise.restore(false))
             );
             exercises.forEach((exercise) => {
                 exerciseMap.set(exercise.participantId, exercise);
