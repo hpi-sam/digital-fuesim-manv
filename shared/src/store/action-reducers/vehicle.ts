@@ -236,6 +236,8 @@ export namespace VehicleActionReducers {
                     y: unloadPosition.y,
                 };
             }
+            if (vehicle.imagesPatientsLoaded?.[0] !== undefined)
+                vehicle.image = vehicle.imagesPatientsLoaded[0];
             calculateTreatments(draftState);
             return draftState;
         },
@@ -306,6 +308,25 @@ export namespace VehicleActionReducers {
                         // If a personnel is in transfer, this doesn't change that
                         draftState.personnel[personnelId]!.position = undefined;
                     });
+                }
+            }
+            if (vehicle.imagesPatientsLoaded !== undefined) {
+                const numberOfPatientsInVehicle = Object.keys(
+                    vehicle.patientIds
+                ).length;
+                if (
+                    vehicle.imagesPatientsLoaded[numberOfPatientsInVehicle] !==
+                    undefined
+                ) {
+                    // TODO: why needing "!"" at the end?
+                    vehicle.image =
+                        vehicle.imagesPatientsLoaded[
+                            numberOfPatientsInVehicle
+                        ]!;
+                } else {
+                    throw new ReducerError(
+                        `vehicle was tried to be unloaed while not having correct imagesPatientsLoaded`
+                    );
                 }
             }
             calculateTreatments(draftState);
