@@ -27,11 +27,6 @@ export interface ActionReducer<A extends Action = Action> {
  */
 export interface Action {
     readonly type: `[${string}] ${string}`;
-    /**
-     * This timestamp will be refreshed by the server when receiving the action.
-     * Only use a field with this name in case you want this behavior.
-     */
-    timestamp?: number;
 }
 
 /**
@@ -51,6 +46,23 @@ export interface Action {
  * const anAction: ExerciseAction = { type: 'some action' };
  * exerciseReducerMap[anAction.type](draftState, anAction);
  * ```
+ *
+ *
+ * Be aware that the action is immutable!
+ * [While TypeScript allows assigning immutable objects to properties of mutable objects](https://github.com/microsoft/TypeScript/issues/13347),
+ * we have an eslint rule that shields against this.
+ * You must always clone parts of the action before assigning them to the draftState.
+ * The same could also apply for objects created inside the reducer function - like with a `Model.create()`, which by default returns an immutable object.
+ *
+ * Example:
+ * ```ts
+ * const reducerFunction = (draftState, anAction) =>  {
+ *     draftState.someObject = cloneDeepMutable(anAction.someObject);
+ *     draftState.someOtherObject = cloneDeepMutable(SomeOtherObject.create());
+ *     return draftState;
+ * }
+ * ```
+ *
  */
 type ReducerFunction<A extends Action> = (
     // These functions can only work with a mutable state object, because we expect them to be executed in immers produce context.

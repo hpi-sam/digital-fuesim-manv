@@ -10,6 +10,7 @@ import type {
     StateExport,
 } from 'digital-fuesim-manv-shared';
 import { reduceExerciseState } from 'digital-fuesim-manv-shared';
+import { freeze } from 'immer';
 import type { Observable } from 'rxjs';
 import { BehaviorSubject, lastValueFrom, map, of, switchMap } from 'rxjs';
 import type { AppState } from '../state/app.state';
@@ -168,6 +169,8 @@ export class ApiService {
             });
             throw error;
         });
+        // Freeze to prevent accidental modification
+        freeze(exerciseTimeLine, true);
         if (!this.activatingTimeTravel) {
             // The timeTravel has been stopped during the retrieval of the timeline
             return;
@@ -196,10 +199,7 @@ export class ApiService {
      * @param optimistic wether the action should be applied before the server responds (to reduce latency) (this update is guaranteed to be synchronous)
      * @returns the response of the server
      */
-    public async proposeAction<A extends ExerciseAction>(
-        action: A,
-        optimistic = false
-    ) {
+    public async proposeAction(action: ExerciseAction, optimistic = false) {
         if (this.isTimeTraveling) {
             this.messageService.postError({
                 title: 'Die Vergangenheit kann nicht bearbeitet werden',
@@ -236,7 +236,7 @@ export class ApiService {
             this.httpClient.get<ExerciseTimeline>(
                 `${httpOrigin}/api/exercise/${this.exerciseId}/history`
             )
-        );
+        ).then((value) => freeze(value, true));
     }
 
     public async deleteExercise(trainerId: string) {

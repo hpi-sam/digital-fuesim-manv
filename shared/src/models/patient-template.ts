@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsDefined, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { cloneDeepMutable, UUID, uuid, uuidValidationOptions } from '../utils';
 import type { PatientStatusCode } from './utils';
 import {
     BiometricInformation,
@@ -70,25 +70,27 @@ export class PatientTemplate {
     ): Patient {
         // Randomize function parameters
         const healthStates = Object.fromEntries(
-            Object.entries(template.healthStates).map(([stateId, state]) => {
-                const functionParameters = Object.fromEntries(
-                    Object.entries(state.functionParameters).map(
-                        ([key, value]) => [
-                            key as keyof FunctionParameters,
-                            randomizeValue(value, 0.2),
-                        ]
-                        // The signatures for Object.fromEntries and Object.entries are not made for literals...
-                    ) as [keyof FunctionParameters, any][]
-                ) as FunctionParameters;
-                // The function parameters will randomize by 20%
-                return [
-                    stateId,
-                    {
-                        ...state,
-                        functionParameters,
-                    },
-                ];
-            })
+            Object.entries(cloneDeepMutable(template.healthStates)).map(
+                ([stateId, state]) => {
+                    const functionParameters = Object.fromEntries(
+                        Object.entries(state.functionParameters).map(
+                            ([key, value]) => [
+                                key as keyof FunctionParameters,
+                                randomizeValue(value, 0.2),
+                            ]
+                            // The signatures for Object.fromEntries and Object.entries are not made for literals...
+                        ) as [keyof FunctionParameters, any][]
+                    ) as FunctionParameters;
+                    // The function parameters will randomize by 20%
+                    return [
+                        stateId,
+                        {
+                            ...state,
+                            functionParameters,
+                        },
+                    ];
+                }
+            )
         );
         const status = getStatus(template.health);
         return Patient.create(

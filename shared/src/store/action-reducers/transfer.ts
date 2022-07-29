@@ -3,7 +3,7 @@ import type { ExerciseState } from '../..';
 import { imageSizeToPosition, Position, TransferPoint } from '../..';
 import { StartPoint } from '../../models/utils/start-points';
 import type { Mutable } from '../../utils';
-import { UUID, uuidValidationOptions } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { getElement } from './utils/get-element';
@@ -28,11 +28,13 @@ export function letElementArrive(
         'transferPoints',
         element.transfer.targetTransferPointId
     );
-    element.position = Position.create(
-        targetTransferPoint.position.x,
-        targetTransferPoint.position.y +
-            //  Position it in the upper half of the transferPoint)
-            imageSizeToPosition(TransferPoint.image.height / 3)
+    element.position = cloneDeepMutable(
+        Position.create(
+            targetTransferPoint.position.x,
+            targetTransferPoint.position.y +
+                //  Position it in the upper half of the transferPoint)
+                imageSizeToPosition(TransferPoint.image.height / 3)
+        )
     );
     delete element.transfer;
 }
@@ -144,7 +146,7 @@ export namespace TransferActionReducers {
             // Set the element to transfer
             delete element.position;
             element.transfer = {
-                startPoint,
+                startPoint: cloneDeepMutable(startPoint),
                 targetTransferPointId,
                 endTimeStamp: draftState.currentTime + duration,
                 isPaused: false,

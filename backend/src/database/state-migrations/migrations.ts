@@ -1,5 +1,6 @@
 import type {
     ExerciseState,
+    Mutable,
     StateExport,
     UUID,
 } from 'digital-fuesim-manv-shared';
@@ -7,6 +8,10 @@ import type { EntityManager } from 'typeorm';
 import { RestoreError } from '../../utils/restore-error';
 import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
 import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity';
+import { updateEocLog3 } from './3-update-eoc-log';
+import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
+import { removeStatistics5 } from './5-remove-statistics';
+import { removeStateHistory6 } from './6-remove-state-history';
 import { impossibleMigration } from './impossible-migration';
 
 /**
@@ -37,6 +42,10 @@ export const migrations: {
     [key: number]: Migration;
 } = {
     2: impossibleMigration,
+    3: updateEocLog3,
+    4: removeSetParticipantIdAction4,
+    5: removeStatistics5,
+    6: removeStateHistory6,
 };
 
 export async function migrateInDatabaseTo(
@@ -147,11 +156,11 @@ export function migrateStateExportTo(
     migrationFunctions.state.forEach((migrateStateFunction) => {
         stateExport.currentState = migrateStateFunction(
             stateExport.currentState
-        ) as ExerciseState;
+        ) as Mutable<ExerciseState>;
         if (stateExport.history) {
             stateExport.history.initialState = migrateStateFunction(
                 stateExport.history.initialState
-            ) as ExerciseState;
+            ) as Mutable<ExerciseState>;
         }
     });
     if (stateExport.history) {
@@ -161,7 +170,10 @@ export function migrateStateExportTo(
                 stateExport.history!.actionHistory
             );
         });
-        stateExport.history.actionHistory.filter((action) => action !== null);
+        stateExport.history.actionHistory =
+            stateExport.history.actionHistory.filter(
+                (action) => action !== null
+            );
     }
     return stateExport;
 }

@@ -5,7 +5,7 @@ import type {
     Transfer,
     Personnel,
 } from 'digital-fuesim-manv-shared';
-import { Viewport, ExerciseState } from 'digital-fuesim-manv-shared';
+import { Viewport } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
 import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
@@ -77,6 +77,7 @@ export const selectTileMapProperties = (state: AppState) =>
     state.exercise.configuration.tileMapProperties;
 export const selectConfiguration = (state: AppState) =>
     state.exercise.configuration;
+export const selectEocLogEntries = (state: AppState) => state.exercise.eocLog;
 /**
  * @returns a selector that returns a dictionary of all elements that have a position and are in the viewport restriction
  */
@@ -112,7 +113,7 @@ export const getSelectClient = (clientId: UUID) => (state: AppState) =>
     state.exercise.clients[clientId]!;
 
 export const selectExerciseStatus = (state: AppState) =>
-    ExerciseState.getStatus(state.exercise);
+    state.exercise.currentStatus;
 
 export const selectParticipantId = (state: AppState) =>
     state.exercise.participantId;

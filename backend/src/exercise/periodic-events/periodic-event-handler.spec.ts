@@ -1,4 +1,4 @@
-import { sleep } from '../../../test/utils';
+import { sleep } from 'digital-fuesim-manv-shared';
 import { PeriodicEventHandler } from './periodic-event-handler';
 
 describe('Periodic Event Handler', () => {

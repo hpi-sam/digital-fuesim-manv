@@ -6,13 +6,13 @@ import type {
     MergeIntersection,
     ServerToClientEvents,
 } from 'digital-fuesim-manv-shared';
-import { socketIoTransports } from 'digital-fuesim-manv-shared';
+import { sleep, socketIoTransports } from 'digital-fuesim-manv-shared';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import request from 'supertest';
 import type { DataSource } from 'typeorm';
-import type { HttpMethod } from '../src/exercise/http-handler/secure-http';
 import { Config } from '../src/config';
+import type { HttpMethod } from '../src/exercise/http-handler/secure-http';
 import { FuesimServer } from '../src/fuesim-server';
 import type { SocketReservedEvents } from './socket-reserved-events';
 
@@ -201,9 +201,4 @@ export async function createExercise(
         .expect(201);
 
     return response.body as ExerciseCreationResponse;
-}
-
-export async function sleep(ms: number) {
-    // eslint-disable-next-line no-promise-executor-return
-    return new Promise((resolve) => setTimeout(resolve, ms));
 }

@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { TransferPoint } from '../../models';
 import { Position } from '../../models/utils';
-import { uuidValidationOptions, UUID } from '../../utils';
+import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { letElementArrive } from './transfer';
@@ -111,7 +111,8 @@ export namespace TransferPointActionReducers {
     export const addTransferPoint: ActionReducer<AddTransferPointAction> = {
         action: AddTransferPointAction,
         reducer: (draftState, { transferPoint }) => {
-            draftState.transferPoints[transferPoint.id] = transferPoint;
+            draftState.transferPoints[transferPoint.id] =
+                cloneDeepMutable(transferPoint);
             return draftState;
         },
         rights: 'trainer',
@@ -125,7 +126,7 @@ export namespace TransferPointActionReducers {
                 'transferPoints',
                 transferPointId
             );
-            transferPoint.position = targetPosition;
+            transferPoint.position = cloneDeepMutable(targetPosition);
             return draftState;
         },
         rights: 'trainer',

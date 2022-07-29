@@ -1,4 +1,5 @@
 import type { Viewport } from '../models';
+import type { ExerciseStatus } from '../models/utils';
 import { ExerciseState } from '../state';
 import type { UUID } from '../utils';
 import { uuid } from '../utils';
@@ -32,7 +33,7 @@ describe('exerciseReducer', () => {
     }
 
     beforeEach(() => {
-        state = ExerciseState.create();
+        state = ExerciseState.create('123456');
     });
 
     it('should apply simple actions', () => {
@@ -47,5 +48,40 @@ describe('exerciseReducer', () => {
 
     it('should throw an error if an action is unsuccessful', () => {
         expect(() => removeViewport(uuid())).toThrow(ReducerError);
+    });
+
+    describe('exercise starting/stopping', () => {
+        function pauseExercise() {
+            state = reduceExerciseState(state, {
+                type: '[Exercise] Pause',
+            });
+        }
+        function startExercise() {
+            state = reduceExerciseState(state, {
+                type: '[Exercise] Start',
+            });
+        }
+        it('does not start the exercise twice', () => {
+            startExercise();
+            expect(startExercise).toThrow(ReducerError);
+        });
+        it('does not pause a not started exercise', () => {
+            expect(pauseExercise).toThrow(ReducerError);
+        });
+        it('does not pause a not running exercise', () => {
+            startExercise();
+            pauseExercise();
+            expect(pauseExercise).toThrow(ReducerError);
+        });
+        it('correctly starts and stops an exercise', () => {
+            const expectStatus = (expected: ExerciseStatus) => {
+                expect(state.currentStatus).toBe(expected);
+            };
+            expectStatus('notStarted');
+            startExercise();
+            expectStatus('running');
+            pauseExercise();
+            expectStatus('paused');
+        });
     });
 });

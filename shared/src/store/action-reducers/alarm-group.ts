@@ -9,7 +9,7 @@ import {
 import { AlarmGroup } from '../../models/alarm-group';
 import { AlarmGroupVehicle } from '../../models/utils/alarm-group-vehicle';
 import type { Mutable } from '../../utils';
-import { UUID, uuidValidationOptions } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { getElement } from './utils/get-element';
@@ -83,7 +83,8 @@ export namespace AlarmGroupActionReducers {
     export const addAlarmGroup: ActionReducer<AddAlarmGroupAction> = {
         action: AddAlarmGroupAction,
         reducer: (draftState, { alarmGroup }) => {
-            draftState.alarmGroups[alarmGroup.id] = alarmGroup;
+            draftState.alarmGroups[alarmGroup.id] =
+                cloneDeepMutable(alarmGroup);
             return draftState;
         },
         rights: 'trainer',
@@ -123,7 +124,7 @@ export namespace AlarmGroupActionReducers {
                     alarmGroupId
                 );
                 alarmGroup.alarmGroupVehicles[alarmGroupVehicle.id] =
-                    alarmGroupVehicle;
+                    cloneDeepMutable(alarmGroupVehicle);
                 return draftState;
             },
             rights: 'trainer',

@@ -71,10 +71,9 @@ module.exports = {
         'arrow-body-style': 'warn',
         'no-restricted-exports': 'warn',
         'no-restricted-imports': [
-            'warn',
+            'error',
             {
                 name: 'lodash',
-                importNames: ['lodash-es'],
                 message: 'Please use lodash-es instead.',
             },
             'assert',

@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
-import type { AreaStatistics, UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import { BehaviorSubject, map, switchMap } from 'rxjs';
-import type { AppState } from 'src/app/state/app.state';
-import { decimateStatistics } from './shared/decimate-statistics';
+import { BehaviorSubject, combineLatest, map } from 'rxjs';
+import type { AreaStatistics } from '../core/statistics/area-statistics';
+import { StatisticsService } from '../core/statistics/statistics.service';
 
 @Injectable({
     providedIn: 'root',
@@ -21,39 +20,30 @@ export class AreaStatisticsService {
      * Emits the statistics for the current area and the accompanying correct exerciseTime
      */
     public readonly areaStatistics$: Observable<AreaStatisticsEntry[]> =
-        this.areaId$.pipe(
-            switchMap((areaId) =>
-                this.store.select(
-                    (state) =>
-                        state.exercise.statistics
-                            .map((statisticEntry) => ({
-                                value:
-                                    areaId === null
-                                        ? statisticEntry.exercise
-                                        : // This is filtered out in the next step, if the viewport didn't exist yet
-                                          statisticEntry.viewports[areaId],
-                                exerciseTime: statisticEntry.exerciseTime,
-                            }))
-                            .filter(
-                                (entry) => entry.value !== undefined
-                            ) as AreaStatisticsEntry[]
-                )
+        combineLatest([this.statisticsService.statistics$, this.areaId$]).pipe(
+            map(
+                ([statistics, areaId]) =>
+                    statistics
+                        .map((statisticEntry) => ({
+                            value:
+                                areaId === null
+                                    ? statisticEntry.exercise
+                                    : // This is filtered out in the next step, if the viewport didn't exist yet
+                                      statisticEntry.viewports[areaId],
+                            exerciseTime: statisticEntry.exerciseTime,
+                        }))
+                        .filter(
+                            (entry) => entry.value !== undefined
+                        ) as AreaStatisticsEntry[]
             )
         );
 
-    /**
-     * The {@link areaStatistics$} decimated to reduce the amount of data per emit
-     */
-    public readonly decimatedAreaStatistics$ = this.areaStatistics$.pipe(
-        map((statistics) => decimateStatistics(statistics))
-    );
+    constructor(private readonly statisticsService: StatisticsService) {}
 
     public setAreaId(areaId: UUID | null) {
         this.areaId = areaId;
         this.areaId$.next(areaId);
     }
-
-    constructor(private readonly store: Store<AppState>) {}
 }
 
 export interface AreaStatisticsEntry {

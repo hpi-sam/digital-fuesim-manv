@@ -7,6 +7,7 @@ import type {
     UUID,
 } from 'digital-fuesim-manv-shared';
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
+import { freeze } from 'immer';
 import { BehaviorSubject } from 'rxjs';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
@@ -64,6 +65,7 @@ export class PresentExerciseHelper {
         private readonly messageService: MessageService
     ) {
         this.socket.on('performAction', (action: ExerciseAction) => {
+            freeze(action, true);
             this.optimisticActionHandler.performAction(action);
         });
         this.socket.on('disconnect', (reason) => {
@@ -168,6 +170,7 @@ export class PresentExerciseHelper {
                 this.socket.emit('getState', resolve);
             }
         );
+        freeze(response, true);
         if (!response.success) {
             this.messageService.postError({
                 title: 'Fehler beim Laden der Übung',
