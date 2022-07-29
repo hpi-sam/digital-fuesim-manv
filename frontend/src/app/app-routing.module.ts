@@ -12,7 +12,8 @@ const routes: Routes = [
     },
     {
         path: 'exercises',
-        loadChildren: async () =>
+        // eslint-disable-next-line @typescript-eslint/promise-function-async
+        loadChildren: () =>
             import('./pages/exercises/exercises.module').then(
                 (m) => m.ExercisesModule
             ),

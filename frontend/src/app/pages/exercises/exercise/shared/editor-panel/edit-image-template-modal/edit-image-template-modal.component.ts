@@ -7,7 +7,7 @@ import type {
     Mutable,
     UUID,
 } from 'digital-fuesim-manv-shared';
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import { getSelectMapImageTemplate } from 'src/app/state/exercise/exercise.selectors';

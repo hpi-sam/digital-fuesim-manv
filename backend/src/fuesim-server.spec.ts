@@ -4,6 +4,7 @@ import { uuid } from 'digital-fuesim-manv-shared';
 import { exerciseMap } from 'exercise/exercise-map';
 import { EntityManager } from 'typeorm';
 import { createExercise, createTestEnvironment } from '../test/utils';
+import { pushAll } from './utils/array';
 
 describe('Exercise saving', () => {
     const environment = createTestEnvironment();
@@ -42,7 +43,7 @@ describe('Exercise saving', () => {
                     },
                     null
                 );
-                savedEntities.push(...entities);
+                pushAll(savedEntities, entities);
                 return entities;
                 // TODO: Better type
             }) as any);

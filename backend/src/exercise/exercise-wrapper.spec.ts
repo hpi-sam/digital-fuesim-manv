@@ -41,7 +41,7 @@ describe('Exercise Wrapper', () => {
     });
 
     it('does nothing removing a client that is not joined', async () => {
-        const exercise = await ExerciseWrapper.create(
+        const exercise = ExerciseWrapper.create(
             '123456',
             '12345678',
             environment.databaseService

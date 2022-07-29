@@ -27,11 +27,6 @@ export interface ActionReducer<A extends Action = Action> {
  */
 export interface Action {
     readonly type: `[${string}] ${string}`;
-    /**
-     * This timestamp will be refreshed by the server when receiving the action.
-     * Only use a field with this name in case you want this behavior.
-     */
-    timestamp?: number;
 }
 
 /**
