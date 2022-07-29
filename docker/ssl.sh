@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# TODO: checking if this whole script gets executed correctly
-
 echo "Info: HTTPS is enabled via DFM_ENABLE_SSL"
 
 if [[ -z "${DFM_DOMAIN}" ]]; then
@@ -16,6 +14,8 @@ chown -R www-data:www-data /var/www/acme-challenge
 
 # ignore "that no renewal is needed"
 set +e
+
+# TODO: checking if this acme.sh renewed or created certs sucessfully (look at acme.sh error codes/numbers)
 
  acme.sh --issue \
 --ecc \
@@ -32,11 +32,13 @@ set +e
 
 set -e
 
+# right now only checking if files exist
 # TODO: checking if anything valid is in the files, e.g. files could be empty
+#       or check via something like openssl s_client -connect
 if [[ -f "${DFM_CERTS_PATH}/cert.pem" && -f "${DFM_CERTS_PATH}/key.pem" && -f "${DFM_CERTS_PATH}/fullchain.pem" ]]; then
     echo "Sucess: all needed cert files exist"
 else
-    echo "Error: Not all necessary certs exits in ${DFM_CERTS_PATH}, maybe acme.sh couldn't connect to letsencrypt or letsencrypt couldn't reach this server over http port 80"
+    echo "Error: Not all necessary cert files exits in ${DFM_CERTS_PATH}, maybe acme.sh couldn't connect to letsencrypt or letsencrypt couldn't reach this server over http port 80"
     exit 1
 fi
 
