@@ -67,7 +67,11 @@ export const registerProposeActionHandler = (
             }
             // 4. apply & broadcast action (+ save to timeline)
             try {
-                exerciseWrapper.applyAction(action, clientWrapper.client.id);
+                exerciseWrapper.applyAction(
+                    action,
+                    clientWrapper.client.id,
+                    false
+                );
             } catch (error: any) {
                 if (error instanceof ReducerError) {
                     callback({

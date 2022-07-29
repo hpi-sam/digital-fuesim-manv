@@ -219,7 +219,7 @@ export class ExerciseWrapper extends NormalType<
                 this.tickCounter % this.refreshTreatmentInterval === 0,
             tickInterval: this.tickInterval,
         };
-        this.applyAction(updateAction, this.emitterId);
+        this.applyAction(updateAction, this.emitterId, true);
         this.tickCounter++;
         this.markAsModified();
     };
@@ -351,7 +351,8 @@ export class ExerciseWrapper extends NormalType<
                 {
                     type: '[Exercise] Pause',
                 },
-                this.emitterId
+                this.emitterId,
+                true
             );
         // Remove all clients from state
         Object.values(this.currentState.clients).forEach((client) => {
@@ -359,7 +360,7 @@ export class ExerciseWrapper extends NormalType<
                 type: '[Client] Remove client',
                 clientId: client.id,
             };
-            this.reduce(removeClientAction, this.emitterId);
+            this.reduce(removeClientAction, this.emitterId, true);
         });
     }
 
@@ -467,7 +468,7 @@ export class ExerciseWrapper extends NormalType<
             type: '[Client] Add client',
             client,
         };
-        this.applyAction(addClientAction, client.id);
+        this.applyAction(addClientAction, client.id, true);
         // Only after all this add the client in order to not send the action adding itself to it
         this.clients.add(clientWrapper);
     }
@@ -482,7 +483,7 @@ export class ExerciseWrapper extends NormalType<
             type: '[Client] Remove client',
             clientId: client.id,
         };
-        this.applyAction(removeClientAction, client.id, () => {
+        this.applyAction(removeClientAction, client.id, true, () => {
             clientWrapper.disconnect();
             this.clients.delete(clientWrapper);
         });
@@ -504,9 +505,10 @@ export class ExerciseWrapper extends NormalType<
     public applyAction(
         action: ExerciseAction,
         emitterId: UUID | null,
+        validateAction: boolean,
         intermediateAction?: () => void
     ): void {
-        this.reduce(action, emitterId);
+        this.reduce(action, emitterId, validateAction);
         intermediateAction?.();
         this.emitAction(action);
     }
@@ -515,8 +517,14 @@ export class ExerciseWrapper extends NormalType<
      * Applies the action on the current state.
      * @throws Error if the action is not applicable on the current state
      */
-    private reduce(action: ExerciseAction, emitterId: UUID | null): void {
-        this.validateAction(action);
+    private reduce(
+        action: ExerciseAction,
+        emitterId: UUID | null,
+        validateAction: boolean
+    ): void {
+        if (validateAction) {
+            this.validateAction(action);
+        }
         const newState = reduceExerciseState(this.currentState, action);
         this.setState(newState, action, emitterId);
         if (action.type === '[Exercise] Pause') {
