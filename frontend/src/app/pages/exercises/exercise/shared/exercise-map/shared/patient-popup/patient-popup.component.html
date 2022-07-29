@@ -76,6 +76,21 @@
                                     {{ patient.personalInformation.address }}
                                 </td>
                             </tr>
+                            <tr>
+                                <th scope="col">Patienteninformationen</th>
+                                <td>
+                                    <textarea
+                                        [ngModel]="patient.userText"
+                                        (appSaveOnTyping)="
+                                            updateUserText($event)
+                                        "
+                                        [appAutofocus]="true"
+                                        maxlength="65535"
+                                        placeholder="Schreiben Sie Informationen über den Patienten in dieses Feld..."
+                                        class="form-control no-validation mb-3"
+                                    ></textarea>
+                                </td>
+                            </tr>
                             <ng-container
                                 *ngIf="
                                     (apiService.currentRole$ | async) !==
