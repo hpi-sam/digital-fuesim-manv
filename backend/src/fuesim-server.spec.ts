@@ -40,8 +40,7 @@ describe('Exercise saving', () => {
                             name: 'Alarm Group',
                         },
                     },
-                    null,
-                    true
+                    null
                 );
                 savedEntities.push(...entities);
                 return entities;

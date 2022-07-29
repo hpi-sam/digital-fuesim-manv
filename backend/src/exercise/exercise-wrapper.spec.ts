@@ -105,8 +105,7 @@ describe('Exercise Wrapper', () => {
 
             exercise.applyAction(
                 { type: '[Exercise] Start' },
-                (exercise as any).emitterUUID,
-                true
+                (exercise as any).emitterUUID
             );
             expect(startMock).toHaveBeenCalledTimes(1);
         });
@@ -124,14 +123,12 @@ describe('Exercise Wrapper', () => {
             // We have to start the exercise before it can be paused
             exercise.applyAction(
                 { type: '[Exercise] Start' },
-                (exercise as any).emitterUUID,
-                true
+                (exercise as any).emitterUUID
             );
 
             exercise.applyAction(
                 { type: '[Exercise] Pause' },
-                (exercise as any).emitterUUID,
-                true
+                (exercise as any).emitterUUID
             );
             expect(pause).toHaveBeenCalledTimes(1);
         });
