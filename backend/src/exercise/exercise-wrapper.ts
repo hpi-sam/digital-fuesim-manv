@@ -1,10 +1,12 @@
+import type { EntityManager } from 'typeorm';
+import { LessThan } from 'typeorm';
 import type {
     ExerciseAction,
-    ExerciseTimeline,
-    Role,
-    UUID,
     StateExport,
     ExerciseIds,
+    Role,
+    UUID,
+    ExerciseTimeline,
 } from 'digital-fuesim-manv-shared';
 import {
     ExerciseState,
@@ -12,8 +14,6 @@ import {
     validateExerciseState,
     validateExerciseAction,
 } from 'digital-fuesim-manv-shared';
-import type { EntityManager } from 'typeorm';
-import { LessThan } from 'typeorm';
 import { IncrementIdGenerator } from '../utils/increment-id-generator';
 import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
 import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
@@ -23,10 +23,7 @@ import { Config } from '../config';
 import { RestoreError } from '../utils/restore-error';
 import { UserReadableIdGenerator } from '../utils/user-readable-id-generator';
 import type { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
-import {
-    migrateInDatabaseTo,
-    migrateInMemoryTo,
-} from '../database/state-migrations/migrations';
+import { migrateInDatabaseTo } from '../database/state-migrations/migrations';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
@@ -43,15 +40,19 @@ export class ExerciseWrapper extends NormalType<
         return this._changedSinceSave;
     }
 
+    private numberOfActionsToBeSaved = 0;
+
     /**
      * Mark this exercise as being up-to-date in the database
      */
     public markAsSaved() {
-        this._changedSinceSave = false;
-        this.temporaryActionHistory.splice(
-            0,
-            this.temporaryActionHistory.length
-        );
+        this.temporaryActionHistory.splice(0, this.numberOfActionsToBeSaved);
+        this._changedSinceSave = this.temporaryActionHistory.length > 0;
+        this.numberOfActionsToBeSaved = 0;
+    }
+
+    public markAsAboutToBeSaved() {
+        this.numberOfActionsToBeSaved = this.temporaryActionHistory.length;
     }
 
     /**
@@ -82,6 +83,7 @@ export class ExerciseWrapper extends NormalType<
         entityManager?: EntityManager
     ): Promise<ExerciseWrapperEntity> {
         const operations = async (manager: EntityManager) => {
+            if (save) this.markAsAboutToBeSaved();
             const getFromDatabase = async () =>
                 this.databaseService.exerciseWrapperService.getFindById(
                     this.id!
@@ -243,7 +245,7 @@ export class ExerciseWrapper extends NormalType<
         public readonly temporaryActionHistory: ActionWrapper[],
         databaseService: DatabaseService,
         private readonly stateVersion: number,
-        private readonly initialState = ExerciseState.create(),
+        private readonly initialState = ExerciseState.create(participantId),
         private currentState: ExerciseState = initialState
     ) {
         super(databaseService);
@@ -258,14 +260,20 @@ export class ExerciseWrapper extends NormalType<
         exerciseIds: ExerciseIds
     ): Promise<ExerciseWrapper> {
         const importOperations = async (manager: EntityManager | undefined) => {
-            let exercise = new ExerciseWrapper(
+            const newInitialState =
+                file.history?.initialState ?? file.currentState;
+            const newCurrentState = file.currentState;
+            // Set new participant id
+            newInitialState.participantId = exerciseIds.participantId;
+            newCurrentState.participantId = exerciseIds.participantId;
+            const exercise = new ExerciseWrapper(
                 exerciseIds.participantId,
                 exerciseIds.trainerId,
                 [],
                 databaseService,
                 ExerciseState.currentStateVersion,
-                file.history?.initialState ?? file.currentState,
-                file.currentState
+                newInitialState,
+                newCurrentState
             );
             const actions = (file.history?.actionHistory ?? []).map(
                 (action) =>
@@ -277,40 +285,7 @@ export class ExerciseWrapper extends NormalType<
                     )
             );
             exercise.temporaryActionHistory.push(...actions);
-            if (manager === undefined) {
-                // eslint-disable-next-line require-atomic-updates
-                exercise = await migrateInMemoryTo(
-                    ExerciseState.currentStateVersion,
-                    exercise.stateVersion,
-                    exercise
-                );
-            } else {
-                const exerciseEntity = await exercise.save(manager);
-                await migrateInDatabaseTo(
-                    ExerciseState.currentStateVersion,
-                    exercise.stateVersion,
-                    exerciseEntity.id,
-                    manager
-                );
-                // eslint-disable-next-line require-atomic-updates
-                exercise = ExerciseWrapper.createFromEntity(
-                    await databaseService.exerciseWrapperService.getFindById(
-                        exerciseEntity.id
-                    )(manager),
-                    databaseService
-                );
-                // Reset actions to apply them (they are removed when saving the entity to the database)
-                exercise.temporaryActionHistory.push(...actions);
-            }
             exercise.restore();
-            exercise.applyAction(
-                {
-                    type: '[Exercise] Set Participant Id',
-                    participantId: exerciseIds.participantId,
-                },
-                exercise.emitterId,
-                undefined
-            );
             exercise.tickCounter = actions.filter(
                 (action) => action.action.type === '[Exercise] Tick'
             ).length;
@@ -328,7 +303,7 @@ export class ExerciseWrapper extends NormalType<
         participantId: string,
         trainerId: string,
         databaseService: DatabaseService,
-        initialState: ExerciseState = ExerciseState.create()
+        initialState: ExerciseState = ExerciseState.create(participantId)
     ): ExerciseWrapper {
         const exercise = new ExerciseWrapper(
             participantId,
@@ -337,14 +312,6 @@ export class ExerciseWrapper extends NormalType<
             databaseService,
             ExerciseState.currentStateVersion,
             initialState
-        );
-
-        exercise.applyAction(
-            {
-                type: '[Exercise] Set Participant Id',
-                participantId,
-            },
-            exercise.emitterId
         );
 
         return exercise;
@@ -379,11 +346,10 @@ export class ExerciseWrapper extends NormalType<
             );
         }
         // Pause exercise
-        if (this.currentState.statusHistory.at(-1)?.status === 'running')
+        if (this.currentState.currentStatus === 'running')
             this.reduce(
                 {
                     type: '[Exercise] Pause',
-                    timestamp: Date.now(),
                 },
                 this.emitterId
             );
@@ -409,14 +375,16 @@ export class ExerciseWrapper extends NormalType<
                         ),
                     },
                 })(manager);
-            outdatedExercises.forEach(async (exercise) => {
-                await migrateInDatabaseTo(
-                    ExerciseState.currentStateVersion,
-                    exercise.stateVersion,
-                    exercise.id,
-                    manager
-                );
-            });
+            await Promise.all(
+                outdatedExercises.map(async (exercise) => {
+                    await migrateInDatabaseTo(
+                        ExerciseState.currentStateVersion,
+                        exercise.stateVersion,
+                        exercise.id,
+                        manager
+                    );
+                })
+            );
 
             const exercises = await Promise.all(
                 (
@@ -586,6 +554,8 @@ export class ExerciseWrapper extends NormalType<
 
     public async deleteExercise() {
         this.clients.forEach((client) => client.disconnect());
+        // Pause the exercise to stop the tick
+        this.pause();
         exerciseMap.delete(this.participantId);
         exerciseMap.delete(this.trainerId);
         if (this.id !== undefined && Config.useDb) {

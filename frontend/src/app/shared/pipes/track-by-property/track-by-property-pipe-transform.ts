@@ -15,7 +15,7 @@ export function trackByPropertyPipeTransform<
 >(
     propertyNames: P | P[] | '$index' | '$value',
     // only to get the type for Items, because angular pipes don't support passing types as generic parameters
-    items?: Items
+    items?: Items | null
 ): TrackByFunction<Item> {
     // The transform function is in general called once per `trackBy:` (https://stackoverflow.com/questions/66365244/in-angular-ivy-why-pure-pipe-instance-is-not-cached-between-usages-like-in-view)
     // The here returned TrackByFunction could be called once per changeDetection cycle for each item in the ngFor loop -> should be very fast

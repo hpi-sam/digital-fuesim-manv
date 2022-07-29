@@ -13,6 +13,7 @@ import { TransferActionReducers } from './transfer';
 import { TransferPointActionReducers } from './transfer-point';
 import { VehicleActionReducers } from './vehicle';
 import { ViewportActionReducers } from './viewport';
+import { EmergencyOperationCenterActionReducers } from './emergency-operation-center';
 
 /**
  * All action reducers of the exercise must be registered here
@@ -33,6 +34,7 @@ const actionReducers = {
     ...MapImageTemplatesActionReducers,
     ...TransferActionReducers,
     ...HospitalActionReducers,
+    ...EmergencyOperationCenterActionReducers,
 };
 
 type ExerciseActionReducer = typeof actionReducers[keyof typeof actionReducers];

@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsDefined, IsString, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { cloneDeepMutable, UUID, uuid, uuidValidationOptions } from '../utils';
 import type { PatientStatusCode } from './utils';
 import { BiometricInformation, getCreate } from './utils';
 import { ImageProperties } from './utils/image-properties';
@@ -52,40 +52,45 @@ export class PatientTemplate {
     ): Patient {
         // Randomize function parameters
         const healthStates = Object.fromEntries(
-            Object.entries(template.healthStates).map(([stateId, state]) => {
-                const randomizedNextStateConditions = Object.values(
-                    state.nextStateConditions
-                ).map((condition) => {
-                    let newEarliestTime = condition.earliestTime;
-                    if (newEarliestTime) {
-                        newEarliestTime = randomizeValue(newEarliestTime, 0.2);
-                    }
-                    let newLatestTime = condition.latestTime;
-                    if (newLatestTime) {
-                        newLatestTime = randomizeValue(newLatestTime, 0.2);
-                    }
-                    return ConditionParameters.create(
-                        newEarliestTime,
-                        newLatestTime,
-                        condition.isBeingTreated,
-                        condition.requiredMaterialAmount,
-                        condition.requiredNotArztAmount,
-                        condition.requiredNotSanAmount,
-                        condition.requiredRettSanAmount,
-                        condition.requiredSanAmount,
-                        condition.matchingHealthStateId
-                    );
-                });
+            Object.entries(cloneDeepMutable(template.healthStates)).map(
+                ([stateId, state]) => {
+                    const randomizedNextStateConditions = Object.values(
+                        state.nextStateConditions
+                    ).map((condition) => {
+                        let newEarliestTime = condition.earliestTime;
+                        if (newEarliestTime) {
+                            newEarliestTime = randomizeValue(
+                                newEarliestTime,
+                                0.2
+                            );
+                        }
+                        let newLatestTime = condition.latestTime;
+                        if (newLatestTime) {
+                            newLatestTime = randomizeValue(newLatestTime, 0.2);
+                        }
+                        return ConditionParameters.create(
+                            newEarliestTime,
+                            newLatestTime,
+                            condition.isBeingTreated,
+                            condition.requiredMaterialAmount,
+                            condition.requiredNotArztAmount,
+                            condition.requiredNotSanAmount,
+                            condition.requiredRettSanAmount,
+                            condition.requiredSanAmount,
+                            condition.matchingHealthStateId
+                        );
+                    });
 
-                // The function parameters will randomize by 20%
-                return [
-                    stateId,
-                    {
-                        ...state,
-                        nextStateConditions: randomizedNextStateConditions,
-                    },
-                ];
-            })
+                    // The function parameters will randomize by 20%
+                    return [
+                        stateId,
+                        {
+                            ...state,
+                            nextStateConditions: randomizedNextStateConditions,
+                        },
+                    ];
+                }
+            )
         );
         return Patient.create(
             PersonalInformation.generatePersonalInformation(

@@ -32,7 +32,7 @@ export function parsePatientData(importString: string) {
         // 0, 1, 2 are orginasational data for anaolg training
         // 3 and 4 are personalInformation that will be randomly generated
         const biometricInformation = BiometricInformation.create(
-            splitString[i + 7],
+            splitString[i + 7]!,
             Number(splitString[i + 5]),
             splitString[i + 6] === 'M'
                 ? 'male'
@@ -43,43 +43,43 @@ export function parsePatientData(importString: string) {
 
         // 8, 9 are more organisational data
         const pretriageInformation = PretriageInformation.create(
-            splitString[i + 28],
-            splitString[i + 29] + splitString[i + 30],
+            splitString[i + 28]!,
+            splitString[i + 29]! + splitString[i + 30]!,
             !(splitString[i + 56] === 'G'),
             // XABCDE
-            splitString[i + 10] + splitString[i + 11],
-            splitString[i + 12],
+            splitString[i + 10]! + splitString[i + 11]!,
+            splitString[i + 12]!,
             Breathing.create(
-                splitString[i + 13],
-                splitString[i + 14],
-                splitString[i + 15]
+                splitString[i + 13]!,
+                splitString[i + 14]!,
+                splitString[i + 15]!
             ),
             Circulation.create(
-                splitString[i + 16],
-                splitString[i + 17],
-                splitString[i + 18],
-                splitString[i + 19]
+                splitString[i + 16]!,
+                splitString[i + 17]!,
+                splitString[i + 18]!,
+                splitString[i + 19]!
             ),
             Disability.create(
-                splitString[i + 20],
-                splitString[i + 21],
-                splitString[i + 22],
-                splitString[i + 23],
-                splitString[i + 24],
-                splitString[i + 27]
+                splitString[i + 20]!,
+                splitString[i + 21]!,
+                splitString[i + 22]!,
+                splitString[i + 23]!,
+                splitString[i + 24]!,
+                splitString[i + 27]!
             ),
-            Exposure.create(splitString[i + 25], splitString[i + 26])
+            Exposure.create(splitString[i + 25]!, splitString[i + 26]!)
         );
 
         // 31 - 55 are data for images. These are currently ignored
 
         const statusCode =
-            splitString[i + 61] +
-            splitString[i + 62] +
-            splitString[i + 63] +
-            splitString[i + 64] +
-            splitString[i + 65] +
-            splitString[i + 66];
+            splitString[i + 61]! +
+            splitString[i + 62]! +
+            splitString[i + 63]! +
+            splitString[i + 64]! +
+            splitString[i + 65]! +
+            splitString[i + 66]!;
 
         const healthStates = generateHealthStates(
             splitString.slice(i + 67, i + 104),
@@ -148,7 +148,7 @@ function generateHealthStates(
     const healthStateData: HealthStateData[] = [
         new HealthStateData(
             'Phase1State',
-            getColor(healthStateInformation[0]),
+            getColor(healthStateInformation[0]!),
             [],
             1,
             false
@@ -163,9 +163,9 @@ function generateHealthStates(
 
     for (let i = 0; i < phaseChanges; i++) {
         const conditionColor = colorRegExp.exec(
-            healthStateInformation[3 * i + 2]
+            healthStateInformation[3 * i + 2]!
         );
-        const nextPhaseColor = getColor(healthStateInformation[3 * i + 3]);
+        const nextPhaseColor = getColor(healthStateInformation[3 * i + 3]!);
         // Finish all States and transfer them to two new states based on the condition
         if (conditionColor!) {
             const conditionSuccessStateName = createHealthState(
@@ -184,7 +184,7 @@ function generateHealthStates(
                 }
                 healthState.conditions.push(
                     getCondition(
-                        healthStateInformation[3 * i + 1],
+                        healthStateInformation[3 * i + 1]!,
                         (i + 1 - healthState.startingPhase) * phaseTime,
                         conditionSuccessStateName
                     ),

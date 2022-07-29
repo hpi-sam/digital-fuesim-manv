@@ -2,8 +2,11 @@ import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { TransferPoint, Viewport } from 'digital-fuesim-manv-shared';
-
+import {
+    colorCodeMap,
+    TransferPoint,
+    Viewport,
+} from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -28,7 +31,9 @@ import { parsePatientData } from '../utility/parse-csv';
  * A wrapper around the map that provides trainers with more options and tools.
  */
 export class TrainerMapEditorComponent {
-    public currentCategory = 'X';
+    public currentCategory: keyof typeof colorCodeMap = 'X';
+    public readonly colorCodeMap = colorCodeMap;
+    public readonly categories = ['X', 'Y', 'Z'] as const;
 
     public readonly vehicleTemplates$ = this.store.select(
         selectVehicleTemplates
@@ -71,7 +76,7 @@ export class TrainerMapEditorComponent {
         openEditImageTemplateModal(this.ngbModalService, mapImageTemplateId);
     }
 
-    public setCurrentCategory(category: string) {
+    public setCurrentCategory(category: keyof typeof colorCodeMap) {
         this.currentCategory = category;
     }
 

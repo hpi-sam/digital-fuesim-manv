@@ -10,7 +10,7 @@ export function createPatientCatgories(
 
     patientData.forEach(({ code, templates }) =>
         patientCategories.push(
-            PatientCategory.create(code, templates[0].image, templates)
+            PatientCategory.create(code, templates[0]!.image, templates)
         )
     );
 

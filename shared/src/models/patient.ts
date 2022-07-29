@@ -139,13 +139,13 @@ export class Patient {
         const status =
             !pretriageEnabled ||
             patient.treatmentTime >= this.pretriageTimeThreshold
-                ? patient.healthStates[patient.currentHealthStateId].status
+                ? patient.healthStates[patient.currentHealthStateId]!.status
                 : patient.pretriageStatus;
         return status === 'blue' && !bluePatientsEnabled ? 'red' : status;
     }
 
     static getPretriageInformation(patient: Patient) {
-        return patient.healthStates[patient.currentHealthStateId]
+        return patient.healthStates[patient.currentHealthStateId]!
             .pretriageInformation;
     }
 

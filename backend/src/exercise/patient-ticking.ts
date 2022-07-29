@@ -128,7 +128,7 @@ function getDedicatedResources(
  * @returns The next {@link PatientHealthState} id.
  */
 function getNextStateId(patient: Patient, dedicatedResources: Catering) {
-    const currentState = patient.healthStates[patient.currentHealthStateId];
+    const currentState = patient.healthStates[patient.currentHealthStateId]!;
     for (const nextConditions of currentState.nextStateConditions) {
         if (
             (nextConditions.earliestTime === undefined ||

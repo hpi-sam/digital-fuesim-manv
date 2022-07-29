@@ -10,7 +10,7 @@ import {
 import { defaultPatientCategories } from '../default-state/patient-templates';
 
 export function generateDummyPatient(): Patient {
-    const template = defaultPatientCategories[0].patientTemplates[0];
+    const template = defaultPatientCategories[0]!.patientTemplates[0]!;
     const healthState = PatientHealthState.create(
         'StateName',
         PretriageInformation.create(

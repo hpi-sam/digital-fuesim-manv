@@ -4,7 +4,7 @@ import { MapImageTemplate } from '../../models';
 import { ImageProperties } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
-import { UUID, uuidValidationOptions } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 
@@ -54,7 +54,9 @@ export namespace MapImageTemplatesActionReducers {
                         `MapImageTemplate with id ${mapImageTemplate.id} already exists`
                     );
                 }
-                draftState.mapImageTemplates.push(mapImageTemplate);
+                draftState.mapImageTemplates.push(
+                    cloneDeepMutable(mapImageTemplate)
+                );
                 return draftState;
             },
             rights: 'trainer',
@@ -66,7 +68,7 @@ export namespace MapImageTemplatesActionReducers {
             reducer: (draftState, { id, name, image }) => {
                 const mapImageTemplate = getMapImageTemplate(draftState, id);
                 mapImageTemplate.name = name;
-                mapImageTemplate.image = image;
+                mapImageTemplate.image = cloneDeepMutable(image);
                 return draftState;
             },
             rights: 'trainer',

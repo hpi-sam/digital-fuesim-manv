@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
-import { UUID, uuidValidationOptions } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
@@ -23,7 +23,7 @@ export namespace PersonnelActionReducers {
         action: MovePersonnelAction,
         reducer: (draftState, { personnelId, targetPosition }) => {
             const personnel = getElement(draftState, 'personnel', personnelId);
-            personnel.position = targetPosition;
+            personnel.position = cloneDeepMutable(targetPosition);
             calculateTreatments(draftState);
             return draftState;
         },

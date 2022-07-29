@@ -39,7 +39,7 @@ export class HospitalPatientsTableComponent {
                             statusNames[
                                 hospitalPatient.healthStates[
                                     hospitalPatient.currentHealthStateId
-                                ].status
+                                ]!.status
                             ],
                         vehicleType: hospitalPatient.vehicleType,
                     };

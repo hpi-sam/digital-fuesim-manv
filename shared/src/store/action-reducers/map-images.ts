@@ -1,14 +1,15 @@
 import { Type } from 'class-transformer';
 import {
-    IsString,
-    ValidateNested,
-    IsUUID,
     IsNumber,
+    IsOptional,
     IsPositive,
+    IsString,
+    IsUUID,
+    ValidateNested,
 } from 'class-validator';
 import { MapImage } from '../../models';
 import { Position } from '../../models/utils';
-import { uuidValidationOptions, UUID } from '../../utils';
+import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
 
@@ -40,13 +41,15 @@ export class ScaleMapImageAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly mapImageId!: UUID;
 
+    @IsOptional()
     @IsNumber()
     @IsPositive()
-    public readonly newHeight!: number;
+    public readonly newHeight?: number;
 
+    @IsOptional()
     @IsNumber()
     @IsPositive()
-    public readonly newAspectRatio!: number;
+    public readonly newAspectRatio?: number;
 }
 
 export class RemoveMapImageAction implements Action {
@@ -75,7 +78,7 @@ export namespace MapImagesActionReducers {
     export const addMapImage: ActionReducer<AddMapImageAction> = {
         action: AddMapImageAction,
         reducer: (draftState, { mapImage }) => {
-            draftState.mapImages[mapImage.id] = mapImage;
+            draftState.mapImages[mapImage.id] = cloneDeepMutable(mapImage);
             return draftState;
         },
         rights: 'trainer',
@@ -85,7 +88,7 @@ export namespace MapImagesActionReducers {
         action: MoveMapImageAction,
         reducer: (draftState, { mapImageId, targetPosition }) => {
             const mapImage = getElement(draftState, 'mapImages', mapImageId);
-            mapImage.position = targetPosition;
+            mapImage.position = cloneDeepMutable(targetPosition);
             return draftState;
         },
         rights: 'trainer',
@@ -95,8 +98,12 @@ export namespace MapImagesActionReducers {
         action: ScaleMapImageAction,
         reducer: (draftState, { mapImageId, newHeight, newAspectRatio }) => {
             const mapImage = getElement(draftState, 'mapImages', mapImageId);
-            mapImage.image.height = newHeight;
-            mapImage.image.aspectRatio = newAspectRatio;
+            if (newHeight) {
+                mapImage.image.height = newHeight;
+            }
+            if (newAspectRatio) {
+                mapImage.image.aspectRatio = newAspectRatio;
+            }
             return draftState;
         },
         rights: 'trainer',

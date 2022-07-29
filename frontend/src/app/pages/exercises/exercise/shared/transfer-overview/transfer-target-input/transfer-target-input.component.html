@@ -11,17 +11,16 @@
     <div ngbDropdownMenu>
         <button
             *ngFor="
-                let transferPointKeyValue of transferPoints$ | async | keyvalue;
-                trackBy: 'key' | appTrackByProperty
+                let transferPoint of transferPoints$ | async | values;
+                trackBy: 'id'
+                    | appTrackByProperty: (transferPoints$ | async | values)
             "
             ngbDropdownItem
-            [disabled]="
-                transferPointKeyValue.key === transfer.targetTransferPointId
-            "
-            (click)="setTransferTarget(transferPointKeyValue.key)"
+            [disabled]="transferPoint.id === transfer.targetTransferPointId"
+            (click)="setTransferTarget(transferPoint.id)"
         >
             <app-transfer-point-name
-                [transferPointId]="transferPointKeyValue.key"
+                [transferPointId]="transferPoint.id"
             ></app-transfer-point-name>
         </button>
     </div>

@@ -10,8 +10,9 @@ import type {
     StateExport,
 } from 'digital-fuesim-manv-shared';
 import { reduceExerciseState } from 'digital-fuesim-manv-shared';
+import { freeze } from 'immer';
 import type { Observable } from 'rxjs';
-import { lastValueFrom, map, of, switchMap } from 'rxjs';
+import { BehaviorSubject, lastValueFrom, map, of, switchMap } from 'rxjs';
 import type { AppState } from '../state/app.state';
 import {
     applyServerAction,
@@ -22,12 +23,19 @@ import { getStateSnapshot } from '../state/get-state-snapshot';
 import { httpOrigin } from './api-origins';
 import { MessageService } from './messages/message.service';
 import { PresentExerciseHelper } from './present-exercise-helper';
+import type { TimeConstraints } from './time-travel-helper';
 import { TimeTravelHelper } from './time-travel-helper';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ApiService {
+    public get isTimeTraveling() {
+        return this.timeTravelHelper !== undefined;
+    }
+    public readonly isTimeTraveling$ = new BehaviorSubject(
+        this.isTimeTraveling
+    );
     constructor(
         private readonly store: Store<AppState>,
         private readonly httpClient: HttpClient,
@@ -45,13 +53,13 @@ export class ApiService {
             this.isTimeTraveling
                 ? this.presentState!
                 : getStateSnapshot(this.store).exercise,
-        (action) => {
-            if (!this.isTimeTraveling) {
-                this.store.dispatch(applyServerAction(action));
-                return;
-            }
-            this.presentState = reduceExerciseState(this.presentState!, action);
-        },
+        (action) =>
+            this.isTimeTraveling
+                ? (this.presentState = reduceExerciseState(
+                      this.presentState!,
+                      action
+                  ))
+                : this.store.dispatch(applyServerAction(action)),
         this.messageService
     );
 
@@ -75,38 +83,31 @@ export class ApiService {
         return this.presentExerciseHelper.ownClientId !== undefined;
     }
 
-    private readonly timeTravelHelper: TimeTravelHelper = new TimeTravelHelper(
-        () =>
-            this.isTimeTraveling
-                ? this.presentState!
-                : getStateSnapshot(this.store).exercise,
-        (state) => this.store.dispatch(setExerciseState(state)),
-        async () =>
-            lastValueFrom(
-                this.httpClient.get<ExerciseTimeline>(
-                    `${httpOrigin}/api/exercise/${this.exerciseId}/history`
-                )
-            ).catch((error) => {
-                this.stopTimeTravel();
-                this.messageService.postError({
-                    title: 'Die Vergangenheit konnte nicht geladen werden',
-                    error,
-                });
-                throw error;
-            })
-    );
+    private timeTravelHelper?: TimeTravelHelper;
 
-    public readonly jumpToTime = this.timeTravelHelper.jumpToTime.bind(
-        this.timeTravelHelper
-    );
-    public timeConstraints$ = this.timeTravelHelper.timeConstraints$;
+    public jumpToTime(exerciseTime: number) {
+        if (!this.timeTravelHelper) {
+            this.messageService.postError({
+                title: 'Zeitreise ist nicht aktiviert.',
+            });
+            return;
+        }
+        this.timeTravelHelper.jumpToTime(exerciseTime);
+    }
+
+    public timeConstraints$: Observable<TimeConstraints | undefined> =
+        this.isTimeTraveling$.pipe(
+            switchMap(
+                () => this.timeTravelHelper?.timeConstraints$ ?? of(undefined)
+            )
+        );
     public get timeConstraints() {
-        return this.timeTravelHelper.timeConstraints;
-    }
-    public get isTimeTraveling() {
-        return this.timeTravelHelper.isTimeTraveling;
+        return this.timeTravelHelper?.timeConstraints;
     }
 
+    // TODO: It is suboptimal to differentiate between null and undefined.
+    // But because this distinction is only used in this class and better exposed via
+    // isTimeTraveling and getCurrentRole, this is ok for now.
     /**
      * The id of the client that is currently joined to the exercise with {@link exerciseId}
      * undefined: the client is not joined to an exercise
@@ -124,7 +125,7 @@ export class ApiService {
      * undefined if the user is not joined to an exercise or
      * null if time travel is active
      */
-    public readonly ownClient$ = this.timeTravelHelper.isTimeTraveling$.pipe(
+    public readonly ownClient$ = this.isTimeTraveling$.pipe(
         switchMap((isTimeTraveling) =>
             isTimeTraveling ? of(null) : this.presentExerciseHelper.ownClientId$
         ),
@@ -145,23 +146,49 @@ export class ApiService {
             ? getSelectClient(this.ownClientId)(getStateSnapshot(this.store))
             : // clientId is expected to never be the empty string
               (this.ownClientId as null | undefined)
-    ) {
-        return ownClient ? ownClient.role : 'timeTravel';
+    ): CurrentRole {
+        return ownClient === null
+            ? 'timeTravel'
+            : ownClient === undefined
+            ? 'notJoined'
+            : ownClient.role;
     }
 
-    public startTimeTravel() {
-        if (this.isTimeTraveling) {
+    private activatingTimeTravel = false;
+    public async startTimeTravel() {
+        this.activatingTimeTravel = true;
+        const exerciseTimeLine = await lastValueFrom(
+            this.httpClient.get<ExerciseTimeline>(
+                `${httpOrigin}/api/exercise/${this.exerciseId}/history`
+            )
+        ).catch((error) => {
+            this.stopTimeTravel();
+            this.messageService.postError({
+                title: 'Die Vergangenheit konnte nicht geladen werden',
+                error,
+            });
+            throw error;
+        });
+        // Freeze to prevent accidental modification
+        freeze(exerciseTimeLine, true);
+        if (!this.activatingTimeTravel) {
+            // The timeTravel has been stopped during the retrieval of the timeline
             return;
         }
+        this.activatingTimeTravel = false;
         this.presentState = getStateSnapshot(this.store).exercise;
-        this.timeTravelHelper.startTimeTravel();
+        this.timeTravelHelper = new TimeTravelHelper(
+            this.presentState,
+            exerciseTimeLine,
+            (state) => this.store.dispatch(setExerciseState(state))
+        );
+        this.isTimeTraveling$.next(this.isTimeTraveling);
     }
 
     public stopTimeTravel() {
-        if (!this.isTimeTraveling) {
-            return;
-        }
-        this.timeTravelHelper.stopTimeTravel();
+        this.activatingTimeTravel = false;
+        this.timeTravelHelper = undefined;
+        this.isTimeTraveling$.next(this.isTimeTraveling);
         // Set the state back to the present one
         this.store.dispatch(setExerciseState(this.presentState!));
         this.presentState = undefined;
@@ -172,10 +199,7 @@ export class ApiService {
      * @param optimistic wether the action should be applied before the server responds (to reduce latency) (this update is guaranteed to be synchronous)
      * @returns the response of the server
      */
-    public async proposeAction<A extends ExerciseAction>(
-        action: A,
-        optimistic = false
-    ) {
+    public async proposeAction(action: ExerciseAction, optimistic = false) {
         if (this.isTimeTraveling) {
             this.messageService.postError({
                 title: 'Die Vergangenheit kann nicht bearbeitet werden',
@@ -212,7 +236,7 @@ export class ApiService {
             this.httpClient.get<ExerciseTimeline>(
                 `${httpOrigin}/api/exercise/${this.exerciseId}/history`
             )
-        );
+        ).then((value) => freeze(value, true));
     }
 
     public async deleteExercise(trainerId: string) {
@@ -247,4 +271,4 @@ export class ApiService {
     }
 }
 
-type CurrentRole = 'participant' | 'timeTravel' | 'trainer';
+type CurrentRole = 'notJoined' | 'participant' | 'timeTravel' | 'trainer';

@@ -1,6 +1,6 @@
 import assert from 'node:assert';
-import { generateDummyPatient } from 'digital-fuesim-manv-shared';
-import { createExercise, createTestEnvironment, sleep } from './utils';
+import { generateDummyPatient, sleep } from 'digital-fuesim-manv-shared';
+import { createExercise, createTestEnvironment } from './utils';
 
 describe('join exercise', () => {
     const environment = createTestEnvironment();

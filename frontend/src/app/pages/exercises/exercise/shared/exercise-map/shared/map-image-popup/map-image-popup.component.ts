@@ -5,7 +5,6 @@ import type { MapImage, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
-import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import { getSelectMapImage } from 'src/app/state/exercise/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
@@ -24,14 +23,10 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     public mapImage$?: Observable<MapImage>;
 
     public url?: string;
-    public height?: number;
-    // TODO: Allow changing this (with effect)
-    public aspectRatio?: number;
 
     constructor(
         private readonly store: Store<AppState>,
-        public readonly apiService: ApiService,
-        private readonly messageService: MessageService
+        public readonly apiService: ApiService
     ) {}
 
     async ngOnInit() {
@@ -40,40 +35,21 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
         // Set the initial form values
         const mapImage = await firstValueFrom(this.mapImage$);
         this.url = mapImage.image.url;
-        this.height = mapImage.image.height;
-        this.aspectRatio = mapImage.image.aspectRatio;
     }
 
-    public async saveUrl() {
-        const response = await this.apiService.proposeAction({
+    public saveUrl() {
+        this.apiService.proposeAction({
             type: '[MapImage] Reconfigure Url',
             mapImageId: this.mapImageId,
             newUrl: this.url!,
         });
-        if (response.success) {
-            this.messageService.postMessage({
-                title: 'Bild-URL erfolgreich verändert',
-                color: 'success',
-            });
-            this.closePopup.emit();
-        }
     }
 
-    public async resizeImage(
-        targetHeight: number | null,
-        targetAspectRatio: number | null
-    ) {
-        const response = await this.apiService.proposeAction({
+    public resizeImage(newHeight: number) {
+        this.apiService.proposeAction({
             type: '[MapImage] Scale MapImage',
             mapImageId: this.mapImageId,
-            newHeight: targetHeight ?? this.height!,
-            newAspectRatio: targetAspectRatio ?? this.aspectRatio!,
+            newHeight,
         });
-        if (response.success) {
-            this.messageService.postMessage({
-                title: 'Größe des Bildes erfolgreich verändert',
-                color: 'success',
-            });
-        }
     }
 }

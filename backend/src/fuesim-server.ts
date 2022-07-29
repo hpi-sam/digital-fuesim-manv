@@ -27,9 +27,10 @@ export class FuesimServer {
         }
         await this.databaseService.transaction(async (manager) => {
             const exerciseEntities = await Promise.all(
-                exercisesToSave.map(async (exercise) =>
-                    exercise.asEntity(false, manager)
-                )
+                exercisesToSave.map(async (exercise) => {
+                    exercise.markAsAboutToBeSaved();
+                    return exercise.asEntity(false, manager);
+                })
             );
             const actionEntities = exerciseEntities.flatMap(
                 (exercise) => exercise.actions ?? []

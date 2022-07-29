@@ -24,14 +24,14 @@
             <tr
                 *ngFor="
                     let hospital of hospitals;
-                    trackBy: 'id' | appTrackByProperty
+                    trackBy: 'id' | appTrackByProperty: hospitals
                 "
             >
                 <td>
                     <input
                         #nameInput="ngModel"
                         [ngModel]="hospital.name"
-                        (ngModelChange)="renameHospital(hospital.id, $event)"
+                        (appSaveOnTyping)="renameHospital(hospital.id, $event)"
                         required
                         placeholder="Name"
                         type="text"
@@ -44,7 +44,7 @@
                         [min]="0"
                         [max]="24 * 60"
                         [ngModel]="hospital.transportDuration / 1000 / 60"
-                        (ngModelChange)="
+                        (appSaveOnTyping)="
                             editTransportDurationToHospital(
                                 hospital.id,
                                 $event * 1000 * 60
