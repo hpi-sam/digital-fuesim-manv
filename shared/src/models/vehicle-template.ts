@@ -5,7 +5,9 @@ import {
     ValidateNested,
     IsNumber,
     IsArray,
+    IsOptional,
 } from 'class-validator';
+import { ReducerError } from '../store';
 import { uuidValidationOptions, UUID, uuid } from '../utils';
 import type { PersonnelType } from './utils';
 import { CanCaterFor, ImageProperties, getCreate } from './utils';
@@ -20,9 +22,23 @@ export class VehicleTemplate {
     @IsString()
     public readonly name: string;
 
+    /**
+     * If an array, at position 0 it means zero patients are loaded
+     * at position 1 one patient is loaded, etc.
+     */
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
+
+    /**
+     * If an array, at position 0 it means zero patients are loaded
+     * at position 1 one patient is loaded, etc.
+     */
+    @IsArray()
+    @ValidateNested()
+    @Type(() => ImageProperties)
+    @IsOptional()
+    public readonly imagesPatientsLoaded?: ImageProperties[];
 
     @IsNumber()
     public readonly patientCapacity: number;
@@ -45,7 +61,8 @@ export class VehicleTemplate {
         image: ImageProperties,
         patientCapacity: number,
         personnel: readonly PersonnelType[],
-        materials: readonly CanCaterFor[]
+        materials: readonly CanCaterFor[],
+        imagesPatientsLoaded?: ImageProperties[]
     ) {
         this.vehicleType = vehicleType;
         this.name = name;
@@ -53,6 +70,15 @@ export class VehicleTemplate {
         this.patientCapacity = patientCapacity;
         this.personnel = personnel;
         this.materials = materials;
+
+        if (
+            imagesPatientsLoaded !== undefined &&
+            imagesPatientsLoaded.length + 1 !== patientCapacity
+        )
+            throw new ReducerError(
+                `vehicle was tried to be created, but imagesPatientsLoaded.length is not equal to patientCapacity`
+            );
+        this.imagesPatientsLoaded = imagesPatientsLoaded;
     }
 
     static readonly create = getCreate(this);

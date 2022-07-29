@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+    IsArray,
     IsDefined,
     IsNumber,
     IsOptional,
@@ -7,6 +8,7 @@ import {
     IsUUID,
     ValidateNested,
 } from 'class-validator';
+import { ReducerError } from '../store';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
 import { getCreate, Position, Transfer } from './utils';
 import { ImageProperties } from './utils/image-properties';
@@ -41,6 +43,16 @@ export class Vehicle {
     public readonly image: ImageProperties;
 
     /**
+     * If an array, at position 0 it means zero patients are loaded
+     * at position 1 one patient is loaded, etc.
+     */
+    @IsArray()
+    @ValidateNested()
+    @Type(() => ImageProperties)
+    @IsOptional()
+    public readonly imagesPatientsLoaded?: ImageProperties[];
+
+    /**
      * Exclusive-or to {@link position}
      */
     @ValidateNested()
@@ -64,13 +76,22 @@ export class Vehicle {
         name: string,
         materialIds: UUIDSet,
         patientCapacity: number,
-        image: ImageProperties
+        image: ImageProperties,
+        imagesPatientsLoaded?: ImageProperties[]
     ) {
         this.vehicleType = vehicleType;
         this.name = name;
         this.materialIds = materialIds;
         this.patientCapacity = patientCapacity;
         this.image = image;
+        if (
+            imagesPatientsLoaded !== undefined &&
+            imagesPatientsLoaded.length + 1 !== patientCapacity
+        )
+            throw new ReducerError(
+                `vehicle was tried to be created, but imagesPatientsLoaded.length is not equal to patientCapacity`
+            );
+        this.imagesPatientsLoaded = imagesPatientsLoaded;
     }
 
     static readonly create = getCreate(this);
