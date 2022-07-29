@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+    ArrayNotEmpty,
     IsArray,
     IsDefined,
     IsNumber,
@@ -40,17 +41,17 @@ export class Vehicle {
 
     @ValidateNested()
     @Type(() => ImageProperties)
-    public readonly image: ImageProperties;
+    public readonly currentImage: ImageProperties;
 
     /**
      * If an array, at position 0 it means zero patients are loaded
      * at position 1 one patient is loaded, etc.
      */
     @IsArray()
-    @ValidateNested()
+    @ArrayNotEmpty()
+    @ValidateNested({ each: true })
     @Type(() => ImageProperties)
-    @IsOptional()
-    public readonly imagesPatientsLoaded?: ImageProperties[];
+    public readonly images: ImageProperties[];
 
     /**
      * Exclusive-or to {@link position}
@@ -76,22 +77,19 @@ export class Vehicle {
         name: string,
         materialIds: UUIDSet,
         patientCapacity: number,
-        image: ImageProperties,
-        imagesPatientsLoaded?: ImageProperties[]
+        images: ImageProperties[]
     ) {
+        // if (images.length > patientCapacity + 1)
+        //     throw new ReducerError(
+        //         `vehicle was tried to be created, but imagesP.length is greater than patientCapacity + 1`
+        //     );
+
         this.vehicleType = vehicleType;
         this.name = name;
         this.materialIds = materialIds;
         this.patientCapacity = patientCapacity;
-        this.image = image;
-        if (
-            imagesPatientsLoaded !== undefined &&
-            imagesPatientsLoaded.length + 1 !== patientCapacity
-        )
-            throw new ReducerError(
-                `vehicle was tried to be created, but imagesPatientsLoaded.length is not equal to patientCapacity`
-            );
-        this.imagesPatientsLoaded = imagesPatientsLoaded;
+        this.images = images;
+        this.currentImage = this.images[0]!;
     }
 
     static readonly create = getCreate(this);

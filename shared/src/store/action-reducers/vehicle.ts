@@ -205,7 +205,7 @@ export namespace VehicleActionReducers {
                 (patientId) => draftState.patients[patientId]!
             );
             const vehicleWidthInPosition = imageSizeToPosition(
-                vehicle.image.aspectRatio * vehicle.image.height
+                vehicle.currentImage.aspectRatio * vehicle.currentImage.height
             );
             const space =
                 vehicleWidthInPosition /
@@ -236,8 +236,7 @@ export namespace VehicleActionReducers {
                     y: unloadPosition.y,
                 };
             }
-            if (vehicle.imagesPatientsLoaded?.[0] !== undefined)
-                vehicle.image = vehicle.imagesPatientsLoaded[0];
+            vehicle.currentImage = vehicle.images[0]!;
             calculateTreatments(draftState);
             return draftState;
         },
@@ -310,19 +309,15 @@ export namespace VehicleActionReducers {
                     });
                 }
             }
-            if (vehicle.imagesPatientsLoaded !== undefined) {
+            // if there is more than a standard image
+            if (Object.keys(vehicle.images).length > 1) {
                 const numberOfPatientsInVehicle = Object.keys(
                     vehicle.patientIds
                 ).length;
-                if (
-                    vehicle.imagesPatientsLoaded[numberOfPatientsInVehicle] !==
-                    undefined
-                ) {
+                if (vehicle.images[numberOfPatientsInVehicle] !== undefined) {
                     // TODO: why needing "!"" at the end?
-                    vehicle.image =
-                        vehicle.imagesPatientsLoaded[
-                            numberOfPatientsInVehicle
-                        ]!;
+                    vehicle.currentImage =
+                        vehicle.images[numberOfPatientsInVehicle]!;
                 } else {
                     throw new ReducerError(
                         `vehicle was tried to be unloaed while not having correct imagesPatientsLoaded`

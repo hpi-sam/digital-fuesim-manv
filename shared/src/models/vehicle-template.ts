@@ -5,8 +5,7 @@ import {
     ValidateNested,
     IsNumber,
     IsArray,
-    IsNotEmpty,
-    IsOptional,
+    ArrayNotEmpty,
 } from 'class-validator';
 import { ReducerError } from '../store';
 import { uuidValidationOptions, UUID, uuid } from '../utils';
@@ -27,19 +26,11 @@ export class VehicleTemplate {
      * If an array, at position 0 it means zero patients are loaded
      * at position 1 one patient is loaded, etc.
      */
-    @ValidateNested()
-    @Type(() => ImageProperties)
-    public readonly image: ImageProperties;
-
-    /**
-     * If an array, at position 0 it means zero patients are loaded
-     * at position 1 one patient is loaded, etc.
-     */
     @IsArray()
-    @ValidateNested()
+    @ArrayNotEmpty()
+    @ValidateNested({ each: true })
     @Type(() => ImageProperties)
-    @IsOptional()
-    public readonly imagesPatientsLoaded?: ImageProperties[];
+    public readonly images: ImageProperties[];
 
     @IsNumber()
     public readonly patientCapacity: number;
@@ -59,27 +50,22 @@ export class VehicleTemplate {
     constructor(
         vehicleType: string,
         name: string,
-        image: ImageProperties,
+        images: ImageProperties[],
         patientCapacity: number,
         personnel: readonly PersonnelType[],
-        materials: readonly CanCaterFor[],
-        imagesPatientsLoaded?: ImageProperties[]
+        materials: readonly CanCaterFor[]
     ) {
+        if (images.length > patientCapacity + 1)
+            throw new ReducerError(
+                `vehicle was tried to be created, but images.length is greater than patientCapacity + 1`
+            );
+
         this.vehicleType = vehicleType;
         this.name = name;
-        this.image = image;
+        this.images = images;
         this.patientCapacity = patientCapacity;
         this.personnel = personnel;
         this.materials = materials;
-
-        if (
-            imagesPatientsLoaded !== undefined &&
-            imagesPatientsLoaded.length + 1 !== patientCapacity
-        )
-            throw new ReducerError(
-                `vehicle was tried to be created, but imagesPatientsLoaded.length is not equal to patientCapacity`
-            );
-        this.imagesPatientsLoaded = imagesPatientsLoaded;
     }
 
     static readonly create = getCreate(this);
