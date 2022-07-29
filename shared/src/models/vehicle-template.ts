@@ -23,6 +23,13 @@ export class VehicleTemplate {
     public readonly name: string;
 
     /**
+     * currentImage, loaded from images
+     */
+    @ValidateNested()
+    @Type(() => ImageProperties)
+    public readonly image: ImageProperties;
+
+    /**
      * If an array, at position 0 it means zero patients are loaded
      * at position 1 one patient is loaded, etc.
      */
@@ -63,6 +70,7 @@ export class VehicleTemplate {
         this.vehicleType = vehicleType;
         this.name = name;
         this.images = images;
+        this.image = images[0]!;
         this.patientCapacity = patientCapacity;
         this.personnel = personnel;
         this.materials = materials;

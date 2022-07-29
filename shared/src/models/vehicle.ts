@@ -9,7 +9,6 @@ import {
     IsUUID,
     ValidateNested,
 } from 'class-validator';
-import { ReducerError } from '../store';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
 import { getCreate, Position, Transfer } from './utils';
 import { ImageProperties } from './utils/image-properties';
@@ -39,9 +38,12 @@ export class Vehicle {
     @IsOptional()
     public readonly position?: Position;
 
+    /**
+     * currentImage, loaded from images
+     */
     @ValidateNested()
     @Type(() => ImageProperties)
-    public readonly currentImage: ImageProperties;
+    public readonly image: ImageProperties;
 
     /**
      * If an array, at position 0 it means zero patients are loaded
@@ -79,6 +81,7 @@ export class Vehicle {
         patientCapacity: number,
         images: ImageProperties[]
     ) {
+        // TODO: check that there can't be more images than patients that can be loaded + 1
         // if (images.length > patientCapacity + 1)
         //     throw new ReducerError(
         //         `vehicle was tried to be created, but imagesP.length is greater than patientCapacity + 1`
@@ -89,7 +92,7 @@ export class Vehicle {
         this.materialIds = materialIds;
         this.patientCapacity = patientCapacity;
         this.images = images;
-        this.currentImage = this.images[0]!;
+        this.image = this.images[0]!;
     }
 
     static readonly create = getCreate(this);

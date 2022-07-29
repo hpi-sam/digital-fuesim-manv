@@ -205,7 +205,7 @@ export namespace VehicleActionReducers {
                 (patientId) => draftState.patients[patientId]!
             );
             const vehicleWidthInPosition = imageSizeToPosition(
-                vehicle.currentImage.aspectRatio * vehicle.currentImage.height
+                vehicle.image.aspectRatio * vehicle.image.height
             );
             const space =
                 vehicleWidthInPosition /
@@ -236,7 +236,13 @@ export namespace VehicleActionReducers {
                     y: unloadPosition.y,
                 };
             }
-            vehicle.currentImage = vehicle.images[0]!;
+            const newImage = vehicle.images[0];
+            if (newImage === undefined) {
+                throw new ReducerError(
+                    `vehicle was tried to be loaeded while not having ImageProperties at images[0]`
+                );
+            }
+            vehicle.image = newImage;
             calculateTreatments(draftState);
             return draftState;
         },
@@ -314,10 +320,9 @@ export namespace VehicleActionReducers {
                 const numberOfPatientsInVehicle = Object.keys(
                     vehicle.patientIds
                 ).length;
-                if (vehicle.images[numberOfPatientsInVehicle] !== undefined) {
-                    // TODO: why needing "!"" at the end?
-                    vehicle.currentImage =
-                        vehicle.images[numberOfPatientsInVehicle]!;
+                const newImage = vehicle.images[numberOfPatientsInVehicle];
+                if (newImage !== undefined) {
+                    vehicle.image = newImage;
                 } else {
                     throw new ReducerError(
                         `vehicle was tried to be unloaed while not having correct imagesPatientsLoaded`

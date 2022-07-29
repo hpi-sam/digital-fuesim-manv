@@ -32,7 +32,7 @@ export function createVehicleParameters(
         name: vehicleTemplate.name,
         patientCapacity: vehicleTemplate.patientCapacity,
         images: vehicleTemplate.images,
-        currentImage: vehicleTemplate.images[0]!,
+        image: vehicleTemplate.image,
         patientIds: {},
         personnelIds: arrayToUUIDSet(personnel.map((p) => p.id)),
         position: vehiclePosition,

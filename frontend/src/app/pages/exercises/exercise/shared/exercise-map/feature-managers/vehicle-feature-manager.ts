@@ -20,14 +20,14 @@ export class VehicleFeatureManager extends ElementFeatureManager<
     WithPosition<Vehicle>
 > {
     private readonly imageStyleHelper = new ImageStyleHelper(
-        (feature) => this.getElementFromFeature(feature)!.value.currentImage
+        (feature) => this.getElementFromFeature(feature)!.value.image
     );
     private readonly nameStyleHelper = new NameStyleHelper(
         (feature) => {
             const vehicle = this.getElementFromFeature(feature)!.value;
             return {
                 name: vehicle.name,
-                offsetY: vehicle.currentImage.height / 2 / normalZoom,
+                offsetY: vehicle.image.height / 2 / normalZoom,
             };
         },
         0.1,
@@ -102,8 +102,8 @@ export class VehicleFeatureManager extends ElementFeatureManager<
 
     override unsupportedChangeProperties = new Set([
         'id',
+        'image',
         'images',
-        'currentImage',
     ] as const);
 
     public override onFeatureClicked(
