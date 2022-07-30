@@ -52,6 +52,13 @@ export class ExerciseSettingsModalComponent {
         });
     }
 
+    public setGlobalPatientChangeSpeed(changeSpeed: string) {
+        this.apiService.proposeAction({
+            type: '[Configuration] Set globalPatientChangeSpeed',
+            changeSpeed: Number(changeSpeed),
+        });
+    }
+
     public close() {
         this.activeModal.close();
     }

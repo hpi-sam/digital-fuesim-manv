@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import {
+    IsNumber,
+    IsString,
+    IsUUID,
+    Min,
+    ValidateNested,
+} from 'class-validator';
 import { Patient } from '../../models';
 import { PatientStatus, Position } from '../../models/utils';
 import type { ExerciseState } from '../../state';
@@ -60,13 +66,25 @@ export class SetVisibleStatusAction implements Action {
     public readonly patientStatus!: PatientStatus;
 }
 
+export class SetPatientChangeSpeedAction implements Action {
+    @IsString()
+    public readonly type = '[Patient] Set Change Speed';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly patientId!: UUID;
+
+    @IsNumber()
+    @Min(0)
+    public readonly changeSpeed!: number;
+}
+
 export namespace PatientActionReducers {
     export const addPatient: ActionReducer<AddPatientAction> = {
         action: AddPatientAction,
         reducer: (draftState, { patient }) => {
             if (
                 StrictObject.entries(patient.healthStates).some(
-                    ([id, healthState]) => healthState.id !== id
+                    ([name, healthState]) => healthState.name !== name
                 )
             ) {
                 throw new ReducerError(
@@ -78,21 +96,22 @@ export namespace PatientActionReducers {
                     (nextStateCondition) => {
                         if (
                             patient.healthStates[
-                                nextStateCondition.matchingHealthStateId
+                                nextStateCondition.matchingHealthStateName
                             ] === undefined
                         ) {
                             throw new ReducerError(
-                                `HealthState with id ${nextStateCondition.matchingHealthStateId} does not exist`
+                                `HealthState with id ${nextStateCondition.matchingHealthStateName} does not exist`
                             );
                         }
                     }
                 );
             });
             if (
-                patient.healthStates[patient.currentHealthStateId] === undefined
+                patient.healthStates[patient.currentHealthStateName] ===
+                undefined
             ) {
                 throw new ReducerError(
-                    `HealthState with id ${patient.currentHealthStateId} does not exist`
+                    `HealthState with id ${patient.currentHealthStateName} does not exist`
                 );
             }
             draftState.patients[patient.id] = cloneDeepMutable(patient);
@@ -132,5 +151,15 @@ export namespace PatientActionReducers {
             return draftState;
         },
         rights: 'participant',
+    };
+
+    export const setChangeSpeed: ActionReducer<SetPatientChangeSpeedAction> = {
+        action: SetPatientChangeSpeedAction,
+        reducer: (draftState, { patientId, changeSpeed }) => {
+            const patient = getElement(draftState, 'patients', patientId);
+            patient.changeSpeed = changeSpeed;
+            return draftState;
+        },
+        rights: 'trainer',
     };
 }

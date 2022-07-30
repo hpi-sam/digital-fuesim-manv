@@ -4,10 +4,10 @@ import type {
     Client,
     ExerciseState,
     Mutable,
-    Patient,
     Vehicle,
 } from 'digital-fuesim-manv-shared';
 import {
+    Patient,
     applyAction,
     cloneDeepMutable,
     Personnel,
@@ -89,6 +89,7 @@ export class StatisticsService {
 
     private generateStatisticsEntry(draftState: Mutable<ExerciseState>) {
         const exerciseStatistics = this.generateAreaStatistics(
+            draftState,
             Object.values(draftState.clients),
             Object.values(draftState.patients),
             Object.values(draftState.vehicles),
@@ -99,6 +100,7 @@ export class StatisticsService {
             Object.entries(draftState.viewports).map(([id, viewport]) => [
                 id,
                 this.generateAreaStatistics(
+                    draftState,
                     Object.values(draftState.clients).filter(
                         (client) => client.viewRestrictedToViewportId === id
                     ),
@@ -129,6 +131,7 @@ export class StatisticsService {
     }
 
     private generateAreaStatistics(
+        state: Mutable<ExerciseState>,
         clients: Client[],
         patients: Patient[],
         vehicles: Vehicle[],
@@ -139,7 +142,13 @@ export class StatisticsService {
                 (client) =>
                     !client.isInWaitingRoom && client.role === 'participant'
             ).length,
-            patients: countBy(patients, (patient) => patient.realStatus),
+            patients: countBy(patients, (patient) =>
+                Patient.getVisibleStatus(
+                    patient,
+                    state.configuration.pretriageEnabled,
+                    state.configuration.bluePatientsEnabled
+                )
+            ),
             vehicles: countBy(vehicles, (vehicle) => vehicle.vehicleType),
             personnel: countBy(
                 personnel.filter(
