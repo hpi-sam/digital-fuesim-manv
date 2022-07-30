@@ -2,6 +2,7 @@ import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { Hospital, TransferPoint, UUID } from 'digital-fuesim-manv-shared';
+import { sortSet } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -50,12 +51,19 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     public readonly transferPointsToBeAdded$ = this.store.select((state) => {
         const transferPoints = state.exercise.transferPoints;
         const currentTransferPoint = transferPoints[this.transferPointId]!;
-        return Object.fromEntries(
+        const transferPointsToBeAdded = Object.fromEntries(
             Object.entries(transferPoints).filter(
                 ([key]) =>
                     key !== this.transferPointId &&
                     !currentTransferPoint.reachableTransferPoints[key]
             )
+        );
+        return sortSet(
+            transferPointsToBeAdded,
+            true,
+            (transferPoint) =>
+                `${transferPoint.externalName} (${transferPoint.internalName})`,
+            (left, right) => left.localeCompare(right)
         );
     });
 
@@ -63,10 +71,16 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
         const transferPoints = state.exercise.transferPoints;
         const currentTransferPoint = transferPoints[this.transferPointId]!;
         const hospitals = state.exercise.hospitals;
-        return Object.fromEntries(
+        const hospitalsToBeAdded = Object.fromEntries(
             Object.entries(hospitals).filter(
                 ([key]) => !currentTransferPoint.reachableHospitals[key]
             )
+        );
+        return sortSet(
+            hospitalsToBeAdded,
+            true,
+            (hospital) => hospital.name,
+            (left, right) => left.localeCompare(right)
         );
     });
 

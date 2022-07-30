@@ -1,12 +1,13 @@
 import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { AlarmGroup, UUID } from 'digital-fuesim-manv-shared';
+import type { UUID, AlarmGroup } from 'digital-fuesim-manv-shared';
 import {
-    AlarmGroupStartPoint,
+    sortSet,
     createVehicleParameters,
+    AlarmGroupStartPoint,
 } from 'digital-fuesim-manv-shared';
-import { Subject, takeUntil } from 'rxjs';
+import { map, Subject, takeUntil } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -32,7 +33,19 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
 
     public readonly alarmGroups$ = this.store.select(selectAlarmGroups);
 
-    public readonly transferPoints$ = this.store.select(selectTransferPoints);
+    public readonly transferPoints$ = this.store
+        .select(selectTransferPoints)
+        .pipe(
+            map((transferPoints) =>
+                sortSet(
+                    transferPoints,
+                    true,
+                    (transferPoint) =>
+                        `${transferPoint.externalName} (${transferPoint.internalName})`,
+                    (left, right) => left.localeCompare(right)
+                )
+            )
+        );
 
     constructor(
         private readonly apiService: ApiService,
