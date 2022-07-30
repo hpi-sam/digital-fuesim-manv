@@ -84,11 +84,11 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
         return statusNames;
     }
 
-    updateUserText(userText: string) {
+    updateRemarks(remarks: string) {
         this.apiService.proposeAction({
-            type: '[Patient] Set User Text',
+            type: '[Patient] Set Remarks',
             patientId: this.patientId,
-            userText,
+            remarks,
         });
     }
 }

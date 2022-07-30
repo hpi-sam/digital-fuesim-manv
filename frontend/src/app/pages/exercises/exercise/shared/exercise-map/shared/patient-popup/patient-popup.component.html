@@ -77,12 +77,12 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="col">Patienteninformationen</th>
+                                <th scope="col">Anmerkungen</th>
                                 <td>
                                     <textarea
-                                        [ngModel]="patient.userText"
+                                        [ngModel]="patient.remarks"
                                         (appSaveOnTyping)="
-                                            updateUserText($event)
+                                            updateRemarks($event)
                                         "
                                         [appAutofocus]="true"
                                         maxlength="65535"
