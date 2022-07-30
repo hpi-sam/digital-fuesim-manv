@@ -15,7 +15,7 @@ import {
     uuid,
     Viewport,
 } from 'digital-fuesim-manv-shared';
-import { countBy } from 'lodash';
+import { countBy } from 'lodash-es';
 import { ReplaySubject } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';

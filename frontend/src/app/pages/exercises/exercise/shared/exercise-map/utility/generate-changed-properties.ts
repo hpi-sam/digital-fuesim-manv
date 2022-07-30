@@ -1,5 +1,5 @@
 import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
-import { isEqual } from 'lodash';
+import { isEqual } from 'lodash-es';
 
 /**
  * @returns a Set of all the properties that are different between the two objects

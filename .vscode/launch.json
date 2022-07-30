@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "[frontend] Launch Chrome against localhost",
-            "type": "pwa-chrome",
+            "type": "chrome",
             "request": "launch",
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}/frontend"

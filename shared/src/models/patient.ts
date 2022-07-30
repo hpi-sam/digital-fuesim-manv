@@ -7,6 +7,7 @@ import {
     IsString,
     IsUUID,
     Max,
+    MaxLength,
     Min,
     ValidateNested,
 } from 'class-validator';
@@ -74,7 +75,8 @@ export class Patient {
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         currentHealthStateId: UUID,
         image: ImageProperties,
-        health: HealthPoints
+        health: HealthPoints,
+        remarks: string
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
@@ -86,6 +88,7 @@ export class Patient {
         this.currentHealthStateId = currentHealthStateId;
         this.image = image;
         this.health = health;
+        this.remarks = remarks;
     }
 
     /**
@@ -137,6 +140,13 @@ export class Patient {
     @IsNumber()
     @Min(0)
     public readonly timeSpeed: number = 1;
+
+    /**
+     * This can be any arbitrary string. It gives trainers the freedom to add additional functionalities that are not natively supported by this application (like an hospital ticket system)
+     */
+    @IsString()
+    @MaxLength(65535)
+    public readonly remarks: string;
 
     @IsNumber()
     @Min(0)

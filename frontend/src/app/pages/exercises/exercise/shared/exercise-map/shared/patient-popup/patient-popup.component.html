@@ -30,7 +30,10 @@
             <ng-container ngbNavItem>
                 <a ngbNavLink>Allgemein</a>
                 <ng-template ngbNavContent>
-                    <table class="table mb-0" style="max-width: 300px">
+                    <table
+                        class="table table-sm small mb-0"
+                        style="max-width: 300px"
+                    >
                         <tbody>
                             <tr>
                                 <th scope="col">Alter</th>
@@ -95,7 +98,7 @@
                                 </tr>
                                 <tr>
                                     <th scope="col">
-                                        Verletzungs-Geschwindigkeit:
+                                        Verletzungs-Geschwindigkeit
                                     </th>
                                     <td class="font-monospace">
                                         &times;{{ patient.timeSpeed }}
@@ -104,6 +107,18 @@
                             </ng-container>
                         </tbody>
                     </table>
+                    <div class="small fw-bold p-1">Anmerkungen</div>
+                    <div class="p-1">
+                        <textarea
+                            [ngModel]="patient.remarks"
+                            (appSaveOnTyping)="updateRemarks($event)"
+                            [appAutofocus]="true"
+                            maxlength="65535"
+                            placeholder="Schreiben Sie Informationen über den Patienten in dieses Feld..."
+                            class="form-control form-control-sm no-validation w-100"
+                            style="height: 100px; resize: none"
+                        ></textarea>
+                    </div>
                 </ng-template>
             </ng-container>
             <ng-container ngbNavItem>
