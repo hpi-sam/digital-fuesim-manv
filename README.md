@@ -267,12 +267,12 @@ If you need to read from the state to change it, you should do this inside the a
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/Dassderdie"><img src="https://avatars.githubusercontent.com/u/18506183?v=4" width="100px;" alt=""/><br /><sub><b>Julian Schmidt</b></sub></a></td>
-    <td align="center"><a href="https://github.com/ClFeSc"><img src="https://avatars.githubusercontent.com/u/68013019?v=4" width="100px;" alt=""/><br /><sub><b>Clemens Schielicke</b></sub></a></td>
-    <td align="center"><a href="https://github.com/hpistudent72"><img src="https://avatars.githubusercontent.com/u/64257074?v=4" width="100px;" alt=""/><br /><sub><b>Florian Krummrey</b></sub></a></td>
-    <td align="center"><a href="https://github.com/anonym-HPI"><img src="https://avatars.githubusercontent.com/u/68286419?v=4" width="100px;" alt=""/><br /><sub><b>Marvin Müller-Mettnau</b></sub></a></td>
-    <td align="center"><a href="https://github.com/mbarkowsky"><img src="https://avatars.githubusercontent.com/u/7481705?v=4" width="100px;" alt=""/><br /><sub><b>Matthias Barkowsky</b></sub></a></td>
-    <td align="center"><a href="https://github.com/christianzoellner"><img src="https://avatars.githubusercontent.com/u/4678160?v=4" width="100px;" alt=""/><br /><sub><b>Christian Zöllner</b></sub></a></td>
+    <td align="center"><a href="https://github.com/Dassderdie"><img src="https://avatars.githubusercontent.com/u/18506183?v=4" width="100px;" alt=""/><br /><sub><b>Julian Schmidt</b></sub></a><br /><a href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=Dassderdie" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/ClFeSc"><img src="https://avatars.githubusercontent.com/u/68013019?v=4" width="100px;" alt=""/><br /><sub><b>Clemens Schielicke</b></sub></a><br /><a href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=ClFeSc" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/hpistudent72"><img src="https://avatars.githubusercontent.com/u/64257074?v=4" width="100px;" alt=""/><br /><sub><b>Florian Krummrey</b></sub></a><br /><a href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=hpistudent72" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/anonym-HPI"><img src="https://avatars.githubusercontent.com/u/68286419?v=4" width="100px;" alt=""/><br /><sub><b>Marvin Müller-Mettnau</b></sub></a><br /><a href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=anonym-HPI" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/mbarkowsky"><img src="https://avatars.githubusercontent.com/u/7481705?v=4" width="100px;" alt=""/><br /><sub><b>Matthias Barkowsky</b></sub></a><br />📆</td>
+    <td align="center"><a href="https://github.com/christianzoellner"><img src="https://avatars.githubusercontent.com/u/4678160?v=4" width="100px;" alt=""/><br /><sub><b>Christian Zöllner</b></sub></a><br />📆</td>
   </tr>
 </table>
 <!-- markdownlint-restore -->
