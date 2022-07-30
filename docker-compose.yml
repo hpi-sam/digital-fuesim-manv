@@ -17,7 +17,7 @@ services:
         env_file:
             - .env
         volumes:
-            - dfm-data:/${DFM_PERSISTENT_DATA}
+            - dfm-data:/${DFM_PERSISTENT_DATA_PATH}
     db:
         image: postgres:14
         container_name: dfm_postgres

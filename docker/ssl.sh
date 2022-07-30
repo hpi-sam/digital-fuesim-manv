@@ -48,7 +48,7 @@ else
 fi
 
 # writing the correct data path into nginx
-echo "ssl_certificate ${DFM_DFM_PERSISTENT_DATA_PATH}/certs/fullchain.pem;
+echo "ssl_certificate ${DFM_PERSISTENT_DATA_PATH}/certs/fullchain.pem;
 ssl_trusted_certificate ${DFM_PERSISTENT_DATA_PATH}/certs/fullchain.pem;
 ssl_certificate_key ${DFM_PERSISTENT_DATA_PATH}/certs/key.pem;" > /etc/nginx/conf.d/certs
 
