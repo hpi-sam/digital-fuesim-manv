@@ -25,7 +25,7 @@ export function reduceExerciseState(
 
 /**
  * Applies the action on the state by mutating it.
- * @param state The current state (mutable)
+ * @param draftState The current state (mutable)
  * @param action The action to apply on the current state
  * @throws {ReducerError} if the action is not applicable on the current state
  * @returns the new state
