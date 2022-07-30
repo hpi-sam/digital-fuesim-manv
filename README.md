@@ -271,6 +271,8 @@ If you need to read from the state to change it, you should do this inside the a
     <td align="center"><a href="https://github.com/ClFeSc"><img src="https://avatars.githubusercontent.com/u/68013019?v=4" width="100px;" alt=""/><br /><sub><b>Clemens Schielicke</b></sub></a></td>
     <td align="center"><a href="https://github.com/hpistudent72"><img src="https://avatars.githubusercontent.com/u/64257074?v=4" width="100px;" alt=""/><br /><sub><b>Florian Krummrey</b></sub></a></td>
     <td align="center"><a href="https://github.com/anonym-HPI"><img src="https://avatars.githubusercontent.com/u/68286419?v=4" width="100px;" alt=""/><br /><sub><b>Marvin Müller-Mettnau</b></sub></a></td>
+    <td align="center"><a href="https://github.com/mbarkowsky"><img src="https://avatars.githubusercontent.com/u/7481705?v=4" width="100px;" alt=""/><br /><sub><b>Matthias Barkowsky</b></sub></a></td>
+    <td align="center"><a href="https://github.com/christianzoellner"><img src="https://avatars.githubusercontent.com/u/4678160?v=4" width="100px;" alt=""/><br /><sub><b>Christian Zöllner</b></sub></a></td>
   </tr>
 </table>
 <!-- markdownlint-restore -->
