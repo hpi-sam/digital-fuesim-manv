@@ -17,7 +17,7 @@ server {
     resolver_timeout 5s;
 
     # using ssl session ticket instead, if problems occur, especially with Apple devices
-    # maybe uncomment the next two lines, but keep in mind to find a way to wipe the memory regurarly to keep Forward Secrecy intact
+    # maybe uncomment the next two lines, but keep in mind to find a way to wipe the cache regurarly to keep Forward Secrecy intact
     # ssl_session_cache on;
     # ssl_session_cache shared:SSL:10m;
 
