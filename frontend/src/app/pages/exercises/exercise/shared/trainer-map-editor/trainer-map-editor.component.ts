@@ -101,7 +101,7 @@ export class TrainerMapEditorComponent {
             );
         } catch (error: unknown) {
             this.messageService.postError({
-                title: 'Fehler beim Importieren der Übung',
+                title: 'Fehler beim Importieren der Patientendaten',
                 error,
             });
         }

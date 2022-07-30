@@ -1,6 +1,7 @@
 import type {
     ConditionParameters,
     ImageProperties,
+    PatientStatus,
 } from 'digital-fuesim-manv-shared';
 import {
     Breathing,
@@ -111,7 +112,7 @@ export function parsePatientData(importString: string) {
     return patientData;
 }
 
-type ColorCategory = 'black' | 'blue' | 'green' | 'red' | 'yellow';
+type ColorCategory = Exclude<PatientStatus, 'white'>;
 class HealthStateData {
     constructor(
         public name: string,
@@ -156,7 +157,7 @@ function generateHealthStates(
         );
         const nextPhaseColor = getColor(healthStateInformation[3 * i + 3]!);
         // Finish all States and transfer them to two new states based on the condition
-        if (conditionColor!) {
+        if (conditionColor !== null) {
             const conditionSuccessStateName = createHealthStateName(
                 nextPhaseColor,
                 i + 2,
