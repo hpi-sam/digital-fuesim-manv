@@ -38,7 +38,7 @@ export function parsePatientData(importString: string) {
             Number(splitString[i + 5]),
             splitString[i + 6] === 'M'
                 ? 'male'
-                : splitString[i + 6] === 'F'
+                : splitString[i + 6] === 'W'
                 ? 'female'
                 : 'diverse'
         );
@@ -47,7 +47,7 @@ export function parsePatientData(importString: string) {
         const pretriageInformation = PretriageInformation.create(
             splitString[i + 28]!,
             splitString[i + 29]! + splitString[i + 30]!,
-            !(splitString[i + 56] === 'G'),
+            splitString[i + 56] === 'G',
             // XABCDE
             splitString[i + 10]! + splitString[i + 11]!,
             splitString[i + 12]!,
@@ -232,6 +232,19 @@ function getColor(colorString: string): ColorCategory {
     const color = colorRegExp.exec(colorString.toLowerCase());
     if (color === null) {
         throw new Error('Wrong color format in SK entries');
+    }
+    switch (color[0]) {
+        case 'grün':
+            return 'green';
+        case 'gelb':
+            return 'yellow';
+        case 'rot':
+            return 'red';
+        case 'schwarz':
+            return 'black';
+        case 'blau':
+            return 'blue';
+        default:
     }
     return color[0] as ColorCategory;
 }

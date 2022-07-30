@@ -90,6 +90,18 @@
                 <li class="list-group-item">
                     <h5>
                         Patienten
+                        <div class="btn btn-outline-primary ms-5">
+                            <i class="bi-cloud-upload me-2"> </i>
+                            CSV-Import
+                            <input
+                                (input)="
+                                    importPatientsCSV($any($event.target).files)
+                                "
+                                type="file"
+                                accept="application/csv"
+                                class="d-none"
+                            />
+                        </div>
                         <div
                             ngbDropdown
                             placement="bottom-end"
@@ -136,18 +148,6 @@
                             height: 240px;
                         "
                     >
-                        <label class="btn btn-outline-primary ms-5">
-                            <i class="bi-cloud-upload me-2"> </i>
-                            Patienten aus CSV importieren
-                            <input
-                                (input)="
-                                    importPatientsCSV($any($event.target).files)
-                                "
-                                type="file"
-                                accept="application/csv"
-                                class="d-none"
-                            />
-                        </label>
                         <div
                             *ngFor="
                                 let patientCategory of patientCategories$
