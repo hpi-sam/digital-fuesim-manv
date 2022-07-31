@@ -20,6 +20,7 @@ import { IntegerValidatorDirective } from './validation/integer-validator.direct
 import { OnlyNumbersValidatorDirective } from './validation/only-numbers-validator.directive';
 import { UrlValidatorDirective } from './validation/url-validator.directive';
 import { PatientStatusBadgeComponent } from './components/patient-status-badge/patient-status-badge.component';
+import { OrderByPipe } from './pipes/order-by.pipe';
 
 @NgModule({
     declarations: [
@@ -39,6 +40,7 @@ import { PatientStatusBadgeComponent } from './components/patient-status-badge/p
         UrlValidatorDirective,
         ValuesPipe,
         KeysPipe,
+        OrderByPipe,
         ViewportNameComponent,
         IntegerValidatorDirective,
         PatientStatusDataFieldComponent,
@@ -62,6 +64,7 @@ import { PatientStatusBadgeComponent } from './components/patient-status-badge/p
         UrlValidatorDirective,
         ValuesPipe,
         KeysPipe,
+        OrderByPipe,
         ViewportNameComponent,
         IntegerValidatorDirective,
         PatientStatusBadgeComponent,
