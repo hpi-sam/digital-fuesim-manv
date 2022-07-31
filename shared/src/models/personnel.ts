@@ -1,13 +1,8 @@
 import { Type } from 'class-transformer';
-import {
-    IsDefined,
-    IsOptional,
-    IsString,
-    IsUUID,
-    ValidateNested,
-} from 'class-validator';
+import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { personnelTemplateMap } from '../data/default-state/personnel-templates';
 import { UUID, UUIDSet, uuid, uuidValidationOptions } from '../utils';
+import { IsUUIDSet } from '../utils/validators';
 import {
     CanCaterFor,
     Position,
@@ -31,8 +26,7 @@ export class Personnel {
     @IsString()
     public readonly vehicleName: string;
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly assignedPatientIds: UUIDSet;
 
     @ValidateNested()
