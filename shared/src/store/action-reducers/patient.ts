@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
 import { PatientStatus, Position } from '../../models/utils';
 import { SpatialTree } from '../../models/utils/spatial-tree';
@@ -59,6 +59,18 @@ export class SetVisibleStatusAction implements Action {
 
     @IsString()
     public readonly patientStatus!: PatientStatus;
+}
+
+export class SetUserTextAction implements Action {
+    @IsString()
+    public readonly type = '[Patient] Set Remarks';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly patientId!: UUID;
+
+    @IsString()
+    @MaxLength(65535)
+    public readonly remarks!: string;
 }
 
 export namespace PatientActionReducers {
@@ -178,6 +190,16 @@ export namespace PatientActionReducers {
                 calculateTreatments(draftState, patient, patient.position);
             }
 
+            return draftState;
+        },
+        rights: 'participant',
+    };
+
+    export const setUserTextAction: ActionReducer<SetUserTextAction> = {
+        action: SetUserTextAction,
+        reducer: (draftState, { patientId, remarks }) => {
+            const patient = getElement(draftState, 'patients', patientId);
+            patient.remarks = remarks;
             return draftState;
         },
         rights: 'participant',

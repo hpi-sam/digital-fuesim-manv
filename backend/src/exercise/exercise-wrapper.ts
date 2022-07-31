@@ -10,6 +10,8 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import {
     ExerciseState,
+    cloneDeepMutable,
+    applyAction,
     reduceExerciseState,
     validateExerciseState,
     validateExerciseAction,
@@ -24,6 +26,7 @@ import { RestoreError } from '../utils/restore-error';
 import { UserReadableIdGenerator } from '../utils/user-readable-id-generator';
 import type { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
 import { migrateInDatabaseTo } from '../database/state-migrations/migrations';
+import { pushAll, removeAll } from '../utils/array';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
@@ -155,7 +158,6 @@ export class ExerciseWrapper extends NormalType<
             : this.databaseService.transaction(operations);
     }
 
-    // TODO: Method currently unused, kept for follow-up changes
     static createFromEntity(
         entity: ExerciseWrapperEntity,
         databaseService: DatabaseService
@@ -172,10 +174,9 @@ export class ExerciseWrapper extends NormalType<
         );
         normal.id = entity.id;
         if (entity.actions) {
-            actionsInWrapper.splice(
-                0,
-                0,
-                ...entity.actions.map((action) =>
+            pushAll(
+                actionsInWrapper,
+                entity.actions.map((action) =>
                     ActionWrapper.createFromEntity(
                         action,
                         databaseService,
@@ -285,7 +286,7 @@ export class ExerciseWrapper extends NormalType<
                         exercise
                     )
             );
-            exercise.temporaryActionHistory.push(...actions);
+            pushAll(exercise.temporaryActionHistory, actions);
             exercise.restore();
             exercise.tickCounter = actions.filter(
                 (action) => action.action.type === '[Exercise] Tick'
@@ -330,12 +331,12 @@ export class ExerciseWrapper extends NormalType<
     }
 
     private restoreState() {
-        this.currentState = this.initialState;
-        this.temporaryActionHistory.forEach((action) => {
-            this.validateAction(action.action);
-            const state = reduceExerciseState(this.currentState, action.action);
-            this.currentState = state;
+        let currentState = cloneDeepMutable(this.initialState);
+        this.temporaryActionHistory.forEach(({ action }) => {
+            this.validateAction(action);
+            currentState = applyAction(currentState, action);
         });
+        this.currentState = currentState;
         this.incrementIdGenerator.setCurrent(
             this.temporaryActionHistory.length
         );
@@ -397,11 +398,11 @@ export class ExerciseWrapper extends NormalType<
                         exerciseEntity,
                         databaseService
                     );
+                    removeAll(exercise.temporaryActionHistory);
                     // Load all actions
-                    exercise.temporaryActionHistory.splice(
-                        0,
-                        exercise.temporaryActionHistory.length,
-                        ...(
+                    pushAll(
+                        exercise.temporaryActionHistory,
+                        (
                             await databaseService.actionWrapperService.getFindAll(
                                 {
                                     where: { exercise: { id: exercise.id } },
@@ -487,6 +488,18 @@ export class ExerciseWrapper extends NormalType<
             clientWrapper.disconnect();
             this.clients.delete(clientWrapper);
         });
+        if (
+            this.clients.size === 0 &&
+            this.currentState.currentStatus === 'running'
+        ) {
+            // Pause the exercise
+            this.applyAction(
+                {
+                    type: '[Exercise] Pause',
+                },
+                null
+            );
+        }
     }
 
     public start() {
@@ -517,7 +530,6 @@ export class ExerciseWrapper extends NormalType<
      * @throws Error if the action is not applicable on the current state
      */
     private reduce(action: ExerciseAction, emitterId: UUID | null): void {
-        this.validateAction(action);
         const newState = reduceExerciseState(this.currentState, action);
         this.setState(newState, action, emitterId);
         if (action.type === '[Exercise] Pause') {
