@@ -1,5 +1,4 @@
 import { IsInt, IsString, Min } from 'class-validator';
-import { IsLiteralType } from '../../utils/validators';
 import { getCreate } from './get-create';
 import { Sex } from './sex';
 
@@ -8,7 +7,7 @@ export class BiometricInformation {
     @Min(0)
     public readonly age: number;
 
-    @IsLiteralType<Sex>({ diverse: true, female: true, male: true })
+    @IsString()
     public readonly sex: Sex;
 
     /**
