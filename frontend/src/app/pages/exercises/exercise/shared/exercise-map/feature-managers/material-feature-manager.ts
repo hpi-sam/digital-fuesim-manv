@@ -8,9 +8,12 @@ import type OlMap from 'ol/Map';
 import type { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import type { Feature } from 'ol';
+import Stroke from 'ol/style/Stroke';
+import { getRgbaColor } from 'src/app/shared/functions/colors';
 import type { WithPosition } from '../../utility/types/with-position';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
+import { CircleStyleHelper } from '../utility/style-helper/circle-style-helper';
 import { ElementFeatureManager, createPoint } from './element-feature-manager';
 
 export class MaterialFeatureManager extends ElementFeatureManager<
@@ -30,6 +33,26 @@ export class MaterialFeatureManager extends ElementFeatureManager<
         0.025,
         'top'
     );
+
+    // TODO: make it non interactable - is also on top of e.g. patients
+    private readonly auraStyleHelper = new CircleStyleHelper((feature) => {
+        const material = this.getElementFromFeature(feature)!.value;
+        if (!material.auraMode) {
+            return undefined;
+        }
+        return {
+            stroke: new Stroke({
+                color: getRgbaColor('white', 0.6),
+                width: 5,
+                lineDash: [0, 20, 20, 20],
+            }),
+            radius:
+                Math.max(
+                    material.specificThreshold,
+                    material.generalThreshold
+                ) / 0.025,
+        };
+    }, 0.025);
 
     constructor(
         store: Store<AppState>,
@@ -53,6 +76,7 @@ export class MaterialFeatureManager extends ElementFeatureManager<
         this.layer.setStyle((feature, resolution) => [
             this.nameStyleHelper.getStyle(feature as Feature, resolution),
             this.imageStyleHelper.getStyle(feature as Feature, resolution),
+            this.auraStyleHelper.getStyle(feature as Feature, resolution),
         ]);
     }
 

@@ -34,6 +34,8 @@ export class FunctionParameters {
     @IsNumber()
     public readonly rettSanModifier: number;
 
+    // TODO: sanModifier not included
+
     /**
      * @deprecated Use {@link create} instead
      */

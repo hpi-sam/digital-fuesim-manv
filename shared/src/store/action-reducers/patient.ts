@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
 import { PatientStatus, Position } from '../../models/utils';
+import { SpatialTree } from '../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import {
@@ -108,7 +109,18 @@ export namespace PatientActionReducers {
                 );
             }
             draftState.patients[patient.id] = cloneDeepMutable(patient);
-            calculateTreatments(draftState);
+
+            if (patient.position !== undefined) {
+                SpatialTree.addElement(
+                    draftState,
+                    'patients',
+                    patient.id,
+                    patient.position
+                );
+            }
+
+            calculateTreatments(draftState, patient, patient.position);
+
             return draftState;
         },
         rights: 'trainer',
@@ -118,8 +130,27 @@ export namespace PatientActionReducers {
         action: MovePatientAction,
         reducer: (draftState, { patientId, targetPosition }) => {
             const patient = getElement(draftState, 'patients', patientId);
+
+            const startPosition = patient.position;
+
+            if (startPosition !== undefined) {
+                SpatialTree.moveElement(draftState, 'patients', patient.id, [
+                    startPosition,
+                    targetPosition,
+                ]);
+            } else {
+                SpatialTree.addElement(
+                    draftState,
+                    'patients',
+                    patient.id,
+                    targetPosition
+                );
+            }
+
             patient.position = cloneDeepMutable(targetPosition);
-            calculateTreatments(draftState);
+
+            calculateTreatments(draftState, patient, targetPosition);
+
             return draftState;
         },
         rights: 'participant',
@@ -128,9 +159,22 @@ export namespace PatientActionReducers {
     export const removePatient: ActionReducer<RemovePatientAction> = {
         action: RemovePatientAction,
         reducer: (draftState, { patientId }) => {
-            getElement(draftState, 'patients', patientId);
+            const patient = getElement(draftState, 'patients', patientId);
+
+            if (patient.position !== undefined) {
+                SpatialTree.removeElement(
+                    draftState,
+                    'patients',
+                    patient.id,
+                    patient.position
+                );
+
+                // remove any treatments this patient received (deletes patient from personnel and material assignedPatientIds UUIDSet)
+                calculateTreatments(draftState, patient, undefined);
+            }
+
             deletePatient(draftState, patientId);
-            calculateTreatments(draftState);
+
             return draftState;
         },
         rights: 'trainer',
@@ -141,6 +185,11 @@ export namespace PatientActionReducers {
         reducer: (draftState, { patientId, patientStatus }) => {
             const patient = getElement(draftState, 'patients', patientId);
             patient.pretriageStatus = patientStatus;
+
+            if (patient.position !== undefined) {
+                calculateTreatments(draftState, patient, patient.position);
+            }
+
             return draftState;
         },
         rights: 'participant',

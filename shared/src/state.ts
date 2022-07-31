@@ -30,6 +30,8 @@ import { getCreate } from './models/utils';
 import type { UUID } from './utils';
 import { uuidValidationOptions, uuid } from './utils';
 import { PatientCategory } from './models/patient-category';
+import type { SpatialTreeElementType } from './models/utils/spatial-tree';
+import { SpatialTree } from './models/utils/spatial-tree';
 import { ExerciseStatus } from './models/utils/exercise-status';
 
 export class ExerciseState {
@@ -88,6 +90,16 @@ export class ExerciseState {
     public readonly eocLog: readonly EocLogEntry[] = [];
     @IsString()
     public readonly participantId: string = '';
+
+    @IsObject()
+    public readonly spatialTrees: {
+        readonly [key in SpatialTreeElementType]: SpatialTree;
+    } = {
+        materials: SpatialTree.create(),
+        patients: SpatialTree.create(),
+        personnel: SpatialTree.create(),
+    };
+
     @ValidateNested()
     @Type(() => ExerciseConfiguration)
     public readonly configuration = ExerciseConfiguration.create();

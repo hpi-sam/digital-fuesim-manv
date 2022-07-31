@@ -9,17 +9,10 @@ const sanPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(1, 1, 4, 'or')
-);
-
-const notSanPersonnelTemplate = PersonnelTemplate.create(
-    'notSan',
-    {
-        url: '/assets/notSan-personnel.svg',
-        height: 80,
-        aspectRatio: 1,
-    },
-    CanCaterFor.create(1, 1, 4, 'or')
+    CanCaterFor.create(0, 0, 5, 'or'),
+    2.5,
+    5.5,
+    false
 );
 
 const rettSanPersonnelTemplate = PersonnelTemplate.create(
@@ -29,7 +22,23 @@ const rettSanPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(1, 1, 4, 'or')
+    CanCaterFor.create(1, 2, 0, 'and'),
+    2.5,
+    5,
+    false
+);
+
+const notSanPersonnelTemplate = PersonnelTemplate.create(
+    'notSan',
+    {
+        url: '/assets/notSan-personnel.svg',
+        height: 80,
+        aspectRatio: 1,
+    },
+    CanCaterFor.create(2, 1, 0, 'and'),
+    2.5,
+    5.5,
+    false
 );
 
 const notarztPersonnelTemplate = PersonnelTemplate.create(
@@ -39,7 +48,10 @@ const notarztPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(1, 1, 4, 'or')
+    CanCaterFor.create(2, 2, 2, 'and'),
+    15,
+    0,
+    true
 );
 
 const gfPersonnelTemplate = PersonnelTemplate.create(
@@ -49,15 +61,18 @@ const gfPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(0, 0, 0, 'or')
+    CanCaterFor.create(0, 0, 0, 'or'),
+    0,
+    0,
+    false
 );
 
 export const personnelTemplateMap: {
     [key in PersonnelType]: PersonnelTemplate;
 } = {
     san: sanPersonnelTemplate,
-    notSan: notSanPersonnelTemplate,
     rettSan: rettSanPersonnelTemplate,
+    notSan: notSanPersonnelTemplate,
     notarzt: notarztPersonnelTemplate,
     gf: gfPersonnelTemplate,
 };

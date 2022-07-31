@@ -4,6 +4,7 @@ import type { Patient } from '../../../models';
 import { Material, Personnel } from '../../../models';
 import type { PatientStatus } from '../../../models/utils';
 import { CanCaterFor, Position } from '../../../models/utils';
+import { SpatialTree } from '../../../models/utils/spatial-tree';
 import { ExerciseState } from '../../../state';
 import type { Mutable, UUID, UUIDSet } from '../../../utils';
 import { uuid, cloneDeepMutable } from '../../../utils';
@@ -55,6 +56,7 @@ function assertCatering(
 }
 
 function generatePatient(
+    state: Mutable<ExerciseState>,
     pretriageStatus: PatientStatus,
     realStatus: PatientStatus,
     position?: Position
@@ -64,31 +66,39 @@ function generatePatient(
     patient.realStatus = realStatus;
     if (position) {
         patient.position = cloneDeepMutable(position);
+        SpatialTree.addElement(state, 'patients', patient.id, patient.position);
     }
     return patient;
 }
 
-function generatePersonnel(position?: Position) {
+function generatePersonnel(state: Mutable<ExerciseState>, position?: Position) {
     const personnel = cloneDeepMutable(
         Personnel.create(uuid(), 'RTW 3/83/1', 'notSan', {})
     );
     if (position) {
         personnel.position = cloneDeepMutable(position);
+        SpatialTree.addElement(
+            state,
+            'personnel',
+            personnel.id,
+            personnel.position
+        );
     }
     return personnel;
 }
 
-function generateMaterial(position?: Position) {
+function generateMaterial(state: Mutable<ExerciseState>, position?: Position) {
     const material = cloneDeepMutable(
-        Material.create(
-            uuid(),
-            'RTW 3/83/1',
-            CanCaterFor.create(1, 2, 3, 'or'),
-            {}
-        )
+        Material.create(uuid(), 'RTW 3/83/1', 'default', {})
     );
     if (position) {
         material.position = cloneDeepMutable(position);
+        SpatialTree.addElement(
+            state,
+            'materials',
+            material.id,
+            material.position
+        );
     }
     return material;
 }
@@ -106,7 +116,9 @@ function setupStateAndApplyTreatments(
     });
 
     const newState = produce(beforeState, (draft) => {
-        calculateTreatments(draft);
+        for (const patient of Object.values(draft.patients)) {
+            calculateTreatments(draft, patient, undefined);
+        }
     });
     return {
         beforeState,
@@ -123,7 +135,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only personnel in vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const person = generatePersonnel();
+                const person = generatePersonnel(state);
                 state.personnel[person.id] = person;
             }
         );
@@ -133,7 +145,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only personnel outside vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const person = generatePersonnel(Position.create(0, 0));
+                const person = generatePersonnel(state, Position.create(0, 0));
                 state.personnel[person.id] = person;
             }
         );
@@ -143,7 +155,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only material in vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const material = generateMaterial();
+                const material = generateMaterial(state);
                 state.materials[material.id] = material;
             }
         );
@@ -153,7 +165,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only material outside vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const material = generateMaterial(Position.create(0, 0));
+                const material = generateMaterial(state, Position.create(0, 0));
                 state.materials[material.id] = material;
             }
         );
@@ -166,6 +178,7 @@ describe('calculate treatment', () => {
                 (['green', 'yellow', 'red'] as PatientStatus[]).forEach(
                     (color) => {
                         const patient = generatePatient(
+                            state,
                             color,
                             color,
                             Position.create(0, 0)
@@ -182,6 +195,7 @@ describe('calculate treatment', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
                 const patient = generatePatient(
+                    state,
                     'black',
                     'black',
                     Position.create(0, 0)
@@ -196,13 +210,14 @@ describe('calculate treatment', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
                 const patient = generatePatient(
+                    state,
                     'green',
                     'green',
                     Position.create(0, 0)
                 );
                 state.patients[patient.id] = patient;
 
-                const person = generatePersonnel();
+                const person = generatePersonnel(state);
                 state.personnel[person.id] = person;
             }
         );
@@ -213,13 +228,14 @@ describe('calculate treatment', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
                 const patient = generatePatient(
+                    state,
                     'green',
                     'green',
                     Position.create(0, 0)
                 );
                 state.patients[patient.id] = patient;
 
-                const material = generateMaterial();
+                const material = generateMaterial(state);
                 state.materials[material.id] = material;
             }
         );
@@ -235,16 +251,18 @@ describe('calculate treatment', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
                 const greenPatient = generatePatient(
+                    state,
                     'green',
                     'green',
                     Position.create(0, 0)
                 );
                 const redPatient = generatePatient(
+                    state,
                     'red',
                     'red',
                     Position.create(2, 2)
                 );
-                const material = generateMaterial(Position.create(0, 0));
+                const material = generateMaterial(state, Position.create(0, 0));
 
                 ids.material = material.id;
                 ids.greenPatient = greenPatient.id;
@@ -272,16 +290,18 @@ describe('calculate treatment', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
                 const greenPatient = generatePatient(
+                    state,
                     'green',
                     'green',
                     Position.create(-1, -1)
                 );
                 const redPatient = generatePatient(
+                    state,
                     'red',
                     'red',
                     Position.create(2, 2)
                 );
-                const material = generateMaterial(Position.create(0, 0));
+                const material = generateMaterial(state, Position.create(0, 0));
 
                 ids.material = material.id;
                 ids.greenPatient = greenPatient.id;
@@ -309,16 +329,18 @@ describe('calculate treatment', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
                 const greenPatient = generatePatient(
+                    state,
                     'green',
                     'green',
                     Position.create(-10, -10)
                 );
                 const redPatient = generatePatient(
+                    state,
                     'red',
                     'red',
                     Position.create(20, 20)
                 );
-                const material = generateMaterial(Position.create(0, 0));
+                const material = generateMaterial(state, Position.create(0, 0));
 
                 ids.material = material.id;
                 ids.greenPatient = greenPatient.id;
@@ -340,16 +362,18 @@ describe('calculate treatment', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
                 const greenPatient = generatePatient(
+                    state,
                     'green',
                     'green',
                     Position.create(-1, -1)
                 );
                 const redPatient = generatePatient(
+                    state,
                     'red',
                     'red',
                     Position.create(2, 2)
                 );
-                const material = generateMaterial(Position.create(0, 0));
+                const material = generateMaterial(state, Position.create(0, 0));
                 material.canCaterFor = cloneDeepMutable(
                     CanCaterFor.create(1, 0, 1, 'and')
                 );

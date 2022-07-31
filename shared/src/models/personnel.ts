@@ -1,12 +1,17 @@
 import { Type } from 'class-transformer';
 import {
+    IsBoolean,
     IsDefined,
+    IsNumber,
     IsOptional,
     IsString,
     IsUUID,
+    Max,
+    Min,
     ValidateNested,
 } from 'class-validator';
 import { personnelTemplateMap } from '../data/default-state/personnel-templates';
+import { maxGlobalThreshold } from '../state-helpers/max-global-threshold';
 import { UUID, UUIDSet, uuid, uuidValidationOptions } from '../utils';
 import {
     CanCaterFor,
@@ -38,6 +43,25 @@ export class Personnel {
     @ValidateNested()
     @Type(() => CanCaterFor)
     public readonly canCaterFor: CanCaterFor;
+
+    /**
+     * Guaranteed to be <= {@link maxGlobalThreshold}.
+     */
+    @IsNumber()
+    @Min(0)
+    @Max(maxGlobalThreshold)
+    public readonly specificThreshold: number;
+
+    /**
+     * Guaranteed to be <= {@link maxGlobalThreshold}.
+     */
+    @IsNumber()
+    @Min(0)
+    @Max(maxGlobalThreshold)
+    public readonly generalThreshold: number;
+
+    @IsBoolean()
+    public readonly auraMode: boolean;
 
     @ValidateNested()
     @Type(() => ImageProperties)
@@ -72,9 +96,14 @@ export class Personnel {
         this.vehicleName = vehicleName;
         this.personnelType = personnelType;
         this.assignedPatientIds = assignedPatientIds;
-        // Only assign this when the parameter is set appropriately
+        // The constructor must be callable without any arguments
         this.image = personnelTemplateMap[personnelType]?.image;
         this.canCaterFor = personnelTemplateMap[personnelType]?.canCaterFor;
+        this.generalThreshold =
+            personnelTemplateMap[personnelType]?.generalThreshold;
+        this.specificThreshold =
+            personnelTemplateMap[personnelType]?.specificThreshold;
+        this.auraMode = personnelTemplateMap[personnelType]?.auraMode;
     }
 
     static readonly create = getCreate(this);

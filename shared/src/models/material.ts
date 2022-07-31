@@ -1,13 +1,20 @@
 import { Type } from 'class-transformer';
 import {
+    IsBoolean,
     IsDefined,
+    IsNumber,
     IsOptional,
     IsString,
     IsUUID,
+    Max,
+    Min,
     ValidateNested,
 } from 'class-validator';
+import { materialTemplateMap } from '../data/default-state/material-templates';
+import { maxGlobalThreshold } from '../state-helpers/max-global-threshold';
 import { uuid, UUID, UUIDSet, uuidValidationOptions } from '../utils';
 import { CanCaterFor, getCreate, ImageProperties, Position } from './utils';
+import type { MaterialType } from './utils/material-type';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
@@ -28,6 +35,25 @@ export class Material {
     public readonly canCaterFor: CanCaterFor;
 
     /**
+     * Guaranteed to be <= {@link maxGlobalThreshold}.
+     */
+    @IsNumber()
+    @Min(0)
+    @Max(maxGlobalThreshold)
+    public readonly specificThreshold: number;
+
+    /**
+     * Guaranteed to be <= {@link maxGlobalThreshold}.
+     */
+    @IsNumber()
+    @Min(0)
+    @Max(maxGlobalThreshold)
+    public readonly generalThreshold: number;
+
+    @IsBoolean()
+    public readonly auraMode: boolean;
+
+    /**
      * if undefined, is in vehicle with {@link vehicleId}
      */
     @ValidateNested()
@@ -37,11 +63,7 @@ export class Material {
 
     @ValidateNested()
     @Type(() => ImageProperties)
-    public readonly image: ImageProperties = {
-        url: './assets/material.svg',
-        height: 40,
-        aspectRatio: 1,
-    };
+    public readonly image: ImageProperties;
 
     /**
      * @deprecated Use {@link create} instead
@@ -49,15 +71,22 @@ export class Material {
     constructor(
         vehicleId: UUID,
         vehicleName: string,
-        canCaterFor: CanCaterFor,
+        materialType: MaterialType,
         assignedPatientIds: UUIDSet,
         position?: Position
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
-        this.canCaterFor = canCaterFor;
         this.assignedPatientIds = assignedPatientIds;
         this.position = position;
+        // The constructor must be callable without any arguments
+        this.image = materialTemplateMap[materialType]?.image;
+        this.canCaterFor = materialTemplateMap[materialType]?.canCaterFor;
+        this.generalThreshold =
+            materialTemplateMap[materialType]?.generalThreshold;
+        this.specificThreshold =
+            materialTemplateMap[materialType]?.specificThreshold;
+        this.auraMode = materialTemplateMap[materialType]?.auraMode;
     }
 
     static readonly create = getCreate(this);

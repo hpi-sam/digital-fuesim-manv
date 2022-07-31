@@ -1,7 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
-import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
+import { SpatialTree } from '../../models/utils/spatial-tree';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
@@ -23,8 +24,27 @@ export namespace MaterialActionReducers {
         action: MoveMaterialAction,
         reducer: (draftState, { materialId, targetPosition }) => {
             const material = getElement(draftState, 'materials', materialId);
+
+            const startPosition = material.position;
+
+            if (startPosition !== undefined) {
+                SpatialTree.moveElement(draftState, 'materials', material.id, [
+                    startPosition,
+                    targetPosition,
+                ]);
+            } else {
+                SpatialTree.addElement(
+                    draftState,
+                    'materials',
+                    material.id,
+                    targetPosition
+                );
+            }
+
             material.position = cloneDeepMutable(targetPosition);
-            calculateTreatments(draftState);
+
+            calculateTreatments(draftState, material, targetPosition);
+
             return draftState;
         },
         rights: 'participant',

@@ -20,10 +20,28 @@ export class CateringLinesFeatureManager
 {
     readonly unsupportedChangeProperties = new Set(['id'] as const);
 
-    private readonly lineStyleHelper = new LineStyleHelper(0.1, '#0dcaf0');
+    private readonly lineStyleHelper: LineStyleHelper;
 
-    constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {
+    /**
+     *
+     * @param layer
+     * @param scale
+     * @param lineColor in hex with # before, e.g. '#0dcaf0'
+     */
+    constructor(
+        public readonly layer: VectorLayer<VectorSource<LineString>>,
+        scale: number,
+        lineColor: string
+    ) {
         super();
+        this.lineStyleHelper = new LineStyleHelper(
+            {
+                color: lineColor,
+                width: 5,
+                lineDash: [0, 20, 20, 20],
+            },
+            scale
+        );
         layer.setStyle((thisFeature, currentZoom) =>
             this.lineStyleHelper.getStyle(thisFeature as Feature, currentZoom)
         );

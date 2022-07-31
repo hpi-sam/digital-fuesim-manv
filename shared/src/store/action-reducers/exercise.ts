@@ -7,7 +7,8 @@ import {
     IsString,
     ValidateNested,
 } from 'class-validator';
-import type { Personnel, Vehicle } from '../../models';
+import { Patient } from '../../models';
+import type { Vehicle, Personnel } from '../../models';
 import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
@@ -77,19 +78,57 @@ export namespace ExerciseActionReducers {
         ) => {
             // Refresh the current time
             draftState.currentTime += tickInterval;
+
             // Refresh patient status
             patientUpdates.forEach((patientUpdate) => {
                 const currentPatient = draftState.patients[patientUpdate.id]!;
+
+                const visibleStatusBefore = Patient.getVisibleStatus(
+                    currentPatient,
+                    draftState.configuration.pretriageEnabled,
+                    draftState.configuration.bluePatientsEnabled
+                );
+
                 currentPatient.currentHealthStateId = patientUpdate.nextStateId;
                 currentPatient.health = patientUpdate.nextHealthPoints;
                 currentPatient.stateTime = patientUpdate.nextStateTime;
                 currentPatient.treatmentTime = patientUpdate.treatmentTime;
                 currentPatient.realStatus = getStatus(currentPatient.health);
+
+                const visibleStatusAfter = Patient.getVisibleStatus(
+                    currentPatient,
+                    draftState.configuration.pretriageEnabled,
+                    draftState.configuration.bluePatientsEnabled
+                );
+
+                /**
+                 * if visibleStatus would change setting {@link needsNewCalculateTreatments} to true,
+                 * as when {@link refreshTreatments} is also true, this patient needs new treatment calculation
+                 */
+                if (visibleStatusBefore !== visibleStatusAfter) {
+                    /**
+                     * calculateTreatments() will set {@link currentPatient.needsNewCalculateTreatments} to false again
+                     * if
+                     * @see calculateTreatments was called with a patient
+                     */
+                    currentPatient.needsNewCalculateTreatments = true;
+                }
+
+                /**
+                 * Refresh treatments of this patient every refreshTreatmentInterval and only when the visibleStatus of a patient really changed
+                 */
+                if (
+                    refreshTreatments &&
+                    currentPatient.needsNewCalculateTreatments
+                ) {
+                    calculateTreatments(
+                        draftState,
+                        currentPatient,
+                        currentPatient.position
+                    );
+                }
             });
-            // Refresh treatments
-            if (refreshTreatments) {
-                calculateTreatments(draftState);
-            }
+
             // Refresh transfers
             refreshTransfer(draftState, 'vehicles', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);

@@ -10,7 +10,6 @@ import { Hospital } from '../../models';
 import { HospitalPatient } from '../../models/hospital-patient';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
-import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 import { deleteVehicle } from './vehicle';
 
@@ -141,7 +140,6 @@ export namespace HospitalActionReducers {
                     hospital.patientIds[patientId] = true;
                 }
                 deleteVehicle(draftState, vehicleId);
-                calculateTreatments(draftState);
                 return draftState;
             },
             rights: 'participant',

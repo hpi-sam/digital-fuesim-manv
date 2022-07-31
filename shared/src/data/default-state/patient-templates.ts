@@ -7,8 +7,8 @@ import { PatientCategory } from '../../models/patient-category';
 import type { ImageProperties } from '../../models/utils';
 import { healthPointsDefaults } from '../../models/utils';
 
-const defaultMaleImage: ImageProperties = {
-    url: '/assets/male-patient.svg',
+const defaultPatientImage: ImageProperties = {
+    url: '/assets/patient.svg',
     height: 80,
     aspectRatio: 1,
 };
@@ -811,7 +811,7 @@ const prioRedUntilPhase2State = PatientHealthState.create(
 
 export const defaultPatientCategories: readonly PatientCategory[] = [
     // XAXAXA Patients
-    PatientCategory.create('XAXAXA', defaultMaleImage, [
+    PatientCategory.create('XAXAXA', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'female',
@@ -834,14 +834,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 isWalkable: true,
             },
             { [noChangesState.id]: noChangesState },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.greenMax,
             noChangesState.id
         ),
     ]),
 
     // XAXAXD Patients
-    PatientCategory.create('XAXAXD', defaultMaleImage, [
+    PatientCategory.create('XAXAXD', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'female',
@@ -866,7 +866,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [noChangesState.id]: noChangesState,
                 [greenUntilPhase10State.id]: greenUntilPhase10State,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.greenMax,
             greenUntilPhase10State.id
         ),
@@ -894,7 +894,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [noChangesState.id]: noChangesState,
                 [greenUntilPhase11State.id]: greenUntilPhase11State,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.greenMax,
             greenUntilPhase11State.id
         ),
@@ -922,14 +922,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [noChangesState.id]: noChangesState,
                 [greenUntilPhase12State.id]: greenUntilPhase12State,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.greenMax,
             greenUntilPhase12State.id
         ),
     ]),
 
     // XAXDXA Patients
-    PatientCategory.create('XAXDXA', defaultMaleImage, [
+    PatientCategory.create('XAXDXA', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'female',
@@ -956,7 +956,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [waitForYellowToGreenState.id]: waitForYellowToGreenState,
                 [yellowToGreenState.id]: yellowToGreenState,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.greenMax,
             greenUntilPhase7State.id
         ),
@@ -985,14 +985,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [waitForYellowToGreenState.id]: waitForYellowToGreenState,
                 [yellowToGreenState.id]: yellowToGreenState,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.greenMax,
             greenUntilPhase8State.id
         ),
     ]),
 
     // XDXDXA Patients
-    PatientCategory.create('XDXDXA', defaultMaleImage, [
+    PatientCategory.create('XDXDXA', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'male',
@@ -1020,14 +1020,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [yellowFor2PhasesState.id]: yellowFor2PhasesState,
                 [recoverToGreenState.id]: recoverToGreenState,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.greenMax,
             greenUntilPhase2State.id
         ),
     ]),
 
     // XAXAYB Patients
-    PatientCategory.create('XAXAYB', defaultMaleImage, [
+    PatientCategory.create('XAXAYB', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'female',
@@ -1057,14 +1057,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [greenStartPhase11RADecisionState.id]:
                     greenStartPhase11RADecisionState,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.greenMax,
             greenUntilPhase9State.id
         ),
     ]),
 
     // XDZBZC Patients
-    PatientCategory.create('XDZBZC', defaultMaleImage, [
+    PatientCategory.create('XDZBZC', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'female',
@@ -1093,14 +1093,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                     greenStartPhase5RADecisionState,
                 [waitForTransportState.id]: waitForTransportState,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.greenMax,
             greenUntilPhase4State.id
         ),
     ]),
 
     // YAXAXA Patients
-    PatientCategory.create('YAXAXA', defaultMaleImage, [
+    PatientCategory.create('YAXAXA', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'male',
@@ -1126,14 +1126,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [noChangesState.id]: noChangesState,
                 [yellowUntilPhase5State.id]: yellowUntilPhase5State,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.yellowAverage,
             yellowUntilPhase5State.id
         ),
     ]),
 
     // YBXAXA Patients
-    PatientCategory.create('YBXAXA', defaultMaleImage, [
+    PatientCategory.create('YBXAXA', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'male',
@@ -1160,14 +1160,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [yellowUntilPhase4State.id]: yellowUntilPhase4State,
                 [recoverWithRSState.id]: recoverWithRSState,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.yellowAverage,
             yellowUntilPhase4State.id
         ),
     ]),
 
     // YBYAYA Patients
-    PatientCategory.create('YBYAYA', defaultMaleImage, [
+    PatientCategory.create('YBYAYA', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'male',
@@ -1195,14 +1195,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [yellowStartPhase4RSDecisionState.id]:
                     yellowStartPhase4RSDecisionState,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.yellowAverage,
             yellowUntilRedPhase4State.id
         ),
     ]),
 
     // YAYBYA Patients
-    PatientCategory.create('YAYBYA', defaultMaleImage, [
+    PatientCategory.create('YAYBYA', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'male',
@@ -1225,14 +1225,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 isWalkable: false,
             },
             { [noChangesState.id]: noChangesState },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.yellowAverage,
             noChangesState.id
         ),
     ]),
 
     // YDYBYB Patients
-    PatientCategory.create('YDYBYB', defaultMaleImage, [
+    PatientCategory.create('YDYBYB', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'female',
@@ -1267,14 +1267,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [yellowStartPhase9RADecisionState.id]:
                     yellowStartPhase9RADecisionState,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.yellowAverage,
             yellowUntilPhase3State.id
         ),
     ]),
 
     // YCZCVE Patients
-    PatientCategory.create('YCZCVE', defaultMaleImage, [
+    PatientCategory.create('YCZCVE', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'female',
@@ -1302,14 +1302,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                     yellowUntilPrioRedPhase4State,
                 [redUntilBlack2PhasesState.id]: redUntilBlack2PhasesState,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.yellowAverage,
             yellowUntilPrioRedPhase4State.id
         ),
     ]),
 
     // ZBZAZA Patients
-    PatientCategory.create('ZBZAZA', defaultMaleImage, [
+    PatientCategory.create('ZBZAZA', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'male',
@@ -1335,7 +1335,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [noChangesState.id]: noChangesState,
                 [redUntilBlackPhase2State.id]: redUntilBlackPhase2State,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.redAverage,
             redUntilBlackPhase2State.id
         ),
@@ -1364,7 +1364,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [noChangesState.id]: noChangesState,
                 [redUntilBlackPhase2State.id]: redUntilBlackPhase2State,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.redAverage,
             redUntilBlackPhase2State.id
         ),
@@ -1393,7 +1393,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [noChangesState.id]: noChangesState,
                 [redUntilBlackPhase2State.id]: redUntilBlackPhase2State,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.redAverage,
             redUntilBlackPhase2State.id
         ),
@@ -1422,14 +1422,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [noChangesState.id]: noChangesState,
                 [redUntilBlackPhase2State.id]: redUntilBlackPhase2State,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.redAverage,
             redUntilBlackPhase2State.id
         ),
     ]),
 
     // ZBZCVE Patients
-    PatientCategory.create('ZBZCVE', defaultMaleImage, [
+    PatientCategory.create('ZBZCVE', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'female',
@@ -1459,14 +1459,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                     redIntoTransportFor2PhasesState,
                 [redInstantTransportState.id]: redInstantTransportState,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.redAverage,
             redUntilPhase2State.id
         ),
     ]),
 
     // ZCZCVE Patients
-    PatientCategory.create('ZCZCVE', defaultMaleImage, [
+    PatientCategory.create('ZCZCVE', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'male',
@@ -1493,14 +1493,14 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [prioRedUntilPhase2State.id]: prioRedUntilPhase2State,
                 [redInstantTransportState.id]: redInstantTransportState,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.redAverage,
             prioRedUntilPhase2State.id
         ),
     ]),
 
     // ZCVEVE Patients
-    PatientCategory.create('ZCVEVE', defaultMaleImage, [
+    PatientCategory.create('ZCVEVE', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'female',
@@ -1526,7 +1526,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
                 [noChangesState.id]: noChangesState,
                 [redInstantTransportState.id]: redInstantTransportState,
             },
-            defaultMaleImage,
+            defaultPatientImage,
             healthPointsDefaults.redAverage,
             redInstantTransportState.id
         ),

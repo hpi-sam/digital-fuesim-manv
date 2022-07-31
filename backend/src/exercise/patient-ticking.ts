@@ -3,48 +3,25 @@ import type {
     HealthPoints,
     Patient,
     PersonnelType,
-    UUID,
 } from 'digital-fuesim-manv-shared';
 import { healthPointsDefaults, isAlive } from 'digital-fuesim-manv-shared';
+import type { PatientUpdate } from 'digital-fuesim-manv-shared/dist/utils/patient-updates';
 
 /**
  * The count of assigned personnel and material that cater for a {@link Patient}.
  */
 type Catering = { [key in PersonnelType | 'material']: number };
 
-interface PatientTickResult {
-    /**
-     * The id of the patient
-     */
-    id: UUID;
-    /**
-     * The new {@link HealthPoints} the patient should have
-     */
-    nextHealthPoints: HealthPoints;
-    /**
-     * The next {@link PatientHealthState} the patient should be in
-     */
-    nextStateId: UUID;
-    /**
-     * The new state time of the patient
-     */
-    nextStateTime: number;
-    /**
-     * The time a patient was treated overall
-     */
-    treatmentTime: number;
-}
-
 /**
  * Apply the patient tick to the {@link state}
  * @param state The {@link ExerciseState} the patient tick should be applied on later
  * @param patientTickInterval The interval in ms between calls to this function
- * @returns An array of {@link PatientTickResult}s to apply to the {@link state} in a reducer
+ * @returns An array of {@link PatientUpdate}s to apply to the {@link state} in a reducer
  */
 export function patientTick(
     state: ExerciseState,
     patientTickInterval: number
-): PatientTickResult[] {
+): PatientUpdate[] {
     return (
         Object.values(state.patients)
             // Only look at patients that are alive and have a position, i.e. are not in a vehicle
@@ -96,13 +73,14 @@ function getDedicatedResources(
             san: 0,
         };
     }
-    const material = Object.values(state.materials).filter((thisMaterial) =>
-        Object.keys(thisMaterial.assignedPatientIds).includes(patient.id)
-    ).length;
-    const treatingPersonnel = Object.values(state.personnel).filter(
-        (thisPersonnel) =>
-            Object.keys(thisPersonnel.assignedPatientIds).includes(patient.id)
+
+    const material = Object.keys(patient.assignedMaterialIds).length;
+
+    // TODO: check if this is efficient and maybe do it via for each assignedPersonnelId state.personnel[assignedPersonnelId]
+    const treatingPersonnel = Object.values(state.personnel).filter(() =>
+        Object.keys(patient.assignedPersonnelIds)
     );
+
     const notarzt = treatingPersonnel.filter(
         (thisPersonnel) => thisPersonnel.personnelType === 'notarzt'
     ).length;
@@ -143,10 +121,10 @@ function getNextPatientHealthPoints(
     const notarzt = treatedBy.notarzt;
     const notSan = treatedBy.notSan;
     const rettSan = treatedBy.rettSan;
-    // TODO: Sans should be able to treat patients too
+    // TODO: Sans should be able to treat patients too.
     const functionParameters =
         patient.healthStates[patient.currentHealthStateId]!.functionParameters;
-    // To do anything the personnel needs material
+    // to do anything (actually help a patient) the personnel needs material (or better said, the patient needs to be treated by material)
     // TODO: But a personnel should probably be able to treat a patient a bit without material - e.g. free airways, just press something on a strongly bleeding wound, etc.
     // -> find a better heuristic
     let equippedNotarzt = Math.min(notarzt, material);

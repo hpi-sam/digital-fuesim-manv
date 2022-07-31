@@ -1,11 +1,13 @@
 import { IsInt, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
-import type { ExerciseState } from '../..';
+import type { ExerciseState, Personnel } from '../..';
 import { imageSizeToPosition, Position, TransferPoint } from '../..';
+import { SpatialTree } from '../../models/utils/spatial-tree';
 import { StartPoint } from '../../models/utils/start-points';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
+import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 
 /**
@@ -37,6 +39,16 @@ export function letElementArrive(
         )
     );
     delete element.transfer;
+
+    if (elementType === 'personnel') {
+        SpatialTree.addElement(
+            draftState,
+            'personnel',
+            element.id,
+            element.position
+        );
+        calculateTreatments(draftState, element as Personnel, element.position);
+    }
 }
 
 export class AddToTransferAction implements Action {
@@ -143,6 +155,23 @@ export namespace TransferActionReducers {
                 duration = startPoint.duration;
             }
 
+            if (elementType === 'personnel') {
+                if (element.position !== undefined) {
+                    SpatialTree.removeElement(
+                        draftState,
+                        'personnel',
+                        element.id,
+                        element.position
+                    );
+                    // remove any treatment this personnel did
+                    calculateTreatments(
+                        draftState,
+                        element as Personnel,
+                        undefined
+                    );
+                }
+            }
+
             // Set the element to transfer
             delete element.position;
             element.transfer = {
@@ -151,6 +180,7 @@ export namespace TransferActionReducers {
                 endTimeStamp: draftState.currentTime + duration,
                 isPaused: false,
             };
+
             return draftState;
         },
         rights: 'participant',
