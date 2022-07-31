@@ -163,7 +163,8 @@ export class Patient {
         healthStates: { readonly [stateId: UUID]: PatientHealthState },
         currentHealthStateId: UUID,
         image: ImageProperties,
-        health: HealthPoints
+        health: HealthPoints,
+        remarks: string
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
@@ -175,6 +176,7 @@ export class Patient {
         this.currentHealthStateId = currentHealthStateId;
         this.image = image;
         this.health = health;
+        this.remarks = remarks;
     }
 
     static readonly create = getCreate(this);
