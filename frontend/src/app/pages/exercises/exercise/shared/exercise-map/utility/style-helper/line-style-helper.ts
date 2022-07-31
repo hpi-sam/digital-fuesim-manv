@@ -1,22 +1,20 @@
 import type { Feature } from 'ol';
-import type { ColorLike } from 'ol/colorlike';
+import type { Options } from 'ol/style/Stroke';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import { StyleHelper } from './style-helper';
 
 export class LineStyleHelper extends StyleHelper<Style, Feature> {
     constructor(
-        private readonly scale: number,
-        private readonly color: ColorLike
+        private readonly getProperties: Options,
+        private readonly scale: number
     ) {
         super();
     }
 
     protected generateInitialStyle(feature: Feature, zoom: number) {
         return new Style({
-            stroke: new Stroke({
-                color: this.color,
-            }),
+            stroke: new Stroke(this.getProperties),
         });
     }
 

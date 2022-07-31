@@ -35,10 +35,7 @@ export class Material {
     public readonly canCaterFor: CanCaterFor;
 
     /**
-     * when the last personnel or material matching {@link maxGlobalThreshold}
-     * has a smaller {@link specificThreshold} or {@link generalThreshold}
-     * than {@link maxGlobalThreshold}, than update {@link maxGlobalThreshold}.
-     * Important you need a migration when updating {@link maxGlobalThreshold}!
+     * Guaranteed to be <= {@link maxGlobalThreshold}.
      */
     @IsNumber()
     @Min(0)
@@ -46,10 +43,7 @@ export class Material {
     public readonly specificThreshold: number;
 
     /**
-     * when the last personnel or material matching {@link maxGlobalThreshold}
-     * has a smaller {@link specificThreshold} or {@link generalThreshold}
-     * than {@link maxGlobalThreshold}, than update {@link maxGlobalThreshold}.
-     * Important you need a migration when updating {@link maxGlobalThreshold}!
+     * Guaranteed to be <= {@link maxGlobalThreshold}.
      */
     @IsNumber()
     @Min(0)
@@ -85,6 +79,7 @@ export class Material {
         this.vehicleName = vehicleName;
         this.assignedPatientIds = assignedPatientIds;
         this.position = position;
+        // The constructor must be callable without any arguments
         this.image = materialTemplateMap[materialType]?.image;
         this.canCaterFor = materialTemplateMap[materialType]?.canCaterFor;
         this.generalThreshold =

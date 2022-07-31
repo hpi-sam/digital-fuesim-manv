@@ -1,4 +1,4 @@
-import { IsJSON } from 'class-validator';
+import { IsObject } from 'class-validator';
 import RBush from 'rbush';
 /**
  * right now knn is included via the github repo
@@ -56,7 +56,7 @@ export class PointRBush extends RBush<PointRBushElement> {
  * more info read: https://blog.mapbox.com/a-dive-into-spatial-search-algorithms-ebd0c5e39d2a
  */
 export class SpatialTree {
-    @IsJSON()
+    @IsObject()
     public readonly spatialTreeAsJSON: ImmutableJsonObject;
 
     static readonly create = getCreate(this);
@@ -178,7 +178,7 @@ export class SpatialTree {
      * @param position where around elements should be searched
      * @param radius around the {@link position}, must be >0
      *
-     * @returns all or {@link maxNumberOfElements} if given elements in circle sorted by distance
+     * @returns all or {@link maxNumberOfElements} elements in circle, result is sorted by distance
      */
     static findAllElementsInCircle(
         state: Mutable<ExerciseState>,

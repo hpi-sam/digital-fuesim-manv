@@ -25,16 +25,23 @@ export class CateringLinesFeatureManager
     /**
      *
      * @param layer
-     * @param lineWidth
+     * @param scale
      * @param lineColor in hex with # before, e.g. '#0dcaf0'
      */
     constructor(
         public readonly layer: VectorLayer<VectorSource<LineString>>,
-        lineWidth: number,
+        scale: number,
         lineColor: string
     ) {
         super();
-        this.lineStyleHelper = new LineStyleHelper(lineWidth, lineColor);
+        this.lineStyleHelper = new LineStyleHelper(
+            {
+                color: lineColor,
+                width: 5,
+                lineDash: [0, 20, 20, 20],
+            },
+            scale
+        );
         layer.setStyle((thisFeature, currentZoom) =>
             this.lineStyleHelper.getStyle(thisFeature as Feature, currentZoom)
         );

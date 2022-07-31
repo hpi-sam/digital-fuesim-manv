@@ -227,8 +227,9 @@ function removeTreatmentsOfElement(
 }
 
 /**
- * @param position when a patient was moved, positions needs to have old position and new position
- *                  when positions is undefined, it means all treatments from this element should be removed
+ * @param position has two purposes:
+ *                  - if an element was moved: {@link position} needs the new position
+ *                  - if treatment of an element should be removed: set {@link position} to `undefined`
  * @param elementIdsToBeSkipped with this you can ignore e.g. personnel and material that was already calculated before (e.g. see unloadVehicle)
  */
 export function calculateTreatments(

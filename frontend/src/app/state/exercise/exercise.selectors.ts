@@ -118,65 +118,46 @@ export const selectExerciseStatus = (state: AppState) =>
 export const selectParticipantId = (state: AppState) =>
     state.exercise.participantId;
 
-// TODO: only use the material and personnel in the current viewport
-export const selectCateringLines = createSelector(
-    selectMaterials,
-    selectPersonnel,
-    selectPatients,
-    (materials, personnel, patients) =>
-        [...Object.values(materials), ...Object.values(personnel)]
-            .flatMap((element) => {
-                // filter out every element not having a position or having auraMode enabled
-                if (element.position === undefined || element.auraMode) {
-                    return [];
-                }
-                return Object.keys(element.assignedPatientIds)
-                    .map((patientId) => patients[patientId])
-                    .filter((patient) => patient.position !== undefined)
-                    .map((patient) => ({
-                        id: `${element.id}:${patient.id}` as const,
-                        catererPosition: element.position!,
-                        patientPosition: patient.position!,
-                    }));
-            })
-            .reduce<{ [id: string]: CateringLine }>(
-                (cateringLinesObject, cateringLine) => {
-                    cateringLinesObject[cateringLine.id] = cateringLine;
-                    return cateringLinesObject;
-                },
-                {}
-            )
-);
+function cateringLinesElementSelector(getElementsWithAuraMode = false) {
+    return createSelector(
+        selectMaterials,
+        selectPersonnel,
+        selectPatients,
+        (materials, personnel, patients) =>
+            [...Object.values(materials), ...Object.values(personnel)]
+                .flatMap((element) => {
+                    // filter out every element not having a position or having auraMode (dependent on enabled
+                    if (
+                        element.position === undefined ||
+                        (getElementsWithAuraMode && !element.auraMode) ||
+                        (!getElementsWithAuraMode && element.auraMode)
+                    ) {
+                        return [];
+                    }
+                    return Object.keys(element.assignedPatientIds)
+                        .map((patientId) => patients[patientId]!)
+                        .filter((patient) => patient.position !== undefined)
+                        .map((patient) => ({
+                            id: `${element.id}:${patient!.id}` as const,
+                            catererPosition: element.position!,
+                            patientPosition: patient!.position!,
+                        }));
+                })
+                .reduce<{ [id: string]: CateringLine }>(
+                    (cateringLinesObject, cateringLine) => {
+                        cateringLinesObject[cateringLine.id] = cateringLine;
+                        return cateringLinesObject;
+                    },
+                    {}
+                )
+    );
+}
 
 // TODO: only use the material and personnel in the current viewport
-export const selectAuraCateringLines = createSelector(
-    selectMaterials,
-    selectPersonnel,
-    selectPatients,
-    (materials, personnel, patients) =>
-        [...Object.values(materials), ...Object.values(personnel)]
-            .flatMap((element) => {
-                // filter out every element not having a position or having auraMode disabled
-                if (element.position === undefined || !element.auraMode) {
-                    return [];
-                }
-                return Object.keys(element.assignedPatientIds)
-                    .map((patientId) => patients[patientId]!)
-                    .filter((patient) => patient.position !== undefined)
-                    .map((patient) => ({
-                        id: `${element.id}:${patient.id}` as const,
-                        catererPosition: element.position!,
-                        patientPosition: patient.position!,
-                    }));
-            })
-            .reduce<{ [id: string]: CateringLine }>(
-                (cateringLinesObject, cateringLine) => {
-                    cateringLinesObject[cateringLine.id] = cateringLine;
-                    return cateringLinesObject;
-                },
-                {}
-            )
-);
+export const selectCateringLines = cateringLinesElementSelector();
+
+// TODO: only use the material and personnel in the current viewport
+export const selectAuraCateringLines = cateringLinesElementSelector(true);
 
 export const selectTransferLines = createSelector(
     selectTransferPoints,

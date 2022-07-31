@@ -4,7 +4,6 @@ import { Position } from '../../models/utils';
 import { SpatialTree } from '../../models/utils/spatial-tree';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
 import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 
@@ -28,18 +27,22 @@ export namespace MaterialActionReducers {
 
             const startPosition = material.position;
 
-            if (startPosition === undefined) {
-                throw new ReducerError(
-                    `Material with id ${material.id} can't be moved, as its position is undefined`
+            if (startPosition !== undefined) {
+                SpatialTree.moveElement(draftState, 'materials', material.id, [
+                    startPosition,
+                    targetPosition,
+                ]);
+            } else {
+                SpatialTree.addElement(
+                    draftState,
+                    'materials',
+                    material.id,
+                    targetPosition
                 );
             }
 
             material.position = cloneDeepMutable(targetPosition);
 
-            SpatialTree.moveElement(draftState, 'materials', material.id, [
-                startPosition,
-                targetPosition,
-            ]);
             calculateTreatments(draftState, material, targetPosition);
 
             return draftState;

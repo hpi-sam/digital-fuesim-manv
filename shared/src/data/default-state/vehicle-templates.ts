@@ -52,14 +52,7 @@ const ktwVehicleTemplate = VehicleTemplate.create(
     ktwImage,
     1,
     ['san', 'rettSan'],
-    [
-        {
-            logicalOperator: 'or',
-            green: 2,
-            yellow: 1,
-            red: 1,
-        },
-    ]
+    ['default']
 );
 
 const carryingUnitVehicleTemplate = VehicleTemplate.create(

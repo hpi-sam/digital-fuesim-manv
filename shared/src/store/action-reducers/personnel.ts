@@ -4,7 +4,6 @@ import { Position } from '../../models/utils';
 import { SpatialTree } from '../../models/utils/spatial-tree';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
 import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 
@@ -28,18 +27,21 @@ export namespace PersonnelActionReducers {
 
             const startPosition = personnel.position;
 
-            if (startPosition === undefined) {
-                throw new ReducerError(
-                    `Personnel with id ${personnel.id} can't be moved, as its position is undefined`
+            if (startPosition !== undefined) {
+                SpatialTree.moveElement(draftState, 'personnel', personnel.id, [
+                    startPosition,
+                    targetPosition,
+                ]);
+            } else {
+                SpatialTree.addElement(
+                    draftState,
+                    'personnel',
+                    personnel.id,
+                    targetPosition
                 );
             }
 
             personnel.position = cloneDeepMutable(targetPosition);
-
-            SpatialTree.moveElement(draftState, 'personnel', personnel.id, [
-                startPosition,
-                targetPosition,
-            ]);
 
             calculateTreatments(draftState, personnel, targetPosition);
 

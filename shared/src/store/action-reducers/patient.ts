@@ -98,18 +98,15 @@ export namespace PatientActionReducers {
             }
             draftState.patients[patient.id] = cloneDeepMutable(patient);
 
-            if (patient.position === undefined) {
-                throw new ReducerError(
-                    `Patient with id ${patient.id} can't be added without a position`
+            if (patient.position !== undefined) {
+                SpatialTree.addElement(
+                    draftState,
+                    'patients',
+                    patient.id,
+                    patient.position
                 );
             }
 
-            SpatialTree.addElement(
-                draftState,
-                'patients',
-                patient.id,
-                patient.position
-            );
             calculateTreatments(draftState, patient, patient.position);
 
             return draftState;
@@ -124,18 +121,21 @@ export namespace PatientActionReducers {
 
             const startPosition = patient.position;
 
-            if (startPosition === undefined) {
-                throw new ReducerError(
-                    `Patient with id ${patient.id} can't be moved, as its position is undefined - needs a valid position to move from`
+            if (startPosition !== undefined) {
+                SpatialTree.moveElement(draftState, 'patients', patient.id, [
+                    startPosition,
+                    targetPosition,
+                ]);
+            } else {
+                SpatialTree.addElement(
+                    draftState,
+                    'patients',
+                    patient.id,
+                    targetPosition
                 );
             }
 
             patient.position = cloneDeepMutable(targetPosition);
-
-            SpatialTree.moveElement(draftState, 'patients', patient.id, [
-                startPosition,
-                targetPosition,
-            ]);
 
             calculateTreatments(draftState, patient, targetPosition);
 
@@ -149,23 +149,17 @@ export namespace PatientActionReducers {
         reducer: (draftState, { patientId }) => {
             const patient = getElement(draftState, 'patients', patientId);
 
-            if (patient.position === undefined) {
-                throw new ReducerError(
-                    `Patient with id ${patient.id} can't be removed, as its position is undefined, if removed while being inside a vehicle, something went wrong`
+            if (patient.position !== undefined) {
+                SpatialTree.removeElement(
+                    draftState,
+                    'patients',
+                    patient.id,
+                    patient.position
                 );
+
+                // remove any treatments this patient received (deletes patient from personnel and material assignedPatientIds UUIDSet)
+                calculateTreatments(draftState, patient, undefined);
             }
-
-            SpatialTree.removeElement(
-                draftState,
-                'patients',
-                patient.id,
-                patient.position
-            );
-
-            patient.position = undefined;
-
-            // remove any treatments this patient received (deletes patient from personnel and material assignedPatientIds UUIDSet)
-            calculateTreatments(draftState, patient, patient.position);
 
             deletePatient(draftState, patientId);
 
@@ -180,13 +174,9 @@ export namespace PatientActionReducers {
             const patient = getElement(draftState, 'patients', patientId);
             patient.pretriageStatus = patientStatus;
 
-            if (patient.position === undefined) {
-                throw new ReducerError(
-                    `visibleStatus of Patient with id ${patient.id} can't be set, as its position is undefined`
-                );
+            if (patient.position !== undefined) {
+                calculateTreatments(draftState, patient, patient.position);
             }
-
-            calculateTreatments(draftState, patient, patient.position);
 
             return draftState;
         },

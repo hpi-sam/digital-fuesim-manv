@@ -156,7 +156,6 @@ export namespace TransferActionReducers {
             }
 
             if (elementType === 'personnel') {
-                // TODO: is there a possibility not having a position but being added to transfer as only a personnel (not being in vehicle)?
                 if (element.position !== undefined) {
                     SpatialTree.removeElement(
                         draftState,
@@ -174,7 +173,7 @@ export namespace TransferActionReducers {
             }
 
             // Set the element to transfer
-            element.position = undefined;
+            delete element.position;
             element.transfer = {
                 startPoint: cloneDeepMutable(startPoint),
                 targetTransferPointId,

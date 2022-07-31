@@ -95,18 +95,17 @@ export namespace ExerciseActionReducers {
                 currentPatient.treatmentTime = patientUpdate.treatmentTime;
                 currentPatient.realStatus = getStatus(currentPatient.health);
 
+                const visibleStatusAfter = Patient.getVisibleStatus(
+                    currentPatient,
+                    draftState.configuration.pretriageEnabled,
+                    draftState.configuration.bluePatientsEnabled
+                );
+
                 /**
                  * if visibleStatus would change setting {@link needsNewCalculateTreatments} to true,
                  * as when {@link refreshTreatments} is also true, this patient needs new treatment calculation
                  */
-                if (
-                    visibleStatusBefore !==
-                    Patient.getVisibleStatus(
-                        currentPatient,
-                        draftState.configuration.pretriageEnabled,
-                        draftState.configuration.bluePatientsEnabled
-                    )
-                ) {
+                if (visibleStatusBefore !== visibleStatusAfter) {
                     /**
                      * calculateTreatments() will set {@link currentPatient.needsNewCalculateTreatments} to false again
                      * if

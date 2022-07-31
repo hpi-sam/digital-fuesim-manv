@@ -263,15 +263,11 @@ export namespace VehicleActionReducers {
             }
 
             /**
-             * Has the Ids of every personnel and material that we calculated already,
-             * so we don't recalculated multiple times.
-             * Without this set of skipped UUIDs for each material and personnel
-             * around each patient that was unloaded
-             * calculateTreatments would probably calculate the them multiple times
+             * Ids of elements that are already calculated
              */
             const elementIdsToBeSkipped: Mutable<UUIDSet> = {};
 
-            // now that everything is unloaded the spatialTree we will calculate treatments for each personnel, material and patient unloaded
+            // after every elements are unloaded we will calculate treatments for each
             for (const person of personnel) {
                 calculateTreatments(draftState, person, person.position);
                 elementIdsToBeSkipped[person.id] = true;
@@ -316,18 +312,14 @@ export namespace VehicleActionReducers {
                         );
                     }
 
-                    if (material.position === undefined) {
-                        throw new ReducerError(
-                            `Material with id ${material.id} can't be loaded into vehicle with id ${vehicle.id}, as its position is undefined`
+                    if (material.position !== undefined) {
+                        SpatialTree.removeElement(
+                            draftState,
+                            'materials',
+                            material.id,
+                            material.position
                         );
                     }
-
-                    SpatialTree.removeElement(
-                        draftState,
-                        'materials',
-                        material.id,
-                        material.position
-                    );
 
                     material.position = undefined;
 
@@ -356,18 +348,14 @@ export namespace VehicleActionReducers {
                         );
                     }
 
-                    if (personnel.position === undefined) {
-                        throw new ReducerError(
-                            `Personnel with id ${personnel.id} can't be loaded into vehicle with id ${vehicle.id}, as its position is undefined, if personnel should be in transfer, something has gone wrong`
+                    if (personnel.position !== undefined) {
+                        SpatialTree.removeElement(
+                            draftState,
+                            'personnel',
+                            personnel.id,
+                            personnel.position
                         );
                     }
-
-                    SpatialTree.removeElement(
-                        draftState,
-                        'personnel',
-                        personnel.id,
-                        personnel.position
-                    );
 
                     personnel.position = undefined;
 
@@ -395,93 +383,78 @@ export namespace VehicleActionReducers {
                     }
                     vehicle.patientIds[elementToBeLoadedId] = true;
 
-                    if (patient.position === undefined) {
-                        throw new ReducerError(
-                            `Patient with id ${patient.id} can't be loaded into vehicle with id ${vehicle.id}, as its position is undefined`
+                    if (patient.position !== undefined) {
+                        SpatialTree.removeElement(
+                            draftState,
+                            'patients',
+                            patient.id,
+                            patient.position
                         );
                     }
-
-                    SpatialTree.removeElement(
-                        draftState,
-                        'patients',
-                        patient.id,
-                        patient.position
-                    );
 
                     patient.position = undefined;
 
                     // remove any treatments this patient received
                     calculateTreatments(draftState, patient, patient.position);
 
-                    const materialIds = Object.keys(vehicle.materialIds);
                     // if this vehicle has material associated with it load them in
-                    if (materialIds.length > 0) {
-                        for (const materialId of materialIds) {
-                            const material = getElement(
-                                draftState,
-                                'materials',
-                                materialId
-                            );
+                    Object.keys(vehicle.materialIds).forEach((materialId) => {
+                        const material = getElement(
+                            draftState,
+                            'materials',
+                            materialId
+                        );
 
-                            if (material.position === undefined) {
-                                throw new ReducerError(
-                                    `Material with id ${material.id} can't be loaded into vehicle with id ${vehicle.id}, as its position is undefined`
-                                );
-                            }
-
+                        if (material.position !== undefined) {
                             SpatialTree.removeElement(
                                 draftState,
                                 'materials',
                                 material.id,
                                 material.position
                             );
+                        }
 
-                            material.position = undefined;
+                        material.position = undefined;
+
+                        // remove any treatments from this material
+                        calculateTreatments(
+                            draftState,
+                            material,
+                            material.position
+                        );
+                    });
+
+                    // if this vehicle has personnel associated with it load all in (except personnel being in transfer)
+                    Object.keys(vehicle.personnelIds).forEach((personnelId) => {
+                        const personnel = getElement(
+                            draftState,
+                            'personnel',
+                            personnelId
+                        );
+                        // only remove personnel from spatialTree if it had a position before and is not in transfer
+                        if (
+                            personnel.position !== undefined &&
+                            personnel.transfer === undefined
+                        ) {
+                            SpatialTree.removeElement(
+                                draftState,
+                                'personnel',
+                                personnel.id,
+                                personnel.position
+                            );
+
+                            personnel.position = undefined;
 
                             // remove any treatments from this material
                             calculateTreatments(
                                 draftState,
-                                material,
-                                material.position
+                                personnel,
+                                personnel.position
                             );
                         }
-                    }
-
-                    const personnelIds = Object.keys(vehicle.personnelIds);
-                    // if this vehicle has personnel associated with it load all in (except personnel being in transfer)
-                    if (personnelIds.length > 0) {
-                        for (const personnelId of personnelIds) {
-                            const personnel = getElement(
-                                draftState,
-                                'personnel',
-                                personnelId
-                            );
-                            // only remove personnel from spatialTree if it had a position before and is not in transfer
-                            if (
-                                personnel.position !== undefined &&
-                                personnel.transfer === undefined
-                            ) {
-                                SpatialTree.removeElement(
-                                    draftState,
-                                    'personnel',
-                                    personnel.id,
-                                    personnel.position
-                                );
-
-                                personnel.position = undefined;
-
-                                // remove any treatments from this material
-                                calculateTreatments(
-                                    draftState,
-                                    personnel,
-                                    personnel.position
-                                );
-                            }
-                        }
-                    }
+                    });
                 }
             }
-
             return draftState;
         },
         rights: 'participant',

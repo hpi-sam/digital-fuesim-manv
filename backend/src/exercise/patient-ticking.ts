@@ -124,7 +124,7 @@ function getNextPatientHealthPoints(
     // TODO: Sans should be able to treat patients too.
     const functionParameters =
         patient.healthStates[patient.currentHealthStateId]!.functionParameters;
-    // TODO: anything the personnel needs material
+    // to do anything (actually help a patient) the personnel needs material (or better said, the patient needs to be treated by material)
     // TODO: But a personnel should probably be able to treat a patient a bit without material - e.g. free airways, just press something on a strongly bleeding wound, etc.
     // -> find a better heuristic
     let equippedNotarzt = Math.min(notarzt, material);
