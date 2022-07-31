@@ -1,7 +1,7 @@
 import produce from 'immer';
-import { ExerciseState } from '../state';
+import type { ExerciseState } from '../state';
 import { cloneDeepMutable, sleep } from '../utils';
-import { ExerciseAction } from './action-reducers';
+import type { ExerciseAction } from './action-reducers';
 import { applyAction } from './reduce-exercise-state';
 
 /**
