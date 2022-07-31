@@ -6,3 +6,4 @@ export * from './reducer-error';
 export * from './reduce-exercise-state';
 export * from './action-reducers';
 export * from './action-reducer';
+export * from './time-travel-utilities';
