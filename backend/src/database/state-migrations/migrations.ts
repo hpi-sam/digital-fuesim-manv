@@ -137,7 +137,7 @@ export async function migrateInDatabaseTo(
                 actionsToUpdate.map(async ({ index, actionString }) =>
                     entityManager.update(
                         ActionWrapperEntity,
-                        { index },
+                        { index, exercise: { id: exerciseId } },
                         { actionString }
                     )
                 )
