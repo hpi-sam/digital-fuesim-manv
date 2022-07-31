@@ -109,3 +109,10 @@ The [OlMapManager](src/app/pages/exercises/exercise/shared/exercise-map/utility/
 The map consists of different layers. Each layer only displays one kind of element. How an element in this layer should be rendered and what interactions are possible is defined in the [specific ElementFeatureManagers](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers).
 They all inherit from [ElementFeatureManager](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers/element-feature-manager.ts) and make mostly use of `Helper` classes to add additional functionality via composition.
 They have a custom API that allows reacting to changes in an element ([ElementManager](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers/element-manager.ts)) and an API that allows for interaction with other elements via the OlMapManager ([FeatureManager](src/app/pages/exercises/exercise/shared/exercise-map/utility/feature-manager.ts)).
+
+## Action proposals
+
+As described in the [root README.md](../README.md), we use actions to propose changes.
+Such actions can be proposed optimistically.
+Note that all actions that correspond to visual updates on the map must be proposed optimistically as otherwise visual bugs may occur when the proposal fails.
+See [#298](https://github.com/hpi-sam/digital-fuesim-manv/issues/298) in this context.
