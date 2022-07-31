@@ -1,3 +1,6 @@
+import assert from 'node:assert';
+import fs from 'node:fs';
+import type { ExerciseState, Mutable } from 'digital-fuesim-manv-shared';
 import { exerciseMap } from '../src/exercise/exercise-map';
 import { UserReadableIdGenerator } from '../src/utils/user-readable-id-generator';
 import type { ExerciseCreationResponse } from './utils';
@@ -28,6 +31,51 @@ describe('exercise', () => {
             }
             await environment.httpRequest('post', '/api/exercise').expect(503);
         });
+
+        it('imports an exercise correctly', async () => {
+            // Load data
+            const getJsonObjectFromFile = (path: string): object =>
+                JSON.parse(fs.readFileSync(path, 'utf8'));
+            const exampleExerciseExport = getJsonObjectFromFile(
+                './test/data/example-exercise-export.json'
+            );
+            const exampleExerciseFinalState = getJsonObjectFromFile(
+                './test/data/example-exercise-final-state.json'
+            );
+            const response = await environment
+                .httpRequest('post', '/api/exercise')
+                .send(exampleExerciseExport)
+                .expect(201);
+
+            const exerciseCreationResponse =
+                response.body as ExerciseCreationResponse;
+            await environment.withWebsocket(async (socket) => {
+                const joinResponse = await socket.emit(
+                    'joinExercise',
+                    exerciseCreationResponse.trainerId,
+                    'Test'
+                );
+                expect(joinResponse.success).toBe(true);
+
+                const getStateResponse = await socket.emit('getState');
+                expect(getStateResponse.success).toBe(true);
+                assert(getStateResponse.success);
+
+                const receivedState =
+                    getStateResponse.payload as Mutable<ExerciseState>;
+                const expectedState =
+                    exampleExerciseFinalState as Mutable<ExerciseState>;
+                receivedState.participantId = '123456';
+                expectedState.participantId = '123456';
+                expect(Object.keys(receivedState.clients).length).toBe(
+                    Object.keys(expectedState.clients).length
+                );
+                receivedState.clients = {};
+                expectedState.clients = {};
+
+                expect(receivedState).toStrictEqual(expectedState);
+            });
+        }, 90_000);
     });
 
     describe('GET /api/exercise/:exerciseId', () => {
