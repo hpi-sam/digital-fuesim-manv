@@ -50,6 +50,10 @@ export class TransferPoint {
         height: 400,
         aspectRatio: 134 / 102,
     };
+
+    public static getFullName(transferPoint: TransferPoint): string {
+        return `${transferPoint.externalName} (${transferPoint.internalName})`;
+    }
 }
 
 // TODO: Add validation

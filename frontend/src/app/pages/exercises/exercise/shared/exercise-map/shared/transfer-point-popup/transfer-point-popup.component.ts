@@ -1,7 +1,8 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { Hospital, TransferPoint, UUID } from 'digital-fuesim-manv-shared';
+import type { Hospital, UUID } from 'digital-fuesim-manv-shared';
+import { TransferPoint } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -43,6 +44,14 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     public transferPoints$ = this.store.select(selectTransferPoints);
 
     public hospitals$ = this.store.select(selectHospitals);
+
+    public getTransferPointOrderByValue: (
+        transferPoint: TransferPoint
+    ) => string = (transferPoint) => TransferPoint.getFullName(transferPoint);
+
+    public getHospitalOrderByValue: (hospital: Hospital) => string = (
+        hospital
+    ) => hospital.name;
 
     /**
      * All transferPoints that are neither connected to this one nor this one itself

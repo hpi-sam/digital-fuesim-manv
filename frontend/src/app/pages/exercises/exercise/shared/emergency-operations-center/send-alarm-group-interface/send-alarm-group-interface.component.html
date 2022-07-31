@@ -2,7 +2,12 @@
     <h5 class="card-header">
         Alarmieren
         <div
-            *appLet="transferPoints$ | async | values as transferPoints"
+            *appLet="
+                transferPoints$
+                    | async
+                    | values
+                    | orderBy: getTransferPointOrderByValue as transferPoints
+            "
             ngbDropdown
             class="d-inline-block float-end"
         >
