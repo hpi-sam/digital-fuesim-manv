@@ -31,6 +31,7 @@ export interface Action {
 
 /**
  * A pure function that applies the action on the provided state.
+ * Pure especially means that no non-deterministic behavior (like `Date.now()` or `uuid()`) may be used.
  *
  * @throws {ReducerError} if the action is not applicable on the provided state
  *
