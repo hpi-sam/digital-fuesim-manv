@@ -326,7 +326,11 @@ export class OlMapManager {
 
         // normal lines of catering objects
         this.registerFeatureElementManager(
-            new CateringLinesFeatureManager(cateringLinesLayer, 0.1, '#0dcaf0'),
+            new CateringLinesFeatureManager(
+                cateringLinesLayer,
+                { color: '#0dcaf0', width: 5 },
+                0.1
+            ),
             this.store.select(selectCateringLines)
         );
 
@@ -334,8 +338,11 @@ export class OlMapManager {
         this.registerFeatureElementManager(
             new CateringLinesFeatureManager(
                 auraCateringLinesLayer,
-                0.1,
-                '#ff0000'
+                {
+                    color: '#ff0000',
+                    width: 5,
+                },
+                0.1
             ),
             this.store.select(selectAuraCateringLines)
         );

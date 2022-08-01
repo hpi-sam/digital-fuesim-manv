@@ -4,6 +4,7 @@ import LineString from 'ol/geom/LineString';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
+import { Options } from 'ol/style/Stroke';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { FeatureManager } from '../utility/feature-manager';
 import { LineStyleHelper } from '../utility/style-helper/line-style-helper';
@@ -25,23 +26,16 @@ export class CateringLinesFeatureManager
     /**
      *
      * @param layer
+     * @param getProperties Stroke Options
      * @param scale
-     * @param lineColor in hex with # before, e.g. '#0dcaf0'
      */
     constructor(
         public readonly layer: VectorLayer<VectorSource<LineString>>,
-        scale: number,
-        lineColor: string
+        private readonly getProperties: Options,
+        private readonly scale: number
     ) {
         super();
-        this.lineStyleHelper = new LineStyleHelper(
-            {
-                color: lineColor,
-                width: 5,
-                lineDash: [0, 20, 20, 20],
-            },
-            scale
-        );
+        this.lineStyleHelper = new LineStyleHelper(getProperties, scale);
         layer.setStyle((thisFeature, currentZoom) =>
             this.lineStyleHelper.getStyle(thisFeature as Feature, currentZoom)
         );
