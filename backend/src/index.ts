@@ -54,7 +54,8 @@ async function main() {
                 console.error(
                     `Error while restoring exercise \`${e.exerciseId}\`:`,
                     e.message,
-                    e.stack
+                    e.stack,
+                    e.cause
                 );
                 return;
             }
