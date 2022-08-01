@@ -7,6 +7,7 @@ import {
     IsOptional,
     IsString,
     IsUUID,
+    MaxLength,
     Min,
     ValidateNested,
 } from 'class-validator';
@@ -47,6 +48,13 @@ export class Patient {
     public readonly image: ImageProperties;
 
     /**
+     * This can be any arbitrary string. It gives trainers the freedom to add additional functionalities that are not natively supported by this application (like an hospital ticket  * system)
+     */
+    @IsString()
+    @MaxLength(65535)
+    public readonly remarks: string;
+
+    /**
      * @deprecated Use {@link create} instead
      */
     constructor(
@@ -57,7 +65,8 @@ export class Patient {
         pretriageStatus: PatientStatus,
         healthStates: { readonly [stateName: string]: PatientHealthState },
         currentHealthStateName: string,
-        image: ImageProperties
+        image: ImageProperties,
+        remarks: string
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
@@ -66,6 +75,7 @@ export class Patient {
         this.healthStates = healthStates;
         this.currentHealthStateName = currentHealthStateName;
         this.image = image;
+        this.remarks = remarks;
     }
 
     /**

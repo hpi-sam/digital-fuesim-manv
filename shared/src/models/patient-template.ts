@@ -101,7 +101,8 @@ export class PatientTemplate {
             'white',
             healthStates,
             template.startingHealthStateName,
-            template.image
+            template.image,
+            ''
         );
     }
 }

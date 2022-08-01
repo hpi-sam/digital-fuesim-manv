@@ -3,6 +3,7 @@ import {
     IsNumber,
     IsString,
     IsUUID,
+    MaxLength,
     Min,
     ValidateNested,
 } from 'class-validator';
@@ -76,6 +77,18 @@ export class SetPatientChangeSpeedAction implements Action {
     @IsNumber()
     @Min(0)
     public readonly changeSpeed!: number;
+}
+
+export class SetUserTextAction implements Action {
+    @IsString()
+    public readonly type = '[Patient] Set Remarks';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly patientId!: UUID;
+
+    @IsString()
+    @MaxLength(65535)
+    public readonly remarks!: string;
 }
 
 export namespace PatientActionReducers {
@@ -161,5 +174,14 @@ export namespace PatientActionReducers {
             return draftState;
         },
         rights: 'trainer',
+    };
+    export const setUserTextAction: ActionReducer<SetUserTextAction> = {
+        action: SetUserTextAction,
+        reducer: (draftState, { patientId, remarks }) => {
+            const patient = getElement(draftState, 'patients', patientId);
+            patient.remarks = remarks;
+            return draftState;
+        },
+        rights: 'participant',
     };
 }

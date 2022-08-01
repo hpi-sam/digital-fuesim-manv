@@ -38,6 +38,7 @@ export function generateDummyPatient(): Patient {
         'green',
         { [healthState.name]: healthState },
         healthState.name,
-        template.image
+        template.image,
+        ''
     );
 }

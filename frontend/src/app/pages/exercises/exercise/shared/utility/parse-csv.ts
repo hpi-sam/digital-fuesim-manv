@@ -245,8 +245,10 @@ function getColor(colorString: string): ColorCategory {
         case 'blau':
             return 'blue';
         default:
+            throw new Error(
+                'Diese Nachricht hätte nicht angezeigt werden dürfen.'
+            );
     }
-    return color[0] as ColorCategory;
 }
 
 function getCondition(

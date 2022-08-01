@@ -163,7 +163,8 @@
                                 *ngFor="
                                     let transferPoint of transferPointsToBeAdded$
                                         | async
-                                        | values;
+                                        | values
+                                        | orderBy: getTransferPointOrderByValue;
                                     trackBy: 'id' | appTrackByProperty
                                 "
                                 ngbDropdownItem
@@ -271,7 +272,8 @@
                                 *ngFor="
                                     let hospital of hospitalsToBeAdded$
                                         | async
-                                        | values;
+                                        | values
+                                        | orderBy: getHospitalOrderByValue;
                                     trackBy: 'id'
                                         | appTrackByProperty
                                             : (hospitalsToBeAdded$
