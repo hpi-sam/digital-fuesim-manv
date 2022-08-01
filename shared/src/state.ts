@@ -24,13 +24,13 @@ import type {
     Vehicle,
     Viewport,
 } from './models';
+import { EocLogEntry, MapImageTemplate, VehicleTemplate } from './models';
 import { ExerciseConfiguration } from './models/exercise-configuration';
-import { EocLogEntry, VehicleTemplate, MapImageTemplate } from './models';
-import { getCreate } from './models/utils';
-import type { UUID } from './utils';
-import { uuidValidationOptions, uuid } from './utils';
 import { PatientCategory } from './models/patient-category';
+import { getCreate } from './models/utils';
 import { ExerciseStatus } from './models/utils/exercise-status';
+import type { UUID } from './utils';
+import { uuid, uuidValidationOptions } from './utils';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -39,6 +39,8 @@ export class ExerciseState {
      * The number of ms since the start of the exercise.
      * This time is updated each `tick` by a constant value, is guaranteed to be (a bit) slower than the real time
      * (depending on the server load and overhead of the tick).
+     *
+     * It is guaranteed that the `ExerciseTickAction` is the only action that modifies this value.
      */
     @IsInt()
     @Min(0)

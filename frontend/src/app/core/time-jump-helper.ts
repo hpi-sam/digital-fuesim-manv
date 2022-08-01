@@ -2,8 +2,7 @@ import type {
     ExerciseState,
     ExerciseTimeline,
 } from 'digital-fuesim-manv-shared';
-import { applyAction } from 'digital-fuesim-manv-shared';
-import produce from 'immer';
+import { jumpToTime } from 'digital-fuesim-manv-shared';
 import { environment } from 'src/environments/environment';
 import { TimeLineCache } from './time-line-cache';
 
@@ -40,29 +39,17 @@ export class TimeJumpHelper {
         if (actions.length === 0) {
             return nearest.state;
         }
-
-        let lastAppliedActionIndex = 0;
         // TODO: Maybe do this in a WebWorker?
-        const newState = produce(nearest.state, (draftState) => {
-            for (
-                ;
-                lastAppliedActionIndex < actions.length;
-                lastAppliedActionIndex++
-            ) {
-                applyAction(draftState, actions[lastAppliedActionIndex]!);
-
-                // TODO: We actually want the last action after which currentTime <= exerciseTime
-                // Maybe look whether the action is a tick action and if so, check how much time would go by
-                if (draftState.currentTime > exerciseTime) {
-                    break;
-                }
-            }
-        });
-        this.exerciseStateCache.add(newState.currentTime, {
+        const { stateAtTime, lastAppliedActionIndex } = jumpToTime(
+            nearest.state,
+            actions,
+            exerciseTime
+        );
+        this.exerciseStateCache.add(stateAtTime.currentTime, {
             nextActionIndex:
                 nearest.nextActionIndex + lastAppliedActionIndex + 1,
-            state: newState,
+            state: stateAtTime,
         });
-        return newState;
+        return stateAtTime;
     }
 }
