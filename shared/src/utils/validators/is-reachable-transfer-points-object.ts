@@ -1,22 +1,20 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
 import { isUUID, isNumber, min } from 'class-validator';
+import { getMapValidator } from './get-map-validator';
 import { makeValidator } from './make-validator';
 
 export function isReachableTransferPoints(
     valueToBeValidated: unknown
 ): boolean {
-    return (
-        typeof valueToBeValidated === 'object' &&
-        valueToBeValidated !== null &&
-        Object.entries(valueToBeValidated).every(
-            ([key, value]: [string, unknown]) =>
-                isUUID(key, 4) &&
-                typeof value === 'object' &&
-                value !== null &&
-                isNumber((value as { duration: number }).duration) &&
-                min((value as { duration: number }).duration, 0)
-        )
-    );
+    return getMapValidator<{ duration: number }>({
+        keyValidator: (key) => isUUID(key, 4),
+        valueTransformer: (value) => value as { duration: number },
+        valueValidator: (value) =>
+            typeof value === 'object' &&
+            value !== null &&
+            isNumber(value.duration) &&
+            min(value.duration, 0),
+    })(valueToBeValidated);
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

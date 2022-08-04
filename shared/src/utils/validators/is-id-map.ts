@@ -3,6 +3,7 @@ import type { ValidationOptions, ValidationArguments } from 'class-validator';
 import { isUUID, validateSync } from 'class-validator';
 import type { Constructor } from '../constructor';
 import type { UUID } from '../uuid';
+import { getMapValidator } from './get-map-validator';
 import { makeValidator } from './make-validator';
 
 export function isIdMap<T extends object>(
@@ -10,24 +11,12 @@ export function isIdMap<T extends object>(
     getId: (value: T) => UUID,
     valueToBeValidated: unknown
 ): boolean {
-    return (
-        typeof valueToBeValidated === 'object' &&
-        valueToBeValidated !== null &&
-        Object.entries(valueToBeValidated).every(([key, value]) => {
-            if (!isUUID(key, 4)) {
-                return false;
-            }
-            const valueInstance = plainToInstance(type, value);
-            const validationErrors = validateSync(valueInstance);
-            if (validationErrors.length > 0) {
-                return false;
-            }
-            if (getId(valueInstance) !== key) {
-                return false;
-            }
-            return true;
-        })
-    );
+    return getMapValidator({
+        keyValidator: (key) => isUUID(key, 4),
+        valueTransformer: (value) => plainToInstance(type, value),
+        valueValidator: (value) => validateSync(value).length === 0,
+        consistencyValidator: (key, value) => getId(value) === key,
+    })(valueToBeValidated);
 }
 
 /**
