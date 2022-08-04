@@ -1,6 +1,6 @@
 import { IsString, IsUUID } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { IsIdObject } from '../utils/validators/is-id-object';
+import { IsIdMap } from '../utils/validators/is-id-map';
 import { getCreate } from './utils';
 import { AlarmGroupVehicle } from './utils/alarm-group-vehicle';
 
@@ -11,7 +11,7 @@ export class AlarmGroup {
     @IsString()
     public readonly name: string;
 
-    @IsIdObject(AlarmGroupVehicle)
+    @IsIdMap(AlarmGroupVehicle)
     public alarmGroupVehicles: { readonly [key: UUID]: AlarmGroupVehicle } = {};
 
     /**

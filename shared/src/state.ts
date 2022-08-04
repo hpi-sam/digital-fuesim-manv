@@ -41,7 +41,7 @@ import type { MaterialType } from './models/utils/material-type';
 import type { SpatialElementType } from './store/action-reducers/utils/spatial-elements';
 import type { UUID } from './utils';
 import { uuidValidationOptions, uuid } from './utils';
-import { IsIdObject } from './utils/validators';
+import { IsIdMap } from './utils/validators';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -58,30 +58,30 @@ export class ExerciseState {
     public readonly currentTime = 0;
     @IsString()
     public readonly currentStatus: ExerciseStatus = 'notStarted';
-    @IsIdObject(Viewport)
+    @IsIdMap(Viewport)
     public readonly viewports: { readonly [key: UUID]: Viewport } = {};
-    @IsIdObject(Vehicle)
+    @IsIdMap(Vehicle)
     public readonly vehicles: { readonly [key: UUID]: Vehicle } = {};
-    @IsIdObject(Personnel)
+    @IsIdMap(Personnel)
     public readonly personnel: { readonly [key: UUID]: Personnel } = {};
-    @IsIdObject(Patient)
+    @IsIdMap(Patient)
     public readonly patients: { readonly [key: UUID]: Patient } = {};
-    @IsIdObject(Material)
+    @IsIdMap(Material)
     public readonly materials: { readonly [key: UUID]: Material } = {};
-    @IsIdObject(MapImage)
+    @IsIdMap(MapImage)
     public readonly mapImages: { readonly [key: UUID]: MapImage } = {};
-    @IsIdObject(TransferPoint)
+    @IsIdMap(TransferPoint)
     public readonly transferPoints: { readonly [key: UUID]: TransferPoint } =
         {};
-    @IsIdObject(Hospital)
+    @IsIdMap(Hospital)
     public readonly hospitals: { readonly [key: UUID]: Hospital } = {};
-    @IsIdObject(HospitalPatient, (hospitalPatient) => hospitalPatient.patientId)
+    @IsIdMap(HospitalPatient, (hospitalPatient) => hospitalPatient.patientId)
     public readonly hospitalPatients: {
         readonly [key: UUID]: HospitalPatient;
     } = {};
-    @IsIdObject(AlarmGroup)
+    @IsIdMap(AlarmGroup)
     public readonly alarmGroups: { readonly [key: UUID]: AlarmGroup } = {};
-    @IsIdObject(Client)
+    @IsIdMap(Client)
     public readonly clients: { readonly [key: UUID]: Client } = {};
     @IsArray()
     @ValidateNested()
