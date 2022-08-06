@@ -10,6 +10,7 @@ import {
     UUID,
     uuidValidationOptions,
 } from '../../utils';
+import { IsStringLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { updateTreatments } from './utils/calculate-treatments';
@@ -62,7 +63,7 @@ export class SetVisibleStatusAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly patientId!: UUID;
 
-    @IsString()
+    @IsStringLiteralUnion()
     public readonly patientStatus!: PatientStatus;
 }
 

@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
-import { IsUUIDSet } from '../utils/validators';
+import { IsStringLiteralUnion, IsUUIDSet } from '../utils/validators';
 import type { PersonnelTemplate } from './personnel-template';
 import {
     PersonnelType,
@@ -28,8 +28,7 @@ export class Personnel {
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId: UUID;
 
-    // TODO
-    @IsString()
+    @IsStringLiteralUnion()
     public readonly personnelType: PersonnelType;
 
     @IsString()

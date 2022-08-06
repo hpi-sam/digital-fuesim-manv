@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
     IsBoolean,
     IsDefined,
+    isEmpty,
     IsNumber,
     IsOptional,
     IsString,
@@ -11,21 +12,21 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import { isEmpty } from 'lodash-es';
-import { UUID, uuid, UUIDSet, uuidValidationOptions } from '../utils';
+import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
+import { IsStringLiteralUnion, IsIdMap } from '../utils/validators';
+import { PatientHealthState } from './patient-health-state';
 import {
-    getCreate,
-    HealthPoints,
-    healthPointsDefaults,
-    ImageProperties,
+    BiometricInformation,
+    PatientStatusCode,
     PatientStatus,
+    ImageProperties,
     Position,
+    healthPointsDefaults,
+    HealthPoints,
+    getCreate,
 } from './utils';
-import { BiometricInformation } from './utils/biometric-information';
-import { PatientStatusCode } from './utils/patient-status-code';
-import { PretriageInformation } from './utils/pretriage-information';
 import { PersonalInformation } from './utils/personal-information';
-import type { PatientHealthState } from '.';
+import { PretriageInformation } from './utils/pretriage-information';
 
 export class Patient {
     @IsUUID(4, uuidValidationOptions)
@@ -51,12 +52,10 @@ export class Patient {
     @Type(() => PatientStatusCode)
     public readonly patientStatusCode: PatientStatusCode;
 
-    // TODO
-    @IsString()
+    @IsStringLiteralUnion()
     public readonly pretriageStatus: PatientStatus;
 
-    // TODO
-    @IsString()
+    @IsStringLiteralUnion()
     public readonly realStatus: PatientStatus;
 
     @ValidateNested()
@@ -84,7 +83,7 @@ export class Patient {
     @IsNumber()
     public readonly stateTime: number = 0;
 
-    @IsDefined()
+    @IsIdMap(PatientHealthState)
     public readonly healthStates: {
         readonly [stateId: UUID]: PatientHealthState;
     } = {};

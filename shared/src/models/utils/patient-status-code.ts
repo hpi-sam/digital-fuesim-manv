@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsString, ValidateNested } from 'class-validator';
+import { ValidateNested } from 'class-validator';
+import { IsStringLiteralUnion } from '../../utils/validators';
 import { getCreate } from './get-create';
 
 type ColorCode = 'V' | 'W' | 'X' | 'Y' | 'Z';
@@ -26,10 +27,10 @@ export const behaviourCodeMap: { [key in BehaviourCode]: string } = {
 };
 
 export class PatientStatusDataField {
-    @IsString()
+    @IsStringLiteralUnion()
     public readonly colorCode: ColorCode;
 
-    @IsString()
+    @IsStringLiteralUnion()
     public readonly behaviourCode: BehaviourCode;
 
     /**

@@ -1,3 +1,4 @@
+import type { TypeOptions } from 'class-transformer';
 import { IsIn, IsNumber, IsString, IsUUID, Min } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { getCreate } from './get-create';
@@ -42,3 +43,20 @@ export class AlarmGroupStartPoint {
 
     static readonly create = getCreate(this);
 }
+
+export const startPointTypeOptions: TypeOptions = {
+    keepDiscriminatorProperty: true,
+    discriminator: {
+        property: 'type',
+        subTypes: [
+            {
+                name: 'alarmGroup',
+                value: AlarmGroupStartPoint,
+            },
+            {
+                name: 'transferPoint',
+                value: TransferStartPoint,
+            },
+        ],
+    },
+};

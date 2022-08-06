@@ -1,4 +1,5 @@
-import { IsNumber, IsString, Min } from 'class-validator';
+import { IsNumber, Min } from 'class-validator';
+import { IsStringLiteralUnion } from '../../utils/validators';
 import { getCreate } from './get-create';
 
 export class CanCaterFor {
@@ -30,8 +31,7 @@ export class CanCaterFor {
     @Min(0)
     public readonly green: number;
 
-    // TODO
-    @IsString()
+    @IsStringLiteralUnion()
     public readonly logicalOperator: 'and' | 'or';
 
     /**

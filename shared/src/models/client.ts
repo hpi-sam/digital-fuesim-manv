@@ -6,6 +6,7 @@ import {
     MaxLength,
 } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { IsStringLiteralUnion } from '../utils/validators';
 import { getCreate, Role } from './utils';
 
 export class Client {
@@ -17,8 +18,7 @@ export class Client {
     @MaxLength(255)
     public readonly name: string;
 
-    // TODO
-    @IsString()
+    @IsStringLiteralUnion()
     public readonly role: Role;
 
     @IsUUID(4, uuidValidationOptions)

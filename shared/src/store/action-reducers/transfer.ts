@@ -1,15 +1,25 @@
-import { IsInt, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
-import type { ExerciseState, Position } from '../..';
-import { imageSizeToPosition, TransferPoint } from '../..';
-import { StartPoint } from '../../models/utils/start-points';
+import { Type } from 'class-transformer';
+import {
+    IsString,
+    IsUUID,
+    ValidateNested,
+    IsOptional,
+    IsInt,
+} from 'class-validator';
+import { TransferPoint } from '../../models';
+import type { Position } from '../../models/utils';
+import { startPointTypeOptions, StartPoint } from '../../models/utils';
+import type { ExerciseState } from '../../state';
+import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import { UUID, uuidValidationOptions, cloneDeepMutable } from '../../utils';
+import { IsStringLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
-import { getElement } from './utils/get-element';
+import { getElement } from './utils';
 import {
-    removeElementPosition,
     updateElementPosition,
+    removeElementPosition,
 } from './utils/spatial-elements';
 
 /**
@@ -51,13 +61,14 @@ export class AddToTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Add to transfer';
 
-    @IsString()
+    @IsStringLiteralUnion()
     elementType!: 'personnel' | 'vehicles';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;
 
-    @IsObject()
+    @ValidateNested()
+    @Type(() => Object, startPointTypeOptions)
     public readonly startPoint!: StartPoint;
 
     @IsUUID(4, uuidValidationOptions)
@@ -68,7 +79,7 @@ export class EditTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Edit transfer';
 
-    @IsString()
+    @IsStringLiteralUnion()
     elementType!: 'personnel' | 'vehicles';
 
     @IsUUID(4, uuidValidationOptions)
@@ -92,7 +103,7 @@ export class FinishTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Finish transfer';
 
-    @IsString()
+    @IsStringLiteralUnion()
     elementType!: 'personnel' | 'vehicles';
 
     @IsUUID(4, uuidValidationOptions)
@@ -106,7 +117,7 @@ export class TogglePauseTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Toggle pause transfer';
 
-    @IsString()
+    @IsStringLiteralUnion()
     elementType!: 'personnel' | 'vehicles';
 
     @IsUUID(4, uuidValidationOptions)

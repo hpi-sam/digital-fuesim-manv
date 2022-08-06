@@ -11,6 +11,7 @@ import {
     UUID,
     uuidValidationOptions,
 } from '../../utils';
+import { IsStringLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { deletePatient } from './patient';
@@ -103,7 +104,7 @@ export class LoadVehicleAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
 
-    @IsString()
+    @IsStringLiteralUnion()
     public readonly elementToBeLoadedType!:
         | 'materials'
         | 'patients'
