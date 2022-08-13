@@ -3,9 +3,14 @@ import type {
     HealthPoints,
     Patient,
     PersonnelType,
+    PatientUpdate,
+    Mutable,
 } from 'digital-fuesim-manv-shared';
-import { healthPointsDefaults, isAlive } from 'digital-fuesim-manv-shared';
-import type { PatientUpdate } from 'digital-fuesim-manv-shared/dist/utils/patient-updates';
+import {
+    getElement,
+    healthPointsDefaults,
+    isAlive,
+} from 'digital-fuesim-manv-shared';
 
 /**
  * The count of assigned personnel and material that cater for a {@link Patient}.
@@ -19,7 +24,7 @@ type Catering = { [key in PersonnelType | 'material']: number };
  * @returns An array of {@link PatientUpdate}s to apply to the {@link state} in a reducer
  */
 export function patientTick(
-    state: ExerciseState,
+    state: Mutable<ExerciseState>,
     patientTickInterval: number
 ): PatientUpdate[] {
     return (
@@ -60,47 +65,35 @@ export function patientTick(
  * @returns An object containing the count of assigned personnel and material that cater for the {@link patient}.
  */
 function getDedicatedResources(
-    state: ExerciseState,
+    state: Mutable<ExerciseState>,
     patient: Patient
 ): Catering {
+    const cateringTypes: Catering = {
+        notarzt: 0,
+        notSan: 0,
+        rettSan: 0,
+        san: 0,
+        gf: 0,
+        material: 0,
+    };
+
     if (!patient.isBeingTreated) {
-        return {
-            gf: 0,
-            material: 0,
-            notarzt: 0,
-            notSan: 0,
-            rettSan: 0,
-            san: 0,
-        };
+        return cateringTypes;
     }
 
-    const material = Object.keys(patient.assignedMaterialIds).length;
+    // getting the number of material
+    cateringTypes.material = Object.keys(patient.assignedMaterialIds).length;
 
-    // TODO: check if this is efficient and maybe do it via for each assignedPersonnelId state.personnel[assignedPersonnelId]
-    const treatingPersonnel = Object.values(state.personnel).filter(() =>
-        Object.keys(patient.assignedPersonnelIds)
+    // getting the number of every personnel
+    // TODO: does this work?
+    Object.keys(patient.assignedPersonnelIds).forEach(
+        (personnelId) =>
+            cateringTypes[
+                getElement(state, 'personnel', personnelId).personnelType
+            ]++
     );
 
-    const notarzt = treatingPersonnel.filter(
-        (thisPersonnel) => thisPersonnel.personnelType === 'notarzt'
-    ).length;
-    const notSan = treatingPersonnel.filter(
-        (thisPersonnel) => thisPersonnel.personnelType === 'notSan'
-    ).length;
-    const rettSan = treatingPersonnel.filter(
-        (thisPersonnel) => thisPersonnel.personnelType === 'rettSan'
-    ).length;
-    const san = treatingPersonnel.filter(
-        (thisPersonnel) => thisPersonnel.personnelType === 'san'
-    ).length;
-    return {
-        gf: 0,
-        material,
-        notarzt,
-        notSan,
-        rettSan,
-        san,
-    };
+    return cateringTypes;
 }
 
 /**

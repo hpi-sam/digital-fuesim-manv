@@ -6,6 +6,7 @@ import { SpatialTree } from '../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import {
+    cloneDeepImmutable,
     cloneDeepMutable,
     StrictObject,
     UUID,
@@ -20,6 +21,18 @@ export function deletePatient(
     draftState: Mutable<ExerciseState>,
     patientId: UUID
 ) {
+    const patient = draftState.patients[patientId];
+    if (patient !== undefined) {
+        if (patient.position !== undefined) {
+            SpatialTree.removeElement(
+                draftState.spatialTrees.patients,
+                patient.id,
+                patient.position
+            );
+            delete patient.position;
+        }
+        calculateTreatments(draftState, patient);
+    }
     delete draftState.patients[patientId];
 }
 
@@ -108,18 +121,18 @@ export namespace PatientActionReducers {
                     `HealthState with id ${patient.currentHealthStateId} does not exist`
                 );
             }
-            draftState.patients[patient.id] = cloneDeepMutable(patient);
+            const mutablePatient = cloneDeepMutable(patient);
+            draftState.patients[patient.id] = mutablePatient;
 
             if (patient.position !== undefined) {
                 SpatialTree.addElement(
-                    draftState,
-                    'patients',
+                    draftState.spatialTrees.patients,
                     patient.id,
                     patient.position
                 );
             }
 
-            calculateTreatments(draftState, patient, patient.position);
+            calculateTreatments(draftState, mutablePatient);
 
             return draftState;
         },
@@ -134,14 +147,15 @@ export namespace PatientActionReducers {
             const startPosition = patient.position;
 
             if (startPosition !== undefined) {
-                SpatialTree.moveElement(draftState, 'patients', patient.id, [
-                    startPosition,
-                    targetPosition,
-                ]);
+                SpatialTree.moveElement(
+                    draftState.spatialTrees.patients,
+                    patient.id,
+                    cloneDeepImmutable(startPosition),
+                    targetPosition
+                );
             } else {
                 SpatialTree.addElement(
-                    draftState,
-                    'patients',
+                    draftState.spatialTrees.patients,
                     patient.id,
                     targetPosition
                 );
@@ -149,7 +163,7 @@ export namespace PatientActionReducers {
 
             patient.position = cloneDeepMutable(targetPosition);
 
-            calculateTreatments(draftState, patient, targetPosition);
+            calculateTreatments(draftState, patient);
 
             return draftState;
         },
@@ -163,14 +177,14 @@ export namespace PatientActionReducers {
 
             if (patient.position !== undefined) {
                 SpatialTree.removeElement(
-                    draftState,
-                    'patients',
+                    draftState.spatialTrees.patients,
                     patient.id,
                     patient.position
                 );
 
+                delete patient.position;
                 // remove any treatments this patient received (deletes patient from personnel and material assignedPatientIds UUIDSet)
-                calculateTreatments(draftState, patient, undefined);
+                calculateTreatments(draftState, patient);
             }
 
             deletePatient(draftState, patientId);
@@ -187,7 +201,7 @@ export namespace PatientActionReducers {
             patient.pretriageStatus = patientStatus;
 
             if (patient.position !== undefined) {
-                calculateTreatments(draftState, patient, patient.position);
+                calculateTreatments(draftState, patient);
             }
 
             return draftState;

@@ -2,7 +2,12 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
 import { SpatialTree } from '../../models/utils/spatial-tree';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import {
+    cloneDeepImmutable,
+    cloneDeepMutable,
+    UUID,
+    uuidValidationOptions,
+} from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
@@ -28,14 +33,15 @@ export namespace PersonnelActionReducers {
             const startPosition = personnel.position;
 
             if (startPosition !== undefined) {
-                SpatialTree.moveElement(draftState, 'personnel', personnel.id, [
-                    startPosition,
-                    targetPosition,
-                ]);
+                SpatialTree.moveElement(
+                    draftState.spatialTrees.personnel,
+                    personnel.id,
+                    cloneDeepImmutable(startPosition),
+                    targetPosition
+                );
             } else {
                 SpatialTree.addElement(
-                    draftState,
-                    'personnel',
+                    draftState.spatialTrees.personnel,
                     personnel.id,
                     targetPosition
                 );
@@ -43,7 +49,7 @@ export namespace PersonnelActionReducers {
 
             personnel.position = cloneDeepMutable(targetPosition);
 
-            calculateTreatments(draftState, personnel, targetPosition);
+            calculateTreatments(draftState, personnel);
 
             return draftState;
         },

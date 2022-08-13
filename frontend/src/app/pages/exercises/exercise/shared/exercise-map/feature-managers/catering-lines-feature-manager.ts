@@ -4,7 +4,7 @@ import LineString from 'ol/geom/LineString';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
-import { Options } from 'ol/style/Stroke';
+import type { Options } from 'ol/style/Stroke';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { FeatureManager } from '../utility/feature-manager';
 import { LineStyleHelper } from '../utility/style-helper/line-style-helper';

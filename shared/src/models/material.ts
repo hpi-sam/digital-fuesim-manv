@@ -54,7 +54,7 @@ export class Material {
     public readonly auraMode: boolean;
 
     /**
-     * if undefined, is in vehicle with {@link vehicleId}
+     * if undefined, is in vehicle with {@link this.vehicleId}
      */
     @ValidateNested()
     @Type(() => Position)

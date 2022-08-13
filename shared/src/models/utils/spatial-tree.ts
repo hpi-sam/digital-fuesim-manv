@@ -8,7 +8,6 @@ import RBush from 'rbush';
  */
 // @ts-expect-error doesn't have a type
 import knn from 'rbush-knn';
-import type { ExerciseState } from '../../state';
 import { ImmutableJsonObject } from '../../utils';
 import type { Mutable, UUID } from '../../utils';
 import type { Position } from '.';
@@ -19,7 +18,12 @@ import { getCreate } from '.';
  */
 export const nodeSize = 9;
 
-// TODO: maybe use ElementType, see getElement<...
+/**
+ * used as keys in spatialTrees in state
+ * if a new type should be supported just include in here and in the state,
+ * e.g. wanting to track all vehicles
+ * (mind: for anything else than Points something different than PointRBush needs to be used)
+ */
 export type SpatialTreeElementType = 'materials' | 'patients' | 'personnel';
 
 /**
@@ -56,6 +60,9 @@ export class PointRBush extends RBush<PointRBushElement> {
  * more info read: https://blog.mapbox.com/a-dive-into-spatial-search-algorithms-ebd0c5e39d2a
  */
 export class SpatialTree {
+    /**
+     * Only alter this via the functions in this class
+     */
     @IsObject()
     public readonly spatialTreeAsJSON: ImmutableJsonObject;
 
@@ -67,89 +74,68 @@ export class SpatialTree {
     constructor() {
         // initialize
 
-        /**
-         * just create an empty one, as bulk loading/insertion is not needed
-         * if bulk loading/insertion is needed create new static function including this
-         * https://github.com/mourner/rbush#bulk-inserting-data
-         */
+        // just create an empty one, as bulk loading/insertion is not needed
+        // if bulk loading/insertion is needed create new static function including this
+        // https://github.com/mourner/rbush#bulk-inserting-data
         this.spatialTreeAsJSON = new PointRBush(
             nodeSize
         ).toJSON() as ImmutableJsonObject;
     }
 
     /**
-     * gets the spatialTree from the state (where it is saved as {@link ImmutableJsonObject})
-     * @param key of the spatialTree in spatialTrees
+     * gets the spatialTree with it creates a new PointRBush out of {@link spatialTreeAsJSON}
      *
      * * !!! IMPORTANT !!!
      * if you switch the spatialTree datastructure away from RBush be sure that export (write)
      * and import (read) are constant and not linear in performance (e.g. no stringify parse)
      * !!! IMPORTANT !!!
      *
-     * TODO: discuss: call it readFromState or getFromState? does read imply non constant time?
      */
-    static getFromState(state: ExerciseState, key: SpatialTreeElementType) {
-        return new PointRBush(nodeSize).fromJSON(
-            state.spatialTrees[key].spatialTreeAsJSON
-        );
+    private static getFromJSON(spatialTree: SpatialTree) {
+        return new PointRBush(nodeSize).fromJSON(spatialTree.spatialTreeAsJSON);
     }
 
     /**
-     * writes the spatialTree into the state as {@link ImmutableJsonObject} and returns the state
-     * @param key of the spatialTree in spatialTrees
-     * @param spatialTree that should be saved to state (as JSON)
+     * writes the spatialTree as a {@link ImmutableJsonObject} into {@link spatialTreeAsJSON}
      *
      * !!! IMPORTANT !!!
      * if you switch the spatialTree datastructure away from RBush be sure that export (write)
      * and import (read) are constant and not linear in performance (e.g. no stringify parse)
      * !!! IMPORTANT !!!
      */
-    static writeToState(
-        state: Mutable<ExerciseState>,
-        key: SpatialTreeElementType,
-        spatialTree: PointRBush
+    private static writeToJSON(
+        spatialTree: Mutable<SpatialTree>,
+        pointRBush: PointRBush
     ) {
-        state.spatialTrees[key].spatialTreeAsJSON =
-            spatialTree.toJSON() as ImmutableJsonObject;
-        return state;
+        spatialTree.spatialTreeAsJSON = pointRBush.toJSON();
     }
 
-    /**
-     *
-     */
-    static addElement(
-        state: Mutable<ExerciseState>,
-        key: SpatialTreeElementType,
+    public static addElement(
+        spatialTree: Mutable<SpatialTree>,
         elementId: UUID,
         position: Position
     ) {
         // after element is added (inserted) write spatialTree back into the state
-        return this.writeToState(
-            state,
-            key,
-            // get spatialTree fromState and add (insert) Element
-            this.getFromState(state, key).insert({
+        this.writeToJSON(
+            spatialTree,
+            // get spatialTree fromJSON and add (insert) Element
+            this.getFromJSON(spatialTree).insert({
                 position,
                 id: elementId,
             })
         );
     }
 
-    /**
-     *
-     */
-    static removeElement(
-        state: Mutable<ExerciseState>,
-        key: SpatialTreeElementType,
+    public static removeElement(
+        spatialTree: Mutable<SpatialTree>,
         elementId: UUID,
         position: Position
     ) {
         // after element is removed write spatialTree back into the state
-        return this.writeToState(
-            state,
-            key,
-            // get spatialTree fromState and remove Element
-            this.getFromState(state, key).remove(
+        this.writeToJSON(
+            spatialTree,
+            // get spatialTree fromJSON and remove Element
+            this.getFromJSON(spatialTree).remove(
                 {
                     position,
                     id: elementId,
@@ -159,37 +145,32 @@ export class SpatialTree {
         );
     }
 
-    /**
-     * @param positions [startPosition, targetPosition] of element to be moved inside the spatialTree
-     */
-    static moveElement(
-        state: Mutable<ExerciseState>,
-        key: SpatialTreeElementType,
+    public static moveElement(
+        spatialTree: Mutable<SpatialTree>,
         elementId: UUID,
-        positions: [Position, Position]
+        startPosition: Position,
+        targetPosition: Position
     ) {
         // TODO: use new move function from RBush, when available: https://github.com/mourner/rbush/issues/28
-        this.removeElement(state, key, elementId, positions[0]);
-        return this.addElement(state, key, elementId, positions[1]);
+        this.removeElement(spatialTree, elementId, startPosition);
+        this.addElement(spatialTree, elementId, targetPosition);
     }
 
     /**
-     *
      * @param position where around elements should be searched
      * @param radius around the {@link position}, must be >0
      *
      * @returns all or {@link maxNumberOfElements} elements in circle, result is sorted by distance
      */
-    static findAllElementsInCircle(
-        state: Mutable<ExerciseState>,
-        key: SpatialTreeElementType,
+    public static findAllElementsInCircle(
+        spatialTree: Mutable<SpatialTree>,
         position: Position,
         radius: number
     ) {
         return radius > 0
             ? // find documentation to knn here: https://github.com/mourner/rbush-knn
               (knn(
-                  this.getFromState(state, key),
+                  this.getFromJSON(spatialTree),
                   position.x,
                   position.y,
                   undefined,
@@ -199,21 +180,19 @@ export class SpatialTree {
             : ([] as PointRBushElement[]);
     }
 
-    // TODO: e.g. use it to get all elements of the saved type in a viewport
     /**
-     *
+     * TODO: e.g. use it to get all elements of the saved type in a viewport
      * @param rectangleBorder.minPos left bottom corner of rectangle
      * @param rectangleBorder.maxPos right top corner of rectangle
      * rectangle could also be just a point
      *
      * @returns all elements in rectangle, but not by distance
      */
-    static findAllElementsInRectangle(
-        state: Mutable<ExerciseState>,
-        key: SpatialTreeElementType,
+    public static findAllElementsInRectangle(
+        spatialTree: Mutable<SpatialTree>,
         rectangleBorder: { minPos: Position; maxPos: Position }
     ) {
-        return this.getFromState(state, key).search({
+        return this.getFromJSON(spatialTree).search({
             minX: rectangleBorder.minPos.x,
             minY: rectangleBorder.minPos.y,
             maxX: rectangleBorder.maxPos.x,

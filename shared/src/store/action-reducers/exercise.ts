@@ -121,11 +121,7 @@ export namespace ExerciseActionReducers {
                     refreshTreatments &&
                     currentPatient.needsNewCalculateTreatments
                 ) {
-                    calculateTreatments(
-                        draftState,
-                        currentPatient,
-                        currentPatient.position
-                    );
+                    calculateTreatments(draftState, currentPatient);
                 }
             });
 

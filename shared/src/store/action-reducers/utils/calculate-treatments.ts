@@ -18,7 +18,7 @@ interface CatersFor {
  */
 function couldCaterFor(
     status: PatientStatus,
-    catering: Mutable<Material> | Mutable<Personnel>,
+    catering: Mutable<Material | Personnel>,
     catersFor: Mutable<CatersFor>
 ) {
     // TODO: maybe make blue patients treatable and count them as red patients
@@ -86,7 +86,7 @@ function couldCaterFor(
  * @returns Whether the patient can be catered for by {@link catering}.
  */
 function caterFor(
-    catering: Mutable<Material> | Mutable<Personnel>,
+    catering: Mutable<Material | Personnel>,
     catersFor: Mutable<CatersFor>,
     patient: Mutable<Patient>,
     pretriageEnabled: boolean,
@@ -154,7 +154,7 @@ function isMaterial(
 
 /**
  * @param position of the patient where all elements of elementType should be recalculated
- * @param elementType used as key in {@link state.spatialTrees}
+ * @param elementType subset of keys from `SpatialTreeElementType` (all `elementType`s that can treat a patient)
  */
 function calculateCateringForElementTypeAroundPatient(
     state: Mutable<ExerciseState>,
@@ -165,8 +165,7 @@ function calculateCateringForElementTypeAroundPatient(
     elementIdsToBeSkipped: UUIDSet = {}
 ) {
     const elementsInGeneralThreshold = SpatialTree.findAllElementsInCircle(
-        state,
-        elementType,
+        state.spatialTrees[elementType],
         position,
         maxGlobalThreshold
     ).filter((elementData) => !elementIdsToBeSkipped[elementData.id]);
@@ -227,19 +226,18 @@ function removeTreatmentsOfElement(
 }
 
 /**
- * @param position has two purposes:
- *                  - if an element was moved: {@link position} needs the new position
- *                  - if treatment of an element should be removed: set {@link position} to `undefined`
+ * @param element.position is important:
+ *                  - if an element was moved: {@link element.position} needs the new position
+ *                  - if treatment of an element should be removed: set {@link element.position} to `undefined`
  * @param elementIdsToBeSkipped with this you can ignore e.g. personnel and material that was already calculated before (e.g. see unloadVehicle)
  */
 export function calculateTreatments(
     state: Mutable<ExerciseState>,
-    element: Material | Patient | Personnel,
-    position: Position | undefined,
+    element: Mutable<Material | Patient | Personnel>,
     elementIdsToBeSkipped: Mutable<UUIDSet> = {}
 ) {
     // if position is undefined, the element is no longer in a position (get it?!) to be treated or treat a patient, therefore any treatment given or received is removed
-    if (position === undefined) {
+    if (element.position === undefined) {
         removeTreatmentsOfElement(state, element);
         return;
     }
@@ -287,7 +285,7 @@ export function calculateTreatments(
             state,
             pretriageEnabled,
             bluePatientsEnabled,
-            position,
+            element.position,
             'personnel',
             elementIdsToBeSkipped
         );
@@ -297,7 +295,7 @@ export function calculateTreatments(
             state,
             pretriageEnabled,
             bluePatientsEnabled,
-            position,
+            element.position,
             'materials',
             elementIdsToBeSkipped
         );
@@ -312,7 +310,7 @@ export function calculateTreatments(
 
 function calculateCatering(
     state: Mutable<ExerciseState>,
-    catering: Material | Personnel,
+    catering: Mutable<Material | Personnel>,
     pretriageEnabled: boolean,
     bluePatientsEnabled: boolean
 ) {
@@ -350,8 +348,7 @@ function calculateCatering(
     if (catering.specificThreshold > 0) {
         const patientsDataInSpecificThreshold =
             SpatialTree.findAllElementsInCircle(
-                state,
-                'patients',
+                state.spatialTrees.patients,
                 catering.position,
                 catering.specificThreshold
             );
@@ -386,8 +383,7 @@ function calculateCatering(
     ) {
         const patientsDataInGeneralThreshold =
             SpatialTree.findAllElementsInCircle(
-                state,
-                'patients',
+                state.spatialTrees.patients,
                 catering.position,
                 catering.generalThreshold
             )

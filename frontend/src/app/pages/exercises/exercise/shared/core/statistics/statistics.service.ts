@@ -3,15 +3,12 @@ import { Store } from '@ngrx/store';
 import type {
     Client,
     ExerciseState,
-    Mutable,
     Patient,
     Vehicle,
 } from 'digital-fuesim-manv-shared';
 import {
-    applyAction,
-    cloneDeepMutable,
+    loopTroughTime,
     Personnel,
-    sleep,
     uuid,
     Viewport,
 } from 'digital-fuesim-manv-shared';
@@ -62,32 +59,38 @@ export class StatisticsService {
             1000
         );
         const statistics: StatisticsEntry[] = [];
-        const statisticsState = cloneDeepMutable(initialState);
         // Apply all actions (mutable -> fast) and generate in regular intervals a statisticsEntry
-        for (const [i, { action }] of actionsWrappers.entries()) {
-            applyAction(statisticsState, action);
-            if (
-                statisticsState.currentTime >
-                (statistics.at(-1)?.exerciseTime ?? 0) +
-                    generateStatisticsInterval
-            ) {
-                statistics.push(this.generateStatisticsEntry(statisticsState));
+        await loopTroughTime(
+            initialState,
+            actionsWrappers.map(({ action }) => action),
+            (stateAtTime) => {
+                // Add the statisticsEntry in the last second that should be included
+                if (stateAtTime.currentTime >= maximumExerciseTime) {
+                    statistics.push(this.generateStatisticsEntry(stateAtTime));
+                    return true;
+                }
+                const previousStatisticsEntry = statistics.at(-1);
+                if (
+                    // Add the statisticsEntry in the first second
+                    !previousStatisticsEntry ||
+                    // Add the statisticsEntries every generateStatisticsInterval
+                    stateAtTime.currentTime >=
+                        previousStatisticsEntry.exerciseTime +
+                            generateStatisticsInterval
+                ) {
+                    statistics.push(this.generateStatisticsEntry(stateAtTime));
+                }
+                return false;
             }
-            if (maximumExerciseTime < statisticsState.currentTime) {
-                break;
-            }
-            if (i % 100 === 0) {
-                // Do not block the main thread for too long
-                // eslint-disable-next-line no-await-in-loop
-                await sleep(0);
-            }
-        }
+        );
         this.statistics$.next(statistics);
         this.updatingStatistics = false;
         return statistics;
     }
 
-    private generateStatisticsEntry(draftState: Mutable<ExerciseState>) {
+    private generateStatisticsEntry(
+        draftState: ExerciseState
+    ): StatisticsEntry {
         const exerciseStatistics = this.generateAreaStatistics(
             Object.values(draftState.clients),
             Object.values(draftState.patients),

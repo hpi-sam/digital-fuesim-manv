@@ -42,12 +42,11 @@ export function letElementArrive(
 
     if (elementType === 'personnel') {
         SpatialTree.addElement(
-            draftState,
-            'personnel',
+            draftState.spatialTrees.personnel,
             element.id,
             element.position
         );
-        calculateTreatments(draftState, element as Personnel, element.position);
+        calculateTreatments(draftState, element as Mutable<Personnel>);
     }
 }
 
@@ -155,25 +154,25 @@ export namespace TransferActionReducers {
                 duration = startPoint.duration;
             }
 
+            const positionBeforeTransfer = element.position;
+            delete element.position;
+
             if (elementType === 'personnel') {
-                if (element.position !== undefined) {
+                if (positionBeforeTransfer !== undefined) {
                     SpatialTree.removeElement(
-                        draftState,
-                        'personnel',
+                        draftState.spatialTrees.personnel,
                         element.id,
-                        element.position
+                        positionBeforeTransfer
                     );
                     // remove any treatment this personnel did
                     calculateTreatments(
                         draftState,
-                        element as Personnel,
-                        undefined
+                        element as Mutable<Personnel>
                     );
                 }
             }
 
             // Set the element to transfer
-            delete element.position;
             element.transfer = {
                 startPoint: cloneDeepMutable(startPoint),
                 targetTransferPointId,

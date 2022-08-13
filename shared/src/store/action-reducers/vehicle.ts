@@ -27,10 +27,38 @@ export function deleteVehicle(
     // Delete related material and personnel
     Object.entries(draftState.materials)
         .filter(([, material]) => material.vehicleId === vehicleId)
-        .forEach(([materialId]) => delete draftState.materials[materialId]);
+        .forEach(([materialId]) => {
+            const material = draftState.materials[materialId];
+            if (material !== undefined) {
+                if (material.position !== undefined) {
+                    SpatialTree.removeElement(
+                        draftState.spatialTrees.materials,
+                        material.id,
+                        material.position
+                    );
+                    delete material.position;
+                }
+                calculateTreatments(draftState, material);
+            }
+            delete draftState.materials[materialId];
+        });
     Object.entries(draftState.personnel)
         .filter(([, personnel]) => personnel.vehicleId === vehicleId)
-        .forEach(([personnelId]) => delete draftState.personnel[personnelId]);
+        .forEach(([personnelId]) => {
+            const personnel = draftState.personnel[personnelId];
+            if (personnel !== undefined) {
+                if (personnel.position !== undefined) {
+                    SpatialTree.removeElement(
+                        draftState.spatialTrees.personnel,
+                        personnel.id,
+                        personnel.position
+                    );
+                    delete personnel.position;
+                }
+                calculateTreatments(draftState, personnel);
+            }
+            delete draftState.personnel[personnelId];
+        });
     Object.entries(draftState.patients)
         .filter(([, patients]) => patients.vehicleId === vehicleId)
         .forEach(([patientId]) => deletePatient(draftState, patientId));
@@ -224,8 +252,7 @@ export namespace VehicleActionReducers {
                 };
                 delete vehicle.patientIds[patient.id];
                 SpatialTree.addElement(
-                    draftState,
-                    'patients',
+                    draftState.spatialTrees.patients,
                     patient.id,
                     patient.position
                 );
@@ -241,8 +268,7 @@ export namespace VehicleActionReducers {
                     y: unloadPosition.y,
                 };
                 SpatialTree.addElement(
-                    draftState,
-                    'personnel',
+                    draftState.spatialTrees.personnel,
                     person.id,
                     person.position
                 );
@@ -255,8 +281,7 @@ export namespace VehicleActionReducers {
                     y: unloadPosition.y,
                 };
                 SpatialTree.addElement(
-                    draftState,
-                    'materials',
+                    draftState.spatialTrees.materials,
                     material.id,
                     material.position
                 );
@@ -269,22 +294,17 @@ export namespace VehicleActionReducers {
 
             // after every elements are unloaded we will calculate treatments for each
             for (const person of personnel) {
-                calculateTreatments(draftState, person, person.position);
+                calculateTreatments(draftState, person);
                 elementIdsToBeSkipped[person.id] = true;
             }
 
             for (const material of materials) {
-                calculateTreatments(draftState, material, material.position);
+                calculateTreatments(draftState, material);
                 elementIdsToBeSkipped[material.id] = true;
             }
 
             for (const patient of patients) {
-                calculateTreatments(
-                    draftState,
-                    patient,
-                    patient.position,
-                    elementIdsToBeSkipped
-                );
+                calculateTreatments(draftState, patient, elementIdsToBeSkipped);
             }
 
             return draftState;
@@ -314,21 +334,16 @@ export namespace VehicleActionReducers {
 
                     if (material.position !== undefined) {
                         SpatialTree.removeElement(
-                            draftState,
-                            'materials',
+                            draftState.spatialTrees.materials,
                             material.id,
                             material.position
                         );
                     }
 
-                    material.position = undefined;
+                    delete material.position;
 
                     // remove any treatments from this material
-                    calculateTreatments(
-                        draftState,
-                        material,
-                        material.position
-                    );
+                    calculateTreatments(draftState, material);
                     break;
                 }
                 case 'personnel': {
@@ -350,21 +365,16 @@ export namespace VehicleActionReducers {
 
                     if (personnel.position !== undefined) {
                         SpatialTree.removeElement(
-                            draftState,
-                            'personnel',
+                            draftState.spatialTrees.personnel,
                             personnel.id,
                             personnel.position
                         );
                     }
 
-                    personnel.position = undefined;
+                    delete personnel.position;
 
                     // remove any treatments from this personnel
-                    calculateTreatments(
-                        draftState,
-                        personnel,
-                        personnel.position
-                    );
+                    calculateTreatments(draftState, personnel);
                     break;
                 }
                 case 'patient': {
@@ -385,17 +395,16 @@ export namespace VehicleActionReducers {
 
                     if (patient.position !== undefined) {
                         SpatialTree.removeElement(
-                            draftState,
-                            'patients',
+                            draftState.spatialTrees.patients,
                             patient.id,
                             patient.position
                         );
                     }
 
-                    patient.position = undefined;
+                    delete patient.position;
 
                     // remove any treatments this patient received
-                    calculateTreatments(draftState, patient, patient.position);
+                    calculateTreatments(draftState, patient);
 
                     // if this vehicle has material associated with it load them in
                     Object.keys(vehicle.materialIds).forEach((materialId) => {
@@ -407,21 +416,16 @@ export namespace VehicleActionReducers {
 
                         if (material.position !== undefined) {
                             SpatialTree.removeElement(
-                                draftState,
-                                'materials',
+                                draftState.spatialTrees.materials,
                                 material.id,
                                 material.position
                             );
                         }
 
-                        material.position = undefined;
+                        delete material.position;
 
                         // remove any treatments from this material
-                        calculateTreatments(
-                            draftState,
-                            material,
-                            material.position
-                        );
+                        calculateTreatments(draftState, material);
                     });
 
                     // if this vehicle has personnel associated with it load all in (except personnel being in transfer)
@@ -437,20 +441,15 @@ export namespace VehicleActionReducers {
                             personnel.transfer === undefined
                         ) {
                             SpatialTree.removeElement(
-                                draftState,
-                                'personnel',
+                                draftState.spatialTrees.personnel,
                                 personnel.id,
                                 personnel.position
                             );
 
-                            personnel.position = undefined;
+                            delete personnel.position;
 
                             // remove any treatments from this material
-                            calculateTreatments(
-                                draftState,
-                                personnel,
-                                personnel.position
-                            );
+                            calculateTreatments(draftState, personnel);
                         }
                     });
                 }
