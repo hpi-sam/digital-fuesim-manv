@@ -4,7 +4,12 @@ import { imageSizeToPosition, Position, TransferPoint } from '../..';
 import { SpatialTree } from '../../models/utils/spatial-tree';
 import { StartPoint } from '../../models/utils/start-points';
 import type { Mutable } from '../../utils';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import {
+    cloneDeepImmutable,
+    cloneDeepMutable,
+    UUID,
+    uuidValidationOptions,
+} from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { calculateTreatments } from './utils/calculate-treatments';
@@ -44,7 +49,7 @@ export function letElementArrive(
         SpatialTree.addElement(
             draftState.spatialTrees.personnel,
             element.id,
-            element.position
+            cloneDeepImmutable(element.position)
         );
         calculateTreatments(draftState, element as Mutable<Personnel>);
     }

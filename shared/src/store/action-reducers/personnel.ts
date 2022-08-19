@@ -2,12 +2,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
 import { SpatialTree } from '../../models/utils/spatial-tree';
-import {
-    cloneDeepImmutable,
-    cloneDeepMutable,
-    UUID,
-    uuidValidationOptions,
-} from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
@@ -36,7 +31,7 @@ export namespace PersonnelActionReducers {
                 SpatialTree.moveElement(
                     draftState.spatialTrees.personnel,
                     personnel.id,
-                    cloneDeepImmutable(startPosition),
+                    startPosition,
                     targetPosition
                 );
             } else {

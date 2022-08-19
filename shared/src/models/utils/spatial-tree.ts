@@ -129,7 +129,7 @@ export class SpatialTree {
     public static removeElement(
         spatialTree: Mutable<SpatialTree>,
         elementId: UUID,
-        position: Position
+        position: Mutable<Position> | Position
     ) {
         // after element is removed write spatialTree back into the state
         this.writeToJSON(
@@ -148,7 +148,7 @@ export class SpatialTree {
     public static moveElement(
         spatialTree: Mutable<SpatialTree>,
         elementId: UUID,
-        startPosition: Position,
+        startPosition: Mutable<Position> | Position,
         targetPosition: Position
     ) {
         // TODO: use new move function from RBush, when available: https://github.com/mourner/rbush/issues/28
@@ -164,7 +164,7 @@ export class SpatialTree {
      */
     public static findAllElementsInCircle(
         spatialTree: Mutable<SpatialTree>,
-        position: Position,
+        position: Mutable<Position> | Position,
         radius: number
     ) {
         return radius > 0
@@ -185,12 +185,14 @@ export class SpatialTree {
      * @param rectangleBorder.minPos left bottom corner of rectangle
      * @param rectangleBorder.maxPos right top corner of rectangle
      * rectangle could also be just a point
-     *
      * @returns all elements in rectangle, but not by distance
      */
     public static findAllElementsInRectangle(
         spatialTree: Mutable<SpatialTree>,
-        rectangleBorder: { minPos: Position; maxPos: Position }
+        rectangleBorder: {
+            minPos: Mutable<Position> | Position;
+            maxPos: Mutable<Position> | Position;
+        }
     ) {
         return this.getFromJSON(spatialTree).search({
             minX: rectangleBorder.minPos.x,

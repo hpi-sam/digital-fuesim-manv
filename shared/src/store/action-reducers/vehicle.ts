@@ -7,6 +7,7 @@ import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable, UUIDSet } from '../../utils';
 import {
+    cloneDeepImmutable,
     cloneDeepMutable,
     StrictObject,
     UUID,
@@ -254,7 +255,7 @@ export namespace VehicleActionReducers {
                 SpatialTree.addElement(
                     draftState.spatialTrees.patients,
                     patient.id,
-                    patient.position
+                    cloneDeepImmutable(patient.position)
                 );
             }
 
@@ -270,7 +271,7 @@ export namespace VehicleActionReducers {
                 SpatialTree.addElement(
                     draftState.spatialTrees.personnel,
                     person.id,
-                    person.position
+                    cloneDeepImmutable(person.position)
                 );
             }
 
@@ -283,7 +284,7 @@ export namespace VehicleActionReducers {
                 SpatialTree.addElement(
                     draftState.spatialTrees.materials,
                     material.id,
-                    material.position
+                    cloneDeepImmutable(material.position)
                 );
             }
 

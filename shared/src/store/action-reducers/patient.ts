@@ -6,7 +6,6 @@ import { SpatialTree } from '../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import {
-    cloneDeepImmutable,
     cloneDeepMutable,
     StrictObject,
     UUID,
@@ -150,7 +149,7 @@ export namespace PatientActionReducers {
                 SpatialTree.moveElement(
                     draftState.spatialTrees.patients,
                     patient.id,
-                    cloneDeepImmutable(startPosition),
+                    startPosition,
                     targetPosition
                 );
             } else {
