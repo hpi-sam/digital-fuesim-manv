@@ -1,4 +1,3 @@
-import type { Store } from '@ngrx/store';
 import type { Material } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
@@ -7,7 +6,6 @@ import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import type { ApiService } from 'src/app/core/api.service';
-import type { AppState } from 'src/app/state/app.state';
 import type { WithPosition } from '../../utility/types/with-position';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
@@ -16,6 +14,7 @@ import { createPoint, ElementFeatureManager } from './element-feature-manager';
 export class MaterialFeatureManager extends ElementFeatureManager<
     WithPosition<Material>
 > {
+    readonly type = 'materials';
     private readonly imageStyleHelper = new ImageStyleHelper(
         (feature) => this.getElementFromFeature(feature)!.value.image
     );
@@ -32,13 +31,11 @@ export class MaterialFeatureManager extends ElementFeatureManager<
     );
 
     constructor(
-        store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
         apiService: ApiService
     ) {
         super(
-            store,
             olMap,
             layer,
             (targetPosition, material) => {

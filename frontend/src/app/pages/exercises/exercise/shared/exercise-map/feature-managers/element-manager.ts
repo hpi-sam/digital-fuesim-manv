@@ -20,10 +20,16 @@ export abstract class ElementManager<
     > = Exclude<ReadonlySet<keyof Element>, UnsupportedChangeProperties>
 > {
     /**
+     * This type is used to identify the type of an element, e.g., when it was (drag &) dropped on something
+     */
+    abstract readonly type: string;
+    /**
      * This should be called if a new element is added.
      */
     public onElementCreated(element: Element) {
-        this.createFeature(element);
+        const feature = this.createFeature(element);
+        feature.set(featureKeys.type, this.type);
+        feature.set(featureKeys.value, element);
     }
 
     /**
@@ -61,6 +67,7 @@ export abstract class ElementManager<
             this.onElementCreated(newElement);
             return;
         }
+        elementFeature.set(featureKeys.value, newElement);
         this.changeFeature(
             oldElement,
             newElement,
@@ -107,6 +114,13 @@ export abstract class ElementManager<
         element: Element
     ): ElementFeature | undefined;
 
+    public getElementFromFeature(feature: Feature<any>) {
+        return {
+            type: feature.get(featureKeys.type),
+            value: feature.get(featureKeys.value),
+        };
+    }
+
     private areAllPropertiesSupported(
         changedProperties: ReadonlySet<keyof Element>
     ): changedProperties is SupportedChangeProperties {
@@ -118,3 +132,11 @@ export abstract class ElementManager<
         return true;
     }
 }
+
+/**
+ * The keys of the feature, where the type and most recent value of the respective element are saved to
+ */
+const featureKeys = {
+    value: 'elementValue',
+    type: 'elementType',
+};
