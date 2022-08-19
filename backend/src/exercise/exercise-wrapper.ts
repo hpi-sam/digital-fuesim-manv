@@ -208,8 +208,7 @@ export class ExerciseWrapper extends NormalType<
      */
     private readonly tick = async () => {
         const patientUpdates = patientTick(
-            // TODO: not really needed to cloneDeepMutable, but getElement needs it, maybe create function called getImmutableElement ?
-            cloneDeepMutable(this.getStateSnapshot()),
+            this.getStateSnapshot(),
             this.tickInterval
         );
         const updateAction: ExerciseAction = {

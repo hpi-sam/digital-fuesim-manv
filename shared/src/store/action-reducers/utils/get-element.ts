@@ -33,3 +33,35 @@ export function getElement<
     }
     return element;
 }
+
+/**
+ * @returns The element with the given id
+ * @throws ReducerError if the element does not exist
+ */
+export function getImmutableElement<
+    ElementType extends
+        | 'alarmGroups'
+        | 'clients'
+        | 'hospitals'
+        | 'mapImages'
+        | 'materials'
+        | 'patients'
+        | 'personnel'
+        | 'transferPoints'
+        | 'vehicles'
+        | 'viewports'
+>(
+    state: ExerciseState,
+    elementType: ElementType,
+    elementId: UUID
+): ExerciseState[ElementType][UUID] {
+    const element = state[elementType][
+        elementId
+    ] as ExerciseState[ElementType][UUID];
+    if (!element) {
+        throw new ReducerError(
+            `Element of type ${elementType} with id ${elementId} does not exist`
+        );
+    }
+    return element;
+}

@@ -4,10 +4,9 @@ import type {
     Patient,
     PersonnelType,
     PatientUpdate,
-    Mutable,
 } from 'digital-fuesim-manv-shared';
 import {
-    getElement,
+    getImmutableElement,
     healthPointsDefaults,
     isAlive,
 } from 'digital-fuesim-manv-shared';
@@ -24,7 +23,7 @@ type Catering = { [key in PersonnelType | 'material']: number };
  * @returns An array of {@link PatientUpdate}s to apply to the {@link state} in a reducer
  */
 export function patientTick(
-    state: Mutable<ExerciseState>,
+    state: ExerciseState,
     patientTickInterval: number
 ): PatientUpdate[] {
     return (
@@ -65,7 +64,7 @@ export function patientTick(
  * @returns An object containing the count of assigned personnel and material that cater for the {@link patient}.
  */
 function getDedicatedResources(
-    state: Mutable<ExerciseState>,
+    state: ExerciseState,
     patient: Patient
 ): Catering {
     const cateringTypes: Catering = {
@@ -89,7 +88,8 @@ function getDedicatedResources(
     Object.keys(patient.assignedPersonnelIds).forEach(
         (personnelId) =>
             cateringTypes[
-                getElement(state, 'personnel', personnelId).personnelType
+                getImmutableElement(state, 'personnel', personnelId)
+                    .personnelType
             ]++
     );
 
