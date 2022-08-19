@@ -74,13 +74,15 @@ export class FuesimServer {
     constructor(
         private readonly databaseService: DatabaseService,
         websocketPort: number = Config.websocketPort,
-        httpPort: number = Config.httpPort
+        httpPort: number = Config.httpPort,
+        uploadLimit: number = Config.uploadLimit
     ) {
         const app = express();
         this._websocketServer = new ExerciseWebsocketServer(app, websocketPort);
         this._httpServer = new ExerciseHttpServer(
             app,
             httpPort,
+            uploadLimit,
             databaseService
         );
         if (Config.useDb) {

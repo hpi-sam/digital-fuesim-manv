@@ -7,6 +7,9 @@ rm -f /etc/nginx/conf.d/https.conf
 cp -a /etc/nginx/conf.d/http.template /etc/nginx/conf.d/http.conf
 echo "" > /etc/nginx/conf.d/hsts
 
+# setting the upload limit in nginx
+echo "client_max_body_size ${DFM_UPLOAD_LIMIT}m;" > /etc/nginx/conf.d/upload-limit
+
 # starting nginx, needed here already for acme.sh to verify certs via http
 nginx
 

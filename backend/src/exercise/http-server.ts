@@ -14,11 +14,19 @@ import { secureHttp } from './http-handler/secure-http';
 
 export class ExerciseHttpServer {
     public readonly httpServer: HttpServer;
-    constructor(app: Express, port: number, databaseService: DatabaseService) {
+    /**
+     * @param uploadLimit in Megabyte can be set via ENV DFM_UPLOAD_LIMIT
+     */
+    constructor(
+        app: Express,
+        port: number,
+        uploadLimit: number,
+        databaseService: DatabaseService
+    ) {
         // TODO: Temporary allow all
         app.use(cors());
 
-        app.use(express.json({ limit: '200mb' }));
+        app.use(express.json({ limit: String(`${uploadLimit}mb`) }));
 
         // This endpoint is used to determine whether the API itself is running.
         // It should be independent from any other services that may or may not be running.
