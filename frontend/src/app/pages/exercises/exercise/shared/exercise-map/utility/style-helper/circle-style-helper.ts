@@ -1,6 +1,7 @@
 import type { Feature } from 'ol';
 import { Circle } from 'ol/style';
 import type { Options } from 'ol/style/Circle';
+import type ImageStyle from 'ol/style/Image';
 import Style from 'ol/style/Style';
 import { StyleHelper } from './style-helper';
 
@@ -8,7 +9,7 @@ export class CircleStyleHelper extends StyleHelper<Style, Feature> {
     constructor(
         private readonly getProperties: (
             feature: Feature
-        ) => Options | undefined,
+        ) => Exclude<Options, { scale: any }> | undefined,
         private readonly scale: number
     ) {
         super();
@@ -33,10 +34,9 @@ export class CircleStyleHelper extends StyleHelper<Style, Feature> {
         zoom: number,
         feature: Feature
     ) {
-        const image = initialStyle.getImage();
-        if (image !== undefined) {
-            image.setScale(this.scale / zoom);
-        }
+        const image = initialStyle.getImage() as ImageStyle | null | undefined;
+        // TODO: reuse the scale from `getProperties`
+        image?.setScale(this.scale / zoom);
         return initialStyle;
     }
 }

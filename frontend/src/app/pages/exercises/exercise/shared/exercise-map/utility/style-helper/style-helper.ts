@@ -1,6 +1,10 @@
 import type { Feature } from 'ol';
 import type { StyleLike } from 'ol/style/Style';
 
+/**
+ * Trivial implementations generate a new style each for each object at each render.
+ * This {@link StyleHelper} encapsulates behaviour to cache the styles between the renders.
+ */
 export abstract class StyleHelper<S extends StyleLike, T extends Feature> {
     private readonly styleCache = new Map<string, S>();
 

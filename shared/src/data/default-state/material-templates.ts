@@ -11,8 +11,7 @@ const defaultMaterialTemplate = MaterialTemplate.create(
     },
     CanCaterFor.create(2, 0, 0, 'and'),
     2.5,
-    5.5,
-    false
+    5.5
 );
 
 const bigMaterialTemplate = MaterialTemplate.create(
@@ -24,8 +23,7 @@ const bigMaterialTemplate = MaterialTemplate.create(
     },
     CanCaterFor.create(2, 2, 0, 'and'),
     15,
-    0,
-    true
+    0
 );
 
 export const materialTemplateMap: {

@@ -11,8 +11,7 @@ const sanPersonnelTemplate = PersonnelTemplate.create(
     },
     CanCaterFor.create(0, 0, 5, 'or'),
     2.5,
-    5.5,
-    false
+    5.5
 );
 
 const rettSanPersonnelTemplate = PersonnelTemplate.create(
@@ -24,8 +23,7 @@ const rettSanPersonnelTemplate = PersonnelTemplate.create(
     },
     CanCaterFor.create(1, 2, 0, 'and'),
     2.5,
-    5,
-    false
+    5
 );
 
 const notSanPersonnelTemplate = PersonnelTemplate.create(
@@ -37,8 +35,7 @@ const notSanPersonnelTemplate = PersonnelTemplate.create(
     },
     CanCaterFor.create(2, 1, 0, 'and'),
     2.5,
-    5.5,
-    false
+    5.5
 );
 
 const notarztPersonnelTemplate = PersonnelTemplate.create(
@@ -50,8 +47,7 @@ const notarztPersonnelTemplate = PersonnelTemplate.create(
     },
     CanCaterFor.create(2, 2, 2, 'and'),
     15,
-    0,
-    true
+    0
 );
 
 const gfPersonnelTemplate = PersonnelTemplate.create(
@@ -63,8 +59,7 @@ const gfPersonnelTemplate = PersonnelTemplate.create(
     },
     CanCaterFor.create(0, 0, 0, 'or'),
     0,
-    0,
-    false
+    0
 );
 
 export const personnelTemplateMap: {

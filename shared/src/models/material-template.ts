@@ -25,9 +25,6 @@ export class MaterialTemplate {
     @Min(0)
     public readonly generalThreshold: number;
 
-    @IsBoolean()
-    public readonly auraMode: boolean;
-
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
@@ -40,15 +37,13 @@ export class MaterialTemplate {
         image: ImageProperties,
         canCaterFor: CanCaterFor,
         specificThreshold: number,
-        generalThreshold: number,
-        auraMode: boolean
+        generalThreshold: number
     ) {
         this.materialType = materialType;
         this.image = image;
         this.canCaterFor = canCaterFor;
         this.specificThreshold = specificThreshold;
         this.generalThreshold = generalThreshold;
-        this.auraMode = auraMode;
     }
 
     static readonly create = getCreate(this);

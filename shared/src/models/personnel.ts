@@ -60,9 +60,6 @@ export class Personnel {
     @Max(maxGlobalThreshold)
     public readonly generalThreshold: number;
 
-    @IsBoolean()
-    public readonly auraMode: boolean;
-
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
@@ -103,7 +100,6 @@ export class Personnel {
             personnelTemplateMap[personnelType]?.generalThreshold;
         this.specificThreshold =
             personnelTemplateMap[personnelType]?.specificThreshold;
-        this.auraMode = personnelTemplateMap[personnelType]?.auraMode;
     }
 
     static readonly create = getCreate(this);

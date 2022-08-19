@@ -4,7 +4,7 @@ import LineString from 'ol/geom/LineString';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
-import type { Options } from 'ol/style/Stroke';
+import { rgbColorPalette } from 'src/app/shared/functions/colors';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { FeatureManager } from '../utility/feature-manager';
 import { LineStyleHelper } from '../utility/style-helper/line-style-helper';
@@ -21,23 +21,17 @@ export class CateringLinesFeatureManager
 {
     readonly unsupportedChangeProperties = new Set(['id'] as const);
 
-    private readonly lineStyleHelper: LineStyleHelper;
+    private readonly lineStyleHelper = new LineStyleHelper(
+        (feature) => ({
+            color: rgbColorPalette.cyan,
+        }),
+        0.05
+    );
 
-    /**
-     *
-     * @param layer
-     * @param getProperties Stroke Options
-     * @param scale
-     */
-    constructor(
-        public readonly layer: VectorLayer<VectorSource<LineString>>,
-        private readonly getProperties: Options,
-        private readonly scale: number
-    ) {
+    constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {
         super();
-        this.lineStyleHelper = new LineStyleHelper(getProperties, scale);
-        layer.setStyle((thisFeature, currentZoom) =>
-            this.lineStyleHelper.getStyle(thisFeature as Feature, currentZoom)
+        layer.setStyle((feature, currentZoom) =>
+            this.lineStyleHelper.getStyle(feature as Feature, currentZoom)
         );
     }
 

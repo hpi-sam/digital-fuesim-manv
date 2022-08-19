@@ -50,9 +50,6 @@ export class Material {
     @Max(maxGlobalThreshold)
     public readonly generalThreshold: number;
 
-    @IsBoolean()
-    public readonly auraMode: boolean;
-
     /**
      * if undefined, is in vehicle with {@link this.vehicleId}
      */
@@ -86,7 +83,6 @@ export class Material {
             materialTemplateMap[materialType]?.generalThreshold;
         this.specificThreshold =
             materialTemplateMap[materialType]?.specificThreshold;
-        this.auraMode = materialTemplateMap[materialType]?.auraMode;
     }
 
     static readonly create = getCreate(this);

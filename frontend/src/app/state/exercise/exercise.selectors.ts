@@ -118,20 +118,16 @@ export const selectExerciseStatus = (state: AppState) =>
 export const selectParticipantId = (state: AppState) =>
     state.exercise.participantId;
 
-function cateringLinesElementSelector(getElementsWithAuraMode = false) {
-    return createSelector(
+export const getSelectVisibleCateringLines = (clientId?: UUID | null) =>
+    createSelector(
+        getSelectRestrictedViewport(clientId),
         selectMaterials,
         selectPersonnel,
         selectPatients,
-        (materials, personnel, patients) =>
+        (viewport, materials, personnel, patients) =>
             [...Object.values(materials), ...Object.values(personnel)]
                 .flatMap((element) => {
-                    // filter out every element not having a position or having auraMode (dependent on enabled
-                    if (
-                        element.position === undefined ||
-                        (getElementsWithAuraMode && !element.auraMode) ||
-                        (!getElementsWithAuraMode && element.auraMode)
-                    ) {
+                    if (element.position === undefined) {
                         return [];
                     }
                     return Object.keys(element.assignedPatientIds)
@@ -143,7 +139,14 @@ function cateringLinesElementSelector(getElementsWithAuraMode = false) {
                             patientPosition: patient!.position!,
                         }));
                 })
-                .reduce<{ [id: string]: CateringLine }>(
+                // To improve performance, all invisible lines are removed
+                .filter(
+                    ({ catererPosition, patientPosition }) =>
+                        !viewport ||
+                        Viewport.isInViewport(viewport, catererPosition) ||
+                        Viewport.isInViewport(viewport, patientPosition)
+                )
+                .reduce<{ [id: `${UUID}:${UUID}`]: CateringLine }>(
                     (cateringLinesObject, cateringLine) => {
                         cateringLinesObject[cateringLine.id] = cateringLine;
                         return cateringLinesObject;
@@ -151,13 +154,6 @@ function cateringLinesElementSelector(getElementsWithAuraMode = false) {
                     {}
                 )
     );
-}
-
-// TODO: only use the material and personnel in the current viewport
-export const selectCateringLines = cateringLinesElementSelector();
-
-// TODO: only use the material and personnel in the current viewport
-export const selectAuraCateringLines = cateringLinesElementSelector(true);
 
 export const selectTransferLines = createSelector(
     selectTransferPoints,

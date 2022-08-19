@@ -25,8 +25,7 @@ import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectRestrictedViewport,
     getSelectVisibleElements,
-    selectCateringLines,
-    selectAuraCateringLines,
+    getSelectVisibleCateringLines,
     selectExerciseStatus,
     selectMapImages,
     selectTileMapProperties,
@@ -326,25 +325,10 @@ export class OlMapManager {
 
         // normal lines of catering objects
         this.registerFeatureElementManager(
-            new CateringLinesFeatureManager(
-                cateringLinesLayer,
-                { color: '#0dcaf0', width: 5 },
-                0.1
-            ),
-            this.store.select(selectCateringLines)
-        );
-
-        // lines of objects with an aura
-        this.registerFeatureElementManager(
-            new CateringLinesFeatureManager(
-                auraCateringLinesLayer,
-                {
-                    color: '#ff0000',
-                    width: 5,
-                },
-                0.1
-            ),
-            this.store.select(selectAuraCateringLines)
+            new CateringLinesFeatureManager(cateringLinesLayer),
+            this.store.select(
+                getSelectVisibleCateringLines(this.apiService.ownClientId)
+            )
         );
 
         this.registerFeatureElementManager(
