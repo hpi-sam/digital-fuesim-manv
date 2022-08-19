@@ -2,11 +2,11 @@ import type {
     ExerciseState,
     HealthPoints,
     Patient,
-    PersonnelType,
     PatientUpdate,
+    PersonnelType,
 } from 'digital-fuesim-manv-shared';
 import {
-    getImmutableElement,
+    getElement,
     healthPointsDefaults,
     isAlive,
 } from 'digital-fuesim-manv-shared';
@@ -88,8 +88,7 @@ function getDedicatedResources(
     Object.keys(patient.assignedPersonnelIds).forEach(
         (personnelId) =>
             cateringTypes[
-                getImmutableElement(state, 'personnel', personnelId)
-                    .personnelType
+                getElement(state, 'personnel', personnelId).personnelType
             ]++
     );
 
