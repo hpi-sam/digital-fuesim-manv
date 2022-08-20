@@ -6,6 +6,11 @@ import Style from 'ol/style/Style';
 import { StyleHelper } from './style-helper';
 
 export class CircleStyleHelper extends StyleHelper<Style, Feature> {
+    /**
+     *
+     * @param getProperties returns the options for the circle that should be rendered
+     * if `undefined` gets returned, no circle gets rendered (empty {@link Style}).
+     */
     constructor(
         private readonly getProperties: (
             feature: Feature
@@ -34,6 +39,7 @@ export class CircleStyleHelper extends StyleHelper<Style, Feature> {
         zoom: number,
         feature: Feature
     ) {
+        // The ol typings are wrong
         const image = initialStyle.getImage() as ImageStyle | null | undefined;
         // TODO: reuse the scale from `getProperties`
         image?.setScale(this.scale / zoom);

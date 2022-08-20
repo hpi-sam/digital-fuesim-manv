@@ -139,7 +139,8 @@ export const getSelectVisibleCateringLines = (clientId?: UUID | null) =>
                             patientPosition: patient!.position!,
                         }));
                 })
-                // To improve performance, all invisible lines are removed
+                // To improve performance, all not needed lines are removed
+                // Lines where both ends are not in the viewport are not relevant for the user
                 .filter(
                     ({ catererPosition, patientPosition }) =>
                         !viewport ||

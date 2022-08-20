@@ -113,7 +113,6 @@ export class OlMapManager {
         const transferPointLayer = this.createElementLayer(600);
         const vehicleLayer = this.createElementLayer(1000);
         const cateringLinesLayer = this.createElementLayer<LineString>();
-        const auraCateringLinesLayer = this.createElementLayer<LineString>();
         const transferLinesLayer = this.createElementLayer<LineString>();
         const patientLayer = this.createElementLayer();
         const personnelLayer = this.createElementLayer();
@@ -193,7 +192,6 @@ export class OlMapManager {
                 transferPointLayer,
                 vehicleLayer,
                 cateringLinesLayer,
-                auraCateringLinesLayer,
                 patientLayer,
                 personnelLayer,
                 materialLayer,
@@ -318,7 +316,6 @@ export class OlMapManager {
             this.store.select(selectMapImages)
         );
 
-        // normal lines of catering objects
         this.registerFeatureElementManager(
             new CateringLinesFeatureManager(cateringLinesLayer),
             this.store.select(
