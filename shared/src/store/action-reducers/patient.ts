@@ -13,7 +13,7 @@ import {
 } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
-import { calculateTreatments } from './utils/calculate-treatments';
+import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 
 export function deletePatient(
@@ -30,7 +30,7 @@ export function deletePatient(
             );
             delete patient.position;
         }
-        calculateTreatments(draftState, patient);
+        updateTreatments(draftState, patient);
     }
     delete draftState.patients[patientId];
 }
@@ -131,7 +131,7 @@ export namespace PatientActionReducers {
                 );
             }
 
-            calculateTreatments(draftState, mutablePatient);
+            updateTreatments(draftState, mutablePatient);
 
             return draftState;
         },
@@ -162,7 +162,7 @@ export namespace PatientActionReducers {
 
             patient.position = cloneDeepMutable(targetPosition);
 
-            calculateTreatments(draftState, patient);
+            updateTreatments(draftState, patient);
 
             return draftState;
         },
@@ -183,7 +183,7 @@ export namespace PatientActionReducers {
 
                 delete patient.position;
                 // remove any treatments this patient received (deletes patient from personnel and material assignedPatientIds UUIDSet)
-                calculateTreatments(draftState, patient);
+                updateTreatments(draftState, patient);
             }
 
             deletePatient(draftState, patientId);
@@ -200,7 +200,7 @@ export namespace PatientActionReducers {
             patient.pretriageStatus = patientStatus;
 
             if (patient.position !== undefined) {
-                calculateTreatments(draftState, patient);
+                updateTreatments(draftState, patient);
             }
 
             return draftState;

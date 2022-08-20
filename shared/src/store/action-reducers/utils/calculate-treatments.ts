@@ -1,12 +1,16 @@
+import { isEmpty } from 'lodash-es';
 import type { Material, Personnel } from '../../../models';
 import { Patient } from '../../../models';
 import type { PatientStatus, Position } from '../../../models/utils';
-import type { ExerciseState } from '../../../state';
-import type { Mutable, UUIDSet } from '../../../utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
+import type { ExerciseState } from '../../../state';
 import { maxGlobalThreshold } from '../../../state-helpers/max-global-threshold';
+import type { Mutable, UUID } from '../../../utils';
 import { getElement } from './get-element';
 
+/**
+ * How many of which triageCategory a personnel/material is treating
+ */
 interface CatersFor {
     red: number;
     yellow: number;
@@ -14,71 +18,44 @@ interface CatersFor {
 }
 
 /**
- * checking wether a material or personnel could check for a patient with {@link status} if already {@link catersFor} x patients
+ * @returns wether a material or personnel could treat a patient with {@link status} if it already {@link catersFor} patients
  */
 function couldCaterFor(
-    status: PatientStatus,
-    catering: Mutable<Material | Personnel>,
+    status: Exclude<PatientStatus, 'white'>,
+    cateringElement: Mutable<Material | Personnel>,
     catersFor: Mutable<CatersFor>
 ) {
-    // TODO: maybe make blue patients treatable and count them as red patients
-    // and maybe make this personnel only be able to treat one blue patient or other patients
-
-    // TODO: understand why it seems to be not necessary (could be that just the lines are not shown - try it putting e.g. a material on top of a dead patient)
-    // black and blue patients can't be treated
+    // black can't be treated (anymore) and blue patients should not (yet) be treated
     if (status === 'black' || status === 'blue') {
         return false;
     }
-    // if logicalOperator === 'and' catering capacity is calculated cumulatively
-
-    // needed for cumulative calculations to calculate the number of patients treated over the normal canCaterFor that are also treated
-    const xTooManyGreens =
-        catering.canCaterFor.green < catersFor.green
-            ? catersFor.green - catering.canCaterFor.green
-            : 0;
-    const xTooManyYellows =
-        catering.canCaterFor.yellow < catersFor.yellow
-            ? catersFor.yellow - catering.canCaterFor.yellow
-            : 0;
-
-    const couldCaterForXMoreReds =
-        catering.canCaterFor.red -
-        catersFor.red +
-        (catering.canCaterFor.logicalOperator === 'and'
-            ? -xTooManyYellows - xTooManyGreens
-            : 0);
-    const couldCaterForXMoreYellows =
-        catering.canCaterFor.yellow -
-        catersFor.yellow +
-        (catering.canCaterFor.logicalOperator === 'and'
-            ? couldCaterForXMoreReds + xTooManyYellows
-            : 0);
-    const couldCaterForXMoreGreens =
-        catering.canCaterFor.green -
-        catersFor.green +
-        (catering.canCaterFor.logicalOperator === 'and'
-            ? couldCaterForXMoreYellows + xTooManyGreens
-            : 0);
-
-    if (
-        (status === 'red' && couldCaterForXMoreReds < 1) ||
-        (status === 'yellow' && couldCaterForXMoreYellows < 1) ||
-        (status === 'green' && couldCaterForXMoreGreens < 1)
-    ) {
-        // Capacity for the status of the patient is no longer there.
-        return false;
+    if (cateringElement.canCaterFor.logicalOperator === 'or') {
+        const numberOfTreatedCategories = Object.entries(
+            cateringElement.canCaterFor
+        ).filter(
+            ([category, canCaterFor]) =>
+                // Will be treated
+                status === category ||
+                // Is already treated
+                canCaterFor > 0
+        ).length;
+        return (
+            // Only one category can be treated
+            numberOfTreatedCategories <= 1 &&
+            catersFor[status] <= cateringElement.canCaterFor[status]
+        );
     }
-    if (
-        catering.canCaterFor.logicalOperator === 'or' &&
-        ((status === 'red' && (catersFor.yellow > 0 || catersFor.green > 0)) ||
-            (status === 'yellow' &&
-                (catersFor.red > 0 || catersFor.green > 0)) ||
-            (status === 'green' && (catersFor.yellow > 0 || catersFor.red > 0)))
-    ) {
-        // We are already treating someone of another category and cannot treat multiple categories as logcialOperator === 'or'.
-        return false;
+
+    let availableCapacity = 0;
+    for (const category of ['red', 'yellow', 'green'] as const) {
+        // The catering capacity is calculated cumulatively - a red slot can also teat a yellow one instead
+        availableCapacity +=
+            cateringElement.canCaterFor[category] - catersFor[category];
+        if (status === category && availableCapacity >= 1) {
+            return true;
+        }
     }
-    return true;
+    return false;
 }
 
 /**
@@ -92,44 +69,28 @@ function caterFor(
     pretriageEnabled: boolean,
     bluePatientsEnabled: boolean
 ) {
-    // Treat not pretriaged patients as yellow.
-    const visibleStatus = Patient.getVisibleStatus(
-        patient,
-        pretriageEnabled,
-        bluePatientsEnabled
+    const status = getCateringStatus(
+        Patient.getVisibleStatus(patient, pretriageEnabled, bluePatientsEnabled)
     );
-    const status = visibleStatus === 'white' ? 'yellow' : visibleStatus;
 
-    // checks if not already full
-    if (!couldCaterFor(status, catering, catersFor)) return false;
+    if (!couldCaterFor(status, catering, catersFor)) {
+        return false;
+    }
 
     catering.assignedPatientIds[patient.id] = true;
-
     patient.isBeingTreated = true;
 
-    // save catering.id in patient for more efficient calculating
     if (isPersonnel(catering)) {
         patient.assignedPersonnelIds[catering.id] = true;
     } else {
         patient.assignedMaterialIds[catering.id] = true;
     }
 
-    switch (status) {
-        case 'red':
-            catersFor.red++;
-            break;
-        case 'yellow':
-            catersFor.yellow++;
-            break;
-        case 'green':
-            catersFor.green++;
-            break;
-        default:
-            break;
-    }
+    catersFor[status as 'green' | 'red' | 'yellow']++;
     return true;
 }
 
+// TODO: Instead, give each Element a "type" property -> discriminated union
 function isPatient(
     element: Material | Patient | Personnel
 ): element is Patient {
@@ -154,29 +115,23 @@ function isMaterial(
 
 /**
  * @param position of the patient where all elements of elementType should be recalculated
- * @param elementType subset of keys from `SpatialTreeElementType` (all `elementType`s that can treat a patient)
  */
-function calculateCateringForElementTypeAroundPatient(
+function updateCateringAroundPatient(
     state: Mutable<ExerciseState>,
-    pretriageEnabled: boolean,
-    bluePatientsEnabled: boolean,
     position: Position,
     elementType: 'materials' | 'personnel',
-    elementIdsToBeSkipped: UUIDSet = {}
+    elementIdsToBeSkipped: Set<UUID>
 ) {
     const elementsInGeneralThreshold = SpatialTree.findAllElementsInCircle(
         state.spatialTrees[elementType],
+        // False positive
+        // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
         position,
         maxGlobalThreshold
-    ).filter((elementData) => !elementIdsToBeSkipped[elementData.id]);
+    ).filter((elementId) => !elementIdsToBeSkipped.has(elementId));
 
-    for (const elementInGeneralThreshold of elementsInGeneralThreshold) {
-        calculateCatering(
-            state,
-            getElement(state, elementType, elementInGeneralThreshold.id),
-            pretriageEnabled,
-            bluePatientsEnabled
-        );
+    for (const elementId of elementsInGeneralThreshold) {
+        updateCatering(state, getElement(state, elementType, elementId));
     }
 }
 
@@ -186,314 +141,198 @@ function removeTreatmentsOfElement(
 ) {
     if (isPatient(element)) {
         const patient = getElement(state, 'patients', element.id);
-        // go through every personnel that treats this patient and remove that it is treated by it (bi-directional)
+        // Make all personnel stop treating this patient
         for (const personnelId of Object.keys(patient.assignedPersonnelIds)) {
             const personnel = getElement(state, 'personnel', personnelId);
             delete personnel.assignedPatientIds[patient.id];
-            delete patient.assignedPersonnelIds[personnelId];
-            // if this personnel was the last treating this patient, set this patient to be not treated anymore
-            if (patient.assignedPersonnelIds === {}) {
-                patient.isBeingTreated = false;
-            }
         }
-        // go through every material that treats this patient and remove that it is treated by it (bi-directional)
+        patient.assignedPersonnelIds = {};
+        patient.isBeingTreated = false;
+        // Make all material stop treating this patient
         for (const materialId of Object.keys(patient.assignedMaterialIds)) {
             const material = getElement(state, 'materials', materialId);
             delete material.assignedPatientIds[patient.id];
-            delete patient.assignedMaterialIds[materialId];
         }
+        patient.assignedMaterialIds = {};
     } else if (isPersonnel(element)) {
         const personnel = getElement(state, 'personnel', element.id);
-        // go through every patient and remove being treated by this personnel
+        // This personnel doesn't treat any patients anymore
         for (const patientId of Object.keys(personnel.assignedPatientIds)) {
             const patient = getElement(state, 'patients', patientId);
-            delete personnel.assignedPatientIds[patientId];
             delete patient.assignedPersonnelIds[personnel.id];
-            // if this personnel was the last treating this patient, set the patient to be not treated anymore
-            if (patient.assignedPersonnelIds === {}) {
-                patient.isBeingTreated = false;
-            }
+            patient.isBeingTreated = !isEmpty(patient.assignedPersonnelIds);
         }
+        personnel.assignedPatientIds = {};
     } else if (isMaterial(element)) {
         const material = getElement(state, 'materials', element.id);
-        // go through every patient and remove being treated by this material
+        // This material doesn't treat any patients anymore
         for (const patientId of Object.keys(material.assignedPatientIds)) {
             const patient = getElement(state, 'patients', patientId);
-            delete material.assignedPatientIds[patientId];
             delete patient.assignedMaterialIds[material.id];
         }
+        material.assignedPatientIds = {};
     }
 }
 
 /**
  * @param element.position is important:
- *                  - if an element was moved: {@link element.position} needs the new position
- *                  - if treatment of an element should be removed: set {@link element.position} to `undefined`
- * @param elementIdsToBeSkipped with this you can ignore e.g. personnel and material that was already calculated before (e.g. see unloadVehicle)
+ *     - if an element was moved: {@link element.position} needs the new position
+ *     - if treatment of an element should be removed: set {@link element.position} to `undefined`
+ * @param elementIdsToBeSkipped with this you can ignore e.g. personnel and material that was already updated before (e.g. see unloadVehicle)
  */
-export function calculateTreatments(
+export function updateTreatments(
     state: Mutable<ExerciseState>,
     element: Mutable<Material | Patient | Personnel>,
-    elementIdsToBeSkipped: Mutable<UUIDSet> = {}
+    elementIdsToBeSkipped = new Set<UUID>()
 ) {
-    // if position is undefined, the element is no longer in a position (get it?!) to be treated or treat a patient, therefore any treatment given or received is removed
+    // The requirement of this function is neither to result in a "perfect" treatment pattern
+    // nor to be independent from its history (calculating the treatments from scratch is allowed to differ
+    // from a solution that has been incrementally produced by calls to this function)
+
     if (element.position === undefined) {
+        // The element is no longer in a position (get it?!) to be treated or treat a patient
         removeTreatmentsOfElement(state, element);
         return;
     }
 
-    const pretriageEnabled = state.configuration.pretriageEnabled;
-    const bluePatientsEnabled = state.configuration.bluePatientsEnabled;
-
-    // if element is personnel or material we just calculate catering for this element
     if (isPersonnel(element) || isMaterial(element)) {
-        calculateCatering(
-            state,
-            element,
-            pretriageEnabled,
-            bluePatientsEnabled
-        );
-    } else {
-        // element is patient: calculating for every personnel and material around the patient position(s)
-
-        // recalculating catering for every personnel that treated this patient
-        for (const personnelId of Object.keys(element.assignedPersonnelIds)) {
-            calculateCatering(
-                state,
-                getElement(state, 'personnel', personnelId),
-                pretriageEnabled,
-                bluePatientsEnabled
-            );
-            // saving personnelIds of personnel that already got calculated - makes small movements of patients more efficient
-            elementIdsToBeSkipped[personnelId] = true;
-        }
-
-        // recalculating catering for every material that treated this patient
-        for (const materialId of Object.keys(element.assignedMaterialIds)) {
-            calculateCatering(
-                state,
-                getElement(state, 'materials', materialId),
-                pretriageEnabled,
-                bluePatientsEnabled
-            );
-            // saving materialIds of material that already got calculated - makes small movements of patients more efficient
-            elementIdsToBeSkipped[materialId] = true;
-        }
-
-        // calculating catering for every personnel around the position the patient is now
-        calculateCateringForElementTypeAroundPatient(
-            state,
-            pretriageEnabled,
-            bluePatientsEnabled,
-            element.position,
-            'personnel',
-            elementIdsToBeSkipped
-        );
-
-        // calculating catering for every material around the position the patient is now
-        calculateCateringForElementTypeAroundPatient(
-            state,
-            pretriageEnabled,
-            bluePatientsEnabled,
-            element.position,
-            'materials',
-            elementIdsToBeSkipped
-        );
-
-        /**
-         * patient got new treatment and updated all possible personnel and material, therefore setting {@link needsNewCalculateTreatments} to false
-         */
-        getElement(state, 'patients', element.id).needsNewCalculateTreatments =
-            false;
+        updateCatering(state, element);
+        return;
     }
+
+    // Update every personnel and material that was assigned to the patient
+    for (const personnelId of Object.keys(element.assignedPersonnelIds)) {
+        updateCatering(state, getElement(state, 'personnel', personnelId));
+        // Saving personnelIds of personnel that already got calculated - makes small movements of patients more efficient
+        elementIdsToBeSkipped.add(personnelId);
+    }
+    for (const materialId of Object.keys(element.assignedMaterialIds)) {
+        updateCatering(state, getElement(state, 'materials', materialId));
+        // Saving materialIds of material that already got calculated - makes small movements of patients more efficient
+        elementIdsToBeSkipped.add(materialId);
+    }
+
+    updateCateringAroundPatient(
+        state,
+        element.position,
+        'personnel',
+        elementIdsToBeSkipped
+    );
+    updateCateringAroundPatient(
+        state,
+        element.position,
+        'materials',
+        elementIdsToBeSkipped
+    );
+
+    // Patient got new treatment and updated all possible personnel and material
+    getElement(state, 'patients', element.id).needsNewCalculateTreatments =
+        false;
 }
 
-function calculateCatering(
+function updateCatering(
     state: Mutable<ExerciseState>,
-    catering: Mutable<Material | Personnel>,
-    pretriageEnabled: boolean,
-    bluePatientsEnabled: boolean
+    cateringElement: Mutable<Material | Personnel>
 ) {
-    // reset treatment of this catering (material/personal) and start over again
-    // TODO: maybe use diff (only removing ones that are not treated anymore) - low priority as this is not much cost, as all ids are known
-    removeTreatmentsOfElement(state, catering);
+    // Reset treatment of this catering (material/personnel) and start over again
+    removeTreatmentsOfElement(state, cateringElement);
 
-    // when it can't treat anything, just skip this element
-    // doing this behind removeTreatmentsOfElement to catch the case someone changed via export import the canCaterFor to 0 while an Element is treating something in the exported state
+    // When it can't treat anything, just skip this element
+    // Doing this behind removeTreatmentsOfElement to catch the case someone changed via export import
+    // the canCaterFor to 0 while an Element is treating something in the exported state
     if (
-        catering.canCaterFor.red === 0 &&
-        catering.canCaterFor.yellow === 0 &&
-        catering.canCaterFor.green === 0
-    )
+        (cateringElement.canCaterFor.red === 0 &&
+            cateringElement.canCaterFor.yellow === 0 &&
+            cateringElement.canCaterFor.green === 0) ||
+        // The element is no longer in a position to treat a patient
+        cateringElement.position === undefined
+    ) {
         return;
+    }
 
-    /**
-     * catersFor is the list, how many of which triageCategory catering (material/personnel) is treating
-     */
     const catersFor: CatersFor = {
         red: 0,
         yellow: 0,
         green: 0,
     };
 
-    if (catering.position === undefined) {
+    // Patients that got already treated in specificThreshold should not be treated again in generalThreshold
+    const cateredForPatients = new Set<UUID>();
+
+    if (cateringElement.specificThreshold > 0) {
+        const patientIdsInSpecificThreshold =
+            SpatialTree.findAllElementsInCircle(
+                state.spatialTrees.patients,
+                cateringElement.position,
+                cateringElement.specificThreshold
+            );
+        // In the specificThreshold (the override circle) only the distance to the patient is important - his injuries are ignored
+        for (const patientId of patientIdsInSpecificThreshold) {
+            caterFor(
+                cateringElement,
+                catersFor,
+                getElement(state, 'patients', patientId),
+                state.configuration.pretriageEnabled,
+                state.configuration.bluePatientsEnabled
+            );
+            cateredForPatients.add(patientId);
+        }
+    }
+
+    if (
+        cateringElement.generalThreshold <= 0 ||
+        // Only look for more patients to treat, if there still is capacity (performance improvement)
+        (!couldCaterFor('red', cateringElement, catersFor) &&
+            !couldCaterFor('yellow', cateringElement, catersFor) &&
+            !couldCaterFor('green', cateringElement, catersFor))
+    ) {
         return;
     }
 
-    /**
-     * saving patientIds of patients that got already treated in specificThreshold, to filter them out when getting patients in generalThreshold
-     */
-    const patientIdsOfCateredForPatients: Mutable<UUIDSet> = {};
-
-    if (catering.specificThreshold > 0) {
-        const patientsDataInSpecificThreshold =
-            SpatialTree.findAllElementsInCircle(
-                state.spatialTrees.patients,
-                catering.position,
-                catering.specificThreshold
-            );
-
-        // having the override circle, if the nearest patients it in the specificThreshold he will be treated, only distance counts
-        for (const currentpatientDataInSpecificThreshold of patientsDataInSpecificThreshold) {
-            if (currentpatientDataInSpecificThreshold) {
-                caterFor(
-                    catering,
-                    catersFor,
-                    getElement(
-                        state,
-                        'patients',
-                        currentpatientDataInSpecificThreshold.id
-                    ),
-                    pretriageEnabled,
-                    bluePatientsEnabled
-                );
-                patientIdsOfCateredForPatients[
-                    currentpatientDataInSpecificThreshold.id
-                ] = true;
-            }
-        }
-    }
-
-    // if catering could cater for anything more, only then look at patients in the generalThreshold
-    if (
-        catering.generalThreshold > 0 &&
-        (couldCaterFor('red', catering, catersFor) ||
-            couldCaterFor('yellow', catering, catersFor) ||
-            couldCaterFor('green', catering, catersFor))
-    ) {
-        const patientsDataInGeneralThreshold =
-            SpatialTree.findAllElementsInCircle(
-                state.spatialTrees.patients,
-                catering.position,
-                catering.generalThreshold
+    const patientsInGeneralThreshold: Mutable<Patient>[] =
+        SpatialTree.findAllElementsInCircle(
+            state.spatialTrees.patients,
+            cateringElement.position,
+            cateringElement.generalThreshold
+        )
+            // Filter out every patient in the specificThreshold
+            .filter(
+                (patientId) =>
+                    // TODO: removing the ! makes the code break, but it should just recalculate for every patient again?!
+                    !cateredForPatients.has(patientId)
             )
-                // filter out every patient in the specificThreshold
-                .filter(
-                    (patientData) =>
-                        // TODO: removing the ! makes the code break, but it should just recalculate for every patient again?!
-                        !patientIdsOfCateredForPatients[patientData.id]
-                );
+            .map((patientId) => getElement(state, 'patients', patientId));
 
-        if (patientsDataInGeneralThreshold.length === 0) {
-            // No patients in the generalThreshold radius.
-            return;
-        }
-
-        const patientsInGeneralThreshold: Mutable<Patient>[] = [];
-        for (const currentpatientDataInGeneralThreshold of patientsDataInGeneralThreshold) {
-            patientsInGeneralThreshold.push(
-                getElement(
-                    state,
-                    'patients',
-                    currentpatientDataInGeneralThreshold.id
-                )
-            );
-        }
-
-        /**
-         * all red patients in the generalThreshold range, sorting them by distance to the catering
-         */
-        const redPatients = patientsInGeneralThreshold.filter(
+    for (const category of ['red', 'yellow', 'green'] as const) {
+        const patients = patientsInGeneralThreshold.filter(
             (patient) =>
-                Patient.getVisibleStatus(
-                    patient,
-                    pretriageEnabled,
-                    bluePatientsEnabled
-                ) === 'red'
-        );
-
-        // TODO: don't even filter out yellow and green patients, when they can't be treated anyway (maybe include it directly below, and use return instead of break)
-
-        /**
-         * all yellow patients (including untriaged patients) in the generalThreshold range, sorting them by distance to the catering
-         */
-        const yellowPatients = patientsInGeneralThreshold.filter((patient) => {
-            const visibleStatus = Patient.getVisibleStatus(
-                patient,
-                pretriageEnabled,
-                bluePatientsEnabled
-            );
-            // Treat untriaged patients as yellow
-            return visibleStatus === 'yellow' || visibleStatus === 'white';
-        });
-
-        /**
-         * all green patients in the generalThreshold range, sorting them by distance to the catering
-         */
-        const greenPatients = patientsInGeneralThreshold.filter(
-            (patient) =>
-                Patient.getVisibleStatus(
-                    patient,
-                    pretriageEnabled,
-                    bluePatientsEnabled
-                ) === 'green'
-        );
-
-        // treat every red patient, closest first, until the capacity is full
-        for (const patient of redPatients) {
-            if (
-                !caterFor(
-                    catering,
-                    catersFor,
-                    patient,
-                    pretriageEnabled,
-                    bluePatientsEnabled
+                category ===
+                getCateringStatus(
+                    Patient.getVisibleStatus(
+                        patient,
+                        state.configuration.pretriageEnabled,
+                        state.configuration.bluePatientsEnabled
+                    )
                 )
-            ) {
-                break;
-            }
-        }
-
-        // treat every yellow patient, closest first, until the capacity is full
-        // NOTE: only treats yellow patients, if no red patients got treated by this catering when catersFor.logicalOperator is set to 'or'
-        for (const patient of yellowPatients) {
+        );
+        // Treat every patient, closest first, until the capacity is full
+        for (const patient of patients) {
             if (
                 !caterFor(
-                    catering,
+                    cateringElement,
                     catersFor,
                     patient,
-                    pretriageEnabled,
-                    bluePatientsEnabled
-                )
-            ) {
-                break;
-            }
-        }
-
-        // treat every green patient, closest first, until the capacity is full
-        // NOTE: only treats green patients, if no yellow or red patients got treated by this catering when catersFor.logicalOperator is set to 'or'
-        for (const patient of greenPatients) {
-            if (
-                !caterFor(
-                    catering,
-                    catersFor,
-                    patient,
-                    pretriageEnabled,
-                    bluePatientsEnabled
+                    state.configuration.pretriageEnabled,
+                    state.configuration.bluePatientsEnabled
                 )
             ) {
                 break;
             }
         }
     }
+}
+
+function getCateringStatus(status: PatientStatus) {
+    // Treat not pretriaged patients as yellow.
+    return status === 'white' ? 'yellow' : status;
 }

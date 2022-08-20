@@ -12,7 +12,7 @@ import {
 } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
-import { calculateTreatments } from './utils/calculate-treatments';
+import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 
 /**
@@ -51,7 +51,7 @@ export function letElementArrive(
             element.id,
             cloneDeepImmutable(element.position)
         );
-        calculateTreatments(draftState, element as Mutable<Personnel>);
+        updateTreatments(draftState, element as Mutable<Personnel>);
     }
 }
 
@@ -170,10 +170,7 @@ export namespace TransferActionReducers {
                         positionBeforeTransfer
                     );
                     // remove any treatment this personnel did
-                    calculateTreatments(
-                        draftState,
-                        element as Mutable<Personnel>
-                    );
+                    updateTreatments(draftState, element as Mutable<Personnel>);
                 }
             }
 

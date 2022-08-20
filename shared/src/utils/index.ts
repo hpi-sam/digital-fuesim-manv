@@ -8,4 +8,3 @@ export * from './merge-intersection';
 export * from './clone-deep';
 export * from './strict-object';
 export * from './sleep';
-export * from './patient-updates';

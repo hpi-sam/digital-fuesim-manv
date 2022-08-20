@@ -1,6 +1,6 @@
 import { IsNumber, IsUUID, Min } from 'class-validator';
-import { HealthPoints, IsValidHealthPoint } from '../models/utils';
-import { UUID, uuidValidationOptions } from './uuid';
+import { HealthPoints, IsValidHealthPoint } from '../../../models/utils';
+import { UUID, uuidValidationOptions } from '../../../utils/uuid';
 
 export class PatientUpdate {
     /**

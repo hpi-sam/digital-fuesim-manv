@@ -4,7 +4,7 @@ import { Position } from '../../models/utils';
 import { SpatialTree } from '../../models/utils/spatial-tree';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
-import { calculateTreatments } from './utils/calculate-treatments';
+import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 
 export class MoveMaterialAction implements Action {
@@ -44,7 +44,7 @@ export namespace MaterialActionReducers {
 
             material.position = cloneDeepMutable(targetPosition);
 
-            calculateTreatments(draftState, material);
+            updateTreatments(draftState, material);
 
             return draftState;
         },

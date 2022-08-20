@@ -4,7 +4,7 @@ import { Position } from '../../models/utils';
 import { SpatialTree } from '../../models/utils/spatial-tree';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
-import { calculateTreatments } from './utils/calculate-treatments';
+import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 
 export class MovePersonnelAction implements Action {
@@ -44,7 +44,7 @@ export namespace PersonnelActionReducers {
 
             personnel.position = cloneDeepMutable(targetPosition);
 
-            calculateTreatments(draftState, personnel);
+            updateTreatments(draftState, personnel);
 
             return draftState;
         },

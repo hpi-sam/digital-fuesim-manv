@@ -5,7 +5,7 @@ import { Position } from '../../models/utils';
 import { SpatialTree } from '../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
-import type { Mutable, UUIDSet } from '../../utils';
+import type { Mutable } from '../../utils';
 import {
     cloneDeepImmutable,
     cloneDeepMutable,
@@ -16,7 +16,7 @@ import {
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { deletePatient } from './patient';
-import { calculateTreatments } from './utils/calculate-treatments';
+import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 
 export function deleteVehicle(
@@ -39,7 +39,7 @@ export function deleteVehicle(
                     );
                     delete material.position;
                 }
-                calculateTreatments(draftState, material);
+                updateTreatments(draftState, material);
             }
             delete draftState.materials[materialId];
         });
@@ -56,7 +56,7 @@ export function deleteVehicle(
                     );
                     delete personnel.position;
                 }
-                calculateTreatments(draftState, personnel);
+                updateTreatments(draftState, personnel);
             }
             delete draftState.personnel[personnelId];
         });
@@ -291,21 +291,21 @@ export namespace VehicleActionReducers {
             /**
              * Ids of elements that are already calculated
              */
-            const elementIdsToBeSkipped: Mutable<UUIDSet> = {};
+            const elementIdsToBeSkipped = new Set<UUID>();
 
             // after every elements are unloaded we will calculate treatments for each
             for (const person of personnel) {
-                calculateTreatments(draftState, person);
-                elementIdsToBeSkipped[person.id] = true;
+                updateTreatments(draftState, person);
+                elementIdsToBeSkipped.add(person.id);
             }
 
             for (const material of materials) {
-                calculateTreatments(draftState, material);
-                elementIdsToBeSkipped[material.id] = true;
+                updateTreatments(draftState, material);
+                elementIdsToBeSkipped.add(material.id);
             }
 
             for (const patient of patients) {
-                calculateTreatments(draftState, patient, elementIdsToBeSkipped);
+                updateTreatments(draftState, patient, elementIdsToBeSkipped);
             }
 
             return draftState;
@@ -344,7 +344,7 @@ export namespace VehicleActionReducers {
                     delete material.position;
 
                     // remove any treatments from this material
-                    calculateTreatments(draftState, material);
+                    updateTreatments(draftState, material);
                     break;
                 }
                 case 'personnel': {
@@ -375,7 +375,7 @@ export namespace VehicleActionReducers {
                     delete personnel.position;
 
                     // remove any treatments from this personnel
-                    calculateTreatments(draftState, personnel);
+                    updateTreatments(draftState, personnel);
                     break;
                 }
                 case 'patient': {
@@ -405,7 +405,7 @@ export namespace VehicleActionReducers {
                     delete patient.position;
 
                     // remove any treatments this patient received
-                    calculateTreatments(draftState, patient);
+                    updateTreatments(draftState, patient);
 
                     // if this vehicle has material associated with it load them in
                     Object.keys(vehicle.materialIds).forEach((materialId) => {
@@ -426,7 +426,7 @@ export namespace VehicleActionReducers {
                         delete material.position;
 
                         // remove any treatments from this material
-                        calculateTreatments(draftState, material);
+                        updateTreatments(draftState, material);
                     });
 
                     // if this vehicle has personnel associated with it load all in (except personnel being in transfer)
@@ -450,7 +450,7 @@ export namespace VehicleActionReducers {
                             delete personnel.position;
 
                             // remove any treatments from this material
-                            calculateTreatments(draftState, personnel);
+                            updateTreatments(draftState, personnel);
                         }
                     });
                 }

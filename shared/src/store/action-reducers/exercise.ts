@@ -7,16 +7,16 @@ import {
     IsString,
     ValidateNested,
 } from 'class-validator';
+import type { Personnel, Vehicle } from '../../models';
 import { Patient } from '../../models';
-import type { Vehicle, Personnel } from '../../models';
 import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
-import { PatientUpdate } from '../../utils/patient-updates';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { letElementArrive } from './transfer';
-import { calculateTreatments } from './utils/calculate-treatments';
+import { updateTreatments } from './utils/calculate-treatments';
+import { PatientUpdate } from './utils/patient-updates';
 
 export class PauseExerciseAction implements Action {
     @IsString()
@@ -109,7 +109,7 @@ export namespace ExerciseActionReducers {
                     /**
                      * calculateTreatments() will set {@link currentPatient.needsNewCalculateTreatments} to false again
                      * if
-                     * @see calculateTreatments was called with a patient
+                     * @see updateTreatments was called with a patient
                      */
                     currentPatient.needsNewCalculateTreatments = true;
                 }
@@ -121,7 +121,7 @@ export namespace ExerciseActionReducers {
                     refreshTreatments &&
                     currentPatient.needsNewCalculateTreatments
                 ) {
-                    calculateTreatments(draftState, currentPatient);
+                    updateTreatments(draftState, currentPatient);
                 }
             });
 

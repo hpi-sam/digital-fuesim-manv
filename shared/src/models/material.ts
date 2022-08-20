@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import {
-    IsBoolean,
     IsDefined,
     IsNumber,
     IsOptional,
@@ -40,6 +39,7 @@ export class Material {
     @IsNumber()
     @Min(0)
     @Max(maxGlobalThreshold)
+    // TODO: rename to overrideTreatmentThreshold
     public readonly specificThreshold: number;
 
     /**
@@ -48,6 +48,7 @@ export class Material {
     @IsNumber()
     @Min(0)
     @Max(maxGlobalThreshold)
+    // TODO: rename to treatmentThreshold
     public readonly generalThreshold: number;
 
     /**

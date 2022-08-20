@@ -1,11 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-    IsBoolean,
-    IsNumber,
-    IsString,
-    Min,
-    ValidateNested,
-} from 'class-validator';
+import { IsNumber, IsString, Min, ValidateNested } from 'class-validator';
 import {
     CanCaterFor,
     ImageProperties,

@@ -27,7 +27,6 @@ import type {
 import { EocLogEntry, MapImageTemplate, VehicleTemplate } from './models';
 import { ExerciseConfiguration } from './models/exercise-configuration';
 import { PatientCategory } from './models/patient-category';
-import type { SpatialTreeElementType } from './models/utils/spatial-tree';
 import { SpatialTree } from './models/utils/spatial-tree';
 import { getCreate } from './models/utils';
 import { ExerciseStatus } from './models/utils/exercise-status';
@@ -97,13 +96,11 @@ export class ExerciseState {
      * `Mutable<ExerciseState>` could still have immutable objects in spatialTree
      */
     @IsObject()
-    public readonly spatialTrees: {
-        readonly [key in SpatialTreeElementType]: SpatialTree;
-    } = {
+    public readonly spatialTrees = {
         materials: SpatialTree.create(),
         patients: SpatialTree.create(),
         personnel: SpatialTree.create(),
-    };
+    } as const;
 
     @ValidateNested()
     @Type(() => ExerciseConfiguration)
