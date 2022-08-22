@@ -122,7 +122,7 @@ function setupStateAndApplyTreatments(
 
     const newState = produce(beforeState, (draft) => {
         for (const patient of Object.values(draft.patients)) {
-            updateTreatments(draft, patient, undefined);
+            updateTreatments(draft, patient);
         }
     });
     return {
@@ -215,7 +215,7 @@ describe('calculate treatment', () => {
         expect(newState).toStrictEqual(beforeState);
     });
 
-    it('treats the nearest patient within the specificThreshold, regardless of status', () => {
+    it('treats the nearest patient within the overrideTreatmentRange, regardless of status', () => {
         const ids = {
             material: '',
             greenPatient: '',
@@ -247,7 +247,7 @@ describe('calculate treatment', () => {
         ]);
     });
 
-    it('treats the patient with worse status within the generalThreshold, regardless of distance', () => {
+    it('treats the patient with worse status within the treatmentRange, regardless of distance', () => {
         const ids = {
             material: '',
             greenPatient: '',

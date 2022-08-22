@@ -4,7 +4,7 @@ import { Patient } from '../../../models';
 import type { PatientStatus, Position } from '../../../models/utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
-import { maxGlobalThreshold } from '../../../state-helpers/max-global-threshold';
+import { maxTreatmentRange } from '../../../state-helpers/max-treatment-range';
 import type { Mutable, UUID } from '../../../utils';
 import { getElement } from './get-element';
 
@@ -59,11 +59,11 @@ function couldCaterFor(
 }
 
 /**
- * Tries to assign the {@link patient} to {@link catering} (side effect).
- * @returns Whether the patient can be catered for by {@link catering}.
+ * Tries to assign the {@link patient} to {@link cateringElement} (side effect).
+ * @returns Whether the patient can be catered for by the {@link cateringElement}.
  */
 function caterFor(
-    catering: Mutable<Material | Personnel>,
+    cateringElement: Mutable<Material | Personnel>,
     catersFor: Mutable<CatersFor>,
     patient: Mutable<Patient>,
     pretriageEnabled: boolean,
@@ -73,17 +73,17 @@ function caterFor(
         Patient.getVisibleStatus(patient, pretriageEnabled, bluePatientsEnabled)
     );
 
-    if (!couldCaterFor(status, catering, catersFor)) {
+    if (!couldCaterFor(status, cateringElement, catersFor)) {
         return false;
     }
 
-    catering.assignedPatientIds[patient.id] = true;
+    cateringElement.assignedPatientIds[patient.id] = true;
     patient.isBeingTreated = true;
 
-    if (isPersonnel(catering)) {
-        patient.assignedPersonnelIds[catering.id] = true;
+    if (isPersonnel(cateringElement)) {
+        patient.assignedPersonnelIds[cateringElement.id] = true;
     } else {
-        patient.assignedMaterialIds[catering.id] = true;
+        patient.assignedMaterialIds[cateringElement.id] = true;
     }
 
     catersFor[status as 'green' | 'red' | 'yellow']++;
@@ -120,17 +120,17 @@ function updateCateringAroundPatient(
     state: Mutable<ExerciseState>,
     position: Position,
     elementType: 'materials' | 'personnel',
-    elementIdsToBeSkipped: Set<UUID>
+    updatedElements: Set<UUID>
 ) {
-    const elementsInGeneralThreshold = SpatialTree.findAllElementsInCircle(
+    const elementsInTreatmentRange = SpatialTree.findAllElementsInCircle(
         state.spatialTrees[elementType],
         // False positive
         // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
         position,
-        maxGlobalThreshold
-    ).filter((elementId) => !elementIdsToBeSkipped.has(elementId));
+        maxTreatmentRange
+    ).filter((elementId) => !updatedElements.has(elementId));
 
-    for (const elementId of elementsInGeneralThreshold) {
+    for (const elementId of elementsInTreatmentRange) {
         updateCatering(state, getElement(state, elementType, elementId));
     }
 }
@@ -178,12 +178,10 @@ function removeTreatmentsOfElement(
  * @param element.position is important:
  *     - if an element was moved: {@link element.position} needs the new position
  *     - if treatment of an element should be removed: set {@link element.position} to `undefined`
- * @param elementIdsToBeSkipped with this you can ignore e.g. personnel and material that was already updated before (e.g. see unloadVehicle)
  */
 export function updateTreatments(
     state: Mutable<ExerciseState>,
-    element: Mutable<Material | Patient | Personnel>,
-    elementIdsToBeSkipped = new Set<UUID>()
+    element: Mutable<Material | Patient | Personnel>
 ) {
     // The requirement of this function is neither to result in a "perfect" treatment pattern
     // nor to be independent from its history (calculating the treatments from scratch is allowed to differ
@@ -200,29 +198,30 @@ export function updateTreatments(
         return;
     }
 
+    const updatedElements = new Set<UUID>();
     // Update every personnel and material that was assigned to the patient
     for (const personnelId of Object.keys(element.assignedPersonnelIds)) {
         updateCatering(state, getElement(state, 'personnel', personnelId));
         // Saving personnelIds of personnel that already got calculated - makes small movements of patients more efficient
-        elementIdsToBeSkipped.add(personnelId);
+        updatedElements.add(personnelId);
     }
     for (const materialId of Object.keys(element.assignedMaterialIds)) {
         updateCatering(state, getElement(state, 'materials', materialId));
         // Saving materialIds of material that already got calculated - makes small movements of patients more efficient
-        elementIdsToBeSkipped.add(materialId);
+        updatedElements.add(materialId);
     }
 
     updateCateringAroundPatient(
         state,
         element.position,
         'personnel',
-        elementIdsToBeSkipped
+        updatedElements
     );
     updateCateringAroundPatient(
         state,
         element.position,
         'materials',
-        elementIdsToBeSkipped
+        updatedElements
     );
 
     // Patient got new treatment and updated all possible personnel and material
@@ -256,18 +255,17 @@ function updateCatering(
         green: 0,
     };
 
-    // Patients that got already treated in specificThreshold should not be treated again in generalThreshold
+    // Patients that got already treated in overrideTreatmentRange should not be treated again in treatmentRange
     const cateredForPatients = new Set<UUID>();
 
-    if (cateringElement.specificThreshold > 0) {
-        const patientIdsInSpecificThreshold =
-            SpatialTree.findAllElementsInCircle(
-                state.spatialTrees.patients,
-                cateringElement.position,
-                cateringElement.specificThreshold
-            );
-        // In the specificThreshold (the override circle) only the distance to the patient is important - his injuries are ignored
-        for (const patientId of patientIdsInSpecificThreshold) {
+    if (cateringElement.overrideTreatmentRange > 0) {
+        const patientIdsInOverrideRange = SpatialTree.findAllElementsInCircle(
+            state.spatialTrees.patients,
+            cateringElement.position,
+            cateringElement.overrideTreatmentRange
+        );
+        // In the overrideTreatmentRange (the override circle) only the distance to the patient is important - his injuries are ignored
+        for (const patientId of patientIdsInOverrideRange) {
             caterFor(
                 cateringElement,
                 catersFor,
@@ -280,7 +278,7 @@ function updateCatering(
     }
 
     if (
-        cateringElement.generalThreshold <= 0 ||
+        cateringElement.treatmentRange <= 0 ||
         // Only look for more patients to treat, if there still is capacity (performance improvement)
         (!couldCaterFor('red', cateringElement, catersFor) &&
             !couldCaterFor('yellow', cateringElement, catersFor) &&
@@ -289,13 +287,13 @@ function updateCatering(
         return;
     }
 
-    const patientsInGeneralThreshold: Mutable<Patient>[] =
+    const patientsInTreatmentRange: Mutable<Patient>[] =
         SpatialTree.findAllElementsInCircle(
             state.spatialTrees.patients,
             cateringElement.position,
-            cateringElement.generalThreshold
+            cateringElement.treatmentRange
         )
-            // Filter out every patient in the specificThreshold
+            // Filter out every patient in the overrideTreatmentRange
             .filter(
                 (patientId) =>
                     // TODO: removing the ! makes the code break, but it should just recalculate for every patient again?!
@@ -304,7 +302,7 @@ function updateCatering(
             .map((patientId) => getElement(state, 'patients', patientId));
 
     for (const category of ['red', 'yellow', 'green'] as const) {
-        const patients = patientsInGeneralThreshold.filter(
+        const patients = patientsInTreatmentRange.filter(
             (patient) =>
                 category ===
                 getCateringStatus(

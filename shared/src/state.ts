@@ -32,6 +32,7 @@ import { getCreate } from './models/utils';
 import { ExerciseStatus } from './models/utils/exercise-status';
 import type { UUID } from './utils';
 import { uuid, uuidValidationOptions } from './utils';
+import { SpatialElementType } from './store/action-reducers/utils/spatial-elements';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -96,11 +97,13 @@ export class ExerciseState {
      * `Mutable<ExerciseState>` could still have immutable objects in spatialTree
      */
     @IsObject()
-    public readonly spatialTrees = {
+    public readonly spatialTrees: {
+        [type in SpatialElementType]: SpatialTree;
+    } = {
         materials: SpatialTree.create(),
         patients: SpatialTree.create(),
         personnel: SpatialTree.create(),
-    } as const;
+    };
 
     @ValidateNested()
     @Type(() => ExerciseConfiguration)

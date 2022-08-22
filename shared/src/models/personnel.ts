@@ -10,7 +10,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { personnelTemplateMap } from '../data/default-state/personnel-templates';
-import { maxGlobalThreshold } from '../state-helpers/max-global-threshold';
+import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { UUID, UUIDSet, uuid, uuidValidationOptions } from '../utils';
 import {
     CanCaterFor,
@@ -44,20 +44,22 @@ export class Personnel {
     public readonly canCaterFor: CanCaterFor;
 
     /**
-     * Guaranteed to be <= {@link maxGlobalThreshold}.
+     * Patients in this range are preferred over patients that are more far away (even if they are less injured).
+     * Guaranteed to be <= {@link maxTreatmentRange}.
      */
     @IsNumber()
     @Min(0)
-    @Max(maxGlobalThreshold)
-    public readonly specificThreshold: number;
+    @Max(maxTreatmentRange)
+    public readonly overrideTreatmentRange: number;
 
     /**
-     * Guaranteed to be <= {@link maxGlobalThreshold}.
+     * Only patients in this range around the personnel's position can be treated.
+     * Guaranteed to be <= {@link maxTreatmentRange}.
      */
     @IsNumber()
     @Min(0)
-    @Max(maxGlobalThreshold)
-    public readonly generalThreshold: number;
+    @Max(maxTreatmentRange)
+    public readonly treatmentRange: number;
 
     @ValidateNested()
     @Type(() => ImageProperties)
@@ -95,10 +97,10 @@ export class Personnel {
         // The constructor must be callable without any arguments
         this.image = personnelTemplateMap[personnelType]?.image;
         this.canCaterFor = personnelTemplateMap[personnelType]?.canCaterFor;
-        this.generalThreshold =
-            personnelTemplateMap[personnelType]?.generalThreshold;
-        this.specificThreshold =
-            personnelTemplateMap[personnelType]?.specificThreshold;
+        this.treatmentRange =
+            personnelTemplateMap[personnelType]?.treatmentRange;
+        this.overrideTreatmentRange =
+            personnelTemplateMap[personnelType]?.overrideTreatmentRange;
     }
 
     static readonly create = getCreate(this);

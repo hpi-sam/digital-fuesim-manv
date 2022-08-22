@@ -67,7 +67,7 @@ export class VehicleFeatureManager extends ElementFeatureManager<
         const droppedOnVehicle = this.getElementFromFeature(
             droppedOnFeature
         ) as {
-            type: 'vehicle';
+            type: 'vehicles';
             value: Vehicle;
         };
         if (!droppedElement || !droppedOnVehicle) {

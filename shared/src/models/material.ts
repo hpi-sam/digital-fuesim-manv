@@ -10,7 +10,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { materialTemplateMap } from '../data/default-state/material-templates';
-import { maxGlobalThreshold } from '../state-helpers/max-global-threshold';
+import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuid, UUID, UUIDSet, uuidValidationOptions } from '../utils';
 import { CanCaterFor, getCreate, ImageProperties, Position } from './utils';
 import type { MaterialType } from './utils/material-type';
@@ -34,22 +34,22 @@ export class Material {
     public readonly canCaterFor: CanCaterFor;
 
     /**
-     * Guaranteed to be <= {@link maxGlobalThreshold}.
+     * Patients in this range are preferred over patients that are more far away (even if they are less injured).
+     * Guaranteed to be <= {@link maxTreatmentRange}.
      */
     @IsNumber()
     @Min(0)
-    @Max(maxGlobalThreshold)
-    // TODO: rename to overrideTreatmentThreshold
-    public readonly specificThreshold: number;
+    @Max(maxTreatmentRange)
+    public readonly overrideTreatmentRange: number;
 
     /**
-     * Guaranteed to be <= {@link maxGlobalThreshold}.
+     * Only patients in this range around the material's position can be treated.
+     * Guaranteed to be <= {@link maxTreatmentRange}.
      */
     @IsNumber()
     @Min(0)
-    @Max(maxGlobalThreshold)
-    // TODO: rename to treatmentThreshold
-    public readonly generalThreshold: number;
+    @Max(maxTreatmentRange)
+    public readonly treatmentRange: number;
 
     /**
      * if undefined, is in vehicle with {@link this.vehicleId}
@@ -80,10 +80,9 @@ export class Material {
         // The constructor must be callable without any arguments
         this.image = materialTemplateMap[materialType]?.image;
         this.canCaterFor = materialTemplateMap[materialType]?.canCaterFor;
-        this.generalThreshold =
-            materialTemplateMap[materialType]?.generalThreshold;
-        this.specificThreshold =
-            materialTemplateMap[materialType]?.specificThreshold;
+        this.treatmentRange = materialTemplateMap[materialType]?.treatmentRange;
+        this.overrideTreatmentRange =
+            materialTemplateMap[materialType]?.treatmentRange;
     }
 
     static readonly create = getCreate(this);

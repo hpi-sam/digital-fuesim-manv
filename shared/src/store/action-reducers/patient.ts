@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
 import { PatientStatus, Position } from '../../models/utils';
-import { SpatialTree } from '../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import {
@@ -15,23 +14,17 @@ import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
+import {
+    addElementPosition,
+    removeElementPosition,
+    updateElementPosition,
+} from './utils/spatial-elements';
 
 export function deletePatient(
     draftState: Mutable<ExerciseState>,
     patientId: UUID
 ) {
-    const patient = draftState.patients[patientId];
-    if (patient !== undefined) {
-        if (patient.position !== undefined) {
-            SpatialTree.removeElement(
-                draftState.spatialTrees.patients,
-                patient.id,
-                patient.position
-            );
-            delete patient.position;
-        }
-        updateTreatments(draftState, patient);
-    }
+    removeElementPosition(draftState, 'patients', patientId);
     delete draftState.patients[patientId];
 }
 
@@ -120,19 +113,11 @@ export namespace PatientActionReducers {
                     `HealthState with id ${patient.currentHealthStateId} does not exist`
                 );
             }
-            const mutablePatient = cloneDeepMutable(patient);
-            draftState.patients[patient.id] = mutablePatient;
-
-            if (patient.position !== undefined) {
-                SpatialTree.addElement(
-                    draftState.spatialTrees.patients,
-                    patient.id,
-                    patient.position
-                );
-            }
-
-            updateTreatments(draftState, mutablePatient);
-
+            addElementPosition(
+                draftState,
+                'patients',
+                cloneDeepMutable(patient)
+            );
             return draftState;
         },
         rights: 'trainer',
@@ -141,29 +126,14 @@ export namespace PatientActionReducers {
     export const movePatient: ActionReducer<MovePatientAction> = {
         action: MovePatientAction,
         reducer: (draftState, { patientId, targetPosition }) => {
+            // Check whether the patient exists
             const patient = getElement(draftState, 'patients', patientId);
-
-            const startPosition = patient.position;
-
-            if (startPosition !== undefined) {
-                SpatialTree.moveElement(
-                    draftState.spatialTrees.patients,
-                    patient.id,
-                    startPosition,
-                    targetPosition
-                );
-            } else {
-                SpatialTree.addElement(
-                    draftState.spatialTrees.patients,
-                    patient.id,
-                    targetPosition
-                );
-            }
-
-            patient.position = cloneDeepMutable(targetPosition);
-
-            updateTreatments(draftState, patient);
-
+            updateElementPosition(
+                draftState,
+                'patients',
+                patient.id,
+                targetPosition
+            );
             return draftState;
         },
         rights: 'participant',
@@ -172,22 +142,7 @@ export namespace PatientActionReducers {
     export const removePatient: ActionReducer<RemovePatientAction> = {
         action: RemovePatientAction,
         reducer: (draftState, { patientId }) => {
-            const patient = getElement(draftState, 'patients', patientId);
-
-            if (patient.position !== undefined) {
-                SpatialTree.removeElement(
-                    draftState.spatialTrees.patients,
-                    patient.id,
-                    patient.position
-                );
-
-                delete patient.position;
-                // remove any treatments this patient received (deletes patient from personnel and material assignedPatientIds UUIDSet)
-                updateTreatments(draftState, patient);
-            }
-
             deletePatient(draftState, patientId);
-
             return draftState;
         },
         rights: 'trainer',

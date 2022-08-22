@@ -1,19 +1,16 @@
 import { IsInt, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
-import type { ExerciseState, Personnel } from '../..';
-import { imageSizeToPosition, Position, TransferPoint } from '../..';
-import { SpatialTree } from '../../models/utils/spatial-tree';
+import type { ExerciseState, Position } from '../..';
+import { imageSizeToPosition, TransferPoint } from '../..';
 import { StartPoint } from '../../models/utils/start-points';
 import type { Mutable } from '../../utils';
-import {
-    cloneDeepImmutable,
-    cloneDeepMutable,
-    UUID,
-    uuidValidationOptions,
-} from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
-import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
+import {
+    removeElementPosition,
+    updateElementPosition,
+} from './utils/spatial-elements';
 
 /**
  * Personnel/Vehicle in transfer will arrive immediately at new targetTransferPoint
@@ -35,24 +32,19 @@ export function letElementArrive(
         'transferPoints',
         element.transfer.targetTransferPointId
     );
-    element.position = cloneDeepMutable(
-        Position.create(
-            targetTransferPoint.position.x,
+    const newPosition: Mutable<Position> = {
+        x: targetTransferPoint.position.x,
+        y:
             targetTransferPoint.position.y +
-                //  Position it in the upper half of the transferPoint)
-                imageSizeToPosition(TransferPoint.image.height / 3)
-        )
-    );
-    delete element.transfer;
-
+            // Position it in the upper half of the transferPoint
+            imageSizeToPosition(TransferPoint.image.height / 3),
+    };
     if (elementType === 'personnel') {
-        SpatialTree.addElement(
-            draftState.spatialTrees.personnel,
-            element.id,
-            cloneDeepImmutable(element.position)
-        );
-        updateTreatments(draftState, element as Mutable<Personnel>);
+        updateElementPosition(draftState, 'personnel', element.id, newPosition);
+    } else {
+        element.position = newPosition;
     }
+    delete element.transfer;
 }
 
 export class AddToTransferAction implements Action {
@@ -159,19 +151,11 @@ export namespace TransferActionReducers {
                 duration = startPoint.duration;
             }
 
-            const positionBeforeTransfer = element.position;
-            delete element.position;
-
+            // Remove the position of the element
             if (elementType === 'personnel') {
-                if (positionBeforeTransfer !== undefined) {
-                    SpatialTree.removeElement(
-                        draftState.spatialTrees.personnel,
-                        element.id,
-                        positionBeforeTransfer
-                    );
-                    // remove any treatment this personnel did
-                    updateTreatments(draftState, element as Mutable<Personnel>);
-                }
+                removeElementPosition(draftState, 'personnel', element.id);
+            } else {
+                element.position = undefined;
             }
 
             // Set the element to transfer

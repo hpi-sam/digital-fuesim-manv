@@ -2,12 +2,10 @@ import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
 import { Position } from '../../models/utils';
-import { SpatialTree } from '../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
 import {
-    cloneDeepImmutable,
     cloneDeepMutable,
     StrictObject,
     UUID,
@@ -16,53 +14,30 @@ import {
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { deletePatient } from './patient';
-import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
+import {
+    addElementPosition,
+    removeElementPosition,
+    updateElementPosition,
+} from './utils/spatial-elements';
 
 export function deleteVehicle(
     draftState: Mutable<ExerciseState>,
     vehicleId: UUID
 ) {
-    // Check if the vehicle exists
-    getElement(draftState, 'vehicles', vehicleId);
+    const vehicle = getElement(draftState, 'vehicles', vehicleId);
     // Delete related material and personnel
-    Object.entries(draftState.materials)
-        .filter(([, material]) => material.vehicleId === vehicleId)
-        .forEach(([materialId]) => {
-            const material = draftState.materials[materialId];
-            if (material !== undefined) {
-                if (material.position !== undefined) {
-                    SpatialTree.removeElement(
-                        draftState.spatialTrees.materials,
-                        material.id,
-                        material.position
-                    );
-                    delete material.position;
-                }
-                updateTreatments(draftState, material);
-            }
-            delete draftState.materials[materialId];
-        });
-    Object.entries(draftState.personnel)
-        .filter(([, personnel]) => personnel.vehicleId === vehicleId)
-        .forEach(([personnelId]) => {
-            const personnel = draftState.personnel[personnelId];
-            if (personnel !== undefined) {
-                if (personnel.position !== undefined) {
-                    SpatialTree.removeElement(
-                        draftState.spatialTrees.personnel,
-                        personnel.id,
-                        personnel.position
-                    );
-                    delete personnel.position;
-                }
-                updateTreatments(draftState, personnel);
-            }
-            delete draftState.personnel[personnelId];
-        });
-    Object.entries(draftState.patients)
-        .filter(([, patients]) => patients.vehicleId === vehicleId)
-        .forEach(([patientId]) => deletePatient(draftState, patientId));
+    Object.keys(vehicle.materialIds).forEach((materialId) => {
+        removeElementPosition(draftState, 'materials', materialId);
+        delete draftState.materials[materialId];
+    });
+    Object.keys(vehicle.personnelIds).forEach((personnelId) => {
+        removeElementPosition(draftState, 'personnel', personnelId);
+        delete draftState.personnel[personnelId];
+    });
+    Object.keys(vehicle.patientIds).forEach((patientId) =>
+        deletePatient(draftState, patientId)
+    );
     // Delete the vehicle
     delete draftState.vehicles[vehicleId];
 }
@@ -130,8 +105,8 @@ export class LoadVehicleAction implements Action {
 
     @IsString()
     public readonly elementToBeLoadedType!:
-        | 'material'
-        | 'patient'
+        | 'materials'
+        | 'patients'
         | 'personnel';
 
     @IsUUID(4, uuidValidationOptions)
@@ -170,10 +145,18 @@ export namespace VehicleActionReducers {
             }
             draftState.vehicles[vehicle.id] = cloneDeepMutable(vehicle);
             for (const material of materials) {
-                draftState.materials[material.id] = cloneDeepMutable(material);
+                addElementPosition(
+                    draftState,
+                    'materials',
+                    cloneDeepMutable(material)
+                );
             }
             for (const person of personnel) {
-                draftState.personnel[person.id] = cloneDeepMutable(person);
+                addElementPosition(
+                    draftState,
+                    'personnel',
+                    cloneDeepMutable(person)
+                );
             }
             return draftState;
         },
@@ -225,87 +208,65 @@ export namespace VehicleActionReducers {
                     `Vehicle with id ${vehicleId} is currently in transfer`
                 );
             }
-            const materials = Object.keys(vehicle.materialIds).map(
-                (materialId) => draftState.materials[materialId]!
-            );
-            const personnel = Object.keys(vehicle.personnelIds).map(
-                (personnelId) => draftState.personnel[personnelId]!
-            );
-            const patients = Object.keys(vehicle.patientIds).map(
-                (patientId) => draftState.patients[patientId]!
-            );
+            const materialIds = Object.keys(vehicle.materialIds);
+            const personnelIds = Object.keys(vehicle.personnelIds);
+            const patientIds = Object.keys(vehicle.patientIds);
             const vehicleWidthInPosition = imageSizeToPosition(
                 vehicle.image.aspectRatio * vehicle.image.height
             );
 
             const space =
                 vehicleWidthInPosition /
-                (personnel.length + materials.length + patients.length + 1);
+                (personnelIds.length +
+                    materialIds.length +
+                    patientIds.length +
+                    1);
             let x = unloadPosition.x - vehicleWidthInPosition / 2;
 
-            // first undload all patients, personnel and material and add them to their spatialTree
+            // Unload all patients, personnel and material and put them on the vehicle
 
-            for (const patient of patients) {
+            for (const patientId of patientIds) {
                 x += space;
-                patient.position ??= {
+                updateElementPosition(draftState, 'patients', patientId, {
                     x,
                     y: unloadPosition.y,
-                };
-                delete vehicle.patientIds[patient.id];
-                SpatialTree.addElement(
-                    draftState.spatialTrees.patients,
-                    patient.id,
-                    cloneDeepImmutable(patient.position)
-                );
+                });
+                delete vehicle.patientIds[patientId];
             }
 
-            for (const person of personnel) {
+            for (const personnelId of personnelIds) {
                 x += space;
-                if (!Personnel.isInVehicle(person)) {
-                    continue;
+                const personnel = getElement(
+                    draftState,
+                    'personnel',
+                    personnelId
+                );
+                if (Personnel.isInVehicle(personnel)) {
+                    updateElementPosition(
+                        draftState,
+                        'personnel',
+                        personnelId,
+                        {
+                            x,
+                            y: unloadPosition.y,
+                        }
+                    );
                 }
-                person.position ??= {
-                    x,
-                    y: unloadPosition.y,
-                };
-                SpatialTree.addElement(
-                    draftState.spatialTrees.personnel,
-                    person.id,
-                    cloneDeepImmutable(person.position)
-                );
             }
 
-            for (const material of materials) {
+            for (const materialId of materialIds) {
                 x += space;
-                material.position ??= {
-                    x,
-                    y: unloadPosition.y,
-                };
-                SpatialTree.addElement(
-                    draftState.spatialTrees.materials,
-                    material.id,
-                    cloneDeepImmutable(material.position)
+                const material = getElement(
+                    draftState,
+                    'materials',
+                    materialId
                 );
-            }
-
-            /**
-             * Ids of elements that are already calculated
-             */
-            const elementIdsToBeSkipped = new Set<UUID>();
-
-            // after every elements are unloaded we will calculate treatments for each
-            for (const person of personnel) {
-                updateTreatments(draftState, person);
-                elementIdsToBeSkipped.add(person.id);
-            }
-
-            for (const material of materials) {
-                updateTreatments(draftState, material);
-                elementIdsToBeSkipped.add(material.id);
-            }
-
-            for (const patient of patients) {
-                updateTreatments(draftState, patient, elementIdsToBeSkipped);
+                if (Material.isInVehicle(material)) {
+                    updateElementPosition(draftState, 'materials', materialId, {
+                        x,
+                        y: unloadPosition.y,
+                    });
+                }
             }
 
             return draftState;
@@ -321,7 +282,7 @@ export namespace VehicleActionReducers {
         ) => {
             const vehicle = getElement(draftState, 'vehicles', vehicleId);
             switch (elementToBeLoadedType) {
-                case 'material': {
+                case 'materials': {
                     const material = getElement(
                         draftState,
                         'materials',
@@ -332,19 +293,7 @@ export namespace VehicleActionReducers {
                             `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
-
-                    if (material.position !== undefined) {
-                        SpatialTree.removeElement(
-                            draftState.spatialTrees.materials,
-                            material.id,
-                            material.position
-                        );
-                    }
-
-                    delete material.position;
-
-                    // remove any treatments from this material
-                    updateTreatments(draftState, material);
+                    removeElementPosition(draftState, 'materials', material.id);
                     break;
                 }
                 case 'personnel': {
@@ -363,22 +312,14 @@ export namespace VehicleActionReducers {
                             `Personnel with id ${personnel.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
-
-                    if (personnel.position !== undefined) {
-                        SpatialTree.removeElement(
-                            draftState.spatialTrees.personnel,
-                            personnel.id,
-                            personnel.position
-                        );
-                    }
-
-                    delete personnel.position;
-
-                    // remove any treatments from this personnel
-                    updateTreatments(draftState, personnel);
+                    removeElementPosition(
+                        draftState,
+                        'personnel',
+                        personnel.id
+                    );
                     break;
                 }
-                case 'patient': {
+                case 'patients': {
                     const patient = getElement(
                         draftState,
                         'patients',
@@ -394,65 +335,32 @@ export namespace VehicleActionReducers {
                     }
                     vehicle.patientIds[elementToBeLoadedId] = true;
 
-                    if (patient.position !== undefined) {
-                        SpatialTree.removeElement(
-                            draftState.spatialTrees.patients,
-                            patient.id,
-                            patient.position
-                        );
-                    }
+                    removeElementPosition(draftState, 'patients', patient.id);
 
-                    delete patient.position;
-
-                    // remove any treatments this patient received
-                    updateTreatments(draftState, patient);
-
-                    // if this vehicle has material associated with it load them in
+                    // Load in all materials
                     Object.keys(vehicle.materialIds).forEach((materialId) => {
-                        const material = getElement(
+                        removeElementPosition(
                             draftState,
                             'materials',
                             materialId
                         );
-
-                        if (material.position !== undefined) {
-                            SpatialTree.removeElement(
-                                draftState.spatialTrees.materials,
-                                material.id,
-                                material.position
-                            );
-                        }
-
-                        delete material.position;
-
-                        // remove any treatments from this material
-                        updateTreatments(draftState, material);
                     });
 
-                    // if this vehicle has personnel associated with it load all in (except personnel being in transfer)
-                    Object.keys(vehicle.personnelIds).forEach((personnelId) => {
-                        const personnel = getElement(
-                            draftState,
-                            'personnel',
-                            personnelId
-                        );
-                        // only remove personnel from spatialTree if it had a position before and is not in transfer
-                        if (
-                            personnel.position !== undefined &&
-                            personnel.transfer === undefined
-                        ) {
-                            SpatialTree.removeElement(
-                                draftState.spatialTrees.personnel,
-                                personnel.id,
-                                personnel.position
+                    // Load in all personnel
+                    Object.keys(vehicle.personnelIds)
+                        .filter(
+                            // Skip personnel currently in transfer
+                            (personnelId) =>
+                                getElement(draftState, 'personnel', personnelId)
+                                    .transfer === undefined
+                        )
+                        .forEach((personnelId) => {
+                            removeElementPosition(
+                                draftState,
+                                'personnel',
+                                personnelId
                             );
-
-                            delete personnel.position;
-
-                            // remove any treatments from this material
-                            updateTreatments(draftState, personnel);
-                        }
-                    });
+                        });
                 }
             }
             return draftState;
