@@ -31,7 +31,7 @@ export interface Action {
 
 /**
  * A pure function that applies the action on the provided state.
- * Pure especially means that no non-deterministic behavior (like `Date.now()` or `uuid()`) may be used.
+ * A [pure function](https://en.wikipedia.org/wiki/Pure_function) is a function that produces the same return value for identical arguments (doesn't use non-deterministic functions like `Date.now()`, `uuid()` or `Math.random()`) and is side-effect free.
  *
  * @throws {ReducerError} if the action is not applicable on the provided state
  *

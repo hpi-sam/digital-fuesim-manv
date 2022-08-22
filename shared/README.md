@@ -29,7 +29,7 @@ Note especially that new `Action`s have to be registered in `actionReducers` in 
 
 When adding new models note that they must expose a `static` `create` method that calls the constructor, removes the prototype and freezes the object.
 This can be achieved by using `static create = getCreate(this)`, like in existing models.
-Also mark the `constructor` `deprecated` via a JSDoc comment.
+Also, mark the `constructor` as `deprecated` via a JSDoc comment.
 
 ## Validation
 
