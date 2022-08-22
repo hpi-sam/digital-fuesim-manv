@@ -109,3 +109,10 @@ The [OlMapManager](src/app/pages/exercises/exercise/shared/exercise-map/utility/
 The map consists of different layers. Each layer only displays one kind of element. How an element in this layer should be rendered and what interactions are possible is defined in the [specific ElementFeatureManagers](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers).
 They all inherit from [ElementFeatureManager](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers/element-feature-manager.ts) and make mostly use of `Helper` classes to add additional functionality via composition.
 They have a custom API that allows reacting to changes in an element ([ElementManager](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers/element-manager.ts)) and an API that allows for interaction with other elements via the OlMapManager ([FeatureManager](src/app/pages/exercises/exercise/shared/exercise-map/utility/feature-manager.ts)).
+
+## Action proposals
+
+As described in the [root README.md](../README.md), we use actions to propose changes.
+Such actions can be proposed optimistically.
+Note that the described synchronization mechanisms only make sure that the states between the clients and the server are in sync. In addition, it must be guaranteed that the UI is always in sync with the current state in the store. While Angular deals with this, for the most part, the OpenLayers implementation doesn't do this by default. Therefore, desynchronization is possible when, e.g., dragging an element. To fix this, the respective proposals should be optimistic.
+See [#298](https://github.com/hpi-sam/digital-fuesim-manv/issues/298) in this context.
