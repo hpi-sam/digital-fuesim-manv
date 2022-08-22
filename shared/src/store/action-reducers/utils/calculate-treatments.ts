@@ -48,14 +48,16 @@ function couldCaterFor(
 
     let availableCapacity = 0;
     for (const category of ['red', 'yellow', 'green'] as const) {
-        // The catering capacity is calculated cumulatively - a red slot can also teat a yellow one instead
+        // The catering capacity is calculated cumulatively - a red slot can also treat a yellow one instead
         availableCapacity +=
-            cateringElement.canCaterFor[category] - catersFor[category];
-        if (status === category && availableCapacity >= 1) {
-            return true;
+            cateringElement.canCaterFor[category] -
+            catersFor[category] -
+            (status === category ? 1 : 0);
+        if (availableCapacity < 0) {
+            return false;
         }
     }
-    return false;
+    return true;
 }
 
 /**

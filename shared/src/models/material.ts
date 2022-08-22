@@ -82,7 +82,7 @@ export class Material {
         this.canCaterFor = materialTemplateMap[materialType]?.canCaterFor;
         this.treatmentRange = materialTemplateMap[materialType]?.treatmentRange;
         this.overrideTreatmentRange =
-            materialTemplateMap[materialType]?.treatmentRange;
+            materialTemplateMap[materialType]?.overrideTreatmentRange;
     }
 
     static readonly create = getCreate(this);
