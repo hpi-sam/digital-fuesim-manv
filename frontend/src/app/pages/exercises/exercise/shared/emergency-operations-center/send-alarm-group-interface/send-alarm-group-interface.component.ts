@@ -1,10 +1,11 @@
 import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { AlarmGroup, UUID } from 'digital-fuesim-manv-shared';
+import type { UUID, AlarmGroup } from 'digital-fuesim-manv-shared';
 import {
-    AlarmGroupStartPoint,
+    TransferPoint,
     createVehicleParameters,
+    AlarmGroupStartPoint,
 } from 'digital-fuesim-manv-shared';
 import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
@@ -33,6 +34,10 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
     public readonly alarmGroups$ = this.store.select(selectAlarmGroups);
 
     public readonly transferPoints$ = this.store.select(selectTransferPoints);
+
+    public getTransferPointOrderByValue: (
+        transferPoint: TransferPoint
+    ) => string = (transferPoint) => TransferPoint.getFullName(transferPoint);
 
     constructor(
         private readonly apiService: ApiService,
