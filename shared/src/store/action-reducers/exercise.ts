@@ -101,25 +101,10 @@ export namespace ExerciseActionReducers {
                     draftState.configuration.bluePatientsEnabled
                 );
 
-                /**
-                 * if visibleStatus would change setting {@link needsNewCalculateTreatments} to true,
-                 * as when {@link refreshTreatments} is also true, this patient needs new treatment calculation
-                 */
-                if (visibleStatusBefore !== visibleStatusAfter) {
-                    /**
-                     * calculateTreatments() will set {@link currentPatient.needsNewCalculateTreatments} to false again
-                     * if
-                     * @see updateTreatments was called with a patient
-                     */
-                    currentPatient.needsNewCalculateTreatments = true;
-                }
-
-                /**
-                 * Refresh treatments of this patient every refreshTreatmentInterval and only when the visibleStatus of a patient really changed
-                 */
                 if (
                     refreshTreatments &&
-                    currentPatient.needsNewCalculateTreatments
+                    // We only want to do this expensive calculation, when it is really necessary
+                    visibleStatusBefore !== visibleStatusAfter
                 ) {
                     updateTreatments(draftState, currentPatient);
                 }

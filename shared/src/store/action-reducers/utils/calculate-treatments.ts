@@ -225,10 +225,6 @@ export function updateTreatments(
         'materials',
         updatedElements
     );
-
-    // Patient got new treatment and updated all possible personnel and material
-    getElement(state, 'patients', element.id).needsNewCalculateTreatments =
-        false;
 }
 
 function updateCatering(

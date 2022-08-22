@@ -58,16 +58,6 @@ export class Patient {
     @IsString()
     public readonly realStatus: PatientStatus;
 
-    /**
-     * when set to true patient will get new treatment calcuation in exercise Tick when {@link refreshTreatments} is true
-     *
-     * TODO: maybe use getter and setter for {@link needsNewCalculateTreatments} and combine it with getVisibleStatus
-     * when visibleStatus would change, set this to true, for refreshTreatments in exerciseTickAction
-     * will be set to false when next calculateTreatments was called for this patient
-     */
-    @IsBoolean()
-    public readonly needsNewCalculateTreatments: boolean = false;
-
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
