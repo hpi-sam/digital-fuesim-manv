@@ -1,15 +1,10 @@
-export interface ValidationFunctions<T> {
+export interface ValidationFunctions {
     keyValidator: (key: string) => boolean;
-    // TODO: I'm not sure I'm happy with this system already.
     /**
-     * This transformer may return a non-`T` object.
+     * This validator must return `false` when {@link value} is not a valid object.
      */
-    valueTransformer: (value: unknown) => T;
-    /**
-     * This validator must return `false` when {@link value} is not a `T` object.
-     */
-    valueValidator: (value: T) => boolean;
-    consistencyValidator?: (key: string, value: T) => boolean;
+    valueValidator: (value: unknown) => boolean;
+    consistencyValidator?: (key: string, value: unknown) => boolean;
 }
 
 // TODO: The formatting of the list is ugly as something removes the trailing whitespaces that would make it create newlines.
@@ -32,18 +27,17 @@ export interface ValidationFunctions<T> {
  */
 export function getMapValidator<T>({
     keyValidator,
-    valueTransformer,
     valueValidator,
     consistencyValidator,
-}: ValidationFunctions<T>): (valueToBeValidated: unknown) => boolean {
+}: ValidationFunctions): (valueToBeValidated: unknown) => boolean {
     return (valueToBeValidated: unknown): boolean =>
         typeof valueToBeValidated === 'object' &&
         valueToBeValidated !== null &&
         Object.entries(valueToBeValidated).every(
             ([key, value]: [string, unknown]) =>
                 keyValidator(key) &&
-                valueValidator(valueTransformer(value)) &&
+                valueValidator(value) &&
                 (consistencyValidator === undefined ||
-                    consistencyValidator(key, valueTransformer(value)))
+                    consistencyValidator(key, value as T))
         );
 }

@@ -6,9 +6,6 @@ import { makeValidator } from './make-validator';
 export function isUUIDSet(valueToBeValidated: unknown): boolean {
     return getMapValidator<true>({
         keyValidator: (key) => isUUID(key, 4),
-        valueTransformer: (value) => value as true,
-        // The transformer may also return another, non-boolean object (see `ValidationFunctions<T>`)
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
         valueValidator: (value) => value === true,
     })(valueToBeValidated);
 }

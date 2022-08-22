@@ -1,9 +1,10 @@
 import { plainToInstance } from 'class-transformer';
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
-import { isUUID, validateSync } from 'class-validator';
+import { isUUID } from 'class-validator';
 import type { Constructor } from '../constructor';
 import type { UUID } from '../uuid';
 import { getMapValidator } from './get-map-validator';
+import { isValidObject } from './is-valid-object';
 import { makeValidator } from './make-validator';
 
 export function isIdMap<T extends object>(
@@ -13,9 +14,9 @@ export function isIdMap<T extends object>(
 ): boolean {
     return getMapValidator({
         keyValidator: (key) => isUUID(key, 4),
-        valueTransformer: (value) => plainToInstance(type, value),
-        valueValidator: (value) => validateSync(value).length === 0,
-        consistencyValidator: (key, value) => getId(value) === key,
+        valueValidator: (value) => isValidObject(type, value),
+        consistencyValidator: (key, value) =>
+            getId(plainToInstance(type, value)) === key,
     })(valueToBeValidated);
 }
 

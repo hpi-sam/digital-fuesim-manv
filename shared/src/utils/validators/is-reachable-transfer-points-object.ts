@@ -8,12 +8,11 @@ export function isReachableTransferPoints(
 ): boolean {
     return getMapValidator<{ duration: number }>({
         keyValidator: (key) => isUUID(key, 4),
-        valueTransformer: (value) => value as { duration: number },
         valueValidator: (value) =>
             typeof value === 'object' &&
             value !== null &&
-            isNumber(value.duration) &&
-            min(value.duration, 0),
+            isNumber((value as { duration: number }).duration) &&
+            min((value as { duration: number }).duration, 0),
     })(valueToBeValidated);
 }
 
