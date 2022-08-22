@@ -21,6 +21,7 @@ export class TimeTravelHelper {
         });
         this.setState(exerciseTimeLine.initialState);
         this.timeJumpHelper = new TimeJumpHelper(exerciseTimeLine);
+        this.jumpToTime(this.timeConstraints.start);
     }
 
     // Initially set in constructor

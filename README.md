@@ -82,6 +82,14 @@ Note the database requirements depicted in [the installation section](#installat
 
 1. Run `docker build -f docker/Dockerfile -t digital-fuesim-manv .`
 
+### Docker volumes / persistent data
+
+-   All important volumes are listed in [the docker-compose file](./docker-compose.yml).
+
+### Docker ENVs
+
+-   All available Docker ENVs are listed with their default values in [.env.example](./.env.example) file. Copy this file and name it `.env` (under Linux, this would be e.g. `cp .env.example .env`)
+
 ## Before you commit
 
 -   We are using [git lfs](https://git-lfs.github.com/). You can see the file types that currently use git lfs in [.gitattributes](.gitattributes). If you add another binary (or very large) file type to the repository you should add it there too.
@@ -250,3 +258,117 @@ If you need to read from the state to change it, you should do this inside the a
 ## Licenses and Attributions
 
 -   License information about used images can be found [here](frontend/src/assets/image-sources.md). All images are licensed under their original license.
+
+## Contributors
+
+<!-- Inspired by https://github.com/all-contributors/all-contributors -->
+
+<!-- markdownlint-disable -->
+<table>
+    <tr>
+        <td style="text-align: center">
+            <a href="https://github.com/Dassderdie">
+                <img
+                    src="https://avatars.githubusercontent.com/u/18506183?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Julian Schmidt</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=Dassderdie"
+                title="Code"
+                >💻</a
+            >
+            <span title="Review">👀</span>
+            <br />
+            <small>Student 2021/22<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/ClFeSc">
+                <img
+                    src="https://avatars.githubusercontent.com/u/68013019?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Clemens Schielicke</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=ClFeSc"
+                title="Code"
+                >💻</a
+            >
+            <span title="Review">👀</span>
+            <br />
+            <small>Student 2021/22<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/hpistudent72">
+                <img
+                    src="https://avatars.githubusercontent.com/u/64257074?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Florian Krummrey</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=hpistudent72"
+                title="Code"
+                >💻</a
+            >
+            <br />
+            <small>Student 2021/22<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/anonym-HPI">
+                <img
+                    src="https://avatars.githubusercontent.com/u/68286419?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Marvin Müller-Mettnau</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=anonym-HPI"
+                title="Code"
+                >💻</a
+            >
+            <span title="Deployment">📦</span>
+            <br />
+            <small>Student 2021/22<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/mbarkowsky">
+                <img
+                    src="https://avatars.githubusercontent.com/u/7481705?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Matthias Barkowsky</b></sub>
+            </a>
+            <br />
+            📆
+            <br />
+            <small>Supervisor 2021/22<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/christianzoellner">
+                <img
+                    src="https://avatars.githubusercontent.com/u/4678160?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Christian Zöllner</b></sub>
+            </a>
+            <br />
+            📆
+            <br />
+            <small>Supervisor 2021/22<small>
+        </td>
+    </tr>
+</table>
+<!-- markdownlint-restore -->

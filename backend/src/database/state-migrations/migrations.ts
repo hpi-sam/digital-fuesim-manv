@@ -12,6 +12,7 @@ import { updateEocLog3 } from './3-update-eoc-log';
 import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
 import { removeStatistics5 } from './5-remove-statistics';
 import { removeStateHistory6 } from './6-remove-state-history';
+import { addPatientRemarks7 } from './7-add-patient-remarks';
 import { impossibleMigration } from './impossible-migration';
 
 /**
@@ -46,6 +47,7 @@ export const migrations: {
     4: removeSetParticipantIdAction4,
     5: removeStatistics5,
     6: removeStateHistory6,
+    7: addPatientRemarks7,
 };
 
 export async function migrateInDatabaseTo(
@@ -135,7 +137,7 @@ export async function migrateInDatabaseTo(
                 actionsToUpdate.map(async ({ index, actionString }) =>
                     entityManager.update(
                         ActionWrapperEntity,
-                        { index },
+                        { index, exercise: { id: exerciseId } },
                         { actionString }
                     )
                 )
