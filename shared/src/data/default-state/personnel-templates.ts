@@ -9,7 +9,7 @@ const sanPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(0, 0, 5, 'or'),
+    CanCaterFor.create(0, 0, 5, 'and'),
     2.5,
     5.5
 );
@@ -57,7 +57,7 @@ const gfPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(0, 0, 0, 'or'),
+    CanCaterFor.create(0, 0, 0, 'and'),
     0,
     0
 );

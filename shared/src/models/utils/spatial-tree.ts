@@ -12,7 +12,7 @@ import type { Position } from '.';
 import { getCreate } from '.';
 
 /**
- * A data structure that enables efficient search of elements (interpreted as points) in radius or rectangle
+ * A data structure that enables efficient search of elements (interpreted as points) in a circle or rectangle
  * @see https://blog.mapbox.com/a-dive-into-spatial-search-algorithms-ebd0c5e39d2a
  */
 export class SpatialTree {
@@ -130,7 +130,7 @@ export class SpatialTree {
      * @param rectangleBorder.minPos bottom left corner of rectangle
      * @param rectangleBorder.maxPos top right corner of rectangle
      * rectangle could also be just a point
-     * @returns all elements in rectangle, but not by distance
+     * @returns all elements in the rectangle in a non-specified order
      */
     public static findAllElementsInRectangle(
         spatialTree: Mutable<SpatialTree>,
