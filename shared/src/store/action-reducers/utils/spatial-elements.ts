@@ -23,7 +23,6 @@ export function addElementPosition(
     elementType: SpatialElementType,
     element: Mutable<Material | Patient | Personnel>
 ) {
-    state[elementType][element.id] = element;
     if (element.position === undefined) {
         return;
     }
@@ -74,13 +73,14 @@ export function removeElementPosition(
     elementId: UUID
 ) {
     const element = getElement(state, elementType, elementId);
-    if (element.position !== undefined) {
-        SpatialTree.removeElement(
-            state.spatialTrees[elementType],
-            element.id,
-            element.position
-        );
-        element.position = undefined;
-        updateTreatments(state, element);
+    if (element.position === undefined) {
+        return;
     }
+    SpatialTree.removeElement(
+        state.spatialTrees[elementType],
+        element.id,
+        element.position
+    );
+    element.position = undefined;
+    updateTreatments(state, element);
 }

@@ -66,7 +66,7 @@ export class Personnel {
     public readonly image: ImageProperties;
 
     /**
-     * If undefined, is in vehicle with {@link this.vehicleId} or in transfer
+     * If undefined, the vehicle is either in the vehicle with {@link this.vehicleId} or in transfer
      */
     @ValidateNested()
     @Type(() => Position)

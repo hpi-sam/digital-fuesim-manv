@@ -113,11 +113,9 @@ export namespace PatientActionReducers {
                     `HealthState with id ${patient.currentHealthStateId} does not exist`
                 );
             }
-            addElementPosition(
-                draftState,
-                'patients',
-                cloneDeepMutable(patient)
-            );
+            const mutablePatient = cloneDeepMutable(patient);
+            draftState.patients[mutablePatient.id] = mutablePatient;
+            addElementPosition(draftState, 'patients', mutablePatient);
             return draftState;
         },
         rights: 'trainer',

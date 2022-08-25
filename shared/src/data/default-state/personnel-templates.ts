@@ -1,6 +1,10 @@
 import type { PersonnelType } from '../../models/utils';
 import { CanCaterFor } from '../../models/utils';
 import { PersonnelTemplate } from '../../models/personnel-template';
+import {
+    defaultOverrideTreatmentRange,
+    defaultTreatmentRange,
+} from './default-treatment-range';
 
 const sanPersonnelTemplate = PersonnelTemplate.create(
     'san',
@@ -10,8 +14,8 @@ const sanPersonnelTemplate = PersonnelTemplate.create(
         aspectRatio: 1,
     },
     CanCaterFor.create(0, 0, 5, 'and'),
-    2.5,
-    5.5
+    defaultOverrideTreatmentRange,
+    defaultTreatmentRange
 );
 
 const rettSanPersonnelTemplate = PersonnelTemplate.create(
@@ -22,8 +26,8 @@ const rettSanPersonnelTemplate = PersonnelTemplate.create(
         aspectRatio: 1,
     },
     CanCaterFor.create(1, 2, 0, 'and'),
-    2.5,
-    5
+    defaultOverrideTreatmentRange,
+    defaultTreatmentRange
 );
 
 const notSanPersonnelTemplate = PersonnelTemplate.create(
@@ -34,8 +38,8 @@ const notSanPersonnelTemplate = PersonnelTemplate.create(
         aspectRatio: 1,
     },
     CanCaterFor.create(2, 1, 0, 'and'),
-    2.5,
-    5.5
+    defaultOverrideTreatmentRange,
+    defaultTreatmentRange
 );
 
 const notarztPersonnelTemplate = PersonnelTemplate.create(

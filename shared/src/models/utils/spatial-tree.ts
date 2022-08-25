@@ -6,9 +6,9 @@ import RBush from 'rbush';
 // https://github.com/mourner/rbush-knn#changelog
 // @ts-expect-error doesn't have a type
 import knn from 'rbush-knn';
-import { ImmutableJsonObject } from '../../utils';
 import type { Mutable, UUID } from '../../utils';
-import type { Position } from '.';
+import { ImmutableJsonObject } from '../../utils';
+import type { Position, Size } from '.';
 import { getCreate } from '.';
 
 /**
@@ -108,7 +108,7 @@ export class SpatialTree {
      */
     public static findAllElementsInCircle(
         spatialTree: Mutable<SpatialTree>,
-        circlePosition: Mutable<Position> | Position,
+        circlePosition: Position,
         radius: number
     ): UUID[] {
         if (radius <= 0) {
@@ -127,23 +127,18 @@ export class SpatialTree {
 
     // TODO: Use this to get all elements in a viewport
     /**
-     * @param rectangleBorder.minPos bottom left corner of rectangle
-     * @param rectangleBorder.maxPos top right corner of rectangle
-     * rectangle could also be just a point
      * @returns all elements in the rectangle in a non-specified order
      */
     public static findAllElementsInRectangle(
         spatialTree: Mutable<SpatialTree>,
-        rectangleBorder: {
-            minPos: Mutable<Position> | Position;
-            maxPos: Mutable<Position> | Position;
-        }
+        topLeftPosition: Position,
+        size: Size
     ) {
         return this.getPointRBush(spatialTree).search({
-            minX: rectangleBorder.minPos.x,
-            minY: rectangleBorder.minPos.y,
-            maxX: rectangleBorder.maxPos.x,
-            maxY: rectangleBorder.maxPos.y,
+            minX: topLeftPosition.x,
+            minY: topLeftPosition.y,
+            maxX: topLeftPosition.x + size.width,
+            maxY: topLeftPosition.y + size.height,
         });
     }
 }

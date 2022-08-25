@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash-es';
+import { groupBy, isEmpty } from 'lodash-es';
 import type { Material, Personnel } from '../../../models';
 import { Patient } from '../../../models';
 import type { PatientStatus, Position } from '../../../models/utils';
@@ -8,8 +8,10 @@ import { maxTreatmentRange } from '../../../state-helpers/max-treatment-range';
 import type { Mutable, UUID } from '../../../utils';
 import { getElement } from './get-element';
 
+// TODO: `caterFor` and `treat` are currently used as synonyms without a clear distinction.
+
 /**
- * How many of which triageCategory a personnel/material is treating
+ * How many patients of which triageStatus a personnel/material is treating
  */
 interface CatersFor {
     red: number;
@@ -64,7 +66,7 @@ function couldCaterFor(
  * Tries to assign the {@link patient} to {@link cateringElement} (side effect).
  * @returns Whether the patient can be catered for by the {@link cateringElement}.
  */
-function caterFor(
+function tryToCaterFor(
     cateringElement: Mutable<Material | Personnel>,
     catersFor: Mutable<CatersFor>,
     patient: Mutable<Patient>,
@@ -126,8 +128,6 @@ function updateCateringAroundPatient(
 ) {
     const elementsInTreatmentRange = SpatialTree.findAllElementsInCircle(
         state.spatialTrees[elementType],
-        // False positive
-        // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
         position,
         maxTreatmentRange
     ).filter((elementId) => !updatedElements.has(elementId));
@@ -264,7 +264,7 @@ function updateCatering(
         );
         // In the overrideTreatmentRange (the override circle) only the distance to the patient is important - his injuries are ignored
         for (const patientId of patientIdsInOverrideRange) {
-            caterFor(
+            tryToCaterFor(
                 cateringElement,
                 catersFor,
                 getElement(state, 'patients', patientId),
@@ -292,29 +292,23 @@ function updateCatering(
             cateringElement.treatmentRange
         )
             // Filter out every patient in the overrideTreatmentRange
-            .filter(
-                (patientId) =>
-                    // TODO: removing the ! makes the code break, but it should just recalculate for every patient again?!
-                    !cateredForPatients.has(patientId)
-            )
+            .filter((patientId) => !cateredForPatients.has(patientId))
             .map((patientId) => getElement(state, 'patients', patientId));
 
-    for (const category of ['red', 'yellow', 'green'] as const) {
-        const patients = patientsInTreatmentRange.filter(
-            (patient) =>
-                category ===
-                getCateringStatus(
-                    Patient.getVisibleStatus(
-                        patient,
-                        state.configuration.pretriageEnabled,
-                        state.configuration.bluePatientsEnabled
-                    )
-                )
-        );
+    const patientsPerStatus = groupBy(patientsInTreatmentRange, (patient) =>
+        getCateringStatus(
+            Patient.getVisibleStatus(
+                patient,
+                state.configuration.pretriageEnabled,
+                state.configuration.bluePatientsEnabled
+            )
+        )
+    );
+    for (const status of ['red', 'yellow', 'green'] as const) {
         // Treat every patient, closest first, until the capacity is full
-        for (const patient of patients) {
+        for (const patient of patientsPerStatus[status] ?? []) {
             if (
-                !caterFor(
+                !tryToCaterFor(
                     cateringElement,
                     catersFor,
                     patient,

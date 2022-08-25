@@ -1,6 +1,10 @@
 import { CanCaterFor } from '../../models/utils';
 import { MaterialTemplate } from '../../models/material-template';
 import type { MaterialType } from '../../models/utils/material-type';
+import {
+    defaultOverrideTreatmentRange,
+    defaultTreatmentRange,
+} from './default-treatment-range';
 
 const defaultMaterialTemplate = MaterialTemplate.create(
     'default',
@@ -10,8 +14,8 @@ const defaultMaterialTemplate = MaterialTemplate.create(
         aspectRatio: 1,
     },
     CanCaterFor.create(2, 0, 0, 'and'),
-    2.5,
-    5.5
+    defaultOverrideTreatmentRange,
+    defaultTreatmentRange
 );
 
 const bigMaterialTemplate = MaterialTemplate.create(

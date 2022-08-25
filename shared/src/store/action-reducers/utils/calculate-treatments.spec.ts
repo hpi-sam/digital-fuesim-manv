@@ -7,7 +7,7 @@ import { CanCaterFor, Position } from '../../../models/utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import { ExerciseState } from '../../../state';
 import type { Mutable, UUID, UUIDSet } from '../../../utils';
-import { uuid, cloneDeepMutable } from '../../../utils';
+import { cloneDeepMutable, uuid } from '../../../utils';
 import { updateTreatments } from './calculate-treatments';
 
 const emptyState = ExerciseState.create('123456');
