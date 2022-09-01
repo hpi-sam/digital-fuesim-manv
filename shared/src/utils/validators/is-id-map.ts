@@ -1,11 +1,11 @@
-import { plainToInstance } from 'class-transformer';
-import type { ValidationOptions, ValidationArguments } from 'class-validator';
-import { isUUID } from 'class-validator';
+import { plainToInstance, Transform } from 'class-transformer';
+import type { ValidationOptions } from 'class-validator';
+import { isUUID, ValidateNested } from 'class-validator';
 import type { Constructor } from '../constructor';
 import type { UUID } from '../uuid';
+import { applyDecorators } from './apply-decorators';
 import { getMapValidator } from './get-map-validator';
 import { isValidObject } from './is-valid-object';
-import { makeValidator } from './make-validator';
 
 export function isIdMap<T extends object>(
     type: Constructor<T>,
@@ -31,10 +31,27 @@ export function IsIdMap<T extends object>(
     getId: (value: T) => UUID = (value) => (value as { id: UUID }).id,
     validationOptions?: ValidationOptions
 ) {
-    return makeValidator(
-        'isIdMap',
-        (value: unknown, args?: ValidationArguments) =>
-            isIdMap(type, getId, value),
-        validationOptions
+    const transform = Transform(
+        (params) => {
+            const plainChildren = params.value as { [key: UUID]: T };
+            if (Object.keys(plainChildren).some((key) => !isUUID(key, 4))) {
+                return 'invalid';
+            }
+            const instanceChildrenWithKey = Object.entries(plainChildren).map(
+                ([key, plainChild]) =>
+                    [key, plainToInstance(type, plainChild)] as const
+            );
+            if (
+                instanceChildrenWithKey.some(
+                    ([key, child]) => getId(child) !== key
+                )
+            ) {
+                return 'invalid';
+            }
+            return instanceChildrenWithKey.map(([, child]) => child);
+        },
+        { toClassOnly: true }
     );
+    const validateNested = ValidateNested({ ...validationOptions, each: true });
+    return applyDecorators(transform, validateNested);
 }
