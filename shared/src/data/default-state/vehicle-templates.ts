@@ -43,7 +43,7 @@ const rtwVehicleTemplate = VehicleTemplate.create(
     rtwImage,
     1,
     ['notSan', 'rettSan'],
-    ['default']
+    ['standard']
 );
 
 const ktwVehicleTemplate = VehicleTemplate.create(
@@ -52,7 +52,7 @@ const ktwVehicleTemplate = VehicleTemplate.create(
     ktwImage,
     1,
     ['san', 'rettSan'],
-    ['default']
+    ['standard']
 );
 
 const carryingUnitVehicleTemplate = VehicleTemplate.create(
@@ -70,7 +70,7 @@ const ktwKatSchutzVehicleTemplate = VehicleTemplate.create(
     ktwImage,
     2,
     ['san', 'rettSan'],
-    ['default']
+    ['standard']
 );
 
 const gwSanVehicleTemplate = VehicleTemplate.create(
@@ -79,16 +79,7 @@ const gwSanVehicleTemplate = VehicleTemplate.create(
     gwSanImage,
     0,
     ['gf', 'rettSan', 'rettSan', 'san', 'san', 'notarzt'],
-    [
-        'default',
-        'default',
-        'default',
-        'default',
-        'default',
-        'default',
-        'default',
-        'default',
-    ]
+    ['big', 'big', 'big', 'big']
 );
 
 const nefVehicleTemplate = VehicleTemplate.create(
@@ -97,7 +88,7 @@ const nefVehicleTemplate = VehicleTemplate.create(
     nefImage,
     0,
     ['notarzt', 'notSan'],
-    ['default']
+    ['standard']
 );
 
 const rthVehicleTemplate = VehicleTemplate.create(
@@ -106,7 +97,7 @@ const rthVehicleTemplate = VehicleTemplate.create(
     rthImage,
     1,
     ['notarzt', 'notSan'],
-    ['default']
+    ['standard']
 );
 
 export const defaultVehicleTemplates: readonly VehicleTemplate[] = [

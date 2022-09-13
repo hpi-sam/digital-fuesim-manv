@@ -50,8 +50,8 @@ const notarztPersonnelTemplate = PersonnelTemplate.create(
         aspectRatio: 1,
     },
     CanCaterFor.create(2, 2, 2, 'and'),
-    15,
-    0
+    defaultOverrideTreatmentRange,
+    15
 );
 
 const gfPersonnelTemplate = PersonnelTemplate.create(

@@ -6,8 +6,8 @@ import {
     defaultTreatmentRange,
 } from './default-treatment-range';
 
-const defaultMaterialTemplate = MaterialTemplate.create(
-    'default',
+const standardMaterialTemplate = MaterialTemplate.create(
+    'standard',
     {
         url: '/assets/material.svg',
         height: 40,
@@ -22,17 +22,18 @@ const bigMaterialTemplate = MaterialTemplate.create(
     'big',
     {
         url: '/assets/material.svg',
-        height: 80,
+        // Roughly double the area of the standard material
+        height: 56,
         aspectRatio: 1,
     },
     CanCaterFor.create(2, 2, 0, 'and'),
-    15,
-    0
+    defaultOverrideTreatmentRange,
+    10
 );
 
 export const materialTemplateMap: {
     [key in MaterialType]: MaterialTemplate;
 } = {
-    default: defaultMaterialTemplate,
+    standard: standardMaterialTemplate,
     big: bigMaterialTemplate,
 };

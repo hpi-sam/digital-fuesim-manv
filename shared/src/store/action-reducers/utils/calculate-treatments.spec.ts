@@ -94,7 +94,7 @@ function addPersonnel(state: Mutable<ExerciseState>, position?: Position) {
 
 function addMaterial(state: Mutable<ExerciseState>, position?: Position) {
     const material = cloneDeepMutable(
-        Material.create(uuid(), 'RTW 3/83/1', 'default', {})
+        Material.create(uuid(), 'RTW 3/83/1', 'standard', {})
     );
     if (position) {
         material.position = cloneDeepMutable(position);
