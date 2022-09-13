@@ -180,6 +180,7 @@ function removeTreatmentsOfElement(
  * @param element.position is important:
  *     - if an element was moved: {@link element.position} needs the new position
  *     - if treatment of an element should be removed: set {@link element.position} to `undefined`
+ * Also sets {@link Patient.visibleStatusChangedSinceTreatment} back to `false` (if element is a patient)
  */
 export function updateTreatments(
     state: Mutable<ExerciseState>,
@@ -225,6 +226,8 @@ export function updateTreatments(
         'materials',
         updatedElements
     );
+    // The treatment of the patient has just been updated -> the visible status hasn't been changed since the last such update
+    element.visibleStatusChangedSinceTreatment = false;
 }
 
 function updateCatering(

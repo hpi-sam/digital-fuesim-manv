@@ -123,6 +123,14 @@ export class Patient {
     public readonly timeSpeed: number = 1;
 
     /**
+     * Whether the {@link getVisibleStatus} of this patient has changed
+     * since the last time it was updated which personnel and materials treat him/her.
+     * Use this to prevent unnecessary recalculations for patients that didn't change -> performance optimization.
+     */
+    @IsBoolean()
+    public readonly visibleStatusChangedSinceTreatment: boolean = false;
+
+    /**
      * This can be any arbitrary string. It gives trainers the freedom to add additional functionalities that are not natively supported by this application (like an hospital ticket system)
      */
     @IsString()

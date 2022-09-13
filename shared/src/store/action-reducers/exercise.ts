@@ -37,6 +37,15 @@ export class ExerciseTickAction implements Action {
     @Type(() => PatientUpdate)
     public readonly patientUpdates!: readonly PatientUpdate[];
 
+    /**
+     * If true, it is updated which personnel and material treats which patient.
+     * This shouldn't be done every tick, because else it could happen that personnel and material "jumps" too fast
+     * between two patients. Keep in mind that the treatments are also updated e.g. if a patient/material/personnel etc.
+     * is e.g. moved - completely independent from the ticks.
+     * The performance optimization resulting from not refreshing the treatments every tick is probably very small in comparison
+     * to skipping all patients that didn't change their status since the last treatment calculation
+     * (via {@link Patient.visibleStatusChangedSinceTreatment}).
+     */
     @IsBoolean()
     public readonly refreshTreatments!: boolean;
 
@@ -100,11 +109,13 @@ export namespace ExerciseActionReducers {
                     draftState.configuration.pretriageEnabled,
                     draftState.configuration.bluePatientsEnabled
                 );
-
+                // Save this to the state because the treatments aren't refreshed in every tick
+                currentPatient.visibleStatusChangedSinceTreatment =
+                    visibleStatusBefore !== visibleStatusAfter;
                 if (
                     refreshTreatments &&
                     // We only want to do this expensive calculation, when it is really necessary
-                    visibleStatusBefore !== visibleStatusAfter
+                    currentPatient.visibleStatusChangedSinceTreatment
                 ) {
                     updateTreatments(draftState, currentPatient);
                 }
