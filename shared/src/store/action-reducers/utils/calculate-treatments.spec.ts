@@ -6,9 +6,10 @@ import type { PatientStatus } from '../../../models/utils';
 import { CanCaterFor, Position } from '../../../models/utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import { ExerciseState } from '../../../state';
-import type { Mutable, UUID, UUIDSet } from '../../../utils';
+import type { Mutable, UUID } from '../../../utils';
 import { cloneDeepMutable, uuid } from '../../../utils';
 import { updateTreatments } from './calculate-treatments';
+import { getElement } from './get-element';
 
 const emptyState = ExerciseState.create('123456');
 
@@ -24,35 +25,45 @@ interface Catering {
     patientIds: UUID[];
 }
 
+/**
+ * Asserts that adding the specified {@link caterings} to the {@link beforeState} results in the {@link newState}.
+ * If the {@link beforeState} has already caterings in it, these will not be removed.
+ */
 function assertCatering(
     beforeState: ExerciseState,
     newState: ExerciseState,
     caterings: Catering[]
 ) {
-    const shouldState = produce(newState, (draftState) => {
-        caterings.forEach((catering) => {
-            const expectedAssignedPatients: Mutable<UUIDSet> = {};
-            catering.patientIds.forEach((patientId) => {
-                expectedAssignedPatients[patientId] = true;
-            });
-            expect(
-                newState[catering.catererType][catering.catererId]!
-                    .assignedPatientIds
-            ).toStrictEqual(expectedAssignedPatients);
-            draftState[catering.catererType][
-                catering.catererId
-            ]!.assignedPatientIds = {};
-        });
-        const patientIds = caterings.flatMap((catering) => catering.patientIds);
-        patientIds.forEach((patientId) => {
-            expect(newState.patients[patientId]!.isBeingTreated).toStrictEqual(
-                true
+    // Add all caterings to the before state and look whether the result is the newState
+    const shouldState = produce(beforeState, (draftState) => {
+        for (const catering of caterings) {
+            // Update all the patients
+            const patients = catering.patientIds.map((patientId) =>
+                getElement(draftState, 'patients', patientId)
             );
-            draftState.patients[patientId]!.isBeingTreated = false;
-        });
+            for (const patient of patients) {
+                patient[
+                    catering.catererType === 'materials'
+                        ? 'assignedMaterialIds'
+                        : 'assignedPersonnelIds'
+                ][catering.catererId] = true;
+                if (catering.catererType === 'personnel') {
+                    patient.isBeingTreated = true;
+                }
+            }
+            // Update the catering element
+            const cateringElement = getElement(
+                draftState,
+                catering.catererType,
+                catering.catererId
+            );
+            for (const patientId of catering.patientIds) {
+                cateringElement.assignedPatientIds[patientId] = true;
+            }
+        }
         return draftState;
     });
-    expect(shouldState).toStrictEqual(beforeState);
+    expect(newState).toStrictEqual(shouldState);
 }
 
 function addPatient(
@@ -80,6 +91,12 @@ function addPersonnel(state: Mutable<ExerciseState>, position?: Position) {
     const personnel = cloneDeepMutable(
         Personnel.create(uuid(), 'RTW 3/83/1', 'notSan', {})
     );
+    personnel.canCaterFor = {
+        red: 1,
+        yellow: 0,
+        green: 0,
+        logicalOperator: 'and',
+    };
     if (position) {
         personnel.position = cloneDeepMutable(position);
         SpatialTree.addElement(
@@ -96,6 +113,12 @@ function addMaterial(state: Mutable<ExerciseState>, position?: Position) {
     const material = cloneDeepMutable(
         Material.create(uuid(), 'RTW 3/83/1', 'standard', {})
     );
+    material.canCaterFor = {
+        red: 1,
+        yellow: 0,
+        green: 0,
+        logicalOperator: 'and',
+    };
     if (position) {
         material.position = cloneDeepMutable(position);
         SpatialTree.addElement(
@@ -259,17 +282,18 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    Position.create(-1, -1)
+                    Position.create(-3, -3)
                 ).id;
                 ids.redPatient = addPatient(
                     state,
                     'red',
                     'red',
-                    Position.create(2, 2)
+                    Position.create(3, 3)
                 ).id;
                 ids.material = addMaterial(state, Position.create(0, 0)).id;
             }
         );
+        console.log(ids);
         assertCatering(beforeState, newState, [
             {
                 catererId: ids.material,

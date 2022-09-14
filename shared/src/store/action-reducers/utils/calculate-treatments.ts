@@ -82,10 +82,10 @@ function tryToCaterFor(
     }
 
     cateringElement.assignedPatientIds[patient.id] = true;
-    patient.isBeingTreated = true;
 
     if (isPersonnel(cateringElement)) {
         patient.assignedPersonnelIds[cateringElement.id] = true;
+        patient.isBeingTreated = true;
     } else {
         patient.assignedMaterialIds[cateringElement.id] = true;
     }

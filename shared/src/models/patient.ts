@@ -105,6 +105,8 @@ export class Patient {
      * Whether the patient is currently being treated by a personnel
      */
     @IsBoolean()
+    // TODO: Find a more descriptive name to make clear that this is only meant for personnel - not material
+    // This must always be true: patient.isBeingTreated === !isEmpty(patient.assignedPersonnelIds)
     public readonly isBeingTreated: boolean = false;
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
