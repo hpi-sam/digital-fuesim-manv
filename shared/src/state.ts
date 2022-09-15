@@ -27,9 +27,8 @@ import type {
 import { EocLogEntry, MapImageTemplate, VehicleTemplate } from './models';
 import { ExerciseConfiguration } from './models/exercise-configuration';
 import { PatientCategory } from './models/patient-category';
-import { getCreate } from './models/utils';
+import { getCreate, SpatialTree } from './models/utils';
 import { ExerciseStatus } from './models/utils/exercise-status';
-import { SpatialTree } from './models/utils/spatial-tree';
 import type { SpatialElementType } from './store/action-reducers/utils/spatial-elements';
 import type { UUID } from './utils';
 import { uuid, uuidValidationOptions } from './utils';
@@ -121,5 +120,5 @@ export class ExerciseState {
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 7;
+    static readonly currentStateVersion = 8;
 }

@@ -8,6 +8,7 @@ import {
     PersonnelType,
 } from './utils';
 
+// TODO: These are not ?yet? saved in the state -> Decide whether they should and if not move this file from the models folder away
 export class PersonnelTemplate {
     @IsString()
     public readonly personnelType: PersonnelType;
