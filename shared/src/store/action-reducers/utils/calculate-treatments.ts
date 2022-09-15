@@ -32,19 +32,18 @@ function couldCaterFor(
         return false;
     }
     if (cateringElement.canCaterFor.logicalOperator === 'or') {
-        const numberOfTreatedCategories = Object.entries(
-            cateringElement.canCaterFor
-        ).filter(
-            ([category, canCaterFor]) =>
+        const numberOfTreatedCategories = Object.entries(catersFor).filter(
+            ([category, catersForInCategory]) =>
                 // Will be treated
                 status === category ||
                 // Is already treated
-                canCaterFor > 0
+                catersForInCategory > 0
         ).length;
         return (
             // Only one category can be treated
             numberOfTreatedCategories <= 1 &&
-            catersFor[status] <= cateringElement.canCaterFor[status]
+            // + 1 for the patient that will be treated
+            catersFor[status] + 1 <= cateringElement.canCaterFor[status]
         );
     }
 
