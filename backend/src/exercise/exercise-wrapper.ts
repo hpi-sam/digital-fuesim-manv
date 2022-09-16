@@ -287,6 +287,7 @@ export class ExerciseWrapper extends NormalType<
                     )
             );
             pushAll(exercise.temporaryActionHistory, actions);
+            // The actions haven't been saved in the database yet -> keep them
             exercise.restore(true);
             exercise.tickCounter = actions.filter(
                 (action) => action.action.type === '[Exercise] Tick'
@@ -332,6 +333,9 @@ export class ExerciseWrapper extends NormalType<
 
     /**
      * @param keepActions This indicates whether to keep the actions that were applied while restoring in the array (when `true`) or to remove them (when `false` and when the database gets used)
+     * Recreates the {@link currentState} by applying all actions from {@link temporaryActionHistory} to the {@link initialState}
+     * as well as adding actions to the end to gracefully mark the end of the previous exercise session.
+
      */
     private restoreState(keepActions: boolean) {
         let currentState = cloneDeepMutable(this.initialState);
@@ -356,8 +360,8 @@ export class ExerciseWrapper extends NormalType<
         this.incrementIdGenerator.setCurrent(
             this.temporaryActionHistory.length
         );
-        // Remove all actions to not save them again (if database is active and this is intended behavior in this context)
         if (Config.useDb && !keepActions) {
+            // Remove all actions to not save them again in the database
             this.temporaryActionHistory.splice(
                 0,
                 this.temporaryActionHistory.length
@@ -437,6 +441,7 @@ export class ExerciseWrapper extends NormalType<
                 })
             );
             await Promise.all(
+                // The actions have already been saved in the database -> do not keep them
                 exercises.map(async (exercise) => exercise.restore(false))
             );
             exercises.forEach((exercise) => {
