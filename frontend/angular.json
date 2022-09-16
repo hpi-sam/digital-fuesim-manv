@@ -33,6 +33,8 @@
                         ],
                         "scripts": [],
                         "allowedCommonJsDependencies": [
+                            "rbush",
+                            "rbush-knn",
                             "validator/lib/isLatLong",
                             "validator/lib/isDivisibleBy",
                             "validator/lib/contains",
@@ -149,7 +151,10 @@
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+                        "lintFilePatterns": [
+                            "src/**/*.ts",
+                            "src/**/*.html"
+                        ]
                     }
                 }
             }
