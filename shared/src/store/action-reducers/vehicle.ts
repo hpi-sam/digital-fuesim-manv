@@ -14,25 +14,30 @@ import {
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { deletePatient } from './patient';
-import { calculateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
+import {
+    addElementPosition,
+    removeElementPosition,
+    updateElementPosition,
+} from './utils/spatial-elements';
 
 export function deleteVehicle(
     draftState: Mutable<ExerciseState>,
     vehicleId: UUID
 ) {
-    // Check if the vehicle exists
-    getElement(draftState, 'vehicles', vehicleId);
+    const vehicle = getElement(draftState, 'vehicles', vehicleId);
     // Delete related material and personnel
-    Object.entries(draftState.materials)
-        .filter(([, material]) => material.vehicleId === vehicleId)
-        .forEach(([materialId]) => delete draftState.materials[materialId]);
-    Object.entries(draftState.personnel)
-        .filter(([, personnel]) => personnel.vehicleId === vehicleId)
-        .forEach(([personnelId]) => delete draftState.personnel[personnelId]);
-    Object.entries(draftState.patients)
-        .filter(([, patients]) => patients.vehicleId === vehicleId)
-        .forEach(([patientId]) => deletePatient(draftState, patientId));
+    Object.keys(vehicle.materialIds).forEach((materialId) => {
+        removeElementPosition(draftState, 'materials', materialId);
+        delete draftState.materials[materialId];
+    });
+    Object.keys(vehicle.personnelIds).forEach((personnelId) => {
+        removeElementPosition(draftState, 'personnel', personnelId);
+        delete draftState.personnel[personnelId];
+    });
+    Object.keys(vehicle.patientIds).forEach((patientId) =>
+        deletePatient(draftState, patientId)
+    );
     // Delete the vehicle
     delete draftState.vehicles[vehicleId];
 }
@@ -100,8 +105,8 @@ export class LoadVehicleAction implements Action {
 
     @IsString()
     public readonly elementToBeLoadedType!:
-        | 'material'
-        | 'patient'
+        | 'materials'
+        | 'patients'
         | 'personnel';
 
     @IsUUID(4, uuidValidationOptions)
@@ -139,11 +144,13 @@ export namespace VehicleActionReducers {
                 );
             }
             draftState.vehicles[vehicle.id] = cloneDeepMutable(vehicle);
-            for (const material of materials) {
-                draftState.materials[material.id] = cloneDeepMutable(material);
+            for (const material of cloneDeepMutable(materials)) {
+                draftState.materials[material.id] = material;
+                addElementPosition(draftState, 'materials', material);
             }
-            for (const person of personnel) {
-                draftState.personnel[person.id] = cloneDeepMutable(person);
+            for (const person of cloneDeepMutable(personnel)) {
+                draftState.personnel[person.id] = person;
+                addElementPosition(draftState, 'personnel', person);
             }
             return draftState;
         },
@@ -195,48 +202,67 @@ export namespace VehicleActionReducers {
                     `Vehicle with id ${vehicleId} is currently in transfer`
                 );
             }
-            const materials = Object.keys(vehicle.materialIds).map(
-                (materialId) => draftState.materials[materialId]!
-            );
-            const personnel = Object.keys(vehicle.personnelIds).map(
-                (personnelId) => draftState.personnel[personnelId]!
-            );
-            const patients = Object.keys(vehicle.patientIds).map(
-                (patientId) => draftState.patients[patientId]!
-            );
+            const materialIds = Object.keys(vehicle.materialIds);
+            const personnelIds = Object.keys(vehicle.personnelIds);
+            const patientIds = Object.keys(vehicle.patientIds);
             const vehicleWidthInPosition = imageSizeToPosition(
                 vehicle.image.aspectRatio * vehicle.image.height
             );
+
             const space =
                 vehicleWidthInPosition /
-                (personnel.length + materials.length + patients.length + 1);
+                (personnelIds.length +
+                    materialIds.length +
+                    patientIds.length +
+                    1);
             let x = unloadPosition.x - vehicleWidthInPosition / 2;
-            for (const patient of patients) {
+
+            // Unload all patients, personnel and material and put them on the vehicle
+
+            for (const patientId of patientIds) {
                 x += space;
-                patient.position ??= {
+                updateElementPosition(draftState, 'patients', patientId, {
                     x,
                     y: unloadPosition.y,
-                };
-                delete vehicle.patientIds[patient.id];
+                });
+                delete vehicle.patientIds[patientId];
             }
-            for (const person of personnel) {
+
+            for (const personnelId of personnelIds) {
                 x += space;
-                if (!Personnel.isInVehicle(person)) {
-                    continue;
+                const personnel = getElement(
+                    draftState,
+                    'personnel',
+                    personnelId
+                );
+                if (Personnel.isInVehicle(personnel)) {
+                    updateElementPosition(
+                        draftState,
+                        'personnel',
+                        personnelId,
+                        {
+                            x,
+                            y: unloadPosition.y,
+                        }
+                    );
                 }
-                person.position ??= {
-                    x,
-                    y: unloadPosition.y,
-                };
             }
-            for (const currentMaterial of materials) {
+
+            for (const materialId of materialIds) {
                 x += space;
-                currentMaterial.position ??= {
-                    x,
-                    y: unloadPosition.y,
-                };
+                const material = getElement(
+                    draftState,
+                    'materials',
+                    materialId
+                );
+                if (Material.isInVehicle(material)) {
+                    updateElementPosition(draftState, 'materials', materialId, {
+                        x,
+                        y: unloadPosition.y,
+                    });
+                }
             }
-            calculateTreatments(draftState);
+
             return draftState;
         },
         rights: 'participant',
@@ -250,7 +276,7 @@ export namespace VehicleActionReducers {
         ) => {
             const vehicle = getElement(draftState, 'vehicles', vehicleId);
             switch (elementToBeLoadedType) {
-                case 'material': {
+                case 'materials': {
                     const material = getElement(
                         draftState,
                         'materials',
@@ -261,7 +287,7 @@ export namespace VehicleActionReducers {
                             `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
-                    material.position = undefined;
+                    removeElementPosition(draftState, 'materials', material.id);
                     break;
                 }
                 case 'personnel': {
@@ -280,10 +306,14 @@ export namespace VehicleActionReducers {
                             `Personnel with id ${personnel.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
-                    personnel.position = undefined;
+                    removeElementPosition(
+                        draftState,
+                        'personnel',
+                        personnel.id
+                    );
                     break;
                 }
-                case 'patient': {
+                case 'patients': {
                     const patient = getElement(
                         draftState,
                         'patients',
@@ -298,17 +328,35 @@ export namespace VehicleActionReducers {
                         );
                     }
                     vehicle.patientIds[elementToBeLoadedId] = true;
-                    patient.position = undefined;
+
+                    removeElementPosition(draftState, 'patients', patient.id);
+
+                    // Load in all materials
                     Object.keys(vehicle.materialIds).forEach((materialId) => {
-                        draftState.materials[materialId]!.position = undefined;
+                        removeElementPosition(
+                            draftState,
+                            'materials',
+                            materialId
+                        );
                     });
-                    Object.keys(vehicle.personnelIds).forEach((personnelId) => {
-                        // If a personnel is in transfer, this doesn't change that
-                        draftState.personnel[personnelId]!.position = undefined;
-                    });
+
+                    // Load in all personnel
+                    Object.keys(vehicle.personnelIds)
+                        .filter(
+                            // Skip personnel currently in transfer
+                            (personnelId) =>
+                                getElement(draftState, 'personnel', personnelId)
+                                    .transfer === undefined
+                        )
+                        .forEach((personnelId) => {
+                            removeElementPosition(
+                                draftState,
+                                'personnel',
+                                personnelId
+                            );
+                        });
                 }
             }
-            calculateTreatments(draftState);
             return draftState;
         },
         rights: 'participant',

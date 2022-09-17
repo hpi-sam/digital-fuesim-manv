@@ -25,7 +25,7 @@ import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectRestrictedViewport,
     getSelectVisibleElements,
-    selectCateringLines,
+    getSelectVisibleCateringLines,
     selectExerciseStatus,
     selectMapImages,
     selectTileMapProperties,
@@ -238,7 +238,6 @@ export class OlMapManager {
         }
         this.registerFeatureElementManager(
             new TransferPointFeatureManager(
-                this.store,
                 this.olMap,
                 transferPointLayer,
                 this.apiService
@@ -268,7 +267,6 @@ export class OlMapManager {
 
         this.registerFeatureElementManager(
             new VehicleFeatureManager(
-                this.store,
                 this.olMap,
                 vehicleLayer,
                 this.apiService
@@ -283,7 +281,6 @@ export class OlMapManager {
 
         this.registerFeatureElementManager(
             new PersonnelFeatureManager(
-                this.store,
                 this.olMap,
                 personnelLayer,
                 this.apiService
@@ -298,7 +295,6 @@ export class OlMapManager {
 
         this.registerFeatureElementManager(
             new MaterialFeatureManager(
-                this.store,
                 this.olMap,
                 materialLayer,
                 this.apiService
@@ -313,7 +309,6 @@ export class OlMapManager {
 
         this.registerFeatureElementManager(
             new MapImageFeatureManager(
-                this.store,
                 this.olMap,
                 mapImagesLayer,
                 this.apiService
@@ -323,12 +318,13 @@ export class OlMapManager {
 
         this.registerFeatureElementManager(
             new CateringLinesFeatureManager(cateringLinesLayer),
-            this.store.select(selectCateringLines)
+            this.store.select(
+                getSelectVisibleCateringLines(this.apiService.ownClientId)
+            )
         );
 
         this.registerFeatureElementManager(
             new ViewportFeatureManager(
-                this.store,
                 this.olMap,
                 viewportLayer,
                 this.apiService

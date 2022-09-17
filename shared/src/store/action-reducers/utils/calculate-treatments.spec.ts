@@ -4,10 +4,12 @@ import type { Patient } from '../../../models';
 import { Material, Personnel } from '../../../models';
 import type { PatientStatus } from '../../../models/utils';
 import { CanCaterFor, Position } from '../../../models/utils';
+import { SpatialTree } from '../../../models/utils/spatial-tree';
 import { ExerciseState } from '../../../state';
-import type { Mutable, UUID, UUIDSet } from '../../../utils';
-import { uuid, cloneDeepMutable } from '../../../utils';
-import { calculateTreatments } from './calculate-treatments';
+import type { Mutable, UUID } from '../../../utils';
+import { cloneDeepMutable, uuid } from '../../../utils';
+import { updateTreatments } from './calculate-treatments';
+import { getElement } from './get-element';
 
 const emptyState = ExerciseState.create('123456');
 
@@ -23,38 +25,49 @@ interface Catering {
     patientIds: UUID[];
 }
 
+/**
+ * Asserts that adding the specified {@link caterings} to the {@link beforeState} results in the {@link newState}.
+ * If the {@link beforeState} has already caterings in it, these will not be removed.
+ */
 function assertCatering(
     beforeState: ExerciseState,
     newState: ExerciseState,
     caterings: Catering[]
 ) {
-    const shouldState = produce(newState, (draftState) => {
-        caterings.forEach((catering) => {
-            const expectedAssignedPatients: Mutable<UUIDSet> = {};
-            catering.patientIds.forEach((patientId) => {
-                expectedAssignedPatients[patientId] = true;
-            });
-            expect(
-                newState[catering.catererType][catering.catererId]!
-                    .assignedPatientIds
-            ).toStrictEqual(expectedAssignedPatients);
-            draftState[catering.catererType][
-                catering.catererId
-            ]!.assignedPatientIds = {};
-        });
-        const patientIds = caterings.flatMap((catering) => catering.patientIds);
-        patientIds.forEach((patientId) => {
-            expect(newState.patients[patientId]!.isBeingTreated).toStrictEqual(
-                true
+    // Add all caterings to the before state and look whether the result is the newState
+    const shouldState = produce(beforeState, (draftState) => {
+        for (const catering of caterings) {
+            // Update all the patients
+            const patients = catering.patientIds.map((patientId) =>
+                getElement(draftState, 'patients', patientId)
             );
-            draftState.patients[patientId]!.isBeingTreated = false;
-        });
+            for (const patient of patients) {
+                patient[
+                    catering.catererType === 'materials'
+                        ? 'assignedMaterialIds'
+                        : 'assignedPersonnelIds'
+                ][catering.catererId] = true;
+                if (catering.catererType === 'personnel') {
+                    patient.isBeingTreated = true;
+                }
+            }
+            // Update the catering element
+            const cateringElement = getElement(
+                draftState,
+                catering.catererType,
+                catering.catererId
+            );
+            for (const patientId of catering.patientIds) {
+                cateringElement.assignedPatientIds[patientId] = true;
+            }
+        }
         return draftState;
     });
-    expect(shouldState).toStrictEqual(beforeState);
+    expect(newState).toStrictEqual(shouldState);
 }
 
-function generatePatient(
+function addPatient(
+    state: Mutable<ExerciseState>,
     pretriageStatus: PatientStatus,
     realStatus: PatientStatus,
     position?: Position
@@ -64,32 +77,57 @@ function generatePatient(
     patient.realStatus = realStatus;
     if (position) {
         patient.position = cloneDeepMutable(position);
+        SpatialTree.addElement(
+            state.spatialTrees.patients,
+            patient.id,
+            patient.position
+        );
     }
+    state.patients[patient.id] = patient;
     return patient;
 }
 
-function generatePersonnel(position?: Position) {
+function addPersonnel(state: Mutable<ExerciseState>, position?: Position) {
     const personnel = cloneDeepMutable(
         Personnel.create(uuid(), 'RTW 3/83/1', 'notSan', {})
     );
+    personnel.canCaterFor = {
+        red: 1,
+        yellow: 0,
+        green: 0,
+        logicalOperator: 'and',
+    };
     if (position) {
         personnel.position = cloneDeepMutable(position);
+        SpatialTree.addElement(
+            state.spatialTrees.personnel,
+            personnel.id,
+            personnel.position
+        );
     }
+    state.personnel[personnel.id] = personnel;
     return personnel;
 }
 
-function generateMaterial(position?: Position) {
+function addMaterial(state: Mutable<ExerciseState>, position?: Position) {
     const material = cloneDeepMutable(
-        Material.create(
-            uuid(),
-            'RTW 3/83/1',
-            CanCaterFor.create(1, 2, 3, 'or'),
-            {}
-        )
+        Material.create(uuid(), 'RTW 3/83/1', 'standard', {})
     );
+    material.canCaterFor = {
+        red: 1,
+        yellow: 0,
+        green: 0,
+        logicalOperator: 'and',
+    };
     if (position) {
         material.position = cloneDeepMutable(position);
+        SpatialTree.addElement(
+            state.spatialTrees.materials,
+            material.id,
+            material.position
+        );
     }
+    state.materials[material.id] = material;
     return material;
 }
 
@@ -106,7 +144,9 @@ function setupStateAndApplyTreatments(
     });
 
     const newState = produce(beforeState, (draft) => {
-        calculateTreatments(draft);
+        for (const patient of Object.values(draft.patients)) {
+            updateTreatments(draft, patient);
+        }
     });
     return {
         beforeState,
@@ -123,8 +163,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only personnel in vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const person = generatePersonnel();
-                state.personnel[person.id] = person;
+                addPersonnel(state);
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -133,8 +172,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only personnel outside vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const person = generatePersonnel(Position.create(0, 0));
-                state.personnel[person.id] = person;
+                addPersonnel(state, Position.create(0, 0));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -143,8 +181,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only material in vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const material = generateMaterial();
-                state.materials[material.id] = material;
+                addMaterial(state);
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -153,8 +190,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only material outside vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const material = generateMaterial(Position.create(0, 0));
-                state.materials[material.id] = material;
+                addMaterial(state, Position.create(0, 0));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -165,12 +201,7 @@ describe('calculate treatment', () => {
             (state) => {
                 (['green', 'yellow', 'red'] as PatientStatus[]).forEach(
                     (color) => {
-                        const patient = generatePatient(
-                            color,
-                            color,
-                            Position.create(0, 0)
-                        );
-                        state.patients[patient.id] = patient;
+                        addPatient(state, color, color, Position.create(0, 0));
                     }
                 );
             }
@@ -181,12 +212,7 @@ describe('calculate treatment', () => {
     it('does nothing when there are only dead patients', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const patient = generatePatient(
-                    'black',
-                    'black',
-                    Position.create(0, 0)
-                );
-                state.patients[patient.id] = patient;
+                addPatient(state, 'black', 'black', Position.create(0, 0));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -195,15 +221,8 @@ describe('calculate treatment', () => {
     it('does nothing when all personnel is in a vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const patient = generatePatient(
-                    'green',
-                    'green',
-                    Position.create(0, 0)
-                );
-                state.patients[patient.id] = patient;
-
-                const person = generatePersonnel();
-                state.personnel[person.id] = person;
+                addPatient(state, 'green', 'green', Position.create(0, 0));
+                addPersonnel(state);
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -212,21 +231,14 @@ describe('calculate treatment', () => {
     it('does nothing when all material is in a vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const patient = generatePatient(
-                    'green',
-                    'green',
-                    Position.create(0, 0)
-                );
-                state.patients[patient.id] = patient;
-
-                const material = generateMaterial();
-                state.materials[material.id] = material;
+                addPatient(state, 'green', 'green', Position.create(0, 0));
+                addMaterial(state);
             }
         );
         expect(newState).toStrictEqual(beforeState);
     });
 
-    it('treats the nearest patient within the specificThreshold, regardless of status', () => {
+    it('treats the nearest patient within the overrideTreatmentRange, regardless of status', () => {
         const ids = {
             material: '',
             greenPatient: '',
@@ -234,24 +246,19 @@ describe('calculate treatment', () => {
         };
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const greenPatient = generatePatient(
+                ids.greenPatient = addPatient(
+                    state,
                     'green',
                     'green',
                     Position.create(0, 0)
-                );
-                const redPatient = generatePatient(
+                ).id;
+                ids.redPatient = addPatient(
+                    state,
                     'red',
                     'red',
                     Position.create(2, 2)
-                );
-                const material = generateMaterial(Position.create(0, 0));
-
-                ids.material = material.id;
-                ids.greenPatient = greenPatient.id;
-                ids.redPatient = redPatient.id;
-                state.patients[greenPatient.id] = greenPatient;
-                state.patients[redPatient.id] = redPatient;
-                state.materials[material.id] = material;
+                ).id;
+                ids.material = addMaterial(state, Position.create(0, 0)).id;
             }
         );
         assertCatering(beforeState, newState, [
@@ -263,7 +270,7 @@ describe('calculate treatment', () => {
         ]);
     });
 
-    it('treats the patient with worse status within the generalThreshold, regardless of distance', () => {
+    it('treats the patient with worse status within the treatmentRange, regardless of distance', () => {
         const ids = {
             material: '',
             greenPatient: '',
@@ -271,26 +278,22 @@ describe('calculate treatment', () => {
         };
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const greenPatient = generatePatient(
+                ids.greenPatient = addPatient(
+                    state,
                     'green',
                     'green',
-                    Position.create(-1, -1)
-                );
-                const redPatient = generatePatient(
+                    Position.create(-3, -3)
+                ).id;
+                ids.redPatient = addPatient(
+                    state,
                     'red',
                     'red',
-                    Position.create(2, 2)
-                );
-                const material = generateMaterial(Position.create(0, 0));
-
-                ids.material = material.id;
-                ids.greenPatient = greenPatient.id;
-                ids.redPatient = redPatient.id;
-                state.patients[greenPatient.id] = greenPatient;
-                state.patients[redPatient.id] = redPatient;
-                state.materials[material.id] = material;
+                    Position.create(3, 3)
+                ).id;
+                ids.material = addMaterial(state, Position.create(0, 0)).id;
             }
         );
+        console.log(ids);
         assertCatering(beforeState, newState, [
             {
                 catererId: ids.material,
@@ -308,24 +311,19 @@ describe('calculate treatment', () => {
         };
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const greenPatient = generatePatient(
+                ids.greenPatient = addPatient(
+                    state,
                     'green',
                     'green',
                     Position.create(-10, -10)
-                );
-                const redPatient = generatePatient(
+                ).id;
+                ids.redPatient = addPatient(
+                    state,
                     'red',
                     'red',
                     Position.create(20, 20)
-                );
-                const material = generateMaterial(Position.create(0, 0));
-
-                ids.material = material.id;
-                ids.greenPatient = greenPatient.id;
-                ids.redPatient = redPatient.id;
-                state.patients[greenPatient.id] = greenPatient;
-                state.patients[redPatient.id] = redPatient;
-                state.materials[material.id] = material;
+                ).id;
+                ids.material = addMaterial(state, Position.create(0, 0)).id;
             }
         );
         assertCatering(beforeState, newState, []);
@@ -339,27 +337,23 @@ describe('calculate treatment', () => {
         };
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                const greenPatient = generatePatient(
+                ids.greenPatient = addPatient(
+                    state,
                     'green',
                     'green',
                     Position.create(-1, -1)
-                );
-                const redPatient = generatePatient(
+                ).id;
+                ids.redPatient = addPatient(
+                    state,
                     'red',
                     'red',
                     Position.create(2, 2)
-                );
-                const material = generateMaterial(Position.create(0, 0));
+                ).id;
+                const material = addMaterial(state, Position.create(0, 0));
                 material.canCaterFor = cloneDeepMutable(
                     CanCaterFor.create(1, 0, 1, 'and')
                 );
-
                 ids.material = material.id;
-                ids.greenPatient = greenPatient.id;
-                ids.redPatient = redPatient.id;
-                state.patients[greenPatient.id] = greenPatient;
-                state.patients[redPatient.id] = redPatient;
-                state.materials[material.id] = material;
             }
         );
         assertCatering(beforeState, newState, [

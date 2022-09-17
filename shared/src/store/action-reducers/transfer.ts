@@ -1,12 +1,16 @@
 import { IsInt, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
-import type { ExerciseState } from '../..';
-import { imageSizeToPosition, Position, TransferPoint } from '../..';
+import type { ExerciseState, Position } from '../..';
+import { imageSizeToPosition, TransferPoint } from '../..';
 import { StartPoint } from '../../models/utils/start-points';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { getElement } from './utils/get-element';
+import {
+    removeElementPosition,
+    updateElementPosition,
+} from './utils/spatial-elements';
 
 /**
  * Personnel/Vehicle in transfer will arrive immediately at new targetTransferPoint
@@ -28,14 +32,18 @@ export function letElementArrive(
         'transferPoints',
         element.transfer.targetTransferPointId
     );
-    element.position = cloneDeepMutable(
-        Position.create(
-            targetTransferPoint.position.x,
+    const newPosition: Mutable<Position> = {
+        x: targetTransferPoint.position.x,
+        y:
             targetTransferPoint.position.y +
-                //  Position it in the upper half of the transferPoint)
-                imageSizeToPosition(TransferPoint.image.height / 3)
-        )
-    );
+            // Position it in the upper half of the transferPoint
+            imageSizeToPosition(TransferPoint.image.height / 3),
+    };
+    if (elementType === 'personnel') {
+        updateElementPosition(draftState, 'personnel', element.id, newPosition);
+    } else {
+        element.position = newPosition;
+    }
     delete element.transfer;
 }
 
@@ -143,14 +151,21 @@ export namespace TransferActionReducers {
                 duration = startPoint.duration;
             }
 
+            // Remove the position of the element
+            if (elementType === 'personnel') {
+                removeElementPosition(draftState, 'personnel', element.id);
+            } else {
+                element.position = undefined;
+            }
+
             // Set the element to transfer
-            delete element.position;
             element.transfer = {
                 startPoint: cloneDeepMutable(startPoint),
                 targetTransferPointId,
                 endTimeStamp: draftState.currentTime + duration,
                 isPaused: false,
             };
+
             return draftState;
         },
         rights: 'participant',

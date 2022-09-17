@@ -1,12 +1,16 @@
 import { Type } from 'class-transformer';
 import {
     IsDefined,
+    IsNumber,
     IsOptional,
     IsString,
     IsUUID,
+    Max,
+    Min,
     ValidateNested,
 } from 'class-validator';
 import { personnelTemplateMap } from '../data/default-state/personnel-templates';
+import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { UUID, UUIDSet, uuid, uuidValidationOptions } from '../utils';
 import {
     CanCaterFor,
@@ -39,12 +43,30 @@ export class Personnel {
     @Type(() => CanCaterFor)
     public readonly canCaterFor: CanCaterFor;
 
+    /**
+     * Patients in this range are preferred over patients that are more far away (even if they are less injured).
+     * Guaranteed to be <= {@link maxTreatmentRange}.
+     */
+    @IsNumber()
+    @Min(0)
+    @Max(maxTreatmentRange)
+    public readonly overrideTreatmentRange: number;
+
+    /**
+     * Only patients in this range around the personnel's position can be treated.
+     * Guaranteed to be <= {@link maxTreatmentRange}.
+     */
+    @IsNumber()
+    @Min(0)
+    @Max(maxTreatmentRange)
+    public readonly treatmentRange: number;
+
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
     /**
-     * if undefined, is in vehicle with {@link vehicleId} or in transfer
+     * If undefined, the vehicle is either in the vehicle with {@link this.vehicleId} or in transfer
      */
     @ValidateNested()
     @Type(() => Position)
@@ -72,9 +94,13 @@ export class Personnel {
         this.vehicleName = vehicleName;
         this.personnelType = personnelType;
         this.assignedPatientIds = assignedPatientIds;
-        // Only assign this when the parameter is set appropriately
+        // The constructor must be callable without any arguments
         this.image = personnelTemplateMap[personnelType]?.image;
         this.canCaterFor = personnelTemplateMap[personnelType]?.canCaterFor;
+        this.treatmentRange =
+            personnelTemplateMap[personnelType]?.treatmentRange;
+        this.overrideTreatmentRange =
+            personnelTemplateMap[personnelType]?.overrideTreatmentRange;
     }
 
     static readonly create = getCreate(this);

@@ -1,22 +1,20 @@
-import type { Store } from '@ngrx/store';
+import { Size, Viewport } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
-import { Viewport, Size } from 'digital-fuesim-manv-shared';
-import type OlMap from 'ol/Map';
+import type { Coordinate } from 'ol/coordinate';
 import type LineString from 'ol/geom/LineString';
 import type VectorLayer from 'ol/layer/Vector';
+import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import type { ApiService } from 'src/app/core/api.service';
-import type { AppState } from 'src/app/state/app.state';
-import type { Coordinate } from 'ol/coordinate';
-import type { FeatureManager } from '../utility/feature-manager';
-import { ModifyHelper } from '../utility/modify-helper';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
+import type { FeatureManager } from '../utility/feature-manager';
+import { ModifyHelper } from '../utility/modify-helper';
 import {
-    ElementFeatureManager,
     createLineString,
+    ElementFeatureManager,
     getCoordinateArray,
 } from './element-feature-manager';
 
@@ -34,16 +32,16 @@ export class ViewportFeatureManager
     extends ElementFeatureManager<Viewport, LineString>
     implements FeatureManager<Feature<LineString>>
 {
+    readonly type = 'viewports';
+
     override unsupportedChangeProperties = new Set(['id'] as const);
 
     constructor(
-        store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<LineString>>,
         private readonly apiService: ApiService
     ) {
         super(
-            store,
             olMap,
             layer,
             (targetPositions, viewport) => {

@@ -118,34 +118,43 @@ export const selectExerciseStatus = (state: AppState) =>
 export const selectParticipantId = (state: AppState) =>
     state.exercise.participantId;
 
-// TODO: only use the material and personnel in the current viewport
-export const selectCateringLines = createSelector(
-    selectMaterials,
-    selectPersonnel,
-    selectPatients,
-    (materials, personnel, patients) =>
-        [...Object.values(materials), ...Object.values(personnel)]
-            .flatMap((element) => {
-                if (element.position === undefined) {
-                    return [];
-                }
-                return Object.keys(element.assignedPatientIds)
-                    .map((patientId) => patients[patientId]!)
-                    .filter((patient) => patient.position !== undefined)
-                    .map((patient) => ({
-                        id: `${element.id}:${patient.id}` as const,
-                        catererPosition: element.position!,
-                        patientPosition: patient.position!,
-                    }));
-            })
-            .reduce<{ [id: string]: CateringLine }>(
-                (cateringLinesObject, cateringLine) => {
-                    cateringLinesObject[cateringLine.id] = cateringLine;
-                    return cateringLinesObject;
-                },
-                {}
-            )
-);
+export const getSelectVisibleCateringLines = (clientId?: UUID | null) =>
+    createSelector(
+        getSelectRestrictedViewport(clientId),
+        selectMaterials,
+        selectPersonnel,
+        selectPatients,
+        (viewport, materials, personnel, patients) =>
+            [...Object.values(materials), ...Object.values(personnel)]
+                .flatMap((element) => {
+                    if (element.position === undefined) {
+                        return [];
+                    }
+                    return Object.keys(element.assignedPatientIds)
+                        .map((patientId) => patients[patientId]!)
+                        .filter((patient) => patient.position !== undefined)
+                        .map((patient) => ({
+                            id: `${element.id}:${patient!.id}` as const,
+                            catererPosition: element.position!,
+                            patientPosition: patient!.position!,
+                        }));
+                })
+                // To improve performance, all not needed lines are removed
+                // Lines where both ends are not in the viewport are not relevant for the user
+                .filter(
+                    ({ catererPosition, patientPosition }) =>
+                        !viewport ||
+                        Viewport.isInViewport(viewport, catererPosition) ||
+                        Viewport.isInViewport(viewport, patientPosition)
+                )
+                .reduce<{ [id: `${UUID}:${UUID}`]: CateringLine }>(
+                    (cateringLinesObject, cateringLine) => {
+                        cateringLinesObject[cateringLine.id] = cateringLine;
+                        return cateringLinesObject;
+                    },
+                    {}
+                )
+    );
 
 export const selectTransferLines = createSelector(
     selectTransferPoints,

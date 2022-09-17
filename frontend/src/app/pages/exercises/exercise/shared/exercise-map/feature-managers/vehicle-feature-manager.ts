@@ -1,24 +1,24 @@
 import type { Vehicle } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
+import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
+import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
+import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import type { ApiService } from 'src/app/core/api.service';
-import type OlMap from 'ol/Map';
-import type { Store } from '@ngrx/store';
-import type { AppState } from 'src/app/state/app.state';
-import type { Feature, MapBrowserEvent } from 'ol';
-import type { TranslateEvent } from 'ol/interaction/Translate';
 import type { WithPosition } from '../../utility/types/with-position';
 import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
+import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { ImagePopupHelper } from '../utility/popup-helper';
-import { ElementFeatureManager, createPoint } from './element-feature-manager';
+import { createPoint, ElementFeatureManager } from './element-feature-manager';
 
 export class VehicleFeatureManager extends ElementFeatureManager<
     WithPosition<Vehicle>
 > {
+    readonly type = 'vehicles';
+
     private readonly imageStyleHelper = new ImageStyleHelper(
         (feature) => this.getElementFromFeature(feature)!.value.image
     );
@@ -36,13 +36,11 @@ export class VehicleFeatureManager extends ElementFeatureManager<
     private readonly popupHelper = new ImagePopupHelper(this.olMap);
 
     constructor(
-        store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
         private readonly apiService: ApiService
     ) {
         super(
-            store,
             olMap,
             layer,
             (targetPosition, vehicle) => {
@@ -69,7 +67,7 @@ export class VehicleFeatureManager extends ElementFeatureManager<
         const droppedOnVehicle = this.getElementFromFeature(
             droppedOnFeature
         ) as {
-            type: 'vehicle';
+            type: 'vehicles';
             value: Vehicle;
         };
         if (!droppedElement || !droppedOnVehicle) {
@@ -79,9 +77,9 @@ export class VehicleFeatureManager extends ElementFeatureManager<
         if (
             (droppedElement.type === 'personnel' &&
                 droppedOnVehicle.value.personnelIds[droppedElement.value.id]) ||
-            (droppedElement.type === 'material' &&
+            (droppedElement.type === 'materials' &&
                 droppedOnVehicle.value.materialIds[droppedElement.value.id]) ||
-            (droppedElement.type === 'patient' &&
+            (droppedElement.type === 'patients' &&
                 Object.keys(droppedOnVehicle.value.patientIds).length <
                     droppedOnVehicle.value.patientCapacity)
         ) {
