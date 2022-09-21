@@ -78,7 +78,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
         }
         if (
             droppedElement.type !== 'vehicles' &&
-            droppedElement.type !== 'personnels'
+            droppedElement.type !== 'personnel'
         ) {
             return false;
         }

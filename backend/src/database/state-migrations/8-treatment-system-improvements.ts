@@ -1,8 +1,3 @@
-import type {
-    ExerciseState,
-    ImageProperties,
-    Mutable,
-} from 'digital-fuesim-manv-shared';
 import {
     cloneDeepMutable,
     SpatialTree,
@@ -86,9 +81,7 @@ export const treatmentSystemImprovements8: Migration = {
             );
         }
         // PatientCategories
-        for (const patientCategory of state.patientCategories as Mutable<
-            ExerciseState['patientCategories']
-        >) {
+        for (const patientCategory of state.patientCategories) {
             migrateImageProperties(patientCategory.image);
         }
         return state;
@@ -111,7 +104,7 @@ function migratePatient(patient: any) {
     patient.assignedMaterialIds = {};
 }
 
-function migrateImageProperties(image: Mutable<ImageProperties>) {
+function migrateImageProperties(image: any) {
     if (image.url === '/assets/male-patient.svg') {
         image.url = '/assets/patient.svg';
     }

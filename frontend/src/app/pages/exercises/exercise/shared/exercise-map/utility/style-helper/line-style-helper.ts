@@ -12,7 +12,7 @@ export class LineStyleHelper extends StyleHelper<Style, Feature> {
     constructor(
         private readonly getOptions: (
             feature: Feature
-            // The width in the options would only be respected
+            // The width in the options would only be used on the initial render and then changed due to the zoom
         ) => Exclude<Options, { width: any }>,
         private readonly width: number
     ) {
