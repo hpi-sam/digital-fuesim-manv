@@ -79,12 +79,7 @@ export class FuesimServer {
     ) {
         const app = express();
         this._websocketServer = new ExerciseWebsocketServer(app, websocketPort);
-        this._httpServer = new ExerciseHttpServer(
-            app,
-            httpPort,
-            uploadLimit,
-            databaseService
-        );
+        this._httpServer = new ExerciseHttpServer(app, databaseService);
         if (Config.useDb) {
             this.saveHandler.start();
         }
