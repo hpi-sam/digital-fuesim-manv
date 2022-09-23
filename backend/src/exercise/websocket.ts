@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import type * as core from 'express-serve-static-core';
 import { Server } from 'socket.io';
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
+import { Config } from 'config';
 import type { ExerciseSocket, ExerciseServer } from '../exercise-server';
 import { clientMap } from './client-map';
 import { ClientWrapper } from './client-wrapper';
@@ -13,7 +14,7 @@ import {
 
 export class ExerciseWebsocketServer {
     public readonly exerciseServer: ExerciseServer;
-    public constructor(app: core.Express, port: number) {
+    public constructor(app: core.Express) {
         const server = createServer(app);
 
         this.exerciseServer = new Server(server, {
@@ -24,7 +25,7 @@ export class ExerciseWebsocketServer {
             ...socketIoTransports,
         });
 
-        this.exerciseServer.listen(port);
+        this.exerciseServer.listen(Config.websocketPort);
 
         this.exerciseServer.on('connection', (socket) => {
             this.registerClient(socket);
