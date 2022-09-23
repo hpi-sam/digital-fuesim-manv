@@ -49,7 +49,7 @@ function couldCaterFor(
 
     let availableCapacity = 0;
     for (const category of ['red', 'yellow', 'green'] as const) {
-        // The catering capacity is calculated cumulatively - a red slot can also treat a yellow one instead
+        // The catering capacity is calculated cumulatively - a red slot can also treat a yellow or green one instead
         availableCapacity +=
             cateringElement.canCaterFor[category] -
             catersFor[category] -
@@ -117,7 +117,7 @@ function isMaterial(
 }
 
 /**
- * @param position of the patient where all elements of elementType should be recalculated
+ * @param position of the patient where all elements of {@link elementType} should be recalculated
  */
 function updateCateringAroundPatient(
     state: Mutable<ExerciseState>,
@@ -177,7 +177,7 @@ function removeTreatmentsOfElement(
 
 /**
  * @param element.position is important:
- *     - if an element was moved: {@link element.position} needs the new position
+ *     - if an element was moved: {@link element.position} must be the new position
  *     - if treatment of an element should be removed: set {@link element.position} to `undefined`
  * Also sets {@link Patient.visibleStatusChangedSinceTreatment} back to `false` (if element is a patient)
  */
@@ -200,6 +200,9 @@ export function updateTreatments(
         return;
     }
 
+    /**
+     * Used to save all elements that already have an updated treatment calculation - therefore don't need it to be calculated again
+     */
     const updatedElements = new Set<UUID>();
     // Update every personnel and material that was assigned to the patient
     for (const personnelId of Object.keys(element.assignedPersonnelIds)) {
@@ -225,7 +228,7 @@ export function updateTreatments(
         'materials',
         updatedElements
     );
-    // The treatment of the patient has just been updated -> the visible status hasn't been changed since the last such update
+    // The treatment of the patient has just been updated -> hence the visible status hasn't been changed since the last update
     element.visibleStatusChangedSinceTreatment = false;
 }
 
@@ -255,7 +258,8 @@ function updateCatering(
         green: 0,
     };
 
-    // Patients that got already treated in overrideTreatmentRange should not be treated again in treatmentRange
+    // Patients that got already treated (or tried to be treated) in overrideTreatmentRange
+    // should not be treated (or tried to be treated) again in treatmentRange
     const cateredForPatients = new Set<UUID>();
 
     if (cateringElement.overrideTreatmentRange > 0) {
@@ -264,7 +268,7 @@ function updateCatering(
             cateringElement.position,
             cateringElement.overrideTreatmentRange
         );
-        // In the overrideTreatmentRange (the override circle) only the distance to the patient is important - his injuries are ignored
+        // In the overrideTreatmentRange (the override circle) only the distance to the patient is important - his/her injuries are ignored
         for (const patientId of patientIdsInOverrideRange) {
             tryToCaterFor(
                 cateringElement,
@@ -307,7 +311,7 @@ function updateCatering(
         )
     );
     for (const status of ['red', 'yellow', 'green'] as const) {
-        // Treat every patient, closest first, until the capacity is full
+        // Treat every patient, closest first, until the capacity (of this category) is full
         for (const patient of patientsPerStatus[status] ?? []) {
             if (
                 !tryToCaterFor(

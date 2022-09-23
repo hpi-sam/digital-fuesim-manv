@@ -20,9 +20,10 @@ export abstract class ElementManager<
     > = Exclude<ReadonlySet<keyof Element>, UnsupportedChangeProperties>
 > {
     /**
-     * This type is used to identify the type of an element, e.g., when it was (drag &) dropped on something
+     * This type is used to identify the type of an element, e.g. when it was (dragged &) dropped on something
      */
     abstract readonly type: string;
+
     /**
      * This should be called if a new element is added.
      */

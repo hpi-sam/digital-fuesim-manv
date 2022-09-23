@@ -28,7 +28,7 @@ export class PatientUpdate {
     public readonly nextStateTime: number;
 
     /**
-     * The time a patient was treated overall
+     * The new time a patient was treated overall
      */
     @IsNumber()
     @Min(0)

@@ -14,7 +14,7 @@ export class CanCaterFor {
 
     /**
      * if {@link logicalOperator}  `=== 'and'` it is cumulative,
-     * how many yellow patients can the catering treat
+     * how many extra {@link yellow} and {@link green} patients can the catering treat
      * to the number already written in the {@link red} value
      */
     @IsNumber()
@@ -23,7 +23,7 @@ export class CanCaterFor {
 
     /**
      * if {@link logicalOperator}  `=== 'and'` it is cumulative,
-     * how many green patients can the catering treat
+     * how many {@link green} patients can the catering treat
      * to the number already written in the {@link yellow} and {@link red} value
      */
     @IsNumber()

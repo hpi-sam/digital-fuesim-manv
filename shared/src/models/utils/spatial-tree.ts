@@ -1,9 +1,10 @@
 import { IsObject } from 'class-validator';
 import RBush from 'rbush';
-// Currently, knn is included via the github repo
-// when  new release is coming out (right now npm package is v3.0.1)
-// could be switched to npm package in package.json and package-lock.json
-// https://github.com/mourner/rbush-knn#changelog
+// Currently, rbush-knn is included via the github repo
+// when new release is coming out (right now npm package is v3.0.1)
+// rbush-knn could be switched to npm package in package.json and package-lock.json
+// see the following issue: https://github.com/mourner/rbush-knn/issues/21
+// or look out for a newer version here: https://github.com/mourner/rbush-knn#changelog
 // @ts-expect-error doesn't have a type
 import knn from 'rbush-knn';
 import type { Mutable, UUID } from '../../utils';
@@ -39,8 +40,8 @@ export class SpatialTree {
     constructor() {}
 
     /**
-     * @param spatialTree a JSON object
-     * @returns a new {@link PointRBush} with all the methods to search, add etc. elements
+     * @param spatialTree inlcuding a {@link PointRBush} saved in {@link spatialTreeAsJSON} as an {@link ImmutableJsonObject}
+     * @returns a new {@link PointRBush} with all the methods to search, add etc. elements in it
      */
     private static getPointRBush(spatialTree: SpatialTree) {
         // PointRBush.fromJSON() runs in O(1)
@@ -50,7 +51,7 @@ export class SpatialTree {
     }
 
     /**
-     * Writes the spatialTree as an {@link ImmutableJsonObject} into {@link spatialTree}
+     * Writes the {@link PointRBush} as an {@link ImmutableJsonObject} into {@link spatialTree}
      */
     private static savePointRBush(
         spatialTree: Mutable<SpatialTree>,
@@ -154,7 +155,7 @@ interface PointRBushElement {
 }
 
 /**
- * An RBush element that works with our Position format
+ * An RBush that works with our {@link Position} format (elements being points)
  * @see https://github.com/mourner/rbush#data-format
  */
 class PointRBush extends RBush<PointRBushElement> {
