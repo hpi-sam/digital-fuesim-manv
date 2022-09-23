@@ -287,7 +287,8 @@ export class ExerciseWrapper extends NormalType<
                     )
             );
             pushAll(exercise.temporaryActionHistory, actions);
-            exercise.restore();
+            // The actions haven't been saved in the database yet -> keep them
+            exercise.restore(true);
             exercise.tickCounter = actions.filter(
                 (action) => action.action.type === '[Exercise] Tick'
             ).length;
@@ -319,7 +320,7 @@ export class ExerciseWrapper extends NormalType<
         return exercise;
     }
 
-    private restore(): void {
+    private restore(keepActions: boolean): void {
         if (this.stateVersion !== ExerciseState.currentStateVersion) {
             throw new RestoreError(
                 `The exercise was created with an incompatible version of the state (got version ${this.stateVersion}, required version ${ExerciseState.currentStateVersion})`,
@@ -327,10 +328,16 @@ export class ExerciseWrapper extends NormalType<
             );
         }
         this.validateInitialState();
-        this.restoreState();
+        this.restoreState(keepActions);
     }
 
-    private restoreState() {
+    /**
+     * @param keepActions This indicates whether to keep the actions that were applied while restoring in the array (when `true`) or to remove them (when `false` and when the database gets used)
+     * Recreates the {@link currentState} by applying all actions from {@link temporaryActionHistory} to the {@link initialState}
+     * as well as adding actions to the end to gracefully mark the end of the previous exercise session.
+
+     */
+    private restoreState(keepActions: boolean) {
         let currentState = cloneDeepMutable(this.initialState);
         this.temporaryActionHistory.forEach((actionWrapper) => {
             this.validateAction(actionWrapper.action);
@@ -353,8 +360,8 @@ export class ExerciseWrapper extends NormalType<
         this.incrementIdGenerator.setCurrent(
             this.temporaryActionHistory.length
         );
-        // Remove all actions to not save them again (if database is active)
-        if (Config.useDb) {
+        if (Config.useDb && !keepActions) {
+            // Remove all actions to not save them again in the database
             this.temporaryActionHistory.splice(
                 0,
                 this.temporaryActionHistory.length
@@ -434,7 +441,8 @@ export class ExerciseWrapper extends NormalType<
                 })
             );
             await Promise.all(
-                exercises.map(async (exercise) => exercise.restore())
+                // The actions have already been saved in the database -> do not keep them
+                exercises.map(async (exercise) => exercise.restore(false))
             );
             exercises.forEach((exercise) => {
                 exerciseMap.set(exercise.participantId, exercise);
