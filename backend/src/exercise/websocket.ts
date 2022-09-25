@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import type * as core from 'express-serve-static-core';
 import { Server } from 'socket.io';
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
-import { Config } from 'config';
+import { Config } from '../config';
 import type { ExerciseSocket, ExerciseServer } from '../exercise-server';
 import { clientMap } from './client-map';
 import { ClientWrapper } from './client-wrapper';

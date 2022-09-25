@@ -2,7 +2,7 @@ import type { Server as HttpServer } from 'node:http';
 import cors from 'cors';
 import type { Express } from 'express';
 import express from 'express';
-import { Config } from 'config';
+import { Config } from '../config';
 import type { DatabaseService } from '../database/services/database-service';
 import {
     deleteExercise,
