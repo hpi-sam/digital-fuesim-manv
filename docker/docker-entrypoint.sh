@@ -7,6 +7,9 @@ rm -f /etc/nginx/conf.d/https.conf
 cp -a /etc/nginx/conf.d/http.template /etc/nginx/conf.d/http.conf
 echo "" > /etc/nginx/conf.d/hsts
 
+# setting the upload limit in nginx
+echo "client_max_body_size ${DFM_UPLOAD_LIMIT}m;" > /etc/nginx/conf.d/upload-limit
+
 # starting nginx, needed here already for acme.sh to verify certs via http
 nginx
 
@@ -40,6 +43,8 @@ if ${DFM_ENABLE_SSL}; then
 
 fi
 
-NODE_ENV=migration node --experimental-specifier-resolution=node ./node_modules/typeorm/cli -d dist/src/database/migration-datasource.js migration:run
+if ${DFM_USE_DB}; then
+    NODE_ENV=migration node --experimental-specifier-resolution=node ./node_modules/typeorm/cli -d dist/src/database/migration-datasource.js migration:run
+fi
 
 NODE_ENV=production node --experimental-specifier-resolution=node dist/src/index.js

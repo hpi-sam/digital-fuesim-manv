@@ -1,11 +1,13 @@
 import './utils/dotenv-config';
 import dotenv from 'dotenv';
-import { bool, cleanEnv, makeValidator, str } from 'envalid';
+import { bool, cleanEnv, makeValidator, num, str } from 'envalid';
 
 export class Config {
     private static _websocketPort?: number;
 
     private static _httpPort?: number;
+
+    private static _uploadLimit?: number;
 
     private static _useDb?: boolean;
 
@@ -29,6 +31,11 @@ export class Config {
     public static get httpPort(): number {
         this.throwIfNotInitialized();
         return this._httpPort!;
+    }
+
+    public static get uploadLimit(): number {
+        this.throwIfNotInitialized();
+        return this._uploadLimit!;
     }
 
     public static get useDb(): boolean {
@@ -89,6 +96,7 @@ export class Config {
             DFM_WEBSOCKET_PORT_TESTING: tcpPortValidator({ default: 13200 }),
             DFM_HTTP_PORT: tcpPortValidator({ default: 3201 }),
             DFM_HTTP_PORT_TESTING: tcpPortValidator({ default: 13201 }),
+            DFM_UPLOAD_LIMIT: num({ default: 200 }),
             DFM_USE_DB: bool(),
             DFM_USE_DB_TESTING: bool({ default: undefined }),
             DFM_DB_USER: str(
@@ -143,6 +151,7 @@ export class Config {
         this._httpPort = testing
             ? env.DFM_HTTP_PORT_TESTING
             : env.DFM_HTTP_PORT;
+        this._uploadLimit = env.DFM_UPLOAD_LIMIT;
         this._useDb =
             testing && env.DFM_USE_DB_TESTING
                 ? env.DFM_USE_DB_TESTING

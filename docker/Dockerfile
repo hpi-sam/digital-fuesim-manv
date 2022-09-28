@@ -39,6 +39,7 @@ ENV DFM_ENABLE_HSTS=false
 ENV DFM_DEBUG=false
 ENV DFM_PERSISTENT_DATA_PATH="/dfm-data"
 ENV DFM_USE_DB=true
+ENV DFM_UPLOAD_LIMIT=200
 
 # install necessary packages
 RUN apt-get update && \
