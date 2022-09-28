@@ -134,9 +134,9 @@ export const getSelectVisibleCateringLines = (clientId?: UUID | null) =>
                         .map((patientId) => patients[patientId]!)
                         .filter((patient) => patient.position !== undefined)
                         .map((patient) => ({
-                            id: `${element.id}:${patient!.id}` as const,
+                            id: `${element.id}:${patient.id}` as const,
                             catererPosition: element.position!,
-                            patientPosition: patient!.position!,
+                            patientPosition: patient.position!,
                         }));
                 })
                 // To improve performance, all not needed lines are removed

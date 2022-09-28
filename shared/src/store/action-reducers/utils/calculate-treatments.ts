@@ -118,18 +118,19 @@ function isMaterial(
 
 /**
  * @param position of the patient where all elements of {@link elementType} should be recalculated
+ * @param elementIdsToBeSkipped the elements whose treatment should not be updated
  */
 function updateCateringAroundPatient(
     state: Mutable<ExerciseState>,
     position: Position,
     elementType: 'materials' | 'personnel',
-    updatedElements: Set<UUID>
+    elementIdsToBeSkipped: Set<UUID>
 ) {
     const elementsInTreatmentRange = SpatialTree.findAllElementsInCircle(
         state.spatialTrees[elementType],
         position,
         maxTreatmentRange
-    ).filter((elementId) => !updatedElements.has(elementId));
+    ).filter((elementId) => !elementIdsToBeSkipped.has(elementId));
 
     for (const elementId of elementsInTreatmentRange) {
         updateCatering(state, getElement(state, elementType, elementId));
@@ -200,33 +201,31 @@ export function updateTreatments(
         return;
     }
 
-    /**
-     * Used to save all elements that already have an updated treatment calculation - therefore don't need it to be calculated again
-     */
-    const updatedElements = new Set<UUID>();
+    // Used to save all elements that already have an updated treatment calculation - therefore don't need it to be calculated again
+    const alreadyUpdatedElementIds = new Set<UUID>();
     // Update every personnel and material that was assigned to the patient
     for (const personnelId of Object.keys(element.assignedPersonnelIds)) {
         updateCatering(state, getElement(state, 'personnel', personnelId));
         // Saving personnelIds of personnel that already got calculated - makes small movements of patients more efficient
-        updatedElements.add(personnelId);
+        alreadyUpdatedElementIds.add(personnelId);
     }
     for (const materialId of Object.keys(element.assignedMaterialIds)) {
         updateCatering(state, getElement(state, 'materials', materialId));
         // Saving materialIds of material that already got calculated - makes small movements of patients more efficient
-        updatedElements.add(materialId);
+        alreadyUpdatedElementIds.add(materialId);
     }
 
     updateCateringAroundPatient(
         state,
         element.position,
         'personnel',
-        updatedElements
+        alreadyUpdatedElementIds
     );
     updateCateringAroundPatient(
         state,
         element.position,
         'materials',
-        updatedElements
+        alreadyUpdatedElementIds
     );
     // The treatment of the patient has just been updated -> hence the visible status hasn't been changed since the last update
     element.visibleStatusChangedSinceTreatment = false;

@@ -73,14 +73,8 @@ function getDedicatedResources(
         rettSan: 0,
         san: 0,
         gf: 0,
-        material: 0,
+        material: Object.keys(patient.assignedMaterialIds).length,
     };
-
-    cateringTypes.material = Object.keys(patient.assignedMaterialIds).length;
-
-    if (!patient.isBeingTreated) {
-        return cateringTypes;
-    }
 
     // Get the number of every personnel
     Object.keys(patient.assignedPersonnelIds).forEach(

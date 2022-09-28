@@ -20,7 +20,8 @@ export abstract class ElementManager<
     > = Exclude<ReadonlySet<keyof Element>, UnsupportedChangeProperties>
 > {
     /**
-     * This type is used to identify the type of an element, e.g. when it was (dragged &) dropped on something
+     * When an element gets (dragged &) dropped, this identifies the type of the dropped element.
+     * @example `patients`
      */
     abstract readonly type: string;
 
@@ -139,5 +140,6 @@ export abstract class ElementManager<
  */
 const featureKeys = {
     value: 'elementValue',
+    // TODO: In the future the type should be saved in the element itself
     type: 'elementType',
 };
