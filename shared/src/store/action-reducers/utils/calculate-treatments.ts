@@ -110,10 +110,7 @@ function isMaterial(
     element: Material | Patient | Personnel
 ): element is Material {
     // as Material does not include any distinguishable properties, we will check if it is not of type Personnel or Patient
-    return (
-        !isPersonnel(element) &&
-        !isPatient(element)
-    );
+    return !isPersonnel(element) && !isPatient(element);
 }
 
 /**

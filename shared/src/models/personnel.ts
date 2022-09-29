@@ -67,7 +67,6 @@ export class Personnel {
 
     /**
      * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or in transfer.
-     * Exclusive-or to {@link transfer}
      */
     @ValidateNested()
     @Type(() => Position)
@@ -75,7 +74,7 @@ export class Personnel {
     public readonly position?: Position;
 
     /**
-     * Exclusive-or to {@link position}
+     * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or has a {@link position}.
      */
     @ValidateNested()
     @Type(() => Transfer)
