@@ -115,7 +115,7 @@ export namespace PatientActionReducers {
             }
             const mutablePatient = cloneDeepMutable(patient);
             draftState.patients[mutablePatient.id] = mutablePatient;
-            addElementPosition(draftState, 'patients', mutablePatient);
+            addElementPosition(draftState, 'patients', mutablePatient.id);
             return draftState;
         },
         rights: 'trainer',

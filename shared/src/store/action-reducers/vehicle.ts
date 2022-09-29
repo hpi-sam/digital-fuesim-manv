@@ -146,11 +146,11 @@ export namespace VehicleActionReducers {
             draftState.vehicles[vehicle.id] = cloneDeepMutable(vehicle);
             for (const material of cloneDeepMutable(materials)) {
                 draftState.materials[material.id] = material;
-                addElementPosition(draftState, 'materials', material);
+                addElementPosition(draftState, 'materials', material.id);
             }
             for (const person of cloneDeepMutable(personnel)) {
                 draftState.personnel[person.id] = person;
-                addElementPosition(draftState, 'personnel', person);
+                addElementPosition(draftState, 'personnel', person.id);
             }
             return draftState;
         },

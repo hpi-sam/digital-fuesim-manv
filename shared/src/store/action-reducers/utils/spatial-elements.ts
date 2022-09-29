@@ -1,4 +1,3 @@
-import type { Material, Patient, Personnel } from '../../../models';
 import type { Position } from '../../../models/utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
@@ -8,7 +7,7 @@ import { updateTreatments } from './calculate-treatments';
 import { getElement } from './get-element';
 
 /**
- * The element types for which a spatial tree exists in the state to improve the performance.
+ * The element types for which a spatial tree exists in the state to improve the performance (see {@link SpatialTree}).
  * The position of the element must be changed via one of the function in this file.
  * In addition, the respective functions must be called when an element gets added or removed.
  */
@@ -21,8 +20,9 @@ export type SpatialElementType = 'materials' | 'patients' | 'personnel';
 export function addElementPosition(
     state: Mutable<ExerciseState>,
     elementType: SpatialElementType,
-    element: Mutable<Material | Patient | Personnel>
+    elementId: UUID
 ) {
+    const element = getElement(state, elementType, elementId);
     if (element.position === undefined) {
         return;
     }
@@ -38,29 +38,29 @@ export function addElementPosition(
  * Changes the elements position and executes side effects to guarantee the consistency of the state
  */
 export function updateElementPosition(
-    draftState: Mutable<ExerciseState>,
+    state: Mutable<ExerciseState>,
     elementType: SpatialElementType,
     elementId: UUID,
     targetPosition: Position
 ) {
-    const element = getElement(draftState, elementType, elementId);
+    const element = getElement(state, elementType, elementId);
     const startPosition = element.position;
     if (startPosition !== undefined) {
         SpatialTree.moveElement(
-            draftState.spatialTrees[elementType],
+            state.spatialTrees[elementType],
             element.id,
             startPosition,
             targetPosition
         );
     } else {
         SpatialTree.addElement(
-            draftState.spatialTrees[elementType],
+            state.spatialTrees[elementType],
             element.id,
             targetPosition
         );
     }
     element.position = cloneDeepMutable(targetPosition);
-    updateTreatments(draftState, element);
+    updateTreatments(state, element);
 }
 
 /**
