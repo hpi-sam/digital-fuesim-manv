@@ -129,7 +129,7 @@ export class Patient {
      * Use this to prevent unnecessary recalculations for patients that didn't change -> performance optimization.
      */
     @IsBoolean()
-    public readonly visibleStatusChangedSinceTreatment: boolean = false;
+    public readonly visibleStatusChanged: boolean = false;
 
     /**
      * This can be any arbitrary string. It gives trainers the freedom to add additional functionalities that are not natively supported by this application (like an hospital ticket system)

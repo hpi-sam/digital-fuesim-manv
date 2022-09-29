@@ -20,6 +20,12 @@ export const treatmentSystemImprovements8: Migration = {
                 case '[Patient] Add patient':
                     migratePatient(action.patient);
                     break;
+                case '[Vehicle] Load vehicle':
+                    if (action.elementToBeLoadedType === 'material') {
+                        action.elementToBeLoadedType = 'materials';
+                    } else if (action.elementToBeLoadedType === 'patient') {
+                        action.elementToBeLoadedType = 'patients';
+                    }
             }
         }
     },
@@ -102,6 +108,7 @@ function migratePatient(patient: any) {
     migrateImageProperties(patient.image);
     patient.assignedPersonnelIds = {};
     patient.assignedMaterialIds = {};
+    patient.visibleStatusChanged = false;
 }
 
 function migrateImageProperties(image: any) {

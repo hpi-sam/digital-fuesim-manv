@@ -30,6 +30,7 @@ export class CanCaterFor {
     @Min(0)
     public readonly green: number;
 
+    // TODO: Use a better validator
     @IsString()
     public readonly logicalOperator: 'and' | 'or';
 

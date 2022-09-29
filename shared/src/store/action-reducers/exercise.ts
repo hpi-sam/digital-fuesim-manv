@@ -44,7 +44,7 @@ export class ExerciseTickAction implements Action {
      * is e.g. moved - completely independent from the ticks.
      * The performance optimization resulting from not refreshing the treatments every tick is probably very small in comparison
      * to skipping all patients that didn't change their status since the last treatment calculation
-     * (via {@link Patient.visibleStatusChangedSinceTreatment}).
+     * (via {@link Patient.visibleStatusChanged}).
      */
     @IsBoolean()
     public readonly refreshTreatments!: boolean;
@@ -110,12 +110,12 @@ export namespace ExerciseActionReducers {
                     draftState.configuration.bluePatientsEnabled
                 );
                 // Save this to the state because the treatments aren't refreshed in every tick
-                currentPatient.visibleStatusChangedSinceTreatment =
+                currentPatient.visibleStatusChanged =
                     visibleStatusBefore !== visibleStatusAfter;
                 if (
                     refreshTreatments &&
                     // We only want to do this expensive calculation, when it is really necessary
-                    currentPatient.visibleStatusChangedSinceTreatment
+                    currentPatient.visibleStatusChanged
                 ) {
                     updateTreatments(draftState, currentPatient);
                 }
