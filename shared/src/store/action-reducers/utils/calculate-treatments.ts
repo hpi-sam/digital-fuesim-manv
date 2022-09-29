@@ -186,9 +186,9 @@ export function updateTreatments(
     state: Mutable<ExerciseState>,
     element: Mutable<Material | Patient | Personnel>
 ) {
-    // The requirement of this function is not to result in a "perfect" treatment pattern. 
+    // The requirement of this function is not to result in a "perfect" treatment pattern.
     // Instead, it should just find an intuitive and reasonably realistic treatment pattern.
-    // Currently, the treatment pattern algorithm is stable. This means that completely done from scratch, 
+    // Currently, the treatment pattern algorithm is stable. This means that completely done from scratch,
     // the result would semantically be the same. This could be changed later.
 
     if (element.position === undefined) {
