@@ -71,18 +71,10 @@ export class FuesimServer {
         this.saveTickInterval
     );
 
-    constructor(
-        private readonly databaseService: DatabaseService,
-        websocketPort: number = Config.websocketPort,
-        httpPort: number = Config.httpPort
-    ) {
+    constructor(private readonly databaseService: DatabaseService) {
         const app = express();
-        this._websocketServer = new ExerciseWebsocketServer(app, websocketPort);
-        this._httpServer = new ExerciseHttpServer(
-            app,
-            httpPort,
-            databaseService
-        );
+        this._websocketServer = new ExerciseWebsocketServer(app);
+        this._httpServer = new ExerciseHttpServer(app, databaseService);
         if (Config.useDb) {
             this.saveHandler.start();
         }

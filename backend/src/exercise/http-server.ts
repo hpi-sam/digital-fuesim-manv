@@ -2,6 +2,7 @@ import type { Server as HttpServer } from 'node:http';
 import cors from 'cors';
 import type { Express } from 'express';
 import express from 'express';
+import { Config } from '../config';
 import type { DatabaseService } from '../database/services/database-service';
 import {
     deleteExercise,
@@ -14,11 +15,14 @@ import { secureHttp } from './http-handler/secure-http';
 
 export class ExerciseHttpServer {
     public readonly httpServer: HttpServer;
-    constructor(app: Express, port: number, databaseService: DatabaseService) {
+    /**
+     * @param uploadLimit in Megabyte can be set via ENV DFM_UPLOAD_LIMIT
+     */
+    constructor(app: Express, databaseService: DatabaseService) {
         // TODO: Temporary allow all
         app.use(cors());
 
-        app.use(express.json({ limit: '200mb' }));
+        app.use(express.json({ limit: `${Config.uploadLimit}mb` }));
 
         // This endpoint is used to determine whether the API itself is running.
         // It should be independent from any other services that may or may not be running.
@@ -40,7 +44,7 @@ export class ExerciseHttpServer {
             )
         );
 
-        this.httpServer = app.listen(port);
+        this.httpServer = app.listen(Config.httpPort);
     }
 
     public close(): void {
