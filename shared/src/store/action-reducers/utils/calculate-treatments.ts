@@ -95,20 +95,20 @@ function tryToCaterFor(
 
 // TODO: Instead, give each Element a "type" property -> discriminated union
 function isPatient(
-    element: Material | Patient | Personnel
-): element is Patient {
+    element: Mutable<Material | Patient | Personnel>
+): element is Mutable<Patient> {
     return (element as Patient).personalInformation !== undefined;
 }
 
 function isPersonnel(
-    element: Material | Patient | Personnel
-): element is Personnel {
+    element: Mutable<Material | Patient | Personnel>
+): element is Mutable<Personnel> {
     return (element as Personnel).personnelType !== undefined;
 }
 
 function isMaterial(
-    element: Material | Patient | Personnel
-): element is Material {
+    element: Mutable<Material | Patient | Personnel>
+): element is Mutable<Material> {
     // as Material does not include any distinguishable properties, we will check if it is not of type Personnel or Patient
     return !isPersonnel(element) && !isPatient(element);
 }
@@ -136,10 +136,13 @@ function updateCateringAroundPatient(
 
 function removeTreatmentsOfElement(
     state: Mutable<ExerciseState>,
-    element: Material | Patient | Personnel
+    element: Mutable<Material | Patient | Personnel>
 ) {
+    // TODO: when elements have their own type saved don't use const patient = getElement(state, 'patients', element.id);
+    // instead use const patient = element;
+    // same for personnel and material in the other if statements
     if (isPatient(element)) {
-        const patient = getElement(state, 'patients', element.id);
+        const patient = element;
         // Make all personnel stop treating this patient
         for (const personnelId of Object.keys(patient.assignedPersonnelIds)) {
             const personnel = getElement(state, 'personnel', personnelId);
@@ -154,7 +157,7 @@ function removeTreatmentsOfElement(
         }
         patient.assignedMaterialIds = {};
     } else if (isPersonnel(element)) {
-        const personnel = getElement(state, 'personnel', element.id);
+        const personnel = element;
         // This personnel doesn't treat any patients anymore
         for (const patientId of Object.keys(personnel.assignedPatientIds)) {
             const patient = getElement(state, 'patients', patientId);
@@ -163,7 +166,7 @@ function removeTreatmentsOfElement(
         }
         personnel.assignedPatientIds = {};
     } else if (isMaterial(element)) {
-        const material = getElement(state, 'materials', element.id);
+        const material = element;
         // This material doesn't treat any patients anymore
         for (const patientId of Object.keys(material.assignedPatientIds)) {
             const patient = getElement(state, 'patients', patientId);
