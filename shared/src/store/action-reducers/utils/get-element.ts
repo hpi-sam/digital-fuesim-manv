@@ -17,15 +17,14 @@ export function getElement<
         | 'personnel'
         | 'transferPoints'
         | 'vehicles'
-        | 'viewports'
+        | 'viewports',
+    State extends ExerciseState | Mutable<ExerciseState>
 >(
-    state: Mutable<ExerciseState>,
+    state: State,
     elementType: ElementType,
     elementId: UUID
-): Mutable<ExerciseState>[ElementType][UUID] {
-    const element = state[elementType][
-        elementId
-    ] as Mutable<ExerciseState>[ElementType][UUID];
+): State[ElementType][UUID] {
+    const element = state[elementType][elementId] as State[ElementType][UUID];
     if (!element) {
         throw new ReducerError(
             `Element of type ${elementType} with id ${elementId} does not exist`

@@ -13,6 +13,7 @@ import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-act
 import { removeStatistics5 } from './5-remove-statistics';
 import { removeStateHistory6 } from './6-remove-state-history';
 import { addPatientRemarks7 } from './7-add-patient-remarks';
+import { treatmentSystemImprovements8 } from './8-treatment-system-improvements';
 import { impossibleMigration } from './impossible-migration';
 
 /**
@@ -48,6 +49,7 @@ export const migrations: {
     5: removeStatistics5,
     6: removeStateHistory6,
     7: addPatientRemarks7,
+    8: treatmentSystemImprovements8,
 };
 
 export async function migrateInDatabaseTo(

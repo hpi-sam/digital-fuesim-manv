@@ -1,4 +1,3 @@
-import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { TransferPoint, TransferStartPoint } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
@@ -8,7 +7,6 @@ import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import type { ApiService } from 'src/app/core/api.service';
-import type { AppState } from 'src/app/state/app.state';
 import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
 import { ImagePopupHelper } from '../utility/popup-helper';
@@ -17,16 +15,15 @@ import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { createPoint, ElementFeatureManager } from './element-feature-manager';
 
 export class TransferPointFeatureManager extends ElementFeatureManager<TransferPoint> {
+    readonly type = 'transferPoints';
     private readonly popupHelper = new ImagePopupHelper(this.olMap);
 
     constructor(
-        store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
         private readonly apiService: ApiService
     ) {
         super(
-            store,
             olMap,
             layer,
             (targetPosition, transferPoint) => {
@@ -80,7 +77,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
             return false;
         }
         if (
-            droppedElement.type !== 'vehicle' &&
+            droppedElement.type !== 'vehicles' &&
             droppedElement.type !== 'personnel'
         ) {
             return false;
@@ -113,11 +110,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                         this.apiService.proposeAction(
                             {
                                 type: '[Transfer] Add to transfer',
-                                // TODO: The type should already be correct
-                                elementType:
-                                    droppedElement.type === 'vehicle'
-                                        ? 'vehicles'
-                                        : 'personnel',
+                                elementType: droppedElement.type,
                                 elementId: droppedElement.value.id,
                                 startPoint: TransferStartPoint.create(
                                     droppedOnTransferPoint.id

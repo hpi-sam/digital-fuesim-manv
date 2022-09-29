@@ -19,6 +19,7 @@ import { createPoint, ElementFeatureManager } from './element-feature-manager';
 export class PatientFeatureManager extends ElementFeatureManager<
     WithPosition<Patient>
 > {
+    readonly type = 'patients';
     private readonly popupHelper = new ImagePopupHelper(this.olMap);
 
     private readonly imageStyleHelper = new ImageStyleHelper((feature) => {
@@ -56,13 +57,12 @@ export class PatientFeatureManager extends ElementFeatureManager<
     }, 0.025);
 
     constructor(
-        store: Store<AppState>,
+        private readonly store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
         apiService: ApiService
     ) {
         super(
-            store,
             olMap,
             layer,
             (targetPosition, patient) => {

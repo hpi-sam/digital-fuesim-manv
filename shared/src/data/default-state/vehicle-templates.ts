@@ -43,14 +43,7 @@ const rtwVehicleTemplate = VehicleTemplate.create(
     rtwImage,
     1,
     ['notSan', 'rettSan'],
-    [
-        {
-            logicalOperator: 'or',
-            green: 2,
-            yellow: 1,
-            red: 1,
-        },
-    ]
+    ['standard']
 );
 
 const ktwVehicleTemplate = VehicleTemplate.create(
@@ -59,14 +52,7 @@ const ktwVehicleTemplate = VehicleTemplate.create(
     ktwImage,
     1,
     ['san', 'rettSan'],
-    [
-        {
-            logicalOperator: 'or',
-            green: 2,
-            yellow: 1,
-            red: 1,
-        },
-    ]
+    ['standard']
 );
 
 const carryingUnitVehicleTemplate = VehicleTemplate.create(
@@ -84,14 +70,7 @@ const ktwKatSchutzVehicleTemplate = VehicleTemplate.create(
     ktwImage,
     2,
     ['san', 'rettSan'],
-    [
-        {
-            logicalOperator: 'or',
-            green: 2,
-            yellow: 1,
-            red: 1,
-        },
-    ]
+    ['standard']
 );
 
 const gwSanVehicleTemplate = VehicleTemplate.create(
@@ -100,56 +79,7 @@ const gwSanVehicleTemplate = VehicleTemplate.create(
     gwSanImage,
     0,
     ['gf', 'rettSan', 'rettSan', 'san', 'san', 'notarzt'],
-    [
-        {
-            logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
-        },
-        {
-            logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
-        },
-        {
-            logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
-        },
-        {
-            logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
-        },
-        {
-            logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
-        },
-        {
-            logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
-        },
-        {
-            logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
-        },
-        {
-            logicalOperator: 'and',
-            green: 2,
-            yellow: 1,
-            red: 1,
-        },
-    ]
+    ['big', 'big', 'big', 'big']
 );
 
 const nefVehicleTemplate = VehicleTemplate.create(
@@ -158,14 +88,7 @@ const nefVehicleTemplate = VehicleTemplate.create(
     nefImage,
     0,
     ['notarzt', 'notSan'],
-    [
-        {
-            logicalOperator: 'or',
-            green: 2,
-            yellow: 2,
-            red: 2,
-        },
-    ]
+    ['standard']
 );
 
 const rthVehicleTemplate = VehicleTemplate.create(
@@ -174,14 +97,7 @@ const rthVehicleTemplate = VehicleTemplate.create(
     rthImage,
     1,
     ['notarzt', 'notSan'],
-    [
-        {
-            logicalOperator: 'or',
-            green: 2,
-            yellow: 1,
-            red: 1,
-        },
-    ]
+    ['standard']
 );
 
 export const defaultVehicleTemplates: readonly VehicleTemplate[] = [

@@ -215,8 +215,9 @@ export class ExerciseWrapper extends NormalType<
             type: '[Exercise] Tick',
             patientUpdates,
             /**
-             * refresh every {@link refreshTreatmentInterval} * {@link tickInterval} ms seconds
+             * Refresh every {@link refreshTreatmentInterval} * {@link tickInterval} ms seconds
              */
+            // TODO: Refactor this: do this in the reducer instead of sending it in the action
             refreshTreatments:
                 this.tickCounter % this.refreshTreatmentInterval === 0,
             tickInterval: this.tickInterval,

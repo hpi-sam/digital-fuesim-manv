@@ -1,17 +1,12 @@
 import { Type } from 'class-transformer';
 import { IsNumber, IsString, Max, Min, ValidateNested } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
-import {
-    CanCaterFor,
-    getCreate,
-    ImageProperties,
-    PersonnelType,
-} from './utils';
+import { CanCaterFor, getCreate, ImageProperties } from './utils';
+import { MaterialType } from './utils/material-type';
 
-// TODO: These are not (yet) saved in the state -> Decide whether they should and if not move this file from the models folder away
-export class PersonnelTemplate {
+export class MaterialTemplate {
     @IsString()
-    public readonly personnelType: PersonnelType;
+    public readonly materialType: MaterialType;
 
     @ValidateNested()
     @Type(() => CanCaterFor)
@@ -27,7 +22,7 @@ export class PersonnelTemplate {
     public readonly overrideTreatmentRange: number;
 
     /**
-     * Only patients in this range around the personnel's position can be treated.
+     * Only patients in this range around the material's position can be treated.
      * Guaranteed to be <= {@link maxTreatmentRange}.
      */
     @IsNumber()
@@ -43,13 +38,13 @@ export class PersonnelTemplate {
      * @deprecated Use {@link create} instead
      */
     constructor(
-        personnelType: PersonnelType,
+        materialType: MaterialType,
         image: ImageProperties,
         canCaterFor: CanCaterFor,
         overrideTreatmentRange: number,
         treatmentRange: number
     ) {
-        this.personnelType = personnelType;
+        this.materialType = materialType;
         this.image = image;
         this.canCaterFor = canCaterFor;
         this.overrideTreatmentRange = overrideTreatmentRange;

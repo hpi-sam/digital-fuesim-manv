@@ -12,13 +12,19 @@ import {
 } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
-import { calculateTreatments } from './utils/calculate-treatments';
+import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
+import {
+    addElementPosition,
+    removeElementPosition,
+    updateElementPosition,
+} from './utils/spatial-elements';
 
 export function deletePatient(
     draftState: Mutable<ExerciseState>,
     patientId: UUID
 ) {
+    removeElementPosition(draftState, 'patients', patientId);
     delete draftState.patients[patientId];
 }
 
@@ -107,8 +113,9 @@ export namespace PatientActionReducers {
                     `HealthState with id ${patient.currentHealthStateId} does not exist`
                 );
             }
-            draftState.patients[patient.id] = cloneDeepMutable(patient);
-            calculateTreatments(draftState);
+            const mutablePatient = cloneDeepMutable(patient);
+            draftState.patients[mutablePatient.id] = mutablePatient;
+            addElementPosition(draftState, 'patients', mutablePatient.id);
             return draftState;
         },
         rights: 'trainer',
@@ -117,9 +124,12 @@ export namespace PatientActionReducers {
     export const movePatient: ActionReducer<MovePatientAction> = {
         action: MovePatientAction,
         reducer: (draftState, { patientId, targetPosition }) => {
-            const patient = getElement(draftState, 'patients', patientId);
-            patient.position = cloneDeepMutable(targetPosition);
-            calculateTreatments(draftState);
+            updateElementPosition(
+                draftState,
+                'patients',
+                patientId,
+                targetPosition
+            );
             return draftState;
         },
         rights: 'participant',
@@ -128,9 +138,7 @@ export namespace PatientActionReducers {
     export const removePatient: ActionReducer<RemovePatientAction> = {
         action: RemovePatientAction,
         reducer: (draftState, { patientId }) => {
-            getElement(draftState, 'patients', patientId);
             deletePatient(draftState, patientId);
-            calculateTreatments(draftState);
             return draftState;
         },
         rights: 'trainer',
@@ -141,6 +149,11 @@ export namespace PatientActionReducers {
         reducer: (draftState, { patientId, patientStatus }) => {
             const patient = getElement(draftState, 'patients', patientId);
             patient.pretriageStatus = patientStatus;
+
+            if (patient.position !== undefined) {
+                updateTreatments(draftState, patient);
+            }
+
             return draftState;
         },
         rights: 'participant',

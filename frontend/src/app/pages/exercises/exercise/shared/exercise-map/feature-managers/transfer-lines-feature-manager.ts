@@ -19,6 +19,7 @@ export class TransferLinesFeatureManager
     >
     implements FeatureManager<Feature<LineString>>
 {
+    readonly type = 'transferLines';
     readonly unsupportedChangeProperties = new Set(['id'] as const);
 
     constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {

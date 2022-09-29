@@ -143,7 +143,10 @@ In the `diff` folder you can see the changes between the baseline and the compar
 ## Styleguide
 
 -   names are never unique, ids are
--   private properties that may be used with getters/setters (and only those!) start with one leading underscore (`_`)
+-   Use [StrictObject](shared\src\utils\strict-object.ts) instead of `Object` wherever possible
+-   A leading underscore should only be used
+    -   for private properties that may be used with getters/setters
+    -   to resolve certain naming conflicts (e.g. `.some(_item => ...)`)
 -   `dependencies` should be used for packages that must be installed when running the app (e.g. `express`), whereas `devDependencies` should be used for packages only required for developing, debugging, building, or testing (e.g. `jest`), which includes all `@types` packages. We try to follow this route even for the frontend and the backend, although it is not important there. See also [this](https://stackoverflow.com/a/22004559) answer on StackOverflow for more information about the differences.
 -   Use JSDoc features for further documentation because editors like VSCode can display them better.
     -   Be aware that JSDoc comments must always go above the Decorator of the class/component/function/variable etc.

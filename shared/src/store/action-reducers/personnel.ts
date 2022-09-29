@@ -1,10 +1,9 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import { UUID, uuidValidationOptions } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
-import { calculateTreatments } from './utils/calculate-treatments';
-import { getElement } from './utils/get-element';
+import { updateElementPosition } from './utils/spatial-elements';
 
 export class MovePersonnelAction implements Action {
     @IsString()
@@ -22,9 +21,12 @@ export namespace PersonnelActionReducers {
     export const movePersonnel: ActionReducer<MovePersonnelAction> = {
         action: MovePersonnelAction,
         reducer: (draftState, { personnelId, targetPosition }) => {
-            const personnel = getElement(draftState, 'personnel', personnelId);
-            personnel.position = cloneDeepMutable(targetPosition);
-            calculateTreatments(draftState);
+            updateElementPosition(
+                draftState,
+                'personnel',
+                personnelId,
+                targetPosition
+            );
             return draftState;
         },
         rights: 'participant',

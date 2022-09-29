@@ -1,24 +1,26 @@
-import type { UUID, Position, Size } from 'digital-fuesim-manv-shared';
+import type {
+    ExerciseState,
+    Position,
+    Size,
+    UUID,
+} from 'digital-fuesim-manv-shared';
+import { isArray } from 'lodash-es';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
-import Point from 'ol/geom/Point';
-import type VectorLayer from 'ol/layer/Vector';
-import type VectorSource from 'ol/source/Vector';
-import type OlMap from 'ol/Map';
-import type { AppState } from 'src/app/state/app.state';
-import type { Store } from '@ngrx/store';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
-import type { TranslateEvent } from 'ol/interaction/Translate';
-import { LineString } from 'ol/geom';
-import { isArray } from 'lodash-es';
 import type { Coordinate } from 'ol/coordinate';
+import { LineString } from 'ol/geom';
+import Point from 'ol/geom/Point';
+import type { TranslateEvent } from 'ol/interaction/Translate';
+import type VectorLayer from 'ol/layer/Vector';
+import type OlMap from 'ol/Map';
+import type VectorSource from 'ol/source/Vector';
 import { Subject } from 'rxjs';
+import type { WithPosition } from '../../utility/types/with-position';
+import type { FeatureManager } from '../utility/feature-manager';
 import type { Coordinates } from '../utility/movement-animator';
 import { MovementAnimator } from '../utility/movement-animator';
-import { TranslateHelper } from '../utility/translate-helper';
-import type { FeatureManager } from '../utility/feature-manager';
-import type { WithPosition } from '../../utility/types/with-position';
 import type { OpenPopupOptions } from '../utility/popup-manager';
+import { TranslateHelper } from '../utility/translate-helper';
 import { ElementManager } from './element-manager';
 
 export interface PositionableElement {
@@ -81,6 +83,7 @@ export abstract class ElementFeatureManager<
     >
     implements FeatureManager<ElementFeature>
 {
+    abstract override readonly type: keyof ExerciseState;
     public readonly togglePopup$ = new Subject<OpenPopupOptions<any>>();
     protected readonly movementAnimator = new MovementAnimator<FeatureType>(
         this.olMap,
@@ -89,7 +92,6 @@ export abstract class ElementFeatureManager<
     protected readonly translateHelper = new TranslateHelper<FeatureType>();
 
     constructor(
-        protected readonly store: Store<AppState>,
         protected readonly olMap: OlMap,
         public readonly layer: VectorLayer<VectorSource<FeatureType>>,
         private readonly proposeMovementAction: (
@@ -152,55 +154,6 @@ export abstract class ElementFeatureManager<
                 .getFeatureById(element.id) as ElementFeature | null) ??
             undefined
         );
-    }
-
-    protected getElementFromFeature(feature: Feature<any>) {
-        const id = feature.getId() as UUID;
-        const exerciseState = getStateSnapshot(this.store).exercise;
-        // We expect the id to be globally unique
-        if (exerciseState.materials[id]) {
-            return {
-                type: 'material',
-                value: exerciseState.materials[id] as unknown as Element,
-            } as const;
-        }
-        if (exerciseState.patients[id]) {
-            return {
-                type: 'patient',
-                value: exerciseState.patients[id] as unknown as Element,
-            } as const;
-        }
-        if (exerciseState.vehicles[id]) {
-            return {
-                type: 'vehicle',
-                value: exerciseState.vehicles[id] as unknown as Element,
-            } as const;
-        }
-        if (exerciseState.personnel[id]) {
-            return {
-                type: 'personnel',
-                value: exerciseState.personnel[id] as unknown as Element,
-            } as const;
-        }
-        if (exerciseState.mapImages[id]) {
-            return {
-                type: 'image',
-                value: exerciseState.mapImages[id] as unknown as Element,
-            } as const;
-        }
-        if (exerciseState.viewports[id]) {
-            return {
-                type: 'viewport',
-                value: exerciseState.viewports[id] as unknown as Element,
-            } as const;
-        }
-        if (exerciseState.transferPoints[id]) {
-            return {
-                type: 'transferPoint',
-                value: exerciseState.transferPoints[id] as unknown as Element,
-            } as const;
-        }
-        return undefined;
     }
 
     public getCenter(feature: ElementFeature): Coordinate {

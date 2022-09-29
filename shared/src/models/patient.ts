@@ -11,7 +11,7 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { UUID, uuid, UUIDSet, uuidValidationOptions } from '../utils';
 import {
     getCreate,
     HealthPoints,
@@ -41,6 +41,7 @@ export class Patient {
     @ValidateNested()
     @Type(() => PretriageInformation)
     public readonly pretriageInformation: PretriageInformation;
+
     /**
      * A description of the expected patient behaviour over time
      * For the trainer
@@ -60,6 +61,92 @@ export class Patient {
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
+
+    /**
+     * Exclusive-or to {@link vehicleId}
+     */
+    @ValidateNested()
+    @Type(() => Position)
+    @IsOptional()
+    public readonly position?: Position;
+
+    /**
+     * Exclusive-or to {@link position}
+     */
+    @IsUUID(4, uuidValidationOptions)
+    @IsOptional()
+    public readonly vehicleId?: UUID;
+
+    /**
+     * The time the patient already is in the current state
+     */
+    @IsNumber()
+    public readonly stateTime: number = 0;
+
+    @IsDefined()
+    public readonly healthStates: {
+        readonly [stateId: UUID]: PatientHealthState;
+    } = {};
+
+    /**
+     * The id of the current health state in {@link healthStates}
+     */
+    @IsUUID(4, uuidValidationOptions)
+    public readonly currentHealthStateId: UUID;
+
+    /**
+     * See {@link HealthPoints} for context of this property.
+     */
+    @IsNumber()
+    @Max(healthPointsDefaults.max)
+    @Min(healthPointsDefaults.min)
+    public readonly health: HealthPoints;
+    /**
+     * Whether the patient is currently being treated by a personnel
+     */
+    @IsBoolean()
+    // TODO: Remove this property and calculate it on demand via `static isTreatedByPersonnel(patient){ return !isEmpty(patient.assignedPersonnelIds); }`
+    public readonly isBeingTreated: boolean = false;
+
+    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
+    @IsDefined()
+    public readonly assignedPersonnelIds: UUIDSet = {};
+
+    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
+    @IsDefined()
+    public readonly assignedMaterialIds: UUIDSet = {};
+    /**
+     * The speed with which the patients healthStatus changes
+     * if it is 0.5 every patient changes half as fast (slow motion)
+     */
+    @IsNumber()
+    @Min(0)
+    public readonly timeSpeed: number = 1;
+
+    /**
+     * Whether the {@link getVisibleStatus} of this patient has changed
+     * since the last time it was updated which personnel and materials treat him/her.
+     * Use this to prevent unnecessary recalculations for patients that didn't change -> performance optimization.
+     */
+    @IsBoolean()
+    public readonly visibleStatusChanged: boolean = false;
+
+    /**
+     * This can be any arbitrary string. It gives trainers the freedom to add additional functionalities that are not natively supported by this application (like an hospital ticket system)
+     */
+    @IsString()
+    @MaxLength(65535)
+    public readonly remarks: string;
+
+    @IsNumber()
+    @Min(0)
+    public treatmentTime = 0;
+
+    /**
+     * The time that is needed for personnel to automatically pretriage the patient
+     * in milliseconds
+     */
+    private static readonly pretriageTimeThreshold: number = 2 * 60 * 1000;
 
     /**
      * @deprecated Use {@link create} instead
@@ -91,74 +178,7 @@ export class Patient {
         this.remarks = remarks;
     }
 
-    /**
-     * Exclusive-or to {@link vehicleId}
-     */
-    @ValidateNested()
-    @Type(() => Position)
-    @IsOptional()
-    public readonly position?: Position;
-    /**
-     * Exclusive-or to {@link position}
-     */
-    @IsUUID(4, uuidValidationOptions)
-    @IsOptional()
-    public readonly vehicleId?: UUID;
-
-    /**
-     * The time the patient already is in the current state
-     */
-    @IsNumber()
-    public readonly stateTime: number = 0;
-
-    @IsDefined()
-    public readonly healthStates: {
-        readonly [stateId: UUID]: PatientHealthState;
-    } = {};
-
-    /**
-     * The id of the current health state in {@link healthStates}
-     */
-    @IsUUID(4, uuidValidationOptions)
-    public readonly currentHealthStateId: UUID;
-    /**
-     * See {@link HealthPoints} for context of this property.
-     */
-    @IsNumber()
-    @Max(healthPointsDefaults.max)
-    @Min(healthPointsDefaults.min)
-    public readonly health: HealthPoints;
-    /**
-     * Whether the patient is currently being treated by a personnel
-     */
-    @IsBoolean()
-    public readonly isBeingTreated: boolean = false;
-    /**
-     * The speed with which the patients healthStatus changes
-     * if it is 0.5 every patient changes half as fast (slow motion)
-     */
-    @IsNumber()
-    @Min(0)
-    public readonly timeSpeed: number = 1;
-
-    /**
-     * This can be any arbitrary string. It gives trainers the freedom to add additional functionalities that are not natively supported by this application (like an hospital ticket system)
-     */
-    @IsString()
-    @MaxLength(65535)
-    public readonly remarks: string;
-
-    @IsNumber()
-    @Min(0)
-    public treatmentTime = 0;
-
     static readonly create = getCreate(this);
-
-    /**
-     * The time that is needed for personnel to automatically pretriage the patient
-     * in milliseconds
-     */
-    private static readonly pretriageTimeThreshold: number = 2 * 60 * 1000;
 
     static getVisibleStatus(
         patient: Patient,
