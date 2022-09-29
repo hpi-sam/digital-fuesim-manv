@@ -124,12 +124,10 @@ export namespace PatientActionReducers {
     export const movePatient: ActionReducer<MovePatientAction> = {
         action: MovePatientAction,
         reducer: (draftState, { patientId, targetPosition }) => {
-            // Check whether the patient exists
-            const patient = getElement(draftState, 'patients', patientId);
             updateElementPosition(
                 draftState,
                 'patients',
-                patient.id,
+                patientId,
                 targetPosition
             );
             return draftState;
