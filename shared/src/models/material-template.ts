@@ -13,7 +13,7 @@ export class MaterialTemplate {
     public readonly canCaterFor: CanCaterFor;
 
     /**
-     * Patients in this range are preferred over patients that are more far away (even if they are less injured).
+     * Patients in this range are preferred over patients farther away (even if they are less injured).
      * Guaranteed to be <= {@link maxTreatmentRange}.
      */
     @IsNumber()

@@ -20,7 +20,7 @@ interface CatersFor {
 }
 
 /**
- * @returns wether a material or personnel could treat a patient with {@link status} if it already {@link catersFor} patients
+ * @returns whether a material or personnel could treat a patient with {@link status} if it already {@link catersFor} patients
  */
 function couldCaterFor(
     status: Exclude<PatientStatus, 'white'>,
@@ -109,10 +109,10 @@ function isPersonnel(
 function isMaterial(
     element: Material | Patient | Personnel
 ): element is Material {
-    // as Material does not include any distinguishable, we will check if it is not of type Personnel or Patient
+    // as Material does not include any distinguishable properties, we will check if it is not of type Personnel or Patient
     return (
-        (element as Personnel).personnelType === undefined &&
-        (element as Patient).personalInformation === undefined
+        !isPersonnel(element) &&
+        !isPatient(element)
     );
 }
 

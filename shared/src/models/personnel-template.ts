@@ -8,7 +8,7 @@ import {
     PersonnelType,
 } from './utils';
 
-// TODO: These are not ?yet? saved in the state -> Decide whether they should and if not move this file from the models folder away
+// TODO: These are not (yet) saved in the state -> Decide whether they should and if not move this file from the models folder away
 export class PersonnelTemplate {
     @IsString()
     public readonly personnelType: PersonnelType;
@@ -18,7 +18,7 @@ export class PersonnelTemplate {
     public readonly canCaterFor: CanCaterFor;
 
     /**
-     * Patients in this range are preferred over patients that are more far away (even if they are less injured).
+     * Patients in this range are preferred over patients farther away (even if they are less injured).
      * Guaranteed to be <= {@link maxTreatmentRange}.
      */
     @IsNumber()
@@ -27,7 +27,7 @@ export class PersonnelTemplate {
     public readonly overrideTreatmentRange: number;
 
     /**
-     * Only patients in this range around the material's position can be treated.
+     * Only patients in this range around the personnel's position can be treated.
      * Guaranteed to be <= {@link maxTreatmentRange}.
      */
     @IsNumber()
