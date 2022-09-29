@@ -55,7 +55,7 @@ export class TransferPoint {
     }
 }
 
-interface ReachableTransferPoints {
+export interface ReachableTransferPoints {
     readonly [connectTransferPointId: UUID]: {
         /**
          * The time in ms it takes to get from this transfer point to the other one.
