@@ -278,7 +278,7 @@ function updateCatering(
     }
 
     if (
-        cateringElement.treatmentRange <= 0 ||
+        cateringElement.treatmentRange === 0 ||
         // Only look for more patients to treat, if there still is capacity (performance improvement)
         (!couldCaterFor('red', cateringElement, catersFor) &&
             !couldCaterFor('yellow', cateringElement, catersFor) &&

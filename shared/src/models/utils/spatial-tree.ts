@@ -112,6 +112,10 @@ export class SpatialTree {
         circlePosition: Position,
         radius: number
     ): UUID[] {
+        // knn does not work great with `0`|`undefined` as it interprets either as `infinity`
+        // knn also does not work great with negative numbers
+        // see https://github.com/mourner/rbush-knn/blob/master/index.js line 15
+        // TODO: Make it impossible to give this function a negative number
         if (radius <= 0) {
             return [];
         }

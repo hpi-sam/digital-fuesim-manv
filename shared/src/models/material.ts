@@ -36,6 +36,7 @@ export class Material {
     /**
      * Patients in this range are preferred over patients farther away (even if they are less injured).
      * Guaranteed to be <= {@link maxTreatmentRange}.
+     * Setting this to `0` means deactivating this range.
      */
     @IsNumber()
     @Min(0)
@@ -45,6 +46,7 @@ export class Material {
     /**
      * Only patients in this range around the material's position can be treated.
      * Guaranteed to be <= {@link maxTreatmentRange}.
+     * Setting this to `0` means deactivating this range.
      */
     @IsNumber()
     @Min(0)

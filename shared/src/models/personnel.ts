@@ -46,6 +46,7 @@ export class Personnel {
     /**
      * Patients in this range are preferred over patients that are more far away (even if they are less injured).
      * Guaranteed to be <= {@link maxTreatmentRange}.
+     * Setting this to `0` means deactivating this range.
      */
     @IsNumber()
     @Min(0)
@@ -55,6 +56,7 @@ export class Personnel {
     /**
      * Only patients in this range around the personnel's position can be treated.
      * Guaranteed to be <= {@link maxTreatmentRange}.
+     * Setting this to `0` means deactivating this range.
      */
     @IsNumber()
     @Min(0)
