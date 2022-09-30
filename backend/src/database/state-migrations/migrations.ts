@@ -1,9 +1,10 @@
 import type {
-    ExerciseState,
+    ExerciseAction,
     Mutable,
     StateExport,
     UUID,
 } from 'digital-fuesim-manv-shared';
+import { applyAllActions, ExerciseState } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import { RestoreError } from '../../utils/restore-error';
 import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
@@ -52,76 +53,67 @@ export const migrations: {
     8: treatmentSystemImprovements8,
 };
 
-export async function migrateInDatabaseTo(
-    targetStateVersion: number,
-    currentStateVersion: number,
+export async function migrateInDatabase(
     exerciseId: UUID,
     entityManager: EntityManager
 ): Promise<void> {
-    const migrationFunctions = getMigrationFunctions(
-        currentStateVersion,
-        targetStateVersion
-    );
-    const stateMigrationFunctions = migrationFunctions.state;
-    const originalStates = await entityManager.findOne(ExerciseWrapperEntity, {
+    const exercise = await entityManager.findOne(ExerciseWrapperEntity, {
         where: { id: exerciseId },
-        select: { initialStateString: true, currentStateString: true },
     });
-    if (originalStates === null) {
+    if (exercise === null) {
         throw new RestoreError(
             'Cannot find exercise to convert in database',
             exerciseId
         );
     }
-    let initialState: object | null = null,
-        currentState: object | null = null;
-    if (stateMigrationFunctions.length > 0) {
-        initialState = JSON.parse(originalStates.initialStateString);
-        currentState = JSON.parse(originalStates.currentStateString);
-        stateMigrationFunctions.forEach((stateMigrationFunction) => {
-            initialState = stateMigrationFunction(initialState!);
-            currentState = stateMigrationFunction(currentState!);
-        });
-    }
-    const actionsMigrationFunctions = migrationFunctions.actions;
-    let actions: (object | null)[] | null = null;
-    if (actionsMigrationFunctions.length > 0) {
-        const originalActions = await entityManager.find(ActionWrapperEntity, {
+    // const targetVersion = ExerciseState.currentStateVersion;
+    const initialState = JSON.parse(exercise.initialStateString);
+    const currentState = JSON.parse(exercise.currentStateString);
+    const actions = (
+        await entityManager.find(ActionWrapperEntity, {
             where: { exercise: { id: exerciseId } },
             select: { actionString: true },
             order: { index: 'ASC' },
-        });
-        actions = originalActions.map((originalAction) =>
-            JSON.parse(originalAction.actionString)
-        );
-        initialState ??= JSON.parse(originalStates.initialStateString);
-        actionsMigrationFunctions.forEach((actionsMigrationFunction) => {
-            actionsMigrationFunction(initialState!, actions!);
-        });
-    }
+        })
+    ).map((action) => JSON.parse(action.actionString));
+    const {
+        currentStateVersion: newStateVersion,
+        currentState: newCurrentState,
+        history,
+    } = applyMigrations(exercise.stateVersion, currentState, {
+        initialState,
+        actions,
+    });
+    // Save exercise
     const patch: Partial<ExerciseWrapperEntity> = {
-        stateVersion: targetStateVersion,
+        stateVersion: newStateVersion,
     };
-    if (currentState !== null) {
-        patch.initialStateString = JSON.stringify(initialState);
-        patch.currentStateString = JSON.stringify(currentState);
-    }
+    // if (newCurrentState !== null) {
+    patch.initialStateString = JSON.stringify(history!.initialState);
+    patch.currentStateString = JSON.stringify(newCurrentState);
+    // }
     await entityManager.update(
         ExerciseWrapperEntity,
         { id: exerciseId },
         patch
     );
-    if (actions !== null) {
+    // Save actions
+    if (history!.actions !== undefined) {
         let patchedActionsIndex = 0;
         const indicesToRemove: number[] = [];
-        const actionsToUpdate: { index: number; actionString: string }[] = [];
-        actions.forEach((action, i) => {
+        const actionsToUpdate: {
+            previousIndex: number;
+            newIndex: number;
+            actionString: string;
+        }[] = [];
+        history!.actions.forEach((action, i) => {
             if (action === null) {
                 indicesToRemove.push(i);
                 return;
             }
             actionsToUpdate.push({
-                index: patchedActionsIndex++,
+                previousIndex: i,
+                newIndex: patchedActionsIndex++,
                 actionString: JSON.stringify(action),
             });
         });
@@ -136,71 +128,86 @@ export async function migrateInDatabaseTo(
         }
         if (actionsToUpdate.length > 0) {
             await Promise.all(
-                actionsToUpdate.map(async ({ index, actionString }) =>
-                    entityManager.update(
-                        ActionWrapperEntity,
-                        { index, exercise: { id: exerciseId } },
-                        { actionString }
-                    )
+                actionsToUpdate.map(
+                    async ({ previousIndex, newIndex, actionString }) =>
+                        entityManager.update(
+                            ActionWrapperEntity,
+                            {
+                                index: previousIndex,
+                                exercise: { id: exerciseId },
+                            },
+                            { actionString, index: newIndex }
+                        )
                 )
             );
         }
     }
 }
 
-export function migrateStateExportTo(
-    targetStateVersion: number,
-    currentStateVersion: number,
-    stateExport: StateExport
-): StateExport {
-    const migrationFunctions = getMigrationFunctions(
-        currentStateVersion,
-        targetStateVersion
+export function migrateStateExport(stateExport: StateExport): StateExport {
+    const { currentState, history } = applyMigrations(
+        stateExport.dataVersion,
+        stateExport.currentState,
+        stateExport.history
+            ? {
+                  initialState: stateExport.history.initialState,
+                  actions: stateExport.history.actionHistory,
+              }
+            : undefined
     );
-    migrationFunctions.state.forEach((migrateStateFunction) => {
-        stateExport.currentState = migrateStateFunction(
-            stateExport.currentState
-        ) as Mutable<ExerciseState>;
-        if (stateExport.history) {
-            stateExport.history.initialState = migrateStateFunction(
-                stateExport.history.initialState
-            ) as Mutable<ExerciseState>;
-        }
-    });
     if (stateExport.history) {
-        migrationFunctions.actions.forEach((fn) => {
-            fn(
-                stateExport.history!.initialState,
-                stateExport.history!.actionHistory
-            );
-        });
-        stateExport.history.actionHistory =
-            stateExport.history.actionHistory.filter(
-                (action) => action !== null
-            );
+        stateExport.history.initialState = history!
+            .initialState as Mutable<ExerciseState>;
+        stateExport.history.actionHistory = history!.actions.filter(
+            (action) => action !== null
+        ) as ExerciseAction[];
     }
+    stateExport.currentState = currentState as Mutable<ExerciseState>;
     return stateExport;
 }
 
-function getMigrationFunctions(
-    initialVersion: number,
-    targetVersion: number
-): { actions: MigrateActionsFunction[]; state: MigrateStateFunction[] } {
-    const necessaryMigrations = Object.entries(migrations)
-        .filter(
-            ([key]) =>
-                Number.parseInt(key) > initialVersion &&
-                Number.parseInt(key) <= targetVersion
-        )
-        .map(([, migration]) => migration);
+function applyMigrations(
+    currentStateVersion: number,
+    currentState: object,
+    history?: { initialState: object; actions: (object | null)[] }
+): {
+    currentStateVersion: number;
+    currentState: object;
+    history?: {
+        initialState: ExerciseState;
+        actions: (ExerciseAction | null)[];
+    };
+} {
+    const targetVersion = ExerciseState.currentStateVersion;
+    let newCurrentState = currentState;
+    for (let i = currentStateVersion + 1; i <= targetVersion; i++) {
+        const stateMigration = migrations[i]?.state;
+        if (typeof stateMigration === 'function') {
+            if (history)
+                history.initialState = stateMigration(history.initialState);
+            else newCurrentState = stateMigration(newCurrentState);
+        }
+        if (!history) continue;
+        const actionMigration = migrations[i]?.actions;
+        if (typeof actionMigration === 'function') {
+            actionMigration(history.initialState, history.actions);
+        }
+    }
+    if (history)
+        newCurrentState = applyAllActions(
+            history.initialState as ExerciseState,
+            history.actions.filter(
+                (action) => action !== null
+            ) as ExerciseAction[]
+        );
     return {
-        actions: necessaryMigrations
-            .filter((migration) => migration.actions !== null)
-            .map((migration) => migration.actions) as MigrateActionsFunction[],
-        state: necessaryMigrations
-            .filter((thisFunctions) => thisFunctions.state !== null)
-            .map(
-                (thisFunctions) => thisFunctions.state
-            ) as MigrateStateFunction[],
+        currentStateVersion: targetVersion,
+        currentState: newCurrentState,
+        history: history
+            ? {
+                  initialState: history?.initialState as ExerciseState,
+                  actions: history?.actions as (ExerciseAction | null)[],
+              }
+            : undefined,
     };
 }

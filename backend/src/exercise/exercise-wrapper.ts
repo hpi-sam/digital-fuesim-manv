@@ -26,7 +26,7 @@ import { Config } from '../config';
 import { RestoreError } from '../utils/restore-error';
 import { UserReadableIdGenerator } from '../utils/user-readable-id-generator';
 import type { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
-import { migrateInDatabaseTo } from '../database/state-migrations/migrations';
+import { migrateInDatabase } from '../database/state-migrations/migrations';
 import { pushAll, removeAll } from '../utils/array';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
@@ -400,12 +400,7 @@ export class ExerciseWrapper extends NormalType<
                 })(manager);
             await Promise.all(
                 outdatedExercises.map(async (exercise) => {
-                    await migrateInDatabaseTo(
-                        ExerciseState.currentStateVersion,
-                        exercise.stateVersion,
-                        exercise.id,
-                        manager
-                    );
+                    await migrateInDatabase(exercise.id, manager);
                 })
             );
 

@@ -42,3 +42,20 @@ export function applyAction(
         action as any
     );
 }
+
+/**
+ * @param actions all the actions that were applied to the {@link initialState} to get to the present state
+ * @returns the state after applying all the actions
+ */
+export function applyAllActions(
+    initialState: ExerciseState,
+    actions: readonly ExerciseAction[]
+): ExerciseState {
+    // TODO: find a heuristic for whether using produce or deepCloning it
+    // Default is produce
+    return produce(initialState, (draftState) => {
+        for (const action of actions) {
+            applyAction(draftState, action);
+        }
+    });
+}
