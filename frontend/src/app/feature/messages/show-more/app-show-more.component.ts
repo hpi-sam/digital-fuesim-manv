@@ -89,7 +89,7 @@ export class AppShowMoreComponent
         if (this.heightChangeObservationStrategies.polling) {
             this.pollingIntervallRef = setInterval(
                 () => this.updateState(),
-                this.heightChangeObservationStrategies.polling
+                1000
             );
         }
         if (this.heightChangeObservationStrategies.resizeObserver) {

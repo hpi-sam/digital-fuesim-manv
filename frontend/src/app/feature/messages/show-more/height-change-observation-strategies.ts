@@ -4,14 +4,12 @@ export interface HeightChangeObservationStrategies {
      */
     resizeObserver: boolean;
     /**
-     * Observe wether the content or its children got mutated (attributes changed, new element added, element removed etc.)
+     * Observe whether the content or its children got mutated (attributes changed, new element added, element removed etc.)
      * Can be non-performant if the content is large
      */
     mutationObserver: boolean;
     /**
-     * Check every {@link polling} ms if the scrollHeight of the content has changed
-     * number - the polling interval in ms
-     * false - disable polling
+     * Check in regular intervals whether the scrollHeight of the content has changed
      */
-    polling: number | false;
+    polling: boolean;
 }
