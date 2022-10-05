@@ -2,6 +2,8 @@ import { IsNumber, Min } from 'class-validator';
 import { IsStringLiteralUnion } from '../../utils/validators';
 import { getCreate } from './get-create';
 
+type LogicalOperator = 'and' | 'or';
+
 export class CanCaterFor {
     /**
      * if {@link logicalOperator}  `=== 'and'` it is cumulative,
@@ -31,8 +33,8 @@ export class CanCaterFor {
     @Min(0)
     public readonly green: number;
 
-    @IsStringLiteralUnion()
-    public readonly logicalOperator: 'and' | 'or';
+    @IsStringLiteralUnion<LogicalOperator>({ and: true, or: true })
+    public readonly logicalOperator: LogicalOperator;
 
     /**
      * @deprecated Use {@link create} instead
@@ -41,7 +43,7 @@ export class CanCaterFor {
         red: number,
         yellow: number,
         green: number,
-        logicalOperator: 'and' | 'or'
+        logicalOperator: LogicalOperator
     ) {
         this.red = red;
         this.yellow = yellow;

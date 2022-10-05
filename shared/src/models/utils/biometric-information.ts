@@ -8,7 +8,7 @@ export class BiometricInformation {
     @Min(0)
     public readonly age: number;
 
-    @IsStringLiteralUnion()
+    @IsStringLiteralUnion<Sex>({ diverse: true, female: true, male: true })
     public readonly sex: Sex;
 
     /**

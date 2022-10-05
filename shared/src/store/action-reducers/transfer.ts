@@ -22,6 +22,8 @@ import {
     removeElementPosition,
 } from './utils/spatial-elements';
 
+type TransferableElementType = 'personnel' | 'vehicles';
+
 /**
  * Personnel/Vehicle in transfer will arrive immediately at new targetTransferPoint
  * Transfer gets deleted afterwards
@@ -29,7 +31,7 @@ import {
  */
 export function letElementArrive(
     draftState: Mutable<ExerciseState>,
-    elementType: 'personnel' | 'vehicles',
+    elementType: TransferableElementType,
     elementId: UUID
 ) {
     const element = getElement(draftState, elementType, elementId);
@@ -61,8 +63,11 @@ export class AddToTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Add to transfer';
 
-    @IsStringLiteralUnion()
-    elementType!: 'personnel' | 'vehicles';
+    @IsStringLiteralUnion<TransferableElementType>({
+        personnel: true,
+        vehicles: true,
+    })
+    elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;
@@ -79,8 +84,11 @@ export class EditTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Edit transfer';
 
-    @IsStringLiteralUnion()
-    elementType!: 'personnel' | 'vehicles';
+    @IsStringLiteralUnion<TransferableElementType>({
+        personnel: true,
+        vehicles: true,
+    })
+    elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;
@@ -103,8 +111,11 @@ export class FinishTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Finish transfer';
 
-    @IsStringLiteralUnion()
-    elementType!: 'personnel' | 'vehicles';
+    @IsStringLiteralUnion<TransferableElementType>({
+        personnel: true,
+        vehicles: true,
+    })
+    elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;
@@ -117,8 +128,11 @@ export class TogglePauseTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Toggle pause transfer';
 
-    @IsStringLiteralUnion()
-    elementType!: 'personnel' | 'vehicles';
+    @IsStringLiteralUnion<TransferableElementType>({
+        personnel: true,
+        vehicles: true,
+    })
+    elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;

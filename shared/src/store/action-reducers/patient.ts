@@ -63,7 +63,14 @@ export class SetVisibleStatusAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly patientId!: UUID;
 
-    @IsStringLiteralUnion()
+    @IsStringLiteralUnion<PatientStatus>({
+        black: true,
+        blue: true,
+        green: true,
+        red: true,
+        white: true,
+        yellow: true,
+    })
     public readonly patientStatus!: PatientStatus;
 }
 
