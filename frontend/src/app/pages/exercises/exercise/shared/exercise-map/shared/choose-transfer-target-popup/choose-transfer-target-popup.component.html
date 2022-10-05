@@ -21,7 +21,7 @@
             [transferPointId]="reachableTransferPoint.id"
         ></app-transfer-point-name>
     </button>
-    <ng-container *ngIf="droppedElementType === 'vehicle'">
+    <ng-container *ngIf="droppedElementType === 'vehicles'">
         <div
             *ngIf="
                 (reachableTransferPoints$ | async)?.length &&

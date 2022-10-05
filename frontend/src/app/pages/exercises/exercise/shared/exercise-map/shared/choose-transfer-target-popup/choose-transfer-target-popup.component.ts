@@ -20,7 +20,7 @@ export class ChooseTransferTargetPopupComponent
 {
     // These properties are only set after OnInit
     public transferPointId!: UUID;
-    public droppedElementType!: 'personnel' | 'vehicle';
+    public droppedElementType!: 'personnel' | 'vehicles';
 
     public transferToCallback!: (
         targetId: UUID,
