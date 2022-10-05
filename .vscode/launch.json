@@ -5,7 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "[frontend] Launch Chrome against localhost",
+            "name": "Launch Frontend [Firefox]",
+            "type": "firefox",
+            "request": "launch",
+            "url": "http://localhost:4200",
+            "webRoot": "${workspaceFolder}/frontend"
+        },
+        {
+            "name": "Launch Frontend [Chrome]",
             "type": "chrome",
             "request": "launch",
             "url": "http://localhost:4200",
