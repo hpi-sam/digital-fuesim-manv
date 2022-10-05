@@ -160,7 +160,8 @@ function getNextStateId(patient: Patient) {
             (nextConditions.maximumHealth === undefined ||
                 patient.health < nextConditions.maximumHealth) &&
             (nextConditions.isBeingTreated === undefined ||
-                Patient.isTreatedByPersonnel(patient) === nextConditions.isBeingTreated)
+                Patient.isTreatedByPersonnel(patient) ===
+                    nextConditions.isBeingTreated)
         ) {
             return nextConditions.matchingHealthStateId;
         }
