@@ -9,7 +9,16 @@
             "type": "firefox",
             "request": "launch",
             "url": "http://localhost:4200",
-            "webRoot": "${workspaceFolder}/frontend"
+            "pathMappings": [
+                {
+                    "url": "webpack:///shared",
+                    "path": "${workspaceFolder}/shared"
+                },
+                {
+                    "url": "webpack:///",
+                    "path": "${workspaceFolder}/frontend"
+                }
+            ]
         },
         {
             "name": "Launch Frontend [Chrome]",
