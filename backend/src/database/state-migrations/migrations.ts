@@ -81,27 +81,27 @@ export async function migrateInDatabase(
             order: { index: 'ASC' },
         })
     ).map((action) => JSON.parse(action.actionString));
-    const {
-        currentStateVersion: newStateVersion,
-        currentState: newCurrentState,
-        history,
-    } = applyMigrations(exercise.stateVersion, currentState, {
-        initialState,
-        actions,
+    const newVersion = applyMigrations(exercise.stateVersion, {
+        currentState,
+        history: {
+            initialState,
+            actions,
+        },
     });
+    exercise.stateVersion = newVersion;
     // Save exercise wrapper
     const patch: Partial<ExerciseWrapperEntity> = {
-        stateVersion: newStateVersion,
+        stateVersion: exercise.stateVersion,
     };
-    patch.initialStateString = JSON.stringify(history!.initialState);
-    patch.currentStateString = JSON.stringify(newCurrentState);
+    patch.initialStateString = JSON.stringify(initialState);
+    patch.currentStateString = JSON.stringify(currentState);
     await entityManager.update(
         ExerciseWrapperEntity,
         { id: exerciseId },
         patch
     );
     // Save actions
-    if (history!.actions !== undefined) {
+    if (actions !== undefined) {
         let patchedActionsIndex = 0;
         const indicesToRemove: number[] = [];
         const actionsToUpdate: {
@@ -109,7 +109,7 @@ export async function migrateInDatabase(
             newIndex: number;
             actionString: string;
         }[] = [];
-        history!.actions.forEach((action, i) => {
+        actions.forEach((action, i) => {
             if (action === null) {
                 indicesToRemove.push(i);
                 return;
@@ -151,68 +151,67 @@ export function migrateStateExport(
     stateExportToMigrate: StateExport
 ): Mutable<StateExport> {
     const stateExport = cloneDeepMutable(stateExportToMigrate);
-    const { currentState, history } = applyMigrations(
-        stateExport.dataVersion,
-        stateExport.currentState,
-        stateExport.history
+    const propertiesToMigrate = {
+        currentState: stateExport.currentState,
+        history: stateExport.history
             ? {
                   initialState: stateExport.history.initialState,
                   actions: stateExport.history.actionHistory,
               }
-            : undefined
+            : undefined,
+    };
+    const newVersion = applyMigrations(
+        stateExport.dataVersion,
+        propertiesToMigrate
     );
+    stateExport.dataVersion = newVersion;
+    stateExport.currentState = propertiesToMigrate.currentState;
     if (stateExport.history) {
-        stateExport.history.initialState = history!
-            .initialState as Mutable<ExerciseState>;
-        stateExport.history.actionHistory = history!.actions.filter(
-            (action) => action !== null
-        ) as Mutable<ExerciseAction>[];
+        stateExport.history.actionHistory =
+            // Remove actions that are marked to be removed by the migrations
+            propertiesToMigrate.history!.actions.filter(
+                (action) => action !== null
+            );
     }
-    stateExport.currentState = currentState as Mutable<ExerciseState>;
     return stateExport;
 }
 
+/**
+ * Migrates {@link propertiesToMigrate} to the newest version ({@link ExerciseState.currentStateVersion})
+ * by mutating them.
+ *
+ * @returns The new state version
+ */
 function applyMigrations(
     currentStateVersion: number,
-    currentState: object,
-    history?: { initialState: object; actions: (object | null)[] }
-): {
-    currentStateVersion: number;
-    currentState: ExerciseState;
-    history?: {
-        initialState: ExerciseState;
-        actions: (ExerciseAction | null)[];
-    };
-} {
+    propertiesToMigrate: {
+        currentState: object;
+        history?: { initialState: object; actions: (object | null)[] };
+    }
+): number {
     const targetVersion = ExerciseState.currentStateVersion;
-    let newCurrentState = currentState;
     for (let i = currentStateVersion + 1; i <= targetVersion; i++) {
         const stateMigration = migrations[i]!.state;
         if (stateMigration !== null) {
-            if (history) stateMigration(history.initialState);
-            else stateMigration(newCurrentState);
+            if (propertiesToMigrate.history)
+                stateMigration(propertiesToMigrate.history.initialState);
+            else stateMigration(propertiesToMigrate.currentState);
         }
-        if (!history) continue;
+        if (!propertiesToMigrate.history) continue;
         const actionMigration = migrations[i]!.actions;
         if (actionMigration !== null) {
-            actionMigration(history.initialState, history.actions);
+            actionMigration(
+                propertiesToMigrate.history.initialState,
+                propertiesToMigrate.history.actions
+            );
         }
     }
-    if (history)
-        newCurrentState = applyAllActions(
-            history.initialState as ExerciseState,
-            history.actions.filter(
+    if (propertiesToMigrate.history)
+        propertiesToMigrate.currentState = applyAllActions(
+            propertiesToMigrate.history.initialState as ExerciseState,
+            propertiesToMigrate.history.actions.filter(
                 (action) => action !== null
             ) as ExerciseAction[]
         );
-    return {
-        currentStateVersion: targetVersion,
-        currentState: newCurrentState as ExerciseState,
-        history: history
-            ? {
-                  initialState: history?.initialState as ExerciseState,
-                  actions: history?.actions as (ExerciseAction | null)[],
-              }
-            : undefined,
-    };
+    return targetVersion;
 }
