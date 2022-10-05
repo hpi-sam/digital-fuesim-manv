@@ -1,4 +1,4 @@
-import { groupBy, isEmpty } from 'lodash-es';
+import { groupBy } from 'lodash-es';
 import type { Material, Personnel } from '../../../models';
 import { Patient } from '../../../models';
 import type { PatientStatus, Position } from '../../../models/utils';
@@ -84,7 +84,6 @@ function tryToCaterFor(
 
     if (isPersonnel(cateringElement)) {
         patient.assignedPersonnelIds[cateringElement.id] = true;
-        patient.isBeingTreated = true;
     } else {
         patient.assignedMaterialIds[cateringElement.id] = true;
     }
@@ -149,7 +148,6 @@ function removeTreatmentsOfElement(
             delete personnel.assignedPatientIds[patient.id];
         }
         patient.assignedPersonnelIds = {};
-        patient.isBeingTreated = false;
         // Make all material stop treating this patient
         for (const materialId of Object.keys(patient.assignedMaterialIds)) {
             const material = getElement(state, 'materials', materialId);
@@ -162,7 +160,6 @@ function removeTreatmentsOfElement(
         for (const patientId of Object.keys(personnel.assignedPatientIds)) {
             const patient = getElement(state, 'patients', patientId);
             delete patient.assignedPersonnelIds[personnel.id];
-            patient.isBeingTreated = !isEmpty(patient.assignedPersonnelIds);
         }
         personnel.assignedPatientIds = {};
     } else if (isMaterial(element)) {
