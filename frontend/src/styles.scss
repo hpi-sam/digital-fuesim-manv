@@ -1,5 +1,10 @@
 @import '~bootstrap/scss/bootstrap.scss';
 
+.dropdown-menu {
+    overflow: auto;
+    max-height: 250px;
+}
+
 // These classes are automatically applied by angular on validated inputs
 .ng-valid:not(.no-validation) {
     @extend .is-valid;
