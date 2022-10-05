@@ -11,6 +11,7 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
+import { isEmpty } from 'lodash-es';
 import { UUID, uuid, UUIDSet, uuidValidationOptions } from '../utils';
 import {
     getCreate,
@@ -101,12 +102,6 @@ export class Patient {
     @Max(healthPointsDefaults.max)
     @Min(healthPointsDefaults.min)
     public readonly health: HealthPoints;
-    /**
-     * Whether the patient is currently being treated by a personnel
-     */
-    @IsBoolean()
-    // TODO: Remove this property and calculate it on demand via `static isTreatedByPersonnel(patient){ return !isEmpty(patient.assignedPersonnelIds); }`
-    public readonly isBeingTreated: boolean = false;
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     @IsDefined()
@@ -199,5 +194,9 @@ export class Patient {
 
     static isInVehicle(patient: Patient): boolean {
         return patient.position === undefined;
+    }
+
+    static isTreatedByPersonnel(patient: Patient) {
+        return !isEmpty(patient.assignedPersonnelIds);
     }
 }

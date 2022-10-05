@@ -47,9 +47,6 @@ function assertCatering(
                         ? 'assignedMaterialIds'
                         : 'assignedPersonnelIds'
                 ][catering.catererId] = true;
-                if (catering.catererType === 'personnel') {
-                    patient.isBeingTreated = true;
-                }
             }
             // Update the catering element
             const cateringElement = getElement(

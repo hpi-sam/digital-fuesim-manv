@@ -15,6 +15,7 @@ import { removeStatistics5 } from './5-remove-statistics';
 import { removeStateHistory6 } from './6-remove-state-history';
 import { addPatientRemarks7 } from './7-add-patient-remarks';
 import { treatmentSystemImprovements8 } from './8-treatment-system-improvements';
+import { removeIsBeingTreated9 } from './9-remove-is-being-treated';
 import { impossibleMigration } from './impossible-migration';
 
 /**
@@ -51,6 +52,7 @@ export const migrations: {
     6: removeStateHistory6,
     7: addPatientRemarks7,
     8: treatmentSystemImprovements8,
+    9: removeIsBeingTreated9,
 };
 
 export async function migrateInDatabase(

@@ -55,7 +55,7 @@ export class AppShowMoreComponent
      */
     @Input()
     heightChangeObservationStrategies: HeightChangeObservationStrategies = {
-        polling: 1000,
+        polling: false,
         resizeObserver: true,
         mutationObserver: true,
     };
@@ -74,6 +74,7 @@ export class AppShowMoreComponent
 
     private resizeObserver?: ResizeObserver;
     private mutationObserver?: MutationObserver;
+    private pollingIntervallRef?: ReturnType<typeof setInterval>;
 
     ngOnChanges() {
         this.updateState();
@@ -86,9 +87,9 @@ export class AppShowMoreComponent
         // observe the height of the content and update the showingMore-state whenever it changes
         // therefore we make use of up to three different strategies to detect changes in the scrollHeight
         if (this.heightChangeObservationStrategies.polling) {
-            setInterval(
+            this.pollingIntervallRef = setInterval(
                 () => this.updateState(),
-                this.heightChangeObservationStrategies.polling
+                1000
             );
         }
         if (this.heightChangeObservationStrategies.resizeObserver) {
@@ -164,5 +165,6 @@ export class AppShowMoreComponent
     ngOnDestroy() {
         this.resizeObserver?.disconnect();
         this.mutationObserver?.disconnect();
+        clearInterval(this.pollingIntervallRef);
     }
 }
