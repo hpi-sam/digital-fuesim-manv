@@ -1,12 +1,14 @@
-import {
-    cloneDeepImmutable,
-    cloneDeepMutable,
-    ExerciseAction,
-    Mutable,
-    StateExport,
+import type {
     UUID,
+    StateExport,
+    Mutable,
+    ExerciseAction,
 } from 'digital-fuesim-manv-shared';
-import { applyAllActions, ExerciseState } from 'digital-fuesim-manv-shared';
+import {
+    cloneDeepMutable,
+    ExerciseState,
+    applyAllActions,
+} from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import { RestoreError } from '../../utils/restore-error';
 import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
