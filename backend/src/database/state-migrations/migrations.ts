@@ -66,7 +66,6 @@ export async function migrateInDatabase(
             exerciseId
         );
     }
-    // const targetVersion = ExerciseState.currentStateVersion;
     const initialState = JSON.parse(exercise.initialStateString);
     const currentState = JSON.parse(exercise.currentStateString);
     const actions = (
@@ -88,10 +87,8 @@ export async function migrateInDatabase(
     const patch: Partial<ExerciseWrapperEntity> = {
         stateVersion: newStateVersion,
     };
-    // if (newCurrentState !== null) {
     patch.initialStateString = JSON.stringify(history!.initialState);
     patch.currentStateString = JSON.stringify(newCurrentState);
-    // }
     await entityManager.update(
         ExerciseWrapperEntity,
         { id: exerciseId },
@@ -172,7 +169,7 @@ function applyMigrations(
     history?: { initialState: object; actions: (object | null)[] }
 ): {
     currentStateVersion: number;
-    currentState: object;
+    currentState: ExerciseState;
     history?: {
         initialState: ExerciseState;
         actions: (ExerciseAction | null)[];
@@ -181,15 +178,15 @@ function applyMigrations(
     const targetVersion = ExerciseState.currentStateVersion;
     let newCurrentState = currentState;
     for (let i = currentStateVersion + 1; i <= targetVersion; i++) {
-        const stateMigration = migrations[i]?.state;
-        if (typeof stateMigration === 'function') {
+        const stateMigration = migrations[i]!.state;
+        if (stateMigration !== null) {
             if (history)
                 history.initialState = stateMigration(history.initialState);
             else newCurrentState = stateMigration(newCurrentState);
         }
         if (!history) continue;
-        const actionMigration = migrations[i]?.actions;
-        if (typeof actionMigration === 'function') {
+        const actionMigration = migrations[i]!.actions;
+        if (actionMigration !== null) {
             actionMigration(history.initialState, history.actions);
         }
     }
@@ -202,7 +199,7 @@ function applyMigrations(
         );
     return {
         currentStateVersion: targetVersion,
-        currentState: newCurrentState,
+        currentState: newCurrentState as ExerciseState,
         history: history
             ? {
                   initialState: history?.initialState as ExerciseState,
