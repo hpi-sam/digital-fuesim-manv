@@ -5,10 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            // By default, the Firefox debug extension will create a temporary profile and use this for the Firefox process
+            // Therefore, extensions (like the Angular DevTools) have to be installed every time
+            // You can specify a profile to copy with the `profile`-property
+            // You might also have to specify `"keepProfileChanges": true`
+            // Example configurations can be found below, commented-out
+            // Please note the using default profiles might cause security issues:
+            // Remote debugging will be enabled for your main profile used for daily browsing
             "name": "Launch Frontend [Firefox]",
             "type": "firefox",
             "request": "launch",
             "url": "http://localhost:4200",
+            // "profile": "dev-edition-default",
+            // "keepProfileChanges": true,
             "pathMappings": [
                 {
                     "url": "webpack:///shared",
