@@ -1,4 +1,6 @@
-import type {
+import {
+    cloneDeepImmutable,
+    cloneDeepMutable,
     ExerciseAction,
     Mutable,
     StateExport,
@@ -85,7 +87,7 @@ export async function migrateInDatabase(
         initialState,
         actions,
     });
-    // Save exercise
+    // Save exercise wrapper
     const patch: Partial<ExerciseWrapperEntity> = {
         stateVersion: newStateVersion,
     };
@@ -143,7 +145,10 @@ export async function migrateInDatabase(
     }
 }
 
-export function migrateStateExport(stateExport: StateExport): StateExport {
+export function migrateStateExport(
+    stateExportToMigrate: StateExport
+): Mutable<StateExport> {
+    const stateExport = cloneDeepMutable(stateExportToMigrate);
     const { currentState, history } = applyMigrations(
         stateExport.dataVersion,
         stateExport.currentState,
@@ -159,7 +164,7 @@ export function migrateStateExport(stateExport: StateExport): StateExport {
             .initialState as Mutable<ExerciseState>;
         stateExport.history.actionHistory = history!.actions.filter(
             (action) => action !== null
-        ) as ExerciseAction[];
+        ) as Mutable<ExerciseAction>[];
     }
     stateExport.currentState = currentState as Mutable<ExerciseState>;
     return stateExport;
