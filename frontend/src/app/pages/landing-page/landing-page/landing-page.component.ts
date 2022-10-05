@@ -52,6 +52,15 @@ export class LandingPageComponent {
             });
     }
 
+    public async selectExerciseState(event: Event) {
+        const target: any = event.target;
+        if (target) {
+            this.importExerciseState(target.files);
+            // Reset value so we receive a change even for the same filename next time
+            target.value = '';
+        }
+    }
+
     public importingExercise = false;
     public async importExerciseState(fileList: FileList) {
         this.importingExercise = true;
