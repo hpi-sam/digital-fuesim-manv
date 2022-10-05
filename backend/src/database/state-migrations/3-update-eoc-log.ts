@@ -6,7 +6,7 @@ export const updateEocLog3: Migration = {
     state: migrateState,
 };
 
-function migrateState(state: object): object {
+function migrateState(state: object): void {
     // Rename `ecoLog` to `eocLog`
     (state as { eocLog: EocLogEntry[] }).eocLog = (
         state as { ecoLog: EocLogEntry[] }
@@ -20,7 +20,6 @@ function migrateState(state: object): object {
             (state as { clients: { [key: UUID]: Client } }).clients
         )
     );
-    return state;
 }
 
 /**

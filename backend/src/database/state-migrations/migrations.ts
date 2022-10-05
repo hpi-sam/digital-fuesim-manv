@@ -31,10 +31,10 @@ type MigrateActionsFunction = (
 ) => void;
 
 /**
- * Such a function gets the not yet migrated state and is expected to return a migrated version of it.
+ * Such a function gets the not yet migrated state and is expected to mutate it to a migrated version.
  * It may throw a {@link RestoreError} when a migration is not possible.
  */
-type MigrateStateFunction = (state: object) => object;
+type MigrateStateFunction = (state: object) => void;
 
 export interface Migration {
     actions: MigrateActionsFunction | null;
@@ -182,9 +182,8 @@ function applyMigrations(
     for (let i = currentStateVersion + 1; i <= targetVersion; i++) {
         const stateMigration = migrations[i]!.state;
         if (stateMigration !== null) {
-            if (history)
-                history.initialState = stateMigration(history.initialState);
-            else newCurrentState = stateMigration(newCurrentState);
+            if (history) stateMigration(history.initialState);
+            else stateMigration(newCurrentState);
         }
         if (!history) continue;
         const actionMigration = migrations[i]!.actions;
