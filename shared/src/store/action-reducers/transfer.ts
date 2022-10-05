@@ -90,7 +90,7 @@ export class EditTransferAction implements Action {
 
 export class DeleteTransferAction implements Action {
     @IsString()
-    public readonly type = '[Transfer] delete transfer';
+    public readonly type = '[Transfer] Delete transfer';
 
     @IsString()
     elementType!: 'personnel' | 'vehicles';
