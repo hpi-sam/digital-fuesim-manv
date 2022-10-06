@@ -52,4 +52,12 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
             newHeight,
         });
     }
+
+    public lock(newLocked: boolean) {
+        this.apiService.proposeAction({
+            type: '[MapImage] Lock MapImage',
+            mapImageId: this.mapImageId,
+            newLocked,
+        });
+    }
 }

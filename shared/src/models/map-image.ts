@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
 import { Position, getCreate, ImageProperties } from './utils';
 
@@ -15,12 +15,16 @@ export class MapImage {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
+    @IsBoolean()
+    public readonly locked: boolean;
+
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(topLeft: Position, image: ImageProperties) {
+    constructor(topLeft: Position, image: ImageProperties, locked?: boolean) {
         this.position = topLeft;
         this.image = image;
+        this.locked = locked ?? false;
     }
 
     static readonly create = getCreate(this);

@@ -52,6 +52,15 @@
                     [ngModelInput]="heightInput"
                 ></app-display-validation>
             </div>
+            <div class="form-check form-switch pb-3">
+                <input
+                    type="checkbox"
+                    class="form-check-input"
+                    [ngModel]="mapImage.locked"
+                    (ngModelChange)="lock($event)"
+                />
+                <label class="form-check-label">Position Sperren</label>
+            </div>
         </ng-container>
     </div>
 </ng-container>
