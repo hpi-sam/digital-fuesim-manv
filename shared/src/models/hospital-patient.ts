@@ -15,6 +15,7 @@ import {
     ImageProperties,
     IsValidHealthPoint,
     PatientStatus,
+    patientStatusAllowedValues,
 } from './utils';
 import { BiometricInformation } from './utils/biometric-information';
 import { PersonalInformation } from './utils/personal-information';
@@ -54,24 +55,10 @@ export class HospitalPatient {
     @Type(() => BiometricInformation)
     public readonly biometricInformation: BiometricInformation;
 
-    @IsStringLiteralUnion<PatientStatus>({
-        black: true,
-        blue: true,
-        green: true,
-        red: true,
-        white: true,
-        yellow: true,
-    })
+    @IsStringLiteralUnion<PatientStatus>(patientStatusAllowedValues)
     public readonly pretriageStatus: PatientStatus;
 
-    @IsStringLiteralUnion<PatientStatus>({
-        black: true,
-        blue: true,
-        green: true,
-        red: true,
-        white: true,
-        yellow: true,
-    })
+    @IsStringLiteralUnion<PatientStatus>(patientStatusAllowedValues)
     public readonly realStatus: PatientStatus;
 
     @ValidateNested()

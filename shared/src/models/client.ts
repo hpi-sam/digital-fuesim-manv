@@ -8,6 +8,7 @@ import {
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { IsStringLiteralUnion } from '../utils/validators';
 import { getCreate, Role } from './utils';
+import { roleAllowedValues } from './utils/role';
 
 export class Client {
     @IsUUID(4, uuidValidationOptions)
@@ -18,7 +19,7 @@ export class Client {
     @MaxLength(255)
     public readonly name: string;
 
-    @IsStringLiteralUnion<Role>({ participant: true, trainer: true })
+    @IsStringLiteralUnion<Role>(roleAllowedValues)
     public readonly role: Role;
 
     @IsUUID(4, uuidValidationOptions)

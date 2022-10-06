@@ -1,20 +1,21 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
-import { StrictObject } from '../strict-object';
 import { makeValidator } from './make-validator';
 
+export type AllowedValues<T extends string> = { [key in T]: true };
+
 export function isStringLiteralUnion<T extends string>(
-    allowedValues: { [key in T]: true },
+    allowedValues: AllowedValues<T>,
     valueToBeValidated: unknown
 ): boolean {
     return (
         typeof valueToBeValidated === 'string' &&
-        StrictObject.keys(allowedValues).includes(valueToBeValidated as T)
+        allowedValues[valueToBeValidated as T]
     );
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function IsStringLiteralUnion<T extends string>(
-    allowedValues: { [key in T]: true },
+    allowedValues: AllowedValues<T>,
     validationOptions?: ValidationOptions
 ) {
     return makeValidator(

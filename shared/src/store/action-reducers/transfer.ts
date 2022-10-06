@@ -13,6 +13,7 @@ import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
 import { UUID, uuidValidationOptions, cloneDeepMutable } from '../../utils';
+import type { AllowedValues } from '../../utils/validators';
 import { IsStringLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -23,6 +24,8 @@ import {
 } from './utils/spatial-elements';
 
 type TransferableElementType = 'personnel' | 'vehicles';
+const transferableElementTypeAllowedValues: AllowedValues<TransferableElementType> =
+    { personnel: true, vehicles: true };
 
 /**
  * Personnel/Vehicle in transfer will arrive immediately at new targetTransferPoint
@@ -63,10 +66,9 @@ export class AddToTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Add to transfer';
 
-    @IsStringLiteralUnion<TransferableElementType>({
-        personnel: true,
-        vehicles: true,
-    })
+    @IsStringLiteralUnion<TransferableElementType>(
+        transferableElementTypeAllowedValues
+    )
     elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
@@ -84,10 +86,9 @@ export class EditTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Edit transfer';
 
-    @IsStringLiteralUnion<TransferableElementType>({
-        personnel: true,
-        vehicles: true,
-    })
+    @IsStringLiteralUnion<TransferableElementType>(
+        transferableElementTypeAllowedValues
+    )
     elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
@@ -111,10 +112,9 @@ export class FinishTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Finish transfer';
 
-    @IsStringLiteralUnion<TransferableElementType>({
-        personnel: true,
-        vehicles: true,
-    })
+    @IsStringLiteralUnion<TransferableElementType>(
+        transferableElementTypeAllowedValues
+    )
     elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
@@ -128,10 +128,9 @@ export class TogglePauseTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Toggle pause transfer';
 
-    @IsStringLiteralUnion<TransferableElementType>({
-        personnel: true,
-        vehicles: true,
-    })
+    @IsStringLiteralUnion<TransferableElementType>(
+        transferableElementTypeAllowedValues
+    )
     elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)

@@ -1,3 +1,5 @@
+import type { AllowedValues } from '../../utils/validators';
+
 export type PatientStatus =
     | 'black'
     | 'blue'
@@ -15,4 +17,13 @@ export const statusNames: {
     red: 'SK I',
     white: 'Ungesichtet',
     yellow: 'SK II',
+};
+
+export const patientStatusAllowedValues: AllowedValues<PatientStatus> = {
+    black: true,
+    blue: true,
+    green: true,
+    red: true,
+    white: true,
+    yellow: true,
 };

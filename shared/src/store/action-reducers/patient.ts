@@ -1,7 +1,11 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
-import { PatientStatus, Position } from '../../models/utils';
+import {
+    PatientStatus,
+    patientStatusAllowedValues,
+    Position,
+} from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import {
@@ -63,14 +67,7 @@ export class SetVisibleStatusAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly patientId!: UUID;
 
-    @IsStringLiteralUnion<PatientStatus>({
-        black: true,
-        blue: true,
-        green: true,
-        red: true,
-        white: true,
-        yellow: true,
-    })
+    @IsStringLiteralUnion<PatientStatus>(patientStatusAllowedValues)
     public readonly patientStatus!: PatientStatus;
 }
 

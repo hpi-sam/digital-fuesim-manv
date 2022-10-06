@@ -20,6 +20,7 @@ import {
     Transfer,
     getCreate,
 } from './utils';
+import { personnelTypeAllowedValues } from './utils/personnel-type';
 
 export class Personnel {
     @IsUUID(4, uuidValidationOptions)
@@ -28,13 +29,7 @@ export class Personnel {
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId: UUID;
 
-    @IsStringLiteralUnion<PersonnelType>({
-        gf: true,
-        notarzt: true,
-        notSan: true,
-        rettSan: true,
-        san: true,
-    })
+    @IsStringLiteralUnion<PersonnelType>(personnelTypeAllowedValues)
     public readonly personnelType: PersonnelType;
 
     @IsString()

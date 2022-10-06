@@ -1,16 +1,16 @@
 import { Type } from 'class-transformer';
 import {
-    IsBoolean,
-    IsDefined,
-    isEmpty,
-    IsNumber,
-    IsOptional,
-    IsString,
     IsUUID,
-    Max,
-    MaxLength,
-    Min,
     ValidateNested,
+    IsOptional,
+    IsNumber,
+    Max,
+    Min,
+    IsDefined,
+    IsBoolean,
+    IsString,
+    MaxLength,
+    isEmpty,
 } from 'class-validator';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsStringLiteralUnion, IsIdMap } from '../utils/validators';
@@ -19,6 +19,7 @@ import {
     BiometricInformation,
     PatientStatusCode,
     PatientStatus,
+    patientStatusAllowedValues,
     ImageProperties,
     Position,
     healthPointsDefaults,
@@ -52,24 +53,10 @@ export class Patient {
     @Type(() => PatientStatusCode)
     public readonly patientStatusCode: PatientStatusCode;
 
-    @IsStringLiteralUnion<PatientStatus>({
-        black: true,
-        blue: true,
-        green: true,
-        red: true,
-        white: true,
-        yellow: true,
-    })
+    @IsStringLiteralUnion<PatientStatus>(patientStatusAllowedValues)
     public readonly pretriageStatus: PatientStatus;
 
-    @IsStringLiteralUnion<PatientStatus>({
-        black: true,
-        blue: true,
-        green: true,
-        red: true,
-        white: true,
-        yellow: true,
-    })
+    @IsStringLiteralUnion<PatientStatus>(patientStatusAllowedValues)
     public readonly realStatus: PatientStatus;
 
     @ValidateNested()

@@ -4,25 +4,11 @@ import { isUUID, ValidateNested } from 'class-validator';
 import type { Constructor } from '../constructor';
 import type { UUID } from '../uuid';
 import { combineDecorators } from './combine-decorators';
-import { createMapValidator } from './create-map-validator';
-import { isValidObject } from './is-valid-object';
 
-export function isIdMap<T extends object>(
-    type: Constructor<T>,
-    getId: (value: T) => UUID,
-    valueToBeValidated: unknown
-): boolean {
-    return createMapValidator<UUID, T>({
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        keyValidator: <(key: unknown) => key is UUID>((key) => isUUID(key, 4)),
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        valueValidator: <(value: unknown) => value is T>(
-            ((value) => isValidObject(type, value))
-        ),
-        consistencyValidator: (key, value) =>
-            getId(plainToInstance(type, value)) === key,
-    })(valueToBeValidated);
-}
+// An `isIdMap` function is omitted.
+// It's currently not used and it's not trivial to migrate the decorator approach below
+// to a standalone function.
+// For reference, such an implementation once existed as part of https://github.com/hpi-sam/digital-fuesim-manv/pull/125.
 
 /**
  * An `IdMap` is of type `{ [key: UUID]: T }`

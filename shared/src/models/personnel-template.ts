@@ -8,16 +8,11 @@ import {
     ImageProperties,
     getCreate,
 } from './utils';
+import { personnelTypeAllowedValues } from './utils/personnel-type';
 
 // TODO: These are not (yet) saved in the state -> Decide whether they should and if not move this file from the models folder away
 export class PersonnelTemplate {
-    @IsStringLiteralUnion<PersonnelType>({
-        gf: true,
-        notarzt: true,
-        notSan: true,
-        rettSan: true,
-        san: true,
-    })
+    @IsStringLiteralUnion<PersonnelType>(personnelTypeAllowedValues)
     public readonly personnelType: PersonnelType;
 
     @ValidateNested()
