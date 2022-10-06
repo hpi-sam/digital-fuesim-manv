@@ -104,9 +104,9 @@ export class LoadVehicleAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
 
-    @IsStringLiteralUnion<'material' | 'patient' | 'personnel'>({
-        material: true,
-        patient: true,
+    @IsStringLiteralUnion<'materials' | 'patients' | 'personnel'>({
+        materials: true,
+        patients: true,
         personnel: true,
     })
     public readonly elementToBeLoadedType!:

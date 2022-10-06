@@ -1,7 +1,12 @@
 import { plainToInstance } from 'class-transformer';
-import type { ValidationError } from 'class-validator';
+import type {
+    ValidationArguments,
+    ValidationError,
+    ValidationOptions,
+} from 'class-validator';
 import { validateSync } from 'class-validator';
 import type { Constructor } from '../utils';
+import { makeValidator } from '../utils/validators/make-validator';
 import type { ExerciseAction } from './action-reducers';
 import { getExerciseActionTypeDictionary } from './action-reducers';
 import { defaultValidateOptions } from './validation-options';
@@ -28,5 +33,21 @@ export function validateExerciseAction(
     return validateSync(
         plainToInstance(actionClass as Constructor<ExerciseAction>, action),
         defaultValidateOptions
+    );
+}
+
+// Provide decorators for validation
+// Placed here instead of in utils/validators to prevent circular imports
+
+export function isExerciseAction(value: unknown): value is ExerciseAction {
+    return validateExerciseAction(value as ExerciseAction).length === 0;
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function IsExerciseAction(validationOptions?: ValidationOptions) {
+    return makeValidator(
+        'isExerciseAction',
+        (value: unknown, args?: ValidationArguments) => isExerciseAction(value),
+        validationOptions
     );
 }

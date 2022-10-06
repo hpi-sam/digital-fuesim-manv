@@ -1,27 +1,20 @@
 import { Type } from 'class-transformer';
-import type { ValidationError } from 'class-validator';
 import { IsArray, IsOptional, ValidateNested } from 'class-validator';
 import { ExerciseState } from '../../state';
 import type { ExerciseAction } from '../../store';
-import { validateExerciseAction } from '../../store';
+import { IsExerciseAction } from '../../store';
 import { Mutable } from '../../utils';
 import { IsStringLiteralUnion } from '../../utils/validators';
 import { BaseExportImportFile } from './base-file';
 
 export class StateHistoryCompound {
-    // TODO: Validate actions via decorator
     @IsArray()
+    @IsExerciseAction({ each: true })
     public actionHistory: ExerciseAction[];
 
     @ValidateNested()
     @Type(() => ExerciseState)
     public initialState: Mutable<ExerciseState>;
-
-    public validateActions(): (ValidationError | string)[][] {
-        return this.actionHistory.map((action) =>
-            validateExerciseAction(action)
-        );
-    }
 
     public constructor(
         actionHistory: ExerciseAction[],
