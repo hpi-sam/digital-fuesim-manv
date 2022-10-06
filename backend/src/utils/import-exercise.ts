@@ -1,13 +1,12 @@
 import { plainToInstance } from 'class-transformer';
 import type { ExerciseIds } from 'digital-fuesim-manv-shared';
 import {
-    ExerciseState,
     ReducerError,
     StateExport,
     validateExerciseExport,
 } from 'digital-fuesim-manv-shared';
 import type { DatabaseService } from '../database/services/database-service';
-import { migrateStateExportTo } from '../database/state-migrations/migrations';
+import { migrateStateExport } from '../database/state-migrations/migrations';
 import { ExerciseWrapper } from '../exercise/exercise-wrapper';
 import type { HttpResponse } from '../exercise/http-handler/utils';
 
@@ -16,11 +15,7 @@ export async function importExercise(
     ids: ExerciseIds,
     databaseService: DatabaseService
 ): Promise<ExerciseWrapper | HttpResponse<ExerciseIds>> {
-    const migratedImportObject = migrateStateExportTo(
-        ExerciseState.currentStateVersion,
-        importObject.dataVersion,
-        importObject
-    );
+    const migratedImportObject = migrateStateExport(importObject);
     // console.log(
     //     inspect(importObject.history, { depth: 2, colors: true })
     // );
