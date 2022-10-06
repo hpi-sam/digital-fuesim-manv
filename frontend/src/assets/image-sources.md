@@ -37,6 +37,9 @@ Florian Greiz 23
 [material.svg](material.svg):  
 <https://commons.wikimedia.org/wiki/File:First_aid_kit_(70543)_-_The_Noun_Project.svg> (edited)
 
+[big-material.svg](big-material.svg):  
+<https://commons.wikimedia.org/wiki/File:First_aid_kit_(70543)_-_The_Noun_Project.svg> (edited)
+
 [patient.svg](patient.svg):  
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
 

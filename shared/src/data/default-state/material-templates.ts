@@ -21,7 +21,7 @@ const standardMaterialTemplate = MaterialTemplate.create(
 const bigMaterialTemplate = MaterialTemplate.create(
     'big',
     {
-        url: '/assets/material.svg',
+        url: '/assets/big-material.svg',
         // Roughly double the area of the standard material
         height: 56,
         aspectRatio: 1,
