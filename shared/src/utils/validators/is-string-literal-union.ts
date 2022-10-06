@@ -1,6 +1,25 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
 import { makeValidator } from './make-validator';
 
+/**
+ * A type for validating unions of string literals.
+ *
+ * @example
+ * ````ts
+ * type StringLiteralUnion = 'a' | 'b';
+ *
+ * const stringLiteralUnionAllowedValues: AllowedValues<StringLiteralUnion> = {
+ *     a: true,
+ *     b: true,
+ * };
+ *
+ * class MyClassToValidate {
+ *     @IsStringLiteralUnion<StringLiteralUnion>(stringLiteralUnionAllowedValues)
+ *     public readonly myString: StringLiteralUnion;
+ * }
+ *
+ * ````
+ */
 export type AllowedValues<T extends string> = { [key in T]: true };
 
 export function isStringLiteralUnion<T extends string>(
