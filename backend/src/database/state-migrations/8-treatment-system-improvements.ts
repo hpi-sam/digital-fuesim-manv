@@ -90,7 +90,6 @@ export const treatmentSystemImprovements8: Migration = {
         for (const patientCategory of state.patientCategories) {
             migrateImageProperties(patientCategory.image);
         }
-        return state;
     },
 };
 

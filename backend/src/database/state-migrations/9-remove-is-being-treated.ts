@@ -17,6 +17,5 @@ export const removeIsBeingTreated9: Migration = {
         Object.values(typedState.patients).forEach((patient) => {
             delete patient.isBeingTreated;
         });
-        return typedState;
     },
 };

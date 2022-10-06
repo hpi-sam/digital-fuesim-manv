@@ -1,8 +1,13 @@
 import type {
-    ExerciseState,
-    Mutable,
-    StateExport,
     UUID,
+    StateExport,
+    Mutable,
+    ExerciseAction,
+} from 'digital-fuesim-manv-shared';
+import {
+    cloneDeepMutable,
+    ExerciseState,
+    applyAllActions,
 } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import { RestoreError } from '../../utils/restore-error';
@@ -30,10 +35,10 @@ type MigrateActionsFunction = (
 ) => void;
 
 /**
- * Such a function gets the not yet migrated state and is expected to return a migrated version of it.
+ * Such a function gets the not yet migrated state and is expected to mutate it to a migrated version.
  * It may throw a {@link RestoreError} when a migration is not possible.
  */
-type MigrateStateFunction = (state: object) => object;
+type MigrateStateFunction = (state: object) => void;
 
 export interface Migration {
     actions: MigrateActionsFunction | null;
@@ -54,76 +59,64 @@ export const migrations: {
     9: removeIsBeingTreated9,
 };
 
-export async function migrateInDatabaseTo(
-    targetStateVersion: number,
-    currentStateVersion: number,
+export async function migrateInDatabase(
     exerciseId: UUID,
     entityManager: EntityManager
 ): Promise<void> {
-    const migrationFunctions = getMigrationFunctions(
-        currentStateVersion,
-        targetStateVersion
-    );
-    const stateMigrationFunctions = migrationFunctions.state;
-    const originalStates = await entityManager.findOne(ExerciseWrapperEntity, {
+    const exercise = await entityManager.findOne(ExerciseWrapperEntity, {
         where: { id: exerciseId },
-        select: { initialStateString: true, currentStateString: true },
     });
-    if (originalStates === null) {
+    if (exercise === null) {
         throw new RestoreError(
             'Cannot find exercise to convert in database',
             exerciseId
         );
     }
-    let initialState: object | null = null,
-        currentState: object | null = null;
-    if (stateMigrationFunctions.length > 0) {
-        initialState = JSON.parse(originalStates.initialStateString);
-        currentState = JSON.parse(originalStates.currentStateString);
-        stateMigrationFunctions.forEach((stateMigrationFunction) => {
-            initialState = stateMigrationFunction(initialState!);
-            currentState = stateMigrationFunction(currentState!);
-        });
-    }
-    const actionsMigrationFunctions = migrationFunctions.actions;
-    let actions: (object | null)[] | null = null;
-    if (actionsMigrationFunctions.length > 0) {
-        const originalActions = await entityManager.find(ActionWrapperEntity, {
+    const initialState = JSON.parse(exercise.initialStateString);
+    const currentState = JSON.parse(exercise.currentStateString);
+    const actions = (
+        await entityManager.find(ActionWrapperEntity, {
             where: { exercise: { id: exerciseId } },
             select: { actionString: true },
             order: { index: 'ASC' },
-        });
-        actions = originalActions.map((originalAction) =>
-            JSON.parse(originalAction.actionString)
-        );
-        initialState ??= JSON.parse(originalStates.initialStateString);
-        actionsMigrationFunctions.forEach((actionsMigrationFunction) => {
-            actionsMigrationFunction(initialState!, actions!);
-        });
-    }
+        })
+    ).map((action) => JSON.parse(action.actionString));
+    const newVersion = applyMigrations(exercise.stateVersion, {
+        currentState,
+        history: {
+            initialState,
+            actions,
+        },
+    });
+    exercise.stateVersion = newVersion;
+    // Save exercise wrapper
     const patch: Partial<ExerciseWrapperEntity> = {
-        stateVersion: targetStateVersion,
+        stateVersion: exercise.stateVersion,
     };
-    if (currentState !== null) {
-        patch.initialStateString = JSON.stringify(initialState);
-        patch.currentStateString = JSON.stringify(currentState);
-    }
+    patch.initialStateString = JSON.stringify(initialState);
+    patch.currentStateString = JSON.stringify(currentState);
     await entityManager.update(
         ExerciseWrapperEntity,
         { id: exerciseId },
         patch
     );
-    if (actions !== null) {
+    // Save actions
+    if (actions !== undefined) {
         let patchedActionsIndex = 0;
         const indicesToRemove: number[] = [];
-        const actionsToUpdate: { index: number; actionString: string }[] = [];
+        const actionsToUpdate: {
+            previousIndex: number;
+            newIndex: number;
+            actionString: string;
+        }[] = [];
         actions.forEach((action, i) => {
             if (action === null) {
                 indicesToRemove.push(i);
                 return;
             }
             actionsToUpdate.push({
-                index: patchedActionsIndex++,
+                previousIndex: i,
+                newIndex: patchedActionsIndex++,
                 actionString: JSON.stringify(action),
             });
         });
@@ -138,71 +131,87 @@ export async function migrateInDatabaseTo(
         }
         if (actionsToUpdate.length > 0) {
             await Promise.all(
-                actionsToUpdate.map(async ({ index, actionString }) =>
-                    entityManager.update(
-                        ActionWrapperEntity,
-                        { index, exercise: { id: exerciseId } },
-                        { actionString }
-                    )
+                actionsToUpdate.map(
+                    async ({ previousIndex, newIndex, actionString }) =>
+                        entityManager.update(
+                            ActionWrapperEntity,
+                            {
+                                index: previousIndex,
+                                exercise: { id: exerciseId },
+                            },
+                            { actionString, index: newIndex }
+                        )
                 )
             );
         }
     }
 }
 
-export function migrateStateExportTo(
-    targetStateVersion: number,
-    currentStateVersion: number,
-    stateExport: StateExport
-): StateExport {
-    const migrationFunctions = getMigrationFunctions(
-        currentStateVersion,
-        targetStateVersion
+export function migrateStateExport(
+    stateExportToMigrate: StateExport
+): Mutable<StateExport> {
+    const stateExport = cloneDeepMutable(stateExportToMigrate);
+    const propertiesToMigrate = {
+        currentState: stateExport.currentState,
+        history: stateExport.history
+            ? {
+                  initialState: stateExport.history.initialState,
+                  actions: stateExport.history.actionHistory,
+              }
+            : undefined,
+    };
+    const newVersion = applyMigrations(
+        stateExport.dataVersion,
+        propertiesToMigrate
     );
-    migrationFunctions.state.forEach((migrateStateFunction) => {
-        stateExport.currentState = migrateStateFunction(
-            stateExport.currentState
-        ) as Mutable<ExerciseState>;
-        if (stateExport.history) {
-            stateExport.history.initialState = migrateStateFunction(
-                stateExport.history.initialState
-            ) as Mutable<ExerciseState>;
-        }
-    });
+    stateExport.dataVersion = newVersion;
+    stateExport.currentState = propertiesToMigrate.currentState;
     if (stateExport.history) {
-        migrationFunctions.actions.forEach((fn) => {
-            fn(
-                stateExport.history!.initialState,
-                stateExport.history!.actionHistory
-            );
-        });
         stateExport.history.actionHistory =
-            stateExport.history.actionHistory.filter(
+            // Remove actions that are marked to be removed by the migrations
+            propertiesToMigrate.history!.actions.filter(
                 (action) => action !== null
             );
     }
     return stateExport;
 }
 
-function getMigrationFunctions(
-    initialVersion: number,
-    targetVersion: number
-): { actions: MigrateActionsFunction[]; state: MigrateStateFunction[] } {
-    const necessaryMigrations = Object.entries(migrations)
-        .filter(
-            ([key]) =>
-                Number.parseInt(key) > initialVersion &&
-                Number.parseInt(key) <= targetVersion
-        )
-        .map(([, migration]) => migration);
-    return {
-        actions: necessaryMigrations
-            .filter((migration) => migration.actions !== null)
-            .map((migration) => migration.actions) as MigrateActionsFunction[],
-        state: necessaryMigrations
-            .filter((thisFunctions) => thisFunctions.state !== null)
-            .map(
-                (thisFunctions) => thisFunctions.state
-            ) as MigrateStateFunction[],
-    };
+/**
+ * Migrates {@link propertiesToMigrate} to the newest version ({@link ExerciseState.currentStateVersion})
+ * by mutating them.
+ *
+ * @returns The new state version
+ */
+function applyMigrations(
+    currentStateVersion: number,
+    propertiesToMigrate: {
+        currentState: object;
+        history?: { initialState: object; actions: (object | null)[] };
+    }
+): number {
+    const targetVersion = ExerciseState.currentStateVersion;
+    for (let i = currentStateVersion + 1; i <= targetVersion; i++) {
+        const stateMigration = migrations[i]!.state;
+        if (stateMigration !== null) {
+            if (propertiesToMigrate.history)
+                stateMigration(propertiesToMigrate.history.initialState);
+            else stateMigration(propertiesToMigrate.currentState);
+        }
+        if (!propertiesToMigrate.history) continue;
+        const actionMigration = migrations[i]!.actions;
+        if (actionMigration !== null) {
+            actionMigration(
+                propertiesToMigrate.history.initialState,
+                propertiesToMigrate.history.actions
+            );
+        }
+    }
+    if (propertiesToMigrate.history)
+        propertiesToMigrate.currentState = applyAllActions(
+            propertiesToMigrate.history.initialState as ExerciseState,
+            propertiesToMigrate.history.actions.filter(
+                (action) => action !== null
+            ) as ExerciseAction[]
+        );
+    return targetVersion;
 }
