@@ -19,6 +19,12 @@ interface CatersFor {
     green: number;
 }
 
+const catersCost = {
+    red: 1,
+    yellow: 0.6,
+    green: 0.3,
+};
+
 /**
  * @returns whether a material or personnel could treat a patient with {@link status} if it already {@link catersFor} patients
  */
@@ -31,33 +37,19 @@ function couldCaterFor(
     if (status === 'black' || status === 'blue') {
         return false;
     }
-    if (cateringElement.canCaterFor.logicalOperator === 'or') {
-        const numberOfTreatedCategories = Object.entries(catersFor).filter(
-            ([category, catersForInCategory]) =>
-                // Will be treated
-                status === category ||
-                // Is already treated
-                catersForInCategory > 0
-        ).length;
-        return (
-            // Only one category can be treated
-            numberOfTreatedCategories <= 1 &&
-            // + 1 for the patient that will be treated
-            catersFor[status] + 1 <= cateringElement.canCaterFor[status]
-        );
-    }
 
-    let availableCapacity = 0;
+    let cateredCapacity = 0;
     for (const category of ['red', 'yellow', 'green'] as const) {
         // The catering capacity is calculated cumulatively - a red slot can also treat a yellow or green one instead
-        availableCapacity +=
-            cateringElement.canCaterFor[category] -
-            catersFor[category] -
-            (status === category ? 1 : 0);
-        if (availableCapacity < 0) {
-            return false;
-        }
+        cateredCapacity += catersFor[category] * catersCost[category];
     }
+    if (
+        cateredCapacity + catersCost[status] >
+        cateringElement.canCaterFor.capacity
+    ) {
+        return false;
+    }
+
     return true;
 }
 
@@ -240,9 +232,7 @@ function updateCatering(
     // Doing this behind removeTreatmentsOfElement to catch the case someone changed via export import
     // the canCaterFor to 0 while an Element is treating something in the exported state
     if (
-        (cateringElement.canCaterFor.red === 0 &&
-            cateringElement.canCaterFor.yellow === 0 &&
-            cateringElement.canCaterFor.green === 0) ||
+        cateringElement.canCaterFor.capacity === 0 ||
         // The element is no longer in a position to treat a patient
         cateringElement.position === undefined
     ) {
