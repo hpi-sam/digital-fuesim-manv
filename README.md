@@ -101,8 +101,9 @@ Note the database requirements depicted in [the installation section](#installat
 
 There are already the following [debug configurations](https://code.visualstudio.com/docs/editor/debugging) for vscode saved:
 
--   [frontend] Launch Chrome against localhost
--   Debug Jest Tests
+-   `Launch Frontend [Chrome]`
+-   `Launch Frontend [Firefox]` (You have to install an extra extension)
+-   `Debug Jest Tests`
 
 In addition you can make use of the following browser extensions:
 
