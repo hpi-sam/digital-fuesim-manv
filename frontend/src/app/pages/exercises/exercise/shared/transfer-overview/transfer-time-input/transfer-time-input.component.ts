@@ -43,7 +43,7 @@ export class TransferTimeInputComponent {
 
     public transferArriveNow() {
         this.apiService.proposeAction({
-            type: '[Transfer] Delete transfer',
+            type: '[Transfer] Finish transfer',
             elementType: this.elementType,
             elementId: this.elementId,
             targetTransferPointId: this.transfer.targetTransferPointId,

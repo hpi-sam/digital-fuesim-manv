@@ -88,9 +88,9 @@ export class EditTransferAction implements Action {
     public readonly timeToAdd?: number;
 }
 
-export class DeleteTransferAction implements Action {
+export class FinishTransferAction implements Action {
     @IsString()
-    public readonly type = '[Transfer] Delete transfer';
+    public readonly type = '[Transfer] Finish transfer';
 
     @IsString()
     elementType!: 'personnel' | 'vehicles';
@@ -198,8 +198,8 @@ export namespace TransferActionReducers {
         rights: 'trainer',
     };
 
-    export const deleteTransfer: ActionReducer<DeleteTransferAction> = {
-        action: DeleteTransferAction,
+    export const finishTransfer: ActionReducer<FinishTransferAction> = {
+        action: FinishTransferAction,
         reducer: (
             draftState,
             { elementType, elementId, targetTransferPointId }
