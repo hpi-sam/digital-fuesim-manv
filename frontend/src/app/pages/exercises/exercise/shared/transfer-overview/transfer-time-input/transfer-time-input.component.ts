@@ -41,7 +41,7 @@ export class TransferTimeInputComponent {
         });
     }
 
-    public transferArriveNow() {
+    public letElementArrive() {
         this.apiService.proposeAction({
             type: '[Transfer] Finish transfer',
             elementType: this.elementType,
