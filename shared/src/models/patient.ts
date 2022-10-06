@@ -6,14 +6,13 @@ import {
     IsNumber,
     Max,
     Min,
-    IsDefined,
     IsBoolean,
     IsString,
     MaxLength,
     isEmpty,
 } from 'class-validator';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
-import { IsStringLiteralUnion, IsIdMap } from '../utils/validators';
+import { IsStringLiteralUnion, IsIdMap, IsUUIDSet } from '../utils/validators';
 import { PatientHealthState } from './patient-health-state';
 import {
     BiometricInformation,
@@ -103,12 +102,10 @@ export class Patient {
     @Min(healthPointsDefaults.min)
     public readonly health: HealthPoints;
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly assignedPersonnelIds: UUIDSet = {};
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly assignedMaterialIds: UUIDSet = {};
     /**
      * The speed with which the patients healthStatus changes

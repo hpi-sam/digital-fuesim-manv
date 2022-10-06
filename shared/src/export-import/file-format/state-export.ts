@@ -1,19 +1,15 @@
 import { Type } from 'class-transformer';
 import type { ValidationError } from 'class-validator';
-import {
-    IsArray,
-    IsIn,
-    IsOptional,
-    IsString,
-    ValidateNested,
-} from 'class-validator';
+import { IsArray, IsOptional, ValidateNested } from 'class-validator';
 import { ExerciseState } from '../../state';
 import type { ExerciseAction } from '../../store';
 import { validateExerciseAction } from '../../store';
 import { Mutable } from '../../utils';
+import { IsStringLiteralUnion } from '../../utils/validators';
 import { BaseExportImportFile } from './base-file';
 
 export class StateHistoryCompound {
+    // TODO: Validate actions via decorator
     @IsArray()
     public actionHistory: ExerciseAction[];
 
@@ -37,8 +33,7 @@ export class StateHistoryCompound {
 }
 
 export class StateExport extends BaseExportImportFile {
-    @IsIn(['complete'])
-    @IsString()
+    @IsStringLiteralUnion<'complete'>({ complete: true })
     public readonly type: 'complete' = 'complete';
 
     @ValidateNested()
