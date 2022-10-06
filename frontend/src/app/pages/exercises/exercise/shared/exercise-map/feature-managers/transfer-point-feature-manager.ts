@@ -140,7 +140,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                 TransferPointPopupComponent,
                 feature,
                 {
-                    transferPointId: feature.getId() as string,
+                    transferPointId: feature.getId() as UUID,
                 }
             )
         );
