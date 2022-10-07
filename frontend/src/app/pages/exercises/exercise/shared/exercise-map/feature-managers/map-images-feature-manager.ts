@@ -56,8 +56,7 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
     }
 
     override isFeatureTranslatable(feature: Feature<Point>): boolean {
-        const mapImage: MapImage = this.getElementFromFeature(feature)
-            .value as MapImage;
+        const mapImage = this.getElementFromFeature(feature).value as MapImage;
         return (
             this.apiService.getCurrentRole() === 'trainer' && !mapImage.locked
         );
