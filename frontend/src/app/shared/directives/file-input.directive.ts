@@ -1,6 +1,4 @@
-import type { OnDestroy } from '@angular/core';
 import { Directive, EventEmitter, HostListener, Output } from '@angular/core';
-import { Subject } from 'rxjs';
 
 /**
  * This directive must only be used on file inputs and provides an output similar to `(input)`,
@@ -14,8 +12,7 @@ import { Subject } from 'rxjs';
 @Directive({
     selector: 'input[appFileInput]',
 })
-export class FileInputDirective implements OnDestroy {
-    destroy$ = new Subject<void>();
+export class FileInputDirective {
     @Output() readonly appFileInput = new EventEmitter<FileList>();
 
     @HostListener('input', ['$event'])
@@ -25,9 +22,5 @@ export class FileInputDirective implements OnDestroy {
         // This is a workaround to fix Chrome not allowing to import the same file twice in a row
         // See https://stackoverflow.com/questions/12030686/html-input-file-selection-event-not-firing-upon-selecting-the-same-file
         inputElement.value = '';
-    }
-
-    ngOnDestroy() {
-        this.destroy$.next();
     }
 }
