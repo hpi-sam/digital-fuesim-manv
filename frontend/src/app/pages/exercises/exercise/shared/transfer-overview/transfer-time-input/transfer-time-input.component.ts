@@ -40,4 +40,13 @@ export class TransferTimeInputComponent {
             elementId: this.elementId,
         });
     }
+
+    public letElementArrive() {
+        this.apiService.proposeAction({
+            type: '[Transfer] Finish transfer',
+            elementType: this.elementType,
+            elementId: this.elementId,
+            targetTransferPointId: this.transfer.targetTransferPointId,
+        });
+    }
 }
