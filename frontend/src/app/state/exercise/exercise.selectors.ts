@@ -147,7 +147,6 @@ function getSelectVisibleElements<
 }
 
 // TODO: Take into account the width and height of the images of these elements
-// (Blocked by a clear calculation between position and image dimensions #374)
 export const getSelectVisibleMaterials =
     getSelectVisibleElements<Material>(selectMaterials);
 export const getSelectVisibleVehicles =
@@ -158,12 +157,12 @@ export const getSelectVisiblePatients =
     getSelectVisibleElements<Patient>(selectPatients);
 export const getSelectVisibleViewports = getSelectVisibleElements<Viewport>(
     selectViewports,
-    // The viewport the client is restricted to should not be shown, as this causes a white border around their screen in fullscreen mode
+    // The viewport the client is restricted to should not be shown, as this causes a white border in fullscreen mode
     (element, viewport) => element.id !== viewport.id
 );
 export const getSelectVisibleMapImages = getSelectVisibleElements<MapImage>(
     selectMapImages,
-    // MapImages could get very big, therefore it's size must be taken into account
+    // TODO: MapImages could get very big. Therefore its size must be taken into account. The current implementation is a temporary solution.
     (element, viewport) => true
 );
 export const getSelectVisibleTransferPoints =
@@ -176,7 +175,7 @@ export const getSelectVisibleCateringLines = (clientId?: UUID | null) =>
         selectPersonnel,
         selectPatients,
         (viewport, materials, personnel, patients) =>
-            // There are mostly less patients that are not treated than materials and personnel that are not treating
+            // Mostly, there are fewer untreated patients than materials and personnel that are not treating
             Object.values(patients)
                 .filter((patient) => patient.position !== undefined)
                 .flatMap((patient) =>
@@ -190,7 +189,7 @@ export const getSelectVisibleCateringLines = (clientId?: UUID | null) =>
                     ].map((caterer) => ({
                         id: `${caterer.id}:${patient.id}` as const,
                         patientPosition: patient.position!,
-                        // if the catering element is treating a patient, it must have a position
+                        // If the catering element is treating a patient, it must have a position
                         catererPosition: caterer.position!,
                     }))
                 )
