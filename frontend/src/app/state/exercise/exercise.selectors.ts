@@ -1,8 +1,13 @@
 import { createSelector } from '@ngrx/store';
 import type {
     ExerciseState,
+    MapImage,
+    Material,
+    Patient,
     Personnel,
+    Position,
     Transfer,
+    TransferPoint,
     UUID,
     Vehicle,
 } from 'digital-fuesim-manv-shared';
@@ -103,39 +108,66 @@ export const getSelectRestrictedViewport = (clientId?: UUID | null) =>
         : (state: AppState) => undefined;
 
 /**
- * @returns a selector that returns a dictionary of all elements that have a position and are in the viewport restriction
- * Only the position is taken into account. Eventual height and width of the element is ignored.
+ * @returns a selector that returns a UUIDMap of all elements that have a position and are in the viewport restriction
  */
-export function getSelectVisibleElements<
-    Key extends
-        | 'materials'
-        | 'patients'
-        | 'personnel'
-        | 'transferPoints'
-        | 'vehicles',
-    Elements extends AppState['exercise'][Key] = AppState['exercise'][Key],
+function getSelectVisibleElements<
+    Element extends { readonly position?: Position },
+    Elements extends { readonly [key: UUID]: Element } = {
+        readonly [key: UUID]: Element;
+    },
     ElementsWithPosition extends {
         [Id in keyof Elements]: WithPosition<Elements[Id]>;
     } = { [Id in keyof Elements]: WithPosition<Elements[Id]> }
->(key: Key, clientId?: UUID | null) {
-    return createSelector(
-        getSelectRestrictedViewport(clientId),
-        selectProperty(key),
-        (restrictedViewport, elements) =>
-            pickBy(
-                elements,
-                (element) =>
-                    // is not in transfer
-                    element.position &&
-                    // no viewport restriction
-                    (!restrictedViewport ||
-                        Viewport.isInViewport(
-                            restrictedViewport,
-                            element.position
-                        ))
-            ) as ElementsWithPosition
-    );
+>(
+    selectElements: (state: AppState) => Elements,
+    isInViewport: (
+        element: WithPosition<Element>,
+        viewport: Viewport
+    ) => boolean = (element, viewport) =>
+        Viewport.isInViewport(viewport, element.position)
+) {
+    return (clientId?: UUID | null) =>
+        createSelector(
+            getSelectRestrictedViewport(clientId),
+            selectElements,
+            (restrictedViewport, elements) =>
+                pickBy(
+                    elements,
+                    (element) =>
+                        // Is placed on the map
+                        element.position &&
+                        // No viewport restriction
+                        (!restrictedViewport ||
+                            isInViewport(
+                                element as WithPosition<Element>,
+                                restrictedViewport
+                            ))
+                ) as ElementsWithPosition
+        );
 }
+
+// TODO: Take into account the width and height of the images of these elements
+// (Blocked by a clear calculation between position and image dimensions #374)
+export const getSelectVisibleMaterials =
+    getSelectVisibleElements<Material>(selectMaterials);
+export const getSelectVisibleVehicles =
+    getSelectVisibleElements<Vehicle>(selectVehicles);
+export const getSelectVisiblePersonnel =
+    getSelectVisibleElements<Personnel>(selectPersonnel);
+export const getSelectVisiblePatients =
+    getSelectVisibleElements<Patient>(selectPatients);
+export const getSelectVisibleViewports = getSelectVisibleElements<Viewport>(
+    selectViewports,
+    // The viewport the client is restricted to should not be shown, as this causes a white border around their screen in fullscreen mode
+    (element, viewport) => element.id !== viewport.id
+);
+export const getSelectVisibleMapImages = getSelectVisibleElements<MapImage>(
+    selectMapImages,
+    // MapImages could get very big, therefore it's size must be taken into account
+    (element, viewport) => true
+);
+export const getSelectVisibleTransferPoints =
+    getSelectVisibleElements<TransferPoint>(selectTransferPoints);
 
 export const getSelectVisibleCateringLines = (clientId?: UUID | null) =>
     createSelector(

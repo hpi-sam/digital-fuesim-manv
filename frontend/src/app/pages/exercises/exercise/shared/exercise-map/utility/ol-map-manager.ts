@@ -21,19 +21,24 @@ import XYZ from 'ol/source/XYZ';
 import type { Observable } from 'rxjs';
 import { combineLatest, pairwise, startWith, Subject, takeUntil } from 'rxjs';
 import type { ApiService } from 'src/app/core/api.service';
+import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectRestrictedViewport,
-    getSelectVisibleElements,
     getSelectVisibleCateringLines,
+    getSelectVisibleMapImages,
+    getSelectVisibleMaterials,
+    getSelectVisiblePatients,
+    getSelectVisiblePersonnel,
+    getSelectVisibleTransferPoints,
+    getSelectVisibleVehicles,
+    getSelectVisibleViewports,
     selectExerciseStatus,
-    selectMapImages,
     selectTileMapProperties,
     selectTransferLines,
     selectViewports,
 } from 'src/app/state/exercise/exercise.selectors';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
-import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
@@ -243,10 +248,7 @@ export class OlMapManager {
                 this.apiService
             ),
             this.store.select(
-                getSelectVisibleElements(
-                    'transferPoints',
-                    this.apiService.ownClientId
-                )
+                getSelectVisibleTransferPoints(this.apiService.ownClientId)
             )
         );
 
@@ -258,10 +260,7 @@ export class OlMapManager {
                 this.apiService
             ),
             this.store.select(
-                getSelectVisibleElements(
-                    'patients',
-                    this.apiService.ownClientId
-                )
+                getSelectVisiblePatients(this.apiService.ownClientId)
             )
         );
 
@@ -272,10 +271,7 @@ export class OlMapManager {
                 this.apiService
             ),
             this.store.select(
-                getSelectVisibleElements(
-                    'vehicles',
-                    this.apiService.ownClientId
-                )
+                getSelectVisibleVehicles(this.apiService.ownClientId)
             )
         );
 
@@ -286,10 +282,7 @@ export class OlMapManager {
                 this.apiService
             ),
             this.store.select(
-                getSelectVisibleElements(
-                    'personnel',
-                    this.apiService.ownClientId
-                )
+                getSelectVisiblePersonnel(this.apiService.ownClientId)
             )
         );
 
@@ -300,10 +293,7 @@ export class OlMapManager {
                 this.apiService
             ),
             this.store.select(
-                getSelectVisibleElements(
-                    'materials',
-                    this.apiService.ownClientId
-                )
+                getSelectVisibleMaterials(this.apiService.ownClientId)
             )
         );
 
@@ -313,7 +303,9 @@ export class OlMapManager {
                 mapImagesLayer,
                 this.apiService
             ),
-            this.store.select(selectMapImages)
+            this.store.select(
+                getSelectVisibleMapImages(this.apiService.ownClientId)
+            )
         );
 
         this.registerFeatureElementManager(
@@ -329,7 +321,9 @@ export class OlMapManager {
                 viewportLayer,
                 this.apiService
             ),
-            this.store.select(selectViewports)
+            this.store.select(
+                getSelectVisibleViewports(this.apiService.ownClientId)
+            )
         );
 
         this.registerPopupTriggers(translateInteraction);

@@ -6,7 +6,7 @@ import { MessageService } from 'src/app/core/messages/message.service';
 import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    getSelectVisibleElements,
+    getSelectVisibleVehicles,
     selectClients,
 } from 'src/app/state/exercise/exercise.selectors';
 
@@ -60,9 +60,7 @@ export class NotificationService {
                         !client.isInWaitingRoom
                 ),
                 switchMap((client) =>
-                    this.store.select(
-                        getSelectVisibleElements('vehicles', client!.id)
-                    )
+                    this.store.select(getSelectVisibleVehicles(client!.id))
                 ),
                 pairwise(),
                 takeUntil(this.stopNotifications$)
