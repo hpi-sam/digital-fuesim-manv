@@ -14,6 +14,7 @@ import { RestoreError } from '../../utils/restore-error';
 import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
 import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity';
 import { renameDeleteTransferAction10 } from './10-rename-delete-transfer-action';
+import { addPersonnelAndMaterialToState11 } from './11-add-personnel-and-material-templates-to-state';
 import { updateEocLog3 } from './3-update-eoc-log';
 import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
 import { removeStatistics5 } from './5-remove-statistics';
@@ -59,6 +60,7 @@ export const migrations: {
     8: treatmentSystemImprovements8,
     9: removeIsBeingTreated9,
     10: renameDeleteTransferAction10,
+    11: addPersonnelAndMaterialToState11,
 };
 
 export async function migrateInDatabase(

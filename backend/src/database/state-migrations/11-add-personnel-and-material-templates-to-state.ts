@@ -1,11 +1,6 @@
-import { PersonnelType } from 'digital-fuesim-manv-shared';
-import { MaterialTemplate } from 'digital-fuesim-manv-shared/dist/models/material-template';
-import { PersonnelTemplate } from 'digital-fuesim-manv-shared/dist/models/personnel-template';
-import { MaterialType } from 'digital-fuesim-manv-shared/dist/models/utils/material-type';
-import { isArray } from 'lodash-es';
 import type { Migration } from './migrations';
 
-export const renameDeleteTransferAction10: Migration = {
+export const addPersonnelAndMaterialToState11: Migration = {
     actions: null,
     state: (state: any) => {
         state.materialTemplates = defaultMaterialTemplates;
@@ -13,9 +8,7 @@ export const renameDeleteTransferAction10: Migration = {
     },
 };
 
-const defaultMaterialTemplates: {
-    [key in MaterialType]: MaterialTemplate;
-} = {
+const defaultMaterialTemplates = {
     standard: {
         materialType: 'standard',
         canCaterFor: {
@@ -50,9 +43,7 @@ const defaultMaterialTemplates: {
     },
 };
 
-const defaultPersonnelTemplates: {
-    [key in PersonnelType]: PersonnelTemplate;
-} = {
+const defaultPersonnelTemplates = {
     san: {
         personnelType: 'san',
         canCaterFor: {

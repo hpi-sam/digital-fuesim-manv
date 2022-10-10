@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
     IsArray,
     IsInt,
+    isObject,
     IsObject,
     IsString,
     IsUUID,
@@ -31,8 +32,9 @@ import { ExerciseConfiguration } from './models/exercise-configuration';
 import { MaterialTemplate } from './models/material-template';
 import { PatientCategory } from './models/patient-category';
 import { PersonnelTemplate } from './models/personnel-template';
-import { getCreate, SpatialTree } from './models/utils';
+import { getCreate, PersonnelType, SpatialTree } from './models/utils';
 import { ExerciseStatus } from './models/utils/exercise-status';
+import { MaterialType } from './models/utils/material-type';
 import type { SpatialElementType } from './store/action-reducers/utils/spatial-elements';
 import type { UUID } from './utils';
 import { uuid, uuidValidationOptions } from './utils';
@@ -85,10 +87,14 @@ export class ExerciseState {
     @ValidateNested()
     @Type(() => VehicleTemplate)
     public readonly vehicleTemplates = defaultVehicleTemplates;
-
-    public readonly materialTemplates = defaultMaterialTemplates;
-
-    public readonly personnelTemplates = defaultPersonnelTemplates;
+    @IsObject()
+    public readonly materialTemplates: {
+        [key in MaterialType]: MaterialTemplate;
+    } = defaultMaterialTemplates;
+    @IsObject()
+    public readonly personnelTemplates: {
+        [key in PersonnelType]: PersonnelTemplate;
+    } = defaultPersonnelTemplates;
     @IsArray()
     @ValidateNested()
     @Type(() => MapImageTemplate)
