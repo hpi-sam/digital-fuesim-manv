@@ -150,7 +150,7 @@ export namespace MapImagesActionReducers {
         action: LockMapImageAction,
         reducer: (draftState, { mapImageId, newLocked }) => {
             const mapImage = getElement(draftState, 'mapImages', mapImageId);
-            mapImage.locked = newLocked;
+            mapImage.isLocked = newLocked;
             return draftState;
         },
         rights: 'trainer',

@@ -15,16 +15,19 @@ export class MapImage {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
+    /**
+     * Whether the UI should prevent position changes of the map image by drag&drop
+     */
     @IsBoolean()
-    public readonly locked: boolean;
+    public readonly isLocked: boolean = false;
 
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(topLeft: Position, image: ImageProperties, locked?: boolean) {
+    constructor(topLeft: Position, image: ImageProperties, isLocked: boolean) {
         this.position = topLeft;
         this.image = image;
-        this.locked = locked ?? false;
+        this.isLocked = isLocked;
     }
 
     static readonly create = getCreate(this);
