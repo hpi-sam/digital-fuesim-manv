@@ -21,6 +21,7 @@ import { OnlyNumbersValidatorDirective } from './validation/only-numbers-validat
 import { UrlValidatorDirective } from './validation/url-validator.directive';
 import { PatientStatusBadgeComponent } from './components/patient-status-badge/patient-status-badge.component';
 import { OrderByPipe } from './pipes/order-by.pipe';
+import { FileInputDirective } from './directives/file-input.directive';
 
 @NgModule({
     declarations: [
@@ -45,6 +46,7 @@ import { OrderByPipe } from './pipes/order-by.pipe';
         IntegerValidatorDirective,
         PatientStatusDataFieldComponent,
         PatientStatusBadgeComponent,
+        FileInputDirective,
     ],
     imports: [CommonModule],
     exports: [
@@ -68,6 +70,7 @@ import { OrderByPipe } from './pipes/order-by.pipe';
         ViewportNameComponent,
         IntegerValidatorDirective,
         PatientStatusBadgeComponent,
+        FileInputDirective,
     ],
 })
 export class SharedModule {}
