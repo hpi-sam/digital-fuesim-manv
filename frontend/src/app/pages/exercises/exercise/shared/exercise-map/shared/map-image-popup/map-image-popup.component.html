@@ -56,8 +56,8 @@
                 <input
                     type="checkbox"
                     class="form-check-input"
-                    [ngModel]="mapImage.locked"
-                    (ngModelChange)="lock($event)"
+                    [ngModel]="mapImage.isLocked"
+                    (ngModelChange)="setLocked($event)"
                 />
                 <label class="form-check-label">Position sperren</label>
             </div>
