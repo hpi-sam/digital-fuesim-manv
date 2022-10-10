@@ -27,7 +27,7 @@ export interface FeatureManager<ElementFeature extends Feature<any>> {
     ) => void;
 
     /**
-     * @returns whether the feature can be translated
+     * @returns whether the feature can be moved by the user
      */
     isFeatureTranslatable: (feature: ElementFeature) => boolean;
 
