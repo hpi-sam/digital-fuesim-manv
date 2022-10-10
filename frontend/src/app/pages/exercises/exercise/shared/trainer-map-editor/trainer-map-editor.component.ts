@@ -1,17 +1,20 @@
 import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import type { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID, VehicleTemplate } from 'digital-fuesim-manv-shared';
 import {
     colorCodeMap,
     TransferPoint,
     Viewport,
 } from 'digital-fuesim-manv-shared';
+import { firstValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectMapImagesTemplates,
+    selectMaterialTemplates,
     selectPatientCategories,
+    selectPersonnelTemplates,
     selectVehicleTemplates,
 } from 'src/app/state/exercise/exercise.selectors';
 import { DragElementService } from '../core/drag-element.service';
@@ -34,6 +37,14 @@ export class TrainerMapEditorComponent {
 
     public readonly vehicleTemplates$ = this.store.select(
         selectVehicleTemplates
+    );
+
+    public readonly materialTemplates$ = this.store.select(
+        selectMaterialTemplates
+    );
+
+    public readonly personnelTemplates$ = this.store.select(
+        selectPersonnelTemplates
     );
 
     public readonly patientCategories$ = this.store.select(
@@ -74,5 +85,16 @@ export class TrainerMapEditorComponent {
 
     public setCurrentCategory(category: keyof typeof colorCodeMap) {
         this.currentCategory = category;
+    }
+    public async vehicleOnMouseDown(
+        event: MouseEvent,
+        vehicleTemplate: VehicleTemplate
+    ) {
+        this.dragElementService.onMouseDown(event, {
+            type: 'vehicle',
+            template: vehicleTemplate,
+            materialTemplates: await firstValueFrom(this.materialTemplates$),
+            personnelTemplates: await firstValueFrom(this.personnelTemplates$),
+        });
     }
 }

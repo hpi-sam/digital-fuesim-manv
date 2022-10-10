@@ -4,6 +4,7 @@ import type OlMap from 'ol/Map';
 import type {
     ImageProperties,
     MapImageTemplate,
+    PersonnelType,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
 import {
@@ -15,6 +16,9 @@ import {
     MapImage,
 } from 'digital-fuesim-manv-shared';
 import type { PatientCategory } from 'digital-fuesim-manv-shared/dist/models/patient-category';
+import type { PersonnelTemplate } from 'digital-fuesim-manv-shared/dist/models/personnel-template';
+import type { MaterialTemplate } from 'digital-fuesim-manv-shared/dist/models/material-template';
+import type { MaterialType } from 'digital-fuesim-manv-shared/dist/models/utils/material-type';
 
 @Injectable({
     providedIn: 'root',
@@ -133,6 +137,8 @@ export class DragElementService {
                         type: '[Vehicle] Add vehicle',
                         ...createVehicleParameters(
                             this.transferringTemplate.template,
+                            this.transferringTemplate.materialTemplates,
+                            this.transferringTemplate.personnelTemplates,
                             position
                         ),
                     },
@@ -251,6 +257,12 @@ type TransferTemplate =
     | {
           type: 'vehicle';
           template: VehicleTemplate;
+          personnelTemplates: {
+              [key in PersonnelType]: PersonnelTemplate;
+          };
+          materialTemplates: {
+              [key in MaterialType]: MaterialTemplate;
+          };
       }
     | {
           type: 'viewport';

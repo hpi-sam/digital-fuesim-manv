@@ -191,10 +191,7 @@
                             class="d-inline-block card text-center"
                             style="width: 10rem; text-overflow: ellipsis"
                             (mousedown)="
-                                dragElementService.onMouseDown($event, {
-                                    type: 'vehicle',
-                                    template: vehicleTemplate
-                                })
+                                vehicleOnMouseDown($event, vehicleTemplate)
                             "
                         >
                             <div class="preview-image-container card-img-top">

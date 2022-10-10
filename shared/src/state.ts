@@ -9,7 +9,9 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
+import { defaultMaterialTemplates } from './data/default-state/material-templates';
 import { defaultPatientCategories } from './data/default-state/patient-templates';
+import { defaultPersonnelTemplates } from './data/default-state/personnel-templates';
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
 import type {
     AlarmGroup,
@@ -26,7 +28,9 @@ import type {
 } from './models';
 import { EocLogEntry, MapImageTemplate, VehicleTemplate } from './models';
 import { ExerciseConfiguration } from './models/exercise-configuration';
+import { MaterialTemplate } from './models/material-template';
 import { PatientCategory } from './models/patient-category';
+import { PersonnelTemplate } from './models/personnel-template';
 import { getCreate, SpatialTree } from './models/utils';
 import { ExerciseStatus } from './models/utils/exercise-status';
 import type { SpatialElementType } from './store/action-reducers/utils/spatial-elements';
@@ -81,6 +85,10 @@ export class ExerciseState {
     @ValidateNested()
     @Type(() => VehicleTemplate)
     public readonly vehicleTemplates = defaultVehicleTemplates;
+
+    public readonly materialTemplates = defaultMaterialTemplates;
+
+    public readonly personnelTemplates = defaultPersonnelTemplates;
     @IsArray()
     @ValidateNested()
     @Type(() => MapImageTemplate)
@@ -120,5 +128,5 @@ export class ExerciseState {
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 10;
+    static readonly currentStateVersion = 11;
 }

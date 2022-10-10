@@ -13,9 +13,12 @@ import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectClient,
+    getSelectPersonnel,
     getSelectTransferPoint,
     getSelectVehicleTemplate,
     selectAlarmGroups,
+    selectMaterialTemplates,
+    selectPersonnelTemplates,
     selectTransferPoints,
 } from 'src/app/state/exercise/exercise.selectors';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
@@ -76,10 +79,14 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                         alarmGroupVehicle.vehicleTemplateId
                     )(getStateSnapshot(this.store));
 
-                    const vehicleParameters = createVehicleParameters({
-                        ...vehicleTemplate,
-                        name: alarmGroupVehicle.name,
-                    });
+                    const vehicleParameters = createVehicleParameters(
+                        {
+                            ...vehicleTemplate,
+                            name: alarmGroupVehicle.name,
+                        },
+                        selectMaterialTemplates(getStateSnapshot(this.store)),
+                        selectPersonnelTemplates(getStateSnapshot(this.store))
+                    );
 
                     return [
                         this.apiService.proposeAction({

@@ -31,7 +31,7 @@ const bigMaterialTemplate = MaterialTemplate.create(
     10
 );
 
-export const materialTemplateMap: {
+export const defaultMaterialTemplates: {
     [key in MaterialType]: MaterialTemplate;
 } = {
     standard: standardMaterialTemplate,
