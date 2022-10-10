@@ -61,9 +61,9 @@ export class RemoveMapImageAction implements Action {
     public readonly mapImageId!: UUID;
 }
 
-export class LockMapImageAction implements Action {
+export class SetLockedMapImageAction implements Action {
     @IsString()
-    public readonly type = '[MapImage] Lock MapImage';
+    public readonly type = '[MapImage] Set Locked MapImage';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly mapImageId!: UUID;
@@ -146,8 +146,8 @@ export namespace MapImagesActionReducers {
             rights: 'trainer',
         };
 
-    export const lockMapImage: ActionReducer<LockMapImageAction> = {
-        action: LockMapImageAction,
+    export const setLockedMapImage: ActionReducer<SetLockedMapImageAction> = {
+        action: SetLockedMapImageAction,
         reducer: (draftState, { mapImageId, newLocked }) => {
             const mapImage = getElement(draftState, 'mapImages', mapImageId);
             mapImage.isLocked = newLocked;

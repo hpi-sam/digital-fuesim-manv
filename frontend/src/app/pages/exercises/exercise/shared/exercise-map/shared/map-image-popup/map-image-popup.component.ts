@@ -55,7 +55,7 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
 
     public setLocked(newLocked: boolean) {
         this.apiService.proposeAction({
-            type: '[MapImage] Lock MapImage',
+            type: '[MapImage] Set Locked MapImage',
             mapImageId: this.mapImageId,
             newLocked,
         });
