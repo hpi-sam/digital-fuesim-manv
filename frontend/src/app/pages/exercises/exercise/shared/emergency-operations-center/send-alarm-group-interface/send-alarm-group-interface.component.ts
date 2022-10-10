@@ -13,7 +13,6 @@ import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectClient,
-    getSelectPersonnel,
     getSelectTransferPoint,
     getSelectVehicleTemplate,
     selectAlarmGroups,
