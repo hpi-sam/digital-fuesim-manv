@@ -96,7 +96,9 @@ export class OlMapManager {
         transferLinesService: TransferLinesService
     ) {
         // Layers
-        const satelliteLayer = new TileLayer();
+        const satelliteLayer = new TileLayer({
+            preload: Number.POSITIVE_INFINITY,
+        });
         this.store
             .select(selectTileMapProperties)
             .pipe(takeUntil(this.destroy$))
