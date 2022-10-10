@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { plainToInstance } from 'class-transformer';
 import type { Constructor, ExportImportFile } from 'digital-fuesim-manv-shared';
 import { PartialExport, StateExport } from 'digital-fuesim-manv-shared';
+import { escapeRegExp } from 'lodash-es';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 
@@ -108,6 +109,18 @@ export class LandingPageComponent {
             });
         } finally {
             this.importingExercise = false;
+        }
+    }
+
+    public joinInputChanged() {
+        const joinUrl = new RegExp(
+            `^${escapeRegExp(location.origin)}/exercises/(\\d{6,8})$`,
+            'u'
+        );
+
+        const matches = joinUrl.exec(this.exerciseId);
+        if (matches?.[1]) {
+            this.exerciseId = matches[1];
         }
     }
 

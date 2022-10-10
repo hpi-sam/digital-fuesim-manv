@@ -51,4 +51,8 @@
             >) </ng-container
         >.
     </div>
+    <div *ngIf="errors['joinUrlOrId']">
+        Die Eingabe muss eine gültige Übungs-ID (6-8 Ziffern) oder Beitrittslink
+        sein.
+    </div>
 </div>

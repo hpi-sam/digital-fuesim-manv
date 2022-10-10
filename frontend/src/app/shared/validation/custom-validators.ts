@@ -1,5 +1,6 @@
 import type { AbstractControl } from '@angular/forms';
 import { isURL } from 'class-validator';
+import { escapeRegExp } from 'lodash-es';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace CustomValidators {
@@ -26,5 +27,18 @@ export namespace CustomValidators {
             !control.value || Number.isInteger(control.value)
                 ? null
                 : { integer: true as const };
+    }
+    export function joinUrlOrIdValidator() {
+        const joinUrl = new RegExp(
+            `^${escapeRegExp(location.origin)}/exercises/\\d{6,8}$`,
+            'u'
+        );
+        const id = /^\d{6,8}$/u;
+        return (control: AbstractControl) =>
+            !control.value ||
+            id.test(control.value) ||
+            joinUrl.test(control.value)
+                ? null
+                : { joinUrlOrId: true as const };
     }
 }
