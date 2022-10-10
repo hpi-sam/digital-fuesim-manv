@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import {
     IsArray,
     IsInt,
-    isObject,
     IsObject,
     IsString,
     IsUUID,
@@ -29,12 +28,13 @@ import type {
 } from './models';
 import { EocLogEntry, MapImageTemplate, VehicleTemplate } from './models';
 import { ExerciseConfiguration } from './models/exercise-configuration';
-import { MaterialTemplate } from './models/material-template';
+import type { MaterialTemplate } from './models/material-template';
 import { PatientCategory } from './models/patient-category';
-import { PersonnelTemplate } from './models/personnel-template';
-import { getCreate, PersonnelType, SpatialTree } from './models/utils';
+import type { PersonnelTemplate } from './models/personnel-template';
+import type { PersonnelType } from './models/utils';
+import { getCreate, SpatialTree } from './models/utils';
 import { ExerciseStatus } from './models/utils/exercise-status';
-import { MaterialType } from './models/utils/material-type';
+import type { MaterialType } from './models/utils/material-type';
 import type { SpatialElementType } from './store/action-reducers/utils/spatial-elements';
 import type { UUID } from './utils';
 import { uuid, uuidValidationOptions } from './utils';
