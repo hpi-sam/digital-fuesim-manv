@@ -89,11 +89,11 @@ export class ExerciseState {
     public readonly vehicleTemplates = defaultVehicleTemplates;
     @IsObject()
     public readonly materialTemplates: {
-        [key in MaterialType]: MaterialTemplate;
+        [Key in MaterialType]: MaterialTemplate;
     } = defaultMaterialTemplates;
     @IsObject()
     public readonly personnelTemplates: {
-        [key in PersonnelType]: PersonnelTemplate;
+        [Key in PersonnelType]: PersonnelTemplate;
     } = defaultPersonnelTemplates;
     @IsArray()
     @ValidateNested()
