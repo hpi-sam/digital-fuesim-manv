@@ -15,7 +15,7 @@ import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
 export function createVehicleParameters(
     vehicleTemplate: VehicleTemplate,
     materialTemplates: {
-        [key in MaterialType]: MaterialTemplate;
+        [Key in MaterialType]: MaterialTemplate;
     },
     personnelTemplates: {
         [key in PersonnelType]: PersonnelTemplate;
