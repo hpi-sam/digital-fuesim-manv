@@ -28,17 +28,10 @@ export namespace CustomValidators {
                 ? null
                 : { integer: true as const };
     }
-    export function joinUrlOrIdValidator() {
-        const joinUrl = new RegExp(
-            `^${escapeRegExp(location.origin)}/exercises/\\d{6,8}$`,
-            'u'
-        );
-        const id = /^\d{6,8}$/u;
+    export function joinIdValidator() {
         return (control: AbstractControl) =>
-            !control.value ||
-            id.test(control.value) ||
-            joinUrl.test(control.value)
+            /^((\d{6})|(\d{8}))$/u.test(control.value)
                 ? null
-                : { joinUrlOrId: true as const };
+                : { joinId: true as const };
     }
 }

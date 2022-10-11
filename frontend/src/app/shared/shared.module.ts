@@ -22,7 +22,7 @@ import { UrlValidatorDirective } from './validation/url-validator.directive';
 import { PatientStatusBadgeComponent } from './components/patient-status-badge/patient-status-badge.component';
 import { OrderByPipe } from './pipes/order-by.pipe';
 import { FileInputDirective } from './directives/file-input.directive';
-import { JoinIdOrUrlDirective } from './validation/join-id-or-url-validator.directive';
+import { JoinIdDirective } from './validation/join-id-or-url-validator.directive';
 
 @NgModule({
     declarations: [
@@ -31,7 +31,7 @@ import { JoinIdOrUrlDirective } from './validation/join-id-or-url-validator.dire
         DisplayValidationComponent,
         ExactMatchValidatorDirective,
         OnlyNumbersValidatorDirective,
-        JoinIdOrUrlDirective,
+        JoinIdDirective,
         AppTrackByPropertyPipe,
         ExerciseExistsValidatorDirective,
         ImageExistsValidatorDirective,
@@ -57,7 +57,7 @@ import { JoinIdOrUrlDirective } from './validation/join-id-or-url-validator.dire
         DisplayValidationComponent,
         ExactMatchValidatorDirective,
         OnlyNumbersValidatorDirective,
-        JoinIdOrUrlDirective,
+        JoinIdDirective,
         AppTrackByPropertyPipe,
         ExerciseExistsValidatorDirective,
         ImageExistsValidatorDirective,

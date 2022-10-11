@@ -112,15 +112,17 @@ export class LandingPageComponent {
         }
     }
 
-    public joinInputChanged() {
+    public pasteExerciseId(event: ClipboardEvent) {
+        const pastedText = event.clipboardData?.getData('text') ?? '';
         const joinUrl = new RegExp(
             `^${escapeRegExp(location.origin)}/exercises/(\\d{6,8})$`,
             'u'
         );
 
-        const matches = joinUrl.exec(this.exerciseId);
+        const matches = joinUrl.exec(pastedText);
         if (matches?.[1]) {
             this.exerciseId = matches[1];
+            event.preventDefault();
         }
     }
 

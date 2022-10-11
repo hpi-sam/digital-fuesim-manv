@@ -4,17 +4,17 @@ import { NG_VALIDATORS } from '@angular/forms';
 import { CustomValidators } from './custom-validators';
 
 @Directive({
-    selector: '[appJoinUrlOrIdValidator]',
+    selector: '[appJoinIdValidator]',
     providers: [
         {
             provide: NG_VALIDATORS,
-            useExisting: JoinIdOrUrlDirective,
+            useExisting: JoinIdDirective,
             multi: true,
         },
     ],
 })
-export class JoinIdOrUrlDirective implements Validator {
+export class JoinIdDirective implements Validator {
     validate(control: AbstractControl) {
-        return CustomValidators.joinUrlOrIdValidator()(control);
+        return CustomValidators.joinIdValidator()(control);
     }
 }

@@ -9,11 +9,13 @@
         <div class="input-group">
             <input
                 [(ngModel)]="exerciseId"
-                (ngModelChange)="joinInputChanged()"
                 [appAutofocus]="true"
                 (keydown.enter)="joinExercise()"
+                (paste)="pasteExerciseId($event)"
+                [minLength]="6"
+                [maxLength]="8"
                 required
-                appJoinUrlOrIdValidator
+                appJoinIdValidator
                 appExerciseExistsValidator
                 class="form-control form-control-lg"
                 placeholder="Übungs-ID"
