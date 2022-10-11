@@ -11,8 +11,19 @@ import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import { saveBlob } from 'src/app/shared/functions/save-blob';
 import type { AppState } from 'src/app/state/app.state';
+import {
+    selectExerciseId,
+    selectTimeConstraints,
+} from 'src/app/state/application/application.selectors';
 import { selectParticipantId } from 'src/app/state/exercise/exercise.selectors';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import {
+    getStateSnapshot,
+    selectStateSnapshot,
+} from 'src/app/state/get-state-snapshot';
+import {
+    selectCurrentRole,
+    selectOwnClient,
+} from 'src/app/state/shared/shared.selectors';
 import { NotificationService } from '../core/notification.service';
 
 @Component({
@@ -24,6 +35,9 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     private readonly destroy = new Subject<void>();
 
     public readonly participantId$ = this.store.select(selectParticipantId);
+    public readonly currentRole$ = this.store.select(selectCurrentRole);
+    public readonly timeConstraints$ = this.store.select(selectTimeConstraints);
+    public readonly ownClient$ = this.store.select(selectOwnClient);
 
     constructor(
         private readonly store: Store<AppState>,
@@ -36,8 +50,12 @@ export class ExerciseComponent implements OnInit, OnDestroy {
         this.notificationService.startNotifications();
     }
 
-    public shareExercise(exerciseId: string) {
-        const url = `${location.origin}/exercises/${exerciseId}`;
+    public shareExercise(type: 'participantId' | 'trainerId') {
+        const id = selectStateSnapshot(
+            type === 'participantId' ? selectParticipantId : selectExerciseId,
+            this.store
+        );
+        const url = `${location.origin}/exercises/${id}`;
         if (navigator.share) {
             navigator.share({ url }).catch((error) => {
                 if (error.name === 'AbortError') {

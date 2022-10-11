@@ -11,7 +11,7 @@ import { cloneDeep } from 'lodash-es';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import { getSelectMapImageTemplate } from 'src/app/state/exercise/exercise.selectors';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { ChangedImageTemplateValues } from '../image-template-form/image-template-form.component';
 
 @Component({
@@ -33,8 +33,9 @@ export class EditImageTemplateModalComponent implements OnInit {
 
     ngOnInit(): void {
         this.mapImageTemplate = cloneDeep(
-            getSelectMapImageTemplate(this.mapImageTemplateId)(
-                getStateSnapshot(this.store)
+            selectStateSnapshot(
+                getSelectMapImageTemplate(this.mapImageTemplateId),
+                this.store
             )
         );
     }

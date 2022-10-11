@@ -1,5 +1,5 @@
 <div
-    *ngIf="apiService.currentRole$ | async as role"
+    *ngIf="currentRole$ | async as role"
     class="p-2 d-flex flex-column"
     style="height: 100vh"
 >
@@ -14,15 +14,15 @@
                     class="ms-3"
                 ></app-exercise-state-badge>
                 <button
-                    *ngIf="participantId$ | async as participantId"
-                    (click)="shareExercise(participantId)"
+                    *ngIf="participantId$ | async"
+                    (click)="shareExercise('participantId')"
                     class="btn btn-light ms-3"
                 >
                     Teilnehmerlink teilen
                 </button>
                 <button
                     *ngIf="role !== 'participant'"
-                    (click)="shareExercise(apiService.exerciseId!)"
+                    (click)="shareExercise('trainerId')"
                     class="btn btn-outline-warning ms-3"
                 >
                     Übungsleiterlink teilen
@@ -59,10 +59,7 @@
                         <i class="bi-cloud-download me-2"> </i>
                         Aktuellen Zustand
                         <span
-                            *ngIf="
-                                apiService.timeConstraints$
-                                    | async as timeConstraints
-                            "
+                            *ngIf="timeConstraints$ | async as timeConstraints"
                             class="text-muted"
                         >
                             um {{ timeConstraints.current | formatDuration }}
@@ -76,7 +73,7 @@
     <div class="flex-fill">
         <ng-container
             *ngIf="
-                !(apiService.ownClient$ | async)?.isInWaitingRoom;
+                !(ownClient$ | async)?.isInWaitingRoom;
                 else waitingRoomTemplate
             "
         >

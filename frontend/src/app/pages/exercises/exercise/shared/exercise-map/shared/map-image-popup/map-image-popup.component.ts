@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import { getSelectMapImage } from 'src/app/state/exercise/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/shared/shared.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({
@@ -21,6 +22,7 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public mapImage$?: Observable<MapImage>;
+    public readonly currentRole$ = this.store.select(selectCurrentRole);
 
     public url?: string;
 

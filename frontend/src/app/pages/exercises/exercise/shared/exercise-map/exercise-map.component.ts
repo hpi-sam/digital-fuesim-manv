@@ -10,7 +10,10 @@ import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { getSelectRestrictedViewport } from 'src/app/state/exercise/exercise.selectors';
+import {
+    getSelectRestrictedViewport,
+    selectCurrentRole,
+} from 'src/app/state/shared/shared.selectors';
 import { DragElementService } from '../core/drag-element.service';
 import { TransferLinesService } from '../core/transfer-lines.service';
 import { OlMapManager } from './utility/ol-map-manager';
@@ -33,8 +36,9 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     public olMapManager?: OlMapManager;
     private popupManager?: PopupManager;
     public readonly restrictedToViewport$ = this.store.select(
-        getSelectRestrictedViewport(this.apiService.ownClientId)
+        getSelectRestrictedViewport
     );
+    public readonly currentRole$ = this.store.select(selectCurrentRole);
 
     constructor(
         private readonly store: Store<AppState>,

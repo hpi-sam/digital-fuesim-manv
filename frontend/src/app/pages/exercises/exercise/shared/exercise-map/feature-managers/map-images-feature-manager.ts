@@ -1,3 +1,4 @@
+import type { Store } from '@ngrx/store';
 import type { MapImage } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
@@ -5,6 +6,9 @@ import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import type { ApiService } from 'src/app/core/api.service';
+import type { AppState } from 'src/app/state/app.state';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectCurrentRole } from 'src/app/state/shared/shared.selectors';
 import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popup.component';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
@@ -20,7 +24,8 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        private readonly apiService: ApiService
+        apiService: ApiService,
+        private readonly store: Store<AppState>
     ) {
         super(
             olMap,
@@ -45,7 +50,7 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
     ): void {
         super.onFeatureClicked(event, feature);
 
-        if (this.apiService.getCurrentRole() !== 'trainer') {
+        if (selectStateSnapshot(selectCurrentRole, this.store) !== 'trainer') {
             return;
         }
         this.togglePopup$.next(

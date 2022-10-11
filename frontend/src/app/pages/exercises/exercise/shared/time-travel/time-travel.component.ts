@@ -7,7 +7,11 @@ import { throttle } from 'lodash-es';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectTimeConstraints } from 'src/app/state/application/application.selectors';
+import {
+    getStateSnapshot,
+    selectStateSnapshot,
+} from 'src/app/state/get-state-snapshot';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercise-statistics-modal';
 import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
@@ -18,6 +22,8 @@ import { openTransferOverviewModal } from '../transfer-overview/open-transfer-ov
     styleUrls: ['./time-travel.component.scss'],
 })
 export class TimeTravelComponent implements OnDestroy {
+    public timeConstraints$ = this.store.select(selectTimeConstraints);
+
     constructor(
         private readonly modalService: NgbModal,
         public readonly apiService: ApiService,
@@ -61,7 +67,10 @@ export class TimeTravelComponent implements OnDestroy {
 
     public startReplay() {
         this.replayInterval = setInterval(() => {
-            const timeConstraints = this.apiService.timeConstraints!;
+            const timeConstraints = selectStateSnapshot(
+                selectTimeConstraints,
+                this.store
+            )!;
             if (timeConstraints.current >= timeConstraints.end) {
                 this.stopReplay();
                 return;
@@ -93,7 +102,11 @@ export class TimeTravelComponent implements OnDestroy {
 
     public restartReplay() {
         this.stopReplay();
-        this.apiService.jumpToTime(this.apiService.timeConstraints!.start);
+        const timeConstraints = selectStateSnapshot(
+            selectTimeConstraints,
+            this.store
+        )!;
+        this.apiService.jumpToTime(timeConstraints!.start);
         this.startReplay();
     }
 

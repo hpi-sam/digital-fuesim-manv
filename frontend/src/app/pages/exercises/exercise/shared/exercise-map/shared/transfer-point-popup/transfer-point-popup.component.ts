@@ -11,6 +11,7 @@ import {
     selectHospitals,
     selectTransferPoints,
 } from 'src/app/state/exercise/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/shared/shared.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 type NavIds = 'hospitals' | 'names' | 'transferPoints';
@@ -32,6 +33,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
 
     public transferPoint$?: Observable<TransferPoint>;
 
+    public readonly currentRole$ = this.store.select(selectCurrentRole);
     public hospital$?: Observable<Hospital>;
 
     public get activeNavId() {

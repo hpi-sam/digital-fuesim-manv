@@ -1,3 +1,4 @@
+import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { TransferPoint, TransferStartPoint } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
@@ -7,6 +8,9 @@ import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import type { ApiService } from 'src/app/core/api.service';
+import type { AppState } from 'src/app/state/app.state';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectCurrentRole } from 'src/app/state/shared/shared.selectors';
 import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
 import { ImagePopupHelper } from '../utility/popup-helper';
@@ -21,6 +25,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
+        private readonly store: Store<AppState>,
         private readonly apiService: ApiService
     ) {
         super(
@@ -132,7 +137,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
     ): void {
         super.onFeatureClicked(event, feature);
 
-        if (this.apiService.getCurrentRole() !== 'trainer') {
+        if (selectStateSnapshot(selectCurrentRole, this.store) !== 'trainer') {
             return;
         }
         this.togglePopup$.next(

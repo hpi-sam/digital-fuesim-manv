@@ -6,11 +6,10 @@ import { ApiService } from 'src/app/core/api.service';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
-import {
-    getSelectClient,
-    selectExerciseStatus,
-} from 'src/app/state/exercise/exercise.selectors';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectExerciseId } from 'src/app/state/application/application.selectors';
+import { selectExerciseStatus } from 'src/app/state/exercise/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectOwnClient } from 'src/app/state/shared/shared.selectors';
 import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 import { openEmergencyOperationsCenterModal } from '../emergency-operations-center/open-emergency-operations-center-modal';
@@ -77,7 +76,8 @@ export class TrainerToolbarComponent {
 
     public async startExercise() {
         if (
-            getStateSnapshot(this.store).exercise.currentStatus === 'notStarted'
+            selectStateSnapshot(selectExerciseStatus, this.store) ===
+            'notStarted'
         ) {
             const confirmStart = await this.confirmationModalService.confirm({
                 title: 'Übung starten',
@@ -100,9 +100,7 @@ export class TrainerToolbarComponent {
     private sendLogAction(message: string) {
         this.apiService.proposeAction({
             type: '[Emergency Operation Center] Add Log Entry',
-            name: getSelectClient(this.apiService.ownClientId!)(
-                getStateSnapshot(this.store)
-            ).name,
+            name: selectStateSnapshot(selectOwnClient, this.store)!.name,
             message,
         });
     }
@@ -118,7 +116,7 @@ export class TrainerToolbarComponent {
     }
 
     public async deleteExercise() {
-        const exerciseId = this.apiService.exerciseId!;
+        const exerciseId = selectStateSnapshot(selectExerciseId, this.store)!;
         const deletionConfirmed = await this.confirmationModalService.confirm({
             title: 'Übung löschen',
             description:

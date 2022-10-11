@@ -15,6 +15,7 @@ import {
     getSelectPatient,
     selectConfiguration,
 } from 'src/app/state/exercise/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/shared/shared.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({
@@ -31,7 +32,7 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     public patient$?: Observable<Patient>;
     public visibleStatus$?: Observable<PatientStatus>;
     public pretriageStatusIsLocked$?: Observable<boolean>;
-
+    public readonly currentRole$ = this.store.select(selectCurrentRole);
     public currentYear = new Date().getFullYear();
 
     public configuration$ = this.store.select(selectConfiguration);

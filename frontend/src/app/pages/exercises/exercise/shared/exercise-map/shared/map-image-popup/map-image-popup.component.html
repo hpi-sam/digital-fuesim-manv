@@ -8,7 +8,7 @@
         ></button>
     </h5>
     <div class="popover-body" style="width: 350px; height: 300px">
-        <ng-container *ngIf="(apiService.currentRole$ | async) === 'trainer'">
+        <ng-container *ngIf="(currentRole$ | async) === 'trainer'">
             <!-- TODO: This is a workaround to make it possible to add images. In the future these things should not be done via the popup. -->
             <label class="form-label">URL</label>
             <div class="input-group mb-3">

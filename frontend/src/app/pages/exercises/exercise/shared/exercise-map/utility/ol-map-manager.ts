@@ -24,6 +24,13 @@ import type { ApiService } from 'src/app/core/api.service';
 import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
 import {
+    selectExerciseStatus,
+    selectTileMapProperties,
+    selectTransferLines,
+    selectViewports,
+} from 'src/app/state/exercise/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import {
     getSelectRestrictedViewport,
     getSelectVisibleCateringLines,
     getSelectVisibleMapImages,
@@ -33,12 +40,8 @@ import {
     getSelectVisibleTransferPoints,
     getSelectVisibleVehicles,
     getSelectVisibleViewports,
-    selectExerciseStatus,
-    selectTileMapProperties,
-    selectTransferLines,
-    selectViewports,
-} from 'src/app/state/exercise/exercise.selectors';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+    selectCurrentRole,
+} from 'src/app/state/shared/shared.selectors';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
@@ -139,7 +142,7 @@ export class OlMapManager {
         ];
         const translateInteraction = new Translate({
             layers:
-                this.apiService.getCurrentRole() === 'trainer'
+                selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
                     ? [
                           ...alwaysTranslatableLayers,
                           transferPointLayer,
@@ -174,7 +177,7 @@ export class OlMapManager {
 
         const alwaysInteractions = [translateInteraction];
         const customInteractions =
-            this.apiService.getCurrentRole() === 'trainer'
+            selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
                 ? [...alwaysInteractions, viewportTranslate, viewportModify]
                 : alwaysInteractions;
 
@@ -221,7 +224,7 @@ export class OlMapManager {
         });
 
         // FeatureManagers
-        if (this.apiService.getCurrentRole() === 'trainer') {
+        if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
             this.registerFeatureElementManager(
                 new TransferLinesFeatureManager(transferLinesLayer),
                 this.store.select(selectTransferLines)
@@ -245,11 +248,10 @@ export class OlMapManager {
             new TransferPointFeatureManager(
                 this.olMap,
                 transferPointLayer,
+                this.store,
                 this.apiService
             ),
-            this.store.select(
-                getSelectVisibleTransferPoints(this.apiService.ownClientId)
-            )
+            this.store.select(getSelectVisibleTransferPoints)
         );
 
         this.registerFeatureElementManager(
@@ -259,9 +261,7 @@ export class OlMapManager {
                 patientLayer,
                 this.apiService
             ),
-            this.store.select(
-                getSelectVisiblePatients(this.apiService.ownClientId)
-            )
+            this.store.select(getSelectVisiblePatients)
         );
 
         this.registerFeatureElementManager(
@@ -270,9 +270,7 @@ export class OlMapManager {
                 vehicleLayer,
                 this.apiService
             ),
-            this.store.select(
-                getSelectVisibleVehicles(this.apiService.ownClientId)
-            )
+            this.store.select(getSelectVisibleVehicles)
         );
 
         this.registerFeatureElementManager(
@@ -281,9 +279,7 @@ export class OlMapManager {
                 personnelLayer,
                 this.apiService
             ),
-            this.store.select(
-                getSelectVisiblePersonnel(this.apiService.ownClientId)
-            )
+            this.store.select(getSelectVisiblePersonnel)
         );
 
         this.registerFeatureElementManager(
@@ -292,38 +288,32 @@ export class OlMapManager {
                 materialLayer,
                 this.apiService
             ),
-            this.store.select(
-                getSelectVisibleMaterials(this.apiService.ownClientId)
-            )
+            this.store.select(getSelectVisibleMaterials)
         );
 
         this.registerFeatureElementManager(
             new MapImageFeatureManager(
                 this.olMap,
                 mapImagesLayer,
-                this.apiService
+                this.apiService,
+                this.store
             ),
-            this.store.select(
-                getSelectVisibleMapImages(this.apiService.ownClientId)
-            )
+            this.store.select(getSelectVisibleMapImages)
         );
 
         this.registerFeatureElementManager(
             new CateringLinesFeatureManager(cateringLinesLayer),
-            this.store.select(
-                getSelectVisibleCateringLines(this.apiService.ownClientId)
-            )
+            this.store.select(getSelectVisibleCateringLines)
         );
 
         this.registerFeatureElementManager(
             new ViewportFeatureManager(
                 this.olMap,
                 viewportLayer,
-                this.apiService
+                this.apiService,
+                this.store
             ),
-            this.store.select(
-                getSelectVisibleViewports(this.apiService.ownClientId)
-            )
+            this.store.select(getSelectVisibleViewports)
         );
 
         this.registerPopupTriggers(translateInteraction);
@@ -334,7 +324,7 @@ export class OlMapManager {
         // Register handlers that disable or enable certain interactions
         combineLatest([
             this.store.select(selectExerciseStatus),
-            this.apiService.currentRole$,
+            this.store.select(selectCurrentRole),
         ])
             .pipe(takeUntil(this.destroy$))
             .subscribe(([status, currentRole]) => {
@@ -364,7 +354,7 @@ export class OlMapManager {
     private registerViewportRestriction() {
         this.tryToFitViewToViewports(false);
         this.store
-            .select(getSelectRestrictedViewport(this.apiService.ownClientId))
+            .select(getSelectRestrictedViewport)
             .pipe(takeUntil(this.destroy$))
             .subscribe((viewport) => {
                 const view = this.olMap.getView();
@@ -536,16 +526,16 @@ export class OlMapManager {
      * Sets the map's view to see all viewports.
      */
     public tryToFitViewToViewports(animate = true) {
-        const currentState = getStateSnapshot(this.store);
         if (
-            getSelectRestrictedViewport(this.apiService.ownClientId)(
-                currentState
-            ) !== undefined
+            selectStateSnapshot(getSelectRestrictedViewport, this.store) !==
+            undefined
         ) {
             // We are restricted to a viewport -> you can't fit the view
             return;
         }
-        const viewports = Object.values(selectViewports(currentState));
+        const viewports = Object.values(
+            selectStateSnapshot(selectViewports, this.store)
+        );
         const view = this.olMap.getView();
         if (viewports.length === 0) {
             view.setCenter([startingPosition.x, startingPosition.y]);

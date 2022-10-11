@@ -2,164 +2,214 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type {
-    Client,
+    ClientToServerEvents,
     ExerciseAction,
     ExerciseIds,
     ExerciseState,
     ExerciseTimeline,
+    ServerToClientEvents,
+    SocketResponse,
     StateExport,
+    UUID,
 } from 'digital-fuesim-manv-shared';
-import { reduceExerciseState } from 'digital-fuesim-manv-shared';
+import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import { freeze } from 'immer';
-import type { Observable } from 'rxjs';
-import { BehaviorSubject, lastValueFrom, map, of, switchMap } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
+import type { Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import type { AppState } from '../state/app.state';
+import {
+    selectExerciseId,
+    selectIsTimeTraveling,
+    selectTimeConstraints,
+} from '../state/application/application.selectors';
+
+import {
+    joinExercise,
+    jumpToTime,
+    leaveExercise,
+    startTimeTravel,
+    stopTimeTravel,
+} from '../state/application/application.actions';
 import {
     applyServerAction,
     setExerciseState,
 } from '../state/exercise/exercise.actions';
-import { getSelectClient } from '../state/exercise/exercise.selectors';
-import { getStateSnapshot } from '../state/get-state-snapshot';
-import { httpOrigin } from './api-origins';
+import { selectCurrentTime } from '../state/exercise/exercise.selectors';
+import {
+    getStateSnapshot,
+    selectStateSnapshot,
+} from '../state/get-state-snapshot';
+import { httpOrigin, websocketOrigin } from './api-origins';
 import { MessageService } from './messages/message.service';
-import { PresentExerciseHelper } from './present-exercise-helper';
-import type { TimeConstraints } from './time-travel-helper';
-import { TimeTravelHelper } from './time-travel-helper';
+import { OptimisticActionHandler } from './optimistic-action-handler';
+import { TimeJumpHelper } from './time-jump-helper';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ApiService {
-    public get isTimeTraveling() {
-        return this.timeTravelHelper !== undefined;
-    }
-    public readonly isTimeTraveling$ = new BehaviorSubject(
-        this.isTimeTraveling
-    );
+    private readonly socket: Socket<
+        ServerToClientEvents,
+        ClientToServerEvents
+    > = io(websocketOrigin, {
+        ...socketIoTransports,
+    });
+
     constructor(
         private readonly store: Store<AppState>,
         private readonly httpClient: HttpClient,
         private readonly messageService: MessageService
-    ) {}
+    ) {
+        this.socket.on('performAction', (action: ExerciseAction) => {
+            freeze(action, true);
+            this.optimisticActionHandler.performAction(action);
+        });
+        this.socket.on('disconnect', (reason) => {
+            if (reason === 'io client disconnect') {
+                return;
+            }
+            this.messageService.postError(
+                {
+                    title: 'Die Verbindung zum Server wurde unterbrochen',
+                    body: 'Laden Sie die Seite neu, um die Verbindung wieder herzustellen.',
+                    error: reason,
+                },
+                'alert',
+                null
+            );
+        });
+    }
 
-    private presentState?: ExerciseState;
-
-    private readonly presentExerciseHelper = new PresentExerciseHelper(
-        (exercise) =>
-            this.isTimeTraveling
-                ? (this.presentState = exercise)
-                : this.store.dispatch(setExerciseState(exercise)),
-        () =>
-            this.isTimeTraveling
-                ? this.presentState!
-                : getStateSnapshot(this.store).exercise,
-        (action) =>
-            this.isTimeTraveling
-                ? (this.presentState = reduceExerciseState(
-                      this.presentState!,
-                      action
-                  ))
-                : this.store.dispatch(applyServerAction(action)),
-        this.messageService
+    private readonly optimisticActionHandler = new OptimisticActionHandler<
+        ExerciseAction,
+        ExerciseState,
+        SocketResponse
+    >(
+        (exercise) => this.store.dispatch(setExerciseState(exercise)),
+        () => getStateSnapshot(this.store).exercise,
+        (action) => this.store.dispatch(applyServerAction(action)),
+        async (action) => this.sendAction(action)
     );
 
-    public readonly joinExercise = this.presentExerciseHelper.joinExercise.bind(
-        this.presentExerciseHelper
-    );
-    public leaveExercise() {
-        this.presentExerciseHelper.leaveExercise();
-        this.stopTimeTravel();
-    }
     /**
-     * Either the trainer or participant id
+     * Connect (or reconnect) the socket
      */
-    public get exerciseId() {
-        return this.presentExerciseHelper.exerciseId;
-    }
-    /**
-     * Whether the client is currently joined to an exercise
-     */
-    public get isJoined() {
-        return this.presentExerciseHelper.ownClientId !== undefined;
-    }
-
-    private timeTravelHelper?: TimeTravelHelper;
-
-    public jumpToTime(exerciseTime: number) {
-        if (!this.timeTravelHelper) {
+    private connectSocket() {
+        this.socket.connect().on('connect_error', (error) => {
             this.messageService.postError({
-                title: 'Zeitreise ist nicht aktiviert.',
+                title: 'Fehler beim Verbinden zum Server',
+                error,
             });
-            return;
-        }
-        this.timeTravelHelper.jumpToTime(exerciseTime);
+        });
     }
 
-    public timeConstraints$: Observable<TimeConstraints | undefined> =
-        this.isTimeTraveling$.pipe(
-            switchMap(
-                () => this.timeTravelHelper?.timeConstraints$ ?? of(undefined)
-            )
+    private clientName?: string;
+
+    /**
+     * Join an exercise and retrieve its state
+     * Displays an error message if the join failed
+     * @returns whether the join was successful
+     */
+    public async joinExercise(
+        exerciseId: string,
+        clientName: string
+    ): Promise<boolean> {
+        this.connectSocket();
+        const joinResponse = await new Promise<SocketResponse<UUID>>(
+            (resolve) => {
+                this.socket.emit(
+                    'joinExercise',
+                    exerciseId,
+                    clientName,
+                    resolve
+                );
+            }
         );
-    public get timeConstraints() {
-        return this.timeTravelHelper?.timeConstraints;
-    }
-
-    // TODO: It is suboptimal to differentiate between null and undefined.
-    // But because this distinction is only used in this class and better exposed via
-    // isTimeTraveling and getCurrentRole, this is ok for now.
-    /**
-     * The id of the client that is currently joined to the exercise with {@link exerciseId}
-     * undefined: the client is not joined to an exercise
-     * null: {@link isTimeTraveling} is true, the client could not be in the current exercise state
-     */
-    public get ownClientId() {
-        if (this.isTimeTraveling) {
-            return null;
+        if (!joinResponse.success) {
+            this.messageService.postError({
+                title: 'Fehler beim Beitreten der Übung',
+                error: joinResponse.message,
+            });
+            return false;
         }
-        return this.presentExerciseHelper.ownClientId;
+        const getStateResponse = await new Promise<
+            SocketResponse<ExerciseState>
+        >((resolve) => {
+            this.socket.emit('getState', resolve);
+        });
+        freeze(getStateResponse, true);
+        if (!getStateResponse.success) {
+            this.messageService.postError({
+                title: 'Fehler beim Laden der Übung',
+                error: getStateResponse.message,
+            });
+            return false;
+        }
+        this.clientName = clientName;
+        // TODO: Merge these
+        this.store.dispatch(joinExercise(joinResponse.payload, exerciseId));
+        this.store.dispatch(setExerciseState(getStateResponse.payload));
+        return true;
     }
 
     /**
-     * Emits either the users own client in the state or
-     * undefined if the user is not joined to an exercise or
-     * null if time travel is active
+     * Proposes an action to the server
      */
-    public readonly ownClient$ = this.isTimeTraveling$.pipe(
-        switchMap((isTimeTraveling) =>
-            isTimeTraveling ? of(null) : this.presentExerciseHelper.ownClientId$
-        ),
-        switchMap((clientId) =>
-            clientId
-                ? this.store.select(getSelectClient(clientId))
-                : // clientId is expected to never be the empty string
-                  of(clientId as null | undefined)
-        )
-    );
-
-    public currentRole$: Observable<CurrentRole> = this.ownClient$.pipe(
-        // If we wouldn't provide the ownClient from the observable, this could be a race condition
-        map((ownClient) => this.getCurrentRole(ownClient))
-    );
-    public getCurrentRole(
-        ownClient: Client | null | undefined = this.ownClientId
-            ? getSelectClient(this.ownClientId)(getStateSnapshot(this.store))
-            : // clientId is expected to never be the empty string
-              (this.ownClientId as null | undefined)
-    ): CurrentRole {
-        return ownClient === null
-            ? 'timeTravel'
-            : ownClient === undefined
-            ? 'notJoined'
-            : ownClient.role;
+    private async sendAction(action: ExerciseAction) {
+        const response = await new Promise<SocketResponse>((resolve) => {
+            this.socket.emit('proposeAction', action, resolve);
+        });
+        if (!response.success) {
+            this.messageService.postError({
+                title: 'Fehler beim Senden der Aktion',
+                error: response.message,
+            });
+        }
+        return response;
     }
+
+    public leaveExercise() {
+        this.socket.disconnect();
+        // TODO: What if timeTravel is active?
+        this.store.dispatch(leaveExercise());
+    }
+
+    /**
+     *
+     * @param optimistic wether the action should be applied before the server responds (to reduce latency) (this update is guaranteed to be synchronous)
+     * @returns the response of the server
+     */
+    public async proposeAction(action: ExerciseAction, optimistic = false) {
+        const isTimeTraveling = selectStateSnapshot(
+            selectIsTimeTraveling,
+            this.store
+        );
+        if (isTimeTraveling) {
+            this.messageService.postError({
+                title: 'Die Vergangenheit kann nicht bearbeitet werden',
+                body: 'Deaktiviere den Aufnahme Modus, um Änderungen vorzunehmen.',
+            });
+            return { success: false };
+        }
+        // TODO: throw if `response.success` is false
+        return this.optimisticActionHandler.proposeAction(action, optimistic);
+    }
+
+    /**
+     * TimeTravel
+     *
+     */
+
+    private timeJumpHelper?: TimeJumpHelper;
 
     private activatingTimeTravel = false;
     public async startTimeTravel() {
         this.activatingTimeTravel = true;
+        const exerciseId = selectStateSnapshot(selectExerciseId, this.store);
         const exerciseTimeLine = await lastValueFrom(
             this.httpClient.get<ExerciseTimeline>(
-                `${httpOrigin}/api/exercise/${this.exerciseId}/history`
+                `${httpOrigin}/api/exercise/${exerciseId}/history`
             )
         ).catch((error) => {
             this.stopTimeTravel();
@@ -176,39 +226,50 @@ export class ApiService {
             return;
         }
         this.activatingTimeTravel = false;
-        this.presentState = getStateSnapshot(this.store).exercise;
-        this.timeTravelHelper = new TimeTravelHelper(
-            this.presentState,
-            exerciseTimeLine,
-            (state) => this.store.dispatch(setExerciseState(state))
+        this.timeJumpHelper = new TimeJumpHelper(exerciseTimeLine);
+        this.socket.disconnect();
+        // Travel to the start of the exercise
+        // TODO: this should be one action
+        this.store.dispatch(
+            startTimeTravel({
+                start: exerciseTimeLine.initialState.currentTime,
+                current: exerciseTimeLine.initialState.currentTime,
+                end: selectStateSnapshot(selectCurrentTime, this.store),
+            })
         );
-        this.isTimeTraveling$.next(this.isTimeTraveling);
+        this.store.dispatch(setExerciseState(exerciseTimeLine.initialState));
     }
 
     public stopTimeTravel() {
+        this.timeJumpHelper = undefined;
         this.activatingTimeTravel = false;
-        this.timeTravelHelper = undefined;
-        this.isTimeTraveling$.next(this.isTimeTraveling);
-        // Set the state back to the present one
-        this.store.dispatch(setExerciseState(this.presentState!));
-        this.presentState = undefined;
+        this.store.dispatch(stopTimeTravel());
+        this.joinExercise(
+            selectStateSnapshot(selectExerciseId, this.store)!,
+            this.clientName!
+        );
     }
 
     /**
-     *
-     * @param optimistic wether the action should be applied before the server responds (to reduce latency) (this update is guaranteed to be synchronous)
-     * @returns the response of the server
+     * @param exerciseTime The time to travel to, if it isn't in the timeConstraints, it will be clamped appropriately
      */
-    public async proposeAction(action: ExerciseAction, optimistic = false) {
-        if (this.isTimeTraveling) {
-            this.messageService.postError({
-                title: 'Die Vergangenheit kann nicht bearbeitet werden',
-                body: 'Deaktiviere den Aufnahme Modus, um Änderungen vorzunehmen.',
-            });
-            return { success: false };
+    public jumpToTime(exerciseTime: number) {
+        const timeConstraints = selectStateSnapshot(
+            selectTimeConstraints,
+            this.store
+        );
+        if (!timeConstraints || !this.timeJumpHelper) {
+            throw new Error('Start the time travel before jumping to a time!');
         }
-        // TODO: throw if `response.success` is false
-        return this.presentExerciseHelper.proposeAction(action, optimistic);
+        const clampedTime = Math.max(
+            timeConstraints.start,
+            Math.min(timeConstraints.end, exerciseTime)
+        );
+        // TODO: this should be one action
+        this.store.dispatch(jumpToTime(clampedTime));
+        this.store.dispatch(
+            setExerciseState(this.timeJumpHelper.getStateAtTime(clampedTime))
+        );
     }
 
     /**
@@ -232,9 +293,10 @@ export class ApiService {
     }
 
     public async exerciseHistory() {
+        const exerciseId = selectStateSnapshot(selectExerciseId, this.store);
         return lastValueFrom(
             this.httpClient.get<ExerciseTimeline>(
-                `${httpOrigin}/api/exercise/${this.exerciseId}/history`
+                `${httpOrigin}/api/exercise/${exerciseId}/history`
             )
         ).then((value) => freeze(value, true));
     }
@@ -270,5 +332,3 @@ export class ApiService {
             });
     }
 }
-
-type CurrentRole = 'notJoined' | 'participant' | 'timeTravel' | 'trainer';

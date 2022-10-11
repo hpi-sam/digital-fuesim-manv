@@ -18,3 +18,10 @@ export function getStateSnapshot(store: Store<AppState>): AppState {
         .subscribe((s) => (currentState = s));
     return currentState!;
 }
+
+export function selectStateSnapshot<SelectedValue>(
+    selector: (state: AppState) => SelectedValue,
+    store: Store<AppState>
+): SelectedValue {
+    return selector(getStateSnapshot(store));
+}

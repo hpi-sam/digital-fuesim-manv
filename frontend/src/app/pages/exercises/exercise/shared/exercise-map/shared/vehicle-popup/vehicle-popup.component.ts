@@ -13,6 +13,7 @@ import {
     getSelectPersonnel,
     getSelectVehicle,
 } from 'src/app/state/exercise/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/shared/shared.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({
@@ -28,6 +29,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
 
     public vehicle$?: Observable<Vehicle>;
     public vehicleIsCompletelyUnloaded$?: Observable<boolean>;
+    public readonly currentRole$ = this.store.select(selectCurrentRole);
 
     constructor(
         private readonly store: Store<AppState>,

@@ -8,7 +8,7 @@ import {
     selectConfiguration,
     selectTileMapProperties,
 } from 'src/app/state/exercise/exercise.selectors';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 @Component({
     selector: 'app-exercise-settings-modal',
@@ -17,7 +17,7 @@ import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 })
 export class ExerciseSettingsModalComponent {
     public tileMapProperties = cloneDeepMutable(
-        selectTileMapProperties(getStateSnapshot(this.store))
+        selectStateSnapshot(selectTileMapProperties, this.store)
     );
 
     public readonly tileMapUrlRegex =

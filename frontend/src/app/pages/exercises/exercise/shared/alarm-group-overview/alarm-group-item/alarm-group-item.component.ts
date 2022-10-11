@@ -4,8 +4,11 @@ import type { UUID } from 'digital-fuesim-manv-shared';
 import { AlarmGroup, AlarmGroupVehicle } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectVehicleTemplates } from 'src/app/state/exercise/exercise.selectors';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import {
+    getSelectVehicleTemplate,
+    selectVehicleTemplates,
+} from 'src/app/state/exercise/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 @Component({
     selector: 'app-alarm-group-item',
@@ -74,10 +77,9 @@ export class AlarmGroupItemComponent {
     }
 
     public createAlarmGroupVehicle(vehicleTemplateId: UUID) {
-        const vehicleTemplate = getStateSnapshot(
+        const vehicleTemplate = selectStateSnapshot(
+            getSelectVehicleTemplate(vehicleTemplateId),
             this.store
-        ).exercise.vehicleTemplates.find(
-            (_vehicleTemplate) => _vehicleTemplate.id === vehicleTemplateId
         )!;
         this.apiService.proposeAction({
             type: '[AlarmGroup] Add AlarmGroupVehicle',

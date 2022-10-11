@@ -1,3 +1,4 @@
+import type { Store } from '@ngrx/store';
 import { Size, Viewport } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
@@ -8,6 +9,9 @@ import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import type { ApiService } from 'src/app/core/api.service';
+import type { AppState } from 'src/app/state/app.state';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectCurrentRole } from 'src/app/state/shared/shared.selectors';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
@@ -39,7 +43,8 @@ export class ViewportFeatureManager
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<LineString>>,
-        private readonly apiService: ApiService
+        private readonly apiService: ApiService,
+        private readonly store: Store<AppState>
     ) {
         super(
             olMap,
@@ -131,7 +136,7 @@ export class ViewportFeatureManager
         feature: Feature<any>
     ): void {
         super.onFeatureClicked(event, feature);
-        if (this.apiService.getCurrentRole() !== 'trainer') {
+        if (selectStateSnapshot(selectCurrentRole, this.store) !== 'trainer') {
             return;
         }
         const zoom = this.olMap.getView().getZoom()!;

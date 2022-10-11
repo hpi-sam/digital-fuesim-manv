@@ -5,10 +5,12 @@ import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
+import { selectClients } from 'src/app/state/exercise/exercise.selectors';
 import {
     getSelectVisibleVehicles,
-    selectClients,
-} from 'src/app/state/exercise/exercise.selectors';
+    selectCurrentRole,
+    selectOwnClient,
+} from 'src/app/state/shared/shared.selectors';
 
 @Injectable({
     providedIn: 'root',
@@ -24,7 +26,8 @@ export class NotificationService {
 
     public startNotifications() {
         // If the user is a trainer, display a message for each joined or disconnected client
-        this.apiService.currentRole$
+        this.store
+            .select(selectCurrentRole)
             .pipe(
                 filter((role) => role === 'trainer'),
                 switchMap(() => this.store.select(selectClients)),
@@ -52,7 +55,8 @@ export class NotificationService {
                 });
             });
         // If the user is restricted to a viewport, display a message for each vehicle that arrived at this viewport
-        this.apiService.ownClient$
+        this.store
+            .select(selectOwnClient)
             .pipe(
                 filter(
                     (client) =>
@@ -60,7 +64,7 @@ export class NotificationService {
                         !client.isInWaitingRoom
                 ),
                 switchMap((client) =>
-                    this.store.select(getSelectVisibleVehicles(client!.id))
+                    this.store.select(getSelectVisibleVehicles)
                 ),
                 pairwise(),
                 takeUntil(this.stopNotifications$)
