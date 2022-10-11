@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+    IsBoolean,
     IsNumber,
     IsOptional,
     IsPositive,
@@ -58,6 +59,17 @@ export class RemoveMapImageAction implements Action {
 
     @IsUUID(4, uuidValidationOptions)
     public readonly mapImageId!: UUID;
+}
+
+export class SetIsLockedMapImageAction implements Action {
+    @IsString()
+    public readonly type = '[MapImage] Set isLocked';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly mapImageId!: UUID;
+
+    @IsBoolean()
+    public readonly newLocked!: boolean;
 }
 
 export class ReconfigureMapImageUrlAction implements Action {
@@ -133,4 +145,14 @@ export namespace MapImagesActionReducers {
             },
             rights: 'trainer',
         };
+
+    export const setLockedMapImage: ActionReducer<SetIsLockedMapImageAction> = {
+        action: SetIsLockedMapImageAction,
+        reducer: (draftState, { mapImageId, newLocked }) => {
+            const mapImage = getElement(draftState, 'mapImages', mapImageId);
+            mapImage.isLocked = newLocked;
+            return draftState;
+        },
+        rights: 'trainer',
+    };
 }

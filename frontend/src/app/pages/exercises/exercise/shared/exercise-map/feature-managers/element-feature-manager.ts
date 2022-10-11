@@ -116,6 +116,10 @@ export abstract class ElementFeatureManager<
         return elementFeature;
     }
 
+    isFeatureTranslatable(feature: ElementFeature) {
+        return true;
+    }
+
     deleteFeature(element: Element, elementFeature: ElementFeature): void {
         this.layer.getSource()!.removeFeature(elementFeature);
         this.movementAnimator.stopMovementAnimation(elementFeature);
