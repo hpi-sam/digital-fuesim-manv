@@ -1,6 +1,5 @@
 import type { AbstractControl } from '@angular/forms';
 import { isURL } from 'class-validator';
-import { escapeRegExp } from 'lodash-es';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace CustomValidators {
