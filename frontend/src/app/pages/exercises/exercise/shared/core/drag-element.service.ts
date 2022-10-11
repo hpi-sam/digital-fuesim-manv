@@ -137,8 +137,8 @@ export class DragElementService {
                         type: '[Vehicle] Add vehicle',
                         ...createVehicleParameters(
                             this.transferringTemplate.template,
-                            this.transferringTemplate.materialTemplates,
-                            this.transferringTemplate.personnelTemplates,
+                            selectMaterialTemplates(getStateSnapshot(this.store)),
+                            selectVehicleTemplates(getStateSnapshot(this.store)),
                             position
                         ),
                     },
