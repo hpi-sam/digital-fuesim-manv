@@ -22,6 +22,8 @@ import { PatientStatusBadgeComponent } from './components/patient-status-badge/p
 import { OrderByPipe } from './pipes/order-by.pipe';
 import { FileInputDirective } from './directives/file-input.directive';
 import { JoinIdDirective } from './validation/join-id-validator.directive';
+import { PersonnelNamePipe } from './pipes/personnel-name.pipe';
+import { CaterCapacityCountPipe } from './pipes/cater-capacity-count.pipe';
 
 @NgModule({
     declarations: [
@@ -46,6 +48,8 @@ import { JoinIdDirective } from './validation/join-id-validator.directive';
         IntegerValidatorDirective,
         PatientStatusDataFieldComponent,
         PatientStatusBadgeComponent,
+        PersonnelNamePipe,
+        CaterCapacityCountPipe,
         FileInputDirective,
     ],
     imports: [CommonModule],
@@ -67,6 +71,8 @@ import { JoinIdDirective } from './validation/join-id-validator.directive';
         ValuesPipe,
         KeysPipe,
         OrderByPipe,
+        PersonnelNamePipe,
+        CaterCapacityCountPipe,
         ViewportNameComponent,
         IntegerValidatorDirective,
         PatientStatusBadgeComponent,
