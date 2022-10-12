@@ -55,6 +55,10 @@ export class DeleteFeatureManager implements FeatureManager<Feature<Point>> {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
     ): void {}
 
+    public isFeatureTranslatable(feature: Feature<Point>) {
+        return false;
+    }
+
     public onFeatureDrop(
         dropEvent: TranslateEvent,
         droppedFeature: Feature<any>,

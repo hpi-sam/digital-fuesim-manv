@@ -1,5 +1,5 @@
 import type { Store } from '@ngrx/store';
-import type { MapImage } from 'digital-fuesim-manv-shared';
+import type { MapImage, UUID } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
@@ -55,8 +55,16 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
         }
         this.togglePopup$.next(
             this.popupHelper.getPopupOptions(MapImagePopupComponent, feature, {
-                mapImageId: feature.getId() as string,
+                mapImageId: feature.getId() as UUID,
             })
+        );
+    }
+
+    override isFeatureTranslatable(feature: Feature<Point>): boolean {
+        const mapImage = this.getElementFromFeature(feature).value as MapImage;
+        return (
+            selectStateSnapshot(selectCurrentRole, this.store) === 'trainer' &&
+            !mapImage.isLocked
         );
     }
 

@@ -145,10 +145,14 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                 TransferPointPopupComponent,
                 feature,
                 {
-                    transferPointId: feature.getId() as string,
+                    transferPointId: feature.getId() as UUID,
                 }
             )
         );
+    }
+
+    override isFeatureTranslatable(feature: Feature<Point>): boolean {
+        return selectStateSnapshot(selectCurrentRole, this.store) === 'trainer';
     }
 
     override unsupportedChangeProperties = new Set([

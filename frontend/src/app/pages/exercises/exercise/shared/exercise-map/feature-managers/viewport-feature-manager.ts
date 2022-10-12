@@ -1,4 +1,5 @@
 import type { Store } from '@ngrx/store';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import { Size, Viewport } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
@@ -145,7 +146,7 @@ export class ViewportFeatureManager
         this.togglePopup$.next({
             component: ViewportPopupComponent,
             context: {
-                viewportId: feature.getId() as string,
+                viewportId: feature.getId() as UUID,
             },
             // We want the popup to be centered on the mouse position
             ...calculatePopupPositioning(

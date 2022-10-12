@@ -1,4 +1,5 @@
 import type { Store } from '@ngrx/store';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import { Patient } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
@@ -91,7 +92,7 @@ export class PatientFeatureManager extends ElementFeatureManager<
 
         this.togglePopup$.next(
             this.popupHelper.getPopupOptions(PatientPopupComponent, feature, {
-                patientId: feature.getId() as string,
+                patientId: feature.getId() as UUID,
             })
         );
     }
