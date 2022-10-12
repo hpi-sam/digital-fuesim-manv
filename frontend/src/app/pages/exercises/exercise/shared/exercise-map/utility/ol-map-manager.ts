@@ -20,7 +20,7 @@ import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import type { Observable } from 'rxjs';
 import { combineLatest, pairwise, startWith, Subject, takeUntil } from 'rxjs';
-import { ExerciseService } from 'src/app/core/exercise.service';
+import type { ExerciseService } from 'src/app/core/exercise.service';
 import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
 import {
