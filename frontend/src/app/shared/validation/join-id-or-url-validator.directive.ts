@@ -4,17 +4,19 @@ import { NG_VALIDATORS } from '@angular/forms';
 import { CustomValidators } from './custom-validators';
 
 @Directive({
-    selector: '[appOnlyNumbersValidator]',
+    selector: '[appJoinIdValidator]',
     providers: [
         {
             provide: NG_VALIDATORS,
-            useExisting: OnlyNumbersValidatorDirective,
+            useExisting: JoinIdDirective,
             multi: true,
         },
     ],
 })
-export class OnlyNumbersValidatorDirective implements Validator {
+export class JoinIdDirective implements Validator {
+    private readonly validator = CustomValidators.joinIdValidator();
+
     validate(control: AbstractControl) {
-        return CustomValidators.onlyNumbersValidator()(control);
+        return this.validator(control);
     }
 }

@@ -9,12 +9,6 @@ export namespace CustomValidators {
                 ? { exactMatch: { value: control.value, stringToMatch } }
                 : null;
     }
-    export function onlyNumbersValidator() {
-        return (control: AbstractControl) =>
-            /^\d*$/u.test(control.value)
-                ? null
-                : { onlyNumbers: true as const };
-    }
     export function urlValidator() {
         return (control: AbstractControl) =>
             !control.value || isURL(control.value)
@@ -26,5 +20,11 @@ export namespace CustomValidators {
             !control.value || Number.isInteger(control.value)
                 ? null
                 : { integer: true as const };
+    }
+    export function joinIdValidator() {
+        return (control: AbstractControl) =>
+            /^((\d{6})|(\d{8}))$/u.test(control.value)
+                ? null
+                : { joinId: true as const };
     }
 }
