@@ -9,12 +9,6 @@ export namespace CustomValidators {
                 ? { exactMatch: { value: control.value, stringToMatch } }
                 : null;
     }
-    export function onlyNumbersValidator() {
-        return (control: AbstractControl) =>
-            /^\d*$/u.test(control.value)
-                ? null
-                : { onlyNumbers: true as const };
-    }
     export function urlValidator() {
         return (control: AbstractControl) =>
             !control.value || isURL(control.value)

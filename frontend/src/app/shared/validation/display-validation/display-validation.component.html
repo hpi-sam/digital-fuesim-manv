@@ -26,9 +26,6 @@
     <div *ngIf="errors['max'] as maxError">
         Die Eingabe darf höchstens {{ maxError.max }} sein.
     </div>
-    <div *ngIf="errors['onlyNumbers'] as maxError">
-        Die Eingabe darf nur Zahlen enthalten.
-    </div>
     <div *ngIf="errors['integer'] as maxError">
         Die Eingabe muss eine ganze Zahl sein.
     </div>
