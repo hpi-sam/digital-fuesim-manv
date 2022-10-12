@@ -40,3 +40,7 @@
         padding: map-get($spacers, 1);
     }
 }
+
+.text-prewrap {
+    white-space: pre-wrap;
+}
