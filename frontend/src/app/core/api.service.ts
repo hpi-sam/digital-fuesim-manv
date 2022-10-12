@@ -21,21 +21,15 @@ import type { AppState } from '../state/app.state';
 import {
     selectExerciseId,
     selectIsTimeTraveling,
-    selectTimeConstraints,
 } from '../state/application/application.selectors';
-
 import {
     joinExercise,
-    jumpToTime,
     leaveExercise,
-    startTimeTravel,
-    stopTimeTravel,
 } from '../state/application/application.actions';
 import {
     applyServerAction,
     setExerciseState,
 } from '../state/exercise/exercise.actions';
-import { selectCurrentTime } from '../state/exercise/exercise.selectors';
 import {
     getStateSnapshot,
     selectStateSnapshot,
@@ -43,18 +37,30 @@ import {
 import { httpOrigin, websocketOrigin } from './api-origins';
 import { MessageService } from './messages/message.service';
 import { OptimisticActionHandler } from './optimistic-action-handler';
-import { TimeJumpHelper } from './time-jump-helper';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ApiService {
+    // TODO: Move all of the socket logic into an exerciseService
+
     private readonly socket: Socket<
         ServerToClientEvents,
         ClientToServerEvents
     > = io(websocketOrigin, {
         ...socketIoTransports,
     });
+
+    private readonly optimisticActionHandler = new OptimisticActionHandler<
+        ExerciseAction,
+        ExerciseState,
+        SocketResponse
+    >(
+        (exercise) => this.store.dispatch(setExerciseState(exercise)),
+        () => getStateSnapshot(this.store).exercise,
+        (action) => this.store.dispatch(applyServerAction(action)),
+        async (action) => this.sendAction(action)
+    );
 
     constructor(
         private readonly store: Store<AppState>,
@@ -81,20 +87,6 @@ export class ApiService {
         });
     }
 
-    private readonly optimisticActionHandler = new OptimisticActionHandler<
-        ExerciseAction,
-        ExerciseState,
-        SocketResponse
-    >(
-        (exercise) => this.store.dispatch(setExerciseState(exercise)),
-        () => getStateSnapshot(this.store).exercise,
-        (action) => this.store.dispatch(applyServerAction(action)),
-        async (action) => this.sendAction(action)
-    );
-
-    /**
-     * Connect (or reconnect) the socket
-     */
     private connectSocket() {
         this.socket.connect().on('connect_error', (error) => {
             this.messageService.postError({
@@ -103,8 +95,6 @@ export class ApiService {
             });
         });
     }
-
-    private clientName?: string;
 
     /**
      * Join an exercise and retrieve its state
@@ -146,7 +136,6 @@ export class ApiService {
             });
             return false;
         }
-        this.clientName = clientName;
         // TODO: Merge these
         this.store.dispatch(joinExercise(joinResponse.payload, exerciseId));
         this.store.dispatch(setExerciseState(getStateResponse.payload));
@@ -194,82 +183,6 @@ export class ApiService {
         }
         // TODO: throw if `response.success` is false
         return this.optimisticActionHandler.proposeAction(action, optimistic);
-    }
-
-    /**
-     * TimeTravel
-     *
-     */
-
-    private timeJumpHelper?: TimeJumpHelper;
-
-    private activatingTimeTravel = false;
-    public async startTimeTravel() {
-        this.activatingTimeTravel = true;
-        const exerciseId = selectStateSnapshot(selectExerciseId, this.store);
-        const exerciseTimeLine = await lastValueFrom(
-            this.httpClient.get<ExerciseTimeline>(
-                `${httpOrigin}/api/exercise/${exerciseId}/history`
-            )
-        ).catch((error) => {
-            this.stopTimeTravel();
-            this.messageService.postError({
-                title: 'Die Vergangenheit konnte nicht geladen werden',
-                error,
-            });
-            throw error;
-        });
-        // Freeze to prevent accidental modification
-        freeze(exerciseTimeLine, true);
-        if (!this.activatingTimeTravel) {
-            // The timeTravel has been stopped during the retrieval of the timeline
-            return;
-        }
-        this.activatingTimeTravel = false;
-        this.timeJumpHelper = new TimeJumpHelper(exerciseTimeLine);
-        this.socket.disconnect();
-        // Travel to the start of the exercise
-        // TODO: this should be one action
-        this.store.dispatch(
-            startTimeTravel({
-                start: exerciseTimeLine.initialState.currentTime,
-                current: exerciseTimeLine.initialState.currentTime,
-                end: selectStateSnapshot(selectCurrentTime, this.store),
-            })
-        );
-        this.store.dispatch(setExerciseState(exerciseTimeLine.initialState));
-    }
-
-    public stopTimeTravel() {
-        this.timeJumpHelper = undefined;
-        this.activatingTimeTravel = false;
-        this.store.dispatch(stopTimeTravel());
-        this.joinExercise(
-            selectStateSnapshot(selectExerciseId, this.store)!,
-            this.clientName!
-        );
-    }
-
-    /**
-     * @param exerciseTime The time to travel to, if it isn't in the timeConstraints, it will be clamped appropriately
-     */
-    public jumpToTime(exerciseTime: number) {
-        const timeConstraints = selectStateSnapshot(
-            selectTimeConstraints,
-            this.store
-        );
-        if (!timeConstraints || !this.timeJumpHelper) {
-            throw new Error('Start the time travel before jumping to a time!');
-        }
-        const clampedTime = Math.max(
-            timeConstraints.start,
-            Math.min(timeConstraints.end, exerciseTime)
-        );
-        // TODO: this should be one action
-        this.store.dispatch(jumpToTime(clampedTime));
-        this.store.dispatch(
-            setExerciseState(this.timeJumpHelper.getStateAtTime(clampedTime))
-        );
     }
 
     /**
