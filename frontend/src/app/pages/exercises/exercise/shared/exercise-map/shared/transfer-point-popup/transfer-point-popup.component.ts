@@ -1,6 +1,6 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { createSelector, Store } from '@ngrx/store';
 import type { Hospital, UUID } from 'digital-fuesim-manv-shared';
 import { TransferPoint } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
@@ -10,8 +10,8 @@ import {
     getSelectTransferPoint,
     selectHospitals,
     selectTransferPoints,
-} from 'src/app/state/exercise/exercise.selectors';
-import { selectCurrentRole } from 'src/app/state/shared/shared.selectors';
+} from 'src/app/state/application/selectors/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 type NavIds = 'hospitals' | 'names' | 'transferPoints';
@@ -58,28 +58,34 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     /**
      * All transferPoints that are neither connected to this one nor this one itself
      */
-    public readonly transferPointsToBeAdded$ = this.store.select((state) => {
-        const transferPoints = state.exercise.transferPoints;
-        const currentTransferPoint = transferPoints[this.transferPointId]!;
-        return Object.fromEntries(
-            Object.entries(transferPoints).filter(
-                ([key]) =>
-                    key !== this.transferPointId &&
-                    !currentTransferPoint.reachableTransferPoints[key]
-            )
-        );
-    });
+    public readonly transferPointsToBeAdded$ = this.store.select(
+        createSelector(selectTransferPoints, (transferPoints) => {
+            const currentTransferPoint = transferPoints[this.transferPointId]!;
+            return Object.fromEntries(
+                Object.entries(transferPoints).filter(
+                    ([key]) =>
+                        key !== this.transferPointId &&
+                        !currentTransferPoint.reachableTransferPoints[key]
+                )
+            );
+        })
+    );
 
-    public readonly hospitalsToBeAdded$ = this.store.select((state) => {
-        const transferPoints = state.exercise.transferPoints;
-        const currentTransferPoint = transferPoints[this.transferPointId]!;
-        const hospitals = state.exercise.hospitals;
-        return Object.fromEntries(
-            Object.entries(hospitals).filter(
-                ([key]) => !currentTransferPoint.reachableHospitals[key]
-            )
-        );
-    });
+    public readonly hospitalsToBeAdded$ = this.store.select(
+        createSelector(
+            selectTransferPoints,
+            selectHospitals,
+            (transferPoints, hospitals) => {
+                const currentTransferPoint =
+                    transferPoints[this.transferPointId]!;
+                return Object.fromEntries(
+                    Object.entries(hospitals).filter(
+                        ([key]) => !currentTransferPoint.reachableHospitals[key]
+                    )
+                );
+            }
+        )
+    );
 
     constructor(
         private readonly apiService: ApiService,

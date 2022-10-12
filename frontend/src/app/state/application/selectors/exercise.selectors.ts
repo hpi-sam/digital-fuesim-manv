@@ -7,14 +7,19 @@ import type {
     Vehicle,
 } from 'digital-fuesim-manv-shared';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
-import type { AppState } from '../app.state';
+import type { AppState } from '../../app.state';
 
 // Properties
 
-export const selectExercise = (state: AppState) => state.exercise;
+/**
+ * Check before via selectExerciseStateMode whether the exerciseState is defined
+ */
+export const selectExerciseState = (state: AppState) =>
+    // TODO: we currently expect this to only be used of the exerciseStateMode is not undefined
+    state.application.exerciseState!;
 
 function selectProperty<Key extends keyof ExerciseState>(key: Key) {
-    return createSelector(selectExercise, (exercise) => exercise[key]);
+    return createSelector(selectExerciseState, (exercise) => exercise[key]);
 }
 
 // UUIDMap properties

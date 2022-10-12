@@ -5,7 +5,7 @@ import type { UUID } from 'digital-fuesim-manv-shared';
 import { Hospital } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectHospitals } from 'src/app/state/exercise/exercise.selectors';
+import { selectHospitals } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
     selector: 'app-hospital-editor-modal',

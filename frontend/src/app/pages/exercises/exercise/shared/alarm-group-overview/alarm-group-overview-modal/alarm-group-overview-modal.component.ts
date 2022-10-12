@@ -7,7 +7,7 @@ import type { AppState } from 'src/app/state/app.state';
 import {
     selectAlarmGroups,
     selectVehicleTemplates,
-} from 'src/app/state/exercise/exercise.selectors';
+} from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
     selector: 'app-alarm-group-overview-modal',

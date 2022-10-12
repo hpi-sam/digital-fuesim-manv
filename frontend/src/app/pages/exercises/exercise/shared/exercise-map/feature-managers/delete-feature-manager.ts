@@ -12,7 +12,7 @@ import Icon from 'ol/style/Icon';
 import Style from 'ol/style/Style';
 import type { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectExercise } from 'src/app/state/exercise/exercise.selectors';
+import { selectExerciseState } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { FeatureManager } from '../utility/feature-manager';
 
@@ -65,7 +65,10 @@ export class DeleteFeatureManager implements FeatureManager<Feature<Point>> {
         droppedOnFeature: Feature<Point>
     ) {
         const id = droppedFeature.getId() as UUID;
-        const exerciseState = selectStateSnapshot(selectExercise, this.store);
+        const exerciseState = selectStateSnapshot(
+            selectExerciseState,
+            this.store
+        );
         // We expect the id to be globally unique
         if (exerciseState.patients[id]) {
             this.apiService.proposeAction({

@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { Transfer, UUID } from 'digital-fuesim-manv-shared';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectCurrentTime } from 'src/app/state/exercise/exercise.selectors';
+import { selectCurrentTime } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
     selector: 'app-transfer-time-input',

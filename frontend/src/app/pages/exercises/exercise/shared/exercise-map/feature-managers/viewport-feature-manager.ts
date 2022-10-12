@@ -12,7 +12,7 @@ import Style from 'ol/style/Style';
 import type { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import { selectCurrentRole } from 'src/app/state/shared/shared.selectors';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';

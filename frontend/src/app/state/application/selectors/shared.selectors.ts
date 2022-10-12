@@ -13,11 +13,11 @@ import { Viewport } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
 import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
-import type { AppState } from '../app.state';
+import type { AppState } from '../../app.state';
 import {
-    selectMode,
+    selectExerciseStateMode,
     selectOwnClientId,
-} from '../application/application.selectors';
+} from './application.selectors';
 import {
     selectClients,
     selectMapImages,
@@ -27,7 +27,7 @@ import {
     selectTransferPoints,
     selectVehicles,
     selectViewports,
-} from '../exercise/exercise.selectors';
+} from './exercise.selectors';
 
 export const selectOwnClient = createSelector(
     selectOwnClientId,
@@ -39,7 +39,7 @@ export const selectOwnClient = createSelector(
  * @deprecated Do not use this to distinguish between the modes
  */
 export const selectCurrentRole = createSelector(
-    selectMode,
+    selectExerciseStateMode,
     selectOwnClient,
     (mode, ownClient) => (mode === 'exercise' ? ownClient?.role : mode)
 );

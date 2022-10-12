@@ -3,9 +3,9 @@ import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectEocLogEntries } from 'src/app/state/exercise/exercise.selectors';
+import { selectEocLogEntries } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import { selectOwnClient } from 'src/app/state/shared/shared.selectors';
+import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
 
 @Component({
     selector: 'app-eoc-log-interface',

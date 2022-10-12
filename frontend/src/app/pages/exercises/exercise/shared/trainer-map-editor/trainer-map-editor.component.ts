@@ -13,7 +13,7 @@ import {
     selectMapImagesTemplates,
     selectPatientCategories,
     selectVehicleTemplates,
-} from 'src/app/state/exercise/exercise.selectors';
+} from 'src/app/state/application/selectors/exercise.selectors';
 import { DragElementService } from '../core/drag-element.service';
 import { TransferLinesService } from '../core/transfer-lines.service';
 import { openCreateImageTemplateModal } from '../editor-panel/create-image-template-modal/open-create-image-template-modal';

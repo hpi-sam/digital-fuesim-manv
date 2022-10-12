@@ -20,18 +20,16 @@ import { io } from 'socket.io-client';
 import { NotificationService } from '../pages/exercises/exercise/core/notification.service';
 import type { AppState } from '../state/app.state';
 import {
+    applyServerAction,
     joinExercise,
     leaveExercise,
+    setExerciseState,
 } from '../state/application/application.actions';
 import {
     selectExerciseId,
-    selectMode,
-} from '../state/application/application.selectors';
-import {
-    applyServerAction,
-    setExerciseState,
-} from '../state/exercise/exercise.actions';
-import { selectExercise } from '../state/exercise/exercise.selectors';
+    selectExerciseStateMode,
+} from '../state/application/selectors/application.selectors';
+import { selectExerciseState } from '../state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from '../state/get-state-snapshot';
 import { httpOrigin, websocketOrigin } from './api-origins';
 import { MessageService } from './messages/message.service';
@@ -56,7 +54,7 @@ export class ApiService {
         SocketResponse
     >(
         (exercise) => this.store.dispatch(setExerciseState(exercise)),
-        () => selectStateSnapshot(selectExercise, this.store),
+        () => selectStateSnapshot(selectExerciseState, this.store),
         (action) => this.store.dispatch(applyServerAction(action)),
         async (action) => {
             const response = await new Promise<SocketResponse>((resolve) => {
@@ -147,9 +145,13 @@ export class ApiService {
         }
         // TODO: Merge these
         this.store.dispatch(
-            joinExercise(joinResponse.payload, exerciseId, clientName)
+            joinExercise(
+                joinResponse.payload,
+                getStateResponse.payload,
+                exerciseId,
+                clientName
+            )
         );
-        this.store.dispatch(setExerciseState(getStateResponse.payload));
         // Only start them after the correct state is in the store
         this.notificationService.startNotifications();
         return true;
@@ -170,7 +172,10 @@ export class ApiService {
      * @returns the response of the server
      */
     public async proposeAction(action: ExerciseAction, optimistic = false) {
-        if (selectStateSnapshot(selectMode, this.store) !== 'exercise') {
+        if (
+            selectStateSnapshot(selectExerciseStateMode, this.store) !==
+            'exercise'
+        ) {
             // Especially during timeTravel, buttons that propose actions are only deactivated via best effort
             this.messageService.postError({
                 title: 'Änderungen konnten nicht vorgenommen werden',

@@ -5,8 +5,8 @@ import type { UUID, Viewport } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { getSelectViewport } from 'src/app/state/exercise/exercise.selectors';
-import { selectCurrentRole } from 'src/app/state/shared/shared.selectors';
+import { getSelectViewport } from 'src/app/state/application/selectors/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 
 @Component({
     selector: 'app-viewport-popup',

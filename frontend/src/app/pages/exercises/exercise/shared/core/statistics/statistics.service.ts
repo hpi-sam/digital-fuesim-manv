@@ -16,7 +16,7 @@ import { countBy } from 'lodash-es';
 import { ReplaySubject } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectCurrentTime } from 'src/app/state/exercise/exercise.selectors';
+import { selectCurrentTime } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { AreaStatistics } from './area-statistics';
 import type { StatisticsEntry } from './statistics-entry';

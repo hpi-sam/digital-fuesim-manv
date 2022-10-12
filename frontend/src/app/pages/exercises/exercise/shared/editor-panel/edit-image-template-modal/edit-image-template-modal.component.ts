@@ -10,7 +10,7 @@ import type {
 import { cloneDeep } from 'lodash-es';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { getSelectMapImageTemplate } from 'src/app/state/exercise/exercise.selectors';
+import { getSelectMapImageTemplate } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { ChangedImageTemplateValues } from '../image-template-form/image-template-form.component';
 

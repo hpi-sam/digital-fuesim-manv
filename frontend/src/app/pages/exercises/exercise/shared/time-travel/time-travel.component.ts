@@ -8,8 +8,8 @@ import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import { TimeTravelService } from 'src/app/core/time-travel.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectTimeConstraints } from 'src/app/state/application/application.selectors';
-import { selectExercise } from 'src/app/state/exercise/exercise.selectors';
+import { selectTimeConstraints } from 'src/app/state/application/selectors/application.selectors';
+import { selectExerciseState } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercise-statistics-modal';
@@ -111,9 +111,12 @@ export class TimeTravelComponent implements OnDestroy {
     }
 
     public async createNewExerciseFromTheCurrentState() {
-        const currentState = selectStateSnapshot(selectExercise, this.store);
+        const currentExerciseState = selectStateSnapshot(
+            selectExerciseState,
+            this.store
+        );
         const { trainerId } = await this.apiService.importExercise(
-            new StateExport(cloneDeepMutable(currentState))
+            new StateExport(cloneDeepMutable(currentExerciseState))
         );
         this.messageService.postMessage({
             color: 'success',

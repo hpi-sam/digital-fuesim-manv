@@ -5,7 +5,7 @@ import type { VehicleTemplate } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
-import { getSelectVehicleTemplate } from 'src/app/state/exercise/exercise.selectors';
+import { getSelectVehicleTemplate } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
     selector: 'app-vehicle-template-display',

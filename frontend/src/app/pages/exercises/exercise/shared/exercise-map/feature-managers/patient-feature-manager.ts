@@ -9,7 +9,7 @@ import type VectorSource from 'ol/source/Vector';
 import { Fill, Stroke } from 'ol/style';
 import type { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectConfiguration } from 'src/app/state/exercise/exercise.selectors';
+import { selectConfiguration } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { WithPosition } from '../../utility/types/with-position';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';

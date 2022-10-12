@@ -12,9 +12,8 @@ import {
 import {
     selectExerciseId,
     selectTimeConstraints,
-} from '../state/application/application.selectors';
-import { setExerciseState } from '../state/exercise/exercise.actions';
-import { selectCurrentTime } from '../state/exercise/exercise.selectors';
+} from '../state/application/selectors/application.selectors';
+import { selectCurrentTime } from '../state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from '../state/get-state-snapshot';
 import { httpOrigin } from './api-origins';
 import { MessageService } from './messages/message.service';
@@ -61,15 +60,11 @@ export class TimeTravelService {
         this.activatingTimeTravel = false;
         this.timeJumpHelper = new TimeJumpHelper(exerciseTimeLine);
         // Travel to the start of the exercise
-        // TODO: this should be one action
+        // TODO: This should be calculated from the timeline
+        const endTime = selectStateSnapshot(selectCurrentTime, this.store);
         this.store.dispatch(
-            startTimeTravel({
-                start: exerciseTimeLine.initialState.currentTime,
-                current: exerciseTimeLine.initialState.currentTime,
-                end: selectStateSnapshot(selectCurrentTime, this.store),
-            })
+            startTimeTravel(exerciseTimeLine.initialState, endTime)
         );
-        this.store.dispatch(setExerciseState(exerciseTimeLine.initialState));
     }
 
     /**
@@ -88,10 +83,11 @@ export class TimeTravelService {
             timeConstraints.start,
             Math.min(timeConstraints.end, exerciseTime)
         );
-        // TODO: this should be one action
-        this.store.dispatch(jumpToTime(clampedTime));
         this.store.dispatch(
-            setExerciseState(this.timeJumpHelper.getStateAtTime(clampedTime))
+            jumpToTime(
+                clampedTime,
+                this.timeJumpHelper.getStateAtTime(clampedTime)
+            )
         );
     }
 

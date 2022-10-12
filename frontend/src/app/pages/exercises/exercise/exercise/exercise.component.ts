@@ -14,15 +14,15 @@ import { saveBlob } from 'src/app/shared/functions/save-blob';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectExerciseId,
-    selectMode,
+    selectExerciseStateMode,
     selectTimeConstraints,
-} from 'src/app/state/application/application.selectors';
+} from 'src/app/state/application/selectors/application.selectors';
 import {
-    selectExercise,
+    selectExerciseState,
     selectParticipantId,
-} from 'src/app/state/exercise/exercise.selectors';
+} from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import { selectOwnClient } from 'src/app/state/shared/shared.selectors';
+import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
 
 @Component({
     selector: 'app-exercise',
@@ -32,7 +32,9 @@ import { selectOwnClient } from 'src/app/state/shared/shared.selectors';
 export class ExerciseComponent implements OnDestroy {
     private readonly destroy = new Subject<void>();
 
-    public readonly mode$ = this.store.select(selectMode);
+    public readonly exerciseStateMode$ = this.store.select(
+        selectExerciseStateMode
+    );
     public readonly participantId$ = this.store.select(selectParticipantId);
     public readonly timeConstraints$ = this.store.select(selectTimeConstraints);
     public readonly ownClient$ = this.store.select(selectOwnClient);
@@ -81,7 +83,10 @@ export class ExerciseComponent implements OnDestroy {
 
     public async exportExerciseWithHistory() {
         const history = await this.apiService.exerciseHistory();
-        const currentState = selectStateSnapshot(selectExercise, this.store);
+        const currentState = selectStateSnapshot(
+            selectExerciseState,
+            this.store
+        );
         const blob = new Blob([
             JSON.stringify(
                 new StateExport(
@@ -99,7 +104,10 @@ export class ExerciseComponent implements OnDestroy {
     }
 
     public exportExerciseState() {
-        const currentState = selectStateSnapshot(selectExercise, this.store);
+        const currentState = selectStateSnapshot(
+            selectExerciseState,
+            this.store
+        );
         const blob = new Blob([
             JSON.stringify(new StateExport(cloneDeepMutable(currentState))),
         ]);

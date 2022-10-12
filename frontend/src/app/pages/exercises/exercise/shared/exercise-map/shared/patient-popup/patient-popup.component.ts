@@ -14,8 +14,8 @@ import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectPatient,
     selectConfiguration,
-} from 'src/app/state/exercise/exercise.selectors';
-import { selectCurrentRole } from 'src/app/state/shared/shared.selectors';
+} from 'src/app/state/application/selectors/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({

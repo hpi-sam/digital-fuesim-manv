@@ -5,7 +5,7 @@ import {
     selectExerciseStatus,
     selectPersonnelInTransfer,
     selectVehiclesInTransfer,
-} from 'src/app/state/exercise/exercise.selectors';
+} from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
     selector: 'app-transfer-overview-table',

@@ -16,9 +16,9 @@ import {
     getSelectVehicleTemplate,
     selectAlarmGroups,
     selectTransferPoints,
-} from 'src/app/state/exercise/exercise.selectors';
+} from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import { selectOwnClient } from 'src/app/state/shared/shared.selectors';
+import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
 
 // We want to remember this
 let targetTransferPointId: UUID | undefined;

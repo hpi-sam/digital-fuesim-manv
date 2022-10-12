@@ -7,7 +7,7 @@ import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectReachableHospitals,
     getSelectReachableTransferPoints,
-} from 'src/app/state/exercise/exercise.selectors';
+} from 'src/app/state/application/selectors/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({

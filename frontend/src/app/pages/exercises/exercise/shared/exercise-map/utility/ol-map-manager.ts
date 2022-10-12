@@ -28,7 +28,7 @@ import {
     selectTileMapProperties,
     selectTransferLines,
     selectViewports,
-} from 'src/app/state/exercise/exercise.selectors';
+} from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import {
     getSelectRestrictedViewport,
@@ -41,7 +41,7 @@ import {
     getSelectVisibleVehicles,
     getSelectVisibleViewports,
     selectCurrentRole,
-} from 'src/app/state/shared/shared.selectors';
+} from 'src/app/state/application/selectors/shared.selectors';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';

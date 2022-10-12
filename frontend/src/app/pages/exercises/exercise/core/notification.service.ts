@@ -4,12 +4,12 @@ import { filter, pairwise, Subject, switchMap, takeUntil } from 'rxjs';
 import { MessageService } from 'src/app/core/messages/message.service';
 import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
-import { selectClients } from 'src/app/state/exercise/exercise.selectors';
+import { selectClients } from 'src/app/state/application/selectors/exercise.selectors';
 import {
     getSelectVisibleVehicles,
     selectCurrentRole,
     selectOwnClient,
-} from 'src/app/state/shared/shared.selectors';
+} from 'src/app/state/application/selectors/shared.selectors';
 
 @Injectable({
     providedIn: 'root',

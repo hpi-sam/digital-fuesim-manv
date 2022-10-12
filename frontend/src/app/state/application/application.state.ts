@@ -1,8 +1,20 @@
-import type { UUID } from 'digital-fuesim-manv-shared';
+import type { ExerciseState, UUID } from 'digital-fuesim-manv-shared';
 import type { TimeConstraints } from 'src/app/core/time-travel-helper';
 
 export class ApplicationState {
-    public readonly mode: 'exercise' | 'frontPage' | 'timeTravel' = 'frontPage';
+    /**
+     * The state of the exercise with {@link exerciseId}
+     */
+    public readonly exerciseState: ExerciseState | undefined = undefined;
+
+    /**
+     * Depending on the mode the {@link exerciseState} is
+     * exercise: (always) up-to-date
+     * timeTravel: at an arbitrary time, probably in the past
+     * undefined: no assumptions can be made over the exerciseState (e.g. on the landing page)
+     */
+    public readonly exerciseStateMode: 'exercise' | 'timeTravel' | undefined =
+        undefined;
     /**
      * Either the trainer or participant id of the current or last exercise the client had joined
      * undefined if the client hasn't joined an exercise yet

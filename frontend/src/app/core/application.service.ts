@@ -4,8 +4,8 @@ import type { AppState } from '../state/app.state';
 import {
     selectExerciseId,
     selectLastClientName,
-    selectMode,
-} from '../state/application/application.selectors';
+    selectExerciseStateMode,
+} from '../state/application/selectors/application.selectors';
 import { selectStateSnapshot } from '../state/get-state-snapshot';
 import { ApiService } from './api.service';
 import { TimeTravelService } from './time-travel.service';
@@ -24,18 +24,21 @@ export class ApplicationService {
      * A new mode must be set immediately after this function is called
      */
     private stopCurrentMode() {
-        const currentMode = selectStateSnapshot(selectMode, this.store);
-        switch (currentMode) {
+        const currentExerciseStateMode = selectStateSnapshot(
+            selectExerciseStateMode,
+            this.store
+        );
+        switch (currentExerciseStateMode) {
             case 'exercise':
                 this.apiService.leaveExercise();
                 break;
             case 'timeTravel':
                 this.timeTravelService.stopTimeTravel();
                 break;
-            case 'frontPage':
+            case undefined:
                 break;
             default:
-                assertExhaustiveness(currentMode);
+                assertExhaustiveness(currentExerciseStateMode);
         }
     }
 
