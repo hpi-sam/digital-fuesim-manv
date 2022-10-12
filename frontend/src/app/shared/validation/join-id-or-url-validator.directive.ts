@@ -14,7 +14,9 @@ import { CustomValidators } from './custom-validators';
     ],
 })
 export class JoinIdDirective implements Validator {
+    private readonly validator = CustomValidators.joinIdValidator();
+
     validate(control: AbstractControl) {
-        return CustomValidators.joinIdValidator()(control);
+        return this.validator(control);
     }
 }
