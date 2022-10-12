@@ -9,7 +9,7 @@ import {
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectPatient,
@@ -51,7 +51,7 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {}
 
     ngOnInit(): void {
@@ -74,7 +74,7 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     }
 
     setPretriageCategory(patientStatus: PatientStatus) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Patient] Set Visible Status',
             patientId: this.patientId,
             patientStatus,
@@ -86,7 +86,7 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     }
 
     updateRemarks(remarks: string) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Patient] Set Remarks',
             patientId: this.patientId,
             remarks,

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { cloneDeepMutable } from 'digital-fuesim-manv-shared';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectConfiguration,
@@ -28,25 +28,25 @@ export class ExerciseSettingsModalComponent {
     constructor(
         private readonly store: Store<AppState>,
         public readonly activeModal: NgbActiveModal,
-        private readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {}
 
     public updateTileMapProperties() {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Configuration] Set tileMapProperties',
             tileMapProperties: this.tileMapProperties,
         });
     }
 
     public setPretriageFlag(pretriageEnabled: boolean) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Configuration] Set pretriageEnabled',
             pretriageEnabled,
         });
     }
 
     public setBluePatientsFlag(bluePatientsEnabled: boolean) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Configuration] Set bluePatientsEnabled',
             bluePatientsEnabled,
         });

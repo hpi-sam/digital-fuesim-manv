@@ -7,7 +7,7 @@ import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import { Fill, Stroke } from 'ol/style';
-import type { ApiService } from 'src/app/core/api.service';
+import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectConfiguration } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
@@ -64,13 +64,13 @@ export class PatientFeatureManager extends ElementFeatureManager<
         private readonly store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        apiService: ApiService
+        exerciseService: ExerciseService
     ) {
         super(
             olMap,
             layer,
             (targetPosition, patient) => {
-                apiService.proposeAction({
+                exerciseService.proposeAction({
                     type: '[Patient] Move patient',
                     patientId: patient.id,
                     targetPosition,

@@ -5,7 +5,7 @@ import type { UUID, Vehicle } from 'digital-fuesim-manv-shared';
 import { Material, Patient, Personnel } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map, switchMap } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectMaterial,
@@ -33,7 +33,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {}
 
     async ngOnInit() {
@@ -76,7 +76,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
     }
 
     public renameVehicle(name: string) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Vehicle] Rename vehicle',
             vehicleId: this.vehicleId,
             name,
@@ -84,7 +84,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
     }
 
     public unloadVehicle() {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Vehicle] Unload vehicle',
             vehicleId: this.vehicleId,
         });

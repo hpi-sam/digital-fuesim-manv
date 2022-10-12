@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Transfer, UUID } from 'digital-fuesim-manv-shared';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectTransferPoints } from 'src/app/state/application/selectors/exercise.selectors';
 
@@ -19,11 +19,11 @@ export class TransferTargetInputComponent {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {}
 
     public setTransferTarget(targetTransferPointId: UUID) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Transfer] Edit transfer',
             elementType: this.elementType,
             elementId: this.elementId,

@@ -4,7 +4,7 @@ import { createSelector, Store } from '@ngrx/store';
 import type { Hospital, UUID } from 'digital-fuesim-manv-shared';
 import { TransferPoint } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectTransferPoint,
@@ -88,7 +88,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     );
 
     constructor(
-        private readonly apiService: ApiService,
+        private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {}
 
@@ -105,7 +105,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
         internalName?: string;
         externalName?: string;
     }) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[TransferPoint] Rename TransferPoint',
             transferPointId: this.transferPointId,
             internalName,
@@ -114,7 +114,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     }
 
     public connectTransferPoint(transferPointId: UUID, duration?: number) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[TransferPoint] Connect TransferPoints',
             transferPointId1: this.transferPointId,
             transferPointId2: transferPointId,
@@ -123,7 +123,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     }
 
     public disconnectTransferPoint(transferPointId: UUID) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[TransferPoint] Disconnect TransferPoints',
             transferPointId1: this.transferPointId,
             transferPointId2: transferPointId,
@@ -131,7 +131,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     }
 
     public connectHospital(hospitalId: UUID) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[TransferPoint] Connect hospital',
             transferPointId: this.transferPointId,
             hospitalId,
@@ -139,7 +139,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     }
 
     public disconnectHospital(hospitalId: UUID) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[TransferPoint] Disconnect hospital',
             transferPointId: this.transferPointId,
             hospitalId,

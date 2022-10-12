@@ -5,7 +5,7 @@ import type {
     RouterStateSnapshot,
 } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { ApiService } from 'src/app/core/api.service';
+import { ApplicationService } from 'src/app/core/application.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectExerciseStateMode } from 'src/app/state/application/selectors/application.selectors';
@@ -16,7 +16,7 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 })
 export class LeaveExerciseGuard implements CanDeactivate<unknown> {
     constructor(
-        private readonly apiService: ApiService,
+        private readonly applicationService: ApplicationService,
         private readonly store: Store<AppState>,
         private readonly messageService: MessageService
     ) {}
@@ -33,7 +33,7 @@ export class LeaveExerciseGuard implements CanDeactivate<unknown> {
             selectStateSnapshot(selectExerciseStateMode, this.store) !==
             undefined
         ) {
-            this.apiService.leaveExercise();
+            this.applicationService.leaveExercise();
             this.messageService.postMessage({
                 title: 'Übung verlassen',
                 body: 'Sie können der Übung über die Übungs-ID wieder beitreten.',

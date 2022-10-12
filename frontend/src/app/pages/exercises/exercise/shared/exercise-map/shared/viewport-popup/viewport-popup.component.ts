@@ -3,7 +3,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID, Viewport } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { getSelectViewport } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
@@ -24,7 +24,7 @@ export class ViewportPopupComponent implements OnInit {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {}
 
     ngOnInit() {
@@ -32,7 +32,7 @@ export class ViewportPopupComponent implements OnInit {
     }
 
     public renameViewport(newName: string) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Viewport] Rename viewport',
             viewportId: this.viewportId,
             newName,

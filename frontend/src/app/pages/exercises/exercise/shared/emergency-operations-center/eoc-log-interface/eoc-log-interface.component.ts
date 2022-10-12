@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectEocLogEntries } from 'src/app/state/application/selectors/exercise.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 @Component({
     selector: 'app-eoc-log-interface',
@@ -21,12 +21,12 @@ export class EocLogInterfaceComponent {
     public newLogEntry = '';
 
     constructor(
-        private readonly apiService: ApiService,
+        private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {}
 
     public async addEocLogEntry() {
-        const response = await this.apiService.proposeAction({
+        const response = await this.exerciseService.proposeAction({
             type: '[Emergency Operation Center] Add Log Entry',
             message: this.newLogEntry,
             name: selectStateSnapshot(selectOwnClient, this.store)!.name,

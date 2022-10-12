@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { AlarmGroup } from 'digital-fuesim-manv-shared';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectAlarmGroups,
@@ -19,7 +19,7 @@ export class AlarmGroupOverviewModalComponent {
 
     constructor(
         public activeModal: NgbActiveModal,
-        private readonly apiService: ApiService,
+        private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {}
 
@@ -34,7 +34,7 @@ export class AlarmGroupOverviewModalComponent {
     }
 
     public addAlarmGroup() {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[AlarmGroup] Add AlarmGroup',
             alarmGroup: AlarmGroup.create('???'),
         });

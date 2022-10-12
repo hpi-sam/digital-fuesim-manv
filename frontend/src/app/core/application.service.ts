@@ -3,11 +3,11 @@ import { Store } from '@ngrx/store';
 import type { AppState } from '../state/app.state';
 import {
     selectExerciseId,
-    selectLastClientName,
     selectExerciseStateMode,
+    selectLastClientName,
 } from '../state/application/selectors/application.selectors';
 import { selectStateSnapshot } from '../state/get-state-snapshot';
-import { ApiService } from './api.service';
+import { ExerciseService } from './exercise.service';
 import { TimeTravelService } from './time-travel.service';
 
 @Injectable({
@@ -16,7 +16,7 @@ import { TimeTravelService } from './time-travel.service';
 export class ApplicationService {
     constructor(
         private readonly timeTravelService: TimeTravelService,
-        private readonly apiService: ApiService,
+        private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {}
 
@@ -30,7 +30,7 @@ export class ApplicationService {
         );
         switch (currentExerciseStateMode) {
             case 'exercise':
-                this.apiService.leaveExercise();
+                this.exerciseService.leaveExercise();
                 break;
             case 'timeTravel':
                 this.timeTravelService.stopTimeTravel();
@@ -43,10 +43,10 @@ export class ApplicationService {
     }
 
     public async joinExercise(
-        ...args: Parameters<typeof this.apiService.joinExercise>
+        ...args: Parameters<typeof this.exerciseService.joinExercise>
     ) {
         this.stopCurrentMode();
-        return this.apiService.joinExercise(...args);
+        return this.exerciseService.joinExercise(...args);
     }
 
     /**

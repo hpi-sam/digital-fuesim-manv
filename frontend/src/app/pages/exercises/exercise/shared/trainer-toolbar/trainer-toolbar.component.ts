@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { ApiService } from 'src/app/core/api.service';
 import { ApplicationService } from 'src/app/core/application.service';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectExerciseId } from 'src/app/state/application/selectors/application.selectors';
@@ -29,6 +30,7 @@ export class TrainerToolbarComponent {
 
     constructor(
         private readonly store: Store<AppState>,
+        private readonly exerciseService: ExerciseService,
         private readonly apiService: ApiService,
         public readonly applicationService: ApplicationService,
         private readonly modalService: NgbModal,
@@ -66,7 +68,7 @@ export class TrainerToolbarComponent {
     }
 
     public async pauseExercise() {
-        const response = await this.apiService.proposeAction({
+        const response = await this.exerciseService.proposeAction({
             type: '[Exercise] Pause',
         });
         if (response.success) {
@@ -89,7 +91,7 @@ export class TrainerToolbarComponent {
                 return;
             }
         }
-        const response = await this.apiService.proposeAction({
+        const response = await this.exerciseService.proposeAction({
             type: '[Exercise] Start',
         });
         if (response.success) {
@@ -100,7 +102,7 @@ export class TrainerToolbarComponent {
     }
 
     private sendLogAction(message: string) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Emergency Operation Center] Add Log Entry',
             name: selectStateSnapshot(selectOwnClient, this.store)!.name,
             message,

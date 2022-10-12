@@ -9,10 +9,10 @@ import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
-import type { ApiService } from 'src/app/core/api.service';
+import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
@@ -44,14 +44,14 @@ export class ViewportFeatureManager
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<LineString>>,
-        private readonly apiService: ApiService,
+        private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {
         super(
             olMap,
             layer,
             (targetPositions, viewport) => {
-                apiService.proposeAction({
+                exerciseService.proposeAction({
                     type: '[Viewport] Move viewport',
                     viewportId: viewport.id,
                     targetPosition: targetPositions[0]!,
@@ -96,7 +96,7 @@ export class ViewportFeatureManager
             // We expect the viewport LineString to have 4 points.
             const topLeft = lineString[0]!;
             const bottomRight = lineString[2]!;
-            this.apiService.proposeAction({
+            this.exerciseService.proposeAction({
                 type: '[Viewport] Resize viewport',
                 viewportId: element.id,
                 targetPosition: topLeft,

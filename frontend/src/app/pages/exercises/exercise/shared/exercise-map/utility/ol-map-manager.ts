@@ -20,7 +20,7 @@ import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import type { Observable } from 'rxjs';
 import { combineLatest, pairwise, startWith, Subject, takeUntil } from 'rxjs';
-import type { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
 import {
@@ -29,8 +29,8 @@ import {
     selectTransferLines,
     selectViewports,
 } from 'src/app/state/application/selectors/exercise.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import {
+    selectCurrentRole,
     selectRestrictedViewport,
     selectVisibleCateringLines,
     selectVisibleMapImages,
@@ -40,8 +40,8 @@ import {
     selectVisibleTransferPoints,
     selectVisibleVehicles,
     selectVisibleViewports,
-    selectCurrentRole,
 } from 'src/app/state/application/selectors/shared.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
@@ -97,7 +97,7 @@ export class OlMapManager {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService,
+        private readonly exerciseService: ExerciseService,
         private readonly openLayersContainer: HTMLDivElement,
         private readonly popoverContainer: HTMLDivElement,
         private readonly ngZone: NgZone,
@@ -234,7 +234,7 @@ export class OlMapManager {
                 this.store,
                 deleteFeatureLayer,
                 this.olMap,
-                this.apiService
+                this.exerciseService
             );
             this.layerFeatureManagerDictionary.set(
                 deleteFeatureLayer,
@@ -246,7 +246,7 @@ export class OlMapManager {
                 this.olMap,
                 transferPointLayer,
                 this.store,
-                this.apiService
+                this.exerciseService
             ),
             this.store.select(selectVisibleTransferPoints)
         );
@@ -256,7 +256,7 @@ export class OlMapManager {
                 this.store,
                 this.olMap,
                 patientLayer,
-                this.apiService
+                this.exerciseService
             ),
             this.store.select(selectVisiblePatients)
         );
@@ -265,7 +265,7 @@ export class OlMapManager {
             new VehicleFeatureManager(
                 this.olMap,
                 vehicleLayer,
-                this.apiService
+                this.exerciseService
             ),
             this.store.select(selectVisibleVehicles)
         );
@@ -274,7 +274,7 @@ export class OlMapManager {
             new PersonnelFeatureManager(
                 this.olMap,
                 personnelLayer,
-                this.apiService
+                this.exerciseService
             ),
             this.store.select(selectVisiblePersonnel)
         );
@@ -283,7 +283,7 @@ export class OlMapManager {
             new MaterialFeatureManager(
                 this.olMap,
                 materialLayer,
-                this.apiService
+                this.exerciseService
             ),
             this.store.select(selectVisibleMaterials)
         );
@@ -292,7 +292,7 @@ export class OlMapManager {
             new MapImageFeatureManager(
                 this.olMap,
                 mapImagesLayer,
-                this.apiService,
+                this.exerciseService,
                 this.store
             ),
             this.store.select(selectVisibleMapImages)
@@ -307,7 +307,7 @@ export class OlMapManager {
             new ViewportFeatureManager(
                 this.olMap,
                 viewportLayer,
-                this.apiService,
+                this.exerciseService,
                 this.store
             ),
             this.store.select(selectVisibleViewports)

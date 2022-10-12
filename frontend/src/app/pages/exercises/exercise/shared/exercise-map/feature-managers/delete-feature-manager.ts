@@ -10,7 +10,7 @@ import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import Icon from 'ol/style/Icon';
 import Style from 'ol/style/Style';
-import type { ApiService } from 'src/app/core/api.service';
+import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectExerciseState } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
@@ -26,7 +26,7 @@ export class DeleteFeatureManager implements FeatureManager<Feature<Point>> {
         private readonly store: Store<AppState>,
         public readonly layer: VectorLayer<VectorSource<Point>>,
         private readonly olMap: OlMap,
-        private readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {
         this.layer.setStyle(
             new Style({
@@ -71,35 +71,35 @@ export class DeleteFeatureManager implements FeatureManager<Feature<Point>> {
         );
         // We expect the id to be globally unique
         if (exerciseState.patients[id]) {
-            this.apiService.proposeAction({
+            this.exerciseService.proposeAction({
                 type: '[Patient] Remove patient',
                 patientId: id,
             });
             return true;
         }
         if (exerciseState.vehicles[id]) {
-            this.apiService.proposeAction({
+            this.exerciseService.proposeAction({
                 type: '[Vehicle] Remove vehicle',
                 vehicleId: id,
             });
             return true;
         }
         if (exerciseState.mapImages[id]) {
-            this.apiService.proposeAction({
+            this.exerciseService.proposeAction({
                 type: '[MapImage] Remove MapImage',
                 mapImageId: id,
             });
             return true;
         }
         if (exerciseState.viewports[id]) {
-            this.apiService.proposeAction({
+            this.exerciseService.proposeAction({
                 type: '[Viewport] Remove viewport',
                 viewportId: id,
             });
             return true;
         }
         if (exerciseState.transferPoints[id]) {
-            this.apiService.proposeAction({
+            this.exerciseService.proposeAction({
                 type: '[TransferPoint] Remove TransferPoint',
                 transferPointId: id,
             });

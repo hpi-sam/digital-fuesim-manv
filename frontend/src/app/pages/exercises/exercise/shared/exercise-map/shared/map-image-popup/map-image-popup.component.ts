@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import type { MapImage, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { getSelectMapImage } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
@@ -28,7 +28,7 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {}
 
     async ngOnInit() {
@@ -40,7 +40,7 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     }
 
     public saveUrl() {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[MapImage] Reconfigure Url',
             mapImageId: this.mapImageId,
             newUrl: this.url!,
@@ -48,7 +48,7 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     }
 
     public resizeImage(newHeight: number) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[MapImage] Scale MapImage',
             mapImageId: this.mapImageId,
             newHeight,
@@ -56,7 +56,7 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     }
 
     public setLocked(newLocked: boolean) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[MapImage] Set isLocked',
             mapImageId: this.mapImageId,
             newLocked,

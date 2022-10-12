@@ -8,7 +8,7 @@ import {
     TransferPoint,
 } from 'digital-fuesim-manv-shared';
 import { Subject, takeUntil } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
@@ -17,8 +17,8 @@ import {
     selectAlarmGroups,
     selectTransferPoints,
 } from 'src/app/state/application/selectors/exercise.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 // We want to remember this
 let targetTransferPointId: UUID | undefined;
@@ -40,7 +40,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
     ) => string = (transferPoint) => TransferPoint.getFullName(transferPoint);
 
     constructor(
-        private readonly apiService: ApiService,
+        private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>,
         private readonly messageService: MessageService
     ) {
@@ -86,13 +86,13 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                     });
 
                     return [
-                        this.apiService.proposeAction({
+                        this.exerciseService.proposeAction({
                             type: '[Vehicle] Add vehicle',
                             materials: vehicleParameters.materials,
                             personnel: vehicleParameters.personnel,
                             vehicle: vehicleParameters.vehicle,
                         }),
-                        this.apiService.proposeAction({
+                        this.exerciseService.proposeAction({
                             type: '[Transfer] Add to transfer',
                             elementType: 'vehicles',
                             elementId: vehicleParameters.vehicle.id,
@@ -112,7 +112,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                     color: 'success',
                 });
             }
-            this.apiService.proposeAction({
+            this.exerciseService.proposeAction({
                 type: '[Emergency Operation Center] Add Log Entry',
                 message: `Alarmgruppe ${alarmGroup.name} wurde alarmiert zu ${targetTransferPoint.externalName}!`,
                 name: selectStateSnapshot(selectOwnClient, this.store)!.name,

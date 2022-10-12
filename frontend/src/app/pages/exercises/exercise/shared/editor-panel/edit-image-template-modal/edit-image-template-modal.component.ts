@@ -8,7 +8,7 @@ import type {
     UUID,
 } from 'digital-fuesim-manv-shared';
 import { cloneDeep } from 'lodash-es';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { getSelectMapImageTemplate } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
@@ -26,7 +26,7 @@ export class EditImageTemplateModalComponent implements OnInit {
     public mapImageTemplate?: Mutable<MapImageTemplate>;
 
     constructor(
-        private readonly apiService: ApiService,
+        private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>,
         public readonly activeModal: NgbActiveModal
     ) {}
@@ -41,7 +41,7 @@ export class EditImageTemplateModalComponent implements OnInit {
     }
 
     public deleteMapImageTemplate(): void {
-        this.apiService
+        this.exerciseService
             .proposeAction({
                 type: '[MapImageTemplate] Delete mapImageTemplate',
                 id: this.mapImageTemplateId,
@@ -63,7 +63,7 @@ export class EditImageTemplateModalComponent implements OnInit {
             console.error("MapImageTemplate wasn't initialized yet");
             return;
         }
-        this.apiService
+        this.exerciseService
             .proposeAction({
                 type: '[MapImageTemplate] Edit mapImageTemplate',
                 id: this.mapImageTemplateId,
