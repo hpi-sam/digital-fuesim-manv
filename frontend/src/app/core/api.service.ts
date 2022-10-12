@@ -17,6 +17,7 @@ import { freeze } from 'immer';
 import { lastValueFrom } from 'rxjs';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
+import { NotificationService } from '../pages/exercises/exercise/core/notification.service';
 import type { AppState } from '../state/app.state';
 import {
     joinExercise,
@@ -74,7 +75,8 @@ export class ApiService {
     constructor(
         private readonly store: Store<AppState>,
         private readonly httpClient: HttpClient,
-        private readonly messageService: MessageService
+        private readonly messageService: MessageService,
+        private readonly notificationService: NotificationService
     ) {
         this.socket.on('performAction', (action: ExerciseAction) => {
             freeze(action, true);
@@ -148,6 +150,8 @@ export class ApiService {
             joinExercise(joinResponse.payload, exerciseId, clientName)
         );
         this.store.dispatch(setExerciseState(getStateResponse.payload));
+        // Only start them after the correct state is in the store
+        this.notificationService.startNotifications();
         return true;
     }
 
@@ -156,6 +160,7 @@ export class ApiService {
      */
     public leaveExercise() {
         this.socket.disconnect();
+        this.notificationService.stopNotifications();
         this.store.dispatch(leaveExercise());
     }
 

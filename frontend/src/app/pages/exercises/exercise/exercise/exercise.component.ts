@@ -1,4 +1,4 @@
-import type { OnDestroy, OnInit } from '@angular/core';
+import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
@@ -23,14 +23,13 @@ import {
 } from 'src/app/state/exercise/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { selectOwnClient } from 'src/app/state/shared/shared.selectors';
-import { NotificationService } from '../core/notification.service';
 
 @Component({
     selector: 'app-exercise',
     templateUrl: './exercise.component.html',
     styleUrls: ['./exercise.component.scss'],
 })
-export class ExerciseComponent implements OnInit, OnDestroy {
+export class ExerciseComponent implements OnDestroy {
     private readonly destroy = new Subject<void>();
 
     public readonly mode$ = this.store.select(selectMode);
@@ -42,13 +41,8 @@ export class ExerciseComponent implements OnInit, OnDestroy {
         private readonly store: Store<AppState>,
         private readonly apiService: ApiService,
         private readonly applicationService: ApplicationService,
-        private readonly messageService: MessageService,
-        private readonly notificationService: NotificationService
+        private readonly messageService: MessageService
     ) {}
-
-    ngOnInit() {
-        this.notificationService.startNotifications();
-    }
 
     public shareExercise(type: 'participantId' | 'trainerId') {
         const id = selectStateSnapshot(
@@ -114,6 +108,5 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.destroy.next();
-        this.notificationService.stopNotifications();
     }
 }
