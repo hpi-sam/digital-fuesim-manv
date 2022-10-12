@@ -27,6 +27,11 @@ export interface FeatureManager<ElementFeature extends Feature<any>> {
     ) => void;
 
     /**
+     * @returns whether the feature can be moved by the user
+     */
+    isFeatureTranslatable: (feature: ElementFeature) => boolean;
+
+    /**
      * @param dropEvent The drop event that triggered the call
      * @param droppedFeature is dropped on {@link droppedOnFeature}
      * @param droppedOnFeature is the feature that {@link droppedFeature} is dropped on

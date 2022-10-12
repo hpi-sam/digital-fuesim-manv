@@ -55,5 +55,12 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
         );
     }
 
+    override isFeatureTranslatable(feature: Feature<Point>): boolean {
+        const mapImage = this.getElementFromFeature(feature).value as MapImage;
+        return (
+            this.apiService.getCurrentRole() === 'trainer' && !mapImage.isLocked
+        );
+    }
+
     override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 }

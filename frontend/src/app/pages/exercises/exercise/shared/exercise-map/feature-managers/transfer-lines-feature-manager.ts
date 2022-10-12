@@ -89,4 +89,8 @@ export class TransferLinesFeatureManager
     getFeatureFromElement(element: TransferLine) {
         return this.layer.getSource()!.getFeatureById(element.id) ?? undefined;
     }
+
+    isFeatureTranslatable(feature: Feature<LineString>) {
+        return false;
+    }
 }

@@ -191,7 +191,7 @@ export class DragElementService {
                     const template = this.transferringTemplate.template.image;
                     this.apiService.proposeAction({
                         type: '[MapImage] Add MapImage',
-                        mapImage: MapImage.create(position, template),
+                        mapImage: MapImage.create(position, template, false),
                     });
                 }
                 break;
