@@ -5,9 +5,6 @@ import type {
     UUID,
 } from 'digital-fuesim-manv-shared';
 
-/**
- * Applies the given action from the server to the exercise state in the frontend.
- */
 export const startTimeTravel = createAction(
     '[Application] Start time travel',
     (initialExerciseState: ExerciseState, endTime: number) => ({
@@ -41,7 +38,7 @@ export const joinExercise = createAction(
 
 export const leaveExercise = createAction('[Application] Leave exercise');
 
-// The actions for the exercise
+// The actions for the ExerciseService
 /**
  * Applies the given action from the server to the exercise state in the frontend.
  */
