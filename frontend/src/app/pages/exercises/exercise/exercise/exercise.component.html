@@ -34,7 +34,7 @@
                 (click)="leaveTimeTravel()"
             >
                 <i class="bi-box-arrow-left"></i>
-                Aufzeichnung verlassen
+                Übung wieder beitreten
             </button>
             <div ngbDropdown class="d-inline-block float-end">
                 <button
@@ -72,32 +72,31 @@
     <div class="flex-fill">
         <app-time-travel *ngIf="mode === 'timeTravel'"></app-time-travel>
         <ng-container *ngIf="mode === 'exercise'">
-            <ng-container
-                *ngIf="
-                    ownClient$ | async as ownClient;
-                    else waitingRoomTemplate
-                "
-            >
-                <app-exercise-map
-                    *ngIf="ownClient.role === 'participant'"
-                    class="h-100 rounded overflow-hidden"
-                ></app-exercise-map>
-                <app-trainer-map-editor
-                    *ngIf="ownClient.role === 'trainer'"
-                ></app-trainer-map-editor>
-            </ng-container>
-            <ng-template #waitingRoomTemplate>
-                <div class="container">
-                    <br />
-                    <div class="p-5 bg-light rounded-3">
-                        <p class="lead mb-0">
-                            Sie sind im Warteraum. Bitte warten Sie, bis ein
-                            Übungsleiter Sie zuweist.
-                        </p>
-                        <!-- TODO: Add a nice waiting animation to fill the space -->
+            <ng-container *ngIf="ownClient$ | async as ownClient">
+                <ng-container
+                    *ngIf="!ownClient.isInWaitingRoom; else waitingRoomTemplate"
+                >
+                    <app-exercise-map
+                        *ngIf="ownClient.role === 'participant'"
+                        class="h-100 rounded overflow-hidden"
+                    ></app-exercise-map>
+                    <app-trainer-map-editor
+                        *ngIf="ownClient.role === 'trainer'"
+                    ></app-trainer-map-editor>
+                </ng-container>
+                <ng-template #waitingRoomTemplate>
+                    <div class="container">
+                        <br />
+                        <div class="p-5 bg-light rounded-3">
+                            <p class="lead mb-0">
+                                Sie sind im Warteraum. Bitte warten Sie, bis ein
+                                Übungsleiter Sie zuweist.
+                            </p>
+                            <!-- TODO: Add a nice waiting animation to fill the space -->
+                        </div>
                     </div>
-                </div>
-            </ng-template>
+                </ng-template>
+            </ng-container>
         </ng-container>
     </div>
 </div>
