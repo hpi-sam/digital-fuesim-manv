@@ -10,7 +10,6 @@ export const startTimeTravel = createAction(
     (timeConstraints: TimeConstraints) => ({ timeConstraints })
 );
 
-export const stopTimeTravel = createAction('[Application] Stop time travel');
 export const jumpToTime = createAction(
     '[Application] Jump to time',
     (exerciseTime: number) => ({ exerciseTime })
@@ -18,7 +17,11 @@ export const jumpToTime = createAction(
 
 export const joinExercise = createAction(
     '[Application] Join exercise',
-    (ownClientId: UUID, exerciseId: UUID) => ({ ownClientId, exerciseId })
+    (ownClientId: UUID, exerciseId: UUID, clientName: string) => ({
+        ownClientId,
+        exerciseId,
+        clientName,
+    })
 );
 
 export const leaveExercise = createAction('[Application] Leave exercise');

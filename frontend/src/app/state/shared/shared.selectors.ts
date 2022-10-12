@@ -15,7 +15,7 @@ import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utili
 import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { AppState } from '../app.state';
 import {
-    selectIsTimeTraveling,
+    selectMode,
     selectOwnClientId,
 } from '../application/application.selectors';
 import {
@@ -32,18 +32,16 @@ import {
 export const selectOwnClient = createSelector(
     selectOwnClientId,
     selectClients,
-    (ownClientId, clients) => (ownClientId ? clients[ownClientId]! : undefined)
+    (ownClientId, clients) => (ownClientId ? clients[ownClientId] : undefined)
 );
 
+/**
+ * @deprecated Do not use this to distinguish between the modes
+ */
 export const selectCurrentRole = createSelector(
-    selectIsTimeTraveling,
+    selectMode,
     selectOwnClient,
-    (isTimeTraveling, ownClient) =>
-        isTimeTraveling
-            ? 'timeTravel'
-            : ownClient
-            ? ownClient.role
-            : 'notJoined'
+    (mode, ownClient) => (mode === 'exercise' ? ownClient?.role : mode)
 );
 
 // The clientId is only optional, to make working with typings easier

@@ -33,7 +33,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
 
     constructor(
         private readonly store: Store<AppState>,
-        public readonly apiService: ApiService
+        private readonly apiService: ApiService
     ) {}
 
     async ngOnInit() {

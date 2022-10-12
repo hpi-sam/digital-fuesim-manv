@@ -8,22 +8,21 @@ import {
 } from 'digital-fuesim-manv-shared';
 import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
+import { ApplicationService } from 'src/app/core/application.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import { saveBlob } from 'src/app/shared/functions/save-blob';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectExerciseId,
+    selectMode,
     selectTimeConstraints,
 } from 'src/app/state/application/application.selectors';
-import { selectParticipantId } from 'src/app/state/exercise/exercise.selectors';
 import {
-    getStateSnapshot,
-    selectStateSnapshot,
-} from 'src/app/state/get-state-snapshot';
-import {
-    selectCurrentRole,
-    selectOwnClient,
-} from 'src/app/state/shared/shared.selectors';
+    selectExercise,
+    selectParticipantId,
+} from 'src/app/state/exercise/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectOwnClient } from 'src/app/state/shared/shared.selectors';
 import { NotificationService } from '../core/notification.service';
 
 @Component({
@@ -34,14 +33,15 @@ import { NotificationService } from '../core/notification.service';
 export class ExerciseComponent implements OnInit, OnDestroy {
     private readonly destroy = new Subject<void>();
 
+    public readonly mode$ = this.store.select(selectMode);
     public readonly participantId$ = this.store.select(selectParticipantId);
-    public readonly currentRole$ = this.store.select(selectCurrentRole);
     public readonly timeConstraints$ = this.store.select(selectTimeConstraints);
     public readonly ownClient$ = this.store.select(selectOwnClient);
 
     constructor(
         private readonly store: Store<AppState>,
-        public readonly apiService: ApiService,
+        private readonly apiService: ApiService,
+        private readonly applicationService: ApplicationService,
         private readonly messageService: MessageService,
         private readonly notificationService: NotificationService
     ) {}
@@ -78,7 +78,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     }
 
     public leaveTimeTravel() {
-        this.apiService.stopTimeTravel();
+        this.applicationService.rejoinExercise();
         this.messageService.postMessage({
             title: 'Zurück in die Zukunft!',
             color: 'info',
@@ -87,7 +87,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
     public async exportExerciseWithHistory() {
         const history = await this.apiService.exerciseHistory();
-        const currentState = getStateSnapshot(this.store).exercise;
+        const currentState = selectStateSnapshot(selectExercise, this.store);
         const blob = new Blob([
             JSON.stringify(
                 new StateExport(
@@ -105,7 +105,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     }
 
     public exportExerciseState() {
-        const currentState = getStateSnapshot(this.store).exercise;
+        const currentState = selectStateSnapshot(selectExercise, this.store);
         const blob = new Blob([
             JSON.stringify(new StateExport(cloneDeepMutable(currentState))),
         ]);

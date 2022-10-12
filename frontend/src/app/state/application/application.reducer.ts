@@ -4,7 +4,6 @@ import {
     jumpToTime,
     leaveExercise,
     startTimeTravel,
-    stopTimeTravel,
 } from './application.actions';
 import { ApplicationState } from './application.state';
 
@@ -12,11 +11,9 @@ export const applicationReducer = createReducer(
     new ApplicationState(),
     on(startTimeTravel, (state, { timeConstraints }) => ({
         ...state,
-        ownClientId: undefined,
+        mode: 'timeTravel',
         timeConstraints,
     })),
-    // TODO:
-    on(stopTimeTravel, (state) => state),
     on(jumpToTime, (state, { exerciseTime }) => ({
         ...state,
         timeConstraints: {
@@ -24,14 +21,15 @@ export const applicationReducer = createReducer(
             current: exerciseTime,
         },
     })),
-    on(joinExercise, (state, { ownClientId, exerciseId }) => ({
-        timeConstraints: undefined,
+    on(joinExercise, (state, { ownClientId, exerciseId, clientName }) => ({
+        ...state,
+        mode: 'exercise',
         exerciseId,
         ownClientId,
+        lastClientName: clientName,
     })),
     on(leaveExercise, (state) => ({
-        timeConstraints: undefined,
-        exerciseId: undefined,
-        ownClientId: undefined,
+        ...state,
+        mode: 'frontPage',
     }))
 );

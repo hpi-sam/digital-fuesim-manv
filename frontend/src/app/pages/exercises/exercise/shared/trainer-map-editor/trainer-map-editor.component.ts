@@ -49,7 +49,7 @@ export class TrainerMapEditorComponent {
     }
 
     constructor(
-        public readonly apiService: ApiService,
+        private readonly apiService: ApiService,
         private readonly store: Store<AppState>,
         public readonly dragElementService: DragElementService,
         public readonly transferLinesService: TransferLinesService,

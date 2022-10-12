@@ -11,8 +11,10 @@ import type { AppState } from '../app.state';
 
 // Properties
 
+export const selectExercise = (state: AppState) => state.exercise;
+
 function selectProperty<Key extends keyof ExerciseState>(key: Key) {
-    return (state: AppState) => state.exercise[key];
+    return createSelector(selectExercise, (exercise) => exercise[key]);
 }
 
 // UUIDMap properties

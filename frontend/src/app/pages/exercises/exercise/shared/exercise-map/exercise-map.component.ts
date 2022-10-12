@@ -43,7 +43,7 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     constructor(
         private readonly store: Store<AppState>,
         private readonly ngZone: NgZone,
-        public readonly apiService: ApiService,
+        private readonly apiService: ApiService,
         public readonly dragElementService: DragElementService,
         public readonly transferLinesService: TransferLinesService
     ) {}

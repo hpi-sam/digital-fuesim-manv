@@ -1,18 +1,19 @@
-import Style from 'ol/style/Style';
-import type OlMap from 'ol/Map';
-import Icon from 'ol/style/Icon';
-import { getTopRight } from 'ol/extent';
-import type VectorLayer from 'ol/layer/Vector';
-import type VectorSource from 'ol/source/Vector';
-import { Point } from 'ol/geom';
-import type { View, MapBrowserEvent } from 'ol';
-import { Feature } from 'ol';
-import type { TranslateEvent } from 'ol/interaction/Translate';
-import type { UUID } from 'digital-fuesim-manv-shared';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { Store } from '@ngrx/store';
-import type { AppState } from 'src/app/state/app.state';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import type { MapBrowserEvent, View } from 'ol';
+import { Feature } from 'ol';
+import { getTopRight } from 'ol/extent';
+import { Point } from 'ol/geom';
+import type { TranslateEvent } from 'ol/interaction/Translate';
+import type VectorLayer from 'ol/layer/Vector';
+import type OlMap from 'ol/Map';
+import type VectorSource from 'ol/source/Vector';
+import Icon from 'ol/style/Icon';
+import Style from 'ol/style/Style';
 import type { ApiService } from 'src/app/core/api.service';
+import type { AppState } from 'src/app/state/app.state';
+import { selectExercise } from 'src/app/state/exercise/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { FeatureManager } from '../utility/feature-manager';
 
 function calculateTopRightViewPoint(view: View) {
@@ -60,7 +61,7 @@ export class DeleteFeatureManager implements FeatureManager<Feature<Point>> {
         droppedOnFeature: Feature<Point>
     ) {
         const id = droppedFeature.getId() as UUID;
-        const exerciseState = getStateSnapshot(this.store).exercise;
+        const exerciseState = selectStateSnapshot(selectExercise, this.store);
         // We expect the id to be globally unique
         if (exerciseState.patients[id]) {
             this.apiService.proposeAction({

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { ApiService } from 'src/app/core/api.service';
+import { ApplicationService } from 'src/app/core/application.service';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -28,7 +29,8 @@ export class TrainerToolbarComponent {
 
     constructor(
         private readonly store: Store<AppState>,
-        public readonly apiService: ApiService,
+        private readonly apiService: ApiService,
+        public readonly applicationService: ApplicationService,
         private readonly modalService: NgbModal,
         private readonly router: Router,
         private readonly confirmationModalService: ConfirmationModalService,
@@ -127,7 +129,7 @@ export class TrainerToolbarComponent {
             return;
         }
         // If we get disconnected by the server during the deletion a disconnect error would be displayed
-        this.apiService.leaveExercise();
+        this.applicationService.leaveExercise();
         this.apiService
             .deleteExercise(exerciseId)
             .then(

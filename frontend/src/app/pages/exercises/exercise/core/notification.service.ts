@@ -17,7 +17,6 @@ import {
 })
 export class NotificationService {
     constructor(
-        private readonly apiService: ApiService,
         private readonly store: Store<AppState>,
         private readonly messageService: MessageService
     ) {}

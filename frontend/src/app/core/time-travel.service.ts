@@ -8,7 +8,6 @@ import type { AppState } from '../state/app.state';
 import {
     jumpToTime,
     startTimeTravel,
-    stopTimeTravel,
 } from '../state/application/application.actions';
 import {
     selectExerciseId,
@@ -35,6 +34,9 @@ export class TimeTravelService {
         private readonly messageService: MessageService
     ) {}
 
+    /**
+     * Use the function in ApplicationService instead
+     */
     public async startTimeTravel() {
         this.activatingTimeTravel = true;
         const exerciseId = selectStateSnapshot(selectExerciseId, this.store);
@@ -71,6 +73,7 @@ export class TimeTravelService {
     }
 
     /**
+     * This function can only be called if the timeTravel has previously been started.
      * @param exerciseTime The time to travel to, if it isn't in the timeConstraints, it will be clamped appropriately
      */
     public jumpToTime(exerciseTime: number) {
@@ -92,9 +95,11 @@ export class TimeTravelService {
         );
     }
 
+    /**
+     * Use the function in ApplicationService instead
+     */
     public stopTimeTravel() {
         this.timeJumpHelper = undefined;
         this.activatingTimeTravel = false;
-        this.store.dispatch(stopTimeTravel());
     }
 }

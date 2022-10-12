@@ -82,7 +82,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     });
 
     constructor(
-        public readonly apiService: ApiService,
+        private readonly apiService: ApiService,
         private readonly store: Store<AppState>
     ) {}
 

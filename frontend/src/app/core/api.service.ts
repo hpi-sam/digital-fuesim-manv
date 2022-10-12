@@ -19,21 +19,19 @@ import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import type { AppState } from '../state/app.state';
 import {
-    selectExerciseId,
-    selectIsTimeTraveling,
-} from '../state/application/application.selectors';
-import {
     joinExercise,
     leaveExercise,
 } from '../state/application/application.actions';
 import {
+    selectExerciseId,
+    selectMode,
+} from '../state/application/application.selectors';
+import {
     applyServerAction,
     setExerciseState,
 } from '../state/exercise/exercise.actions';
-import {
-    getStateSnapshot,
-    selectStateSnapshot,
-} from '../state/get-state-snapshot';
+import { selectExercise } from '../state/exercise/exercise.selectors';
+import { selectStateSnapshot } from '../state/get-state-snapshot';
 import { httpOrigin, websocketOrigin } from './api-origins';
 import { MessageService } from './messages/message.service';
 import { OptimisticActionHandler } from './optimistic-action-handler';
@@ -57,9 +55,20 @@ export class ApiService {
         SocketResponse
     >(
         (exercise) => this.store.dispatch(setExerciseState(exercise)),
-        () => getStateSnapshot(this.store).exercise,
+        () => selectStateSnapshot(selectExercise, this.store),
         (action) => this.store.dispatch(applyServerAction(action)),
-        async (action) => this.sendAction(action)
+        async (action) => {
+            const response = await new Promise<SocketResponse>((resolve) => {
+                this.socket.emit('proposeAction', action, resolve);
+            });
+            if (!response.success) {
+                this.messageService.postError({
+                    title: 'Fehler beim Senden der Aktion',
+                    error: response.message,
+                });
+            }
+            return response;
+        }
     );
 
     constructor(
@@ -87,16 +96,9 @@ export class ApiService {
         });
     }
 
-    private connectSocket() {
-        this.socket.connect().on('connect_error', (error) => {
-            this.messageService.postError({
-                title: 'Fehler beim Verbinden zum Server',
-                error,
-            });
-        });
-    }
-
     /**
+     * Use the function in ApplicationService instead
+     *
      * Join an exercise and retrieve its state
      * Displays an error message if the join failed
      * @returns whether the join was successful
@@ -105,7 +107,12 @@ export class ApiService {
         exerciseId: string,
         clientName: string
     ): Promise<boolean> {
-        this.connectSocket();
+        this.socket.connect().on('connect_error', (error) => {
+            this.messageService.postError({
+                title: 'Fehler beim Verbinden zum Server',
+                error,
+            });
+        });
         const joinResponse = await new Promise<SocketResponse<UUID>>(
             (resolve) => {
                 this.socket.emit(
@@ -137,30 +144,18 @@ export class ApiService {
             return false;
         }
         // TODO: Merge these
-        this.store.dispatch(joinExercise(joinResponse.payload, exerciseId));
+        this.store.dispatch(
+            joinExercise(joinResponse.payload, exerciseId, clientName)
+        );
         this.store.dispatch(setExerciseState(getStateResponse.payload));
         return true;
     }
 
     /**
-     * Proposes an action to the server
+     * Use the function in ApplicationService instead
      */
-    private async sendAction(action: ExerciseAction) {
-        const response = await new Promise<SocketResponse>((resolve) => {
-            this.socket.emit('proposeAction', action, resolve);
-        });
-        if (!response.success) {
-            this.messageService.postError({
-                title: 'Fehler beim Senden der Aktion',
-                error: response.message,
-            });
-        }
-        return response;
-    }
-
     public leaveExercise() {
         this.socket.disconnect();
-        // TODO: What if timeTravel is active?
         this.store.dispatch(leaveExercise());
     }
 
@@ -170,14 +165,11 @@ export class ApiService {
      * @returns the response of the server
      */
     public async proposeAction(action: ExerciseAction, optimistic = false) {
-        const isTimeTraveling = selectStateSnapshot(
-            selectIsTimeTraveling,
-            this.store
-        );
-        if (isTimeTraveling) {
+        if (selectStateSnapshot(selectMode, this.store) !== 'exercise') {
+            // Especially during timeTravel, buttons that propose actions are only deactivated via best effort
             this.messageService.postError({
-                title: 'Die Vergangenheit kann nicht bearbeitet werden',
-                body: 'Deaktiviere den Aufnahme Modus, um Änderungen vorzunehmen.',
+                title: 'Änderungen konnten nicht vorgenommen werden',
+                body: 'Treten Sie der Übung wieder bei.',
             });
             return { success: false };
         }

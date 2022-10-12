@@ -8,7 +8,7 @@ import type { AppState } from './app.state';
  * Warning: this is most of the time an anti-pattern for our ngrx-store.
  * If you want to observe the state and get notified of changes, you should use the selectors on the store.
  */
-export function getStateSnapshot(store: Store<AppState>): AppState {
+function getStateSnapshot(store: Store<AppState>): AppState {
     // There is sadly currently no other way to get the state synchronously...
     let currentState: AppState;
     // "Subscribing to Store will always be guaranteed to be synchronous" - https://github.com/ngrx/platform/issues/227#issuecomment-431682349

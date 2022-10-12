@@ -10,13 +10,5 @@ function createSelectProperty<Key extends keyof ApplicationState>(key: Key) {
 export const selectExerciseId = createSelectProperty('exerciseId');
 export const selectOwnClientId = createSelectProperty('ownClientId');
 export const selectTimeConstraints = createSelectProperty('timeConstraints');
-
-export const selectIsJoined = createSelector(
-    selectOwnClientId,
-    (ownClientId) => ownClientId !== undefined
-);
-
-export const selectIsTimeTraveling = createSelector(
-    selectTimeConstraints,
-    (timeConstraints) => timeConstraints !== undefined
-);
+export const selectMode = createSelectProperty('mode');
+export const selectLastClientName = createSelectProperty('lastClientName');

@@ -10,7 +10,7 @@ import { Store } from '@ngrx/store';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectIsJoined } from 'src/app/state/application/application.selectors';
+import { selectMode } from 'src/app/state/application/application.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { tryToJoinExercise } from '../shared/join-exercise-modal/try-to-join-exercise';
 
@@ -30,7 +30,7 @@ export class JoinExerciseGuard implements CanActivate {
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ) {
-        if (selectStateSnapshot(selectIsJoined, this.store)) {
+        if (selectStateSnapshot(selectMode, this.store) === 'exercise') {
             return true;
         }
         const exerciseExists = await this.apiService.exerciseExists(

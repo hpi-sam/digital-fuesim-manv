@@ -24,7 +24,7 @@ export class ViewportPopupComponent implements OnInit {
 
     constructor(
         private readonly store: Store<AppState>,
-        public readonly apiService: ApiService
+        private readonly apiService: ApiService
     ) {}
 
     ngOnInit() {

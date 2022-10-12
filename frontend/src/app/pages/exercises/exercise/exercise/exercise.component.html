@@ -1,5 +1,5 @@
 <div
-    *ngIf="currentRole$ | async as role"
+    *ngIf="mode$ | async as mode"
     class="p-2 d-flex flex-column"
     style="height: 100vh"
 >
@@ -9,7 +9,7 @@
             <span class="font-monospace fw-bold user-select-all">{{
                 participantId$ | async
             }}</span>
-            <ng-container *ngIf="role !== 'timeTravel'; else timeTravelButton">
+            <ng-container *ngIf="mode === 'exercise'">
                 <app-exercise-state-badge
                     class="ms-3"
                 ></app-exercise-state-badge>
@@ -21,22 +21,21 @@
                     Teilnehmerlink teilen
                 </button>
                 <button
-                    *ngIf="role !== 'participant'"
+                    *ngIf="(ownClient$ | async)?.role !== 'participant'"
                     (click)="shareExercise('trainerId')"
                     class="btn btn-outline-warning ms-3"
                 >
                     Übungsleiterlink teilen
                 </button>
             </ng-container>
-            <ng-template #timeTravelButton>
-                <button
-                    class="btn btn-outline-primary ms-3"
-                    (click)="leaveTimeTravel()"
-                >
-                    <i class="bi-box-arrow-left"></i>
-                    Aufzeichnung verlassen
-                </button>
-            </ng-template>
+            <button
+                *ngIf="mode === 'timeTravel'"
+                class="btn btn-outline-primary ms-3"
+                (click)="leaveTimeTravel()"
+            >
+                <i class="bi-box-arrow-left"></i>
+                Aufzeichnung verlassen
+            </button>
             <div ngbDropdown class="d-inline-block float-end">
                 <button
                     type="button"
@@ -71,38 +70,34 @@
     </div>
 
     <div class="flex-fill">
-        <ng-container
-            *ngIf="
-                !(ownClient$ | async)?.isInWaitingRoom;
-                else waitingRoomTemplate
-            "
-        >
-            <div
-                *ngIf="role === 'participant'"
-                class="h-100 rounded overflow-hidden"
+        <app-time-travel *ngIf="mode === 'timeTravel'"></app-time-travel>
+        <ng-container *ngIf="mode === 'exercise'">
+            <ng-container
+                *ngIf="
+                    ownClient$ | async as ownClient;
+                    else waitingRoomTemplate
+                "
             >
-                <app-exercise-map></app-exercise-map>
-            </div>
-            <ng-container>
+                <app-exercise-map
+                    *ngIf="ownClient.role === 'participant'"
+                    class="h-100 rounded overflow-hidden"
+                ></app-exercise-map>
                 <app-trainer-map-editor
-                    *ngIf="role === 'trainer'"
+                    *ngIf="ownClient.role === 'trainer'"
                 ></app-trainer-map-editor>
-                <app-time-travel
-                    *ngIf="role === 'timeTravel'"
-                ></app-time-travel>
             </ng-container>
-        </ng-container>
-        <ng-template #waitingRoomTemplate>
-            <div class="container">
-                <br />
-                <div class="p-5 bg-light rounded-3">
-                    <p class="lead mb-0">
-                        Sie sind im Warteraum. Bitte warten Sie, bis ein
-                        Übungsleiter Sie zuweist.
-                    </p>
-                    <!-- TODO: Add a nice waiting animation to fill the space -->
+            <ng-template #waitingRoomTemplate>
+                <div class="container">
+                    <br />
+                    <div class="p-5 bg-light rounded-3">
+                        <p class="lead mb-0">
+                            Sie sind im Warteraum. Bitte warten Sie, bis ein
+                            Übungsleiter Sie zuweist.
+                        </p>
+                        <!-- TODO: Add a nice waiting animation to fill the space -->
+                    </div>
                 </div>
-            </div>
-        </ng-template>
+            </ng-template>
+        </ng-container>
     </div>
 </div>
