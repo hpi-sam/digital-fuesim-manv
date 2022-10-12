@@ -1,27 +1,36 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type {
-    ServerToClientEvents,
     ClientToServerEvents,
     ExerciseAction,
     ExerciseState,
+    ServerToClientEvents,
     SocketResponse,
     UUID,
 } from 'digital-fuesim-manv-shared';
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import { freeze } from 'immer';
+import { filter, pairwise, Subject, switchMap, takeUntil } from 'rxjs';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
-import { NotificationService } from '../pages/exercises/exercise/core/notification.service';
+import { handleChanges } from '../shared/functions/handle-changes';
 import type { AppState } from '../state/app.state';
 import {
-    setExerciseState,
     applyServerAction,
     joinExercise,
     leaveExercise,
+    setExerciseState,
 } from '../state/application/application.actions';
 import { selectExerciseStateMode } from '../state/application/selectors/application.selectors';
-import { selectExerciseState } from '../state/application/selectors/exercise.selectors';
+import {
+    selectClients,
+    selectExerciseState,
+} from '../state/application/selectors/exercise.selectors';
+import {
+    selectCurrentRole,
+    selectOwnClient,
+    selectVisibleVehicles,
+} from '../state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from '../state/get-state-snapshot';
 import { websocketOrigin } from './api-origins';
 import { MessageService } from './messages/message.service';
@@ -62,8 +71,7 @@ export class ExerciseService {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly messageService: MessageService,
-        private readonly notificationService: NotificationService
+        private readonly messageService: MessageService
     ) {
         this.socket.on('performAction', (action: ExerciseAction) => {
             freeze(action, true);
@@ -141,7 +149,7 @@ export class ExerciseService {
             )
         );
         // Only start them after the correct state is in the store
-        this.notificationService.startNotifications();
+        this.startNotifications();
         return true;
     }
 
@@ -150,7 +158,7 @@ export class ExerciseService {
      */
     public leaveExercise() {
         this.socket.disconnect();
-        this.notificationService.stopNotifications();
+        this.stopNotifications();
         this.store.dispatch(leaveExercise());
     }
 
@@ -173,5 +181,66 @@ export class ExerciseService {
         }
         // TODO: throw if `response.success` is false
         return this.optimisticActionHandler.proposeAction(action, optimistic);
+    }
+
+    private readonly stopNotifications$ = new Subject<void>();
+
+    private startNotifications() {
+        // If the user is a trainer, display a message for each joined or disconnected client
+        this.store
+            .select(selectCurrentRole)
+            .pipe(
+                filter((role) => role === 'trainer'),
+                switchMap(() => this.store.select(selectClients)),
+                pairwise(),
+                takeUntil(this.stopNotifications$)
+            )
+            .subscribe(([oldClients, newClients]) => {
+                handleChanges(oldClients, newClients, {
+                    createHandler: (newClient) => {
+                        this.messageService.postMessage({
+                            title: `${newClient.name} ist als ${
+                                newClient.role === 'trainer'
+                                    ? 'Trainer'
+                                    : 'Teilnehmer'
+                            } beigetreten.`,
+                            color: 'info',
+                        });
+                    },
+                    deleteHandler: (oldClient) => {
+                        this.messageService.postMessage({
+                            title: `${oldClient.name} hat die Übung verlassen.`,
+                            color: 'info',
+                        });
+                    },
+                });
+            });
+        // If the user is restricted to a viewport, display a message for each vehicle that arrived at this viewport
+        this.store
+            .select(selectOwnClient)
+            .pipe(
+                filter(
+                    (client) =>
+                        client?.viewRestrictedToViewportId !== undefined &&
+                        !client.isInWaitingRoom
+                ),
+                switchMap((client) => this.store.select(selectVisibleVehicles)),
+                pairwise(),
+                takeUntil(this.stopNotifications$)
+            )
+            .subscribe(([oldVehicles, newVehicles]) => {
+                handleChanges(oldVehicles, newVehicles, {
+                    createHandler: (newVehicle) => {
+                        this.messageService.postMessage({
+                            title: `${newVehicle.name} ist eingetroffen.`,
+                            color: 'info',
+                        });
+                    },
+                });
+            });
+    }
+
+    private stopNotifications() {
+        this.stopNotifications$.next();
     }
 }
