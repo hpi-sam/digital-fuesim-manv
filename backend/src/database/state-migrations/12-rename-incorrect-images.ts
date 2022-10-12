@@ -1,6 +1,6 @@
 import type { Migration } from './migrations';
 
-export const renameIncorrectImages11: Migration = {
+export const renameIncorrectPatientImages12: Migration = {
     actions: null,
     state: (state) => {
         (

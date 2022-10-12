@@ -13,8 +13,6 @@ import type { EntityManager } from 'typeorm';
 import { RestoreError } from '../../utils/restore-error';
 import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
 import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity';
-import { renameDeleteTransferAction10 } from './10-rename-delete-transfer-action';
-import { renameIncorrectImages11 } from './11-rename-incorrect-images';
 import { updateEocLog3 } from './3-update-eoc-log';
 import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
 import { removeStatistics5 } from './5-remove-statistics';
@@ -22,6 +20,9 @@ import { removeStateHistory6 } from './6-remove-state-history';
 import { addPatientRemarks7 } from './7-add-patient-remarks';
 import { treatmentSystemImprovements8 } from './8-treatment-system-improvements';
 import { removeIsBeingTreated9 } from './9-remove-is-being-treated';
+import { renameDeleteTransferAction10 } from './10-rename-delete-transfer-action';
+import { addMapImageIsLocked11 } from './11-add-map-image-is-locked';
+import { renameIncorrectPatientImages12 } from './12-rename-incorrect-images';
 import { impossibleMigration } from './impossible-migration';
 
 /**
@@ -60,7 +61,8 @@ export const migrations: {
     8: treatmentSystemImprovements8,
     9: removeIsBeingTreated9,
     10: renameDeleteTransferAction10,
-    11: renameIncorrectImages11,
+    11: addMapImageIsLocked11,
+    12: renameIncorrectPatientImages12,
 };
 
 export async function migrateInDatabase(

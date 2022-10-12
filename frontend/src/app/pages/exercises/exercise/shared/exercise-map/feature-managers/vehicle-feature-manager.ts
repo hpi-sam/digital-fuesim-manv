@@ -1,4 +1,4 @@
-import type { Vehicle } from 'digital-fuesim-manv-shared';
+import type { UUID, Vehicle } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
@@ -108,7 +108,7 @@ export class VehicleFeatureManager extends ElementFeatureManager<
 
         this.togglePopup$.next(
             this.popupHelper.getPopupOptions(VehiclePopupComponent, feature, {
-                vehicleId: feature.getId() as string,
+                vehicleId: feature.getId() as UUID,
             })
         );
     }

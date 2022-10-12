@@ -36,6 +36,10 @@ export class CateringLinesFeatureManager
         );
     }
 
+    public isFeatureTranslatable(feature: Feature<LineString>) {
+        return false;
+    }
+
     createFeature(element: CateringLine): Feature<LineString> {
         const feature = new Feature(
             new LineString([
