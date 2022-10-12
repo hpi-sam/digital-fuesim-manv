@@ -6,7 +6,7 @@ import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
 import { selectClients } from 'src/app/state/application/selectors/exercise.selectors';
 import {
-    getSelectVisibleVehicles,
+    selectVisibleVehicles,
     selectCurrentRole,
     selectOwnClient,
 } from 'src/app/state/application/selectors/shared.selectors';
@@ -61,9 +61,7 @@ export class NotificationService {
                         client?.viewRestrictedToViewportId !== undefined &&
                         !client.isInWaitingRoom
                 ),
-                switchMap((client) =>
-                    this.store.select(getSelectVisibleVehicles)
-                ),
+                switchMap((client) => this.store.select(selectVisibleVehicles)),
                 pairwise(),
                 takeUntil(this.stopNotifications$)
             )

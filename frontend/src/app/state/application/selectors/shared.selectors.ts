@@ -36,21 +36,21 @@ export const selectOwnClient = createSelector(
 );
 
 /**
- * @deprecated Do not use this to distinguish between the modes
+ * @deprecated Do not use this to distinguish between the exerciseStateModes
  */
 export const selectCurrentRole = createSelector(
     selectExerciseStateMode,
     selectOwnClient,
-    (mode, ownClient) => (mode === 'exercise' ? ownClient?.role : mode)
+    (mode, ownClient) => (mode === 'exercise' ? ownClient!.role : mode)
 );
 
 // The clientId is only optional, to make working with typings easier
-export const getSelectRestrictedViewport = createSelector(
+export const selectRestrictedViewport = createSelector(
     selectOwnClient,
     selectViewports,
     (client, viewports) =>
         client?.viewRestrictedToViewportId
-            ? viewports[client.viewRestrictedToViewportId!]
+            ? viewports[client.viewRestrictedToViewportId]!
             : undefined
 );
 
@@ -74,7 +74,7 @@ function getSelectVisibleElements<
         Viewport.isInViewport(viewport, element.position)
 ) {
     return createSelector(
-        getSelectRestrictedViewport,
+        selectRestrictedViewport,
         selectElements,
         (restrictedViewport, elements) =>
             pickBy(
@@ -92,31 +92,30 @@ function getSelectVisibleElements<
     );
 }
 
-// TODO: Rename them to "normal" selectors by removing the "get"
 // TODO: Take into account the width and height of the images of these elements
-export const getSelectVisibleMaterials =
+export const selectVisibleMaterials =
     getSelectVisibleElements<Material>(selectMaterials);
-export const getSelectVisibleVehicles =
+export const selectVisibleVehicles =
     getSelectVisibleElements<Vehicle>(selectVehicles);
-export const getSelectVisiblePersonnel =
+export const selectVisiblePersonnel =
     getSelectVisibleElements<Personnel>(selectPersonnel);
-export const getSelectVisiblePatients =
+export const selectVisiblePatients =
     getSelectVisibleElements<Patient>(selectPatients);
-export const getSelectVisibleViewports = getSelectVisibleElements<Viewport>(
+export const selectVisibleViewports = getSelectVisibleElements<Viewport>(
     selectViewports,
     // The viewport the client is restricted to should not be shown, as this causes a white border in fullscreen mode
     (element, viewport) => element.id !== viewport.id
 );
-export const getSelectVisibleMapImages = getSelectVisibleElements<MapImage>(
+export const selectVisibleMapImages = getSelectVisibleElements<MapImage>(
     selectMapImages,
     // TODO: MapImages could get very big. Therefore its size must be taken into account. The current implementation is a temporary solution.
     (element, viewport) => true
 );
-export const getSelectVisibleTransferPoints =
+export const selectVisibleTransferPoints =
     getSelectVisibleElements<TransferPoint>(selectTransferPoints);
 
-export const getSelectVisibleCateringLines = createSelector(
-    getSelectRestrictedViewport,
+export const selectVisibleCateringLines = createSelector(
+    selectRestrictedViewport,
     selectMaterials,
     selectPersonnel,
     selectPatients,

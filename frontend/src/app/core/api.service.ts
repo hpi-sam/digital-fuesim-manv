@@ -143,7 +143,6 @@ export class ApiService {
             });
             return false;
         }
-        // TODO: Merge these
         this.store.dispatch(
             joinExercise(
                 joinResponse.payload,

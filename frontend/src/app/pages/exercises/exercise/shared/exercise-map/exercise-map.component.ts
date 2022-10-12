@@ -11,7 +11,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    getSelectRestrictedViewport,
+    selectRestrictedViewport,
     selectCurrentRole,
 } from 'src/app/state/application/selectors/shared.selectors';
 import { DragElementService } from '../core/drag-element.service';
@@ -36,7 +36,7 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     public olMapManager?: OlMapManager;
     private popupManager?: PopupManager;
     public readonly restrictedToViewport$ = this.store.select(
-        getSelectRestrictedViewport
+        selectRestrictedViewport
     );
     public readonly currentRole$ = this.store.select(selectCurrentRole);
 

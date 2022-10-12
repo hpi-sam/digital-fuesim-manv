@@ -60,7 +60,7 @@ export class TimeTravelService {
         this.activatingTimeTravel = false;
         this.timeJumpHelper = new TimeJumpHelper(exerciseTimeLine);
         // Travel to the start of the exercise
-        // TODO: This should be calculated from the timeline
+        // TODO: This should be calculated from the timeline (in the TimeJumpHelper - maybe cache states in between)
         const endTime = selectStateSnapshot(selectCurrentTime, this.store);
         this.store.dispatch(
             startTimeTravel(exerciseTimeLine.initialState, endTime)

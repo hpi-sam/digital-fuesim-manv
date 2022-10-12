@@ -31,15 +31,15 @@ import {
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import {
-    getSelectRestrictedViewport,
-    getSelectVisibleCateringLines,
-    getSelectVisibleMapImages,
-    getSelectVisibleMaterials,
-    getSelectVisiblePatients,
-    getSelectVisiblePersonnel,
-    getSelectVisibleTransferPoints,
-    getSelectVisibleVehicles,
-    getSelectVisibleViewports,
+    selectRestrictedViewport,
+    selectVisibleCateringLines,
+    selectVisibleMapImages,
+    selectVisibleMaterials,
+    selectVisiblePatients,
+    selectVisiblePersonnel,
+    selectVisibleTransferPoints,
+    selectVisibleVehicles,
+    selectVisibleViewports,
     selectCurrentRole,
 } from 'src/app/state/application/selectors/shared.selectors';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
@@ -248,7 +248,7 @@ export class OlMapManager {
                 this.store,
                 this.apiService
             ),
-            this.store.select(getSelectVisibleTransferPoints)
+            this.store.select(selectVisibleTransferPoints)
         );
 
         this.registerFeatureElementManager(
@@ -258,7 +258,7 @@ export class OlMapManager {
                 patientLayer,
                 this.apiService
             ),
-            this.store.select(getSelectVisiblePatients)
+            this.store.select(selectVisiblePatients)
         );
 
         this.registerFeatureElementManager(
@@ -267,7 +267,7 @@ export class OlMapManager {
                 vehicleLayer,
                 this.apiService
             ),
-            this.store.select(getSelectVisibleVehicles)
+            this.store.select(selectVisibleVehicles)
         );
 
         this.registerFeatureElementManager(
@@ -276,7 +276,7 @@ export class OlMapManager {
                 personnelLayer,
                 this.apiService
             ),
-            this.store.select(getSelectVisiblePersonnel)
+            this.store.select(selectVisiblePersonnel)
         );
 
         this.registerFeatureElementManager(
@@ -285,7 +285,7 @@ export class OlMapManager {
                 materialLayer,
                 this.apiService
             ),
-            this.store.select(getSelectVisibleMaterials)
+            this.store.select(selectVisibleMaterials)
         );
 
         this.registerFeatureElementManager(
@@ -295,12 +295,12 @@ export class OlMapManager {
                 this.apiService,
                 this.store
             ),
-            this.store.select(getSelectVisibleMapImages)
+            this.store.select(selectVisibleMapImages)
         );
 
         this.registerFeatureElementManager(
             new CateringLinesFeatureManager(cateringLinesLayer),
-            this.store.select(getSelectVisibleCateringLines)
+            this.store.select(selectVisibleCateringLines)
         );
 
         this.registerFeatureElementManager(
@@ -310,7 +310,7 @@ export class OlMapManager {
                 this.apiService,
                 this.store
             ),
-            this.store.select(getSelectVisibleViewports)
+            this.store.select(selectVisibleViewports)
         );
 
         this.registerPopupTriggers(translateInteraction);
@@ -351,7 +351,7 @@ export class OlMapManager {
     private registerViewportRestriction() {
         this.tryToFitViewToViewports(false);
         this.store
-            .select(getSelectRestrictedViewport)
+            .select(selectRestrictedViewport)
             .pipe(takeUntil(this.destroy$))
             .subscribe((viewport) => {
                 const view = this.olMap.getView();
@@ -524,7 +524,7 @@ export class OlMapManager {
      */
     public tryToFitViewToViewports(animate = true) {
         if (
-            selectStateSnapshot(getSelectRestrictedViewport, this.store) !==
+            selectStateSnapshot(selectRestrictedViewport, this.store) !==
             undefined
         ) {
             // We are restricted to a viewport -> you can't fit the view
