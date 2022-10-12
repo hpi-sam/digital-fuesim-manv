@@ -7,6 +7,10 @@
             ein!
         </p>
         <div class="input-group">
+            <!--
+                Still using `[maxLength]` and `[minLength]` in addition to `appJoinIdValidator`
+                since this automatically prevents input of more than 8 chars
+            -->
             <input
                 [(ngModel)]="exerciseId"
                 [appAutofocus]="true"
