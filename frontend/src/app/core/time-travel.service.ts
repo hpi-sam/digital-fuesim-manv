@@ -19,6 +19,13 @@ import { httpOrigin } from './api-origins';
 import { MessageService } from './messages/message.service';
 import { TimeJumpHelper } from './time-jump-helper';
 
+/**
+ * This service deals with the timeTravel functionality.
+ * During timeTravel, the exerciseState in the central frontend store has been replaced
+ * with the state of the exercise at the time the user jumped to.
+ * While this service provides an API to jump to a new time (= change the state),
+ * all read operations should be done via the central frontend store (with the help of selectors).
+ */
 @Injectable({
     providedIn: 'root',
 })

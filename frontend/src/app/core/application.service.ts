@@ -10,6 +10,10 @@ import { selectStateSnapshot } from '../state/get-state-snapshot';
 import { ExerciseService } from './exercise.service';
 import { TimeTravelService } from './time-travel.service';
 
+/**
+ * This service encapsulates the logic for switching between the live exercise, timeTravel and an empty state (e.g. on the landing page).
+ * Its API to switch between exercise state modes should be used instead of those in the {@link ExerciseService} and {@link TimeTravelService}.
+ */
 @Injectable({
     providedIn: 'root',
 })

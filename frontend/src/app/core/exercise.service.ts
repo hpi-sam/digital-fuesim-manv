@@ -36,6 +36,13 @@ import { websocketOrigin } from './api-origins';
 import { MessageService } from './messages/message.service';
 import { OptimisticActionHandler } from './optimistic-action-handler';
 
+/**
+ * This Service deals with the state synchronization of a live exercise.
+ * In addition, it notifies the user during an exercise of certain events (new client connected, vehicle arrived etc.).
+ *
+ * While this service should be used for proposing all actions (= changing the state) all
+ * read operations should be done via the central frontend store (with the help of selectors).
+ */
 @Injectable({
     providedIn: 'root',
 })
