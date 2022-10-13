@@ -1,7 +1,8 @@
-import type { OnChanges, SimpleChanges } from '@angular/core';
+import type { OnChanges } from '@angular/core';
 import { Directive, Input } from '@angular/core';
 import type { AbstractControl, Validator, ValidatorFn } from '@angular/forms';
 import { NG_VALIDATORS } from '@angular/forms';
+import type { SimpleChangesGeneric } from '../types/simple-changes-generic';
 import { CustomValidators } from './custom-validators';
 
 @Directive({
