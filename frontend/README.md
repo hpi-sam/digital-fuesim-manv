@@ -96,6 +96,8 @@ You can assume that the Store has the current exercise state if you are in `src/
 If you want to modify the exercise state, do not do it via [reducers](https://ngrx.io/guide/store/reducers) in the store, but propose an action (optimistically) via the [ApiService](./src/app/core/api.service.ts). The action will automatically be applied to the store.
 By default, we don't use `ChangeDetectionStrategy.OnPush` because it complicates the code and increases the skill level needed to work with the code while providing a mostly negligible performance benefit.
 
+Be aware that certain events are not patched by zone.js. See [./src/polyfills.ts](./src/polyfills.ts) and [./src/zone-flags.ts](./src/zone-flags.ts) for details.
+
 ### Exercise map
 
 You can find the exercise map in [src/app/pages/exercises/exercise/shared/exercise-map](src/app/pages/exercises/exercise/shared/exercise-map).
