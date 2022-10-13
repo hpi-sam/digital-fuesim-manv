@@ -60,4 +60,12 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
             newLocked,
         });
     }
+
+    public changeZIndex(newZIndex: number) {
+        this.apiService.proposeAction({
+            type: '[MapImage] Set zIndex',
+            mapImageId: this.mapImageId,
+            newZIndex,
+        });
+    }
 }

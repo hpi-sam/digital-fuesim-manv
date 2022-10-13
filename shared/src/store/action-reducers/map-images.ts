@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
     IsBoolean,
+    IsInt,
     IsNumber,
     IsOptional,
     IsPositive,
@@ -86,6 +87,17 @@ export class ReconfigureMapImageUrlAction implements Action {
     public readonly newUrl!: string;
 }
 
+export class SetZIndexMapImageAction implements Action {
+    @IsString()
+    public readonly type = '[MapImage] Set zIndex';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly mapImageId!: UUID;
+
+    @IsInt()
+    public readonly newZIndex!: number;
+}
+
 export namespace MapImagesActionReducers {
     export const addMapImage: ActionReducer<AddMapImageAction> = {
         action: AddMapImageAction,
@@ -151,6 +163,16 @@ export namespace MapImagesActionReducers {
         reducer: (draftState, { mapImageId, newLocked }) => {
             const mapImage = getElement(draftState, 'mapImages', mapImageId);
             mapImage.isLocked = newLocked;
+            return draftState;
+        },
+        rights: 'trainer',
+    };
+
+    export const setZIndexMapImage: ActionReducer<SetZIndexMapImageAction> = {
+        action: SetZIndexMapImageAction,
+        reducer: (draftState, { mapImageId, newZIndex }) => {
+            const mapImage = getElement(draftState, 'mapImages', mapImageId);
+            mapImage.zIndex = newZIndex;
             return draftState;
         },
         rights: 'trainer',

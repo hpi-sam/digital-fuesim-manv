@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsInt, IsUUID, ValidateNested } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
 import { Position, getCreate, ImageProperties } from './utils';
 
@@ -15,6 +15,9 @@ export class MapImage {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
+    @IsInt()
+    public readonly zIndex: number;
+
     /**
      * Whether the UI should prevent position changes of the map image by drag&drop
      */
@@ -24,10 +27,16 @@ export class MapImage {
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(topLeft: Position, image: ImageProperties, isLocked: boolean) {
+    constructor(
+        topLeft: Position,
+        image: ImageProperties,
+        isLocked: boolean,
+        zIndex: number
+    ) {
         this.position = topLeft;
         this.image = image;
         this.isLocked = isLocked;
+        this.zIndex = zIndex;
     }
 
     static readonly create = getCreate(this);
