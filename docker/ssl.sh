@@ -13,9 +13,11 @@ chown -R www-data:www-data /var/www/acme-challenge
 # removes certs ánd therefore forcing acme.sh to create new ones
 # after everything works don't forget to disable, issueing too many certs from letsencrypt could create a ratelimit
 if ${DFM_FORCE_NEW_SSL_CERTS}; then
-    rm -r  ${DFM_PERSISTENT_DATA_PATH}/acme.sh/certs/*
-    rm -r  ${DFM_PERSISTENT_DATA_PATH}/certs/*
+    rm -rf  ${DFM_PERSISTENT_DATA_PATH}/acme.sh/certs/*
+    rm -rf  ${DFM_PERSISTENT_DATA_PATH}/certs/*
 fi
+
+mkdir -p ${DFM_PERSISTENT_DATA_PATH}/certs
 
 # ignore "that no renewal is needed"
 set +e
