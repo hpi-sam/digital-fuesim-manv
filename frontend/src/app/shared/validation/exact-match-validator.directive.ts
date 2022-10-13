@@ -22,7 +22,7 @@ export class ExactMatchValidatorDirective implements Validator, OnChanges {
      */
     @Input() appExactMatchValidator!: string;
 
-    ngOnChanges(changes: SimpleChanges): void {
+    ngOnChanges(changes: SimpleChangesGeneric<this>): void {
         this.validator = CustomValidators.exactMatchValidator(
             this.appExactMatchValidator
         );
