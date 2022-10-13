@@ -5,14 +5,14 @@ import type {
     MergeIntersection,
     UUID,
 } from 'digital-fuesim-manv-shared';
-import { isEqual } from 'lodash-es';
-import type { Feature } from 'ol';
+import { isEqual, throttle } from 'lodash-es';
+import type { Feature, MapBrowserEvent } from 'ol';
 import { Overlay, View } from 'ol';
 import { primaryAction, shiftKeyOnly } from 'ol/events/condition';
 import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
 import type Point from 'ol/geom/Point';
-import { defaults as defaultInteractions, Translate } from 'ol/interaction';
+import { defaults as defaultInteractions } from 'ol/interaction';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import OlMap from 'ol/Map';
@@ -21,11 +21,12 @@ import XYZ from 'ol/source/XYZ';
 import type { Observable } from 'rxjs';
 import { combineLatest, pairwise, startWith, Subject, takeUntil } from 'rxjs';
 import type { ApiService } from 'src/app/core/api.service';
+import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectRestrictedViewport,
-    getSelectVisibleElements,
     getSelectVisibleCateringLines,
+    getSelectVisibleElements,
     selectExerciseStatus,
     selectMapImages,
     selectTileMapProperties,
@@ -33,7 +34,6 @@ import {
     selectViewports,
 } from 'src/app/state/exercise/exercise.selectors';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
-import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
@@ -54,6 +54,7 @@ import type { FeatureManager } from './feature-manager';
 import { ModifyHelper } from './modify-helper';
 import type { OpenPopupOptions } from './popup-manager';
 import { TranslateHelper } from './translate-helper';
+import { TranslateInteraction } from './translate-interaction';
 import { createViewportModify } from './viewport-modify';
 
 /**
@@ -141,7 +142,7 @@ export class OlMapManager {
         ];
 
         // Interactions
-        const translateInteraction = new Translate({
+        const translateInteraction = new TranslateInteraction({
             layers: featureLayers,
             hitTolerance: 10,
             filter: (feature, layer) => {
@@ -155,7 +156,7 @@ export class OlMapManager {
         });
         const viewportModify = createViewportModify(viewportLayer);
 
-        const viewportTranslate = new Translate({
+        const viewportTranslate = new TranslateInteraction({
             layers: [viewportLayer],
             condition: (event) => primaryAction(event) && !shiftKeyOnly(event),
             hitTolerance: 10,
@@ -163,7 +164,7 @@ export class OlMapManager {
 
         // Clicking on an element should not trigger a drag event - use a `singleclick` interaction instead
         // Be aware that this means that not every `dragstart` event will have an accompanying `dragend` event
-        const registerTranslate = (translate: Translate) =>
+        const registerTranslate = (translate: TranslateInteraction) =>
             translate.on('translateend', (event) => {
                 if (isEqual(event.coordinate, event.startCoordinate)) {
                     event.stopPropagation();
@@ -206,11 +207,18 @@ export class OlMapManager {
         });
 
         // Cursors
-        this.olMap.on('pointermove', (event) => {
-            this.setCursorStyle(
-                this.olMap!.hasFeatureAtPixel(event.pixel) ? 'pointer' : ''
-            );
-        });
+        this.olMap.on(
+            'pointermove',
+            throttle((event: MapBrowserEvent<any>) => {
+                if (event.originalEvent.pointerType !== 'mouse') {
+                    return;
+                }
+                this.setCursorStyle(
+                    // This operation can be expensive
+                    this.olMap!.hasFeatureAtPixel(event.pixel) ? 'pointer' : ''
+                );
+            }, 200)
+        );
 
         // FeatureManagers
         if (this.apiService.getCurrentRole() === 'trainer') {
@@ -435,7 +443,7 @@ export class OlMapManager {
             });
     }
 
-    private registerPopupTriggers(translateInteraction: Translate) {
+    private registerPopupTriggers(translateInteraction: TranslateInteraction) {
         this.olMap.on('singleclick', (event) => {
             if (!this.popupsEnabled) {
                 return;
@@ -482,7 +490,7 @@ export class OlMapManager {
         });
     }
 
-    private registerDropHandler(translateInteraction: Translate) {
+    private registerDropHandler(translateInteraction: TranslateInteraction) {
         translateInteraction.on('translateend', (event) => {
             const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
             this.olMap.forEachFeatureAtPixel(pixel, (feature, layer) =>
