@@ -7,7 +7,7 @@
             class="btn-close float-end"
         ></button>
     </h5>
-    <div class="popover-body" style="width: 350px; height: 350px">
+    <div class="popover-body" style="width: 350px; height: 250px">
         <ng-container *ngIf="(apiService.currentRole$ | async) === 'trainer'">
             <!-- TODO: This is a workaround to make it possible to add images. In the future these things should not be done via the popup. -->
             <label class="form-label">URL</label>
@@ -34,23 +34,40 @@
             ></app-display-validation>
 
             <br />
-
-            <div class="form-group pb-3">
-                <label class="form-label">Höhe</label>
-                <input
-                    #heightInput="ngModel"
-                    [ngModel]="mapImage.image.height"
-                    (appSaveOnTyping)="resizeImage($event)"
-                    required
-                    min="1"
-                    step="1"
-                    appIntegerValidator
-                    type="number"
-                    class="form-control"
-                />
-                <app-display-validation
-                    [ngModelInput]="heightInput"
-                ></app-display-validation>
+            <div class="row">
+                <div class="col-sm form-group pb-3">
+                    <label class="form-label">Höhe</label>
+                    <input
+                        #heightInput="ngModel"
+                        [ngModel]="mapImage.image.height"
+                        (appSaveOnTyping)="resizeImage($event)"
+                        required
+                        min="1"
+                        step="1"
+                        appIntegerValidator
+                        type="number"
+                        class="form-control"
+                    />
+                    <app-display-validation
+                        [ngModelInput]="heightInput"
+                    ></app-display-validation>
+                </div>
+                <div class="col-sm form-group pb-3">
+                    <label class="form-label">Überlappung</label>
+                    <input
+                        #zIndexInput="ngModel"
+                        [ngModel]="mapImage.zIndex"
+                        (appSaveOnTyping)="changeZIndex($event)"
+                        required
+                        step="1"
+                        appIntegerValidator
+                        type="number"
+                        class="form-control"
+                    />
+                    <app-display-validation
+                        [ngModelInput]="zIndexInput"
+                    ></app-display-validation>
+                </div>
             </div>
             <div class="form-check form-switch pb-3">
                 <input
@@ -60,22 +77,6 @@
                     (ngModelChange)="setLocked($event)"
                 />
                 <label class="form-check-label">Position sperren</label>
-            </div>
-            <div class="form-group pb-3">
-                <label class="form-label">Überlappung</label>
-                <input
-                    #zIndexInput="ngModel"
-                    [ngModel]="mapImage.zIndex"
-                    (appSaveOnTyping)="changeZIndex($event)"
-                    required
-                    step="1"
-                    appIntegerValidator
-                    type="number"
-                    class="form-control"
-                />
-                <app-display-validation
-                    [ngModelInput]="zIndexInput"
-                ></app-display-validation>
             </div>
         </ng-container>
     </div>
