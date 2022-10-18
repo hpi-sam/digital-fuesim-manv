@@ -15,6 +15,9 @@ export class MapImage {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
+    /**
+     * Determines the rendering order among other mapImages.
+     */
     @IsInt()
     public readonly zIndex: number;
 

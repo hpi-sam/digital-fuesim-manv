@@ -15,6 +15,7 @@ import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
 import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity';
 import { renameDeleteTransferAction10 } from './10-rename-delete-transfer-action';
 import { addMapImageIsLocked11 } from './11-add-map-image-is-locked';
+import { addMapImageZIndex12 } from './12-add-map-image-zindex';
 import { updateEocLog3 } from './3-update-eoc-log';
 import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
 import { removeStatistics5 } from './5-remove-statistics';
@@ -61,6 +62,7 @@ export const migrations: {
     9: removeIsBeingTreated9,
     10: renameDeleteTransferAction10,
     11: addMapImageIsLocked11,
+    12: addMapImageZIndex12,
 };
 
 export async function migrateInDatabase(
