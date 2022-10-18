@@ -14,7 +14,9 @@ import { CustomValidators } from './custom-validators';
     ],
 })
 export class IntegerValidatorDirective implements Validator {
+    private readonly validator = CustomValidators.integerValidator();
+
     validate(control: AbstractControl) {
-        return CustomValidators.integerValidator()(control);
+        return this.validator(control);
     }
 }
