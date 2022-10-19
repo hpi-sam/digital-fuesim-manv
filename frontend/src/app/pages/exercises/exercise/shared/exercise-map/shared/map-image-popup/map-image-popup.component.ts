@@ -61,11 +61,17 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
         });
     }
 
-    public changeZIndex(newZIndex: number) {
+    public sendToBack() {
         this.apiService.proposeAction({
-            type: '[MapImage] Set zIndex',
+            type: '[MapImage] Send to back',
             mapImageId: this.mapImageId,
-            newZIndex,
+        });
+    }
+
+    public bringToFront() {
+        this.apiService.proposeAction({
+            type: '[MapImage] Bring to front',
+            mapImageId: this.mapImageId,
         });
     }
 }

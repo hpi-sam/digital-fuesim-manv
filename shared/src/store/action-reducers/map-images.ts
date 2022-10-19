@@ -1,7 +1,6 @@
 import { Type } from 'class-transformer';
 import {
     IsBoolean,
-    IsInt,
     IsNumber,
     IsOptional,
     IsPositive,
@@ -11,9 +10,15 @@ import {
 } from 'class-validator';
 import { MapImage } from '../../models';
 import { Position } from '../../models/utils';
+import type { ExerciseState } from '../../state';
 import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
+import type { Mutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
+
+function mapImageZIndices(exerciseState: Mutable<ExerciseState>): number[] {
+    return Object.values(exerciseState.mapImages).map((mi) => mi.zIndex);
+}
 
 export class AddMapImageAction implements Action {
     @IsString()
@@ -87,22 +92,30 @@ export class ReconfigureMapImageUrlAction implements Action {
     public readonly newUrl!: string;
 }
 
-export class SetZIndexMapImageAction implements Action {
+export class BringToFrontMapImageAction implements Action {
     @IsString()
-    public readonly type = '[MapImage] Set zIndex';
+    public readonly type = '[MapImage] Bring to front';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly mapImageId!: UUID;
+}
 
-    @IsInt()
-    public readonly newZIndex!: number;
+export class SendToBackMapImageAction implements Action {
+    @IsString()
+    public readonly type = '[MapImage] Send to back';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly mapImageId!: UUID;
 }
 
 export namespace MapImagesActionReducers {
     export const addMapImage: ActionReducer<AddMapImageAction> = {
         action: AddMapImageAction,
         reducer: (draftState, { mapImage }) => {
-            draftState.mapImages[mapImage.id] = cloneDeepMutable(mapImage);
+            const newMapImage = cloneDeepMutable(mapImage);
+            newMapImage.zIndex =
+                Math.max(0, ...mapImageZIndices(draftState)) + 1;
+            draftState.mapImages[mapImage.id] = newMapImage;
             return draftState;
         },
         rights: 'trainer',
@@ -168,11 +181,21 @@ export namespace MapImagesActionReducers {
         rights: 'trainer',
     };
 
-    export const setZIndexMapImage: ActionReducer<SetZIndexMapImageAction> = {
-        action: SetZIndexMapImageAction,
-        reducer: (draftState, { mapImageId, newZIndex }) => {
+    export const sendToBackMapImage: ActionReducer<SendToBackMapImageAction> = {
+        action: SendToBackMapImageAction,
+        reducer: (draftState, { mapImageId }) => {
             const mapImage = getElement(draftState, 'mapImages', mapImageId);
-            mapImage.zIndex = newZIndex;
+            mapImage.zIndex = Math.min(0, ...mapImageZIndices(draftState)) - 1;
+            return draftState;
+        },
+        rights: 'trainer',
+    };
+
+    export const bringToFront: ActionReducer<BringToFrontMapImageAction> = {
+        action: BringToFrontMapImageAction,
+        reducer: (draftState, { mapImageId }) => {
+            const mapImage = getElement(draftState, 'mapImages', mapImageId);
+            mapImage.zIndex = Math.max(0, ...mapImageZIndices(draftState)) + 1;
             return draftState;
         },
         rights: 'trainer',
