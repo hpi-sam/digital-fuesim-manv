@@ -6,8 +6,8 @@ import { freeze } from 'immer';
 import { lastValueFrom } from 'rxjs';
 import type { AppState } from '../state/app.state';
 import {
-    jumpToTime,
-    startTimeTravel,
+    createJumpToTimeAction,
+    createStartTimeTravelAction,
 } from '../state/application/application.actions';
 import {
     selectExerciseId,
@@ -70,7 +70,7 @@ export class TimeTravelService {
         // TODO: This should be calculated from the timeline (in the TimeJumpHelper - maybe cache states in between)
         const endTime = selectStateSnapshot(selectCurrentTime, this.store);
         this.store.dispatch(
-            startTimeTravel(exerciseTimeLine.initialState, endTime)
+            createStartTimeTravelAction(exerciseTimeLine.initialState, endTime)
         );
     }
 
@@ -91,7 +91,7 @@ export class TimeTravelService {
             Math.min(timeConstraints.end, exerciseTime)
         );
         this.store.dispatch(
-            jumpToTime(
+            createJumpToTimeAction(
                 clampedTime,
                 this.timeJumpHelper.getStateAtTime(clampedTime)
             )

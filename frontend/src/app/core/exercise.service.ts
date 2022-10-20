@@ -16,10 +16,10 @@ import { io } from 'socket.io-client';
 import { handleChanges } from '../shared/functions/handle-changes';
 import type { AppState } from '../state/app.state';
 import {
-    applyServerAction,
-    joinExercise,
-    leaveExercise,
-    setExerciseState,
+    createApplyServerActionAction,
+    createJoinExerciseAction,
+    createLeaveExerciseAction,
+    createSetExerciseStateAction,
 } from '../state/application/application.actions';
 import { selectExerciseStateMode } from '../state/application/selectors/application.selectors';
 import {
@@ -59,9 +59,10 @@ export class ExerciseService {
         ExerciseState,
         SocketResponse
     >(
-        (exercise) => this.store.dispatch(setExerciseState(exercise)),
+        (exercise) =>
+            this.store.dispatch(createSetExerciseStateAction(exercise)),
         () => selectStateSnapshot(selectExerciseState, this.store),
-        (action) => this.store.dispatch(applyServerAction(action)),
+        (action) => this.store.dispatch(createApplyServerActionAction(action)),
         async (action) => {
             const response = await new Promise<SocketResponse>((resolve) => {
                 this.socket.emit('proposeAction', action, resolve);
@@ -148,7 +149,7 @@ export class ExerciseService {
             return false;
         }
         this.store.dispatch(
-            joinExercise(
+            createJoinExerciseAction(
                 joinResponse.payload,
                 getStateResponse.payload,
                 exerciseId,
@@ -166,7 +167,7 @@ export class ExerciseService {
     public leaveExercise() {
         this.socket.disconnect();
         this.stopNotifications();
-        this.store.dispatch(leaveExercise());
+        this.store.dispatch(createLeaveExerciseAction());
     }
 
     /**

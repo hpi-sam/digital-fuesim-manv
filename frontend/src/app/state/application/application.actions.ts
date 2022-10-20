@@ -5,7 +5,7 @@ import type {
     UUID,
 } from 'digital-fuesim-manv-shared';
 
-export const startTimeTravel = createAction(
+export const createStartTimeTravelAction = createAction(
     '[Application] Start time travel',
     (initialExerciseState: ExerciseState, endTime: number) => ({
         initialExerciseState,
@@ -13,7 +13,7 @@ export const startTimeTravel = createAction(
     })
 );
 
-export const jumpToTime = createAction(
+export const createJumpToTimeAction = createAction(
     '[Application] Jump to time',
     (exerciseTime: number, exerciseStateAtTime: ExerciseState) => ({
         exerciseTime,
@@ -21,7 +21,7 @@ export const jumpToTime = createAction(
     })
 );
 
-export const joinExercise = createAction(
+export const createJoinExerciseAction = createAction(
     '[Application] Join exercise',
     (
         ownClientId: UUID,
@@ -36,17 +36,19 @@ export const joinExercise = createAction(
     })
 );
 
-export const leaveExercise = createAction('[Application] Leave exercise');
+export const createLeaveExerciseAction = createAction(
+    '[Application] Leave exercise'
+);
 
 // The actions for the ExerciseService
 /**
  * Applies the given action from the server to the exercise state in the frontend.
  */
-export const applyServerAction = createAction(
+export const createApplyServerActionAction = createAction(
     '[Exercise] Apply server action',
     (serverAction: ExerciseAction) => ({ serverAction })
 );
-export const setExerciseState = createAction(
+export const createSetExerciseStateAction = createAction(
     '[Exercise] Set state',
     (exercise: ExerciseState) => ({ exercise })
 );
