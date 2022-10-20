@@ -1,6 +1,13 @@
 <div class="btn-group btn-group-sm text-nowrap">
     <button
         class="btn btn-small btn-outline-secondary"
+        title="Sofort ankommen lassen"
+        (click)="letElementArrive()"
+    >
+        Sofort
+    </button>
+    <button
+        class="btn btn-small btn-outline-secondary"
         title="Um 5 Minuten verkürzen"
         (click)="addTransferTime(-5 * 60 * 1000)"
     >

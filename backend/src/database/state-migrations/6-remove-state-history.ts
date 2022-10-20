@@ -25,6 +25,5 @@ export const removeStateHistory6: Migration = {
         (
             state as { currentStatus: 'notStarted' | 'paused' | 'running' }
         ).currentStatus = currentStatus;
-        return state;
     },
 };

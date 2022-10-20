@@ -96,7 +96,9 @@ export class OlMapManager {
         transferLinesService: TransferLinesService
     ) {
         // Layers
-        const satelliteLayer = new TileLayer();
+        const satelliteLayer = new TileLayer({
+            preload: Number.POSITIVE_INFINITY,
+        });
         this.store
             .select(selectTileMapProperties)
             .pipe(takeUntil(this.destroy$))
@@ -124,26 +126,33 @@ export class OlMapManager {
             element: this.popoverContainer,
         });
 
-        // Interactions
-        // The layers where elements can be translated by trainer and participant
-        const alwaysTranslatableLayers = [
+        // The order in this array represents the order of the layers on the map (last element is on top)
+        const featureLayers = [
+            deleteFeatureLayer,
+            mapImagesLayer,
+            transferLinesLayer,
+            transferPointLayer,
             vehicleLayer,
+            cateringLinesLayer,
             patientLayer,
             personnelLayer,
             materialLayer,
+            viewportLayer,
         ];
-        const translateInteraction = new Translate({
-            layers:
-                this.apiService.getCurrentRole() === 'trainer'
-                    ? [
-                          ...alwaysTranslatableLayers,
-                          transferPointLayer,
-                          mapImagesLayer,
-                      ]
-                    : alwaysTranslatableLayers,
-            hitTolerance: 10,
-        });
 
+        // Interactions
+        const translateInteraction = new Translate({
+            layers: featureLayers,
+            hitTolerance: 10,
+            filter: (feature, layer) => {
+                const featureManager = this.layerFeatureManagerDictionary.get(
+                    layer as VectorLayer<VectorSource>
+                );
+                return featureManager === undefined
+                    ? false
+                    : featureManager.isFeatureTranslatable(feature);
+            },
+        });
         const viewportModify = createViewportModify(viewportLayer);
 
         const viewportTranslate = new Translate({
@@ -184,19 +193,7 @@ export class OlMapManager {
             target: this.openLayersContainer,
             // Note: The order of this array determines the order of the objects on the map.
             // The most bottom objects must be at the top of the array.
-            layers: [
-                satelliteLayer,
-                deleteFeatureLayer,
-                mapImagesLayer,
-                transferLinesLayer,
-                transferPointLayer,
-                vehicleLayer,
-                cateringLinesLayer,
-                patientLayer,
-                personnelLayer,
-                materialLayer,
-                viewportLayer,
-            ],
+            layers: [satelliteLayer, ...featureLayers],
             overlays: [this.popupOverlay],
             view: new View({
                 center: [startingPosition.x, startingPosition.y],

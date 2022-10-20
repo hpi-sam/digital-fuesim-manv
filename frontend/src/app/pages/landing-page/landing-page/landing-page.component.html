@@ -7,14 +7,19 @@
             ein!
         </p>
         <div class="input-group">
+            <!--
+                Still using `[maxLength]` and `[minLength]` in addition to `appJoinIdValidator`
+                since this automatically prevents input of more than 8 chars
+            -->
             <input
                 [(ngModel)]="exerciseId"
                 [appAutofocus]="true"
                 (keydown.enter)="joinExercise()"
-                [minlength]="6"
-                [maxlength]="8"
+                (paste)="pasteExerciseId($event)"
+                [minLength]="6"
+                [maxLength]="8"
                 required
-                appOnlyNumbersValidator
+                appJoinIdValidator
                 appExerciseExistsValidator
                 class="form-control form-control-lg"
                 placeholder="Übungs-ID"
@@ -58,7 +63,7 @@
                     class="spinner-border spinner-border-sm"
                 ></span>
                 <input
-                    (input)="importExerciseState($any($event.target).files)"
+                    (appFileInput)="importExerciseState($event)"
                     type="file"
                     accept="application/json"
                     class="d-none"

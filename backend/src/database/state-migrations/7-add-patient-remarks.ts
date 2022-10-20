@@ -17,6 +17,5 @@ export const addPatientRemarks7: Migration = {
         Object.values(typedState.patients).forEach((patient) => {
             patient.remarks = '';
         });
-        return typedState;
     },
 };

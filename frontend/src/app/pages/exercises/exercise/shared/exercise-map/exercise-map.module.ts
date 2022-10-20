@@ -11,6 +11,9 @@ import { PatientPopupComponent } from './shared/patient-popup/patient-popup.comp
 import { TransferPointPopupComponent } from './shared/transfer-point-popup/transfer-point-popup.component';
 import { VehiclePopupComponent } from './shared/vehicle-popup/vehicle-popup.component';
 import { ViewportPopupComponent } from './shared/viewport-popup/viewport-popup.component';
+import { PersonnelPopupComponent } from './shared/personnel-popup/personnel-popup.component';
+import { MaterialPopupComponent } from './shared/material-popup/material-popup.component';
+import { CaterCapacityComponent } from './shared/cater-capacity/cater-capacity.component';
 
 @NgModule({
     declarations: [
@@ -21,6 +24,9 @@ import { ViewportPopupComponent } from './shared/viewport-popup/viewport-popup.c
         TransferPointPopupComponent,
         ViewportPopupComponent,
         ChooseTransferTargetPopupComponent,
+        PersonnelPopupComponent,
+        MaterialPopupComponent,
+        CaterCapacityComponent,
     ],
     imports: [
         CommonModule,

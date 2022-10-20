@@ -2,7 +2,7 @@ export { Position } from './position';
 export * from './patient-status';
 export { Size } from './size';
 export { Role } from './role';
-export { PersonnelType } from './personnel-type';
+export * from './personnel-type';
 export { CanCaterFor } from './cater-for';
 export * from './exercise-status';
 export { Transfer } from './transfer';
