@@ -29,6 +29,10 @@ import {
     selectViewports,
 } from './exercise.selectors';
 
+/**
+ * All selectors in here use exercise- as well as application-selectors
+ */
+
 export const selectOwnClient = createSelector(
     selectOwnClientId,
     selectClients,
@@ -44,13 +48,12 @@ export const selectCurrentRole = createSelector(
     (mode, ownClient) => (mode === 'exercise' ? ownClient!.role : mode)
 );
 
-// The clientId is only optional, to make working with typings easier
 export const selectRestrictedViewport = createSelector(
     selectOwnClient,
     selectViewports,
-    (client, viewports) =>
-        client?.viewRestrictedToViewportId
-            ? viewports[client.viewRestrictedToViewportId]!
+    (ownClient, viewports) =>
+        ownClient?.viewRestrictedToViewportId
+            ? viewports[ownClient.viewRestrictedToViewportId]!
             : undefined
 );
 

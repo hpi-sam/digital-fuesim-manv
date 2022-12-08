@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { assertExhaustiveness } from 'digital-fuesim-manv-shared';
 import type { AppState } from '../state/app.state';
 import {
     selectExerciseId,
@@ -50,6 +51,9 @@ export class ApplicationService {
         ...args: Parameters<typeof this.exerciseService.joinExercise>
     ) {
         this.stopCurrentMode();
+        // TODO: this is currently an invalid state because joinExercise is async
+        // joinExercise could synchronously set the ApplicationState to something valid e.g. an intermediate 'loading' state
+        // This should only be relevant if joinExercise takes a long time
         return this.exerciseService.joinExercise(...args);
     }
 
@@ -74,8 +78,4 @@ export class ApplicationService {
     public async leaveExercise() {
         this.stopCurrentMode();
     }
-}
-
-function assertExhaustiveness(variable: never) {
-    throw Error(`Unhandled case: ${variable}`);
 }
