@@ -12,7 +12,7 @@ import { map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    getSelectPatient,
+    createSelectPatient,
     selectConfiguration,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
@@ -55,10 +55,10 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.patient$ = this.store.select(getSelectPatient(this.patientId));
+        this.patient$ = this.store.select(createSelectPatient(this.patientId));
         this.visibleStatus$ = this.store.select(
             createSelector(
-                getSelectPatient(this.patientId),
+                createSelectPatient(this.patientId),
                 selectConfiguration,
                 (patient, configuration) =>
                     Patient.getVisibleStatus(

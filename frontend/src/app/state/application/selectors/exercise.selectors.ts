@@ -18,36 +18,38 @@ export const selectExerciseState = (state: AppState) =>
     // TODO: we currently expect this to only be used of the exerciseStateMode is not undefined
     state.application.exerciseState!;
 
-function selectProperty<Key extends keyof ExerciseState>(key: Key) {
+function selectPropertyFactory<Key extends keyof ExerciseState>(key: Key) {
     return createSelector(selectExerciseState, (exercise) => exercise[key]);
 }
 
 // UUIDMap properties
-export const selectViewports = selectProperty('viewports');
-export const selectMapImages = selectProperty('mapImages');
-export const selectPatients = selectProperty('patients');
-export const selectVehicles = selectProperty('vehicles');
-export const selectPersonnel = selectProperty('personnel');
-export const selectAlarmGroups = selectProperty('alarmGroups');
-export const selectMaterials = selectProperty('materials');
-export const selectTransferPoints = selectProperty('transferPoints');
-export const selectHospitals = selectProperty('hospitals');
-export const selectHospitalPatients = selectProperty('hospitalPatients');
-export const selectClients = selectProperty('clients');
+export const selectViewports = selectPropertyFactory('viewports');
+export const selectMapImages = selectPropertyFactory('mapImages');
+export const selectPatients = selectPropertyFactory('patients');
+export const selectVehicles = selectPropertyFactory('vehicles');
+export const selectPersonnel = selectPropertyFactory('personnel');
+export const selectAlarmGroups = selectPropertyFactory('alarmGroups');
+export const selectMaterials = selectPropertyFactory('materials');
+export const selectTransferPoints = selectPropertyFactory('transferPoints');
+export const selectHospitals = selectPropertyFactory('hospitals');
+export const selectHospitalPatients = selectPropertyFactory('hospitalPatients');
+export const selectClients = selectPropertyFactory('clients');
 // Array properties
-export const selectVehicleTemplates = selectProperty('vehicleTemplates');
-export const selectMapImagesTemplates = selectProperty('mapImageTemplates');
-export const selectPatientCategories = selectProperty('patientCategories');
+export const selectVehicleTemplates = selectPropertyFactory('vehicleTemplates');
+export const selectMapImagesTemplates =
+    selectPropertyFactory('mapImageTemplates');
+export const selectPatientCategories =
+    selectPropertyFactory('patientCategories');
 // Misc properties
-export const selectConfiguration = selectProperty('configuration');
-export const selectEocLogEntries = selectProperty('eocLog');
-export const selectExerciseStatus = selectProperty('currentStatus');
-export const selectParticipantId = selectProperty('participantId');
-export const selectCurrentTime = selectProperty('currentTime');
+export const selectConfiguration = selectPropertyFactory('configuration');
+export const selectEocLogEntries = selectPropertyFactory('eocLog');
+export const selectExerciseStatus = selectPropertyFactory('currentStatus');
+export const selectParticipantId = selectPropertyFactory('participantId');
+export const selectCurrentTime = selectPropertyFactory('currentTime');
 
 // Elements
 
-function getSelectElementFromMap<Element>(
+function createSelectElementFromMapFactory<Element>(
     elementsSelector: (state: AppState) => { [key: UUID]: Element }
 ) {
     return (id: UUID) =>
@@ -55,19 +57,28 @@ function getSelectElementFromMap<Element>(
 }
 
 // Element from UUIDMap
-export const getSelectAlarmGroup = getSelectElementFromMap(selectAlarmGroups);
-export const getSelectPersonnel = getSelectElementFromMap(selectPersonnel);
-export const getSelectMaterial = getSelectElementFromMap(selectMaterials);
-export const getSelectPatient = getSelectElementFromMap(selectPatients);
-export const getSelectVehicle = getSelectElementFromMap(selectVehicles);
-export const getSelectMapImage = getSelectElementFromMap(selectMapImages);
-export const getSelectTransferPoint =
-    getSelectElementFromMap(selectTransferPoints);
-export const getSelectHospital = getSelectElementFromMap(selectHospitals);
-export const getSelectViewport = getSelectElementFromMap(selectViewports);
-export const getSelectClient = getSelectElementFromMap(selectClients);
+export const createSelectAlarmGroup =
+    createSelectElementFromMapFactory(selectAlarmGroups);
+export const createSelectPersonnel =
+    createSelectElementFromMapFactory(selectPersonnel);
+export const createSelectMaterial =
+    createSelectElementFromMapFactory(selectMaterials);
+export const createSelectPatient =
+    createSelectElementFromMapFactory(selectPatients);
+export const createSelectVehicle =
+    createSelectElementFromMapFactory(selectVehicles);
+export const createSelectMapImage =
+    createSelectElementFromMapFactory(selectMapImages);
+export const createSelectTransferPoint =
+    createSelectElementFromMapFactory(selectTransferPoints);
+export const createSelectHospital =
+    createSelectElementFromMapFactory(selectHospitals);
+export const createSelectViewport =
+    createSelectElementFromMapFactory(selectViewports);
+export const createSelectClient =
+    createSelectElementFromMapFactory(selectClients);
 
-function getSelectElementFromArray<Element extends { id: UUID }>(
+function createSelectElementFromArrayFactory<Element extends { id: UUID }>(
     elementsSelector: (state: AppState) => readonly Element[]
 ) {
     return (id: UUID) =>
@@ -78,10 +89,10 @@ function getSelectElementFromArray<Element extends { id: UUID }>(
 }
 
 // Element from Array
-export const getSelectMapImageTemplate = getSelectElementFromArray(
+export const createSelectMapImageTemplate = createSelectElementFromArrayFactory(
     selectMapImagesTemplates
 );
-export const getSelectVehicleTemplate = getSelectElementFromArray(
+export const createSelectVehicleTemplate = createSelectElementFromArrayFactory(
     selectVehicleTemplates
 );
 
@@ -115,10 +126,10 @@ export const selectTransferLines = createSelector(
             )
 );
 
-export function getSelectReachableTransferPoints(transferPointId: UUID) {
+export function createSelectReachableTransferPoints(transferPointId: UUID) {
     return createSelector(
         selectTransferPoints,
-        getSelectTransferPoint(transferPointId),
+        createSelectTransferPoint(transferPointId),
         (transferPoints, transferPoint) =>
             Object.keys(transferPoint.reachableTransferPoints).map(
                 (id) => transferPoints[id]!
@@ -126,10 +137,10 @@ export function getSelectReachableTransferPoints(transferPointId: UUID) {
     );
 }
 
-export function getSelectReachableHospitals(transferPointId: UUID) {
+export function createSelectReachableHospitals(transferPointId: UUID) {
     return createSelector(
         selectHospitals,
-        getSelectTransferPoint(transferPointId),
+        createSelectTransferPoint(transferPointId),
         (hospitals, transferPoint) =>
             Object.keys(transferPoint.reachableHospitals).map(
                 (id) => hospitals[id]!

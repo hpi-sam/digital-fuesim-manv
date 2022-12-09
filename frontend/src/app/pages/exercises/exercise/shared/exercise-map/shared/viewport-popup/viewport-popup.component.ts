@@ -5,7 +5,7 @@ import type { UUID, Viewport } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { getSelectViewport } from 'src/app/state/application/selectors/exercise.selectors';
+import { createSelectViewport } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 
 @Component({
@@ -28,7 +28,9 @@ export class ViewportPopupComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.viewport$ = this.store.select(getSelectViewport(this.viewportId));
+        this.viewport$ = this.store.select(
+            createSelectViewport(this.viewportId)
+        );
     }
 
     public renameViewport(newName: string) {

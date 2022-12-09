@@ -5,7 +5,7 @@ import type { Viewport } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
-import { getSelectViewport } from 'src/app/state/application/selectors/exercise.selectors';
+import { createSelectViewport } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
     selector: 'app-viewport-name',
@@ -19,6 +19,8 @@ export class ViewportNameComponent implements OnChanges {
     public viewport$?: Observable<Viewport>;
 
     ngOnChanges() {
-        this.viewport$ = this.store.select(getSelectViewport(this.viewportId));
+        this.viewport$ = this.store.select(
+            createSelectViewport(this.viewportId)
+        );
     }
 }

@@ -7,7 +7,7 @@ import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    getSelectTransferPoint,
+    createSelectTransferPoint,
     selectHospitals,
     selectTransferPoints,
 } from 'src/app/state/application/selectors/exercise.selectors';
@@ -94,7 +94,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
 
     ngOnInit() {
         this.transferPoint$ = this.store.select(
-            getSelectTransferPoint(this.transferPointId)
+            createSelectTransferPoint(this.transferPointId)
         );
     }
 

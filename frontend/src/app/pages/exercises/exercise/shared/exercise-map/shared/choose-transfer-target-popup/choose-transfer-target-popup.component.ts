@@ -5,8 +5,8 @@ import type { Hospital, TransferPoint, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    getSelectReachableHospitals,
-    getSelectReachableTransferPoints,
+    createSelectReachableHospitals,
+    createSelectReachableTransferPoints,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
@@ -37,10 +37,10 @@ export class ChooseTransferTargetPopupComponent
 
     ngOnInit(): void {
         this.reachableTransferPoints$ = this.store.select(
-            getSelectReachableTransferPoints(this.transferPointId)
+            createSelectReachableTransferPoints(this.transferPointId)
         );
         this.reachableHospitals$ = this.store.select(
-            getSelectReachableHospitals(this.transferPointId)
+            createSelectReachableHospitals(this.transferPointId)
         );
     }
 

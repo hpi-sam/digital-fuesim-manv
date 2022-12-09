@@ -12,8 +12,8 @@ import { ExerciseService } from 'src/app/core/exercise.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    getSelectTransferPoint,
-    getSelectVehicleTemplate,
+    createSelectTransferPoint,
+    createSelectVehicleTemplate,
     selectAlarmGroups,
     selectTransferPoints,
 } from 'src/app/state/application/selectors/exercise.selectors';
@@ -66,7 +66,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
 
     public sendAlarmGroup(alarmGroup: AlarmGroup) {
         const targetTransferPoint = selectStateSnapshot(
-            getSelectTransferPoint(this.targetTransferPointId!),
+            createSelectTransferPoint(this.targetTransferPointId!),
             this.store
         );
         // TODO: Refactor this into one action (uuid generation is currently not possible in the reducer)
@@ -74,7 +74,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
             Object.values(alarmGroup.alarmGroupVehicles).flatMap(
                 (alarmGroupVehicle) => {
                     const vehicleTemplate = selectStateSnapshot(
-                        getSelectVehicleTemplate(
+                        createSelectVehicleTemplate(
                             alarmGroupVehicle.vehicleTemplateId
                         ),
                         this.store

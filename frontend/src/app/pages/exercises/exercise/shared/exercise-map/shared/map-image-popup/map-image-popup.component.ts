@@ -6,7 +6,7 @@ import type { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { getSelectMapImage } from 'src/app/state/application/selectors/exercise.selectors';
+import { createSelectMapImage } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
@@ -32,7 +32,9 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     ) {}
 
     async ngOnInit() {
-        this.mapImage$ = this.store.select(getSelectMapImage(this.mapImageId));
+        this.mapImage$ = this.store.select(
+            createSelectMapImage(this.mapImageId)
+        );
 
         // Set the initial form values
         const mapImage = await firstValueFrom(this.mapImage$);

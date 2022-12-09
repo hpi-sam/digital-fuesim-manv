@@ -5,7 +5,7 @@ import type { TransferPoint } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
-import { getSelectTransferPoint } from 'src/app/state/application/selectors/exercise.selectors';
+import { createSelectTransferPoint } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
     selector: 'app-transfer-point-name',
@@ -21,7 +21,7 @@ export class TransferPointNameComponent implements OnChanges {
 
     ngOnChanges() {
         this.transferPoint$ = this.store.select(
-            getSelectTransferPoint(this.transferPointId)
+            createSelectTransferPoint(this.transferPointId)
         );
     }
 }

@@ -5,7 +5,7 @@ import { AlarmGroup, AlarmGroupVehicle } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    getSelectVehicleTemplate,
+    createSelectVehicleTemplate,
     selectVehicleTemplates,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
@@ -78,7 +78,7 @@ export class AlarmGroupItemComponent {
 
     public createAlarmGroupVehicle(vehicleTemplateId: UUID) {
         const vehicleTemplate = selectStateSnapshot(
-            getSelectVehicleTemplate(vehicleTemplateId),
+            createSelectVehicleTemplate(vehicleTemplateId),
             this.store
         )!;
         this.exerciseService.proposeAction({

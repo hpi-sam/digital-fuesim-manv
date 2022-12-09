@@ -60,7 +60,7 @@ export const selectRestrictedViewport = createSelector(
 /**
  * @returns a selector that returns a UUIDMap of all elements that have a position and are in the viewport restriction
  */
-function getSelectVisibleElements<
+function selectVisibleElementsFactory<
     Element extends { readonly position?: Position },
     Elements extends { readonly [key: UUID]: Element } = {
         readonly [key: UUID]: Element;
@@ -97,25 +97,25 @@ function getSelectVisibleElements<
 
 // TODO: Take into account the width and height of the images of these elements
 export const selectVisibleMaterials =
-    getSelectVisibleElements<Material>(selectMaterials);
+    selectVisibleElementsFactory<Material>(selectMaterials);
 export const selectVisibleVehicles =
-    getSelectVisibleElements<Vehicle>(selectVehicles);
+    selectVisibleElementsFactory<Vehicle>(selectVehicles);
 export const selectVisiblePersonnel =
-    getSelectVisibleElements<Personnel>(selectPersonnel);
+    selectVisibleElementsFactory<Personnel>(selectPersonnel);
 export const selectVisiblePatients =
-    getSelectVisibleElements<Patient>(selectPatients);
-export const selectVisibleViewports = getSelectVisibleElements<Viewport>(
+    selectVisibleElementsFactory<Patient>(selectPatients);
+export const selectVisibleViewports = selectVisibleElementsFactory<Viewport>(
     selectViewports,
     // The viewport the client is restricted to should not be shown, as this causes a white border in fullscreen mode
     (element, viewport) => element.id !== viewport.id
 );
-export const selectVisibleMapImages = getSelectVisibleElements<MapImage>(
+export const selectVisibleMapImages = selectVisibleElementsFactory<MapImage>(
     selectMapImages,
     // TODO: MapImages could get very big. Therefore its size must be taken into account. The current implementation is a temporary solution.
     (element, viewport) => true
 );
 export const selectVisibleTransferPoints =
-    getSelectVisibleElements<TransferPoint>(selectTransferPoints);
+    selectVisibleElementsFactory<TransferPoint>(selectTransferPoints);
 
 export const selectVisibleCateringLines = createSelector(
     selectRestrictedViewport,
