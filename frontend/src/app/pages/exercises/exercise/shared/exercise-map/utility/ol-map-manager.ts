@@ -5,14 +5,13 @@ import type {
     MergeIntersection,
     UUID,
 } from 'digital-fuesim-manv-shared';
-import { isEqual } from 'lodash-es';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
 import { primaryAction, shiftKeyOnly } from 'ol/events/condition';
 import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
 import type Point from 'ol/geom/Point';
-import { defaults as defaultInteractions, Translate } from 'ol/interaction';
+import { defaults as defaultInteractions } from 'ol/interaction';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import OlMap from 'ol/Map';
@@ -21,11 +20,12 @@ import XYZ from 'ol/source/XYZ';
 import type { Observable } from 'rxjs';
 import { combineLatest, pairwise, startWith, Subject, takeUntil } from 'rxjs';
 import type { ApiService } from 'src/app/core/api.service';
+import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
 import {
     getSelectRestrictedViewport,
-    getSelectVisibleElements,
     getSelectVisibleCateringLines,
+    getSelectVisibleElements,
     selectExerciseStatus,
     selectMapImages,
     selectTileMapProperties,
@@ -33,7 +33,6 @@ import {
     selectViewports,
 } from 'src/app/state/exercise/exercise.selectors';
 import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
-import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
@@ -53,7 +52,7 @@ import {
 import type { FeatureManager } from './feature-manager';
 import { ModifyHelper } from './modify-helper';
 import type { OpenPopupOptions } from './popup-manager';
-import { TranslateHelper } from './translate-helper';
+import { TranslateInteraction } from './translate-interaction';
 import { createViewportModify } from './viewport-modify';
 
 /**
@@ -141,7 +140,7 @@ export class OlMapManager {
         ];
 
         // Interactions
-        const translateInteraction = new Translate({
+        const translateInteraction = new TranslateInteraction({
             layers: featureLayers,
             hitTolerance: 10,
             filter: (feature, layer) => {
@@ -155,25 +154,12 @@ export class OlMapManager {
         });
         const viewportModify = createViewportModify(viewportLayer);
 
-        const viewportTranslate = new Translate({
+        const viewportTranslate = new TranslateInteraction({
             layers: [viewportLayer],
             condition: (event) => primaryAction(event) && !shiftKeyOnly(event),
             hitTolerance: 10,
         });
 
-        // Clicking on an element should not trigger a drag event - use a `singleclick` interaction instead
-        // Be aware that this means that not every `dragstart` event will have an accompanying `dragend` event
-        const registerTranslate = (translate: Translate) =>
-            translate.on('translateend', (event) => {
-                if (isEqual(event.coordinate, event.startCoordinate)) {
-                    event.stopPropagation();
-                }
-            });
-        registerTranslate(translateInteraction);
-        registerTranslate(viewportTranslate);
-
-        TranslateHelper.registerTranslateEvents(translateInteraction);
-        TranslateHelper.registerTranslateEvents(viewportTranslate);
         ModifyHelper.registerModifyEvents(viewportModify);
 
         const alwaysInteractions = [translateInteraction];
@@ -203,13 +189,6 @@ export class OlMapManager {
                 smoothResolutionConstraint: false,
                 constrainRotation: 1,
             }),
-        });
-
-        // Cursors
-        this.olMap.on('pointermove', (event) => {
-            this.setCursorStyle(
-                this.olMap!.hasFeatureAtPixel(event.pixel) ? 'pointer' : ''
-            );
         });
 
         // FeatureManagers
@@ -435,7 +414,7 @@ export class OlMapManager {
             });
     }
 
-    private registerPopupTriggers(translateInteraction: Translate) {
+    private registerPopupTriggers(translateInteraction: TranslateInteraction) {
         this.olMap.on('singleclick', (event) => {
             if (!this.popupsEnabled) {
                 return;
@@ -482,36 +461,28 @@ export class OlMapManager {
         });
     }
 
-    private registerDropHandler(translateInteraction: Translate) {
+    private registerDropHandler(translateInteraction: TranslateInteraction) {
         translateInteraction.on('translateend', (event) => {
             const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
-            this.olMap.forEachFeatureAtPixel(pixel, (feature, layer) =>
+            this.olMap.forEachFeatureAtPixel(pixel, (feature, layer) => {
                 // Skip layer when unset
-                {
-                    if (layer === null) {
-                        return;
-                    }
-                    // we stop propagating the event as soon as the onFeatureDropped function returns true
-                    this.layerFeatureManagerDictionary
-                        .get(
-                            layer as VectorLayer<
-                                VectorSource<LineString | Point>
-                            >
-                        )!
-                        .onFeatureDrop(
-                            event,
-                            event.features.getArray()[0] as Feature<
-                                LineString | Point
-                            >,
-                            feature as Feature<Point>
-                        );
+                if (layer === null) {
+                    return;
                 }
-            );
+                // We stop propagating the event as soon as the onFeatureDropped function returns true
+                return this.layerFeatureManagerDictionary
+                    .get(
+                        layer as VectorLayer<VectorSource<LineString | Point>>
+                    )!
+                    .onFeatureDrop(
+                        event,
+                        event.features.getArray()[0] as Feature<
+                            LineString | Point
+                        >,
+                        feature as Feature<Point>
+                    );
+            });
         });
-    }
-
-    private setCursorStyle(cursorStyle: string) {
-        this.olMap!.getTargetElement().style.cursor = cursorStyle;
     }
 
     /**
