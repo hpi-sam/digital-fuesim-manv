@@ -16,8 +16,10 @@ import type { Mutable } from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
 
-function mapImageZIndices(exerciseState: Mutable<ExerciseState>): number[] {
-    return Object.values(exerciseState.mapImages).map((mi) => mi.zIndex);
+function getZIndices(exerciseState: Mutable<ExerciseState>): number[] {
+    return Object.values(exerciseState.mapImages).map(
+        (mapImage) => mapImage.zIndex
+    );
 }
 
 export class AddMapImageAction implements Action {
@@ -113,8 +115,7 @@ export namespace MapImagesActionReducers {
         action: AddMapImageAction,
         reducer: (draftState, { mapImage }) => {
             const newMapImage = cloneDeepMutable(mapImage);
-            newMapImage.zIndex =
-                Math.max(0, ...mapImageZIndices(draftState)) + 1;
+            newMapImage.zIndex = Math.max(...getZIndices(draftState)) + 1;
             draftState.mapImages[mapImage.id] = newMapImage;
             return draftState;
         },
@@ -185,7 +186,7 @@ export namespace MapImagesActionReducers {
         action: SendToBackMapImageAction,
         reducer: (draftState, { mapImageId }) => {
             const mapImage = getElement(draftState, 'mapImages', mapImageId);
-            mapImage.zIndex = Math.min(0, ...mapImageZIndices(draftState)) - 1;
+            mapImage.zIndex = Math.min(...getZIndices(draftState)) - 1;
             return draftState;
         },
         rights: 'trainer',
@@ -195,7 +196,7 @@ export namespace MapImagesActionReducers {
         action: BringToFrontMapImageAction,
         reducer: (draftState, { mapImageId }) => {
             const mapImage = getElement(draftState, 'mapImages', mapImageId);
-            mapImage.zIndex = Math.max(0, ...mapImageZIndices(draftState)) + 1;
+            mapImage.zIndex = Math.max(...getZIndices(draftState)) + 1;
             return draftState;
         },
         rights: 'trainer',
