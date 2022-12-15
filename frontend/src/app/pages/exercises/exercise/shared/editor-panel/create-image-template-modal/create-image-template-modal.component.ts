@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { uuid } from 'digital-fuesim-manv-shared';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type {
     ChangedImageTemplateValues,
     EditableImageTemplateValues,
@@ -21,7 +21,7 @@ export class CreateImageTemplateModalComponent {
 
     constructor(
         public readonly activeModal: NgbActiveModal,
-        private readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {}
 
     public createImageTemplate({
@@ -30,7 +30,7 @@ export class CreateImageTemplateModalComponent {
         name,
         aspectRatio,
     }: ChangedImageTemplateValues) {
-        this.apiService
+        this.exerciseService
             .proposeAction({
                 type: '[MapImageTemplate] Add mapImageTemplate',
                 mapImageTemplate: {

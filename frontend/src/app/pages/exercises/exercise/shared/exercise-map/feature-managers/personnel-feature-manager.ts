@@ -5,7 +5,7 @@ import type Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
-import type { ApiService } from 'src/app/core/api.service';
+import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { WithPosition } from '../../utility/types/with-position';
 import { PersonnelPopupComponent } from '../shared/personnel-popup/personnel-popup.component';
 import { ImagePopupHelper } from '../utility/popup-helper';
@@ -37,13 +37,13 @@ export class PersonnelFeatureManager extends ElementFeatureManager<
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        apiService: ApiService
+        exerciseService: ExerciseService
     ) {
         super(
             olMap,
             layer,
             (targetPosition, personnel) => {
-                apiService.proposeAction({
+                exerciseService.proposeAction({
                     type: '[Personnel] Move personnel',
                     personnelId: personnel.id,
                     targetPosition,

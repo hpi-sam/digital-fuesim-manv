@@ -4,9 +4,10 @@ import { Store } from '@ngrx/store';
 import type { MapImage, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { getSelectMapImage } from 'src/app/state/exercise/exercise.selectors';
+import { createSelectMapImage } from 'src/app/state/application/selectors/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({
@@ -21,16 +22,19 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public mapImage$?: Observable<MapImage>;
+    public readonly currentRole$ = this.store.select(selectCurrentRole);
 
     public url?: string;
 
     constructor(
         private readonly store: Store<AppState>,
-        public readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {}
 
     async ngOnInit() {
-        this.mapImage$ = this.store.select(getSelectMapImage(this.mapImageId));
+        this.mapImage$ = this.store.select(
+            createSelectMapImage(this.mapImageId)
+        );
 
         // Set the initial form values
         const mapImage = await firstValueFrom(this.mapImage$);
@@ -38,7 +42,7 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     }
 
     public saveUrl() {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[MapImage] Reconfigure Url',
             mapImageId: this.mapImageId,
             newUrl: this.url!,
@@ -46,7 +50,7 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     }
 
     public resizeImage(newHeight: number) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[MapImage] Scale MapImage',
             mapImageId: this.mapImageId,
             newHeight,
@@ -54,7 +58,7 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     }
 
     public setLocked(newLocked: boolean) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[MapImage] Set isLocked',
             mapImageId: this.mapImageId,
             newLocked,
@@ -62,14 +66,14 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     }
 
     public sendToBack() {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[MapImage] Send to back',
             mapImageId: this.mapImageId,
         });
     }
 
     public bringToFront() {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[MapImage] Bring to front',
             mapImageId: this.mapImageId,
         });

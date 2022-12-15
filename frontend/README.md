@@ -8,7 +8,7 @@ Please look in the [root readme](../README.md) for general information about how
 
 You can either use the [Angular CLI](https://angular.io/cli):
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|guard|module|web-worker `.
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|guard|module|web-worker`.
 
 Or an extension:
 [Angular Schematics (vscode)](https://marketplace.visualstudio.com/items?itemName=cyrilletuzi.angular-schematics).
@@ -89,11 +89,14 @@ In `src/app` and every descending folder the following guidelines apply:
 -   `/pages`:
     -   All Angular elements and utilities that are only used according to the route (-> lazy loading)
 
-Commonly used exercise-[selectors](https://ngrx.io/guide/store/selectors) should go in [./src/app/state/exercise/exercise.selectors.ts](./src/app/state/exercise/exercise.selectors.ts).
+Commonly used [selectors](https://ngrx.io/guide/store/selectors) should go in [./src/app/state/application/selectors](./src/app/state/application/selectors/).
 
-You can assume that the Store has the current exercise state if you are in `src/app/pages/exercises/exercise`. We use [route guards](https://angular.io/guide/router-tutorial-toh#canactivate-requiring-authentication) for this.
+You can assume that the Store has the current exercise state (either of a live exercise or an exercise in time travel) if you are in `src/app/pages/exercises/exercise`. We use [route guards](https://angular.io/guide/router-tutorial-toh#canactivate-requiring-authentication) for this.
 
-If you want to modify the exercise state, do not do it via [reducers](https://ngrx.io/guide/store/reducers) in the store, but propose an action (optimistically) via the [ApiService](./src/app/core/api.service.ts). The action will automatically be applied to the store.
+If you want to modify the exercise state, do not do it via [reducers](https://ngrx.io/guide/store/reducers) in the store, but propose an action (optimistically) via the [ExerciseService](./src/app/core/exercise.service.ts). The action will automatically be applied to the store.
+
+If you want to switch between time travel, live exercise and no exercise (e.g. on the landing page), use the [ApplicationService](./src/app/core/application.service.ts).
+
 By default, we don't use `ChangeDetectionStrategy.OnPush` because it complicates the code and increases the skill level needed to work with the code while providing a mostly negligible performance benefit.
 
 ### Exercise map
