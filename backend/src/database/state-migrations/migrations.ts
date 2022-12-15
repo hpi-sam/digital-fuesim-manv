@@ -22,7 +22,7 @@ import { treatmentSystemImprovements8 } from './8-treatment-system-improvements'
 import { removeIsBeingTreated9 } from './9-remove-is-being-treated';
 import { renameDeleteTransferAction10 } from './10-rename-delete-transfer-action';
 import { addMapImageIsLocked11 } from './11-add-map-image-is-locked';
-import { renameIncorrectPatientImages12 } from './12-rename-incorrect-images';
+import { renameIncorrectPatientImages12 } from './12-rename-incorrect-patient-images';
 import { impossibleMigration } from './impossible-migration';
 
 /**

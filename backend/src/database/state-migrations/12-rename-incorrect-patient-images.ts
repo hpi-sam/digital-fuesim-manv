@@ -8,8 +8,9 @@ export const renameIncorrectPatientImages12: Migration = {
                 (action as { type: string } | null)?.type ===
                 '[Patient] Add patient'
             ) {
-                migratePatient(
+                migrateImageProperties(
                     (action as { patient: { image: { url: string } } }).patient
+                        .image
                 );
             }
         });
@@ -23,9 +24,7 @@ export const renameIncorrectPatientImages12: Migration = {
             }
         ).patientCategories.forEach((patientCategory) =>
             patientCategory.patientTemplates.forEach((patientTemplate) => {
-                if (patientTemplate.image.url === '/assets/male-patient.svg') {
-                    patientTemplate.image.url = '/assets/patient.svg';
-                }
+                migrateImageProperties(patientTemplate.image);
             })
         );
         StrictObject.values(
@@ -36,13 +35,9 @@ export const renameIncorrectPatientImages12: Migration = {
                     };
                 }
             ).patients
-        ).forEach((patient) => migratePatient(patient));
+        ).forEach((patient) => migrateImageProperties(patient.image));
     },
 };
-
-function migratePatient(patient: { image: { url: string } }) {
-    migrateImageProperties(patient.image);
-}
 
 function migrateImageProperties(image: { url: string }) {
     if (image.url === '/assets/male-patient.svg') {
