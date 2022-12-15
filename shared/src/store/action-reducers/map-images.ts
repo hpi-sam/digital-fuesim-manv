@@ -108,28 +108,14 @@ export class ChangeZIndexMapImageAction implements Action {
         | 'oneLayerForward';
 }
 
-export class BringToFrontMapImageAction implements Action {
-    @IsString()
-    public readonly type = '[MapImage] Bring to front';
-
-    @IsUUID(4, uuidValidationOptions)
-    public readonly mapImageId!: UUID;
-}
-
-export class SendToBackMapImageAction implements Action {
-    @IsString()
-    public readonly type = '[MapImage] Send to back';
-
-    @IsUUID(4, uuidValidationOptions)
-    public readonly mapImageId!: UUID;
-}
-
 export namespace MapImagesActionReducers {
     export const addMapImage: ActionReducer<AddMapImageAction> = {
         action: AddMapImageAction,
         reducer: (draftState, { mapImage }) => {
             const newMapImage = cloneDeepMutable(mapImage);
-            newMapImage.zIndex = Math.max(...getAllZIndices(draftState)) + 1;
+            const allZIndices = getAllZIndices(draftState);
+            newMapImage.zIndex =
+                allZIndices.length === 0 ? 0 : Math.max(...allZIndices) + 1;
             draftState.mapImages[mapImage.id] = newMapImage;
             return draftState;
         },
@@ -201,19 +187,25 @@ export namespace MapImagesActionReducers {
         reducer: (draftState, { mapImageId, mode }) => {
             const mapImage = getElement(draftState, 'mapImages', mapImageId);
             switch (mode) {
-                case 'bringToBack':
-                    mapImage.zIndex =
-                        Math.min(...getAllZIndices(draftState, mapImageId)) - 1;
-                    break;
                 case 'bringToFront':
+                case 'bringToBack': {
+                    const otherZIndices = getAllZIndices(
+                        draftState,
+                        mapImageId
+                    );
+                    if (otherZIndices.length === 0) {
+                        mapImage.zIndex = 0;
+                        break;
+                    }
                     mapImage.zIndex =
-                        Math.max(...getAllZIndices(draftState, mapImageId)) + 1;
+                        mode === 'bringToFront'
+                            ? Math.max(...otherZIndices) + 1
+                            : Math.min(...otherZIndices) - 1;
                     break;
+                }
                 case 'oneLayerForward':
-                    mapImage.zIndex += 1;
-                    break;
                 case 'oneLayerBack':
-                    mapImage.zIndex -= 1;
+                    mapImage.zIndex += mode === 'oneLayerForward' ? 1 : -1;
                     break;
                 default:
                     assertExhaustiveness(mode);
