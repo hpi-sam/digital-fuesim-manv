@@ -6,7 +6,7 @@ import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
-import type { ApiService } from 'src/app/core/api.service';
+import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { WithPosition } from '../../utility/types/with-position';
 import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
 import { ImagePopupHelper } from '../utility/popup-helper';
@@ -38,13 +38,13 @@ export class VehicleFeatureManager extends ElementFeatureManager<
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        private readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {
         super(
             olMap,
             layer,
             (targetPosition, vehicle) => {
-                apiService.proposeAction({
+                exerciseService.proposeAction({
                     type: '[Vehicle] Move vehicle',
                     vehicleId: vehicle.id,
                     targetPosition,
@@ -84,7 +84,7 @@ export class VehicleFeatureManager extends ElementFeatureManager<
                     droppedOnVehicle.value.patientCapacity)
         ) {
             // TODO: user feedback (e.g. toast)
-            this.apiService.proposeAction(
+            this.exerciseService.proposeAction(
                 {
                     type: '[Vehicle] Load vehicle',
                     vehicleId: droppedOnVehicle.value.id,

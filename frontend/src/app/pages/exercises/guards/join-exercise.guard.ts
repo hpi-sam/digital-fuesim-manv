@@ -1,13 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import type {
     ActivatedRouteSnapshot,
     CanActivate,
     RouterStateSnapshot,
 } from '@angular/router';
+import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Store } from '@ngrx/store';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
+import type { AppState } from 'src/app/state/app.state';
+import { selectExerciseStateMode } from 'src/app/state/application/selectors/application.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { tryToJoinExercise } from '../shared/join-exercise-modal/try-to-join-exercise';
 
 @Injectable({
@@ -18,6 +22,7 @@ export class JoinExerciseGuard implements CanActivate {
         private readonly ngbModalService: NgbModal,
         private readonly router: Router,
         private readonly apiService: ApiService,
+        private readonly store: Store<AppState>,
         private readonly messageService: MessageService
     ) {}
 
@@ -25,7 +30,10 @@ export class JoinExerciseGuard implements CanActivate {
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ) {
-        if (this.apiService.isJoined) {
+        if (
+            selectStateSnapshot(selectExerciseStateMode, this.store) ===
+            'exercise'
+        ) {
             return true;
         }
         const exerciseExists = await this.apiService.exerciseExists(

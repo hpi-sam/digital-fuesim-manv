@@ -22,7 +22,7 @@
         </button>
         <button
             *ngIf="
-                (apiService.currentRole$ | async) !== 'participant' &&
+                (currentRole$ | async) !== 'participant' &&
                 (restrictedToViewport$ | async) === undefined
             "
             (click)="olMapManager?.tryToFitViewToViewports()"

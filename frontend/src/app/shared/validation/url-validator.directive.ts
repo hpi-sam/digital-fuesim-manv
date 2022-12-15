@@ -14,7 +14,9 @@ import { CustomValidators } from './custom-validators';
     ],
 })
 export class UrlValidatorDirective implements Validator {
+    private readonly validator = CustomValidators.urlValidator();
+
     validate(control: AbstractControl) {
-        return CustomValidators.urlValidator()(control);
+        return this.validator(control);
     }
 }

@@ -3,9 +3,9 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { Hospital } from 'digital-fuesim-manv-shared';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectHospitals } from 'src/app/state/exercise/exercise.selectors';
+import { selectHospitals } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
     selector: 'app-hospital-editor-modal',
@@ -18,11 +18,11 @@ export class HospitalEditorModalComponent {
     constructor(
         private readonly store: Store<AppState>,
         public readonly activeModal: NgbActiveModal,
-        private readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {}
 
     public addHospital() {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Hospital] Add hospital',
             hospital: Hospital.create('Krankenhaus-???', 60 * 60 * 1000),
         });
@@ -32,7 +32,7 @@ export class HospitalEditorModalComponent {
         hospitalId: UUID,
         transportDuration: number
     ) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Hospital] Edit transportDuration to hospital',
             hospitalId,
             transportDuration,
@@ -40,7 +40,7 @@ export class HospitalEditorModalComponent {
     }
 
     public renameHospital(hospitalId: UUID, name: string) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Hospital] Rename hospital',
             hospitalId,
             name,
@@ -48,7 +48,7 @@ export class HospitalEditorModalComponent {
     }
 
     public removeHospital(hospitalId: UUID) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Hospital] Remove hospital',
             hospitalId,
         });

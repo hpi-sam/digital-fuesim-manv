@@ -20,7 +20,7 @@ import type { FeatureManager } from '../utility/feature-manager';
 import type { Coordinates } from '../utility/movement-animator';
 import { MovementAnimator } from '../utility/movement-animator';
 import type { OpenPopupOptions } from '../utility/popup-manager';
-import { TranslateHelper } from '../utility/translate-helper';
+import { TranslateInteraction } from '../utility/translate-interaction';
 import { ElementManager } from './element-manager';
 
 export interface PositionableElement {
@@ -89,8 +89,6 @@ export abstract class ElementFeatureManager<
         this.olMap,
         this.layer
     );
-    protected readonly translateHelper = new TranslateHelper<FeatureType>();
-
     constructor(
         protected readonly olMap: OlMap,
         public readonly layer: VectorLayer<VectorSource<FeatureType>>,
@@ -110,9 +108,12 @@ export abstract class ElementFeatureManager<
         const elementFeature = this.createElement(element);
         elementFeature.setId(element.id);
         this.layer.getSource()!.addFeature(elementFeature);
-        this.translateHelper.onTranslateEnd(elementFeature, (newPosition) => {
-            this.proposeMovementAction(newPosition, element);
-        });
+        TranslateInteraction.onTranslateEnd<FeatureType>(
+            elementFeature,
+            (newPosition) => {
+                this.proposeMovementAction(newPosition, element);
+            }
+        );
         return elementFeature;
     }
 
