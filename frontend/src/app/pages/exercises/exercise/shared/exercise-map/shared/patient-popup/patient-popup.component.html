@@ -3,7 +3,7 @@
         {{ patient.personalInformation.name }}
         <span
             *ngIf="
-                (apiService.currentRole$ | async) === 'participant'
+                (currentRole$ | async) === 'participant'
                     ? (visibleStatus$ | async)
                     : patient.realStatus as displayedStatus
             "
@@ -14,7 +14,7 @@
             class="badge rounded-pill font-monospace"
         >
             {{
-                (apiService.currentRole$ | async) !== 'participant'
+                (currentRole$ | async) !== 'participant'
                     ? (patient.health / healthPointsDefaults.max | percent)
                     : statusNames[displayedStatus]
             }}
@@ -80,10 +80,7 @@
                                 </td>
                             </tr>
                             <ng-container
-                                *ngIf="
-                                    (apiService.currentRole$ | async) !==
-                                    'participant'
-                                "
+                                *ngIf="(currentRole$ | async) !== 'participant'"
                             >
                                 <tr>
                                     <th scope="col">Beschreibung</th>

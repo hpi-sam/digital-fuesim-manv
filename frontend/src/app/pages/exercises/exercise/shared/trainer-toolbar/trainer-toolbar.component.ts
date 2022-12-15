@@ -3,14 +3,15 @@ import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { ApiService } from 'src/app/core/api.service';
+import { ApplicationService } from 'src/app/core/application.service';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
-import {
-    getSelectClient,
-    selectExerciseStatus,
-} from 'src/app/state/exercise/exercise.selectors';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectExerciseId } from 'src/app/state/application/selectors/application.selectors';
+import { selectExerciseStatus } from 'src/app/state/application/selectors/exercise.selectors';
+import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 import { openEmergencyOperationsCenterModal } from '../emergency-operations-center/open-emergency-operations-center-modal';
@@ -29,7 +30,9 @@ export class TrainerToolbarComponent {
 
     constructor(
         private readonly store: Store<AppState>,
-        public readonly apiService: ApiService,
+        private readonly exerciseService: ExerciseService,
+        private readonly apiService: ApiService,
+        public readonly applicationService: ApplicationService,
         private readonly modalService: NgbModal,
         private readonly router: Router,
         private readonly confirmationModalService: ConfirmationModalService,
@@ -65,7 +68,7 @@ export class TrainerToolbarComponent {
     }
 
     public async pauseExercise() {
-        const response = await this.apiService.proposeAction({
+        const response = await this.exerciseService.proposeAction({
             type: '[Exercise] Pause',
         });
         if (response.success) {
@@ -77,7 +80,8 @@ export class TrainerToolbarComponent {
 
     public async startExercise() {
         if (
-            getStateSnapshot(this.store).exercise.currentStatus === 'notStarted'
+            selectStateSnapshot(selectExerciseStatus, this.store) ===
+            'notStarted'
         ) {
             const confirmStart = await this.confirmationModalService.confirm({
                 title: 'Übung starten',
@@ -87,7 +91,7 @@ export class TrainerToolbarComponent {
                 return;
             }
         }
-        const response = await this.apiService.proposeAction({
+        const response = await this.exerciseService.proposeAction({
             type: '[Exercise] Start',
         });
         if (response.success) {
@@ -98,11 +102,9 @@ export class TrainerToolbarComponent {
     }
 
     private sendLogAction(message: string) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Emergency Operation Center] Add Log Entry',
-            name: getSelectClient(this.apiService.ownClientId!)(
-                getStateSnapshot(this.store)
-            ).name,
+            name: selectStateSnapshot(selectOwnClient, this.store)!.name,
             message,
         });
     }
@@ -118,7 +120,7 @@ export class TrainerToolbarComponent {
     }
 
     public async deleteExercise() {
-        const exerciseId = this.apiService.exerciseId!;
+        const exerciseId = selectStateSnapshot(selectExerciseId, this.store)!;
         const deletionConfirmed = await this.confirmationModalService.confirm({
             title: 'Übung löschen',
             description:
@@ -129,7 +131,7 @@ export class TrainerToolbarComponent {
             return;
         }
         // If we get disconnected by the server during the deletion a disconnect error would be displayed
-        this.apiService.leaveExercise();
+        this.applicationService.leaveExercise();
         this.apiService
             .deleteExercise(exerciseId)
             .then(

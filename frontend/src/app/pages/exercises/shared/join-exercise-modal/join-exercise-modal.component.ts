@@ -2,7 +2,7 @@ import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
+import { ApplicationService } from 'src/app/core/application.service';
 
 @Component({
     selector: 'app-join-exercise-modal',
@@ -19,12 +19,12 @@ export class JoinExerciseModalComponent implements OnDestroy {
     public exerciseJoined$ = new Subject<boolean>();
 
     constructor(
-        private readonly apiService: ApiService,
+        private readonly applicationService: ApplicationService,
         private readonly activeModal: NgbActiveModal
     ) {}
 
     public async joinExercise() {
-        const successfullyJoined = await this.apiService.joinExercise(
+        const successfullyJoined = await this.applicationService.joinExercise(
             this.exerciseId,
             this.clientName
         );

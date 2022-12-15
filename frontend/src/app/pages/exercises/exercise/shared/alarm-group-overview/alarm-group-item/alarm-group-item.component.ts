@@ -2,10 +2,13 @@ import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { AlarmGroup, AlarmGroupVehicle } from 'digital-fuesim-manv-shared';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectVehicleTemplates } from 'src/app/state/exercise/exercise.selectors';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import {
+    createSelectVehicleTemplate,
+    selectVehicleTemplates,
+} from 'src/app/state/application/selectors/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 @Component({
     selector: 'app-alarm-group-item',
@@ -16,7 +19,7 @@ export class AlarmGroupItemComponent {
     @Input() alarmGroup!: AlarmGroup;
 
     constructor(
-        private readonly apiService: ApiService,
+        private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {}
 
@@ -25,7 +28,7 @@ export class AlarmGroupItemComponent {
     );
 
     public renameAlarmGroup(name: string) {
-        this.apiService.proposeAction(
+        this.exerciseService.proposeAction(
             {
                 type: '[AlarmGroup] Rename AlarmGroup',
                 alarmGroupId: this.alarmGroup.id,
@@ -36,14 +39,14 @@ export class AlarmGroupItemComponent {
     }
 
     public removeAlarmGroup() {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[AlarmGroup] Remove AlarmGroup',
             alarmGroupId: this.alarmGroup.id,
         });
     }
 
     public removeVehicleTemplate(alarmGroupVehicleId: UUID) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[AlarmGroup] Remove AlarmGroupVehicle',
             alarmGroupId: this.alarmGroup.id,
             alarmGroupVehicleId,
@@ -61,7 +64,7 @@ export class AlarmGroupItemComponent {
         if (name === null) {
             return;
         }
-        this.apiService.proposeAction(
+        this.exerciseService.proposeAction(
             {
                 type: '[AlarmGroup] Edit AlarmGroupVehicle',
                 alarmGroupId: this.alarmGroup.id,
@@ -74,12 +77,11 @@ export class AlarmGroupItemComponent {
     }
 
     public createAlarmGroupVehicle(vehicleTemplateId: UUID) {
-        const vehicleTemplate = getStateSnapshot(
+        const vehicleTemplate = selectStateSnapshot(
+            createSelectVehicleTemplate(vehicleTemplateId),
             this.store
-        ).exercise.vehicleTemplates.find(
-            (_vehicleTemplate) => _vehicleTemplate.id === vehicleTemplateId
         )!;
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[AlarmGroup] Add AlarmGroupVehicle',
             alarmGroupId: this.alarmGroup.id,
             alarmGroupVehicle: AlarmGroupVehicle.create(

@@ -3,9 +3,10 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID, Viewport } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { getSelectViewport } from 'src/app/state/exercise/exercise.selectors';
+import { createSelectViewport } from 'src/app/state/application/selectors/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 
 @Component({
     selector: 'app-viewport-popup',
@@ -19,18 +20,21 @@ export class ViewportPopupComponent implements OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public viewport$?: Observable<Viewport>;
+    public readonly currentRole$ = this.store.select(selectCurrentRole);
 
     constructor(
         private readonly store: Store<AppState>,
-        public readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {}
 
     ngOnInit() {
-        this.viewport$ = this.store.select(getSelectViewport(this.viewportId));
+        this.viewport$ = this.store.select(
+            createSelectViewport(this.viewportId)
+        );
     }
 
     public renameViewport(newName: string) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Viewport] Rename viewport',
             viewportId: this.viewportId,
             newName,

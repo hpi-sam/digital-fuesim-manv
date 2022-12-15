@@ -2,9 +2,7 @@
     <div class="rounded overflow-hidden flex-fill">
         <app-exercise-map></app-exercise-map>
     </div>
-    <ng-container
-        *ngIf="apiService.timeConstraints$ | async as timeConstraints"
-    >
+    <ng-container *ngIf="timeConstraints$ | async as timeConstraints">
         <div class="pt-2">
             <div class="d-inline-block">
                 <span

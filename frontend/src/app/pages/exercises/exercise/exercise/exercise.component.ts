@@ -1,4 +1,4 @@
-import type { OnDestroy, OnInit } from '@angular/core';
+import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
@@ -8,36 +8,50 @@ import {
 } from 'digital-fuesim-manv-shared';
 import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
+import { ApplicationService } from 'src/app/core/application.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import { saveBlob } from 'src/app/shared/functions/save-blob';
 import type { AppState } from 'src/app/state/app.state';
-import { selectParticipantId } from 'src/app/state/exercise/exercise.selectors';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
-import { NotificationService } from '../core/notification.service';
+import {
+    selectExerciseId,
+    selectExerciseStateMode,
+    selectTimeConstraints,
+} from 'src/app/state/application/selectors/application.selectors';
+import {
+    selectExerciseState,
+    selectParticipantId,
+} from 'src/app/state/application/selectors/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
 
 @Component({
     selector: 'app-exercise',
     templateUrl: './exercise.component.html',
     styleUrls: ['./exercise.component.scss'],
 })
-export class ExerciseComponent implements OnInit, OnDestroy {
+export class ExerciseComponent implements OnDestroy {
     private readonly destroy = new Subject<void>();
 
+    public readonly exerciseStateMode$ = this.store.select(
+        selectExerciseStateMode
+    );
     public readonly participantId$ = this.store.select(selectParticipantId);
+    public readonly timeConstraints$ = this.store.select(selectTimeConstraints);
+    public readonly ownClient$ = this.store.select(selectOwnClient);
 
     constructor(
         private readonly store: Store<AppState>,
-        public readonly apiService: ApiService,
-        private readonly messageService: MessageService,
-        private readonly notificationService: NotificationService
+        private readonly apiService: ApiService,
+        private readonly applicationService: ApplicationService,
+        private readonly messageService: MessageService
     ) {}
 
-    ngOnInit() {
-        this.notificationService.startNotifications();
-    }
-
-    public shareExercise(exerciseId: string) {
-        const url = `${location.origin}/exercises/${exerciseId}`;
+    public shareExercise(type: 'participantId' | 'trainerId') {
+        const id = selectStateSnapshot(
+            type === 'participantId' ? selectParticipantId : selectExerciseId,
+            this.store
+        );
+        const url = `${location.origin}/exercises/${id}`;
         if (navigator.share) {
             navigator.share({ url }).catch((error) => {
                 if (error.name === 'AbortError') {
@@ -60,7 +74,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     }
 
     public leaveTimeTravel() {
-        this.apiService.stopTimeTravel();
+        this.applicationService.rejoinExercise();
         this.messageService.postMessage({
             title: 'Zurück in die Zukunft!',
             color: 'info',
@@ -69,7 +83,10 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
     public async exportExerciseWithHistory() {
         const history = await this.apiService.exerciseHistory();
-        const currentState = getStateSnapshot(this.store).exercise;
+        const currentState = selectStateSnapshot(
+            selectExerciseState,
+            this.store
+        );
         const blob = new Blob([
             JSON.stringify(
                 new StateExport(
@@ -87,7 +104,10 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     }
 
     public exportExerciseState() {
-        const currentState = getStateSnapshot(this.store).exercise;
+        const currentState = selectStateSnapshot(
+            selectExerciseState,
+            this.store
+        );
         const blob = new Blob([
             JSON.stringify(new StateExport(cloneDeepMutable(currentState))),
         ]);
@@ -96,6 +116,5 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.destroy.next();
-        this.notificationService.stopNotifications();
     }
 }
