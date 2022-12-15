@@ -46,7 +46,8 @@ module.exports = {
         'no-implicit-globals': 'warn',
         'no-iterator': 'warn',
         'no-labels': 'warn',
-        'no-lone-blocks': 'warn',
+        // Disabled because of false positives
+        'no-lone-blocks': 'off',
         'no-magic-numbers': 'off',
         'no-new': 'warn',
         'no-new-func': 'warn',

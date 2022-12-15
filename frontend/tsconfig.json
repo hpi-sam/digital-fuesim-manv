@@ -19,12 +19,12 @@
         "moduleResolution": "node",
         "skipLibCheck": true,
         "importHelpers": true,
-        "target": "es2017",
-        "module": "es2020",
-        // Replace "ESNext.Array" with "es2022" when it's available
-        "lib": ["es2020", "ESNext.Array", "dom"],
+        "target": "ES2022",
+        "module": "ES2020",
+        "lib": ["ES2022", "dom"],
         // needed for https://github.com/typescript-eslint/typescript-eslint/issues/2559#issuecomment-692882427
-        "emitDecoratorMetadata": true
+        "emitDecoratorMetadata": true,
+        "useDefineForClassFields": false
     },
     // this fixes jest globals in .spec.ts being overwritten by cypress globals
     "include": ["src"],
