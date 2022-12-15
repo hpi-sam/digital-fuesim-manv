@@ -2,6 +2,7 @@ import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { MapImage, UUID } from 'digital-fuesim-manv-shared';
+import type { ChangeZIndexMapImageAction } from 'digital-fuesim-manv-shared/dist/store/action-reducers/map-images';
 import type { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -62,6 +63,14 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
             type: '[MapImage] Set isLocked',
             mapImageId: this.mapImageId,
             newLocked,
+        });
+    }
+
+    public changeZIndex(mode: ChangeZIndexMapImageAction['mode']) {
+        this.exerciseService.proposeAction({
+            type: '[MapImage] Change zIndex',
+            mapImageId: this.mapImageId,
+            mode,
         });
     }
 }
