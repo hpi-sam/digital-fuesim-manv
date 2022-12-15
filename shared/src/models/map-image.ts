@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsInt, IsUUID, ValidateNested } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
 import { Position, getCreate, ImageProperties } from './utils';
 
@@ -16,6 +16,15 @@ export class MapImage {
     public readonly image: ImageProperties;
 
     /**
+     * Determines the rendering order among other mapImages.
+     * A smaller number means the mapImage is behind another one.
+     * The index can also be negative.
+     * MapImages with the same zIndex don't have a defined order.
+     */
+    @IsInt()
+    public readonly zIndex: number;
+
+    /**
      * Whether the UI should prevent position changes of the map image by drag&drop
      */
     @IsBoolean()
@@ -24,10 +33,16 @@ export class MapImage {
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(topLeft: Position, image: ImageProperties, isLocked: boolean) {
+    constructor(
+        topLeft: Position,
+        image: ImageProperties,
+        isLocked: boolean,
+        zIndex: number
+    ) {
         this.position = topLeft;
         this.image = image;
         this.isLocked = isLocked;
+        this.zIndex = zIndex;
     }
 
     static readonly create = getCreate(this);

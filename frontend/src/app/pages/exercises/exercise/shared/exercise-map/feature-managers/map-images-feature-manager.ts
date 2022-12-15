@@ -39,9 +39,16 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
             },
             createPoint
         );
-        this.layer.setStyle((feature, resolution) =>
-            this.imageStyleHelper.getStyle(feature as Feature, resolution)
-        );
+        this.layer.setStyle((feature, resolution) => {
+            const style = this.imageStyleHelper.getStyle(
+                feature as Feature,
+                resolution
+            );
+            style.setZIndex(
+                this.getElementFromFeature(feature as Feature)!.value.zIndex
+            );
+            return style;
+        });
     }
 
     public override onFeatureClicked(
