@@ -1,4 +1,5 @@
 import type { Store } from '@ngrx/store';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import { Patient } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
@@ -6,9 +7,10 @@ import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import { Fill, Stroke } from 'ol/style';
-import type { ApiService } from 'src/app/core/api.service';
+import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectConfiguration } from 'src/app/state/application/selectors/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { WithPosition } from '../../utility/types/with-position';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
 import { ImagePopupHelper } from '../utility/popup-helper';
@@ -34,8 +36,10 @@ export class PatientFeatureManager extends ElementFeatureManager<
 
     private readonly circleStyleHelper = new CircleStyleHelper((feature) => {
         const patient = this.getElementFromFeature(feature)!.value;
-        const configuration = getStateSnapshot(this.store).exercise
-            .configuration;
+        const configuration = selectStateSnapshot(
+            selectConfiguration,
+            this.store
+        );
         const color = Patient.getVisibleStatus(
             patient,
             configuration.pretriageEnabled,
@@ -60,13 +64,13 @@ export class PatientFeatureManager extends ElementFeatureManager<
         private readonly store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        apiService: ApiService
+        exerciseService: ExerciseService
     ) {
         super(
             olMap,
             layer,
             (targetPosition, patient) => {
-                apiService.proposeAction({
+                exerciseService.proposeAction({
                     type: '[Patient] Move patient',
                     patientId: patient.id,
                     targetPosition,
@@ -88,7 +92,7 @@ export class PatientFeatureManager extends ElementFeatureManager<
 
         this.togglePopup$.next(
             this.popupHelper.getPopupOptions(PatientPopupComponent, feature, {
-                patientId: feature.getId() as string,
+                patientId: feature.getId() as UUID,
             })
         );
     }

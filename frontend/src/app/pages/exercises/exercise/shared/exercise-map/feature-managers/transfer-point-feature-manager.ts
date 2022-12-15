@@ -1,3 +1,4 @@
+import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { TransferPoint, TransferStartPoint } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
@@ -6,7 +7,10 @@ import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
-import type { ApiService } from 'src/app/core/api.service';
+import type { ExerciseService } from 'src/app/core/exercise.service';
+import type { AppState } from 'src/app/state/app.state';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
 import { ImagePopupHelper } from '../utility/popup-helper';
@@ -21,13 +25,14 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        private readonly apiService: ApiService
+        private readonly store: Store<AppState>,
+        private readonly exerciseService: ExerciseService
     ) {
         super(
             olMap,
             layer,
             (targetPosition, transferPoint) => {
-                apiService.proposeAction({
+                exerciseService.proposeAction({
                     type: '[TransferPoint] Move TransferPoint',
                     transferPointId: transferPoint.id,
                     targetPosition,
@@ -97,7 +102,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                         targetType: 'hospital' | 'transferPoint'
                     ) => {
                         if (targetType === 'hospital') {
-                            this.apiService.proposeAction(
+                            this.exerciseService.proposeAction(
                                 {
                                     type: '[Hospital] Transport patient to hospital',
                                     hospitalId: targetId,
@@ -107,7 +112,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                             );
                             return;
                         }
-                        this.apiService.proposeAction(
+                        this.exerciseService.proposeAction(
                             {
                                 type: '[Transfer] Add to transfer',
                                 elementType: droppedElement.type,
@@ -132,7 +137,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
     ): void {
         super.onFeatureClicked(event, feature);
 
-        if (this.apiService.getCurrentRole() !== 'trainer') {
+        if (selectStateSnapshot(selectCurrentRole, this.store) !== 'trainer') {
             return;
         }
         this.togglePopup$.next(
@@ -140,10 +145,14 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                 TransferPointPopupComponent,
                 feature,
                 {
-                    transferPointId: feature.getId() as string,
+                    transferPointId: feature.getId() as UUID,
                 }
             )
         );
+    }
+
+    override isFeatureTranslatable(feature: Feature<Point>): boolean {
+        return selectStateSnapshot(selectCurrentRole, this.store) === 'trainer';
     }
 
     override unsupportedChangeProperties = new Set([

@@ -8,10 +8,7 @@
         ></button>
     </h5>
     <div class="popover-body">
-        <div
-            *ngIf="(apiService.currentRole$ | async) === 'trainer'"
-            class="mb-3"
-        >
+        <div *ngIf="(currentRole$ | async) === 'trainer'" class="mb-3">
             <div class="form-group">
                 <label class="form-label">Fahrzeugname</label>
                 <input

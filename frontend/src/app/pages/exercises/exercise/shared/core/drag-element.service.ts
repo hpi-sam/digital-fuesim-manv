@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from 'src/app/core/api.service';
-import type OlMap from 'ol/Map';
+import { Store } from '@ngrx/store';
 import type {
     ImageProperties,
     MapImageTemplate,
@@ -8,17 +7,25 @@ import type {
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
 import {
-    Viewport,
-    TransferPoint,
-    normalZoom,
     createVehicleParameters,
-    PatientTemplate,
     MapImage,
+    normalZoom,
+    PatientTemplate,
+    TransferPoint,
+    Viewport,
 } from 'digital-fuesim-manv-shared';
+import type { MaterialTemplate } from 'digital-fuesim-manv-shared/dist/models/material-template';
 import type { PatientCategory } from 'digital-fuesim-manv-shared/dist/models/patient-category';
 import type { PersonnelTemplate } from 'digital-fuesim-manv-shared/dist/models/personnel-template';
-import type { MaterialTemplate } from 'digital-fuesim-manv-shared/dist/models/material-template';
 import type { MaterialType } from 'digital-fuesim-manv-shared/dist/models/utils/material-type';
+import type OlMap from 'ol/Map';
+import { ExerciseService } from 'src/app/core/exercise.service';
+import type { AppState } from 'src/app/state/app.state';
+import {
+    selectMaterialTemplates,
+    selectPersonnelTemplates,
+} from 'src/app/state/application/selectors/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 @Injectable({
     providedIn: 'root',
@@ -29,7 +36,10 @@ import type { MaterialType } from 'digital-fuesim-manv-shared/dist/models/utils/
 export class DragElementService {
     private olMap?: OlMap;
 
-    constructor(private readonly apiService: ApiService) {}
+    constructor(
+        private readonly exerciseService: ExerciseService,
+        private readonly store: Store<AppState>
+    ) {}
 
     public registerMap(map: OlMap) {
         this.olMap = map;
@@ -132,13 +142,19 @@ export class DragElementService {
         // create the element
         switch (this.transferringTemplate.type) {
             case 'vehicle':
-                this.apiService.proposeAction(
+                this.exerciseService.proposeAction(
                     {
                         type: '[Vehicle] Add vehicle',
                         ...createVehicleParameters(
                             this.transferringTemplate.template,
-                            selectMaterialTemplates(getStateSnapshot(this.store)),
-                            selectVehicleTemplates(getStateSnapshot(this.store)),
+                            selectStateSnapshot(
+                                selectMaterialTemplates,
+                                this.store
+                            ),
+                            selectStateSnapshot(
+                                selectPersonnelTemplates,
+                                this.store
+                            ),
                             position
                         ),
                     },
@@ -157,7 +173,7 @@ export class DragElementService {
                         ]!,
                         this.transferringTemplate.template.name
                     );
-                    this.apiService.proposeAction(
+                    this.exerciseService.proposeAction(
                         {
                             type: '[Patient] Add patient',
                             patient: {
@@ -173,7 +189,7 @@ export class DragElementService {
                 // This ratio has been determined by trial and error
                 const height = Viewport.image.height / 23.5;
                 const width = height * Viewport.image.aspectRatio;
-                this.apiService.proposeAction(
+                this.exerciseService.proposeAction(
                     {
                         type: '[Viewport] Add viewport',
                         viewport: Viewport.create(
@@ -195,14 +211,14 @@ export class DragElementService {
             case 'mapImage':
                 {
                     const template = this.transferringTemplate.template.image;
-                    this.apiService.proposeAction({
+                    this.exerciseService.proposeAction({
                         type: '[MapImage] Add MapImage',
-                        mapImage: MapImage.create(position, template),
+                        mapImage: MapImage.create(position, template, false),
                     });
                 }
                 break;
             case 'transferPoint':
-                this.apiService.proposeAction(
+                this.exerciseService.proposeAction(
                     {
                         type: '[TransferPoint] Add TransferPoint',
                         transferPoint: TransferPoint.create(

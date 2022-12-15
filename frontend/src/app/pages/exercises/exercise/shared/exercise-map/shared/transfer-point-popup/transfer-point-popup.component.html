@@ -11,7 +11,7 @@
         <nav #nav="ngbNav" ngbNav [(activeId)]="activeNavId" class="nav-tabs">
             <ng-container
                 ngbNavItem="names"
-                [disabled]="(apiService.currentRole$ | async) !== 'trainer'"
+                [disabled]="(currentRole$ | async) !== 'trainer'"
             >
                 <a ngbNavLink>Namen</a>
                 <ng-template ngbNavContent>
@@ -58,7 +58,7 @@
             </ng-container>
             <ng-container
                 ngbNavItem="transferPoints"
-                [disabled]="(apiService.currentRole$ | async) !== 'trainer'"
+                [disabled]="(currentRole$ | async) !== 'trainer'"
             >
                 <a ngbNavLink>Transferpunkte</a>
                 <ng-template ngbNavContent>
@@ -177,7 +177,7 @@
             </ng-container>
             <ng-container
                 ngbNavItem="hospitals"
-                [disabled]="(apiService.currentRole$ | async) !== 'trainer'"
+                [disabled]="(currentRole$ | async) !== 'trainer'"
             >
                 <a ngbNavLink>Krankenhäuser</a>
                 <ng-template ngbNavContent>

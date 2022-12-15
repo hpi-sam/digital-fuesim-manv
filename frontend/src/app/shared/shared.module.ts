@@ -17,11 +17,13 @@ import { ExactMatchValidatorDirective } from './validation/exact-match-validator
 import { ExerciseExistsValidatorDirective } from './validation/exercise-exists-validator.directive';
 import { ImageExistsValidatorDirective } from './validation/image-exists-validator.directive';
 import { IntegerValidatorDirective } from './validation/integer-validator.directive';
-import { OnlyNumbersValidatorDirective } from './validation/only-numbers-validator.directive';
 import { UrlValidatorDirective } from './validation/url-validator.directive';
 import { PatientStatusBadgeComponent } from './components/patient-status-badge/patient-status-badge.component';
 import { OrderByPipe } from './pipes/order-by.pipe';
 import { FileInputDirective } from './directives/file-input.directive';
+import { JoinIdDirective } from './validation/join-id-validator.directive';
+import { PersonnelNamePipe } from './pipes/personnel-name.pipe';
+import { CaterCapacityCountPipe } from './pipes/cater-capacity-count.pipe';
 
 @NgModule({
     declarations: [
@@ -29,7 +31,7 @@ import { FileInputDirective } from './directives/file-input.directive';
         AppSaveOnTypingDirective,
         DisplayValidationComponent,
         ExactMatchValidatorDirective,
-        OnlyNumbersValidatorDirective,
+        JoinIdDirective,
         AppTrackByPropertyPipe,
         ExerciseExistsValidatorDirective,
         ImageExistsValidatorDirective,
@@ -46,6 +48,8 @@ import { FileInputDirective } from './directives/file-input.directive';
         IntegerValidatorDirective,
         PatientStatusDataFieldComponent,
         PatientStatusBadgeComponent,
+        PersonnelNamePipe,
+        CaterCapacityCountPipe,
         FileInputDirective,
     ],
     imports: [CommonModule],
@@ -54,7 +58,7 @@ import { FileInputDirective } from './directives/file-input.directive';
         AppSaveOnTypingDirective,
         DisplayValidationComponent,
         ExactMatchValidatorDirective,
-        OnlyNumbersValidatorDirective,
+        JoinIdDirective,
         AppTrackByPropertyPipe,
         ExerciseExistsValidatorDirective,
         ImageExistsValidatorDirective,
@@ -67,6 +71,8 @@ import { FileInputDirective } from './directives/file-input.directive';
         ValuesPipe,
         KeysPipe,
         OrderByPipe,
+        PersonnelNamePipe,
+        CaterCapacityCountPipe,
         ViewportNameComponent,
         IntegerValidatorDirective,
         PatientStatusBadgeComponent,

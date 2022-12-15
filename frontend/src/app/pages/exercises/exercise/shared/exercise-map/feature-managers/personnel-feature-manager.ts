@@ -1,12 +1,14 @@
-import type { Personnel } from 'digital-fuesim-manv-shared';
+import type { Personnel, UUID } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
-import type { Feature } from 'ol';
+import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
-import type { ApiService } from 'src/app/core/api.service';
+import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { WithPosition } from '../../utility/types/with-position';
+import { PersonnelPopupComponent } from '../shared/personnel-popup/personnel-popup.component';
+import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { createPoint, ElementFeatureManager } from './element-feature-manager';
@@ -30,16 +32,18 @@ export class PersonnelFeatureManager extends ElementFeatureManager<
         'top'
     );
 
+    private readonly popupHelper = new ImagePopupHelper(this.olMap);
+
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        apiService: ApiService
+        exerciseService: ExerciseService
     ) {
         super(
             olMap,
             layer,
             (targetPosition, personnel) => {
-                apiService.proposeAction({
+                exerciseService.proposeAction({
                     type: '[Personnel] Move personnel',
                     personnelId: personnel.id,
                     targetPosition,
@@ -55,4 +59,17 @@ export class PersonnelFeatureManager extends ElementFeatureManager<
     }
 
     override unsupportedChangeProperties = new Set(['id', 'image'] as const);
+
+    public override onFeatureClicked(
+        event: MapBrowserEvent<any>,
+        feature: Feature<any>
+    ): void {
+        super.onFeatureClicked(event, feature);
+
+        this.togglePopup$.next(
+            this.popupHelper.getPopupOptions(PersonnelPopupComponent, feature, {
+                personnelId: feature.getId() as UUID,
+            })
+        );
+    }
 }

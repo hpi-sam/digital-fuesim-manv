@@ -9,12 +9,13 @@ import {
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    getSelectPatient,
+    createSelectPatient,
     selectConfiguration,
-} from 'src/app/state/exercise/exercise.selectors';
+} from 'src/app/state/application/selectors/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({
@@ -31,7 +32,7 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     public patient$?: Observable<Patient>;
     public visibleStatus$?: Observable<PatientStatus>;
     public pretriageStatusIsLocked$?: Observable<boolean>;
-
+    public readonly currentRole$ = this.store.select(selectCurrentRole);
     public currentYear = new Date().getFullYear();
 
     public configuration$ = this.store.select(selectConfiguration);
@@ -50,14 +51,14 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
 
     constructor(
         private readonly store: Store<AppState>,
-        public readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {}
 
     ngOnInit(): void {
-        this.patient$ = this.store.select(getSelectPatient(this.patientId));
+        this.patient$ = this.store.select(createSelectPatient(this.patientId));
         this.visibleStatus$ = this.store.select(
             createSelector(
-                getSelectPatient(this.patientId),
+                createSelectPatient(this.patientId),
                 selectConfiguration,
                 (patient, configuration) =>
                     Patient.getVisibleStatus(
@@ -73,7 +74,7 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     }
 
     setPretriageCategory(patientStatus: PatientStatus) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Patient] Set Visible Status',
             patientId: this.patientId,
             patientStatus,
@@ -85,7 +86,7 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     }
 
     updateRemarks(remarks: string) {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Patient] Set Remarks',
             patientId: this.patientId,
             remarks,

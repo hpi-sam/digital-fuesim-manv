@@ -1,10 +1,14 @@
-import type { MapImage } from 'digital-fuesim-manv-shared';
+import type { Store } from '@ngrx/store';
+import type { MapImage, UUID } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
-import type { ApiService } from 'src/app/core/api.service';
+import type { ExerciseService } from 'src/app/core/exercise.service';
+import type { AppState } from 'src/app/state/app.state';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popup.component';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
@@ -20,13 +24,14 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        private readonly apiService: ApiService
+        exerciseService: ExerciseService,
+        private readonly store: Store<AppState>
     ) {
         super(
             olMap,
             layer,
             (targetPosition, mapImage) => {
-                apiService.proposeAction({
+                exerciseService.proposeAction({
                     type: '[MapImage] Move MapImage',
                     mapImageId: mapImage.id,
                     targetPosition,
@@ -45,13 +50,21 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
     ): void {
         super.onFeatureClicked(event, feature);
 
-        if (this.apiService.getCurrentRole() !== 'trainer') {
+        if (selectStateSnapshot(selectCurrentRole, this.store) !== 'trainer') {
             return;
         }
         this.togglePopup$.next(
             this.popupHelper.getPopupOptions(MapImagePopupComponent, feature, {
-                mapImageId: feature.getId() as string,
+                mapImageId: feature.getId() as UUID,
             })
+        );
+    }
+
+    override isFeatureTranslatable(feature: Feature<Point>): boolean {
+        const mapImage = this.getElementFromFeature(feature).value as MapImage;
+        return (
+            selectStateSnapshot(selectCurrentRole, this.store) === 'trainer' &&
+            !mapImage.isLocked
         );
     }
 

@@ -1,6 +1,6 @@
 import type { Migration } from './migrations';
 
-export const addPersonnelAndMaterialToState11: Migration = {
+export const addPersonnelAndMaterialToState13: Migration = {
     actions: null,
     state: (state: any) => {
         state.materialTemplates = defaultMaterialTemplates;
