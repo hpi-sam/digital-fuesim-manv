@@ -7,14 +7,10 @@ import {
     TransferPoint,
     Viewport,
 } from 'digital-fuesim-manv-shared';
-import { firstValueFrom } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectMapImagesTemplates,
-    selectMaterialTemplates,
     selectPatientCategories,
-    selectPersonnelTemplates,
     selectVehicleTemplates,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { DragElementService } from '../core/drag-element.service';
@@ -39,14 +35,6 @@ export class TrainerMapEditorComponent {
         selectVehicleTemplates
     );
 
-    public readonly materialTemplates$ = this.store.select(
-        selectMaterialTemplates
-    );
-
-    public readonly personnelTemplates$ = this.store.select(
-        selectPersonnelTemplates
-    );
-
     public readonly patientCategories$ = this.store.select(
         selectPatientCategories
     );
@@ -60,7 +48,6 @@ export class TrainerMapEditorComponent {
     }
 
     constructor(
-        private readonly apiService: ApiService,
         private readonly store: Store<AppState>,
         public readonly dragElementService: DragElementService,
         public readonly transferLinesService: TransferLinesService,
@@ -93,8 +80,6 @@ export class TrainerMapEditorComponent {
         this.dragElementService.onMouseDown(event, {
             type: 'vehicle',
             template: vehicleTemplate,
-            materialTemplates: await firstValueFrom(this.materialTemplates$),
-            personnelTemplates: await firstValueFrom(this.personnelTemplates$),
         });
     }
 }

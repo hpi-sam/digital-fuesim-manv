@@ -18,7 +18,7 @@ export function createVehicleParameters(
         [Key in MaterialType]: MaterialTemplate;
     },
     personnelTemplates: {
-        [key in PersonnelType]: PersonnelTemplate;
+        [Key in PersonnelType]: PersonnelTemplate;
     },
     vehiclePosition?: Position
 ): {

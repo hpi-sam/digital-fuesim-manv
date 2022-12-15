@@ -3,7 +3,6 @@ import { Store } from '@ngrx/store';
 import type {
     ImageProperties,
     MapImageTemplate,
-    PersonnelType,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
 import {
@@ -14,10 +13,7 @@ import {
     TransferPoint,
     Viewport,
 } from 'digital-fuesim-manv-shared';
-import type { MaterialTemplate } from 'digital-fuesim-manv-shared/dist/models/material-template';
 import type { PatientCategory } from 'digital-fuesim-manv-shared/dist/models/patient-category';
-import type { PersonnelTemplate } from 'digital-fuesim-manv-shared/dist/models/personnel-template';
-import type { MaterialType } from 'digital-fuesim-manv-shared/dist/models/utils/material-type';
 import type OlMap from 'ol/Map';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -273,12 +269,6 @@ type TransferTemplate =
     | {
           type: 'vehicle';
           template: VehicleTemplate;
-          personnelTemplates: {
-              [key in PersonnelType]: PersonnelTemplate;
-          };
-          materialTemplates: {
-              [key in MaterialType]: MaterialTemplate;
-          };
       }
     | {
           type: 'viewport';
