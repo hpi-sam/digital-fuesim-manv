@@ -12,7 +12,7 @@ import {
 } from 'src/app/shared/functions/colors';
 import { formatDuration } from 'src/app/shared/functions/format-duration';
 import type { AppState } from 'src/app/state/app.state';
-import { selectViewports } from 'src/app/state/exercise/exercise.selectors';
+import { selectViewports } from 'src/app/state/application/selectors/exercise.selectors';
 import { StatisticsService } from '../../core/statistics/statistics.service';
 import { AreaStatisticsService } from '../area-statistics.service';
 import type { StackedBarChartStatistics } from '../stacked-bar-chart/stacked-bar-chart.component';

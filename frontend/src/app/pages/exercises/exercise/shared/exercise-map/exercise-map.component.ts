@@ -8,9 +8,12 @@ import {
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { getSelectRestrictedViewport } from 'src/app/state/exercise/exercise.selectors';
+import {
+    selectCurrentRole,
+    selectRestrictedViewport,
+} from 'src/app/state/application/selectors/shared.selectors';
 import { DragElementService } from '../core/drag-element.service';
 import { TransferLinesService } from '../core/transfer-lines.service';
 import { OlMapManager } from './utility/ol-map-manager';
@@ -33,13 +36,14 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     public olMapManager?: OlMapManager;
     private popupManager?: PopupManager;
     public readonly restrictedToViewport$ = this.store.select(
-        getSelectRestrictedViewport(this.apiService.ownClientId)
+        selectRestrictedViewport
     );
+    public readonly currentRole$ = this.store.select(selectCurrentRole);
 
     constructor(
         private readonly store: Store<AppState>,
         private readonly ngZone: NgZone,
-        public readonly apiService: ApiService,
+        private readonly exerciseService: ExerciseService,
         public readonly dragElementService: DragElementService,
         public readonly transferLinesService: TransferLinesService
     ) {}
@@ -49,7 +53,7 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         this.ngZone.runOutsideAngular(() => {
             this.olMapManager = new OlMapManager(
                 this.store,
-                this.apiService,
+                this.exerciseService,
                 this.openLayersContainer.nativeElement,
                 this.popoverContainer.nativeElement,
                 this.ngZone,

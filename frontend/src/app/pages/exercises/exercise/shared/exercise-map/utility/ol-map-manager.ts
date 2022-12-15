@@ -19,20 +19,28 @@ import VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import type { Observable } from 'rxjs';
 import { combineLatest, pairwise, startWith, Subject, takeUntil } from 'rxjs';
-import type { ApiService } from 'src/app/core/api.service';
+import type { ExerciseService } from 'src/app/core/exercise.service';
 import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    getSelectRestrictedViewport,
-    getSelectVisibleCateringLines,
-    getSelectVisibleElements,
     selectExerciseStatus,
-    selectMapImages,
     selectTileMapProperties,
     selectTransferLines,
     selectViewports,
-} from 'src/app/state/exercise/exercise.selectors';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+} from 'src/app/state/application/selectors/exercise.selectors';
+import {
+    selectCurrentRole,
+    selectRestrictedViewport,
+    selectVisibleCateringLines,
+    selectVisibleMapImages,
+    selectVisibleMaterials,
+    selectVisiblePatients,
+    selectVisiblePersonnel,
+    selectVisibleTransferPoints,
+    selectVisibleVehicles,
+    selectVisibleViewports,
+} from 'src/app/state/application/selectors/shared.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
@@ -88,7 +96,7 @@ export class OlMapManager {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService,
+        private readonly exerciseService: ExerciseService,
         private readonly openLayersContainer: HTMLDivElement,
         private readonly popoverContainer: HTMLDivElement,
         private readonly ngZone: NgZone,
@@ -164,7 +172,7 @@ export class OlMapManager {
 
         const alwaysInteractions = [translateInteraction];
         const customInteractions =
-            this.apiService.getCurrentRole() === 'trainer'
+            selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
                 ? [...alwaysInteractions, viewportTranslate, viewportModify]
                 : alwaysInteractions;
 
@@ -192,7 +200,7 @@ export class OlMapManager {
         });
 
         // FeatureManagers
-        if (this.apiService.getCurrentRole() === 'trainer') {
+        if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
             this.registerFeatureElementManager(
                 new TransferLinesFeatureManager(transferLinesLayer),
                 this.store.select(selectTransferLines)
@@ -205,7 +213,7 @@ export class OlMapManager {
                 this.store,
                 deleteFeatureLayer,
                 this.olMap,
-                this.apiService
+                this.exerciseService
             );
             this.layerFeatureManagerDictionary.set(
                 deleteFeatureLayer,
@@ -216,14 +224,10 @@ export class OlMapManager {
             new TransferPointFeatureManager(
                 this.olMap,
                 transferPointLayer,
-                this.apiService
+                this.store,
+                this.exerciseService
             ),
-            this.store.select(
-                getSelectVisibleElements(
-                    'transferPoints',
-                    this.apiService.ownClientId
-                )
-            )
+            this.store.select(selectVisibleTransferPoints)
         );
 
         this.registerFeatureElementManager(
@@ -231,81 +235,61 @@ export class OlMapManager {
                 this.store,
                 this.olMap,
                 patientLayer,
-                this.apiService
+                this.exerciseService
             ),
-            this.store.select(
-                getSelectVisibleElements(
-                    'patients',
-                    this.apiService.ownClientId
-                )
-            )
+            this.store.select(selectVisiblePatients)
         );
 
         this.registerFeatureElementManager(
             new VehicleFeatureManager(
                 this.olMap,
                 vehicleLayer,
-                this.apiService
+                this.exerciseService
             ),
-            this.store.select(
-                getSelectVisibleElements(
-                    'vehicles',
-                    this.apiService.ownClientId
-                )
-            )
+            this.store.select(selectVisibleVehicles)
         );
 
         this.registerFeatureElementManager(
             new PersonnelFeatureManager(
                 this.olMap,
                 personnelLayer,
-                this.apiService
+                this.exerciseService
             ),
-            this.store.select(
-                getSelectVisibleElements(
-                    'personnel',
-                    this.apiService.ownClientId
-                )
-            )
+            this.store.select(selectVisiblePersonnel)
         );
 
         this.registerFeatureElementManager(
             new MaterialFeatureManager(
                 this.olMap,
                 materialLayer,
-                this.apiService
+                this.exerciseService
             ),
-            this.store.select(
-                getSelectVisibleElements(
-                    'materials',
-                    this.apiService.ownClientId
-                )
-            )
+            this.store.select(selectVisibleMaterials)
         );
 
         this.registerFeatureElementManager(
             new MapImageFeatureManager(
                 this.olMap,
                 mapImagesLayer,
-                this.apiService
+                this.exerciseService,
+                this.store
             ),
-            this.store.select(selectMapImages)
+            this.store.select(selectVisibleMapImages)
         );
 
         this.registerFeatureElementManager(
             new CateringLinesFeatureManager(cateringLinesLayer),
-            this.store.select(
-                getSelectVisibleCateringLines(this.apiService.ownClientId)
-            )
+            this.store.select(selectVisibleCateringLines)
         );
 
         this.registerFeatureElementManager(
             new ViewportFeatureManager(
                 this.olMap,
                 viewportLayer,
-                this.apiService
+                this.exerciseService,
+                this.store
             ),
-            this.store.select(selectViewports)
+            this.store.select(selectVisibleViewports)
         );
 
         this.registerPopupTriggers(translateInteraction);
@@ -316,7 +300,7 @@ export class OlMapManager {
         // Register handlers that disable or enable certain interactions
         combineLatest([
             this.store.select(selectExerciseStatus),
-            this.apiService.currentRole$,
+            this.store.select(selectCurrentRole),
         ])
             .pipe(takeUntil(this.destroy$))
             .subscribe(([status, currentRole]) => {
@@ -346,7 +330,7 @@ export class OlMapManager {
     private registerViewportRestriction() {
         this.tryToFitViewToViewports(false);
         this.store
-            .select(getSelectRestrictedViewport(this.apiService.ownClientId))
+            .select(selectRestrictedViewport)
             .pipe(takeUntil(this.destroy$))
             .subscribe((viewport) => {
                 const view = this.olMap.getView();
@@ -510,16 +494,16 @@ export class OlMapManager {
      * Sets the map's view to see all viewports.
      */
     public tryToFitViewToViewports(animate = true) {
-        const currentState = getStateSnapshot(this.store);
         if (
-            getSelectRestrictedViewport(this.apiService.ownClientId)(
-                currentState
-            ) !== undefined
+            selectStateSnapshot(selectRestrictedViewport, this.store) !==
+            undefined
         ) {
             // We are restricted to a viewport -> you can't fit the view
             return;
         }
-        const viewports = Object.values(selectViewports(currentState));
+        const viewports = Object.values(
+            selectStateSnapshot(selectViewports, this.store)
+        );
         const view = this.olMap.getView();
         if (viewports.length === 0) {
             view.setCenter([startingPosition.x, startingPosition.y]);
