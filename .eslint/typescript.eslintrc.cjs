@@ -240,6 +240,7 @@ module.exports = {
          * @typescript-eslint
          */
         // "@typescript-eslint/array-type": "array-simple",
+        '@typescript-eslint/prefer-as-const': 'off',
         '@typescript-eslint/ban-tslint-comment': 'warn',
         '@typescript-eslint/class-literal-property-style': ['warn', 'fields'],
         '@typescript-eslint/consistent-indexed-object-style': [
