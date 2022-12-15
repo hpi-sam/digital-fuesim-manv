@@ -71,10 +71,10 @@ export class Material {
         vehicleId: UUID,
         vehicleName: string,
         assignedPatientIds: UUIDSet,
-        image: any,
+        image: ImageProperties,
         canCaterFor: CanCaterFor,
-        treatmentRange: any,
-        overrideTreatmentRange: any,
+        treatmentRange: number,
+        overrideTreatmentRange: number,
         position?: Position
     ) {
         this.vehicleId = vehicleId;

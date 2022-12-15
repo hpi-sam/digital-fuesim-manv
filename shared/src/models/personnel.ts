@@ -91,10 +91,10 @@ export class Personnel {
         vehicleName: string,
         personnelType: PersonnelType,
         assignedPatientIds: UUIDSet,
-        image: any,
+        image: ImageProperties,
         canCaterFor: CanCaterFor,
-        treatmentRange: any,
-        overrideTreatmentRange: any,
+        treatmentRange: number,
+        overrideTreatmentRange: number,
         position?: Position
     ) {
         this.vehicleId = vehicleId;
