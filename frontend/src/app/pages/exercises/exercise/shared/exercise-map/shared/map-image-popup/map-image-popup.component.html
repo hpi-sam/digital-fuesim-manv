@@ -33,8 +33,6 @@
                 [ngModelInput]="urlInput"
             ></app-display-validation>
 
-            <br />
-
             <div class="form-group pb-3">
                 <label class="form-label">Höhe</label>
                 <input
@@ -61,21 +59,45 @@
                 />
                 <label class="form-check-label">Position sperren</label>
             </div>
-            <div class="btn-group btn-group-sm text-nowrap">
-                <button
-                    class="btn btn-small btn-outline-primary"
-                    title="Vor allen anderen Bildern anzeigen"
-                    (click)="bringToFront()"
-                >
-                    In den Vordergrund
-                </button>
-                <button
-                    class="btn btn-small btn-outline-primary"
-                    title="Hinter allen anderen Bildern anzeigen"
-                    (click)="sendToBack()"
-                >
-                    In den Hintergrund
-                </button>
+            <div>
+                <h6>
+                    Reihenfolge
+                    <span
+                        class="text-muted"
+                        title="Die aktuelle Position des Bildes in der Reihenfolge"
+                        >({{ mapImage.zIndex }})</span
+                    >
+                </h6>
+                <div class="btn-group btn-group-sm">
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        title="Vor allen anderen Bildern positionieren"
+                        (click)="changeZIndex('bringToFront')"
+                    >
+                        Vordergrund
+                    </button>
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        title="Hinter allen anderen Bildern positionieren"
+                        (click)="changeZIndex('bringToBack')"
+                    >
+                        Hintergrund
+                    </button>
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        title="Eine Ebene nach vorne"
+                        (click)="changeZIndex('oneLayerForward')"
+                    >
+                        +1
+                    </button>
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        (click)="changeZIndex('oneLayerBack')"
+                        title="Eine Ebene nach hinten"
+                    >
+                        -1
+                    </button>
+                </div>
             </div>
         </ng-container>
     </div>

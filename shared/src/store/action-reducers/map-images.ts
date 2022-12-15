@@ -11,16 +11,15 @@ import {
 import { MapImage } from '../../models';
 import { Position } from '../../models/utils';
 import type { ExerciseState } from '../../state';
-import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
 import type { Mutable } from '../../utils';
+import {
+    assertExhaustiveness,
+    cloneDeepMutable,
+    UUID,
+    uuidValidationOptions,
+} from '../../utils';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
-
-function getZIndices(exerciseState: Mutable<ExerciseState>): number[] {
-    return Object.values(exerciseState.mapImages).map(
-        (mapImage) => mapImage.zIndex
-    );
-}
 
 export class AddMapImageAction implements Action {
     @IsString()
@@ -94,6 +93,21 @@ export class ReconfigureMapImageUrlAction implements Action {
     public readonly newUrl!: string;
 }
 
+export class ChangeZIndexMapImageAction implements Action {
+    @IsString()
+    public readonly type = '[MapImage] Change zIndex';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly mapImageId!: UUID;
+
+    @IsString()
+    public readonly mode!:
+        | 'bringToBack'
+        | 'bringToFront'
+        | 'oneLayerBack'
+        | 'oneLayerForward';
+}
+
 export class BringToFrontMapImageAction implements Action {
     @IsString()
     public readonly type = '[MapImage] Bring to front';
@@ -115,7 +129,7 @@ export namespace MapImagesActionReducers {
         action: AddMapImageAction,
         reducer: (draftState, { mapImage }) => {
             const newMapImage = cloneDeepMutable(mapImage);
-            newMapImage.zIndex = Math.max(...getZIndices(draftState)) + 1;
+            newMapImage.zIndex = Math.max(...getAllZIndices(draftState)) + 1;
             draftState.mapImages[mapImage.id] = newMapImage;
             return draftState;
         },
@@ -182,23 +196,46 @@ export namespace MapImagesActionReducers {
         rights: 'trainer',
     };
 
-    export const sendToBackMapImage: ActionReducer<SendToBackMapImageAction> = {
-        action: SendToBackMapImageAction,
-        reducer: (draftState, { mapImageId }) => {
+    export const changeZIndex: ActionReducer<ChangeZIndexMapImageAction> = {
+        action: ChangeZIndexMapImageAction,
+        reducer: (draftState, { mapImageId, mode }) => {
             const mapImage = getElement(draftState, 'mapImages', mapImageId);
-            mapImage.zIndex = Math.min(...getZIndices(draftState)) - 1;
+            switch (mode) {
+                case 'bringToBack':
+                    mapImage.zIndex =
+                        Math.min(...getAllZIndices(draftState, mapImageId)) - 1;
+                    break;
+                case 'bringToFront':
+                    mapImage.zIndex =
+                        Math.max(...getAllZIndices(draftState, mapImageId)) + 1;
+                    break;
+                case 'oneLayerForward':
+                    mapImage.zIndex += 1;
+                    break;
+                case 'oneLayerBack':
+                    mapImage.zIndex -= 1;
+                    break;
+                default:
+                    assertExhaustiveness(mode);
+            }
             return draftState;
         },
         rights: 'trainer',
     };
+}
 
-    export const bringToFront: ActionReducer<BringToFrontMapImageAction> = {
-        action: BringToFrontMapImageAction,
-        reducer: (draftState, { mapImageId }) => {
-            const mapImage = getElement(draftState, 'mapImages', mapImageId);
-            mapImage.zIndex = Math.max(...getZIndices(draftState)) + 1;
-            return draftState;
-        },
-        rights: 'trainer',
-    };
+/**
+ * @returns the zIndices of all mapImages except {@link mapImageIdToSkip}
+ */
+function getAllZIndices(
+    exerciseState: Mutable<ExerciseState>,
+    mapImageIdToSkip?: UUID
+): number[] {
+    return Object.values(exerciseState.mapImages)
+        .filter(
+            (mapImage) =>
+                mapImageIdToSkip === undefined ||
+                mapImage.id !== mapImageIdToSkip
+        )
+        .map((mapImage) => mapImage.zIndex);
 }

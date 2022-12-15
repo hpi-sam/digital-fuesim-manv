@@ -19,6 +19,7 @@ export class MapImage {
      * Determines the rendering order among other mapImages.
      * A smaller number means the mapImage is behind another one.
      * The index can also be negative.
+     * MapImages with the same zIndex don't have a defined order.
      */
     @IsInt()
     public readonly zIndex: number;
