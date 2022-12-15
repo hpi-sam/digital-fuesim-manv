@@ -1,10 +1,11 @@
+import { cloneDeepMutable } from 'digital-fuesim-manv-shared';
 import type { Migration } from './migrations';
 
 export const addPersonnelAndMaterialToState14: Migration = {
     actions: null,
     state: (state: any) => {
-        state.materialTemplates = defaultMaterialTemplates;
-        state.personnelTemplates = defaultPersonnelTemplates;
+        state.materialTemplates = cloneDeepMutable(defaultMaterialTemplates);
+        state.personnelTemplates = cloneDeepMutable(defaultPersonnelTemplates);
     },
 };
 
