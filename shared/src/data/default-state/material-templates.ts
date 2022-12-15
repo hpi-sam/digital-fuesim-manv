@@ -13,7 +13,7 @@ const standardMaterialTemplate = MaterialTemplate.create(
         height: 40,
         aspectRatio: 1,
     },
-    CanCaterFor.create(2, 0, 0, 'and'),
+    CanCaterFor.create(2),
     defaultOverrideTreatmentRange,
     defaultTreatmentRange
 );
@@ -26,7 +26,7 @@ const bigMaterialTemplate = MaterialTemplate.create(
         height: 56,
         aspectRatio: 1,
     },
-    CanCaterFor.create(2, 2, 0, 'and'),
+    CanCaterFor.create(4),
     defaultOverrideTreatmentRange,
     10
 );

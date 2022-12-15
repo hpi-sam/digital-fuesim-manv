@@ -13,7 +13,7 @@ const sanPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(0, 0, 5, 'and'),
+    CanCaterFor.create(0.3),
     defaultOverrideTreatmentRange,
     defaultTreatmentRange
 );
@@ -25,7 +25,7 @@ const rettSanPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(1, 2, 0, 'and'),
+    CanCaterFor.create(0.8),
     defaultOverrideTreatmentRange,
     defaultTreatmentRange
 );
@@ -37,7 +37,7 @@ const notSanPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(2, 1, 0, 'and'),
+    CanCaterFor.create(1),
     defaultOverrideTreatmentRange,
     defaultTreatmentRange
 );
@@ -49,7 +49,7 @@ const notarztPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(2, 2, 2, 'and'),
+    CanCaterFor.create(1.2),
     defaultOverrideTreatmentRange,
     15
 );
@@ -61,7 +61,7 @@ const gfPersonnelTemplate = PersonnelTemplate.create(
         height: 80,
         aspectRatio: 1,
     },
-    CanCaterFor.create(0, 0, 0, 'and'),
+    CanCaterFor.create(0),
     0,
     0
 );
