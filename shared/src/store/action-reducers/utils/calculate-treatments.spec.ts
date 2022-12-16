@@ -1,5 +1,7 @@
 import { produce } from 'immer';
 import { generateDummyPatient } from '../../../data';
+import { defaultMaterialTemplates } from '../../../data/default-state/material-templates';
+import { defaultPersonnelTemplates } from '../../../data/default-state/personnel-templates';
 import type { Patient } from '../../../models';
 import { Material, Personnel } from '../../../models';
 import type { PatientStatus } from '../../../models/utils';
@@ -86,7 +88,11 @@ function addPatient(
 
 function addPersonnel(state: Mutable<ExerciseState>, position?: Position) {
     const personnel = cloneDeepMutable(
-        Personnel.create(uuid(), 'RTW 3/83/1', 'notSan', {})
+        Personnel.generatePersonnel(
+            defaultPersonnelTemplates.notSan,
+            uuid(),
+            'RTW 3/83/1'
+        )
     );
     personnel.canCaterFor = {
         red: 1,
@@ -108,7 +114,11 @@ function addPersonnel(state: Mutable<ExerciseState>, position?: Position) {
 
 function addMaterial(state: Mutable<ExerciseState>, position?: Position) {
     const material = cloneDeepMutable(
-        Material.create(uuid(), 'RTW 3/83/1', 'standard', {})
+        Material.generateMaterial(
+            defaultMaterialTemplates.standard,
+            uuid(),
+            'RTW 3/83/1'
+        )
     );
     material.canCaterFor = {
         red: 1,

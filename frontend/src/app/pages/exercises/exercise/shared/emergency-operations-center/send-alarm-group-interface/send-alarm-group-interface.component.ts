@@ -15,6 +15,8 @@ import {
     createSelectTransferPoint,
     createSelectVehicleTemplate,
     selectAlarmGroups,
+    selectMaterialTemplates,
+    selectPersonnelTemplates,
     selectTransferPoints,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
@@ -80,10 +82,20 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                         this.store
                     );
 
-                    const vehicleParameters = createVehicleParameters({
-                        ...vehicleTemplate,
-                        name: alarmGroupVehicle.name,
-                    });
+                    const vehicleParameters = createVehicleParameters(
+                        {
+                            ...vehicleTemplate,
+                            name: alarmGroupVehicle.name,
+                        },
+                        selectStateSnapshot(
+                            selectMaterialTemplates,
+                            this.store
+                        ),
+                        selectStateSnapshot(
+                            selectPersonnelTemplates,
+                            this.store
+                        )
+                    );
 
                     return [
                         this.exerciseService.proposeAction({

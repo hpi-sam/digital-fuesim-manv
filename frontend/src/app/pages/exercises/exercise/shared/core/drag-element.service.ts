@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import type {
     ImageProperties,
     MapImageTemplate,
@@ -15,6 +16,12 @@ import {
 import type { PatientCategory } from 'digital-fuesim-manv-shared/dist/models/patient-category';
 import type OlMap from 'ol/Map';
 import { ExerciseService } from 'src/app/core/exercise.service';
+import type { AppState } from 'src/app/state/app.state';
+import {
+    selectMaterialTemplates,
+    selectPersonnelTemplates,
+} from 'src/app/state/application/selectors/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 @Injectable({
     providedIn: 'root',
@@ -25,7 +32,10 @@ import { ExerciseService } from 'src/app/core/exercise.service';
 export class DragElementService {
     private olMap?: OlMap;
 
-    constructor(private readonly exerciseService: ExerciseService) {}
+    constructor(
+        private readonly exerciseService: ExerciseService,
+        private readonly store: Store<AppState>
+    ) {}
 
     public registerMap(map: OlMap) {
         this.olMap = map;
@@ -133,6 +143,14 @@ export class DragElementService {
                         type: '[Vehicle] Add vehicle',
                         ...createVehicleParameters(
                             this.transferringTemplate.template,
+                            selectStateSnapshot(
+                                selectMaterialTemplates,
+                                this.store
+                            ),
+                            selectStateSnapshot(
+                                selectPersonnelTemplates,
+                                this.store
+                            ),
                             position
                         ),
                     },

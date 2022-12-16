@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import type { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID, VehicleTemplate } from 'digital-fuesim-manv-shared';
 import {
     colorCodeMap,
     TransferPoint,
     Viewport,
 } from 'digital-fuesim-manv-shared';
-import { ApiService } from 'src/app/core/api.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectMapImagesTemplates,
@@ -49,7 +48,6 @@ export class TrainerMapEditorComponent {
     }
 
     constructor(
-        private readonly apiService: ApiService,
         private readonly store: Store<AppState>,
         public readonly dragElementService: DragElementService,
         public readonly transferLinesService: TransferLinesService,
@@ -74,5 +72,14 @@ export class TrainerMapEditorComponent {
 
     public setCurrentCategory(category: keyof typeof colorCodeMap) {
         this.currentCategory = category;
+    }
+    public async vehicleOnMouseDown(
+        event: MouseEvent,
+        vehicleTemplate: VehicleTemplate
+    ) {
+        this.dragElementService.onMouseDown(event, {
+            type: 'vehicle',
+            template: vehicleTemplate,
+        });
     }
 }

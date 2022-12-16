@@ -9,9 +9,9 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import { personnelTemplateMap } from '../data/default-state/personnel-templates';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { UUID, UUIDSet, uuid, uuidValidationOptions } from '../utils';
+import type { PersonnelTemplate } from './personnel-template';
 import {
     CanCaterFor,
     Position,
@@ -90,22 +90,43 @@ export class Personnel {
         vehicleId: UUID,
         vehicleName: string,
         personnelType: PersonnelType,
-        assignedPatientIds: UUIDSet
+        assignedPatientIds: UUIDSet,
+        image: ImageProperties,
+        canCaterFor: CanCaterFor,
+        treatmentRange: number,
+        overrideTreatmentRange: number,
+        position?: Position
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
         this.personnelType = personnelType;
         this.assignedPatientIds = assignedPatientIds;
-        // The constructor must be callable without any arguments
-        this.image = personnelTemplateMap[personnelType]?.image;
-        this.canCaterFor = personnelTemplateMap[personnelType]?.canCaterFor;
-        this.treatmentRange =
-            personnelTemplateMap[personnelType]?.treatmentRange;
-        this.overrideTreatmentRange =
-            personnelTemplateMap[personnelType]?.overrideTreatmentRange;
+        this.position = position;
+        this.image = image;
+        this.canCaterFor = canCaterFor;
+        this.treatmentRange = treatmentRange;
+        this.overrideTreatmentRange = overrideTreatmentRange;
     }
 
     static readonly create = getCreate(this);
+
+    static generatePersonnel(
+        personnelTemplate: PersonnelTemplate,
+        vehicleId: UUID,
+        vehicleName: string
+    ): Personnel {
+        return this.create(
+            vehicleId,
+            vehicleName,
+            personnelTemplate.personnelType,
+            {},
+            personnelTemplate.image,
+            personnelTemplate.canCaterFor,
+            personnelTemplate.treatmentRange,
+            personnelTemplate.overrideTreatmentRange,
+            undefined
+        );
+    }
 
     static isInVehicle(personnel: Personnel): boolean {
         return (
