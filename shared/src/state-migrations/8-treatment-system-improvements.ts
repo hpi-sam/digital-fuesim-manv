@@ -1,9 +1,6 @@
-import {
-    cloneDeepMutable,
-    SpatialTree,
-    StrictObject,
-} from 'digital-fuesim-manv-shared';
-import type { Migration } from './migrations';
+import { SpatialTree } from '../models/utils';
+import { cloneDeepMutable, StrictObject } from '../utils';
+import type { Migration } from './migration-functions';
 
 export const treatmentSystemImprovements8: Migration = {
     actions: (_initialState, actions: any[]) => {

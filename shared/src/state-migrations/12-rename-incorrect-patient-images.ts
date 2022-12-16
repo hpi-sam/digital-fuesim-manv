@@ -1,5 +1,5 @@
-import { StrictObject } from 'digital-fuesim-manv-shared';
-import type { Migration } from './migrations';
+import { StrictObject } from '../utils';
+import type { Migration } from './migration-functions';
 
 export const renameIncorrectPatientImages12: Migration = {
     actions: (_initialState, actions) => {

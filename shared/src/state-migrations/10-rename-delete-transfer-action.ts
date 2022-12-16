@@ -1,5 +1,6 @@
-import type { Action, Mutable } from 'digital-fuesim-manv-shared';
-import type { Migration } from './migrations';
+import type { Action } from '../store';
+import type { Mutable } from '../utils';
+import type { Migration } from './migration-functions';
 
 export const renameDeleteTransferAction10: Migration = {
     actions: (_initialState, actions) => {

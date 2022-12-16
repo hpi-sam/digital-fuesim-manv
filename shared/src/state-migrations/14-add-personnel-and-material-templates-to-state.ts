@@ -1,5 +1,5 @@
-import { cloneDeepMutable } from 'digital-fuesim-manv-shared';
-import type { Migration } from './migrations';
+import { cloneDeepMutable } from '../utils';
+import type { Migration } from './migration-functions';
 
 export const addPersonnelAndMaterialToState14: Migration = {
     actions: null,
