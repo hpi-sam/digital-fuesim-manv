@@ -36,6 +36,10 @@ export const selectHospitalPatients = selectPropertyFactory('hospitalPatients');
 export const selectClients = selectPropertyFactory('clients');
 // Array properties
 export const selectVehicleTemplates = selectPropertyFactory('vehicleTemplates');
+export const selectPersonnelTemplates =
+    selectPropertyFactory('personnelTemplates');
+export const selectMaterialTemplates =
+    selectPropertyFactory('materialTemplates');
 export const selectMapImagesTemplates =
     selectPropertyFactory('mapImageTemplates');
 export const selectPatientCategories =

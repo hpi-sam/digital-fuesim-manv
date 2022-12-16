@@ -9,11 +9,10 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import { materialTemplateMap } from '../data/default-state/material-templates';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuid, UUID, UUIDSet, uuidValidationOptions } from '../utils';
+import type { MaterialTemplate } from './material-template';
 import { CanCaterFor, getCreate, ImageProperties, Position } from './utils';
-import type { MaterialType } from './utils/material-type';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
@@ -71,23 +70,41 @@ export class Material {
     constructor(
         vehicleId: UUID,
         vehicleName: string,
-        materialType: MaterialType,
         assignedPatientIds: UUIDSet,
+        image: ImageProperties,
+        canCaterFor: CanCaterFor,
+        treatmentRange: number,
+        overrideTreatmentRange: number,
         position?: Position
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
         this.assignedPatientIds = assignedPatientIds;
         this.position = position;
-        // The constructor must be callable without any arguments
-        this.image = materialTemplateMap[materialType]?.image;
-        this.canCaterFor = materialTemplateMap[materialType]?.canCaterFor;
-        this.treatmentRange = materialTemplateMap[materialType]?.treatmentRange;
-        this.overrideTreatmentRange =
-            materialTemplateMap[materialType]?.overrideTreatmentRange;
+        this.image = image;
+        this.canCaterFor = canCaterFor;
+        this.treatmentRange = treatmentRange;
+        this.overrideTreatmentRange = overrideTreatmentRange;
     }
 
     static readonly create = getCreate(this);
+
+    static generateMaterial(
+        materialTemplate: MaterialTemplate,
+        vehicleId: UUID,
+        vehicleName: string
+    ): Material {
+        return this.create(
+            vehicleId,
+            vehicleName,
+            {},
+            materialTemplate.image,
+            materialTemplate.canCaterFor,
+            materialTemplate.treatmentRange,
+            materialTemplate.overrideTreatmentRange,
+            undefined
+        );
+    }
 
     static isInVehicle(material: Material): boolean {
         return material.position === undefined;

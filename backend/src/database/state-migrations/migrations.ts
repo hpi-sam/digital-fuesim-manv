@@ -25,6 +25,7 @@ import { renameDeleteTransferAction10 } from './10-rename-delete-transfer-action
 import { addMapImageIsLocked11 } from './11-add-map-image-is-locked';
 import { renameIncorrectPatientImages12 } from './12-rename-incorrect-patient-images';
 import { impossibleMigration } from './impossible-migration';
+import { addPersonnelAndMaterialToState14 } from './14-add-personnel-and-material-templates-to-state';
 
 /**
  * Such a function gets the already migrated initial state of the exercise and an array of all actions (not yet migrated).
@@ -65,6 +66,7 @@ export const migrations: {
     11: addMapImageIsLocked11,
     12: renameIncorrectPatientImages12,
     13: addMapImageZIndex13,
+    14: addPersonnelAndMaterialToState14,
 };
 
 export async function migrateInDatabase(
