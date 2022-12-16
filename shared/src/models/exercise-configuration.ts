@@ -11,7 +11,8 @@ export class ExerciseConfiguration {
 
     @ValidateNested()
     @Type(() => TileMapProperties)
-    public readonly tileMapProperties: TileMapProperties = defaultTileMapProperties;
+    public readonly tileMapProperties: TileMapProperties =
+        defaultTileMapProperties;
 
     /**
      * @deprecated Use {@link create} instead

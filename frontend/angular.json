@@ -95,7 +95,11 @@
                             "validator/lib/isURL",
                             "validator/lib/isVariableWidth",
                             "validator/lib/isLength",
-                            "validator/lib/matches"
+                            "validator/lib/matches",
+                            "validator/lib/isBase58",
+                            "validator",
+                            "validator/lib/isISO4217",
+                            "validator/lib/isTaxID"
                         ]
                     },
                     "configurations": {

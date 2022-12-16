@@ -14,8 +14,10 @@ export class CircleStyleHelper extends StyleHelper<Style, Feature> {
     constructor(
         private readonly getProperties: (
             feature: Feature
-        ) => Exclude<Options, { scale: any }> | undefined,
-        private readonly scale: number
+        ) => Exclude<Options, { scale: any; displacement: any }> | undefined,
+        // These two properties are zoom-dependent
+        private readonly scale: number,
+        private readonly getDisplacement: (feature: Feature) => [number, number]
     ) {
         super();
     }
@@ -41,8 +43,11 @@ export class CircleStyleHelper extends StyleHelper<Style, Feature> {
     ) {
         // The ol typings are wrong
         const image = initialStyle.getImage() as ImageStyle | null | undefined;
-        // TODO: reuse the scale from `getProperties`
+        // TODO: reuse these from `getProperties`
         image?.setScale(this.scale / zoom);
+        image?.setDisplacement(
+            this.getDisplacement(feature).map((a) => a / zoom)
+        );
         return initialStyle;
     }
 }

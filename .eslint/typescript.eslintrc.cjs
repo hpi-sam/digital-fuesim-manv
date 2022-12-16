@@ -46,7 +46,8 @@ module.exports = {
         'no-implicit-globals': 'warn',
         'no-iterator': 'warn',
         'no-labels': 'warn',
-        'no-lone-blocks': 'warn',
+        // Disabled because of false positives
+        'no-lone-blocks': 'off',
         'no-magic-numbers': 'off',
         'no-new': 'warn',
         'no-new-func': 'warn',
@@ -240,6 +241,7 @@ module.exports = {
          * @typescript-eslint
          */
         // "@typescript-eslint/array-type": "array-simple",
+        '@typescript-eslint/prefer-as-const': 'off',
         '@typescript-eslint/ban-tslint-comment': 'warn',
         '@typescript-eslint/class-literal-property-style': ['warn', 'fields'],
         '@typescript-eslint/consistent-indexed-object-style': [

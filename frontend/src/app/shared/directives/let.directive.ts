@@ -33,7 +33,10 @@ export class LetDirective<T> {
         }
     }
 
-    private context: LetContext<T | null> = { appLet: null, $implicit: null };
+    private readonly context: LetContext<T | null> = {
+        appLet: null,
+        $implicit: null,
+    };
     private hasView = false;
 
     constructor(

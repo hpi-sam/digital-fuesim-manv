@@ -34,31 +34,36 @@ export class PatientFeatureManager extends ElementFeatureManager<
         };
     });
 
-    private readonly circleStyleHelper = new CircleStyleHelper((feature) => {
-        const patient = this.getElementFromFeature(feature)!.value;
-        const configuration = selectStateSnapshot(
-            selectConfiguration,
-            this.store
-        );
-        const color = Patient.getVisibleStatus(
-            patient,
-            configuration.pretriageEnabled,
-            configuration.bluePatientsEnabled
-        );
-        return {
-            radius: 8,
-            fill: new Fill({
-                color,
-            }),
-            stroke: new Stroke({
-                color: 'white',
-                width: 1,
-            }),
-            displacement: patient.pretriageInformation.isWalkable
-                ? [0, 20]
-                : [-20, 0],
-        };
-    }, 0.025);
+    private readonly circleStyleHelper = new CircleStyleHelper(
+        (feature) => {
+            const patient = this.getElementFromFeature(feature)!.value;
+            const configuration = selectStateSnapshot(
+                selectConfiguration,
+                this.store
+            );
+            const color = Patient.getVisibleStatus(
+                patient,
+                configuration.pretriageEnabled,
+                configuration.bluePatientsEnabled
+            );
+            return {
+                radius: 8,
+                fill: new Fill({
+                    color,
+                }),
+                stroke: new Stroke({
+                    color: 'white',
+                    width: 1,
+                }),
+            };
+        },
+        0.025,
+        (feature) =>
+            this.getElementFromFeature(feature)!.value.pretriageInformation
+                .isWalkable
+                ? [0, 0.25]
+                : [-0.25, 0]
+    );
 
     constructor(
         private readonly store: Store<AppState>,

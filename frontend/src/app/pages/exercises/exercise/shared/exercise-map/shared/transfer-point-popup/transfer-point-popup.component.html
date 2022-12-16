@@ -160,7 +160,8 @@
                                     let transferPoint of transferPointsToBeAdded$
                                         | async
                                         | values
-                                        | orderBy: getTransferPointOrderByValue;
+                                        | orderBy
+                                            : getTransferPointOrderByValue;
                                     trackBy: 'id' | appTrackByProperty
                                 "
                                 ngbDropdownItem
@@ -265,7 +266,7 @@
                                     let hospital of hospitalsToBeAdded$
                                         | async
                                         | values
-                                        | orderBy: getHospitalOrderByValue;
+                                        | orderBy : getHospitalOrderByValue;
                                     trackBy: 'id'
                                         | appTrackByProperty
                                             : (hospitalsToBeAdded$
