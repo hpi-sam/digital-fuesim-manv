@@ -37,7 +37,7 @@
         "@ngrx/store": "^15.0.0",
         "bootstrap": "^5.2.3",
         "bootstrap-icons": "^1.10.2",
-        "chart.js": "^4.0.1",
+        "chart.js": "^4.1.0",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.0",
         "digital-fuesim-manv-shared": "file:../shared",
