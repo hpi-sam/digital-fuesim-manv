@@ -15,7 +15,7 @@ export class CircleStyleHelper extends StyleHelper<Style, Feature> {
         private readonly getProperties: (
             feature: Feature
         ) => Exclude<Options, { scale: any; displacement: any }> | undefined,
-        // THese two properties are zoom-dependent
+        // These two properties are zoom-dependent
         private readonly scale: number,
         private readonly getDisplacement: (feature: Feature) => [number, number]
     ) {
