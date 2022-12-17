@@ -5,3 +5,6 @@ backend/src/database/migrations/
 docker-compose.yml
 # same, but probably not needed
 .env.example
+
+# The states in here should not be touched by humans
+benchmark/data
