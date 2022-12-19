@@ -4,7 +4,11 @@ import { steps, StepState } from './steps';
 
 const pathToData = 'data';
 
-console.log('Starting benchmarks');
+console.log(`
+
+Starting Benchmarks
+
+`);
 
 const filenames = await fs.readdir(pathToData);
 const fileBenchmarkResults: BenchmarkResult[] = [];
@@ -39,7 +43,7 @@ export async function benchmarkFile(
         return;
     }
     const fileSize = (await fs.stat(path)).size;
-    console.log('Start benchmarks for', filename);
+    console.log(filename);
     let parsedData;
     try {
         parsedData = JSON.parse(data);
