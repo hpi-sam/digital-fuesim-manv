@@ -20,7 +20,7 @@ This simulation has been designed in cooperation with and with support from the 
 
 The simulation is implemented as a web application with an Angular frontend and NodeJS backend.
 
-This project is currently developed as a [bachelor project](https://hpi.de/en/studies/before-your-studies/degree-programs/bachelor.html) at the [HPI](https://hpi.de/). You can find the official project website [here](https://hpi.de/teaching/bachelor-projects/digitales-fuehrungssimulationstraining.html).
+This project is currently developed as a [bachelor project](https://hpi.de/en/studies/before-your-studies/degree-programs/bachelor.html) at the [HPI](https://hpi.de/). You can find the official project website [here](https://hpi.de/giese/teaching/bachelor-projects/digitales-fuehrungssimulationstraining.html).
 
 ## Links for collaborators
 
