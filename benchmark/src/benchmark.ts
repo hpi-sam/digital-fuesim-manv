@@ -3,7 +3,6 @@ import type { BenchmarkResult } from './benchmark-file';
 import { benchmarkFile } from './benchmark-file';
 import { printError } from './print-error';
 
-process.env.NODE_ENV = 'production';
 const pathToData = 'data';
 
 console.log('Starting benchmarks');

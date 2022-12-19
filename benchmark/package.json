@@ -5,7 +5,9 @@
     "scripts": {
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,html}\"",
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,html}\"",
-        "benchmark": "node --experimental-specifier-resolution=node --loader ts-node/esm src/benchmark.ts"
+        "benchmark:linux-macos": "NODE_ENV=production node --experimental-specifier-resolution=node --loader ts-node/esm src/benchmark.ts",
+        "benchmark:windows": "set NODE_ENV=production&& node --experimental-specifier-resolution=node --loader ts-node/esm src/benchmark.ts",
+        "benchmark": "(pwd && npm run benchmark:linux-macos) || npm run benchmark:windows"
     },
     "private": true,
     "engines": {
