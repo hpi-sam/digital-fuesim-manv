@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash-es';
-import { printError } from './print-error';
+import { print } from './print';
 import { Step } from './step';
 
 /**
@@ -28,31 +28,22 @@ export class BenchmarkStep<
     }
 
     protected runStep(stepState: State) {
-        this.printStatus([], false);
-        const runBenchmarkOnce = () => {
-            const startTime = performance.now();
-            const result = this.benchmark(stepState);
-            const endTime = performance.now();
-            return {
-                result,
-                time: endTime - startTime,
-            };
-        };
+        print(`  ${this.name}:`.padEnd(30, ' '));
         const benchmarkStepValues: BenchmarkStepValue<Value>[] = [];
         for (let i = 0; i < this.numberOfIterations; i++) {
-            const { time, result } = runBenchmarkOnce();
-            benchmarkStepValues.push({ value: result, time });
-            this.printStatus(benchmarkStepValues, true);
+            const benchmarkStepValue = this.runBenchmarkOnce(stepState);
+            benchmarkStepValues.push(benchmarkStepValue);
+            print(this.formatValue(benchmarkStepValue).padEnd(10, ' '));
         }
-        process.stdout.write('\n');
         if (
             benchmarkStepValues.length > 1 &&
             benchmarkStepValues.some(
                 ({ value }) => !isEqual(benchmarkStepValues[0]!.value, value)
             )
         ) {
-            printError('Benchmark is not deterministic!');
+            print('    Not deterministic!', 'red');
         }
+        print('\n');
         const endResult: BenchmarkStepValue<Value> = {
             value: benchmarkStepValues[0]!.value,
             time:
@@ -65,20 +56,14 @@ export class BenchmarkStep<
         return endResult as NonNullable<State[Name]>;
     }
 
-    private printStatus(
-        benchmarkResults: BenchmarkStepValue<Value>[],
-        overwrite: boolean
-    ) {
-        const statusIndicator = benchmarkResults
-            .map((result) => this.formatValue(result).padEnd(10, ' '))
-            .join(' ');
-        if (overwrite) {
-            process.stdout.clearLine(0);
-            process.stdout.cursorTo(0);
-        }
-        process.stdout.write(
-            `  ${`${this.name}:`.padEnd(26, ' ')} ${statusIndicator}`
-        );
+    private runBenchmarkOnce(stepState: State) {
+        const startTime = performance.now();
+        const value = this.benchmark(stepState);
+        const endTime = performance.now();
+        return {
+            value,
+            time: endTime - startTime,
+        };
     }
 
     protected formatValue(value: BenchmarkStepValue<Value>) {

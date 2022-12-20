@@ -1,5 +1,5 @@
 import { promises as fs } from 'node:fs';
-import { printError } from './print-error';
+import { print } from './print';
 import { steps, StepState } from './steps';
 
 const pathToData = 'data';
@@ -30,7 +30,7 @@ interface BenchmarkResult {
     stepState: StepState;
 }
 
-export async function benchmarkFile(
+async function benchmarkFile(
     filename: string
 ): Promise<BenchmarkResult | undefined> {
     const path = `${pathToData}/${filename}`;
@@ -39,7 +39,7 @@ export async function benchmarkFile(
         // eslint-disable-next-line no-await-in-loop
         data = await fs.readFile(path, 'utf8');
     } catch {
-        printError(`Could not read file ${filename}`);
+        print(`Could not read file ${filename}\n`, 'red');
         return;
     }
     const fileSize = (await fs.stat(path)).size;
@@ -47,8 +47,8 @@ export async function benchmarkFile(
     let parsedData;
     try {
         parsedData = JSON.parse(data);
-    } catch (error: any) {
-        printError('Error while parsing state export', error);
+    } catch {
+        print('Error while parsing state export\n', 'red');
         return;
     }
 
@@ -56,8 +56,8 @@ export async function benchmarkFile(
     for (const step of steps) {
         try {
             step.run(stepState);
-        } catch (error: any) {
-            printError(`Error in step ${step.name}`, error);
+        } catch {
+            print(`Error in step ${step.name}\n`, 'red');
             return;
         }
     }
@@ -69,6 +69,7 @@ export async function benchmarkFile(
 }
 
 // Print the end results to the console
+print('\n');
 console.table(
     fileBenchmarkResults
         .map((result) => ({
@@ -85,9 +86,11 @@ console.table(
         }, {})
 );
 if (fileBenchmarkResults.some(({ stepState }) => !stepState.isConsistent)) {
-    printError(
+    print(
         `Some exercises were not consistent!
 This most likely means that a reducer is either not deterministic or makes some assumptions about immer specific stuff (use of "original()").
-To further debug this, you should log the endStates of the respective exercises and can compare them directly in vscode via "Compare file with".`
+To further debug this, you should log the endStates of the respective exercises and can compare them directly in vscode via "Compare file with".
+`,
+        'red'
     );
 }
