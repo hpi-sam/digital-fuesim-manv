@@ -1,14 +1,19 @@
 import { promises as fs } from 'node:fs';
+import os from 'node:os';
 import { print } from './print';
 import { steps, StepState } from './steps';
 
-const pathToData = 'data';
-
+// Print some information about the system
 console.log(`
-
-Starting Benchmarks
+System Information:
+  OS:      ${os.version()} ${os.release()}
+  #CPUs:   ${os.cpus().length}
+  RAM:     ${Math.round(os.totalmem() / 1024 / 1024)}MB
+  Node.js: ${process.version}
 
 `);
+
+const pathToData = 'data';
 
 const filenames = await fs.readdir(pathToData);
 const fileBenchmarkResults: BenchmarkResult[] = [];
