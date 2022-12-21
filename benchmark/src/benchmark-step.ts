@@ -1,4 +1,5 @@
-import { isEqual } from 'lodash-es';
+import type { BenchmarkValue } from './benchmark-function';
+import { benchmarkFunction } from './benchmark-function';
 import { print } from './print';
 import { Step } from './step';
 
@@ -7,16 +8,14 @@ import { Step } from './step';
  * The printed out value is the time it took to run the benchmark
  */
 export class BenchmarkStep<
-    State extends { [key in Name]?: BenchmarkStepValue<any> | undefined },
+    State extends { [key in Name]?: BenchmarkValue<any> | undefined },
     Name extends string & keyof State = string & keyof State,
-    Value extends NonNullable<State[Name]> extends BenchmarkStepValue<infer T>
+    Value extends NonNullable<State[Name]> extends BenchmarkValue<infer T>
         ? T
-        : never = NonNullable<State[Name]> extends BenchmarkStepValue<infer T>
+        : never = NonNullable<State[Name]> extends BenchmarkValue<infer T>
         ? T
         : never
 > extends Step<State, Name, State[Name]> {
-    private readonly numberOfIterations = 3;
-
     constructor(
         name: Name,
         /**
@@ -29,49 +28,21 @@ export class BenchmarkStep<
 
     protected runStep(stepState: State) {
         print(`  ${this.name}:`.padEnd(30, ' '));
-        const benchmarkStepValues: BenchmarkStepValue<Value>[] = [];
-        for (let i = 0; i < this.numberOfIterations; i++) {
-            const benchmarkStepValue = this.runBenchmarkOnce(stepState);
-            benchmarkStepValues.push(benchmarkStepValue);
-            print(this.formatValue(benchmarkStepValue).padEnd(10, ' '));
-        }
-        if (
-            benchmarkStepValues.length > 1 &&
-            benchmarkStepValues.some(
-                ({ value }) => !isEqual(benchmarkStepValues[0]!.value, value)
-            )
-        ) {
-            print('    Not deterministic!', 'red');
-        }
+        const endResult = benchmarkFunction<Value>(
+            () => this.benchmark(stepState),
+            {
+                onAfterIteration: (benchmarkValue) =>
+                    print(this.formatValue(benchmarkValue).padEnd(10, ' ')),
+                onNonDeterministicError: () =>
+                    print('    Not deterministic!', 'red'),
+            }
+        );
         print('\n');
-        const endResult: BenchmarkStepValue<Value> = {
-            value: benchmarkStepValues[0]!.value,
-            time:
-                benchmarkStepValues.reduce(
-                    (timeSum, { time }) => timeSum + time,
-                    0
-                ) / this.numberOfIterations,
-            // TODO: I couldn't get the typings to work here correctly
-        };
+        // TODO: I couldn't get the typings to work here correctly
         return endResult as NonNullable<State[Name]>;
     }
 
-    private runBenchmarkOnce(stepState: State) {
-        const startTime = performance.now();
-        const value = this.benchmark(stepState);
-        const endTime = performance.now();
-        return {
-            value,
-            time: endTime - startTime,
-        };
-    }
-
-    protected formatValue(value: BenchmarkStepValue<Value>) {
+    protected formatValue(value: BenchmarkValue<Value>) {
         return `${Math.round(value.time)}ms`;
     }
-}
-
-export interface BenchmarkStepValue<T> {
-    value: T;
-    time: number;
 }

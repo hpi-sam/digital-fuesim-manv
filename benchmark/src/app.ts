@@ -21,6 +21,7 @@ const fileBenchmarkResults: BenchmarkResult[] = [];
 for (const filename of filenames) {
     // eslint-disable-next-line no-await-in-loop
     const benchmarkResult = await benchmarkFile(filename);
+    print('\n\n');
     if (benchmarkResult) {
         fileBenchmarkResults.push(benchmarkResult);
     }
@@ -48,7 +49,7 @@ async function benchmarkFile(
         return;
     }
     const fileSize = (await fs.stat(path)).size;
-    console.log(filename);
+    print(`${filename}\n`, 'blue');
     let parsedData;
     try {
         parsedData = JSON.parse(data);
@@ -90,7 +91,9 @@ console.table(
             return table;
         }, {})
 );
-if (fileBenchmarkResults.some(({ stepState }) => !stepState.isConsistent)) {
+if (
+    fileBenchmarkResults.some(({ stepState }) => !stepState.endStatesAreEqual)
+) {
     print(
         `Some exercises were not consistent!
 This most likely means that a reducer is either not deterministic or makes some assumptions about immer specific stuff (use of "original()").

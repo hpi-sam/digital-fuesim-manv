@@ -9,26 +9,48 @@ import {
     cloneDeepMutable,
     migrateStateExport,
     reduceExerciseState,
+    StrictObject,
     validateExerciseExport,
 } from 'digital-fuesim-manv-shared';
 import produce, { freeze } from 'immer';
 import { isEqual } from 'lodash-es';
-import type { BenchmarkStepValue } from './benchmark-step';
+import type { BenchmarkValue } from './benchmark-function';
+import { benchmarkFunction } from './benchmark-function';
 import { BenchmarkStep } from './benchmark-step';
-import type { Step } from './step';
 import { CalculationStep } from './calculation-step';
+import { print } from './print';
+import type { Step } from './step';
 
 export class StepState {
-    public readonly migrate?: BenchmarkStepValue<StateExport>;
-    public readonly validateExercise?: BenchmarkStepValue<any[]>;
+    public readonly migrate?: BenchmarkValue<StateExport>;
+    public readonly validateExercise?: BenchmarkValue<any[]>;
     public readonly freezeState?: {
         initialState: ExerciseState;
         actionHistory: readonly ExerciseAction[];
     };
-    public readonly newImmerDraft?: BenchmarkStepValue<ExerciseState>;
-    public readonly sameImmerDraft?: BenchmarkStepValue<ExerciseState>;
-    public readonly noImmerDraft?: BenchmarkStepValue<ExerciseState>;
-    public readonly isConsistent?: boolean;
+    public readonly newImmerDraft?: BenchmarkValue<ExerciseState>;
+    public readonly sameImmerDraft?: BenchmarkValue<ExerciseState>;
+    public readonly noImmerDraft?: BenchmarkValue<ExerciseState>;
+    public readonly endStatesAreEqual?: boolean;
+    /**
+     * The total benchmarked time it took to execute one action of each type in ms
+     * (sum of all benchmarked times)
+     * Sorted by time (descending)
+     */
+    public readonly benchmarkActions?: {
+        [key in ExerciseAction['type']]?: number;
+    };
+    /**
+     * The most expensive action in the exercise (summed up time)
+     */
+    public readonly mostExpensiveAction?: string;
+    /**
+     * The number of actions of each type
+     * Sorted by amount (descending)
+     */
+    public readonly numberOfActionsPerType?: {
+        [key in ExerciseAction['type']]?: number;
+    };
     public readonly '#actions'?: number;
 
     constructor(public readonly data: StateExport) {}
@@ -83,13 +105,125 @@ export const steps: Step<StepState>[] = [
         );
     }),
     new CalculationStep(
-        'isConsistent',
-        ({ newImmerDraft, sameImmerDraft, noImmerDraft }) =>
-            isEqual(newImmerDraft!.value, sameImmerDraft!.value) &&
-            isEqual(newImmerDraft!.value, noImmerDraft!.value)
+        'endStatesAreEqual',
+        ({ newImmerDraft, sameImmerDraft, noImmerDraft }) => {
+            const endStatesAreEqual =
+                isEqual(newImmerDraft!.value, sameImmerDraft!.value) &&
+                isEqual(newImmerDraft!.value, noImmerDraft!.value);
+            if (!endStatesAreEqual) {
+                print(
+                    `  The endStates of the previous three steps are not equal!\n`,
+                    'red'
+                );
+            }
+            return endStatesAreEqual;
+        },
+        false
+    ),
+    new CalculationStep(
+        'benchmarkActions',
+        ({ freezeState, newImmerDraft }) => {
+            print(`  benchmarkActions: `);
+            const { actionHistory, initialState } = freezeState!;
+            const totalTimePerAction: {
+                [key in ExerciseAction['type']]?: number;
+            } = {};
+            let currentState = initialState;
+            for (const action of actionHistory) {
+                // eslint-disable-next-line @typescript-eslint/no-loop-func
+                const { value: newState, time } = benchmarkFunction(() =>
+                    reduceExerciseState(currentState, action)
+                );
+
+                currentState = newState;
+                totalTimePerAction[action.type] =
+                    (totalTimePerAction[action.type] ?? 0) + time;
+            }
+            const sortedTotalTimePerAction = sortObject(
+                totalTimePerAction,
+                ([, timeA], [, timeB]) => timeB! - timeA!
+            );
+            print(
+                // In the object are only entries we explicitly set -> no need to check for undefined
+                (
+                    StrictObject.entries(sortedTotalTimePerAction) as [
+                        ExerciseAction['type'],
+                        number
+                    ][]
+                )
+                    .map(([type, time]) => `${type}: ${time.toFixed(2)}ms,`)
+                    .join(' ')
+            );
+            print(`\n`);
+            const summedUpExerciseTime =
+                StrictObject.values(totalTimePerAction).reduce(
+                    // In the object are only entries we explicitly set
+                    (totalTime, timePerAction) => totalTime! + timePerAction!,
+                    0
+                ) ?? 0;
+            const summedUpVsDirectTime =
+                summedUpExerciseTime / newImmerDraft!.time;
+            if (summedUpVsDirectTime > 1.1 || summedUpVsDirectTime < 0.9) {
+                print(
+                    `    The summed up time of all actions is ${summedUpVsDirectTime.toFixed(
+                        2
+                    )} times the time of the direct benchmark ("newImmerDraft").\n`,
+                    'yellow'
+                );
+            }
+            return sortedTotalTimePerAction;
+        },
+        false
+    ),
+    new CalculationStep('mostExpensiveAction', ({ benchmarkActions }) => {
+        const mostExpensiveAction = StrictObject.entries(benchmarkActions!)[0];
+        if (!mostExpensiveAction) {
+            return `No actions`;
+        }
+        return `${mostExpensiveAction[0]} (${mostExpensiveAction[1]!.toFixed(
+            2
+        )}ms)`;
+    }),
+    new CalculationStep(
+        'numberOfActionsPerType',
+        ({ freezeState }) => {
+            print(`  numberOfActionsPerType: `);
+            const { actionHistory } = freezeState!;
+            const numberOfActionsPerType: {
+                [key in ExerciseAction['type']]?: number;
+            } = {};
+            for (const action of actionHistory) {
+                numberOfActionsPerType[action.type] =
+                    (numberOfActionsPerType[action.type] ?? 0) + 1;
+            }
+            const sortedNumberOfActionsPerType = sortObject(
+                numberOfActionsPerType,
+                ([, amountA], [, amountB]) => amountB! - amountA!
+            );
+            print(
+                // In the object are only entries we explicitly set -> no need to check for undefined
+                (
+                    StrictObject.entries(sortedNumberOfActionsPerType) as [
+                        ExerciseAction['type'],
+                        number
+                    ][]
+                )
+                    .map(([type, amount]) => `${type}: ${amount},`)
+                    .join(' ')
+            );
+            return sortedNumberOfActionsPerType;
+        },
+        false
     ),
     new CalculationStep(
         '#actions',
         ({ freezeState }) => freezeState!.actionHistory.length
     ),
 ];
+
+function sortObject<T extends { [key: string]: any }>(
+    obj: T,
+    compareFn: (a: [keyof T, T[keyof T]], b: [keyof T, T[keyof T]]) => number
+): T {
+    return Object.fromEntries(StrictObject.entries(obj).sort(compareFn)) as T;
+}
