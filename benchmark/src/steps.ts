@@ -122,7 +122,7 @@ export const steps: Step<StepState>[] = [
     ),
     new CalculationStep(
         'benchmarkActions',
-        ({ freezeState, newImmerDraft }) => {
+        ({ freezeState }) => {
             print(`  benchmarkActions: `);
             const { actionHistory, initialState } = freezeState!;
             const totalTimePerAction: {
@@ -155,8 +155,21 @@ export const steps: Step<StepState>[] = [
                     .join(' ')
             );
             print(`\n`);
+            return sortedTotalTimePerAction;
+        },
+        false
+    ),
+    new CalculationStep(
+        'mostExpensiveAction',
+        ({ benchmarkActions, newImmerDraft }) => {
+            const mostExpensiveAction = StrictObject.entries(
+                benchmarkActions!
+            )[0];
+            if (!mostExpensiveAction) {
+                return `No actions`;
+            }
             const summedUpExerciseTime =
-                StrictObject.values(totalTimePerAction).reduce(
+                StrictObject.values(benchmarkActions!).reduce(
                     // In the object are only entries we explicitly set
                     (totalTime, timePerAction) => totalTime! + timePerAction!,
                     0
@@ -171,19 +184,13 @@ export const steps: Step<StepState>[] = [
                     'yellow'
                 );
             }
-            return sortedTotalTimePerAction;
-        },
-        false
-    ),
-    new CalculationStep('mostExpensiveAction', ({ benchmarkActions }) => {
-        const mostExpensiveAction = StrictObject.entries(benchmarkActions!)[0];
-        if (!mostExpensiveAction) {
-            return `No actions`;
+
+            return `${mostExpensiveAction[0]} ${(
+                (mostExpensiveAction[1]! / summedUpExerciseTime) *
+                100
+            ).toFixed(2)}%`;
         }
-        return `${mostExpensiveAction[0]} (${mostExpensiveAction[1]!.toFixed(
-            2
-        )}ms)`;
-    }),
+    ),
     new CalculationStep(
         'numberOfActionsPerType',
         ({ freezeState }) => {
