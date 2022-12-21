@@ -14,8 +14,8 @@ import {
 } from 'digital-fuesim-manv-shared';
 import produce, { freeze } from 'immer';
 import { isEqual } from 'lodash-es';
-import type { BenchmarkValue } from './benchmark-function';
-import { benchmarkFunction } from './benchmark-function';
+import type { BenchmarkValue } from './benchmark';
+import { benchmark } from './benchmark';
 import { BenchmarkStep } from './benchmark-step';
 import { CalculationStep } from './calculation-step';
 import { print } from './print';
@@ -131,7 +131,7 @@ export const steps: Step<StepState>[] = [
             let currentState = initialState;
             for (const action of actionHistory) {
                 // eslint-disable-next-line @typescript-eslint/no-loop-func
-                const { value: newState, time } = benchmarkFunction(() =>
+                const { value: newState, time } = benchmark(() =>
                     reduceExerciseState(currentState, action)
                 );
 

@@ -1,5 +1,5 @@
-import type { BenchmarkValue } from './benchmark-function';
-import { benchmarkFunction } from './benchmark-function';
+import type { BenchmarkValue } from './benchmark';
+import { benchmark } from './benchmark';
 import { print } from './print';
 import { Step } from './step';
 
@@ -21,15 +21,15 @@ export class BenchmarkStep<
         /**
          * Will be run multiple times and must therefore be deterministic
          */
-        private readonly benchmark: (state: State) => Value
+        private readonly functionToBenchmark: (state: State) => Value
     ) {
         super(name, true);
     }
 
     protected runStep(stepState: State) {
         print(`  ${this.name}:`.padEnd(30, ' '));
-        const endResult = benchmarkFunction<Value>(
-            () => this.benchmark(stepState),
+        const endResult = benchmark<Value>(
+            () => this.functionToBenchmark(stepState),
             {
                 onAfterIteration: (benchmarkValue) =>
                     print(this.formatValue(benchmarkValue).padEnd(10, ' ')),

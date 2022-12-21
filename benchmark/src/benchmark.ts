@@ -9,7 +9,7 @@ export interface BenchmarkValue<T> {
  * @param functionToBenchmark the deterministic function that should be benchmarked, it will be run multiple times
  * @returns
  */
-export function benchmarkFunction<Value>(
+export function benchmark<Value>(
     functionToBenchmark: () => Value,
     options: BenchmarkOptions<Value> = {}
 ): BenchmarkValue<Value> {
