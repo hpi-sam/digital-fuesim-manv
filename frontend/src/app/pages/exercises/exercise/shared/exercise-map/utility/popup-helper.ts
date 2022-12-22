@@ -106,7 +106,6 @@ export class ImagePopupHelper {
     }
 
     /**
-     * @param layer The layer the feature is in
      * @returns wether the feature is visible at the given pixel
      */
     private hasFeatureAtPixel(feature: Feature<Point>, pixel: Pixel): boolean {
