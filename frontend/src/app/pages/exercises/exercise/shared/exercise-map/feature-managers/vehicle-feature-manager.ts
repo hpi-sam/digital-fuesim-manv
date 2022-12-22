@@ -33,7 +33,7 @@ export class VehicleFeatureManager extends ElementFeatureManager<
         0.1,
         'top'
     );
-    private readonly popupHelper = new ImagePopupHelper(this.olMap);
+    private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
     constructor(
         olMap: OlMap,

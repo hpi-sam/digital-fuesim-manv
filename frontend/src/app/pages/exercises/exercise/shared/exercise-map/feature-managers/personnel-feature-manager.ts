@@ -32,7 +32,7 @@ export class PersonnelFeatureManager extends ElementFeatureManager<
         'top'
     );
 
-    private readonly popupHelper = new ImagePopupHelper(this.olMap);
+    private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
     constructor(
         olMap: OlMap,
