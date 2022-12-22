@@ -7,9 +7,15 @@ import {
     IsArray,
 } from 'class-validator';
 import { uuidValidationOptions, UUID, uuid } from '../utils';
+import { IsStringLiteralUnion } from '../utils/validators';
 import type { PersonnelType } from './utils';
-import { ImageProperties, getCreate } from './utils';
+import {
+    ImageProperties,
+    personnelTypeAllowedValues,
+    getCreate,
+} from './utils';
 import type { MaterialType } from './utils/material-type';
+import { materialTypeAllowedValues } from './utils/material-type';
 
 export class VehicleTemplate {
     @IsUUID(4, uuidValidationOptions)
@@ -29,11 +35,15 @@ export class VehicleTemplate {
     public readonly patientCapacity: number;
 
     @IsArray()
-    @IsString({ each: true })
+    @IsStringLiteralUnion<PersonnelType>(personnelTypeAllowedValues, {
+        each: true,
+    })
     public readonly personnel: readonly PersonnelType[];
 
     @IsArray()
-    @IsString({ each: true })
+    @IsStringLiteralUnion<MaterialType>(materialTypeAllowedValues, {
+        each: true,
+    })
     public readonly materials: readonly MaterialType[];
 
     /**

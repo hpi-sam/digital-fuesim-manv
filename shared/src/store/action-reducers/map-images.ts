@@ -18,6 +18,7 @@ import {
     UUID,
     uuidValidationOptions,
 } from '../../utils';
+import { IsStringLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
 
@@ -93,6 +94,12 @@ export class ReconfigureMapImageUrlAction implements Action {
     public readonly newUrl!: string;
 }
 
+type ChangeZIndexMapImageActionMode =
+    | 'bringToBack'
+    | 'bringToFront'
+    | 'oneLayerBack'
+    | 'oneLayerForward';
+
 export class ChangeZIndexMapImageAction implements Action {
     @IsString()
     public readonly type = '[MapImage] Change zIndex';
@@ -100,12 +107,13 @@ export class ChangeZIndexMapImageAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly mapImageId!: UUID;
 
-    @IsString()
-    public readonly mode!:
-        | 'bringToBack'
-        | 'bringToFront'
-        | 'oneLayerBack'
-        | 'oneLayerForward';
+    @IsStringLiteralUnion<ChangeZIndexMapImageActionMode>({
+        bringToBack: true,
+        bringToFront: true,
+        oneLayerBack: true,
+        oneLayerForward: true,
+    })
+    public readonly mode!: ChangeZIndexMapImageActionMode;
 }
 
 export namespace MapImagesActionReducers {
