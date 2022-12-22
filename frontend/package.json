@@ -43,7 +43,7 @@
         "digital-fuesim-manv-shared": "file:../shared",
         "immer": "^9.0.16",
         "lodash-es": "4.17.21",
-        "ol": "^7.2.0",
+        "ol": "^7.2.2",
         "rxjs": "~7.8.0",
         "socket.io-client": "^4.5.4",
         "tslib": "^2.4.1"
