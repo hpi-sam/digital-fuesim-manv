@@ -1,10 +1,15 @@
-@import '~bootstrap/scss/bootstrap.scss';
+@import '../node_modules/bootstrap/scss/bootstrap.scss';
+
+.dropdown-menu {
+    overflow: auto;
+    max-height: 250px;
+}
 
 // These classes are automatically applied by angular on validated inputs
-.ng-valid {
+.ng-valid:not(.no-validation) {
     @extend .is-valid;
 }
-.ng-invalid.ng-dirty {
+.ng-invalid.ng-dirty:not(.no-validation) {
     @extend .is-invalid;
 }
 
@@ -13,4 +18,29 @@
 // Prevent the control buttons from blocking the map
 .ol-control {
     width: fit-content !important;
+}
+
+// Controls the size of images
+.preview-image-container {
+    // TODO: Set the height depending on the current grid tier https://getbootstrap.com/docs/5.1/layout/breakpoints/
+    height: 100px !important;
+    padding: map-get($spacers, 3);
+    img {
+        // fill out the whole container
+        max-width: 100%;
+        max-height: 100%;
+        // center it vertically
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    &.small-image {
+        height: 50px !important;
+        padding: map-get($spacers, 1);
+    }
+}
+
+.text-prewrap {
+    white-space: pre-wrap;
 }

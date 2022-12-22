@@ -1,6 +1,8 @@
 import assert from 'node:assert';
-import { generateDummyPatient } from 'digital-fuesim-manv-shared';
-import { createExercise, createTestEnvironment, sleep } from './utils';
+import { jest } from '@jest/globals';
+import { generateDummyPatient, sleep } from 'digital-fuesim-manv-shared';
+import { ExerciseWrapper } from '../src/exercise/exercise-wrapper';
+import { createExercise, createTestEnvironment } from './utils';
 
 describe('join exercise', () => {
     const environment = createTestEnvironment();
@@ -177,5 +179,27 @@ describe('join exercise', () => {
                 );
             });
         });
+    });
+
+    it('stops an exercise after the last client has left', async () => {
+        const exerciseIds = await createExercise(environment);
+
+        const pauseSpy = jest.spyOn(ExerciseWrapper.prototype, 'pause');
+        await environment.withWebsocket(async (socket) => {
+            const joinResponse = await socket.emit(
+                'joinExercise',
+                exerciseIds.trainerId,
+                'Test'
+            );
+            expect(joinResponse.success).toBe(true);
+
+            const startResponse = await socket.emit('proposeAction', {
+                type: '[Exercise] Start',
+            });
+            expect(startResponse.success);
+        });
+        // Let the socket disconnect.
+        await sleep(1000);
+        expect(pauseSpy).toHaveBeenCalledTimes(1);
     });
 });

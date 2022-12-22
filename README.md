@@ -1,10 +1,31 @@
-# digital-fuesim-manv
+# Digitale FüSim MANV
 
-The official code for BP2021HG1
+This is the codebase for a digital implementation of the "FüSim MANV" (Führungssimulation Massenanfall von Verletzen), a German simulation system for training emergency medical services leadership personnel on how to manage [Mass Casualty Incidents](https://en.wikipedia.org/wiki/Mass-casualty_incident).
 
-You can find the (internal) documentation for this project [here](https://github.com/hpi-sam/BP2021HG1).
+**You can try it out at [https://fuesim-manv.de/](https://fuesim-manv.de/)**.
 
-The (internal) project-board is [here](https://github.com/orgs/hpi-sam/projects/4).
+![image](https://user-images.githubusercontent.com/18506183/172071147-24b9aabe-51ee-4105-a5a4-6cbf8063eece.png)
+_A screenshot of a part of an MCI exercise with initially ca. 50 patients at the Brandenburg Gate._
+
+The concept is as follows:
+
+-   A _trainer_ creates an exercise, which consists of _patients_, _vehicles_, _viewports_, _transferPoints_ and other objects placed on a map.
+-   _Participants_ can then join the exercise.
+-   The _trainer_ can restrict the participants to a specific _viewport_. The _participant_ cannot move out of this area.
+-   _Vehicles_ (containing _material_, _personnel_ and (sometimes) _patients_) can be transferred to other areas via _transferPoints_.
+-   After the exercise is started, _patients_ that are not adequately treated by _personnel_ and _material_ can deteriorate and die. The goal of the _participants_ is to prevent the _patients_ from dying and transport them to the _hospitals_. To do this effectively they have to communicate with each other (via real radio devices, or remote via third-party services) and make the right decisions.
+-   Afterward, the exercise can be evaluated via statistics and a "time-travel" feature.
+
+This simulation has been designed in cooperation with and with support from the [Federal Academy for Civil Protection and Civil Defence](https://www.bbk.bund.de/DE/Themen/Akademie-BABZ/akademie-babz_node.html) of the [Federal Office of Civil Protection and Disaster Assistance Germany](https://www.bbk.bund.de/DE/Home/home_node.html), who are the original copyright holders of the analog "FüSim MANV" simulation system, and the [Malteser Hilfsdienst e.V. Berlin](https://www.malteser-berlin.de/).
+
+The simulation is implemented as a web application with an Angular frontend and NodeJS backend.
+
+This project is currently developed as a [bachelor project](https://hpi.de/en/studies/before-your-studies/degree-programs/bachelor.html) at the [HPI](https://hpi.de/). You can find the official project website [here](https://hpi.de/giese/teaching/bachelor-projects/digitales-fuehrungssimulationstraining.html).
+
+## Links for collaborators
+
+-   [(internal) documentation](https://github.com/hpi-sam/BP2021HG1)
+-   [(internal) project-board](https://github.com/orgs/hpi-sam/projects/4).
 
 ## Installation
 
@@ -13,59 +34,80 @@ The (internal) project-board is [here](https://github.com/orgs/hpi-sam/projects/
 3. [npm](https://www.npmjs.com/) should already come with NodeJs - if not install it
 4. Clone this repository
 5. Run `npm run setup` from the root folder
-6. (Optional) We have a list of recommended [vscode](https://code.visualstudio.com/) extensions. We strongly recommend you to use them if you are developing. You can see them via [the `@recommended` filter in the extensions panel](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
+6. Copy the [`.env.example`](./.env.example) file to `./.env` and adjust the settings as you need them. Note that some of the variables are explained under the next point.
+7. Choose whether you want to use a database:
+   You can (optionally) use a database for the persistence of exercise data. Look at the [relevant section](./backend/README.md#database) in the backend README for further information.
+   Note that to not use the database you have to edit an environment variable, see the [relevant section](./backend/README.md#without-a-database).
+8. (Optional) We have a list of recommended [vscode](https://code.visualstudio.com/) extensions. We strongly recommend you to use them if you are developing. You can see them via [the `@recommended` filter in the extensions panel](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
+
+### Gotchas
+
+If you want the best developer experience, make sure to always install dependencies with `npm install --install-links=false`. The default option changed from previously `false` to `true` with version 9.
 
 ## Starting for development
 
-### Option 1:
+### Option 1
 
 If you are using [vscode](https://code.visualstudio.com/), you can run the [task](https://code.visualstudio.com/docs/editor/tasks) `Start all` to start everything in one go.
+Note that this _tries_ to start the database using `docker compose`. In case this fails please start the database in another way (see [this section in the backend README](./backend/README.md#database)).
 
-### Option 2:
+### Option 2
 
 1. Open a terminal in `/shared` and run `npm run watch`
 2. Open another terminal in `/frontend` and run `npm run start`
 3. Open another terminal in `/backend` and run `npm run start`
+4. Consider the database -- see point 7 of the [installation](#installation).
 
 ## Starting for deployment (using docker)
 
 You need to have [`docker`](https://www.docker.com/) installed.
 
-### With docker-compose (recommended)
+### With docker compose (recommended)
 
-1. [`docker-compose`](https://docs.docker.com/compose/) needs to be installed.
-2. Run `docker-compose up -d` in the root directory.
+1. [`docker compose`](https://docs.docker.com/compose/) needs to be installed. Note that, depending on your setup, you may use `docker-compose` instead of `docker compose`. In this case, just replace the space in the commands with a dash (`-`). For more information, see the [relevant section of the documentation](https://docs.docker.com/compose/#compose-v2-and-the-new-docker-compose-command).
+2. Run `docker compose up -d` in the root directory. This also starts the database. If you don't want to start the database run `docker compose up -d digital-fuesim-manv` instead.
 
-### Without docker-compose
+### Without docker compose
 
 1. Execute `docker run -p -d 80:80 digitalfuesimmanv/dfm`.
 
 The server will start listening using nginx on port `80` for all services (frontend, API, WebSockets).
 
+Note the database requirements depicted in [the installation section](#installation).
+
 ### Building the container from scratch
 
 #### Option 1
 
-1. Uncomment the build section of [the docker-compose file](./docker-compose.yml).
-2. Run `docker-compose build`
+1. Uncomment the build section of [the docker compose file](./docker-compose.yml).
+2. Run `docker compose build`
 
 #### Option 2
 
 1. Run `docker build -f docker/Dockerfile -t digital-fuesim-manv .`
 
+### Docker volumes / persistent data
+
+-   All important volumes are listed in [the docker-compose file](./docker-compose.yml).
+
+### Docker ENVs
+
+-   All available Docker ENVs are listed with their default values in [.env.example](./.env.example) file. Copy this file and name it `.env` (under Linux, this would be e.g. `cp .env.example .env`)
+
 ## Before you commit
 
 -   We are using [git lfs](https://git-lfs.github.com/). You can see the file types that currently use git lfs in [.gitattributes](.gitattributes). If you add another binary (or very large) file type to the repository you should add it there too.
 -   To see the images stored in [git lfs](https://git-lfs.github.com/) in diff views in vscode we recommend running the following command once: `git config diff.lfs.textconv cat`.
--   We are using [prettier](https://prettier.io/) as our code formatter. Run it via `npm run prettier` in the root to format all files and make the CI happy. Please use the [vscode extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
+-   We are using [prettier](https://prettier.io/) as our code formatter. Run it via `npm run prettier` or `npm run prettier:windows` in the root to format all files and make the CI happy. Please use the [vscode extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
 -   We are using [eslint](https://eslint.org/) as our linter. Run it via `npm run lint:fix` in the root to lint (and auto fix if possible) all files. Please use the [vscode extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
 
 ## Debugging
 
 There are already the following [debug configurations](https://code.visualstudio.com/docs/editor/debugging) for vscode saved:
 
--   [frontend] Launch Chrome against localhost
--   Debug Jest Tests
+-   `Launch Frontend [Chrome]`
+-   `Launch Frontend [Firefox]` (You have to install an extra extension)
+-   `Debug Jest Tests`
 
 In addition you can make use of the following browser extensions:
 
@@ -106,7 +148,10 @@ In the `diff` folder you can see the changes between the baseline and the compar
 ## Styleguide
 
 -   names are never unique, ids are
--   private properties that may be used with getters/setters (and only those!) start with one leading underscore (`_`)
+-   Use [StrictObject](shared\src\utils\strict-object.ts) instead of `Object` wherever possible
+-   A leading underscore should only be used
+    -   for private properties that may be used with getters/setters
+    -   to resolve certain naming conflicts (e.g. `.some(_item => ...)`)
 -   `dependencies` should be used for packages that must be installed when running the app (e.g. `express`), whereas `devDependencies` should be used for packages only required for developing, debugging, building, or testing (e.g. `jest`), which includes all `@types` packages. We try to follow this route even for the frontend and the backend, although it is not important there. See also [this](https://stackoverflow.com/a/22004559) answer on StackOverflow for more information about the differences.
 -   Use JSDoc features for further documentation because editors like VSCode can display them better.
     -   Be aware that JSDoc comments must always go above the Decorator of the class/component/function/variable etc.
@@ -165,15 +210,13 @@ Actions cannot be applied in parallel. The order of actions is important.
 
 It is a bad practice to encode part of the state in the action (or values derived/calculated from it). Instead, you should only read the state in the accompanying reducer.
 
-You can find all exercise actions [here](./shared//src/store/exercise.actions.ts).
-
 #### Reducer
 
 A reducer is a [pure function](https://en.wikipedia.org/wiki/Pure_function) (no side effects!) that takes a state and an action of a specific type and returns a new state where the changes described in the action are applied. A state can only be modified by a reducer.
 
 To be able to apply certain optimizations, it is advisable (but not necessary or guaranteed) that the reducer only changes the references of properties that have been changed.
 
-You can find all exercise reducers [here](./shared/src/store/reduce-exercise-state.ts).
+You can find all exercise actions and reducers [here](./shared/src/store/action-reducers). Please orient yourself on the already implemented actions, and don't forget to register them in [shared/src/store/action-reducers/action-reducers.ts](shared/src/store/action-reducers/action-reducers.ts)
 
 ### Immutability
 
@@ -222,4 +265,118 @@ If you need to read from the state to change it, you should do this inside the a
 
 ## Licenses and Attributions
 
--   License information about used images can be found [here](frontend/src/assets/image_sources.md). All images are licensed under their original license.
+-   License information about used images can be found [here](frontend/src/assets/image-sources.md). All images are licensed under their original license.
+
+## Contributors
+
+<!-- Inspired by https://github.com/all-contributors/all-contributors -->
+
+<!-- markdownlint-disable -->
+<table>
+    <tr>
+        <td style="text-align: center">
+            <a href="https://github.com/Dassderdie">
+                <img
+                    src="https://avatars.githubusercontent.com/u/18506183?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Julian Schmidt</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=Dassderdie"
+                title="Code"
+                >💻</a
+            >
+            <span title="Review">👀</span>
+            <br />
+            <small>Student 2021/22<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/ClFeSc">
+                <img
+                    src="https://avatars.githubusercontent.com/u/68013019?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Clemens Schielicke</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=ClFeSc"
+                title="Code"
+                >💻</a
+            >
+            <span title="Review">👀</span>
+            <br />
+            <small>Student 2021/22<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/hpistudent72">
+                <img
+                    src="https://avatars.githubusercontent.com/u/64257074?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Florian Krummrey</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=hpistudent72"
+                title="Code"
+                >💻</a
+            >
+            <br />
+            <small>Student 2021/22<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/anonym-HPI">
+                <img
+                    src="https://avatars.githubusercontent.com/u/68286419?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Marvin Müller-Mettnau</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=anonym-HPI"
+                title="Code"
+                >💻</a
+            >
+            <span title="Deployment">📦</span>
+            <br />
+            <small>Student 2021/22<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/mbarkowsky">
+                <img
+                    src="https://avatars.githubusercontent.com/u/7481705?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Matthias Barkowsky</b></sub>
+            </a>
+            <br />
+            📆
+            <br />
+            <small>Supervisor 2021/22<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/christianzoellner">
+                <img
+                    src="https://avatars.githubusercontent.com/u/4678160?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Christian Zöllner</b></sub>
+            </a>
+            <br />
+            📆
+            <br />
+            <small>Supervisor 2021/22<small>
+        </td>
+    </tr>
+</table>
+<!-- markdownlint-restore -->

@@ -1,11 +1,50 @@
-<div
-    #openLayersContainer
-    (drop)="dragElementService.onDrop($event)"
-    (dragover)="dragElementService.onDragOver($event)"
-    class="h-100"
-></div>
+<!-- We want keyboard events to go to the OpenLayers map, not the container -> tabindex="-1" -->
+<div #openLayersContainer class="h-100 w-100 position-relative" tabindex="-1">
+    <app-display-messages *ngIf="fullscreenEnabled"></app-display-messages>
+    <div
+        class="position-absolute btn-group-vertical"
+        style="z-index: 10"
+        (click)="$event.stopPropagation()"
+    >
+        <button
+            (click)="olMapManager?.changeZoom('zoomIn')"
+            class="btn btn-sm btn-light"
+            title="Vergrößern"
+        >
+            <i class="bi-zoom-in"></i>
+        </button>
+        <button
+            (click)="olMapManager?.changeZoom('zoomOut')"
+            class="btn btn-sm btn-light"
+            title="Verkleinern"
+        >
+            <i class="bi-zoom-out"></i>
+        </button>
+        <button
+            *ngIf="
+                (currentRole$ | async) !== 'participant' &&
+                (restrictedToViewport$ | async) === undefined
+            "
+            (click)="olMapManager?.tryToFitViewToViewports()"
+            class="btn btn-sm btn-light"
+            title="Alle Ansichten anzeigen"
+        >
+            <i class="bi-aspect-ratio"></i>
+        </button>
+        <button
+            (click)="toggleFullscreen()"
+            class="btn btn-sm btn-light"
+            title="Vollbildmodus"
+        >
+            <i
+                [class.bi-fullscreen]="!fullscreenEnabled"
+                [class.bi-fullscreen-exit]="fullscreenEnabled"
+            ></i>
+        </button>
+    </div>
+</div>
 
-<!-- position-relative because openLayers deals with the positioning-->
+<!-- position-relative because openLayers deals with the positioning -->
 <div
     #popoverContainer
     class="popover position-relative"

@@ -1,6 +1,17 @@
 import { Type } from 'class-transformer';
-import { IsDefined, IsOptional, IsUUID, ValidateNested } from 'class-validator';
+import {
+    IsDefined,
+    IsNumber,
+    IsOptional,
+    IsString,
+    IsUUID,
+    Max,
+    Min,
+    ValidateNested,
+} from 'class-validator';
+import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuid, UUID, UUIDSet, uuidValidationOptions } from '../utils';
+import type { MaterialTemplate } from './material-template';
 import { CanCaterFor, getCreate, ImageProperties, Position } from './utils';
 
 export class Material {
@@ -9,6 +20,9 @@ export class Material {
 
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId: UUID;
+
+    @IsString()
+    public readonly vehicleName: string;
 
     // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
     @IsDefined()
@@ -19,7 +33,27 @@ export class Material {
     public readonly canCaterFor: CanCaterFor;
 
     /**
-     * if undefined, is in vehicle with {@link vehicleId}
+     * Patients in this range are preferred over patients farther away (even if they are less injured).
+     * Guaranteed to be <= {@link maxTreatmentRange}.
+     * Setting this to `0` means deactivating this range.
+     */
+    @IsNumber()
+    @Min(0)
+    @Max(maxTreatmentRange)
+    public readonly overrideTreatmentRange: number;
+
+    /**
+     * Only patients in this range around the material's position can be treated.
+     * Guaranteed to be <= {@link maxTreatmentRange}.
+     * Setting this to `0` means deactivating this range.
+     */
+    @IsNumber()
+    @Min(0)
+    @Max(maxTreatmentRange)
+    public readonly treatmentRange: number;
+
+    /**
+     * if undefined, is in vehicle with {@link this.vehicleId}
      */
     @ValidateNested()
     @Type(() => Position)
@@ -28,26 +62,51 @@ export class Material {
 
     @ValidateNested()
     @Type(() => ImageProperties)
-    public readonly image: ImageProperties = {
-        url: './assets/material.svg',
-        height: 40,
-        aspectRatio: 1,
-    };
+    public readonly image: ImageProperties;
 
     /**
      * @deprecated Use {@link create} instead
      */
     constructor(
         vehicleId: UUID,
+        vehicleName: string,
         assignedPatientIds: UUIDSet,
+        image: ImageProperties,
         canCaterFor: CanCaterFor,
+        treatmentRange: number,
+        overrideTreatmentRange: number,
         position?: Position
     ) {
         this.vehicleId = vehicleId;
+        this.vehicleName = vehicleName;
         this.assignedPatientIds = assignedPatientIds;
-        this.canCaterFor = canCaterFor;
         this.position = position;
+        this.image = image;
+        this.canCaterFor = canCaterFor;
+        this.treatmentRange = treatmentRange;
+        this.overrideTreatmentRange = overrideTreatmentRange;
     }
 
     static readonly create = getCreate(this);
+
+    static generateMaterial(
+        materialTemplate: MaterialTemplate,
+        vehicleId: UUID,
+        vehicleName: string
+    ): Material {
+        return this.create(
+            vehicleId,
+            vehicleName,
+            {},
+            materialTemplate.image,
+            materialTemplate.canCaterFor,
+            materialTemplate.treatmentRange,
+            materialTemplate.overrideTreatmentRange,
+            undefined
+        );
+    }
+
+    static isInVehicle(material: Material): boolean {
+        return material.position === undefined;
+    }
 }

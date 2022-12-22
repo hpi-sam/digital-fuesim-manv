@@ -2,16 +2,18 @@ import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID, Vehicle } from 'digital-fuesim-manv-shared';
+import { Material, Patient, Personnel } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map, switchMap } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    getSelectMaterial,
-    getSelectPatient,
-    getSelectPersonnel,
-    getSelectVehicle,
-} from 'src/app/state/exercise/exercise.selectors';
+    createSelectMaterial,
+    createSelectPatient,
+    createSelectPersonnel,
+    createSelectVehicle,
+} from 'src/app/state/application/selectors/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
 @Component({
@@ -27,42 +29,44 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
 
     public vehicle$?: Observable<Vehicle>;
     public vehicleIsCompletelyUnloaded$?: Observable<boolean>;
+    public readonly currentRole$ = this.store.select(selectCurrentRole);
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {}
 
-    ngOnInit(): void {
-        this.vehicle$ = this.store.select(getSelectVehicle(this.vehicleId));
+    async ngOnInit() {
+        this.vehicle$ = this.store.select(createSelectVehicle(this.vehicleId));
         this.vehicleIsCompletelyUnloaded$ = this.vehicle$.pipe(
-            switchMap((vehicle) => {
-                const materialIsInVehicle$ = this.store
-                    .select(getSelectMaterial(vehicle.materialId))
-                    .pipe(map((material) => material.position === undefined));
-                const personnelIsInVehicle$ = Object.keys(
-                    vehicle.personnelIds
-                ).map((personnelId) =>
-                    this.store.select(getSelectPersonnel(personnelId)).pipe(
-                        // TODO: only if the person is not in transfer
-                        map((personnel) => personnel.position === undefined)
-                    )
+            switchMap((_vehicle) => {
+                const materialsAreInVehicle$ = Object.keys(
+                    _vehicle.materialIds
+                ).map((materialId) =>
+                    this.store
+                        .select(createSelectMaterial(materialId))
+                        .pipe(map((material) => Material.isInVehicle(material)))
                 );
-                const patientIsInVehicle$ = Object.keys(vehicle.patientIds).map(
-                    (patientId) =>
-                        this.store
-                            .select(getSelectPatient(patientId))
-                            .pipe(
-                                map(
-                                    (personnel) =>
-                                        personnel.position === undefined
-                                )
-                            )
+                const personnelAreInVehicle$ = Object.keys(
+                    _vehicle.personnelIds
+                ).map((personnelId) =>
+                    this.store
+                        .select(createSelectPersonnel(personnelId))
+                        .pipe(
+                            map((personnel) => Personnel.isInVehicle(personnel))
+                        )
+                );
+                const patientsAreInVehicle$ = Object.keys(
+                    _vehicle.patientIds
+                ).map((patientId) =>
+                    this.store
+                        .select(createSelectPatient(patientId))
+                        .pipe(map((patient) => Patient.isInVehicle(patient)))
                 );
                 return combineLatest([
-                    materialIsInVehicle$,
-                    ...personnelIsInVehicle$,
-                    ...patientIsInVehicle$,
+                    ...materialsAreInVehicle$,
+                    ...personnelAreInVehicle$,
+                    ...patientsAreInVehicle$,
                 ]);
             }),
             map((areInVehicle) =>
@@ -71,8 +75,16 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
         );
     }
 
+    public renameVehicle(name: string) {
+        this.exerciseService.proposeAction({
+            type: '[Vehicle] Rename vehicle',
+            vehicleId: this.vehicleId,
+            name,
+        });
+    }
+
     public unloadVehicle() {
-        this.apiService.proposeAction({
+        this.exerciseService.proposeAction({
             type: '[Vehicle] Unload vehicle',
             vehicleId: this.vehicleId,
         });

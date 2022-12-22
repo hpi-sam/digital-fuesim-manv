@@ -1,0 +1,80 @@
+<div class="modal-header">
+    <h4 class="modal-title">Einstellungen</h4>
+    <button type="button" class="btn-close" (click)="close()"></button>
+</div>
+<div class="modal-body">
+    <div class="card">
+        <div class="card-header">Karte</div>
+        <div class="card-body">
+            <div class="form-group mb-3">
+                <label class="form-label">Serveradresse:</label>
+                <p class="small">
+                    <!-- Yes, this is seemingly the only way to escape curly braces https://github.com/angular/angular/issues/11859 -->
+                    Unter dieser Adresse werden die Karten-Kacheln geladen. Die
+                    Url muss die Platzhalter für die Koordinaten
+                    <code>{{ '{' }}x}</code>, <code>{{ '{' }}y}</code> oder
+                    <code>{{ '{' }}-y}</code>, sowie der Zoomstufe
+                    <code>{{ '{' }}z}</code> enthalten. Bitte beachten Sie die
+                    Lizenzbedingungen der entsprechenden Karten-Server.
+                </p>
+                <input
+                    #tileUrlInput="ngModel"
+                    [(ngModel)]="tileMapProperties.tileUrl"
+                    [appAutofocus]="true"
+                    appUrlValidator
+                    [pattern]="tileMapUrlRegex"
+                    required
+                    type="url"
+                    class="form-control"
+                    placeholder="https://a.tile.openstreetmap.de/{z}/{x}/{y}.png"
+                />
+                <app-display-validation
+                    [ngModelInput]="tileUrlInput"
+                ></app-display-validation>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Maximaler Zoom:</label>
+                <input
+                    #maxZoomInput="ngModel"
+                    [(ngModel)]="tileMapProperties.maxZoom"
+                    required
+                    class="form-control"
+                    step="1"
+                    min="1"
+                    type="number"
+                    placeholder="20"
+                />
+                <app-display-validation
+                    [ngModelInput]="maxZoomInput"
+                ></app-display-validation>
+            </div>
+        </div>
+        <button (click)="updateTileMapProperties()" class="btn btn-primary">
+            Speichern
+        </button>
+    </div>
+    <br />
+    <div *ngIf="configuration$ | async as configuration" class="card">
+        <div class="card-header">Übungsmodus</div>
+        <div class="card-body">
+            Mit Vorsichtung üben?
+            <div class="form-switch">
+                <input
+                    [ngModel]="configuration.pretriageEnabled"
+                    (ngModelChange)="setPretriageFlag($event)"
+                    class="form-check-input"
+                    type="checkbox"
+                />
+            </div>
+            Mit SK IV Patienten üben?
+            <div class="form-switch">
+                <input
+                    [ngModel]="configuration.bluePatientsEnabled"
+                    (ngModelChange)="setBluePatientsFlag($event)"
+                    class="form-check-input"
+                    type="checkbox"
+                />
+            </div>
+        </div>
+    </div>
+</div>

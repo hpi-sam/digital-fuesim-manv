@@ -10,6 +10,7 @@ module.exports = {
         // TODO: doesn't work for some reason from this config and has to be imported separately
         // 'prettier',
     ],
+    ignorePatterns: ['**/migrations/**/*.ts', '**/migrations/**/*.js'],
     rules: {
         /**
          * eslint
@@ -45,7 +46,8 @@ module.exports = {
         'no-implicit-globals': 'warn',
         'no-iterator': 'warn',
         'no-labels': 'warn',
-        'no-lone-blocks': 'warn',
+        // Disabled because of false positives
+        'no-lone-blocks': 'off',
         'no-magic-numbers': 'off',
         'no-new': 'warn',
         'no-new-func': 'warn',
@@ -70,10 +72,9 @@ module.exports = {
         'arrow-body-style': 'warn',
         'no-restricted-exports': 'warn',
         'no-restricted-imports': [
-            'warn',
+            'error',
             {
                 name: 'lodash',
-                importNames: ['lodash-es'],
                 message: 'Please use lodash-es instead.',
             },
             'assert',
@@ -240,6 +241,7 @@ module.exports = {
          * @typescript-eslint
          */
         // "@typescript-eslint/array-type": "array-simple",
+        '@typescript-eslint/prefer-as-const': 'off',
         '@typescript-eslint/ban-tslint-comment': 'warn',
         '@typescript-eslint/class-literal-property-style': ['warn', 'fields'],
         '@typescript-eslint/consistent-indexed-object-style': [
@@ -295,7 +297,7 @@ module.exports = {
         ],
         '@typescript-eslint/no-base-to-string': 'warn',
         '@typescript-eslint/no-confusing-non-null-assertion': 'warn',
-        '@typescript-eslint/no-namespace': 'warn',
+        '@typescript-eslint/no-namespace': 'off',
         '@typescript-eslint/non-nullable-type-assertion-style': 'warn',
         '@typescript-eslint/sort-type-union-intersection-members': 'warn',
         '@typescript-eslint/no-confusing-void-expression': [
@@ -363,7 +365,7 @@ module.exports = {
                 hoist: 'all',
             },
         ],
-        '@typescript-eslint/no-throw-literal': 'warn',
+        '@typescript-eslint/no-throw-literal': 'off',
         '@typescript-eslint/no-unused-expressions': 'warn',
         '@typescript-eslint/no-unused-vars': ['warn', { args: 'none' }],
         '@typescript-eslint/no-use-before-define': 'off',

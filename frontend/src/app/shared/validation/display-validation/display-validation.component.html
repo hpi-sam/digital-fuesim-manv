@@ -26,8 +26,11 @@
     <div *ngIf="errors['max'] as maxError">
         Die Eingabe darf höchstens {{ maxError.max }} sein.
     </div>
-    <div *ngIf="errors['onlyNumbers'] as maxError">
-        Die Eingabe darf nur Zahlen enthalten.
+    <div *ngIf="errors['integer'] as maxError">
+        Die Eingabe muss eine ganze Zahl sein.
+    </div>
+    <div *ngIf="errors['url'] as maxError">
+        Die Eingabe ist keine valide URL.
     </div>
     <div *ngIf="errors['exactMatch'] as exactMatchError">
         Die Eingabe entspricht nicht
@@ -38,5 +41,14 @@
         Es existiert keine Übung mit der Id
         <span class="font-monospace">{{ exerciseExistsError.id }}</span
         >.
+    </div>
+    <div *ngIf="errors['imageExists'] as imageExistsError">
+        Kein Bild gefunden<ng-container *ngIf="imageExistsError.error">
+            (<span class="font-monospace">{{ imageExistsError.error }}</span
+            >) </ng-container
+        >.
+    </div>
+    <div *ngIf="errors['joinId']">
+        Die Eingabe muss eine gültige Übungs-ID (6 oder 8 Ziffern) sein.
     </div>
 </div>

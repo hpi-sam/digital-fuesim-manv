@@ -2,12 +2,19 @@ import type { Feature, MapBrowserEvent } from 'ol';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
+import type { Subject } from 'rxjs';
+import type { OpenPopupOptions } from './popup-manager';
 
 /**
  * The Api to interact with a feature
  */
 export interface FeatureManager<ElementFeature extends Feature<any>> {
     readonly layer: VectorLayer<VectorSource>;
+
+    /**
+     * When this subject emits, a popup with the specified options should be toggled.
+     */
+    readonly togglePopup$?: Subject<OpenPopupOptions<any>>;
 
     /**
      * This method is called when the user clicks on a feature on this layer.
@@ -18,6 +25,11 @@ export interface FeatureManager<ElementFeature extends Feature<any>> {
         event: MapBrowserEvent<any>,
         feature: ElementFeature
     ) => void;
+
+    /**
+     * @returns whether the feature can be moved by the user
+     */
+    isFeatureTranslatable: (feature: ElementFeature) => boolean;
 
     /**
      * @param dropEvent The drop event that triggered the call

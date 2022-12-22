@@ -19,7 +19,7 @@ For a more detailed view please look at the [`Config`](src/config.ts).
 
 ### `index.ts`
 
-When starting, the `index.ts` is executed. It simply creates a `FuesimServer`, which automatically starts it.
+When starting, the `index.ts` is executed. It establishes a database connection and creates a `FuesimServer`, which automatically starts the application.
 
 ### `FuesimServer`
 
@@ -57,3 +57,57 @@ These client wrappers get added to the [`clientMap`](src/exercise/client-map.ts)
 
 When an exercise gets created an [`ExerciseWrapper`](src/exercise/exercise-wrapper.ts) gets created for it, where the current state, the state history, and the set of connected `ClientWrappers` gets stored.
 Its main purpose is the `reduce` method, allowing an `ExerciseAction` to be applied to the current state while also storing the old state in the history. For more information on the state management see the [root Readme](../README.md#state-management-and-synchronisation).
+
+### Database
+
+We are using [PostgreSQL 14](https://www.postgresql.org/) for persistance with [typeorm](https://github.com/typeorm/typeorm/) as an in-between layer for model definitions and interaction with the database.
+
+The credentials and other parameters of the database must match the [`.env` file in the root directory](../.env).
+
+#### Start the database
+
+There are two main ways to start the database.
+
+##### Option 1 using `docker compose` (recommended)
+
+(All `docker compose` commands have to be run in the project root directory, all `npm` scripts have to be run in the `backend/` folder.)
+
+1. Setup your environment file. If you don't have another service running on port 5432 you can use the default settings (otherwise just use another port as your `DFM_DB_PORT`), apart from the password where you should use a good one, and the host which should be changed from `db` to `localhost` in case you want to run the backend and the database on your host machine.
+2. Make sure to have `docker compose` installed, refer to [the relevant section of the root README for this](../README.md#starting-for-deployment-using-docker).
+3. If you want to start both the server and the database using `docker compose`, use `docker compose up -d`, in case you only want to start the database, use `docker compose up -d db`.
+   In the latter case you probably need the database exposed to your host machine. For this, uncomment the `ports` section of the [`docker-compose.yml`](../docker-compose.yml).
+4. Run all pending migrations, [see below](#npm-scripts).
+
+##### Option 2 using PostgreSQL directly
+
+You can also [install PostgreSQL 14 from the official page](https://www.postgresql.org/download/). However, this is untested and not supported by us. If you have any further questions refer to official sources for PostgreSQL, e.g. the [documentation](https://www.postgresql.org/docs/).
+
+#### `npm` scripts
+
+Use the npm script `migration:run` to apply all pending migrations, `migration:revert` to revert the latest migration (can be applied multiple times for older migrations) and `migration:generate <name>` to generate a new migration from the current changes between the models defined in code and present in the database.
+Note that when using non-`sh`-like shells (e.g. Windows `cmd` and PowerShell) you have to append `:windows` to the names of the scripts.
+
+You can use the npm script `db:purge` to remove all elements from the database (no need for `:windows` here).
+
+#### Note for developers
+
+Note that all changes in model and migration files have to be imported in [`src/database/data-source.ts`](./src/database/data-source.ts) before using them.
+
+#### Without a database
+
+If you want to, you can also disable the database.
+Set the environment variable `DFM_USE_DB` (in [`../.env`](../.env)) to `false` to achieve this.
+Note however that this results in a) all history being saved in memory instead of on disk, and b) once the backend exits, for whatever reason, all data is gone forever.
+
+### Migrations
+
+We use [state migrations](./src/database/state-migrations/) to convert outdated states to new versions.
+Look at [`migrations.ts`](./src/database/state-migrations/migrations.ts) for more information.
+
+### Note on long term storage
+
+The current setup when using a database is that no exercises get deleted unless anyone deletes them from the UI (or, more precisely, using the HTTP request `DELETE /api/exercises/:exerciseId`).
+An average exercise with four sections being actively played and about 45 minutes of exercise time seems to take up about 10 MB of storage in the database.
+This is not much in itself, but if many exercises of this size are run each day, it can scale quickly.
+Also, note that there can never be more than 10,000 exercises because then the id generator fails.
+Finally, note that it may be an issue of data protection laws like the [GDPR](https://gdpr.eu/) when user data never gets deleted, even after years of not using it.

@@ -27,9 +27,14 @@
                         "tsConfig": "tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "assets": ["src/favicon.ico", "src/assets"],
-                        "styles": ["src/styles.scss"],
+                        "styles": [
+                            "src/styles.scss",
+                            "node_modules/bootstrap-icons/font/bootstrap-icons.scss"
+                        ],
                         "scripts": [],
                         "allowedCommonJsDependencies": [
+                            "rbush",
+                            "rbush-knn",
                             "validator/lib/isLatLong",
                             "validator/lib/isDivisibleBy",
                             "validator/lib/contains",
@@ -90,23 +95,16 @@
                             "validator/lib/isURL",
                             "validator/lib/isVariableWidth",
                             "validator/lib/isLength",
-                            "validator/lib/matches"
+                            "validator/lib/matches",
+                            "validator/lib/isBase58",
+                            "validator",
+                            "validator/lib/isISO4217",
+                            "validator/lib/isTaxID"
                         ]
                     },
                     "configurations": {
                         "production": {
-                            "budgets": [
-                                {
-                                    "type": "initial",
-                                    "maximumWarning": "500kb",
-                                    "maximumError": "1mb"
-                                },
-                                {
-                                    "type": "anyComponentStyle",
-                                    "maximumWarning": "2kb",
-                                    "maximumError": "4kb"
-                                }
-                            ],
+                            "budgets": [],
                             "fileReplacements": [
                                 {
                                     "replace": "src/environments/environment.ts",
@@ -116,18 +114,7 @@
                             "outputHashing": "all"
                         },
                         "deployment": {
-                            "budgets": [
-                                {
-                                    "type": "initial",
-                                    "maximumWarning": "500kb",
-                                    "maximumError": "1mb"
-                                },
-                                {
-                                    "type": "anyComponentStyle",
-                                    "maximumWarning": "2kb",
-                                    "maximumError": "4kb"
-                                }
-                            ],
+                            "budgets": [],
                             "fileReplacements": [
                                 {
                                     "replace": "src/environments/environment.ts",
@@ -174,8 +161,7 @@
             }
         }
     },
-    "defaultProject": "digital-fuesim-manv",
     "cli": {
-        "defaultCollection": "@angular-eslint/schematics"
+        "analytics": false
     }
 }

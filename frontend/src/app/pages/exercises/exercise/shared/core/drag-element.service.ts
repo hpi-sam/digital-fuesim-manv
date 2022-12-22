@@ -1,16 +1,27 @@
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import type {
-    PatientTemplate,
+    ImageProperties,
+    MapImageTemplate,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
 import {
-    cloneDeepMutable,
-    Patient,
+    createVehicleParameters,
+    MapImage,
     normalZoom,
-    addVehicle,
+    PatientTemplate,
+    TransferPoint,
+    Viewport,
 } from 'digital-fuesim-manv-shared';
-import { ApiService } from 'src/app/core/api.service';
+import type { PatientCategory } from 'digital-fuesim-manv-shared/dist/models/patient-category';
 import type OlMap from 'ol/Map';
+import { ExerciseService } from 'src/app/core/exercise.service';
+import type { AppState } from 'src/app/state/app.state';
+import {
+    selectMaterialTemplates,
+    selectPersonnelTemplates,
+} from 'src/app/state/application/selectors/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 @Injectable({
     providedIn: 'root',
@@ -20,9 +31,11 @@ import type OlMap from 'ol/Map';
  */
 export class DragElementService {
     private olMap?: OlMap;
-    private readonly dragElementKey = 'createElement';
 
-    constructor(private readonly apiService: ApiService) {}
+    constructor(
+        private readonly exerciseService: ExerciseService,
+        private readonly store: Store<AppState>
+    ) {}
 
     public registerMap(map: OlMap) {
         this.olMap = map;
@@ -32,140 +45,234 @@ export class DragElementService {
         this.olMap = undefined;
     }
 
+    private dragElement?: HTMLImageElement;
+    private imageDimensions?: { width: number; height: number };
+    private transferringTemplate?: TransferTemplate;
+
     /**
-     * This should be called in the dragStart handler of the template in the sidebar
+     * Should be called on the mousedown event of the element to be dragged
+     * @param event the mouse event
+     * @param transferTemplate the template to be added
      */
-    public onDragStart(event: DragEvent, transferTemplate: TransferTemplate) {
+    public onMouseDown(event: MouseEvent, transferTemplate: TransferTemplate) {
+        this.transferringTemplate = transferTemplate;
         // Create the drag image
-        const dragImage = new Image();
         const imageProperties = transferTemplate.template.image;
-        dragImage.src = imageProperties.url;
         const zoom = this.olMap!.getView().getZoom()!;
         const zoomFactor = // One higher zoom level means to double the height of the image
             Math.pow(2, zoom - normalZoom) *
             // For some reason we need this additional factor to make it work - determined via best effort guess
             // Changing the scale of the image in OpenLayers does have an influence on the number here. So maybe something to do with a cache.
             2.3;
-        // We need a container, because styles on an image element are ignored per API specification (image is interpreted as a bitmap)
-        const container = this.createDragImageContainer(
-            dragImage,
-            zoomFactor * imageProperties.height
-        );
-        event.dataTransfer?.setDragImage(
-            container,
-            (zoomFactor *
-                imageProperties.aspectRatio *
-                imageProperties.height) /
-                2,
-            (zoomFactor * imageProperties.height) / 2
-        );
-        // This seems to be optional...
-        event.dataTransfer!.dropEffect = 'copy';
-        event.dataTransfer!.effectAllowed = 'copy';
-
-        event.dataTransfer!.setData(
-            this.dragElementKey,
-            JSON.stringify(transferTemplate)
-        );
-    }
-
-    /**
-     * The container for the drag image has to be somewhere in the DOM,
-     * otherwise the drag image is not rendered
-     * This is the container for this.
-     */
-    private createDragImageContainer(
-        imageElement: HTMLImageElement,
-        height: number
-    ) {
-        const container = document.createElement('div');
-        container.style.height = `${height}px`;
-        // The element must be rendered, but should not be visible (this is a hack -> it could be different from browser to browser)
-        container.style.position = 'absolute';
-        container.style.top = '-1000px';
-        document.body.prepend(container);
-        // We assume that only one drag operation can be made at a time
-        document.addEventListener(
-            'dragend',
-            (event) => {
-                container?.remove();
-            },
-            {
-                once: true,
-            }
-        );
-        container.append(imageElement);
-        // The image should have the size of the container
-        imageElement.style.height = '100%';
-        return container;
-    }
-
-    /**
-     * This should be called in the drop handler of the map
-     */
-    public onDrop(event: DragEvent) {
+        this.dragElement = document.createElement('img');
+        this.dragElement.src = imageProperties.url;
+        this.dragElement.style.position = 'absolute';
+        this.imageDimensions = {
+            width:
+                zoomFactor *
+                imageProperties.height *
+                imageProperties.aspectRatio,
+            height: zoomFactor * imageProperties.height,
+        };
+        this.dragElement.style.width = `${this.imageDimensions.width}px`;
+        this.dragElement.style.height = `${this.imageDimensions.height}px`;
+        this.updateDragElementPosition(event);
+        document.body.append(this.dragElement);
+        // The dragging logic
         event.preventDefault();
-        const transferTemplateString = event.dataTransfer?.getData(
-            this.dragElementKey
-        );
-        if (!transferTemplateString) {
-            // TODO: display message that this is not a valid element to drop on the map
+        document.body.style.cursor = 'move';
+        document.addEventListener('mousemove', this.onMouseMove);
+        document.addEventListener('mouseup', this.onMouseUp);
+    }
+
+    private readonly onMouseMove = (event: MouseEvent) => {
+        event.preventDefault();
+        this.updateDragElementPosition(event);
+    };
+
+    private updateDragElementPosition(event: MouseEvent) {
+        if (!this.dragElement || !this.imageDimensions) {
+            console.log('dragElement or imageDimensions are undefined', this);
             return;
         }
+        // max and min to not move out of the window
+        this.dragElement.style.left = `${Math.max(
+            Math.min(
+                event.clientX - this.imageDimensions.width / 2,
+                window.innerWidth - this.imageDimensions.width
+            ),
+            0
+        )}px`;
+        this.dragElement.style.top = `${Math.max(
+            Math.min(
+                event.clientY - this.imageDimensions.height / 2,
+                window.innerHeight - this.imageDimensions.height
+            ),
+            0
+        )}px`;
+    }
+
+    private readonly onMouseUp = (event: MouseEvent) => {
+        // Remove the dragging stuff
         event.preventDefault();
-        const transferTemplate: TransferTemplate = JSON.parse(
-            transferTemplateString
-        );
-        const [x, y] = this.olMap!.getCoordinateFromPixel([
-            event.offsetX,
-            event.offsetY,
-        ]);
+        document.body.style.cursor = 'default';
+        document.removeEventListener('mousemove', this.onMouseMove);
+        document.removeEventListener('mouseup', this.onMouseUp);
+        this.dragElement?.remove();
+
+        if (!this.transferringTemplate || !this.olMap) {
+            console.error('No template or map to add the element to', this);
+            return;
+        }
+        // We don't want to add the element if the mouse is outside the map
+        if (
+            !this.coordinatesAreInElement(this.olMap.getTargetElement(), event)
+        ) {
+            return;
+        }
+        // Get the position of the mouse on the map
+        const [x, y] = this.olMap.getCoordinateFromPixel(
+            this.olMap.getEventPixel(event)
+        ) as [number, number];
         const position = { x, y };
-        switch (transferTemplate.type) {
+        // create the element
+        switch (this.transferringTemplate.type) {
             case 'vehicle':
-                this.apiService.proposeAction(
+                this.exerciseService.proposeAction(
                     {
                         type: '[Vehicle] Add vehicle',
-                        ...addVehicle(transferTemplate.template, position),
+                        ...createVehicleParameters(
+                            this.transferringTemplate.template,
+                            selectStateSnapshot(
+                                selectMaterialTemplates,
+                                this.store
+                            ),
+                            selectStateSnapshot(
+                                selectPersonnelTemplates,
+                                this.store
+                            ),
+                            position
+                        ),
                     },
                     true
                 );
                 break;
             case 'patient':
                 {
-                    const patient = cloneDeepMutable(
-                        Patient.fromTemplate(transferTemplate.template)
+                    const patient = PatientTemplate.generatePatient(
+                        this.transferringTemplate.template.patientTemplates[
+                            Math.floor(
+                                Math.random() *
+                                    this.transferringTemplate.template
+                                        .patientTemplates.length
+                            )
+                        ]!,
+                        this.transferringTemplate.template.name
                     );
-                    patient.position = position;
-                    this.apiService.proposeAction(
+                    this.exerciseService.proposeAction(
                         {
                             type: '[Patient] Add patient',
-                            patient,
+                            patient: {
+                                ...patient,
+                                position,
+                            },
                         },
                         true
                     );
                 }
                 break;
+            case 'viewport': {
+                // This ratio has been determined by trial and error
+                const height = Viewport.image.height / 23.5;
+                const width = height * Viewport.image.aspectRatio;
+                this.exerciseService.proposeAction(
+                    {
+                        type: '[Viewport] Add viewport',
+                        viewport: Viewport.create(
+                            {
+                                x: position.x - width / 2,
+                                y: position.y + height / 2,
+                            },
+                            {
+                                height,
+                                width,
+                            },
+                            'Einsatzabschnitt'
+                        ),
+                    },
+                    true
+                );
+                break;
+            }
+            case 'mapImage':
+                {
+                    const template = this.transferringTemplate.template.image;
+                    this.exerciseService.proposeAction({
+                        type: '[MapImage] Add MapImage',
+                        mapImage: MapImage.create(position, template, false, 0),
+                    });
+                }
+                break;
+            case 'transferPoint':
+                this.exerciseService.proposeAction(
+                    {
+                        type: '[TransferPoint] Add TransferPoint',
+                        transferPoint: TransferPoint.create(
+                            position,
+                            {},
+                            {},
+                            '???',
+                            '???'
+                        ),
+                    },
+                    true
+                );
+                break;
             default:
                 break;
         }
-    }
+    };
 
     /**
-     * This should be called in the dragover handler of the map
+     *
+     * @returns wether {@link coordinates} are in {@link element}
      */
-    public onDragOver(event: DragEvent) {
-        event.preventDefault();
-        event.stopPropagation();
+    private coordinatesAreInElement(
+        element: HTMLElement,
+        coordinates: { x: number; y: number }
+    ) {
+        const rect = element.getBoundingClientRect();
+        return (
+            coordinates.x >= rect.left &&
+            coordinates.x <= rect.right &&
+            coordinates.y >= rect.top &&
+            coordinates.y <= rect.bottom
+        );
     }
 }
 
 type TransferTemplate =
     | {
+          type: 'mapImage';
+          template: MapImageTemplate;
+      }
+    | {
           type: 'patient';
-          template: PatientTemplate;
+          template: PatientCategory;
+      }
+    | {
+          type: 'transferPoint';
+          template: {
+              image: ImageProperties;
+          };
       }
     | {
           type: 'vehicle';
           template: VehicleTemplate;
+      }
+    | {
+          type: 'viewport';
+          template: {
+              image: ImageProperties;
+          };
       };

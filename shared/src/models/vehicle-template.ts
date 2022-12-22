@@ -1,19 +1,22 @@
 import { Type } from 'class-transformer';
 import {
-    IsArray,
-    IsNumber,
-    IsString,
     IsUUID,
+    IsString,
     ValidateNested,
+    IsNumber,
+    IsArray,
 } from 'class-validator';
-import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { uuidValidationOptions, UUID, uuid } from '../utils';
 import type { PersonnelType } from './utils';
-import { CanCaterFor, getCreate } from './utils';
-import { ImageProperties } from './utils/image-properties';
+import { ImageProperties, getCreate } from './utils';
+import type { MaterialType } from './utils/material-type';
 
 export class VehicleTemplate {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsString()
+    public readonly vehicleType: string;
 
     @IsString()
     public readonly name: string;
@@ -26,27 +29,30 @@ export class VehicleTemplate {
     public readonly patientCapacity: number;
 
     @IsArray()
+    @IsString({ each: true })
     public readonly personnel: readonly PersonnelType[];
 
-    @ValidateNested()
-    @Type(() => CanCaterFor)
-    public readonly material: CanCaterFor;
+    @IsArray()
+    @IsString({ each: true })
+    public readonly materials: readonly MaterialType[];
 
     /**
      * @deprecated Use {@link create} instead
      */
     constructor(
+        vehicleType: string,
         name: string,
         image: ImageProperties,
         patientCapacity: number,
         personnel: readonly PersonnelType[],
-        material: CanCaterFor
+        materials: readonly MaterialType[]
     ) {
+        this.vehicleType = vehicleType;
         this.name = name;
         this.image = image;
         this.patientCapacity = patientCapacity;
         this.personnel = personnel;
-        this.material = material;
+        this.materials = materials;
     }
 
     static readonly create = getCreate(this);

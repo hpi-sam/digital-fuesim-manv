@@ -8,7 +8,7 @@ Please look in the [root readme](../README.md) for general information about how
 
 You can either use the [Angular CLI](https://angular.io/cli):
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|guard|module|web-worker `.
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|guard|module|web-worker`.
 
 Or an extension:
 [Angular Schematics (vscode)](https://marketplace.visualstudio.com/items?itemName=cyrilletuzi.angular-schematics).
@@ -52,6 +52,9 @@ Keep in mind that it is also possible to add a [proxy](https://angular.io/guide/
 -   [Bootstrap](https://getbootstrap.com) - A styling framework
     -   [Documentation](https://getbootstrap.com/docs)
     -   [Cheatsheet](https://getbootstrap.com/docs/5.1/examples/cheatsheet/)
+-   [Bootstrap-icons](https://icons.getbootstrap.com/) - the icons we use in the application
+    -   [List of all icons](https://icons.getbootstrap.com/#icons)
+    -   We import the `.css`. Use it like `<i class="bi-alarm"></i>`
 -   [ngBootstrap](https://ng-bootstrap.github.io/) - Angular components for bootstrap
     -   [Documentation](https://ng-bootstrap.github.io/#/components/accordion/examples)
 -   [openlayers](https://openlayers.org/) - A library for displaying maps
@@ -86,11 +89,14 @@ In `src/app` and every descending folder the following guidelines apply:
 -   `/pages`:
     -   All Angular elements and utilities that are only used according to the route (-> lazy loading)
 
-Commonly used exercise-[selectors](https://ngrx.io/guide/store/selectors) should go in [./src/app/state/exercise/exercise.selectors.ts](./src/app/state/exercise/exercise.selectors.ts).
+Commonly used [selectors](https://ngrx.io/guide/store/selectors) should go in [./src/app/state/application/selectors](./src/app/state/application/selectors/).
 
-You can assume that the Store has the current exercise state if you are in `src/app/pages/exercises/exercise`. We use [route guards](https://angular.io/guide/router-tutorial-toh#canactivate-requiring-authentication) for this.
+You can assume that the Store has the current exercise state (either of a live exercise or an exercise in time travel) if you are in `src/app/pages/exercises/exercise`. We use [route guards](https://angular.io/guide/router-tutorial-toh#canactivate-requiring-authentication) for this.
 
-If you want to modify the exercise state, do not do it via [reducers](https://ngrx.io/guide/store/reducers) in the store, but propose an action (optimistically) via the [ApiService](./src/app/core/api.service.ts). The action will automatically be applied to the store.
+If you want to modify the exercise state, do not do it via [reducers](https://ngrx.io/guide/store/reducers) in the store, but propose an action (optimistically) via the [ExerciseService](./src/app/core/exercise.service.ts). The action will automatically be applied to the store.
+
+If you want to switch between time travel, live exercise and no exercise (e.g. on the landing page), use the [ApplicationService](./src/app/core/application.service.ts).
+
 By default, we don't use `ChangeDetectionStrategy.OnPush` because it complicates the code and increases the skill level needed to work with the code while providing a mostly negligible performance benefit.
 
 ### Exercise map
@@ -104,5 +110,12 @@ The [ExerciseMapComponent](src/app/pages/exercises/exercise/shared/exercise-map/
 
 The [OlMapManager](src/app/pages/exercises/exercise/shared/exercise-map/utility/ol-map-manager.ts) manages all the OpenLayers stuff and renders the map on the canvas.
 The map consists of different layers. Each layer only displays one kind of element. How an element in this layer should be rendered and what interactions are possible is defined in the [specific ElementFeatureManagers](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers).
-They all inherit from [ElementFeatureManager](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers/element-feature-manager.ts) and make sometimes use of Mixins to add additional functionality.
+They all inherit from [ElementFeatureManager](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers/element-feature-manager.ts) and make mostly use of `Helper` classes to add additional functionality via composition.
 They have a custom API that allows reacting to changes in an element ([ElementManager](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers/element-manager.ts)) and an API that allows for interaction with other elements via the OlMapManager ([FeatureManager](src/app/pages/exercises/exercise/shared/exercise-map/utility/feature-manager.ts)).
+
+## Action proposals
+
+As described in the [root README.md](../README.md), we use actions to propose changes.
+Such actions can be proposed optimistically.
+Note that the described synchronization mechanisms only make sure that the states between the clients and the server are in sync. In addition, it must be guaranteed that the UI is always in sync with the current state in the store. While Angular deals with this, for the most part, the OpenLayers implementation doesn't do this by default. Therefore, desynchronization is possible when, e.g., dragging an element. To fix this, the respective proposals should be optimistic.
+See [#298](https://github.com/hpi-sam/digital-fuesim-manv/issues/298) in this context.

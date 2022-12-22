@@ -7,8 +7,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
-import type { HealthPoints } from './utils';
-import { getCreate, IsValidHealthPoint } from './utils';
+import { getCreate, HealthPoints, IsValidHealthPoint } from './utils';
 
 /**
  * These parameters determine the increase or decrease of a patients health every second
@@ -25,15 +24,17 @@ export class FunctionParameters {
     @IsNumber()
     public readonly notarztModifier: number;
     /**
-     * Every second the health points are increased by this value multiplied by the weighted number of retSan personnel
-     */
-    @IsNumber()
-    public readonly retSanModifier: number;
-    /**
      * Every second the health points are increased by this value multiplied by the weighted number of notSan personnel
      */
     @IsNumber()
     public readonly notSanModifier: number;
+    /**
+     * Every second the health points are increased by this value multiplied by the weighted number of rettSan personnel
+     */
+    @IsNumber()
+    public readonly rettSanModifier: number;
+
+    // TODO: sanModifier not included
 
     /**
      * @deprecated Use {@link create} instead
@@ -41,12 +42,12 @@ export class FunctionParameters {
     constructor(
         constantChange: number,
         notarztModifier: number,
-        retSanModifier: number,
-        notSanModifier: number
+        notSanModifier: number,
+        rettSanModifier: number
     ) {
         this.constantChange = constantChange;
         this.notarztModifier = notarztModifier;
-        this.retSanModifier = retSanModifier;
+        this.rettSanModifier = rettSanModifier;
         this.notSanModifier = notSanModifier;
     }
 
@@ -63,19 +64,19 @@ export class ConditionParameters {
      */
     @IsOptional()
     @IsNumber()
-    public readonly earliestTime: number | undefined;
+    public readonly earliestTime?: number;
     @IsOptional()
     @IsNumber()
-    public readonly latestTime: number | undefined;
+    public readonly latestTime?: number;
     @IsOptional()
     @IsValidHealthPoint()
-    public readonly minimumHealth: HealthPoints | undefined;
+    public readonly minimumHealth?: HealthPoints;
     @IsOptional()
     @IsValidHealthPoint()
-    public readonly maximumHealth: HealthPoints | undefined;
+    public readonly maximumHealth?: HealthPoints;
     @IsOptional()
     @IsBoolean()
-    public readonly isBeingTreated: boolean | undefined;
+    public readonly isBeingTreated?: boolean;
     /**
      * The id of the patients healthState to switch to when all the conditions match
      */

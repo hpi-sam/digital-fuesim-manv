@@ -8,26 +8,30 @@
         "start:all": "(cd frontend && npm run start) & (cd backend && npm run start)",
         "cy:ci": "cd frontend && npm run cy:run",
         "cy:install": "cd frontend && npm run cy:install",
-        "install:all": "npm i && concurrently \"cd shared && npm i\" \"cd frontend && npm i\" \"cd backend && npm i\"",
-        "setup": "npm i && cd shared && npm i && npm run build && cd .. && concurrently \"cd frontend && npm i\" \"cd backend && npm i\"",
+        "install:all": "npm i --install-links=false && concurrently \"cd shared && npm i --install-links=false\" \"cd frontend && npm i --install-links=false\" \"cd backend && npm i --install-links=false\"",
+        "setup": "npm i --install-links=false && cd shared && npm i --install-links=false && npm run build && cd .. && concurrently \"cd frontend && npm i --install-links=false\" \"cd backend && npm i --install-links=false\"",
+        "prune": "npm prune && cd shared && npm prune && cd ../frontend && npm prune && cd ../backend && npm prune",
+        "prune:deployment": "npm prune --production && cd shared && npm prune --production && cd ../backend && npm prune --production",
+        "deployment": "npm run setup:ci && npm run build:deployment && npm run prune:deployment",
         "setup:ci": "npm ci && cd shared && npm ci && npm run build && cd ../frontend && npm ci && cd ../backend && npm ci",
-        "prettier": "prettier --ignore-path .gitignore --loglevel warn --write \"**/*\" --ignore-unknown",
-        "prettier:check": "prettier --ignore-path .gitignore --loglevel warn --check \"**/*\" --ignore-unknown",
+        "prettier": "cat .gitignore .prettierignore >> .prettierignore-ci && prettier --ignore-path .prettierignore-ci --loglevel warn --write \"**/*\" --ignore-unknown",
+        "prettier:windows": "type .gitignore .prettierignore >> .prettierignore-ci && prettier --ignore-path .prettierignore-ci --loglevel warn --write \"**/*\" --ignore-unknown",
+        "prettier:check": "cat .gitignore .prettierignore >> .prettierignore-ci && prettier --ignore-path .prettierignore-ci --loglevel warn --check \"**/*\" --ignore-unknown",
         "lint": "concurrently \"cd shared && npm run lint\" \"cd frontend && npm run lint\" \"cd backend && npm run lint\"",
         "lint:fix": "concurrently \"cd shared && npm run lint:fix\" \"cd frontend && npm run lint:fix\" \"cd backend && npm run lint:fix\"",
-        "test:global": "jest --runInBand --coverage --verbose",
         "test:concurrently": "concurrently \"cd shared && npm run test\" \"cd frontend && npm run test\" \"cd backend && npm run test\"",
         "test": "cd shared && npm run test && cd ../frontend && npm run test && cd ../backend && npm run test",
-        "test:watch": "jest --runInBand --verbose --watch"
+        "migration:run:prod": "cd backend && npm run migration:run:prod",
+        "merge-coverage": "mkdir coverage && cp backend/coverage/coverage-final.json coverage/backend.json && cp frontend/coverage/coverage-final.json coverage/frontend.json && cp shared/coverage/coverage-final.json coverage/shared.json && nyc merge coverage coverage/merged/coverage.json && nyc report -t coverage/merged --report-dir coverage/reports --reporter=html --reporter=cobertura --reporter=text --reporter=text-summary"
     },
     "private": true,
     "engines": {
         "node": ">=16",
-        "npm": ">=7"
+        "npm": ">=8"
     },
     "devDependencies": {
-        "concurrently": "^7.1.0",
-        "jest": "^27.5.1",
-        "prettier": "^2.6.2"
+        "concurrently": "^7.6.0",
+        "nyc": "^15.1.0",
+        "prettier": "^2.8.1"
     }
 }

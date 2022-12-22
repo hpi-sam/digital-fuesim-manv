@@ -8,21 +8,43 @@
         ></button>
     </h5>
     <div class="popover-body">
-        <div>
-            Verfügbare Patientenplätze:
-            {{
-                vehicle.patientCapacity - (vehicle.patientIds | keyvalue).length
-            }}
-            <br />
-            Verfügbares Material: 1
+        <div *ngIf="(currentRole$ | async) === 'trainer'" class="mb-3">
+            <div class="form-group">
+                <label class="form-label">Fahrzeugname</label>
+                <input
+                    #nameInput="ngModel"
+                    [ngModel]="vehicle.name"
+                    (appSaveOnTyping)="renameVehicle($event)"
+                    [maxlength]="16"
+                    required
+                    type="text"
+                    class="form-control"
+                />
+                <app-display-validation
+                    [ngModelInput]="nameInput"
+                ></app-display-validation>
+            </div>
         </div>
-        <br />
+        <div class="mb-3">
+            Verfügbare Patientenplätze:
+            <span class="font-monospace">
+                {{
+                    vehicle.patientCapacity -
+                        (vehicle.patientIds | keyvalue).length
+                }}
+            </span>
+            von
+            <span class="font-monospace">
+                {{ vehicle.patientCapacity }}
+            </span>
+        </div>
 
         <button
             (click)="unloadVehicle()"
             [disabled]="vehicleIsCompletelyUnloaded$ | async"
-            class="btn btn-primary"
+            class="btn btn-outline-primary"
         >
+            <i class="bi-box-arrow-left"></i>
             Alle aussteigen
         </button>
     </div>

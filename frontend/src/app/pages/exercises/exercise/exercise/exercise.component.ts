@@ -1,47 +1,57 @@
-import type { OnDestroy, OnInit } from '@angular/core';
+import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Subject, takeUntil } from 'rxjs';
+import {
+    cloneDeepMutable,
+    StateExport,
+    StateHistoryCompound,
+} from 'digital-fuesim-manv-shared';
+import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
+import { ApplicationService } from 'src/app/core/application.service';
 import { MessageService } from 'src/app/core/messages/message.service';
+import { saveBlob } from 'src/app/shared/functions/save-blob';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    getSelectClient,
+    selectExerciseId,
+    selectExerciseStateMode,
+    selectTimeConstraints,
+} from 'src/app/state/application/selectors/application.selectors';
+import {
+    selectExerciseState,
     selectParticipantId,
-} from 'src/app/state/exercise/exercise.selectors';
+} from 'src/app/state/application/selectors/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
 
 @Component({
     selector: 'app-exercise',
     templateUrl: './exercise.component.html',
     styleUrls: ['./exercise.component.scss'],
 })
-export class ExerciseComponent implements OnInit, OnDestroy {
+export class ExerciseComponent implements OnDestroy {
     private readonly destroy = new Subject<void>();
-    public exerciseId?: string;
 
-    public readonly participantId$ = this.store.select(selectParticipantId);
-    public client$ = this.store.select(
-        getSelectClient(this.apiService.ownClientId!)
+    public readonly exerciseStateMode$ = this.store.select(
+        selectExerciseStateMode
     );
+    public readonly participantId$ = this.store.select(selectParticipantId);
+    public readonly timeConstraints$ = this.store.select(selectTimeConstraints);
+    public readonly ownClient$ = this.store.select(selectOwnClient);
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly activatedRoute: ActivatedRoute,
         private readonly apiService: ApiService,
+        private readonly applicationService: ApplicationService,
         private readonly messageService: MessageService
     ) {}
 
-    ngOnInit(): void {
-        this.activatedRoute.params
-            .pipe(takeUntil(this.destroy))
-            .subscribe((params) => {
-                this.exerciseId = params['exerciseId'] as string;
-            });
-    }
-
-    public shareExercise(exerciseId: string) {
-        const url = `${location.origin}/exercises/${exerciseId}`;
+    public shareExercise(type: 'participantId' | 'trainerId') {
+        const id = selectStateSnapshot(
+            type === 'participantId' ? selectParticipantId : selectExerciseId,
+            this.store
+        );
+        const url = `${location.origin}/exercises/${id}`;
         if (navigator.share) {
             navigator.share({ url }).catch((error) => {
                 if (error.name === 'AbortError') {
@@ -61,6 +71,47 @@ export class ExerciseComponent implements OnInit, OnDestroy {
             body: 'Sie können ihn nun teilen.',
             color: 'info',
         });
+    }
+
+    public leaveTimeTravel() {
+        this.applicationService.rejoinExercise();
+        this.messageService.postMessage({
+            title: 'Zurück in die Zukunft!',
+            color: 'info',
+        });
+    }
+
+    public async exportExerciseWithHistory() {
+        const history = await this.apiService.exerciseHistory();
+        const currentState = selectStateSnapshot(
+            selectExerciseState,
+            this.store
+        );
+        const blob = new Blob([
+            JSON.stringify(
+                new StateExport(
+                    cloneDeepMutable(currentState),
+                    new StateHistoryCompound(
+                        history.actionsWrappers.map(
+                            (actionWrapper) => actionWrapper.action
+                        ),
+                        cloneDeepMutable(history.initialState)
+                    )
+                )
+            ),
+        ]);
+        saveBlob(blob, `exercise-state-${currentState.participantId}.json`);
+    }
+
+    public exportExerciseState() {
+        const currentState = selectStateSnapshot(
+            selectExerciseState,
+            this.store
+        );
+        const blob = new Blob([
+            JSON.stringify(new StateExport(cloneDeepMutable(currentState))),
+        ]);
+        saveBlob(blob, `exercise-state-${currentState.participantId}.json`);
     }
 
     ngOnDestroy(): void {

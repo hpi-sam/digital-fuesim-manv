@@ -8,7 +8,12 @@
         },
         {
             "label": "Start all",
-            "dependsOn": ["Start frontend", "Start backend", "Watch shared"],
+            "dependsOn": [
+                "Start database",
+                "Start frontend",
+                "Start backend",
+                "Watch shared"
+            ],
             "isBackground": true,
             "problemMatcher": []
         },
@@ -22,6 +27,11 @@
                 "Cypress:run"
             ],
             "problemMatcher": []
+        },
+        {
+            "label": "Start database",
+            "type": "shell",
+            "command": "docker compose up db || docker-compose up db"
         },
         {
             "label": "Start frontend",

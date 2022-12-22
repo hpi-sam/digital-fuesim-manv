@@ -1,0 +1,37 @@
+<div class="modal-header">
+    <h4 class="modal-title">
+        Alarmierungsgruppen
+        <button class="ms-3 btn btn-outline-primary" (click)="addAlarmGroup()">
+            <i class="bi bi-plus"></i> Hinzufügen
+        </button>
+    </h4>
+    <button type="button" class="btn-close" (click)="close()"></button>
+</div>
+<div
+    *ngIf="alarmGroups$ | async | values as alarmGroups"
+    class="modal-body"
+    style="min-height: 60vh"
+>
+    <ul
+        *ngIf="alarmGroups.length > 0; else noAlarmGroups"
+        class="list-group list-group-flush"
+    >
+        <li
+            class="list-group-item"
+            *ngFor="
+                let alarmGroup of alarmGroups;
+                trackBy: 'id' | appTrackByProperty : alarmGroups
+            "
+        >
+            <app-alarm-group-item
+                [alarmGroup]="alarmGroup"
+            ></app-alarm-group-item>
+        </li>
+    </ul>
+
+    <ng-template #noAlarmGroups>
+        <div class="text-muted mt-3 mb-3">
+            Es sind noch keine Alarmierungsgruppen vorhanden.
+        </div>
+    </ng-template>
+</div>

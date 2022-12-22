@@ -1,57 +1,102 @@
 <div
-    *ngIf="client$ | async as client"
+    *ngIf="exerciseStateMode$ | async as mode"
     class="p-2 d-flex flex-column"
     style="height: 100vh"
 >
-    <div *ngIf="participantId$ | async as participantId" class="container">
+    <div class="container">
         <h2>
             Übung:
             <span class="font-monospace fw-bold user-select-all">{{
-                participantId
+                participantId$ | async
             }}</span>
+            <ng-container *ngIf="mode === 'exercise'">
+                <app-exercise-state-badge
+                    class="ms-3"
+                ></app-exercise-state-badge>
+                <button
+                    *ngIf="participantId$ | async"
+                    (click)="shareExercise('participantId')"
+                    class="btn btn-light ms-3"
+                >
+                    Teilnehmerlink teilen
+                </button>
+                <button
+                    *ngIf="(ownClient$ | async)?.role !== 'participant'"
+                    (click)="shareExercise('trainerId')"
+                    class="btn btn-outline-warning ms-3"
+                >
+                    Übungsleiterlink teilen
+                </button>
+            </ng-container>
             <button
-                (click)="shareExercise(participantId)"
-                class="btn btn-light ms-3"
+                *ngIf="mode === 'timeTravel'"
+                class="btn btn-outline-primary ms-3"
+                (click)="leaveTimeTravel()"
             >
-                Teile für Teilnehmer
+                <i class="bi-box-arrow-left"></i>
+                Übung wieder beitreten
             </button>
-            <button
-                *ngIf="client.role === 'trainer'"
-                (click)="shareExercise(exerciseId!)"
-                class="btn btn-outline-warning ms-3"
-            >
-                Teile für Leiter
-            </button>
+            <div ngbDropdown class="d-inline-block float-end">
+                <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    ngbDropdownToggle
+                >
+                    <i class="bi-cloud-download me-2"> </i>
+                    Exportieren
+                </button>
+                <!-- "position: absolute" is only set with a delay by "ngbDropdownMenu", therefore the map canvas has the wrong height when it is initialized -->
+                <div ngbDropdownMenu class="position-absolute">
+                    <button
+                        ngbDropdownItem
+                        (click)="exportExerciseWithHistory()"
+                    >
+                        <i class="bi-clock-history me-2"> </i>
+                        Kompletten Verlauf
+                    </button>
+                    <button ngbDropdownItem (click)="exportExerciseState()">
+                        <i class="bi-cloud-download me-2"> </i>
+                        Aktuellen Zustand
+                        <span
+                            *ngIf="timeConstraints$ | async as timeConstraints"
+                            class="text-muted"
+                        >
+                            um {{ timeConstraints.current | formatDuration }}
+                        </span>
+                    </button>
+                </div>
+            </div>
         </h2>
     </div>
 
     <div class="flex-fill">
-        <ng-container *ngIf="!client.isInWaitingRoom; else waitingRoomTemplate">
-            <div
-                *ngIf="client.role === 'participant'; else trainerMapEditor"
-                class="h-100 rounded overflow-hidden"
-            >
-                <app-exercise-map></app-exercise-map>
-            </div>
-
-            <ng-template #trainerMapEditor>
-                <app-trainer-map-editor
-                    *ngIf="exerciseId"
-                    [exerciseId]="exerciseId"
-                ></app-trainer-map-editor>
-            </ng-template>
+        <app-time-travel *ngIf="mode === 'timeTravel'"></app-time-travel>
+        <ng-container *ngIf="mode === 'exercise'">
+            <ng-container *ngIf="ownClient$ | async as ownClient">
+                <ng-container
+                    *ngIf="!ownClient.isInWaitingRoom; else waitingRoomTemplate"
+                >
+                    <app-exercise-map
+                        *ngIf="ownClient.role === 'participant'"
+                        class="h-100 rounded overflow-hidden"
+                    ></app-exercise-map>
+                    <app-trainer-map-editor
+                        *ngIf="ownClient.role === 'trainer'"
+                    ></app-trainer-map-editor>
+                </ng-container>
+                <ng-template #waitingRoomTemplate>
+                    <div class="container">
+                        <br />
+                        <div class="p-5 bg-light rounded-3">
+                            <p class="lead mb-0">
+                                Sie sind im Warteraum. Bitte warten Sie, bis ein
+                                Übungsleiter Sie zuweist.
+                            </p>
+                            <!-- TODO: Add a nice waiting animation to fill the space -->
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
         </ng-container>
-        <ng-template #waitingRoomTemplate>
-            <div class="container">
-                <br />
-                <div class="p-5 bg-light rounded-3">
-                    <p class="lead mb-0">
-                        Sie sind im Warteraum. Bitte warten Sie, bis ein
-                        Übungsleiter Sie zuweist.
-                    </p>
-                    <!-- TODO: Add a nice waiting animation to fill the space -->
-                </div>
-            </div>
-        </ng-template>
     </div>
 </div>

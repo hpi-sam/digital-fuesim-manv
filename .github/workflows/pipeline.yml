@@ -46,7 +46,7 @@ jobs:
               run: cd shared && npm run build && cd ..
 
     lint:
-        timeout-minutes: 2
+        timeout-minutes: 3
         runs-on: ${{ matrix.os }}
 
         needs: build
@@ -139,17 +139,32 @@ jobs:
               run: cd backend; npm audit; cd ..
 
     test:
-        timeout-minutes: 2
+        timeout-minutes: 4
         runs-on: ${{ matrix.os }}
 
         needs: build
+
+        services:
+            postgres:
+                image: postgres:14
+                env:
+                    POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+                    POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+                    POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+                ports:
+                    - 5432:5432
+                # Set health checks to wait until postgres has started
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
 
         strategy:
             matrix:
                 # As the CI seems to have high run times, limit it to ubuntu-latest
                 # os: [ubuntu-latest, windows-latest, macos-latest]
                 os: [ubuntu-latest]
-                environment: [shared, frontend, backend]
             fail-fast: false
 
         steps:
@@ -177,27 +192,64 @@ jobs:
               with:
                   path: shared/dist
                   key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
-            - name: Run Tests
-              run: cd ${{ matrix.environment }} && npm run test:ci
+            - name: Create .env
+              run: cat ./.env.example | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/" | sed -e "s/^#DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/" | sed -e "s/^DFM_DB_HOST=.*$/DFM_DB_HOST=localhost/" > ./.env
+            - name: Run migrations
+              run: cd backend && npm run migration:run && cd ..
+            - name: Run Backend Tests
+              run: cd backend && npm run test:ci; cd ..
+              if: always()
+            - name: Run Frontend Tests
+              run: cd frontend && npm run test:ci; cd ..
+              if: always()
+            - name: Run Shared Tests
+              run: cd shared && npm run test:ci; cd ..
+              if: always()
+            - name: Merge coverage
+              run: npm run merge-coverage
+              if: always()
+            - name: Upload coverage
+              uses: actions/upload-artifact@v2
+              if: always()
+              with:
+                  name: coverage-output
+                  path: coverage
 
     cypress:
-        timeout-minutes: 4
+        timeout-minutes: 5
         runs-on: ${{ matrix.os }}
 
         needs: build
+
+        services:
+            postgres:
+                image: postgres:14
+                env:
+                    POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+                    POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+                    POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+                ports:
+                    - 5432:5432
+                # Set health checks to wait until postgres has started
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
 
         strategy:
             matrix:
                 os: [ubuntu-latest]
             fail-fast: false
 
+        # Don't pull LFS to reduce bandwidth usage
         steps:
             - uses: actions/checkout@v2
-              with:
-                  lfs: 'true'
+            #   with:
+            #       lfs: 'true'
             - name: checkoutLFS
               uses: actions/checkout@v2
-            - run: git lfs pull
+            # - run: git lfs pull
             - uses: actions/setup-node@v2
               with:
                   node-version: '16'
@@ -230,6 +282,10 @@ jobs:
             - name: Install Cypress
               if: steps.cache-cypress.outputs.cache-hit != 'true'
               run: npm run cy:install
+            - name: Create .env
+              run: cat ./.env.example | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/" | sed -e "s/^#DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/" | sed -e "s/^DFM_DB_HOST=.*$/DFM_DB_HOST=localhost/" > ./.env
+            - name: Run migrations
+              run: cd backend && npm run migration:run && cd ..
             - name: Run Cypress
               uses: cypress-io/github-action@v2
               with:

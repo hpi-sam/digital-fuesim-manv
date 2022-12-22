@@ -1,0 +1,94 @@
+<div class="modal-header">
+    <h4 class="modal-title">Statistiken</h4>
+    <button type="button" class="btn-close" (click)="close()"></button>
+</div>
+<div class="modal-body">
+    <nav #nav="ngbNav" ngbNav class="nav-tabs">
+        <ng-container ngbNavItem="areas">
+            <a ngbNavLink>Einsatzbereiche</a>
+            <ng-template ngbNavContent>
+                <div ngbDropdown class="d-inline-block">
+                    <button
+                        class="btn btn-outline-primary me-3"
+                        title="Bereich für Statistik auswählen"
+                        ngbDropdownToggle
+                    >
+                        <app-viewport-name
+                            *ngIf="
+                                areaStatisticsService.areaId$ | async as areaId;
+                                else noArea
+                            "
+                            [viewportId]="areaId"
+                        ></app-viewport-name>
+                        <ng-template #noArea> Gesamt </ng-template>
+                    </button>
+                    <div ngbDropdownMenu>
+                        <button
+                            ngbDropdownItem
+                            (click)="areaStatisticsService.setAreaId(null)"
+                        >
+                            Gesamt
+                        </button>
+                        <button
+                            *ngFor="
+                                let viewport of viewports$ | async | keyvalue
+                            "
+                            ngbDropdownItem
+                            (click)="
+                                areaStatisticsService.setAreaId(viewport.key)
+                            "
+                        >
+                            <app-viewport-name
+                                [viewportId]="viewport.key"
+                            ></app-viewport-name>
+                        </button>
+                    </div>
+                </div>
+                <button
+                    class="btn btn-sm btn-primary"
+                    (click)="statisticsService.updateStatistics()"
+                    [disabled]="statisticsService.updatingStatistics"
+                >
+                    <span
+                        *ngIf="statisticsService.updatingStatistics"
+                        class="spinner-border spinner-border-sm"
+                    ></span>
+                    Aktualisieren
+                </button>
+
+                <br />
+                <br />
+                <h3>Patienten</h3>
+                <app-stacked-bar-chart
+                    *ngIf="patientsStatistics$ | async as statistics"
+                    [statistics]="statistics"
+                ></app-stacked-bar-chart>
+                <br />
+                <h3>Fahrzeuge</h3>
+                <app-stacked-bar-chart
+                    *ngIf="vehiclesStatistics$ | async as statistics"
+                    [statistics]="statistics"
+                ></app-stacked-bar-chart>
+                <br />
+                <h3>
+                    Einsatzkräfte
+                    <small class="text-muted"
+                        >(weder im Transfer noch im Fahrzeug)</small
+                    >
+                </h3>
+                <app-stacked-bar-chart
+                    *ngIf="personnelStatistics$ | async as statistics"
+                    [statistics]="statistics"
+                ></app-stacked-bar-chart>
+            </ng-template>
+        </ng-container>
+        <ng-container ngbNavItem="hospitals">
+            <a ngbNavLink>Krankenhäuser</a>
+            <ng-template ngbNavContent>
+                <h3>Krankenhäuser</h3>
+                <app-hospital-patients-table></app-hospital-patients-table>
+            </ng-template>
+        </ng-container>
+    </nav>
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+</div>

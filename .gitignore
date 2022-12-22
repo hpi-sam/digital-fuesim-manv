@@ -4,6 +4,9 @@ dist/
 # jest
 /coverage
 
+.env
+.prettierignore-ci
+
 # TODO: These are currently duplicated as a workaround for https://github.com/hpi-sam/digital-fuesim-manv/issues/36
 # cypress
 frontend/cypress/screenshots

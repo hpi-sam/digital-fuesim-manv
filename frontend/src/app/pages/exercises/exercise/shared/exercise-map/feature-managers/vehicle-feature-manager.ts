@@ -1,36 +1,61 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import type { Vehicle } from 'digital-fuesim-manv-shared';
+import type { UUID, Vehicle } from 'digital-fuesim-manv-shared';
+import { normalZoom } from 'digital-fuesim-manv-shared';
+import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
-import type VectorLayer from 'ol/layer/Vector';
-import type VectorSource from 'ol/source/Vector';
-import type { ApiService } from 'src/app/core/api.service';
-import type OlMap from 'ol/Map';
-import type { Store } from '@ngrx/store';
-import type { AppState } from 'src/app/state/app.state';
-import type { Feature } from 'ol';
 import type { TranslateEvent } from 'ol/interaction/Translate';
+import type VectorLayer from 'ol/layer/Vector';
+import type OlMap from 'ol/Map';
+import type VectorSource from 'ol/source/Vector';
+import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { WithPosition } from '../../utility/types/with-position';
 import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
-import { withPopup } from '../utility/with-popup';
-import { withElementImageStyle } from '../utility/with-element-image-style';
-import { ElementFeatureManager } from './element-feature-manager';
+import { ImagePopupHelper } from '../utility/popup-helper';
+import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
+import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
+import { createPoint, ElementFeatureManager } from './element-feature-manager';
 
-class VehicleFeatureManagerBase extends ElementFeatureManager<
+export class VehicleFeatureManager extends ElementFeatureManager<
     WithPosition<Vehicle>
 > {
+    readonly type = 'vehicles';
+
+    private readonly imageStyleHelper = new ImageStyleHelper(
+        (feature) => this.getElementFromFeature(feature)!.value.image
+    );
+    private readonly nameStyleHelper = new NameStyleHelper(
+        (feature) => {
+            const vehicle = this.getElementFromFeature(feature)!.value;
+            return {
+                name: vehicle.name,
+                offsetY: vehicle.image.height / 2 / normalZoom,
+            };
+        },
+        0.1,
+        'top'
+    );
+    private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
+
     constructor(
-        store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        private readonly apiService: ApiService
+        private readonly exerciseService: ExerciseService
     ) {
-        super(store, olMap, layer, (targetPosition, vehicle) => {
-            apiService.proposeAction({
-                type: '[Vehicle] Move vehicle',
-                vehicleId: vehicle.id,
-                targetPosition,
-            });
-        });
+        super(
+            olMap,
+            layer,
+            (targetPosition, vehicle) => {
+                exerciseService.proposeAction({
+                    type: '[Vehicle] Move vehicle',
+                    vehicleId: vehicle.id,
+                    targetPosition,
+                });
+            },
+            createPoint
+        );
+        this.layer.setStyle((feature, resolution) => [
+            this.nameStyleHelper.getStyle(feature as Feature, resolution),
+            this.imageStyleHelper.getStyle(feature as Feature, resolution),
+        ]);
     }
 
     public override onFeatureDrop(
@@ -42,7 +67,7 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
         const droppedOnVehicle = this.getElementFromFeature(
             droppedOnFeature
         ) as {
-            type: 'vehicle';
+            type: 'vehicles';
             value: Vehicle;
         };
         if (!droppedElement || !droppedOnVehicle) {
@@ -52,15 +77,14 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
         if (
             (droppedElement.type === 'personnel' &&
                 droppedOnVehicle.value.personnelIds[droppedElement.value.id]) ||
-            (droppedElement.type === 'material' &&
-                droppedOnVehicle.value.materialId ===
-                    droppedElement.value.id) ||
-            (droppedElement.type === 'patient' &&
+            (droppedElement.type === 'materials' &&
+                droppedOnVehicle.value.materialIds[droppedElement.value.id]) ||
+            (droppedElement.type === 'patients' &&
                 Object.keys(droppedOnVehicle.value.patientIds).length <
                     droppedOnVehicle.value.patientCapacity)
         ) {
             // TODO: user feedback (e.g. toast)
-            this.apiService.proposeAction(
+            this.exerciseService.proposeAction(
                 {
                     type: '[Vehicle] Load vehicle',
                     vehicleId: droppedOnVehicle.value.id,
@@ -75,18 +99,17 @@ class VehicleFeatureManagerBase extends ElementFeatureManager<
     }
 
     override unsupportedChangeProperties = new Set(['id', 'image'] as const);
+
+    public override onFeatureClicked(
+        event: MapBrowserEvent<any>,
+        feature: Feature<any>
+    ): void {
+        super.onFeatureClicked(event, feature);
+
+        this.togglePopup$.next(
+            this.popupHelper.getPopupOptions(VehiclePopupComponent, feature, {
+                vehicleId: feature.getId() as UUID,
+            })
+        );
+    }
 }
-
-const VehicleFeatureManagerWithImageStyle = withElementImageStyle<
-    WithPosition<Vehicle>
->(VehicleFeatureManagerBase);
-
-export const VehicleFeatureManager = withPopup<
-    WithPosition<Vehicle>,
-    typeof VehicleFeatureManagerWithImageStyle
->(VehicleFeatureManagerWithImageStyle, {
-    component: VehiclePopupComponent,
-    height: 150,
-    width: 225,
-    getContext: (feature) => ({ vehicleId: feature.getId()! }),
-});

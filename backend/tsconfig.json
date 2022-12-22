@@ -1,18 +1,22 @@
 {
     "compilerOptions": {
         "strict": true,
+        "noUncheckedIndexedAccess": true,
         "module": "ESNext",
-        "target": "ES2021",
+        "target": "ESNext",
         "declaration": true,
         "outDir": "./dist",
         "sourceMap": true,
         "moduleResolution": "node",
         "declarationMap": true,
         "rootDir": ".",
-        "composite": true,
         "skipLibCheck": true,
         "esModuleInterop": true,
-        "types": ["jest", "node"]
+        "types": ["jest", "node"],
+        // For typeorm
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "baseUrl": "./src"
     },
     "references": [],
     "include": ["src/**/*", "test/**/*"],

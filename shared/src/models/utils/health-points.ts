@@ -1,5 +1,5 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
-import { isInt, registerDecorator } from 'class-validator';
+import { isNumber, registerDecorator } from 'class-validator';
 import type { PatientStatus } from './patient-status';
 
 /**
@@ -16,8 +16,11 @@ export const healthPointsDefaults = {
     max: 100_000,
     min: 0,
     greenMax: 100_000,
+    greenAverage: 85_000,
     yellowMax: 66_000,
+    yellowAverage: 50_000,
     redMax: 33_000,
+    redAverage: 20_000,
     blackMax: 0,
 };
 
@@ -92,7 +95,7 @@ export function IsValidHealthPoint(validationOptions?: ValidationOptions) {
             },
             validator: {
                 validate(value: any, args: ValidationArguments) {
-                    return isInt(value) && isValidHealthPoint(value);
+                    return isNumber(value) && isValidHealthPoint(value);
                 },
             },
         });

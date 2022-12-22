@@ -6,7 +6,7 @@ import { createExercise, createTestEnvironment } from './utils';
 describe('exercise', () => {
     const environment = createTestEnvironment();
 
-    beforeEach(() => {
+    beforeEach(async () => {
         UserReadableIdGenerator.freeAll();
         exerciseMap.clear();
     });

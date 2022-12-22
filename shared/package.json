@@ -22,31 +22,35 @@
     "private": true,
     "engines": {
         "node": ">=16",
-        "npm": ">=7"
+        "npm": ">=8"
     },
     "dependencies": {
         "class-transformer": "^0.5.1",
-        "class-validator": "^0.13.2",
-        "immer": "^9.0.12",
+        "class-validator": "^0.14.0",
+        "immer": "^9.0.16",
         "lodash-es": "^4.17.21",
+        "rbush": "^3.0.1",
+        "rbush-knn": "github:mourner/rbush-knn",
         "reflect-metadata": "^0.1.13",
-        "uuid": "^8.3.2"
+        "uuid": "^9.0.0"
     },
     "devDependencies": {
-        "@types/jest": "^27.4.1",
+        "@types/jest": "^29.2.4",
         "@types/lodash-es": "^4.17.6",
-        "@types/uuid": "^8.3.4",
-        "@types/validator": "^13.7.2",
-        "@typescript-eslint/eslint-plugin": "5.18.0",
-        "@typescript-eslint/parser": "5.18.0",
-        "eslint": "^8.12.0",
+        "@types/rbush": "^3.0.0",
+        "@types/uuid": "^9.0.0",
+        "@types/validator": "^13.7.10",
+        "@typescript-eslint/eslint-plugin": "5.47.0",
+        "@typescript-eslint/parser": "5.47.0",
+        "eslint": "^8.30.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-import": "~2.26.0",
-        "eslint-plugin-unicorn": "^42.0.0",
-        "jest": "^27.5.1",
-        "ts-jest": "^27.1.4",
-        "ts-node": "^10.7.0",
-        "typescript": "~4.6.3"
+        "eslint-plugin-total-functions": "6.0.0",
+        "eslint-plugin-unicorn": "^45.0.2",
+        "jest": "^29.3.1",
+        "ts-jest": "^29.0.3",
+        "ts-node": "^10.9.1",
+        "typescript": "~4.8.2"
     },
     "exports": {
         ".": {

@@ -4,20 +4,21 @@
             <th scope="col">Name</th>
             <th scope="col">Rolle</th>
             <th scope="col">Einsatzabschnitt</th>
-            <th scope="col">Im Warteraum?</th>
+            <th scope="col">In der Übung</th>
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let client of clients$ | async | keyvalue">
+        <tr
+            *ngFor="
+                let client of clients$ | async | values;
+                trackBy: 'id' | appTrackByProperty : (clients$ | async | values)
+            "
+        >
             <td class="align-middle">
-                {{ client.value.name }}
+                {{ client.name }}
             </td>
             <td class="align-middle">
-                {{
-                    client.value.role === 'trainer'
-                        ? 'Übungsleiter'
-                        : 'Teilnehmer'
-                }}
+                {{ client.role === 'trainer' ? 'Übungsleiter' : 'Teilnehmer' }}
             </td>
             <!-- Choose the viewport -->
             <td ngbDropdown>
@@ -27,8 +28,7 @@
                 >
                     <ng-container
                         *ngIf="
-                            client.value
-                                .viewRestrictedToViewportId as viewportId;
+                            client.viewRestrictedToViewportId as viewportId;
                             else noViewportId
                         "
                     >
@@ -37,15 +37,15 @@
                 </button>
                 <div ngbDropdownMenu>
                     <button
-                        *ngFor="let viewport of viewports$ | async | keyvalue"
+                        *ngFor="let viewport of viewports$ | async | values"
                         ngbDropdownItem
-                        (click)="restrictToViewport(client.key, viewport.key)"
+                        (click)="restrictToViewport(client.id, viewport.id)"
                     >
-                        {{ viewport.value.name }}
+                        {{ viewport.name }}
                     </button>
                     <button
                         ngbDropdownItem
-                        (click)="restrictToViewport(client.key, undefined)"
+                        (click)="restrictToViewport(client.id, undefined)"
                     >
                         <ng-container
                             [ngTemplateOutlet]="noViewportId"
@@ -59,8 +59,8 @@
             <td class="align-middle">
                 <div class="form-switch">
                     <input
-                        [ngModel]="client.value.isInWaitingRoom"
-                        (ngModelChange)="setWaitingRoom(client.key, $event)"
+                        [ngModel]="!client.isInWaitingRoom"
+                        (ngModelChange)="setWaitingRoom(client.id, !$event)"
                         class="form-check-input"
                         type="checkbox"
                     />
