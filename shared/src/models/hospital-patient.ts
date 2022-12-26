@@ -55,10 +55,10 @@ export class HospitalPatient {
     @Type(() => BiometricInformation)
     public readonly biometricInformation: BiometricInformation;
 
-    @IsStringLiteralUnion<PatientStatus>(patientStatusAllowedValues)
+    @IsStringLiteralUnion(patientStatusAllowedValues)
     public readonly pretriageStatus: PatientStatus;
 
-    @IsStringLiteralUnion<PatientStatus>(patientStatusAllowedValues)
+    @IsStringLiteralUnion(patientStatusAllowedValues)
     public readonly realStatus: PatientStatus;
 
     @ValidateNested()

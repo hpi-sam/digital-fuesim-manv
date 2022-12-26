@@ -16,10 +16,10 @@ export const isUUIDSet = createMapValidator<UUID, true>({
 });
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export function IsUUIDSet(
-    validationOptions?: ValidationOptions
-): GenericPropertyDecorator<UUIDSet> {
-    return makeValidator<UUIDSet>(
+export function IsUUIDSet<Each extends boolean = false>(
+    validationOptions?: ValidationOptions & { each?: Each }
+): GenericPropertyDecorator<UUIDSet, Each> {
+    return makeValidator<UUIDSet, Each>(
         'isUUIDSet',
         (value: unknown, args?: ValidationArguments) => isUUIDSet(value),
         validationOptions

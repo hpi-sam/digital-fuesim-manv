@@ -107,7 +107,7 @@ export class ChangeZIndexMapImageAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly mapImageId!: UUID;
 
-    @IsStringLiteralUnion<ChangeZIndexMapImageActionMode>({
+    @IsStringLiteralUnion({
         bringToBack: true,
         bringToFront: true,
         oneLayerBack: true,

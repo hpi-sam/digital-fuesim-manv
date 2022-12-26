@@ -7,7 +7,7 @@ import { getCreate } from './get-create';
 export type StartPoint = AlarmGroupStartPoint | TransferStartPoint;
 
 export class TransferStartPoint {
-    @IsStringLiteralUnion<'transferPoint'>({ transferPoint: true })
+    @IsStringLiteralUnion({ transferPoint: true })
     public readonly type = 'transferPoint';
 
     @IsUUID(4, uuidValidationOptions)
@@ -24,7 +24,7 @@ export class TransferStartPoint {
 }
 
 export class AlarmGroupStartPoint {
-    @IsStringLiteralUnion<'alarmGroup'>({ alarmGroup: true })
+    @IsStringLiteralUnion({ alarmGroup: true })
     public readonly type = 'alarmGroup';
 
     @IsString()

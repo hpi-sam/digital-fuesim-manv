@@ -9,7 +9,7 @@ import { IsStringLiteralUnion } from '../../utils/validators';
 import { BaseExportImportFile } from './base-file';
 
 export class PartialExport extends BaseExportImportFile {
-    @IsStringLiteralUnion<'partial'>({ partial: true })
+    @IsStringLiteralUnion({ partial: true })
     public readonly type: 'partial' = 'partial';
 
     @IsOptional()

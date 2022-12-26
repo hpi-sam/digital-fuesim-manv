@@ -12,7 +12,7 @@ import { personnelTypeAllowedValues } from './utils/personnel-type';
 
 // TODO: These are not (yet) saved in the state -> Decide whether they should and if not move this file from the models folder away
 export class PersonnelTemplate {
-    @IsStringLiteralUnion<PersonnelType>(personnelTypeAllowedValues)
+    @IsStringLiteralUnion(personnelTypeAllowedValues)
     public readonly personnelType: PersonnelType;
 
     @ValidateNested()

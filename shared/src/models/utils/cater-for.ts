@@ -38,7 +38,7 @@ export class CanCaterFor {
     @Min(0)
     public readonly green: number;
 
-    @IsStringLiteralUnion<LogicalOperator>(logicalOperatorAllowedValues)
+    @IsStringLiteralUnion(logicalOperatorAllowedValues)
     public readonly logicalOperator: LogicalOperator;
 
     /**

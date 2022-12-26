@@ -45,10 +45,10 @@ export function isExerciseAction(value: unknown): value is ExerciseAction {
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export function IsExerciseAction(
-    validationOptions?: ValidationOptions
-): GenericPropertyDecorator<ExerciseAction[]> {
-    return makeValidator<ExerciseAction[]>(
+export function IsExerciseAction<Each extends boolean>(
+    validationOptions?: ValidationOptions & { each?: Each }
+): GenericPropertyDecorator<ExerciseAction, Each> {
+    return makeValidator<ExerciseAction, Each>(
         'isExerciseAction',
         (value: unknown, args?: ValidationArguments) => isExerciseAction(value),
         validationOptions

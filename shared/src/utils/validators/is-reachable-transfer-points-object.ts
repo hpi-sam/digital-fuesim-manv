@@ -23,10 +23,10 @@ export const isReachableTransferPoints = createMapValidator<
 });
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export function IsReachableTransferPoints(
-    validationOptions?: ValidationOptions
-): GenericPropertyDecorator<ReachableTransferPoints> {
-    return makeValidator<ReachableTransferPoints>(
+export function IsReachableTransferPoints<Each extends boolean = false>(
+    validationOptions?: ValidationOptions & { each?: Each }
+): GenericPropertyDecorator<ReachableTransferPoints, Each> {
+    return makeValidator<ReachableTransferPoints, Each>(
         'isReachableTransferPoints',
         (value: unknown, args?: ValidationArguments) =>
             isReachableTransferPoints(value),

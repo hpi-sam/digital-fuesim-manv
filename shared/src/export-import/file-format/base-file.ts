@@ -14,7 +14,7 @@ export abstract class BaseExportImportFile {
     @Min(0)
     public readonly dataVersion: number = ExerciseState.currentStateVersion;
 
-    @IsStringLiteralUnion<'complete' | 'partial'>({
+    @IsStringLiteralUnion({
         complete: true,
         partial: true,
     })

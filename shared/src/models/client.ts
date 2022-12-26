@@ -19,7 +19,7 @@ export class Client {
     @MaxLength(255)
     public readonly name: string;
 
-    @IsStringLiteralUnion<Role>(roleAllowedValues)
+    @IsStringLiteralUnion(roleAllowedValues)
     public readonly role: Role;
 
     @IsUUID(4, uuidValidationOptions)

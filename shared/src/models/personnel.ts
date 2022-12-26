@@ -29,7 +29,7 @@ export class Personnel {
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId: UUID;
 
-    @IsStringLiteralUnion<PersonnelType>(personnelTypeAllowedValues)
+    @IsStringLiteralUnion(personnelTypeAllowedValues)
     public readonly personnelType: PersonnelType;
 
     @IsString()

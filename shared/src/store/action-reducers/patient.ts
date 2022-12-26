@@ -67,7 +67,7 @@ export class SetVisibleStatusAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly patientId!: UUID;
 
-    @IsStringLiteralUnion<PatientStatus>(patientStatusAllowedValues)
+    @IsStringLiteralUnion(patientStatusAllowedValues)
     public readonly patientStatus!: PatientStatus;
 }
 

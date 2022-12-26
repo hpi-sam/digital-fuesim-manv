@@ -1,12 +1,20 @@
+import type { GenericPropertyDecorator } from './generic-property-decorator';
+
 // Source: https://github.com/nestjs/nest/blob/a448f53b7746d35bf25a18f1759c971e5b7fea1c/packages/common/decorators/core/apply-decorators.ts
+
 /**
  * @param decorators one or more decorators (e.g., `IsString(...)`)
  * @returns a new decorator that applies all the provided decorators
  *
  * Useful to build new decorators (or a decorator factory) encapsulating multiple decorators
  */
-export function combineDecorators(
-    ...decorators: Array<ClassDecorator | MethodDecorator | PropertyDecorator>
+export function combineDecorators<T, Each extends boolean>(
+    ...decorators: Array<
+        | ClassDecorator
+        | GenericPropertyDecorator<T, Each>
+        | MethodDecorator
+        | PropertyDecorator
+    >
 ) {
     // eslint-disable-next-line @typescript-eslint/ban-types
     return <TFunction extends Function, Y>(

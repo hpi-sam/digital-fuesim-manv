@@ -66,9 +66,7 @@ export class AddToTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Add to transfer';
 
-    @IsStringLiteralUnion<TransferableElementType>(
-        transferableElementTypeAllowedValues
-    )
+    @IsStringLiteralUnion(transferableElementTypeAllowedValues)
     elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
@@ -86,9 +84,7 @@ export class EditTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Edit transfer';
 
-    @IsStringLiteralUnion<TransferableElementType>(
-        transferableElementTypeAllowedValues
-    )
+    @IsStringLiteralUnion(transferableElementTypeAllowedValues)
     elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
@@ -112,9 +108,7 @@ export class FinishTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Finish transfer';
 
-    @IsStringLiteralUnion<TransferableElementType>(
-        transferableElementTypeAllowedValues
-    )
+    @IsStringLiteralUnion(transferableElementTypeAllowedValues)
     elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
@@ -128,9 +122,7 @@ export class TogglePauseTransferAction implements Action {
     @IsString()
     public readonly type = '[Transfer] Toggle pause transfer';
 
-    @IsStringLiteralUnion<TransferableElementType>(
-        transferableElementTypeAllowedValues
-    )
+    @IsStringLiteralUnion(transferableElementTypeAllowedValues)
     elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)

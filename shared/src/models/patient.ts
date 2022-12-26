@@ -52,10 +52,10 @@ export class Patient {
     @Type(() => PatientStatusCode)
     public readonly patientStatusCode: PatientStatusCode;
 
-    @IsStringLiteralUnion<PatientStatus>(patientStatusAllowedValues)
+    @IsStringLiteralUnion(patientStatusAllowedValues)
     public readonly pretriageStatus: PatientStatus;
 
-    @IsStringLiteralUnion<PatientStatus>(patientStatusAllowedValues)
+    @IsStringLiteralUnion(patientStatusAllowedValues)
     public readonly realStatus: PatientStatus;
 
     @ValidateNested()

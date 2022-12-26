@@ -6,7 +6,7 @@ import { CanCaterFor, getCreate, ImageProperties } from './utils';
 import { MaterialType, materialTypeAllowedValues } from './utils/material-type';
 
 export class MaterialTemplate {
-    @IsStringLiteralUnion<MaterialType>(materialTypeAllowedValues)
+    @IsStringLiteralUnion(materialTypeAllowedValues)
     public readonly materialType: MaterialType;
 
     @ValidateNested()

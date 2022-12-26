@@ -26,7 +26,7 @@ export class StateHistoryCompound {
 }
 
 export class StateExport extends BaseExportImportFile {
-    @IsStringLiteralUnion<'complete'>({ complete: true })
+    @IsStringLiteralUnion({ complete: true })
     public readonly type: 'complete' = 'complete';
 
     @ValidateNested()

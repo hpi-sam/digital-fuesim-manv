@@ -42,10 +42,10 @@ export const behaviourCodeMap: { [key in BehaviourCode]: string } = {
 };
 
 export class PatientStatusDataField {
-    @IsStringLiteralUnion<ColorCode>(colorCodeAllowedValues)
+    @IsStringLiteralUnion(colorCodeAllowedValues)
     public readonly colorCode: ColorCode;
 
-    @IsStringLiteralUnion<BehaviourCode>(behaviourCodeAllowedValues)
+    @IsStringLiteralUnion(behaviourCodeAllowedValues)
     public readonly behaviourCode: BehaviourCode;
 
     /**

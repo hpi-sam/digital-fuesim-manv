@@ -34,11 +34,14 @@ export function isStringLiteralUnion<T extends string>(
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export function IsStringLiteralUnion<T extends string>(
+export function IsStringLiteralUnion<
+    T extends string,
+    Each extends boolean = false
+>(
     allowedValues: AllowedValues<T>,
-    validationOptions?: ValidationOptions
-): GenericPropertyDecorator<T> {
-    return makeValidator<T>(
+    validationOptions?: ValidationOptions & { each?: Each }
+): GenericPropertyDecorator<T, Each> {
+    return makeValidator<T, Each>(
         'isStringLiteralUnion',
         (value: unknown, args?: ValidationArguments) =>
             isStringLiteralUnion<T>(allowedValues, value),

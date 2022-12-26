@@ -35,13 +35,13 @@ export class VehicleTemplate {
     public readonly patientCapacity: number;
 
     @IsArray()
-    @IsStringLiteralUnion<PersonnelType>(personnelTypeAllowedValues, {
+    @IsStringLiteralUnion(personnelTypeAllowedValues, {
         each: true,
     })
     public readonly personnel: readonly PersonnelType[];
 
     @IsArray()
-    @IsStringLiteralUnion<MaterialType>(materialTypeAllowedValues, {
+    @IsStringLiteralUnion(materialTypeAllowedValues, {
         each: true,
     })
     public readonly materials: readonly MaterialType[];
