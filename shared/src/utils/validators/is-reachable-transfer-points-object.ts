@@ -3,6 +3,7 @@ import { isUUID, isNumber, min } from 'class-validator';
 import type { ReachableTransferPoints } from '../../models/transfer-point';
 import type { UUID } from '../uuid';
 import { createMapValidator } from './create-map-validator';
+import type { GenericPropertyDecorator } from './generic-property-decorator';
 import { makeValidator } from './make-validator';
 
 export const isReachableTransferPoints = createMapValidator<
@@ -24,8 +25,8 @@ export const isReachableTransferPoints = createMapValidator<
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function IsReachableTransferPoints(
     validationOptions?: ValidationOptions
-) {
-    return makeValidator(
+): GenericPropertyDecorator<ReachableTransferPoints> {
+    return makeValidator<ReachableTransferPoints>(
         'isReachableTransferPoints',
         (value: unknown, args?: ValidationArguments) =>
             isReachableTransferPoints(value),

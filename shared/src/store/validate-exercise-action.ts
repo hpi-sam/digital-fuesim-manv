@@ -6,6 +6,7 @@ import type {
 } from 'class-validator';
 import { validateSync } from 'class-validator';
 import type { Constructor } from '../utils';
+import type { GenericPropertyDecorator } from '../utils/validators/generic-property-decorator';
 import { makeValidator } from '../utils/validators/make-validator';
 import type { ExerciseAction } from './action-reducers';
 import { getExerciseActionTypeDictionary } from './action-reducers';
@@ -44,8 +45,10 @@ export function isExerciseAction(value: unknown): value is ExerciseAction {
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export function IsExerciseAction(validationOptions?: ValidationOptions) {
-    return makeValidator(
+export function IsExerciseAction(
+    validationOptions?: ValidationOptions
+): GenericPropertyDecorator<ExerciseAction[]> {
+    return makeValidator<ExerciseAction[]>(
         'isExerciseAction',
         (value: unknown, args?: ValidationArguments) => isExerciseAction(value),
         validationOptions

@@ -4,14 +4,7 @@ import { isUUID, ValidateNested } from 'class-validator';
 import type { Constructor } from '../constructor';
 import type { UUID } from '../uuid';
 import { combineDecorators } from './combine-decorators';
-
-type PropertyDecorator<T> = <
-    Target extends { readonly [key in Key]: T },
-    Key extends string
->(
-    target: Target,
-    propertyKey: Key
-) => void;
+import type { GenericPropertyDecorator } from './generic-property-decorator';
 
 // An `isIdMap` function is omitted.
 // It's currently not used and it's not trivial to migrate the decorator approach below
@@ -28,7 +21,7 @@ export function IsIdMap<T extends object>(
     type: Constructor<T>,
     getId: (value: T) => UUID = (value) => (value as { id: UUID }).id,
     validationOptions?: ValidationOptions
-): PropertyDecorator<{ [key: UUID]: T }> {
+): GenericPropertyDecorator<{ [key: UUID]: T }> {
     const transform = Transform(
         (params) => {
             const plainChildren = params.value as { [key: UUID]: T };

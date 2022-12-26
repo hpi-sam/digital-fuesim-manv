@@ -1,4 +1,5 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
+import type { GenericPropertyDecorator } from './generic-property-decorator';
 import { makeValidator } from './make-validator';
 
 /**
@@ -36,8 +37,8 @@ export function isStringLiteralUnion<T extends string>(
 export function IsStringLiteralUnion<T extends string>(
     allowedValues: AllowedValues<T>,
     validationOptions?: ValidationOptions
-) {
-    return makeValidator(
+): GenericPropertyDecorator<T> {
+    return makeValidator<T>(
         'isStringLiteralUnion',
         (value: unknown, args?: ValidationArguments) =>
             isStringLiteralUnion<T>(allowedValues, value),

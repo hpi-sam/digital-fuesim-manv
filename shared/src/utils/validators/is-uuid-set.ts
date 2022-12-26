@@ -1,7 +1,9 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
 import { isUUID } from 'class-validator';
 import type { UUID } from '../uuid';
+import type { UUIDSet } from '../uuid-set';
 import { createMapValidator } from './create-map-validator';
+import type { GenericPropertyDecorator } from './generic-property-decorator';
 import { makeValidator } from './make-validator';
 
 export const isUUIDSet = createMapValidator<UUID, true>({
@@ -14,8 +16,10 @@ export const isUUIDSet = createMapValidator<UUID, true>({
 });
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export function IsUUIDSet(validationOptions?: ValidationOptions) {
-    return makeValidator(
+export function IsUUIDSet(
+    validationOptions?: ValidationOptions
+): GenericPropertyDecorator<UUIDSet> {
+    return makeValidator<UUIDSet>(
         'isUUIDSet',
         (value: unknown, args?: ValidationArguments) => isUUIDSet(value),
         validationOptions
