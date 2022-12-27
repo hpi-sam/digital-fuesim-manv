@@ -11,10 +11,9 @@ import { makeValidator } from './make-validator';
  * @param valueToBeValidated The actual value.
  * @returns Whether the values are identical.
  */
-export function isValue<T>(
-    expectedValue: T,
-    valueToBeValidated: unknown
-): boolean {
+export function isValue<
+    T extends bigint | boolean | number | string | symbol | null | undefined
+>(expectedValue: T, valueToBeValidated: unknown): boolean {
     return isIn(valueToBeValidated, [expectedValue]);
 }
 
@@ -28,7 +27,10 @@ export function isValue<T>(
  */
 // TODO [typescript@>=5.0]: Use `const T` (https://github.com/microsoft/TypeScript/pull/51865)
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export function IsValue<T, Each extends boolean = false>(
+export function IsValue<
+    T extends bigint | boolean | number | string | symbol | null | undefined,
+    Each extends boolean = false
+>(
     expectedValue: T,
     validationOptions?: ValidationOptions & { each?: Each }
 ): GenericPropertyDecorator<T, Each> {
