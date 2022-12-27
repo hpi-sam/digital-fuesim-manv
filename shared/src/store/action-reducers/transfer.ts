@@ -8,7 +8,7 @@ import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { AllowedValues } from '../../utils/validators';
-import { IsStringLiteralUnion } from '../../utils/validators';
+import { IsLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { getElement } from './utils';
@@ -57,10 +57,10 @@ export function letElementArrive(
 }
 
 export class AddToTransferAction implements Action {
-    @IsStringLiteralUnion({ '[Transfer] Add to transfer': true })
+    @IsLiteralUnion({ '[Transfer] Add to transfer': true })
     public readonly type = '[Transfer] Add to transfer';
 
-    @IsStringLiteralUnion(transferableElementTypeAllowedValues)
+    @IsLiteralUnion(transferableElementTypeAllowedValues)
     elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
@@ -75,10 +75,10 @@ export class AddToTransferAction implements Action {
 }
 
 export class EditTransferAction implements Action {
-    @IsStringLiteralUnion({ '[Transfer] Edit transfer': true })
+    @IsLiteralUnion({ '[Transfer] Edit transfer': true })
     public readonly type = '[Transfer] Edit transfer';
 
-    @IsStringLiteralUnion(transferableElementTypeAllowedValues)
+    @IsLiteralUnion(transferableElementTypeAllowedValues)
     elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
@@ -99,10 +99,10 @@ export class EditTransferAction implements Action {
 }
 
 export class FinishTransferAction implements Action {
-    @IsStringLiteralUnion({ '[Transfer] Finish transfer': true })
+    @IsLiteralUnion({ '[Transfer] Finish transfer': true })
     public readonly type = '[Transfer] Finish transfer';
 
-    @IsStringLiteralUnion(transferableElementTypeAllowedValues)
+    @IsLiteralUnion(transferableElementTypeAllowedValues)
     elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
@@ -113,10 +113,10 @@ export class FinishTransferAction implements Action {
 }
 
 export class TogglePauseTransferAction implements Action {
-    @IsStringLiteralUnion({ '[Transfer] Toggle pause transfer': true })
+    @IsLiteralUnion({ '[Transfer] Toggle pause transfer': true })
     public readonly type = '[Transfer] Toggle pause transfer';
 
-    @IsStringLiteralUnion(transferableElementTypeAllowedValues)
+    @IsLiteralUnion(transferableElementTypeAllowedValues)
     elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)

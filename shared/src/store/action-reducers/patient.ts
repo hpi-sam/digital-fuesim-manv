@@ -14,7 +14,7 @@ import {
     UUID,
     uuidValidationOptions,
 } from '../../utils';
-import { IsStringLiteralUnion } from '../../utils/validators';
+import { IsLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { updateTreatments } from './utils/calculate-treatments';
@@ -34,7 +34,7 @@ export function deletePatient(
 }
 
 export class AddPatientAction implements Action {
-    @IsStringLiteralUnion({ '[Patient] Add patient': true })
+    @IsLiteralUnion({ '[Patient] Add patient': true })
     public readonly type = '[Patient] Add patient';
     @ValidateNested()
     @Type(() => Patient)
@@ -42,7 +42,7 @@ export class AddPatientAction implements Action {
 }
 
 export class MovePatientAction implements Action {
-    @IsStringLiteralUnion({ '[Patient] Move patient': true })
+    @IsLiteralUnion({ '[Patient] Move patient': true })
     public readonly type = '[Patient] Move patient';
 
     @IsUUID(4, uuidValidationOptions)
@@ -54,25 +54,25 @@ export class MovePatientAction implements Action {
 }
 
 export class RemovePatientAction implements Action {
-    @IsStringLiteralUnion({ '[Patient] Remove patient': true })
+    @IsLiteralUnion({ '[Patient] Remove patient': true })
     public readonly type = '[Patient] Remove patient';
     @IsUUID(4, uuidValidationOptions)
     public readonly patientId!: UUID;
 }
 
 export class SetVisibleStatusAction implements Action {
-    @IsStringLiteralUnion({ '[Patient] Set Visible Status': true })
+    @IsLiteralUnion({ '[Patient] Set Visible Status': true })
     public readonly type = '[Patient] Set Visible Status';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly patientId!: UUID;
 
-    @IsStringLiteralUnion(patientStatusAllowedValues)
+    @IsLiteralUnion(patientStatusAllowedValues)
     public readonly patientStatus!: PatientStatus;
 }
 
 export class SetUserTextAction implements Action {
-    @IsStringLiteralUnion({ '[Patient] Set Remarks': true })
+    @IsLiteralUnion({ '[Patient] Set Remarks': true })
     public readonly type = '[Patient] Set Remarks';
 
     @IsUUID(4, uuidValidationOptions)

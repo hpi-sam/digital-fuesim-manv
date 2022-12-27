@@ -1,4 +1,5 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
+import { isIn } from 'class-validator';
 import type { GenericPropertyDecorator } from './generic-property-decorator';
 import { makeValidator } from './make-validator';
 
@@ -21,30 +22,29 @@ import { makeValidator } from './make-validator';
  *
  * ````
  */
-export type AllowedValues<T extends string> = { [key in T]: true };
+export type AllowedValues<T extends number | string | symbol> = {
+    [key in T]: true;
+};
 
-export function isStringLiteralUnion<T extends string>(
+export function isLiteralUnion<T extends number | string | symbol>(
     allowedValues: AllowedValues<T>,
     valueToBeValidated: unknown
 ): boolean {
-    return (
-        typeof valueToBeValidated === 'string' &&
-        allowedValues[valueToBeValidated as T]
-    );
+    return isIn(valueToBeValidated, Object.keys(allowedValues));
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export function IsStringLiteralUnion<
-    T extends string,
+export function IsLiteralUnion<
+    T extends number | string | symbol,
     Each extends boolean = false
 >(
     allowedValues: AllowedValues<T>,
     validationOptions?: ValidationOptions & { each?: Each }
 ): GenericPropertyDecorator<T, Each> {
     return makeValidator<T, Each>(
-        'isStringLiteralUnion',
+        'isLiteralUnion',
         (value: unknown, args?: ValidationArguments) =>
-            isStringLiteralUnion<T>(allowedValues, value),
+            isLiteralUnion<T>(allowedValues, value),
         validationOptions
     );
 }

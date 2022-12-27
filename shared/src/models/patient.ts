@@ -12,7 +12,7 @@ import {
     isEmpty,
 } from 'class-validator';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
-import { IsStringLiteralUnion, IsIdMap, IsUUIDSet } from '../utils/validators';
+import { IsLiteralUnion, IsIdMap, IsUUIDSet } from '../utils/validators';
 import { PatientHealthState } from './patient-health-state';
 import {
     BiometricInformation,
@@ -52,10 +52,10 @@ export class Patient {
     @Type(() => PatientStatusCode)
     public readonly patientStatusCode: PatientStatusCode;
 
-    @IsStringLiteralUnion(patientStatusAllowedValues)
+    @IsLiteralUnion(patientStatusAllowedValues)
     public readonly pretriageStatus: PatientStatus;
 
-    @IsStringLiteralUnion(patientStatusAllowedValues)
+    @IsLiteralUnion(patientStatusAllowedValues)
     public readonly realStatus: PatientStatus;
 
     @ValidateNested()

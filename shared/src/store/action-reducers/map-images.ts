@@ -18,12 +18,12 @@ import {
     UUID,
     uuidValidationOptions,
 } from '../../utils';
-import { IsStringLiteralUnion } from '../../utils/validators';
+import { IsLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
 
 export class AddMapImageAction implements Action {
-    @IsStringLiteralUnion({ '[MapImage] Add MapImage': true })
+    @IsLiteralUnion({ '[MapImage] Add MapImage': true })
     public readonly type = '[MapImage] Add MapImage';
 
     @ValidateNested()
@@ -32,7 +32,7 @@ export class AddMapImageAction implements Action {
 }
 
 export class MoveMapImageAction implements Action {
-    @IsStringLiteralUnion({ '[MapImage] Move MapImage': true })
+    @IsLiteralUnion({ '[MapImage] Move MapImage': true })
     public readonly type = '[MapImage] Move MapImage';
 
     @IsUUID(4, uuidValidationOptions)
@@ -44,7 +44,7 @@ export class MoveMapImageAction implements Action {
 }
 
 export class ScaleMapImageAction implements Action {
-    @IsStringLiteralUnion({ '[MapImage] Scale MapImage': true })
+    @IsLiteralUnion({ '[MapImage] Scale MapImage': true })
     public readonly type = '[MapImage] Scale MapImage';
 
     @IsUUID(4, uuidValidationOptions)
@@ -62,7 +62,7 @@ export class ScaleMapImageAction implements Action {
 }
 
 export class RemoveMapImageAction implements Action {
-    @IsStringLiteralUnion({ '[MapImage] Remove MapImage': true })
+    @IsLiteralUnion({ '[MapImage] Remove MapImage': true })
     public readonly type = '[MapImage] Remove MapImage';
 
     @IsUUID(4, uuidValidationOptions)
@@ -70,7 +70,7 @@ export class RemoveMapImageAction implements Action {
 }
 
 export class SetIsLockedMapImageAction implements Action {
-    @IsStringLiteralUnion({ '[MapImage] Set isLocked': true })
+    @IsLiteralUnion({ '[MapImage] Set isLocked': true })
     public readonly type = '[MapImage] Set isLocked';
 
     @IsUUID(4, uuidValidationOptions)
@@ -81,7 +81,7 @@ export class SetIsLockedMapImageAction implements Action {
 }
 
 export class ReconfigureMapImageUrlAction implements Action {
-    @IsStringLiteralUnion({ '[MapImage] Reconfigure Url': true })
+    @IsLiteralUnion({ '[MapImage] Reconfigure Url': true })
     public readonly type = '[MapImage] Reconfigure Url';
 
     @IsUUID(4, uuidValidationOptions)
@@ -101,13 +101,13 @@ type ChangeZIndexActionMode =
     | 'oneLayerForward';
 
 export class ChangeZIndexMapImageAction implements Action {
-    @IsStringLiteralUnion({ '[MapImage] Change zIndex': true })
+    @IsLiteralUnion({ '[MapImage] Change zIndex': true })
     public readonly type = '[MapImage] Change zIndex';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly mapImageId!: UUID;
 
-    @IsStringLiteralUnion({
+    @IsLiteralUnion({
         bringToBack: true,
         bringToFront: true,
         oneLayerBack: true,

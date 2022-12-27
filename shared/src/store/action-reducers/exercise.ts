@@ -11,7 +11,7 @@ import { Patient } from '../../models';
 import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
-import { IsStringLiteralUnion } from '../../utils/validators';
+import { IsLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { letElementArrive } from './transfer';
@@ -19,17 +19,17 @@ import { updateTreatments } from './utils/calculate-treatments';
 import { PatientUpdate } from './utils/patient-updates';
 
 export class PauseExerciseAction implements Action {
-    @IsStringLiteralUnion({ '[Exercise] Pause': true })
+    @IsLiteralUnion({ '[Exercise] Pause': true })
     public readonly type = '[Exercise] Pause';
 }
 
 export class StartExerciseAction implements Action {
-    @IsStringLiteralUnion({ '[Exercise] Start': true })
+    @IsLiteralUnion({ '[Exercise] Start': true })
     public readonly type = '[Exercise] Start';
 }
 
 export class ExerciseTickAction implements Action {
-    @IsStringLiteralUnion({ '[Exercise] Tick': true })
+    @IsLiteralUnion({ '[Exercise] Tick': true })
     public readonly type = '[Exercise] Tick';
 
     @IsArray()

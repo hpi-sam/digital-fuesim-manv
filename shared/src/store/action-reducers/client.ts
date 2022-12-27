@@ -2,12 +2,12 @@ import { Type } from 'class-transformer';
 import { IsBoolean, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { Client } from '../../models';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
-import { IsStringLiteralUnion } from '../../utils/validators';
+import { IsLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
 
 export class AddClientAction implements Action {
-    @IsStringLiteralUnion({ '[Client] Add client': true })
+    @IsLiteralUnion({ '[Client] Add client': true })
     public readonly type = '[Client] Add client';
     @ValidateNested()
     @Type(() => Client)
@@ -15,14 +15,14 @@ export class AddClientAction implements Action {
 }
 
 export class RemoveClientAction implements Action {
-    @IsStringLiteralUnion({ '[Client] Remove client': true })
+    @IsLiteralUnion({ '[Client] Remove client': true })
     public readonly type = '[Client] Remove client';
     @IsUUID(4, uuidValidationOptions)
     public readonly clientId!: UUID;
 }
 
 export class RestrictViewToViewportAction implements Action {
-    @IsStringLiteralUnion({ '[Client] Restrict to viewport': true })
+    @IsLiteralUnion({ '[Client] Restrict to viewport': true })
     public readonly type = '[Client] Restrict to viewport';
     @IsUUID(4, uuidValidationOptions)
     public readonly clientId!: UUID;
@@ -32,7 +32,7 @@ export class RestrictViewToViewportAction implements Action {
 }
 
 export class SetWaitingRoomAction implements Action {
-    @IsStringLiteralUnion({ '[Client] Set waitingroom': true })
+    @IsLiteralUnion({ '[Client] Set waitingroom': true })
     public readonly type = '[Client] Set waitingroom';
     @IsUUID(4, uuidValidationOptions)
     public readonly clientId!: UUID;

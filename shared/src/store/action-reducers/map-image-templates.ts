@@ -5,12 +5,12 @@ import { ImageProperties } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
-import { IsStringLiteralUnion } from '../../utils/validators';
+import { IsLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 
 export class AddMapImageTemplateAction implements Action {
-    @IsStringLiteralUnion({ '[MapImageTemplate] Add mapImageTemplate': true })
+    @IsLiteralUnion({ '[MapImageTemplate] Add mapImageTemplate': true })
     public readonly type = '[MapImageTemplate] Add mapImageTemplate';
 
     @ValidateNested()
@@ -19,7 +19,7 @@ export class AddMapImageTemplateAction implements Action {
 }
 
 export class EditMapImageTemplateAction implements Action {
-    @IsStringLiteralUnion({ '[MapImageTemplate] Edit mapImageTemplate': true })
+    @IsLiteralUnion({ '[MapImageTemplate] Edit mapImageTemplate': true })
     public readonly type = '[MapImageTemplate] Edit mapImageTemplate';
 
     @IsUUID(4, uuidValidationOptions)
@@ -34,7 +34,7 @@ export class EditMapImageTemplateAction implements Action {
 }
 
 export class DeleteMapImageTemplateAction implements Action {
-    @IsStringLiteralUnion({
+    @IsLiteralUnion({
         '[MapImageTemplate] Delete mapImageTemplate': true,
     })
     public readonly type = '[MapImageTemplate] Delete mapImageTemplate';

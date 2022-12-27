@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import type { Mutable } from '../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../utils';
-import { IsIdMap, IsStringLiteralUnion } from '../utils/validators';
+import { IsIdMap, IsLiteralUnion } from '../utils/validators';
 import {
     getCreate,
     HealthPoints,
@@ -55,10 +55,10 @@ export class HospitalPatient {
     @Type(() => BiometricInformation)
     public readonly biometricInformation: BiometricInformation;
 
-    @IsStringLiteralUnion(patientStatusAllowedValues)
+    @IsLiteralUnion(patientStatusAllowedValues)
     public readonly pretriageStatus: PatientStatus;
 
-    @IsStringLiteralUnion(patientStatusAllowedValues)
+    @IsLiteralUnion(patientStatusAllowedValues)
     public readonly realStatus: PatientStatus;
 
     @ValidateNested()

@@ -2,12 +2,12 @@ import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
-import { IsStringLiteralUnion } from '../../utils/validators';
+import { IsLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { updateElementPosition } from './utils/spatial-elements';
 
 export class MovePersonnelAction implements Action {
-    @IsStringLiteralUnion({ '[Personnel] Move personnel': true })
+    @IsLiteralUnion({ '[Personnel] Move personnel': true })
     public readonly type = '[Personnel] Move personnel';
 
     @IsUUID(4, uuidValidationOptions)

@@ -1,6 +1,6 @@
 import { IsNumber, Min } from 'class-validator';
 import type { AllowedValues } from '../../utils/validators';
-import { IsStringLiteralUnion } from '../../utils/validators';
+import { IsLiteralUnion } from '../../utils/validators';
 import { getCreate } from './get-create';
 
 type LogicalOperator = 'and' | 'or';
@@ -38,7 +38,7 @@ export class CanCaterFor {
     @Min(0)
     public readonly green: number;
 
-    @IsStringLiteralUnion(logicalOperatorAllowedValues)
+    @IsLiteralUnion(logicalOperatorAllowedValues)
     public readonly logicalOperator: LogicalOperator;
 
     /**

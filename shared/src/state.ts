@@ -46,7 +46,7 @@ import type { MaterialType } from './models/utils/material-type';
 import type { SpatialElementType } from './store/action-reducers/utils/spatial-elements';
 import type { UUID } from './utils';
 import { uuid, uuidValidationOptions } from './utils';
-import { IsIdMap, IsStringLiteralUnion } from './utils/validators';
+import { IsIdMap, IsLiteralUnion } from './utils/validators';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -61,7 +61,7 @@ export class ExerciseState {
     @IsInt()
     @Min(0)
     public readonly currentTime = 0;
-    @IsStringLiteralUnion(exerciseStatusAllowedValues)
+    @IsLiteralUnion(exerciseStatusAllowedValues)
     public readonly currentStatus: ExerciseStatus = 'notStarted';
     @IsIdMap(Viewport)
     public readonly viewports: { readonly [key: UUID]: Viewport } = {};

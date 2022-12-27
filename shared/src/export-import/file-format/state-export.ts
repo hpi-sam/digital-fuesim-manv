@@ -4,7 +4,7 @@ import { ExerciseState } from '../../state';
 import type { ExerciseAction } from '../../store';
 import { IsExerciseAction } from '../../store';
 import { Mutable } from '../../utils';
-import { IsStringLiteralUnion } from '../../utils/validators';
+import { IsLiteralUnion } from '../../utils/validators';
 import { BaseExportImportFile } from './base-file';
 
 export class StateHistoryCompound {
@@ -26,7 +26,7 @@ export class StateHistoryCompound {
 }
 
 export class StateExport extends BaseExportImportFile {
-    @IsStringLiteralUnion({ complete: true })
+    @IsLiteralUnion({ complete: true })
     public readonly type: 'complete' = 'complete';
 
     @ValidateNested()

@@ -1,12 +1,12 @@
 import { Type } from 'class-transformer';
 import { IsNumber, Max, Min, ValidateNested } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
-import { IsStringLiteralUnion } from '../utils/validators';
+import { IsLiteralUnion } from '../utils/validators';
 import { CanCaterFor, getCreate, ImageProperties } from './utils';
 import { MaterialType, materialTypeAllowedValues } from './utils/material-type';
 
 export class MaterialTemplate {
-    @IsStringLiteralUnion(materialTypeAllowedValues)
+    @IsLiteralUnion(materialTypeAllowedValues)
     public readonly materialType: MaterialType;
 
     @ValidateNested()

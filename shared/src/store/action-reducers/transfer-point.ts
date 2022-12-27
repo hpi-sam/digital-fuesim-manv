@@ -9,7 +9,7 @@ import {
 import { TransferPoint } from '../../models';
 import { Position } from '../../models/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
-import { IsStringLiteralUnion } from '../../utils/validators';
+import { IsLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { letElementArrive } from './transfer';
@@ -19,7 +19,7 @@ import { getElement } from './utils/get-element';
 // TODO check: type "TransferPoint" the T is big, in other files, the second word starts with a small letter
 
 export class AddTransferPointAction implements Action {
-    @IsStringLiteralUnion({ '[TransferPoint] Add TransferPoint': true })
+    @IsLiteralUnion({ '[TransferPoint] Add TransferPoint': true })
     public readonly type = `[TransferPoint] Add TransferPoint`;
     @ValidateNested()
     @Type(() => TransferPoint)
@@ -27,7 +27,7 @@ export class AddTransferPointAction implements Action {
 }
 
 export class MoveTransferPointAction implements Action {
-    @IsStringLiteralUnion({ '[TransferPoint] Move TransferPoint': true })
+    @IsLiteralUnion({ '[TransferPoint] Move TransferPoint': true })
     public readonly type = '[TransferPoint] Move TransferPoint';
 
     @IsUUID(4, uuidValidationOptions)
@@ -39,7 +39,7 @@ export class MoveTransferPointAction implements Action {
 }
 
 export class RenameTransferPointAction implements Action {
-    @IsStringLiteralUnion({ '[TransferPoint] Rename TransferPoint': true })
+    @IsLiteralUnion({ '[TransferPoint] Rename TransferPoint': true })
     public readonly type = '[TransferPoint] Rename TransferPoint';
 
     @IsUUID(4, uuidValidationOptions)
@@ -55,7 +55,7 @@ export class RenameTransferPointAction implements Action {
 }
 
 export class RemoveTransferPointAction implements Action {
-    @IsStringLiteralUnion({ '[TransferPoint] Remove TransferPoint': true })
+    @IsLiteralUnion({ '[TransferPoint] Remove TransferPoint': true })
     public readonly type = '[TransferPoint] Remove TransferPoint';
 
     @IsUUID(4, uuidValidationOptions)
@@ -63,7 +63,7 @@ export class RemoveTransferPointAction implements Action {
 }
 
 export class ConnectTransferPointsAction implements Action {
-    @IsStringLiteralUnion({ '[TransferPoint] Connect TransferPoints': true })
+    @IsLiteralUnion({ '[TransferPoint] Connect TransferPoints': true })
     public readonly type = '[TransferPoint] Connect TransferPoints';
 
     @IsUUID(4, uuidValidationOptions)
@@ -78,7 +78,7 @@ export class ConnectTransferPointsAction implements Action {
 }
 
 export class DisconnectTransferPointsAction implements Action {
-    @IsStringLiteralUnion({ '[TransferPoint] Disconnect TransferPoints': true })
+    @IsLiteralUnion({ '[TransferPoint] Disconnect TransferPoints': true })
     public readonly type = '[TransferPoint] Disconnect TransferPoints';
 
     @IsUUID(4, uuidValidationOptions)
@@ -89,7 +89,7 @@ export class DisconnectTransferPointsAction implements Action {
 }
 
 export class ConnectHospitalAction implements Action {
-    @IsStringLiteralUnion({ '[TransferPoint] Connect hospital': true })
+    @IsLiteralUnion({ '[TransferPoint] Connect hospital': true })
     public readonly type = '[TransferPoint] Connect hospital';
     @IsUUID(4, uuidValidationOptions)
     public readonly hospitalId!: UUID;
@@ -99,7 +99,7 @@ export class ConnectHospitalAction implements Action {
 }
 
 export class DisconnectHospitalAction implements Action {
-    @IsStringLiteralUnion({ '[TransferPoint] Disconnect hospital': true })
+    @IsLiteralUnion({ '[TransferPoint] Disconnect hospital': true })
     public readonly type = '[TransferPoint] Disconnect hospital';
     @IsUUID(4, uuidValidationOptions)
     public readonly hospitalId!: UUID;
