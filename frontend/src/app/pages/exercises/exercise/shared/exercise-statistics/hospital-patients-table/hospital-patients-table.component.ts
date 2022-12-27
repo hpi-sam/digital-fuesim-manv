@@ -8,7 +8,7 @@ import type { AppState } from 'src/app/state/app.state';
 import {
     selectHospitalPatients,
     selectHospitals,
-} from 'src/app/state/exercise/exercise.selectors';
+} from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
     selector: 'app-hospital-patients-table',

@@ -66,7 +66,7 @@ const gfPersonnelTemplate = PersonnelTemplate.create(
     0
 );
 
-export const personnelTemplateMap: {
+export const defaultPersonnelTemplates: {
     [key in PersonnelType]: PersonnelTemplate;
 } = {
     san: sanPersonnelTemplate,

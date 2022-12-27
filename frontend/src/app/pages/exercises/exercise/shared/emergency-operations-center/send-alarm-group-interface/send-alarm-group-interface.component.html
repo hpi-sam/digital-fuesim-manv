@@ -6,7 +6,7 @@
                 transferPoints$
                     | async
                     | values
-                    | orderBy: getTransferPointOrderByValue as transferPoints
+                    | orderBy : getTransferPointOrderByValue as transferPoints
             "
             ngbDropdown
             class="d-inline-block float-end"
@@ -31,7 +31,7 @@
                 <button
                     *ngFor="
                         let transferPoint of transferPoints;
-                        trackBy: 'id' | appTrackByProperty: transferPoints
+                        trackBy: 'id' | appTrackByProperty : transferPoints
                     "
                     ngbDropdownItem
                     (click)="targetTransferPointId = transferPoint.id"
@@ -54,7 +54,7 @@
         <button
             *ngFor="
                 let alarmGroup of alarmGroups;
-                trackBy: 'id' | appTrackByProperty: alarmGroups
+                trackBy: 'id' | appTrackByProperty : alarmGroups
             "
             [disabled]="!targetTransferPointId"
             (click)="sendAlarmGroup(alarmGroup)"

@@ -8,7 +8,7 @@
         ></button>
     </h5>
     <div class="popover-body" style="width: 350px; height: 300px">
-        <ng-container *ngIf="(apiService.currentRole$ | async) === 'trainer'">
+        <ng-container *ngIf="(currentRole$ | async) === 'trainer'">
             <!-- TODO: This is a workaround to make it possible to add images. In the future these things should not be done via the popup. -->
             <label class="form-label">URL</label>
             <div class="input-group mb-3">
@@ -32,8 +32,6 @@
             <app-display-validation
                 [ngModelInput]="urlInput"
             ></app-display-validation>
-
-            <br />
 
             <div class="form-group pb-3">
                 <label class="form-label">Höhe</label>
@@ -60,6 +58,46 @@
                     (ngModelChange)="setLocked($event)"
                 />
                 <label class="form-check-label">Position sperren</label>
+            </div>
+            <div>
+                <h6>
+                    Reihenfolge
+                    <span
+                        class="text-muted"
+                        title="Die aktuelle Position des Bildes in der Reihenfolge"
+                        >({{ mapImage.zIndex }})</span
+                    >
+                </h6>
+                <div class="btn-group btn-group-sm">
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        title="Vor allen anderen Bildern positionieren"
+                        (click)="changeZIndex('bringToFront')"
+                    >
+                        Vordergrund
+                    </button>
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        title="Eine Ebene nach vorne"
+                        (click)="changeZIndex('oneLayerForward')"
+                    >
+                        +1
+                    </button>
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        (click)="changeZIndex('oneLayerBack')"
+                        title="Eine Ebene nach hinten"
+                    >
+                        -1
+                    </button>
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        title="Hinter allen anderen Bildern positionieren"
+                        (click)="changeZIndex('bringToBack')"
+                    >
+                        Hintergrund
+                    </button>
+                </div>
             </div>
         </ng-container>
     </div>

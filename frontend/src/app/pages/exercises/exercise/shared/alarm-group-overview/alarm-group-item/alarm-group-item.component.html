@@ -49,7 +49,7 @@
         *ngFor="
             let alarmGroupVehicle of alarmGroup.alarmGroupVehicles | values;
             trackBy: 'id'
-                | appTrackByProperty: (alarmGroup.alarmGroupVehicles | values)
+                | appTrackByProperty : (alarmGroup.alarmGroupVehicles | values)
         "
         class="card text-center m-1"
         style="width: 10rem; text-overflow: ellipsis; height: auto"

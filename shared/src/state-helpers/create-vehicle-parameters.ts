@@ -1,6 +1,9 @@
 import type { Vehicle, VehicleTemplate } from '../models';
 import { Material, Personnel } from '../models';
-import type { Position } from '../models/utils';
+import type { MaterialTemplate } from '../models/material-template';
+import type { PersonnelTemplate } from '../models/personnel-template';
+import type { PersonnelType, Position } from '../models/utils';
+import type { MaterialType } from '../models/utils/material-type';
 import { uuid } from '../utils';
 
 import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
@@ -11,6 +14,12 @@ import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
 // Be aware that `uuid()` is nondeterministic and cannot be used in a reducer function.
 export function createVehicleParameters(
     vehicleTemplate: VehicleTemplate,
+    materialTemplates: {
+        [Key in MaterialType]: MaterialTemplate;
+    },
+    personnelTemplates: {
+        [Key in PersonnelType]: PersonnelTemplate;
+    },
     vehiclePosition?: Position
 ): {
     materials: Material[];
@@ -19,10 +28,18 @@ export function createVehicleParameters(
 } {
     const vehicleId = uuid();
     const materials = vehicleTemplate.materials.map((currentMaterial) =>
-        Material.create(vehicleId, vehicleTemplate.name, currentMaterial, {})
+        Material.generateMaterial(
+            materialTemplates[currentMaterial],
+            vehicleId,
+            vehicleTemplate.name
+        )
     );
     const personnel = vehicleTemplate.personnel.map((currentPersonnel) =>
-        Personnel.create(vehicleId, vehicleTemplate.name, currentPersonnel, {})
+        Personnel.generatePersonnel(
+            personnelTemplates[currentPersonnel],
+            vehicleId,
+            vehicleTemplate.name
+        )
     );
 
     const vehicle: Vehicle = {

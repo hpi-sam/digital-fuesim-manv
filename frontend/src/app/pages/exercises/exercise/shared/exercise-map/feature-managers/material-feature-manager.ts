@@ -5,7 +5,7 @@ import type Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
-import type { ApiService } from 'src/app/core/api.service';
+import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { WithPosition } from '../../utility/types/with-position';
 import { MaterialPopupComponent } from '../shared/material-popup/material-popup.component';
 import { ImagePopupHelper } from '../utility/popup-helper';
@@ -32,18 +32,18 @@ export class MaterialFeatureManager extends ElementFeatureManager<
         'top'
     );
 
-    private readonly popupHelper = new ImagePopupHelper(this.olMap);
+    private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        apiService: ApiService
+        exerciseService: ExerciseService
     ) {
         super(
             olMap,
             layer,
             (targetPosition, material) => {
-                apiService.proposeAction({
+                exerciseService.proposeAction({
                     type: '[Material] Move material',
                     materialId: material.id,
                     targetPosition,

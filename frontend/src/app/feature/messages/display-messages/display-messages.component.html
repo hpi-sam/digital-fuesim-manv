@@ -6,8 +6,8 @@
     <!-- Show the 5 oldest toasts, the newest should appear at the bottom -->
     <div
         *ngFor="
-            let message of messages | slice: 0:5;
-            trackBy: 'id' | appTrackByProperty: messages
+            let message of messages | slice : 0 : 5;
+            trackBy: 'id' | appTrackByProperty : messages
         "
         (mouseenter)="message.destroyTimer?.pause()"
         (mouseleave)="message.destroyTimer?.start()"
@@ -59,8 +59,8 @@
     <!-- Show the 5 newest alerts, the newest should appear on the bottom -->
     <div
         *ngFor="
-            let message of messages | slice: -5;
-            trackBy: 'id' | appTrackByProperty: messages
+            let message of messages | slice : -5;
+            trackBy: 'id' | appTrackByProperty : messages
         "
         (mouseenter)="message.destroyTimer?.pause()"
         (mouseleave)="message.destroyTimer?.start()"

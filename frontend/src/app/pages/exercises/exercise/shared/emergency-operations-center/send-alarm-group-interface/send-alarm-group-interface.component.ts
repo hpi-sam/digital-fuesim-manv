@@ -1,24 +1,26 @@
 import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { UUID, AlarmGroup } from 'digital-fuesim-manv-shared';
+import type { AlarmGroup, UUID } from 'digital-fuesim-manv-shared';
 import {
-    TransferPoint,
-    createVehicleParameters,
     AlarmGroupStartPoint,
+    createVehicleParameters,
+    TransferPoint,
 } from 'digital-fuesim-manv-shared';
 import { Subject, takeUntil } from 'rxjs';
-import { ApiService } from 'src/app/core/api.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    getSelectClient,
-    getSelectTransferPoint,
-    getSelectVehicleTemplate,
+    createSelectTransferPoint,
+    createSelectVehicleTemplate,
     selectAlarmGroups,
+    selectMaterialTemplates,
+    selectPersonnelTemplates,
     selectTransferPoints,
-} from 'src/app/state/exercise/exercise.selectors';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+} from 'src/app/state/application/selectors/exercise.selectors';
+import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 // We want to remember this
 let targetTransferPointId: UUID | undefined;
@@ -40,7 +42,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
     ) => string = (transferPoint) => TransferPoint.getFullName(transferPoint);
 
     constructor(
-        private readonly apiService: ApiService,
+        private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>,
         private readonly messageService: MessageService
     ) {
@@ -65,30 +67,44 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
     }
 
     public sendAlarmGroup(alarmGroup: AlarmGroup) {
-        const targetTransferPoint = getSelectTransferPoint(
-            this.targetTransferPointId!
-        )(getStateSnapshot(this.store));
+        const targetTransferPoint = selectStateSnapshot(
+            createSelectTransferPoint(this.targetTransferPointId!),
+            this.store
+        );
         // TODO: Refactor this into one action (uuid generation is currently not possible in the reducer)
         Promise.all(
             Object.values(alarmGroup.alarmGroupVehicles).flatMap(
                 (alarmGroupVehicle) => {
-                    const vehicleTemplate = getSelectVehicleTemplate(
-                        alarmGroupVehicle.vehicleTemplateId
-                    )(getStateSnapshot(this.store));
+                    const vehicleTemplate = selectStateSnapshot(
+                        createSelectVehicleTemplate(
+                            alarmGroupVehicle.vehicleTemplateId
+                        ),
+                        this.store
+                    );
 
-                    const vehicleParameters = createVehicleParameters({
-                        ...vehicleTemplate,
-                        name: alarmGroupVehicle.name,
-                    });
+                    const vehicleParameters = createVehicleParameters(
+                        {
+                            ...vehicleTemplate,
+                            name: alarmGroupVehicle.name,
+                        },
+                        selectStateSnapshot(
+                            selectMaterialTemplates,
+                            this.store
+                        ),
+                        selectStateSnapshot(
+                            selectPersonnelTemplates,
+                            this.store
+                        )
+                    );
 
                     return [
-                        this.apiService.proposeAction({
+                        this.exerciseService.proposeAction({
                             type: '[Vehicle] Add vehicle',
                             materials: vehicleParameters.materials,
                             personnel: vehicleParameters.personnel,
                             vehicle: vehicleParameters.vehicle,
                         }),
-                        this.apiService.proposeAction({
+                        this.exerciseService.proposeAction({
                             type: '[Transfer] Add to transfer',
                             elementType: 'vehicles',
                             elementId: vehicleParameters.vehicle.id,
@@ -108,12 +124,10 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                     color: 'success',
                 });
             }
-            this.apiService.proposeAction({
+            this.exerciseService.proposeAction({
                 type: '[Emergency Operation Center] Add Log Entry',
                 message: `Alarmgruppe ${alarmGroup.name} wurde alarmiert zu ${targetTransferPoint.externalName}!`,
-                name: getSelectClient(this.apiService.ownClientId!)(
-                    getStateSnapshot(this.store)
-                ).name,
+                name: selectStateSnapshot(selectOwnClient, this.store)!.name,
             });
         });
     }

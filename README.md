@@ -20,7 +20,7 @@ This simulation has been designed in cooperation with and with support from the 
 
 The simulation is implemented as a web application with an Angular frontend and NodeJS backend.
 
-This project is currently developed as a [bachelor project](https://hpi.de/en/studies/before-your-studies/degree-programs/bachelor.html) at the [HPI](https://hpi.de/). You can find the official project website [here](https://hpi.de/teaching/bachelor-projects/digitales-fuehrungssimulationstraining.html).
+This project is currently developed as a [bachelor project](https://hpi.de/en/studies/before-your-studies/degree-programs/bachelor.html) at the [HPI](https://hpi.de/). You can find the official project website [here](https://hpi.de/giese/teaching/bachelor-projects/digitales-fuehrungssimulationstraining.html).
 
 ## Links for collaborators
 
@@ -39,6 +39,10 @@ This project is currently developed as a [bachelor project](https://hpi.de/en/st
    You can (optionally) use a database for the persistence of exercise data. Look at the [relevant section](./backend/README.md#database) in the backend README for further information.
    Note that to not use the database you have to edit an environment variable, see the [relevant section](./backend/README.md#without-a-database).
 8. (Optional) We have a list of recommended [vscode](https://code.visualstudio.com/) extensions. We strongly recommend you to use them if you are developing. You can see them via [the `@recommended` filter in the extensions panel](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
+
+### Gotchas
+
+If you want the best developer experience, make sure to always install dependencies with `npm install --install-links=false`. The default option changed from previously `false` to `true` with version 9.
 
 ## Starting for development
 

@@ -11,7 +11,7 @@
         <tr
             *ngFor="
                 let client of clients$ | async | values;
-                trackBy: 'id' | appTrackByProperty: (clients$ | async | values)
+                trackBy: 'id' | appTrackByProperty : (clients$ | async | values)
             "
         >
             <td class="align-middle">

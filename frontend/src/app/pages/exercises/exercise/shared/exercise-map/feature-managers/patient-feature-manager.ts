@@ -7,9 +7,10 @@ import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import { Fill, Stroke } from 'ol/style';
-import type { ApiService } from 'src/app/core/api.service';
+import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { getStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectConfiguration } from 'src/app/state/application/selectors/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { WithPosition } from '../../utility/types/with-position';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
 import { ImagePopupHelper } from '../utility/popup-helper';
@@ -21,7 +22,7 @@ export class PatientFeatureManager extends ElementFeatureManager<
     WithPosition<Patient>
 > {
     readonly type = 'patients';
-    private readonly popupHelper = new ImagePopupHelper(this.olMap);
+    private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
     private readonly imageStyleHelper = new ImageStyleHelper((feature) => {
         const patient = this.getElementFromFeature(feature)!.value;
@@ -33,41 +34,48 @@ export class PatientFeatureManager extends ElementFeatureManager<
         };
     });
 
-    private readonly circleStyleHelper = new CircleStyleHelper((feature) => {
-        const patient = this.getElementFromFeature(feature)!.value;
-        const configuration = getStateSnapshot(this.store).exercise
-            .configuration;
-        const color = Patient.getVisibleStatus(
-            patient,
-            configuration.pretriageEnabled,
-            configuration.bluePatientsEnabled
-        );
-        return {
-            radius: 8,
-            fill: new Fill({
-                color,
-            }),
-            stroke: new Stroke({
-                color: 'white',
-                width: 1,
-            }),
-            displacement: patient.pretriageInformation.isWalkable
-                ? [0, 20]
-                : [-20, 0],
-        };
-    }, 0.025);
+    private readonly circleStyleHelper = new CircleStyleHelper(
+        (feature) => {
+            const patient = this.getElementFromFeature(feature)!.value;
+            const configuration = selectStateSnapshot(
+                selectConfiguration,
+                this.store
+            );
+            const color = Patient.getVisibleStatus(
+                patient,
+                configuration.pretriageEnabled,
+                configuration.bluePatientsEnabled
+            );
+            return {
+                radius: 8,
+                fill: new Fill({
+                    color,
+                }),
+                stroke: new Stroke({
+                    color: 'white',
+                    width: 1,
+                }),
+            };
+        },
+        0.025,
+        (feature) =>
+            this.getElementFromFeature(feature)!.value.pretriageInformation
+                .isWalkable
+                ? [0, 0.25]
+                : [-0.25, 0]
+    );
 
     constructor(
         private readonly store: Store<AppState>,
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Point>>,
-        apiService: ApiService
+        exerciseService: ExerciseService
     ) {
         super(
             olMap,
             layer,
             (targetPosition, patient) => {
-                apiService.proposeAction({
+                exerciseService.proposeAction({
                     type: '[Patient] Move patient',
                     patientId: patient.id,
                     targetPosition,
