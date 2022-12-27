@@ -16,7 +16,7 @@ import { makeValidator } from './make-validator';
  * };
  *
  * class MyClassToValidate {
- *     @IsStringLiteralUnion<StringLiteralUnion>(stringLiteralUnionAllowedValues)
+ *     @IsLiteralUnion(stringLiteralUnionAllowedValues)
  *     public readonly myString: StringLiteralUnion;
  * }
  *
@@ -33,6 +33,14 @@ export function isLiteralUnion<T extends number | string | symbol>(
     return isIn(valueToBeValidated, Object.keys(allowedValues));
 }
 
+/**
+ * A validator to check whether a property is part of a literal union type.
+ *
+ * Only literal types that may be keys of objects, i.e. `number`, `string`, and `symbol`, are allowed.
+ * @param allowedValues {@link AllowedValues} that specify which values may be present.
+ * @param validationOptions {@link ValidationOptions} passed on to `class-validator`.
+ * @returns A `class-validator` validator that verifies that the value is in the keys of {@link allowedValues}.
+ */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function IsLiteralUnion<
     T extends number | string | symbol,

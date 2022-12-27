@@ -3,6 +3,14 @@ import { isIn } from 'class-validator';
 import type { GenericPropertyDecorator } from './generic-property-decorator';
 import { makeValidator } from './make-validator';
 
+/**
+ * Check whether two values are identical, using {@link isIn} from `class-validator`.
+ *
+ * As of `class-validator` version `0.14.0`, this means that the equality check is doen with `===`.
+ * @param expectedValue The single value that is allowed.
+ * @param valueToBeValidated The actual value.
+ * @returns Whether the values are identical.
+ */
 export function isValue<T>(
     expectedValue: T,
     valueToBeValidated: unknown
@@ -10,7 +18,15 @@ export function isValue<T>(
     return isIn(valueToBeValidated, [expectedValue]);
 }
 
-// With TS 5.0 use `const T` (https://github.com/microsoft/TypeScript/pull/51865)
+/**
+ * A validator for a constant value. Uses {@link isIn} for validation, all limitations of this validator apply.
+ *
+ * This means that, as of `class-validator` version `0.14.0`, `===` is used for equality checks.
+ * @param expectedValue The single value that is allowed for this property.
+ * @param validationOptions {@link ValidationOptions} passed on to `class-validator`.
+ * @returns A `class-validator` validator that verifies that the value is exactly {@link expectedValue}.
+ */
+// TODO [typescript@>=5.0]: Use `const T` (https://github.com/microsoft/TypeScript/pull/51865)
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function IsValue<T, Each extends boolean = false>(
     expectedValue: T,
