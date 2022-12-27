@@ -21,11 +21,13 @@ export function isValue<
  * A validator for a constant value. Uses {@link isIn} for validation, all limitations of this validator apply.
  *
  * This means that, as of `class-validator` version `0.14.0`, `===` is used for equality checks.
+ *
+ * It is highly recommended to use `as const` with this decorator to enable better type checking.
  * @param expectedValue The single value that is allowed for this property.
  * @param validationOptions {@link ValidationOptions} passed on to `class-validator`.
  * @returns A `class-validator` validator that verifies that the value is exactly {@link expectedValue}.
  */
-// TODO [typescript@>=5.0]: Use `const T` (https://github.com/microsoft/TypeScript/pull/51865)
+// TODO [typescript@>=5.0]: Use `const T` (https://github.com/microsoft/TypeScript/pull/51865) (and remove doc comment about `as const`)
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function IsValue<
     T extends bigint | boolean | number | string | symbol | null | undefined,
