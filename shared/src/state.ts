@@ -1,47 +1,52 @@
 import { Type } from 'class-transformer';
 import {
-    IsUUID,
-    IsInt,
-    Min,
-    IsString,
     IsArray,
-    ValidateNested,
+    IsInt,
     IsObject,
+    IsString,
+    IsUUID,
+    Min,
+    ValidateNested,
 } from 'class-validator';
 import {
+    defaultMapImagesTemplates,
     defaultPatientCategories,
     defaultVehicleTemplates,
-    defaultMapImagesTemplates,
 } from './data';
 import { defaultMaterialTemplates } from './data/default-state/material-templates';
 import { defaultPersonnelTemplates } from './data/default-state/personnel-templates';
 import {
-    Viewport,
-    Vehicle,
-    Personnel,
-    Patient,
-    Material,
-    MapImage,
-    TransferPoint,
-    Hospital,
-    HospitalPatient,
     AlarmGroup,
     Client,
-    VehicleTemplate,
-    MapImageTemplate,
     EocLogEntry,
+    Hospital,
+    HospitalPatient,
+    MapImage,
+    MapImageTemplate,
+    Material,
+    Patient,
+    Personnel,
+    TransferPoint,
+    Vehicle,
+    VehicleTemplate,
+    Viewport,
 } from './models';
 import { ExerciseConfiguration } from './models/exercise-configuration';
 import type { MaterialTemplate } from './models/material-template';
 import { PatientCategory } from './models/patient-category';
 import type { PersonnelTemplate } from './models/personnel-template';
 import type { PersonnelType } from './models/utils';
-import { ExerciseStatus, SpatialTree, getCreate } from './models/utils';
+import {
+    ExerciseStatus,
+    exerciseStatusAllowedValues,
+    getCreate,
+    SpatialTree,
+} from './models/utils';
 import type { MaterialType } from './models/utils/material-type';
 import type { SpatialElementType } from './store/action-reducers/utils/spatial-elements';
 import type { UUID } from './utils';
-import { uuidValidationOptions, uuid } from './utils';
-import { IsIdMap } from './utils/validators';
+import { uuid, uuidValidationOptions } from './utils';
+import { IsIdMap, IsStringLiteralUnion } from './utils/validators';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -56,7 +61,7 @@ export class ExerciseState {
     @IsInt()
     @Min(0)
     public readonly currentTime = 0;
-    @IsString()
+    @IsStringLiteralUnion(exerciseStatusAllowedValues)
     public readonly currentStatus: ExerciseStatus = 'notStarted';
     @IsIdMap(Viewport)
     public readonly viewports: { readonly [key: UUID]: Viewport } = {};
@@ -108,7 +113,7 @@ export class ExerciseState {
     @Type(() => EocLogEntry)
     public readonly eocLog: readonly EocLogEntry[] = [];
     @IsString()
-    public readonly participantId: string = '';
+    public readonly participantId: string;
 
     // Mutable<ExerciseState>` could still have immutable objects in spatialTree
     @IsObject()

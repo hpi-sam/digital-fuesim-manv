@@ -9,12 +9,13 @@ import {
 import { Hospital } from '../../models';
 import { HospitalPatient } from '../../models/hospital-patient';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import { IsStringLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
 import { deleteVehicle } from './vehicle';
 
 export class AddHospitalAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Hospital] Add hospital': true })
     public readonly type = '[Hospital] Add hospital';
     @ValidateNested()
     @Type(() => Hospital)
@@ -22,7 +23,9 @@ export class AddHospitalAction implements Action {
 }
 
 export class EditTransportDurationToHospitalAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({
+        '[Hospital] Edit transportDuration to hospital': true,
+    })
     public readonly type = '[Hospital] Edit transportDuration to hospital';
     @IsUUID(4, uuidValidationOptions)
     public readonly hospitalId!: UUID;
@@ -33,7 +36,7 @@ export class EditTransportDurationToHospitalAction implements Action {
 }
 
 export class RenameHospitalAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Hospital] Rename hospital': true })
     public readonly type = '[Hospital] Rename hospital';
     @IsUUID(4, uuidValidationOptions)
     public readonly hospitalId!: UUID;
@@ -43,14 +46,14 @@ export class RenameHospitalAction implements Action {
 }
 
 export class RemoveHospitalAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Hospital] Remove hospital': true })
     public readonly type = '[Hospital] Remove hospital';
     @IsUUID(4, uuidValidationOptions)
     public readonly hospitalId!: UUID;
 }
 
 export class TransportPatientToHospitalAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Hospital] Transport patient to hospital': true })
     public readonly type = '[Hospital] Transport patient to hospital';
     @IsUUID(4, uuidValidationOptions)
     public readonly hospitalId!: UUID;

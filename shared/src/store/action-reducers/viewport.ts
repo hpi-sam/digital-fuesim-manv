@@ -2,12 +2,13 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Viewport } from '../../models';
 import { Position, Size } from '../../models/utils';
-import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import { IsStringLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
 
 export class AddViewportAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Viewport] Add viewport': true })
     readonly type = '[Viewport] Add viewport';
     @ValidateNested()
     @Type(() => Viewport)
@@ -15,14 +16,14 @@ export class AddViewportAction implements Action {
 }
 
 export class RemoveViewportAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Viewport] Remove viewport': true })
     public readonly type = '[Viewport] Remove viewport';
     @IsUUID(4, uuidValidationOptions)
     public readonly viewportId!: UUID;
 }
 
 export class MoveViewportAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Viewport] Move viewport': true })
     public readonly type = '[Viewport] Move viewport';
     @IsUUID(4, uuidValidationOptions)
     public readonly viewportId!: UUID;
@@ -32,7 +33,7 @@ export class MoveViewportAction implements Action {
 }
 
 export class ResizeViewportAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Viewport] Resize viewport': true })
     public readonly type = '[Viewport] Resize viewport';
     @IsUUID(4, uuidValidationOptions)
     public readonly viewportId!: UUID;
@@ -45,7 +46,7 @@ export class ResizeViewportAction implements Action {
 }
 
 export class RenameViewportAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Viewport] Rename viewport': true })
     public readonly type = '[Viewport] Rename viewport';
 
     @IsUUID(4, uuidValidationOptions)

@@ -10,12 +10,13 @@ import { AlarmGroup } from '../../models/alarm-group';
 import { AlarmGroupVehicle } from '../../models/utils/alarm-group-vehicle';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import { IsStringLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { getElement } from './utils/get-element';
 
 export class AddAlarmGroupAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[AlarmGroup] Add AlarmGroup': true })
     public readonly type = '[AlarmGroup] Add AlarmGroup';
 
     @ValidateNested()
@@ -24,7 +25,7 @@ export class AddAlarmGroupAction implements Action {
 }
 
 export class RenameAlarmGroupAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[AlarmGroup] Rename AlarmGroup': true })
     public readonly type = '[AlarmGroup] Rename AlarmGroup';
 
     @IsUUID(4, uuidValidationOptions)
@@ -34,14 +35,14 @@ export class RenameAlarmGroupAction implements Action {
     public readonly name!: string;
 }
 export class RemoveAlarmGroupAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[AlarmGroup] Remove AlarmGroup': true })
     public readonly type = '[AlarmGroup] Remove AlarmGroup';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly alarmGroupId!: UUID;
 }
 export class AddAlarmGroupVehicleAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[AlarmGroup] Add AlarmGroupVehicle': true })
     public readonly type = '[AlarmGroup] Add AlarmGroupVehicle';
 
     @IsUUID(4, uuidValidationOptions)
@@ -52,7 +53,7 @@ export class AddAlarmGroupVehicleAction implements Action {
     public readonly alarmGroupVehicle!: AlarmGroupVehicle;
 }
 export class EditAlarmGroupVehicleAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[AlarmGroup] Edit AlarmGroupVehicle': true })
     public readonly type = '[AlarmGroup] Edit AlarmGroupVehicle';
 
     @IsUUID(4, uuidValidationOptions)
@@ -69,7 +70,7 @@ export class EditAlarmGroupVehicleAction implements Action {
     public readonly name!: string;
 }
 export class RemoveAlarmGroupVehicleAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[AlarmGroup] Remove AlarmGroupVehicle': true })
     public readonly type = '[AlarmGroup] Remove AlarmGroupVehicle';
 
     @IsUUID(4, uuidValidationOptions)

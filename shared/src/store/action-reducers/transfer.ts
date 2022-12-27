@@ -1,26 +1,20 @@
 import { Type } from 'class-transformer';
-import {
-    IsString,
-    IsUUID,
-    ValidateNested,
-    IsOptional,
-    IsInt,
-} from 'class-validator';
+import { IsInt, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { TransferPoint } from '../../models';
 import type { Position } from '../../models/utils';
-import { startPointTypeOptions, StartPoint } from '../../models/utils';
+import { StartPoint, startPointTypeOptions } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
-import { UUID, uuidValidationOptions, cloneDeepMutable } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { AllowedValues } from '../../utils/validators';
 import { IsStringLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { getElement } from './utils';
 import {
-    updateElementPosition,
     removeElementPosition,
+    updateElementPosition,
 } from './utils/spatial-elements';
 
 type TransferableElementType = 'personnel' | 'vehicles';
@@ -63,7 +57,7 @@ export function letElementArrive(
 }
 
 export class AddToTransferAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Transfer] Add to transfer': true })
     public readonly type = '[Transfer] Add to transfer';
 
     @IsStringLiteralUnion(transferableElementTypeAllowedValues)
@@ -81,7 +75,7 @@ export class AddToTransferAction implements Action {
 }
 
 export class EditTransferAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Transfer] Edit transfer': true })
     public readonly type = '[Transfer] Edit transfer';
 
     @IsStringLiteralUnion(transferableElementTypeAllowedValues)
@@ -105,7 +99,7 @@ export class EditTransferAction implements Action {
 }
 
 export class FinishTransferAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Transfer] Finish transfer': true })
     public readonly type = '[Transfer] Finish transfer';
 
     @IsStringLiteralUnion(transferableElementTypeAllowedValues)
@@ -119,7 +113,7 @@ export class FinishTransferAction implements Action {
 }
 
 export class TogglePauseTransferAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Transfer] Toggle pause transfer': true })
     public readonly type = '[Transfer] Toggle pause transfer';
 
     @IsStringLiteralUnion(transferableElementTypeAllowedValues)

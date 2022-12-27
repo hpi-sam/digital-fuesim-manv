@@ -1,11 +1,12 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, ValidateNested } from 'class-validator';
 import { TileMapProperties } from '../../models/utils';
 import { cloneDeepMutable } from '../../utils';
+import { IsStringLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 
 export class SetTileMapPropertiesAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Configuration] Set tileMapProperties': true })
     public readonly type = '[Configuration] Set tileMapProperties';
 
     @ValidateNested()
@@ -14,7 +15,7 @@ export class SetTileMapPropertiesAction implements Action {
 }
 
 export class SetPretriageEnabledAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Configuration] Set pretriageEnabled': true })
     public readonly type = '[Configuration] Set pretriageEnabled';
 
     @IsBoolean()
@@ -22,7 +23,7 @@ export class SetPretriageEnabledAction implements Action {
 }
 
 export class SetBluePatientsEnabledFlagAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Configuration] Set bluePatientsEnabled': true })
     public readonly type = '[Configuration] Set bluePatientsEnabled';
 
     @IsBoolean()

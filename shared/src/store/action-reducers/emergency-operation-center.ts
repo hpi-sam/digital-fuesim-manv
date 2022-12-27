@@ -1,10 +1,13 @@
 import { IsString, MaxLength } from 'class-validator';
 import { EocLogEntry } from '../../models';
-import type { Action, ActionReducer } from '../action-reducer';
 import { cloneDeepMutable } from '../../utils';
+import { IsStringLiteralUnion } from '../../utils/validators';
+import type { Action, ActionReducer } from '../action-reducer';
 
 export class AddLogEntryAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({
+        '[Emergency Operation Center] Add Log Entry': true,
+    })
     public readonly type = '[Emergency Operation Center] Add Log Entry';
     @IsString()
     @MaxLength(255)

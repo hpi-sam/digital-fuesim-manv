@@ -4,7 +4,6 @@ import {
     IsBoolean,
     IsInt,
     IsPositive,
-    IsString,
     ValidateNested,
 } from 'class-validator';
 import type { Personnel, Vehicle } from '../../models';
@@ -12,6 +11,7 @@ import { Patient } from '../../models';
 import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
+import { IsStringLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { letElementArrive } from './transfer';
@@ -19,17 +19,17 @@ import { updateTreatments } from './utils/calculate-treatments';
 import { PatientUpdate } from './utils/patient-updates';
 
 export class PauseExerciseAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Exercise] Pause': true })
     public readonly type = '[Exercise] Pause';
 }
 
 export class StartExerciseAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Exercise] Start': true })
     public readonly type = '[Exercise] Start';
 }
 
 export class ExerciseTickAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Exercise] Tick': true })
     public readonly type = '[Exercise] Tick';
 
     @IsArray()

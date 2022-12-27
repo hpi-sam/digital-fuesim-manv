@@ -34,7 +34,7 @@ export function deletePatient(
 }
 
 export class AddPatientAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Patient] Add patient': true })
     public readonly type = '[Patient] Add patient';
     @ValidateNested()
     @Type(() => Patient)
@@ -42,7 +42,7 @@ export class AddPatientAction implements Action {
 }
 
 export class MovePatientAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Patient] Move patient': true })
     public readonly type = '[Patient] Move patient';
 
     @IsUUID(4, uuidValidationOptions)
@@ -54,14 +54,14 @@ export class MovePatientAction implements Action {
 }
 
 export class RemovePatientAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Patient] Remove patient': true })
     public readonly type = '[Patient] Remove patient';
     @IsUUID(4, uuidValidationOptions)
     public readonly patientId!: UUID;
 }
 
 export class SetVisibleStatusAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Patient] Set Visible Status': true })
     public readonly type = '[Patient] Set Visible Status';
 
     @IsUUID(4, uuidValidationOptions)
@@ -72,7 +72,7 @@ export class SetVisibleStatusAction implements Action {
 }
 
 export class SetUserTextAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Patient] Set Remarks': true })
     public readonly type = '[Patient] Set Remarks';
 
     @IsUUID(4, uuidValidationOptions)

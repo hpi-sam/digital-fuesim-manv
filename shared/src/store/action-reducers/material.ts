@@ -1,12 +1,13 @@
 import { Type } from 'class-transformer';
-import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsUUID, ValidateNested } from 'class-validator';
 import { Position } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
+import { IsStringLiteralUnion } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { updateElementPosition } from './utils/spatial-elements';
 
 export class MoveMaterialAction implements Action {
-    @IsString()
+    @IsStringLiteralUnion({ '[Material] Move material': true })
     public readonly type = '[Material] Move material';
 
     @IsUUID(4, uuidValidationOptions)
