@@ -81,6 +81,12 @@ export const createSelectViewport =
     createSelectElementFromMapFactory(selectViewports);
 export const createSelectClient =
     createSelectElementFromMapFactory(selectClients);
+export const createSelectMaterialTemplate = createSelectElementFromMapFactory(
+    selectMaterialTemplates
+);
+export const createSelectPersonnelTemplate = createSelectElementFromMapFactory(
+    selectPersonnelTemplates
+);
 
 function createSelectElementFromArrayFactory<Element extends { id: UUID }>(
     elementsSelector: (state: AppState) => readonly Element[]

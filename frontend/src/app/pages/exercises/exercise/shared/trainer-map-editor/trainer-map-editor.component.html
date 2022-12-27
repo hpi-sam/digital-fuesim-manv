@@ -179,7 +179,16 @@
                     </div>
                 </li>
                 <li class="list-group-item">
-                    <h5>Fahrzeuge</h5>
+                    <h5>
+                        Fahrzeuge
+                        <button
+                            class="ms-3 btn btn-sm btn-link text-decoration-none"
+                            (click)="addVehicleTemplate()"
+                        >
+                            <i class="bi bi-plus"></i>
+                            Hinzufügen
+                        </button>
+                    </h5>
                     <div
                         class="overflow-auto w-100"
                         style="white-space: nowrap"
@@ -197,6 +206,18 @@
                             <div class="preview-image-container card-img-top">
                                 <img [src]="vehicleTemplate.image.url" />
                             </div>
+
+                            <!-- (mousedown) instead of (click) to be able to stop the propagation-->
+                            <button
+                                (mousedown)="
+                                    editVehicleTemplate(vehicleTemplate.id);
+                                    $event.stopPropagation()
+                                "
+                                class="btn btn-outline-warning position-absolute"
+                                style="top: 0; right: 0"
+                            >
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
                             <div class="card-body">
                                 <h5
                                     class="card-title text-truncate"

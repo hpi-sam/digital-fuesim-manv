@@ -1,0 +1,6 @@
+<ng-container *ngIf="personnelTemplate$ | async as personnelTemplate">
+    <div class="preview-image-container pb-0">
+        <img [src]="personnelTemplate.image.url" />
+    </div>
+    {{ personnelTypeNames[personnelTemplate.personnelType] }}
+</ng-container>

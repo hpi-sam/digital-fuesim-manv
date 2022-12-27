@@ -1,0 +1,215 @@
+<ng-container *ngIf="values">
+    <div class="form-group mb-3">
+        <label class="form-label">Standardname von neuen Fahrzeugen:</label>
+        <input
+            #nameInput="ngModel"
+            [(ngModel)]="values.name"
+            required
+            type="text"
+            class="form-control"
+            placeholder="Fahrzeugname"
+        />
+        <app-display-validation
+            [ngModelInput]="nameInput"
+        ></app-display-validation>
+    </div>
+    <div class="form-group mb-3">
+        <label class="form-label">Typ:</label>
+        <input
+            #typeInput="ngModel"
+            [(ngModel)]="values.type"
+            required
+            type="text"
+            class="form-control"
+            placeholder="Fahrzeugtyp"
+        />
+        <app-display-validation
+            [ngModelInput]="typeInput"
+        ></app-display-validation>
+    </div>
+    <div class="form-group mb-3">
+        <label class="form-label">Bildadresse:</label>
+        <input
+            #imageUrlInput="ngModel"
+            [(ngModel)]="values.url"
+            [appAutofocus]="true"
+            appImageExistsValidator
+            required
+            type="url"
+            class="form-control"
+            placeholder="https://example.com/image.png"
+        />
+        <app-display-validation
+            [ngModelInput]="imageUrlInput"
+        ></app-display-validation>
+    </div>
+    <div class="form-group mb-3">
+        <label class="form-label">Bildhöhe:</label>
+        <input
+            #heightInput="ngModel"
+            [(ngModel)]="values.height"
+            required
+            min="1"
+            step="1"
+            appIntegerValidator
+            type="number"
+            class="form-control"
+            placeholder="100"
+        />
+        <app-display-validation
+            [ngModelInput]="heightInput"
+        ></app-display-validation>
+    </div>
+    <div class="form-group mb-3">
+        <label class="form-label">Patientenkapazität:</label>
+        <input
+            #patientCapacityInput="ngModel"
+            [(ngModel)]="values.patientCapacity"
+            required
+            min="0"
+            step="1"
+            appIntegerValidator
+            type="number"
+            class="form-control"
+            placeholder="1"
+        />
+        <app-display-validation
+            [ngModelInput]="patientCapacityInput"
+        ></app-display-validation>
+    </div>
+    <div class="form-group mb-3">
+        <label class="form-label"
+            >Materialien
+            <div ngbDropdown autoClose="outside" class="d-inline-block">
+                <button
+                    ngbDropdownToggle
+                    type="button"
+                    class="btn btn-outline-primary ms-3"
+                >
+                    Material hinzufügen
+                </button>
+                <div ngbDropdownMenu>
+                    <button
+                        *ngFor="
+                            let materialTemplate of materialTemplates$
+                                | async
+                                | values
+                        "
+                        ngbDropdownItem
+                        (click)="addMaterial(materialTemplate.materialType)"
+                        type="button"
+                        class="btn"
+                    >
+                        <i class="bi bi-plus"></i>
+                        {{ materialTypeNames[materialTemplate.materialType] }}
+                    </button>
+                </div>
+            </div></label
+        >
+        <div
+            *ngIf="values.materialTypes.length > 0; else noMaterialTemplates"
+            class="d-flex flex-wrap"
+        >
+            <div
+                *ngFor="
+                    let materialTypes of values.materialTypes;
+                    let index = index
+                "
+                class="card text-center m-1"
+                style="width: 10rem; text-overflow: ellipsis; height: auto"
+            >
+                <div>
+                    <button
+                        (click)="removeMaterial(index)"
+                        class="btn btn-sm btn-outline-danger float-end"
+                    >
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <app-material-template-display
+                    [materialTemplateType]="materialTypes"
+                >
+                </app-material-template-display>
+            </div>
+        </div>
+        <ng-template #noMaterialTemplates>
+            <div class="text-muted mt-3 mb-3">Keine Materialien zugewiesen</div>
+        </ng-template>
+    </div>
+    <div class="form-group mb-3">
+        <label class="form-label"
+            >Personal
+            <div ngbDropdown autoClose="outside" class="d-inline-block">
+                <button
+                    ngbDropdownToggle
+                    type="button"
+                    class="btn btn-outline-primary ms-3"
+                >
+                    Personal hinzufügen
+                </button>
+                <div ngbDropdownMenu>
+                    <button
+                        *ngFor="
+                            let personnelTemplate of personnelTemplates$
+                                | async
+                                | values
+                        "
+                        ngbDropdownItem
+                        (click)="addPersonnel(personnelTemplate.personnelType)"
+                        type="button"
+                        class="btn"
+                    >
+                        <i class="bi bi-plus"></i>
+                        {{
+                            personnelTypeNames[personnelTemplate.personnelType]
+                        }}
+                    </button>
+                </div>
+            </div></label
+        >
+        <div
+            *ngIf="values.personnelTypes.length > 0; else noPersonnelTemplates"
+            class="d-flex flex-wrap"
+        >
+            <div
+                *ngFor="
+                    let personnelType of values.personnelTypes;
+                    let index = index
+                "
+                class="card text-center m-1"
+                style="width: 10rem; text-overflow: ellipsis; height: auto"
+            >
+                <div>
+                    <button
+                        (click)="removePersonnel(index)"
+                        class="btn btn-sm btn-outline-danger float-end"
+                    >
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <app-personnel-template-display
+                    [personnelTemplateType]="personnelType"
+                >
+                </app-personnel-template-display>
+            </div>
+        </div>
+        <ng-template #noPersonnelTemplates>
+            <div class="text-muted mt-3 mb-3">Kein Personal zugewiesen</div>
+        </ng-template>
+    </div>
+
+    <!-- If the button is not disabled the vehicleTemplate is correct -->
+    <button
+        (click)="submit()"
+        [disabled]="
+            nameInput.invalid ||
+            typeInput.invalid ||
+            imageUrlInput.invalid ||
+            heightInput.invalid ||
+            patientCapacityInput.invalid
+        "
+        class="btn btn-primary"
+    >
+        {{ btnText }}
+    </button>
+</ng-container>

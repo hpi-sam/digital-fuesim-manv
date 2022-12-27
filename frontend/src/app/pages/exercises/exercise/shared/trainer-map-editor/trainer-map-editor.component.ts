@@ -16,7 +16,9 @@ import {
 import { DragElementService } from '../core/drag-element.service';
 import { TransferLinesService } from '../core/transfer-lines.service';
 import { openCreateImageTemplateModal } from '../editor-panel/create-image-template-modal/open-create-image-template-modal';
+import { openCreateVehicleTemplateModal } from '../editor-panel/create-vehicle-template-modal/open-create-vehicle-template-modal';
 import { openEditImageTemplateModal } from '../editor-panel/edit-image-template-modal/open-edit-image-template-modal';
+import { openEditVehicleTemplateModal } from '../editor-panel/edit-vehicle-template-modal/open-edit-vehicle-template-modal';
 
 @Component({
     selector: 'app-trainer-map-editor',
@@ -66,8 +68,16 @@ export class TrainerMapEditorComponent {
         openCreateImageTemplateModal(this.ngbModalService);
     }
 
+    public addVehicleTemplate() {
+        openCreateVehicleTemplateModal(this.ngbModalService);
+    }
+
     public editMapImageTemplate(mapImageTemplateId: UUID) {
         openEditImageTemplateModal(this.ngbModalService, mapImageTemplateId);
+    }
+
+    public editVehicleTemplate(mapImageTemplateId: UUID) {
+        openEditVehicleTemplateModal(this.ngbModalService, mapImageTemplateId);
     }
 
     public setCurrentCategory(category: keyof typeof colorCodeMap) {
