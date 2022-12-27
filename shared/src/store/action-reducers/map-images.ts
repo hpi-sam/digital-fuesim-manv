@@ -94,7 +94,7 @@ export class ReconfigureMapImageUrlAction implements Action {
     public readonly newUrl!: string;
 }
 
-type ChangeZIndexMapImageActionMode =
+type ChangeZIndexActionMode =
     | 'bringToBack'
     | 'bringToFront'
     | 'oneLayerBack'
@@ -113,7 +113,7 @@ export class ChangeZIndexMapImageAction implements Action {
         oneLayerBack: true,
         oneLayerForward: true,
     })
-    public readonly mode!: ChangeZIndexMapImageActionMode;
+    public readonly mode!: ChangeZIndexActionMode;
 }
 
 export namespace MapImagesActionReducers {

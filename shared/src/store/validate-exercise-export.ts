@@ -4,7 +4,6 @@ import { validateSync } from 'class-validator';
 import type { ExportImportFile } from '../export-import/file-format';
 import { PartialExport, StateExport } from '../export-import/file-format';
 import type { Constructor } from '../utils';
-// import { validateExerciseAction } from './validate-exercise-action';
 import { defaultValidateOptions } from './validation-options';
 
 /**

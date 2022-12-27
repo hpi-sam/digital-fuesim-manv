@@ -12,7 +12,7 @@ import type { GenericPropertyDecorator } from './generic-property-decorator';
 // For reference, such an implementation once existed as part of https://github.com/hpi-sam/digital-fuesim-manv/pull/125.
 
 /**
- * An `IdMap` is of type `{ [key: UUID]: T }`
+ * An `IdMap` is of type `{ readonly [key: UUID]: T }`
  *
  * @property getId A function to get the id that is used as the key in the object. Defaults to `.id`, this might be wrong for some types, though.
  */
@@ -21,7 +21,7 @@ export function IsIdMap<T extends object, Each extends boolean = false>(
     type: Constructor<T>,
     getId: (value: T) => UUID = (value) => (value as { id: UUID }).id,
     validationOptions?: ValidationOptions & { each?: Each }
-): GenericPropertyDecorator<{ [key: UUID]: T }, Each> {
+): GenericPropertyDecorator<{ readonly [key: UUID]: T }, Each> {
     const transform = Transform(
         (params) => {
             const plainChildren = params.value as { [key: UUID]: T };

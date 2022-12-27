@@ -9,8 +9,6 @@ export function makeValidator<T, Each extends boolean = false>(
         validationArguments?: ValidationArguments
     ) => boolean,
     validationOptions?: ValidationOptions & { each?: Each }
-    // Disabled as this is the suggested way for [class-validator](https://github.com/typestack/class-validator#custom-validation-decorators)
-    // eslint-disable-next-line @typescript-eslint/ban-types
 ): GenericPropertyDecorator<T, Each> {
     // Disabled as this is the suggested way for [class-validator](https://github.com/typestack/class-validator#custom-validation-decorators)
     // eslint-disable-next-line @typescript-eslint/ban-types

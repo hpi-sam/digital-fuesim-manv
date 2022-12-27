@@ -10,16 +10,14 @@ export const isReachableTransferPoints = createMapValidator<
     UUID,
     ReachableTransferPoints
 >({
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    keyValidator: <(key: unknown) => key is UUID>((key) => isUUID(key, 4)),
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    valueValidator: <(value: unknown) => value is ReachableTransferPoints>(
-        ((value) =>
-            typeof value === 'object' &&
-            value !== null &&
-            isNumber((value as { duration: number }).duration) &&
-            min((value as { duration: number }).duration, 0))
-    ),
+    keyValidator: ((key) => isUUID(key, 4)) as (key: unknown) => key is UUID,
+    valueValidator: ((value) =>
+        typeof value === 'object' &&
+        value !== null &&
+        isNumber((value as { duration: number }).duration) &&
+        min((value as { duration: number }).duration, 0)) as (
+        value: unknown
+    ) => value is ReachableTransferPoints,
 });
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

@@ -37,7 +37,7 @@ export function validateExerciseAction(
     );
 }
 
-// Provide decorators for validation
+// Decorators for validation
 // Placed here instead of in utils/validators to prevent circular imports
 
 export function isExerciseAction(value: unknown): value is ExerciseAction {
