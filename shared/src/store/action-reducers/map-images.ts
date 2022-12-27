@@ -18,12 +18,12 @@ import {
     UUID,
     uuidValidationOptions,
 } from '../../utils';
-import { IsLiteralUnion } from '../../utils/validators';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
 
 export class AddMapImageAction implements Action {
-    @IsLiteralUnion({ '[MapImage] Add MapImage': true })
+    @IsValue('[MapImage] Add MapImage' as const)
     public readonly type = '[MapImage] Add MapImage';
 
     @ValidateNested()
@@ -32,7 +32,7 @@ export class AddMapImageAction implements Action {
 }
 
 export class MoveMapImageAction implements Action {
-    @IsLiteralUnion({ '[MapImage] Move MapImage': true })
+    @IsValue('[MapImage] Move MapImage' as const)
     public readonly type = '[MapImage] Move MapImage';
 
     @IsUUID(4, uuidValidationOptions)
@@ -44,7 +44,7 @@ export class MoveMapImageAction implements Action {
 }
 
 export class ScaleMapImageAction implements Action {
-    @IsLiteralUnion({ '[MapImage] Scale MapImage': true })
+    @IsValue('[MapImage] Scale MapImage' as const)
     public readonly type = '[MapImage] Scale MapImage';
 
     @IsUUID(4, uuidValidationOptions)
@@ -62,7 +62,7 @@ export class ScaleMapImageAction implements Action {
 }
 
 export class RemoveMapImageAction implements Action {
-    @IsLiteralUnion({ '[MapImage] Remove MapImage': true })
+    @IsValue('[MapImage] Remove MapImage' as const)
     public readonly type = '[MapImage] Remove MapImage';
 
     @IsUUID(4, uuidValidationOptions)
@@ -70,7 +70,7 @@ export class RemoveMapImageAction implements Action {
 }
 
 export class SetIsLockedMapImageAction implements Action {
-    @IsLiteralUnion({ '[MapImage] Set isLocked': true })
+    @IsValue('[MapImage] Set isLocked' as const)
     public readonly type = '[MapImage] Set isLocked';
 
     @IsUUID(4, uuidValidationOptions)
@@ -81,7 +81,7 @@ export class SetIsLockedMapImageAction implements Action {
 }
 
 export class ReconfigureMapImageUrlAction implements Action {
-    @IsLiteralUnion({ '[MapImage] Reconfigure Url': true })
+    @IsValue('[MapImage] Reconfigure Url' as const)
     public readonly type = '[MapImage] Reconfigure Url';
 
     @IsUUID(4, uuidValidationOptions)
@@ -101,7 +101,7 @@ type ChangeZIndexActionMode =
     | 'oneLayerForward';
 
 export class ChangeZIndexMapImageAction implements Action {
-    @IsLiteralUnion({ '[MapImage] Change zIndex': true })
+    @IsValue('[MapImage] Change zIndex' as const)
     public readonly type = '[MapImage] Change zIndex';
 
     @IsUUID(4, uuidValidationOptions)

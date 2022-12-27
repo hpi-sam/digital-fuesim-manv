@@ -8,7 +8,7 @@ import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { AllowedValues } from '../../utils/validators';
-import { IsLiteralUnion } from '../../utils/validators';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { getElement } from './utils';
@@ -57,7 +57,7 @@ export function letElementArrive(
 }
 
 export class AddToTransferAction implements Action {
-    @IsLiteralUnion({ '[Transfer] Add to transfer': true })
+    @IsValue('[Transfer] Add to transfer' as const)
     public readonly type = '[Transfer] Add to transfer';
 
     @IsLiteralUnion(transferableElementTypeAllowedValues)
@@ -75,7 +75,7 @@ export class AddToTransferAction implements Action {
 }
 
 export class EditTransferAction implements Action {
-    @IsLiteralUnion({ '[Transfer] Edit transfer': true })
+    @IsValue('[Transfer] Edit transfer' as const)
     public readonly type = '[Transfer] Edit transfer';
 
     @IsLiteralUnion(transferableElementTypeAllowedValues)
@@ -99,7 +99,7 @@ export class EditTransferAction implements Action {
 }
 
 export class FinishTransferAction implements Action {
-    @IsLiteralUnion({ '[Transfer] Finish transfer': true })
+    @IsValue('[Transfer] Finish transfer' as const)
     public readonly type = '[Transfer] Finish transfer';
 
     @IsLiteralUnion(transferableElementTypeAllowedValues)
@@ -113,7 +113,7 @@ export class FinishTransferAction implements Action {
 }
 
 export class TogglePauseTransferAction implements Action {
-    @IsLiteralUnion({ '[Transfer] Toggle pause transfer': true })
+    @IsValue('[Transfer] Toggle pause transfer' as const)
     public readonly type = '[Transfer] Toggle pause transfer';
 
     @IsLiteralUnion(transferableElementTypeAllowedValues)

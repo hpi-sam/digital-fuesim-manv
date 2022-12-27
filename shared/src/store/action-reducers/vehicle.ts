@@ -11,7 +11,7 @@ import {
     UUID,
     uuidValidationOptions,
 } from '../../utils';
-import { IsLiteralUnion } from '../../utils/validators';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { deletePatient } from './patient';
@@ -44,7 +44,7 @@ export function deleteVehicle(
 }
 
 export class AddVehicleAction implements Action {
-    @IsLiteralUnion({ '[Vehicle] Add vehicle': true })
+    @IsValue('[Vehicle] Add vehicle' as const)
     public readonly type = '[Vehicle] Add vehicle';
     @ValidateNested()
     @Type(() => Vehicle)
@@ -62,7 +62,7 @@ export class AddVehicleAction implements Action {
 }
 
 export class RenameVehicleAction implements Action {
-    @IsLiteralUnion({ '[Vehicle] Rename vehicle': true })
+    @IsValue('[Vehicle] Rename vehicle' as const)
     public readonly type = '[Vehicle] Rename vehicle';
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
@@ -72,7 +72,7 @@ export class RenameVehicleAction implements Action {
 }
 
 export class MoveVehicleAction implements Action {
-    @IsLiteralUnion({ '[Vehicle] Move vehicle': true })
+    @IsValue('[Vehicle] Move vehicle' as const)
     public readonly type = '[Vehicle] Move vehicle';
 
     @IsUUID(4, uuidValidationOptions)
@@ -84,21 +84,21 @@ export class MoveVehicleAction implements Action {
 }
 
 export class RemoveVehicleAction implements Action {
-    @IsLiteralUnion({ '[Vehicle] Remove vehicle': true })
+    @IsValue('[Vehicle] Remove vehicle' as const)
     public readonly type = '[Vehicle] Remove vehicle';
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
 }
 
 export class UnloadVehicleAction implements Action {
-    @IsLiteralUnion({ '[Vehicle] Unload vehicle': true })
+    @IsValue('[Vehicle] Unload vehicle' as const)
     public readonly type = '[Vehicle] Unload vehicle';
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
 }
 
 export class LoadVehicleAction implements Action {
-    @IsLiteralUnion({ '[Vehicle] Load vehicle': true })
+    @IsValue('[Vehicle] Load vehicle' as const)
     public readonly type = '[Vehicle] Load vehicle';
 
     @IsUUID(4, uuidValidationOptions)

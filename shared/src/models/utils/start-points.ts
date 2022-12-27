@@ -1,13 +1,13 @@
 import type { TypeOptions } from 'class-transformer';
 import { IsNumber, IsString, IsUUID, Min } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
-import { IsLiteralUnion } from '../../utils/validators';
+import { IsValue } from '../../utils/validators';
 import { getCreate } from './get-create';
 
 export type StartPoint = AlarmGroupStartPoint | TransferStartPoint;
 
 export class TransferStartPoint {
-    @IsLiteralUnion({ transferPoint: true })
+    @IsValue('transferPoint' as const)
     public readonly type = 'transferPoint';
 
     @IsUUID(4, uuidValidationOptions)
@@ -24,7 +24,7 @@ export class TransferStartPoint {
 }
 
 export class AlarmGroupStartPoint {
-    @IsLiteralUnion({ alarmGroup: true })
+    @IsValue('alarmGroup' as const)
     public readonly type = 'alarmGroup';
 
     @IsString()

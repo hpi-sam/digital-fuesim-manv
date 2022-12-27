@@ -5,11 +5,11 @@ import {
     PatientTemplate,
     VehicleTemplate,
 } from '../../models';
-import { IsLiteralUnion } from '../../utils/validators';
+import { IsValue } from '../../utils/validators';
 import { BaseExportImportFile } from './base-file';
 
 export class PartialExport extends BaseExportImportFile {
-    @IsLiteralUnion({ partial: true })
+    @IsValue('partial' as const)
     public readonly type: 'partial' = 'partial';
 
     @IsOptional()

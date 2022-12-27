@@ -5,12 +5,12 @@ import { ImageProperties } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
-import { IsLiteralUnion } from '../../utils/validators';
+import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 
 export class AddMapImageTemplateAction implements Action {
-    @IsLiteralUnion({ '[MapImageTemplate] Add mapImageTemplate': true })
+    @IsValue('[MapImageTemplate] Add mapImageTemplate' as const)
     public readonly type = '[MapImageTemplate] Add mapImageTemplate';
 
     @ValidateNested()
@@ -19,7 +19,7 @@ export class AddMapImageTemplateAction implements Action {
 }
 
 export class EditMapImageTemplateAction implements Action {
-    @IsLiteralUnion({ '[MapImageTemplate] Edit mapImageTemplate': true })
+    @IsValue('[MapImageTemplate] Edit mapImageTemplate' as const)
     public readonly type = '[MapImageTemplate] Edit mapImageTemplate';
 
     @IsUUID(4, uuidValidationOptions)
@@ -34,9 +34,7 @@ export class EditMapImageTemplateAction implements Action {
 }
 
 export class DeleteMapImageTemplateAction implements Action {
-    @IsLiteralUnion({
-        '[MapImageTemplate] Delete mapImageTemplate': true,
-    })
+    @IsValue('[MapImageTemplate] Delete mapImageTemplate' as const)
     public readonly type = '[MapImageTemplate] Delete mapImageTemplate';
 
     @IsUUID(4, uuidValidationOptions)
