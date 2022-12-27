@@ -1,7 +1,11 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
-import { PatientStatus, Position } from '../../models/utils';
+import {
+    PatientStatus,
+    patientStatusAllowedValues,
+    Position,
+} from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import {
@@ -10,6 +14,7 @@ import {
     UUID,
     uuidValidationOptions,
 } from '../../utils';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { updateTreatments } from './utils/calculate-treatments';
@@ -29,7 +34,7 @@ export function deletePatient(
 }
 
 export class AddPatientAction implements Action {
-    @IsString()
+    @IsValue('[Patient] Add patient' as const)
     public readonly type = '[Patient] Add patient';
     @ValidateNested()
     @Type(() => Patient)
@@ -37,7 +42,7 @@ export class AddPatientAction implements Action {
 }
 
 export class MovePatientAction implements Action {
-    @IsString()
+    @IsValue('[Patient] Move patient' as const)
     public readonly type = '[Patient] Move patient';
 
     @IsUUID(4, uuidValidationOptions)
@@ -49,25 +54,25 @@ export class MovePatientAction implements Action {
 }
 
 export class RemovePatientAction implements Action {
-    @IsString()
+    @IsValue('[Patient] Remove patient' as const)
     public readonly type = '[Patient] Remove patient';
     @IsUUID(4, uuidValidationOptions)
     public readonly patientId!: UUID;
 }
 
 export class SetVisibleStatusAction implements Action {
-    @IsString()
+    @IsValue('[Patient] Set Visible Status' as const)
     public readonly type = '[Patient] Set Visible Status';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly patientId!: UUID;
 
-    @IsString()
+    @IsLiteralUnion(patientStatusAllowedValues)
     public readonly patientStatus!: PatientStatus;
 }
 
 export class SetUserTextAction implements Action {
-    @IsString()
+    @IsValue('[Patient] Set Remarks' as const)
     public readonly type = '[Patient] Set Remarks';
 
     @IsUUID(4, uuidValidationOptions)

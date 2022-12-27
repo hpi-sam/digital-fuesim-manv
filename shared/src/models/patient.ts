@@ -1,31 +1,32 @@
 import { Type } from 'class-transformer';
 import {
-    IsBoolean,
-    IsDefined,
-    IsNumber,
-    IsOptional,
-    IsString,
     IsUUID,
-    Max,
-    MaxLength,
-    Min,
     ValidateNested,
+    IsOptional,
+    IsNumber,
+    Max,
+    Min,
+    IsBoolean,
+    IsString,
+    MaxLength,
+    isEmpty,
 } from 'class-validator';
-import { isEmpty } from 'lodash-es';
-import { UUID, uuid, UUIDSet, uuidValidationOptions } from '../utils';
+import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
+import { IsLiteralUnion, IsIdMap, IsUUIDSet } from '../utils/validators';
+import { PatientHealthState } from './patient-health-state';
 import {
-    getCreate,
-    HealthPoints,
-    healthPointsDefaults,
-    ImageProperties,
+    BiometricInformation,
+    PatientStatusCode,
     PatientStatus,
+    patientStatusAllowedValues,
+    ImageProperties,
     Position,
+    healthPointsDefaults,
+    HealthPoints,
+    getCreate,
 } from './utils';
-import { BiometricInformation } from './utils/biometric-information';
-import { PatientStatusCode } from './utils/patient-status-code';
-import { PretriageInformation } from './utils/pretriage-information';
 import { PersonalInformation } from './utils/personal-information';
-import type { PatientHealthState } from '.';
+import { PretriageInformation } from './utils/pretriage-information';
 
 export class Patient {
     @IsUUID(4, uuidValidationOptions)
@@ -51,12 +52,10 @@ export class Patient {
     @Type(() => PatientStatusCode)
     public readonly patientStatusCode: PatientStatusCode;
 
-    // TODO
-    @IsString()
+    @IsLiteralUnion(patientStatusAllowedValues)
     public readonly pretriageStatus: PatientStatus;
 
-    // TODO
-    @IsString()
+    @IsLiteralUnion(patientStatusAllowedValues)
     public readonly realStatus: PatientStatus;
 
     @ValidateNested()
@@ -84,7 +83,7 @@ export class Patient {
     @IsNumber()
     public readonly stateTime: number = 0;
 
-    @IsDefined()
+    @IsIdMap(PatientHealthState)
     public readonly healthStates: {
         readonly [stateId: UUID]: PatientHealthState;
     } = {};
@@ -103,12 +102,10 @@ export class Patient {
     @Min(healthPointsDefaults.min)
     public readonly health: HealthPoints;
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly assignedPersonnelIds: UUIDSet = {};
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly assignedMaterialIds: UUIDSet = {};
     /**
      * The speed with which the patients healthStatus changes

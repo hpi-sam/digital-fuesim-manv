@@ -1,7 +1,8 @@
-import { IsBoolean, IsNumber, IsObject, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsNumber, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { getCreate } from './get-create';
-import { StartPoint } from './start-points';
+import { StartPoint, startPointTypeOptions } from './start-points';
 
 export class Transfer {
     /**
@@ -10,7 +11,8 @@ export class Transfer {
     @IsNumber()
     public readonly endTimeStamp: number;
 
-    @IsObject()
+    @ValidateNested()
+    @Type(() => Object, startPointTypeOptions)
     public readonly startPoint: StartPoint;
 
     @IsUUID(4, uuidValidationOptions)

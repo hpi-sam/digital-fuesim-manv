@@ -1,18 +1,18 @@
 import { Type } from 'class-transformer';
 import {
-    IsDefined,
-    IsNumber,
-    IsOptional,
-    IsString,
     IsUUID,
-    Max,
-    Min,
+    IsString,
     ValidateNested,
+    IsNumber,
+    Min,
+    Max,
+    IsOptional,
 } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
-import { uuid, UUID, UUIDSet, uuidValidationOptions } from '../utils';
+import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
+import { IsUUIDSet } from '../utils/validators';
 import type { MaterialTemplate } from './material-template';
-import { CanCaterFor, getCreate, ImageProperties, Position } from './utils';
+import { CanCaterFor, Position, ImageProperties, getCreate } from './utils';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
@@ -24,8 +24,7 @@ export class Material {
     @IsString()
     public readonly vehicleName: string;
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly assignedPatientIds: UUIDSet;
 
     @ValidateNested()

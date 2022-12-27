@@ -8,36 +8,45 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
+import {
+    defaultMapImagesTemplates,
+    defaultPatientCategories,
+    defaultVehicleTemplates,
+} from './data';
 import { defaultMaterialTemplates } from './data/default-state/material-templates';
-import { defaultPatientCategories } from './data/default-state/patient-templates';
 import { defaultPersonnelTemplates } from './data/default-state/personnel-templates';
-import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
-import type {
+import {
     AlarmGroup,
     Client,
+    EocLogEntry,
     Hospital,
     HospitalPatient,
     MapImage,
+    MapImageTemplate,
     Material,
     Patient,
     Personnel,
     TransferPoint,
     Vehicle,
+    VehicleTemplate,
     Viewport,
 } from './models';
-import { EocLogEntry, MapImageTemplate, VehicleTemplate } from './models';
 import { ExerciseConfiguration } from './models/exercise-configuration';
 import type { MaterialTemplate } from './models/material-template';
 import { PatientCategory } from './models/patient-category';
 import type { PersonnelTemplate } from './models/personnel-template';
 import type { PersonnelType } from './models/utils';
-import { getCreate, SpatialTree } from './models/utils';
-import { ExerciseStatus } from './models/utils/exercise-status';
+import {
+    ExerciseStatus,
+    exerciseStatusAllowedValues,
+    getCreate,
+    SpatialTree,
+} from './models/utils';
 import type { MaterialType } from './models/utils/material-type';
 import type { SpatialElementType } from './store/action-reducers/utils/spatial-elements';
 import type { UUID } from './utils';
 import { uuid, uuidValidationOptions } from './utils';
+import { IsIdMap, IsLiteralUnion } from './utils/validators';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -52,32 +61,32 @@ export class ExerciseState {
     @IsInt()
     @Min(0)
     public readonly currentTime = 0;
-    @IsString()
+    @IsLiteralUnion(exerciseStatusAllowedValues)
     public readonly currentStatus: ExerciseStatus = 'notStarted';
-    @IsObject()
+    @IsIdMap(Viewport)
     public readonly viewports: { readonly [key: UUID]: Viewport } = {};
-    @IsObject()
+    @IsIdMap(Vehicle)
     public readonly vehicles: { readonly [key: UUID]: Vehicle } = {};
-    @IsObject()
+    @IsIdMap(Personnel)
     public readonly personnel: { readonly [key: UUID]: Personnel } = {};
-    @IsObject()
+    @IsIdMap(Patient)
     public readonly patients: { readonly [key: UUID]: Patient } = {};
-    @IsObject()
+    @IsIdMap(Material)
     public readonly materials: { readonly [key: UUID]: Material } = {};
-    @IsObject()
+    @IsIdMap(MapImage)
     public readonly mapImages: { readonly [key: UUID]: MapImage } = {};
-    @IsObject()
+    @IsIdMap(TransferPoint)
     public readonly transferPoints: { readonly [key: UUID]: TransferPoint } =
         {};
-    @IsObject()
+    @IsIdMap(Hospital)
     public readonly hospitals: { readonly [key: UUID]: Hospital } = {};
-    @IsObject()
+    @IsIdMap(HospitalPatient, (hospitalPatient) => hospitalPatient.patientId)
     public readonly hospitalPatients: {
         readonly [key: UUID]: HospitalPatient;
     } = {};
-    @IsObject()
+    @IsIdMap(AlarmGroup)
     public readonly alarmGroups: { readonly [key: UUID]: AlarmGroup } = {};
-    @IsObject()
+    @IsIdMap(Client)
     public readonly clients: { readonly [key: UUID]: Client } = {};
     @IsArray()
     @ValidateNested()
@@ -104,7 +113,7 @@ export class ExerciseState {
     @Type(() => EocLogEntry)
     public readonly eocLog: readonly EocLogEntry[] = [];
     @IsString()
-    public readonly participantId: string = '';
+    public readonly participantId: string;
 
     // Mutable<ExerciseState>` could still have immutable objects in spatialTree
     @IsObject()

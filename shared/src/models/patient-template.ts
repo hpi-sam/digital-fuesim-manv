@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
-import { IsDefined, IsUUID, ValidateNested } from 'class-validator';
+import { IsUUID, ValidateNested } from 'class-validator';
 import { cloneDeepMutable, UUID, uuid, uuidValidationOptions } from '../utils';
+import { IsIdMap } from '../utils/validators';
 import type { PatientStatusCode } from './utils';
 import {
     BiometricInformation,
@@ -14,7 +15,7 @@ import { PersonalInformation } from './utils/personal-information';
 import { Patient } from './patient';
 import type { FunctionParameters } from './patient-health-state';
 import { PretriageInformation } from './utils/pretriage-information';
-import type { PatientHealthState } from '.';
+import { PatientHealthState } from './patient-health-state';
 
 export class PatientTemplate {
     @IsUUID(4, uuidValidationOptions)
@@ -32,7 +33,7 @@ export class PatientTemplate {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    @IsDefined()
+    @IsIdMap(PatientHealthState)
     public readonly healthStates: {
         readonly [stateId: UUID]: PatientHealthState;
     };

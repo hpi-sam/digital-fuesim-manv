@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
-import { IsDefined, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, UUIDSet, uuidValidationOptions } from '../utils';
+import { IsReachableTransferPoints, IsUUIDSet } from '../utils/validators';
 import type { ImageProperties } from './utils';
 import { getCreate, Position } from './utils';
 
@@ -12,12 +13,10 @@ export class TransferPoint {
     @Type(() => Position)
     public readonly position: Position;
 
-    // TODO
-    @IsDefined()
+    @IsReachableTransferPoints()
     public readonly reachableTransferPoints: ReachableTransferPoints;
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly reachableHospitals: UUIDSet = {};
 
     @IsString()
@@ -56,8 +55,7 @@ export class TransferPoint {
     }
 }
 
-// TODO: Add validation
-interface ReachableTransferPoints {
+export interface ReachableTransferPoints {
     readonly [connectTransferPointId: UUID]: {
         /**
          * The time in ms it takes to get from this transfer point to the other one.

@@ -1,31 +1,20 @@
 import { Type } from 'class-transformer';
-import type { ValidationError } from 'class-validator';
-import {
-    IsArray,
-    IsIn,
-    IsOptional,
-    IsString,
-    ValidateNested,
-} from 'class-validator';
+import { IsArray, IsOptional, ValidateNested } from 'class-validator';
 import { ExerciseState } from '../../state';
 import type { ExerciseAction } from '../../store';
-import { validateExerciseAction } from '../../store';
+import { IsExerciseAction } from '../../store';
 import { Mutable } from '../../utils';
+import { IsValue } from '../../utils/validators';
 import { BaseExportImportFile } from './base-file';
 
 export class StateHistoryCompound {
     @IsArray()
+    @IsExerciseAction({ each: true })
     public actionHistory: ExerciseAction[];
 
     @ValidateNested()
     @Type(() => ExerciseState)
     public initialState: Mutable<ExerciseState>;
-
-    public validateActions(): (ValidationError | string)[][] {
-        return this.actionHistory.map((action) =>
-            validateExerciseAction(action)
-        );
-    }
 
     public constructor(
         actionHistory: ExerciseAction[],
@@ -37,8 +26,7 @@ export class StateHistoryCompound {
 }
 
 export class StateExport extends BaseExportImportFile {
-    @IsIn(['complete'])
-    @IsString()
+    @IsValue('complete' as const)
     public readonly type: 'complete' = 'complete';
 
     @ValidateNested()
