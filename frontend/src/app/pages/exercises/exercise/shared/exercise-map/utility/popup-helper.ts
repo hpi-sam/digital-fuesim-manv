@@ -1,6 +1,7 @@
 import type { Type } from '@angular/core';
 import type { Feature } from 'ol';
 import type { Point } from 'ol/geom';
+import type Layer from 'ol/layer/Layer';
 import type OlMap from 'ol/Map';
 import type { Pixel } from 'ol/pixel';
 import { calculatePopupPositioning } from './calculate-popup-positioning';
@@ -12,8 +13,11 @@ import type { OpenPopupOptions, PopupComponent } from './popup-manager';
  * This class is a helper with a workaround to get the bounding box of the style.
  */
 export class ImagePopupHelper {
-    constructor(private readonly olMap: OlMap) {}
+    constructor(private readonly olMap: OlMap, public readonly layer: Layer) {}
 
+    /**
+     * @param feature the feature in {@link layer} next to which the popup should be opened
+     */
     public getPopupOptions<PopupComponentType extends PopupComponent>(
         component: Type<PopupComponentType>,
         feature: Feature<Point>,
@@ -105,12 +109,18 @@ export class ImagePopupHelper {
      * @returns wether the feature is visible at the given pixel
      */
     private hasFeatureAtPixel(feature: Feature<Point>, pixel: Pixel): boolean {
-        return this.olMap
-            .getFeaturesAtPixel(pixel, {
-                // We assume the feature has no holes and is on the two axis the highest
-                hitTolerance: 0,
-            })
-            .some((_feature) => _feature.getId() === feature.getId());
+        return (
+            this.olMap.forEachFeatureAtPixel(
+                pixel,
+                (_feature) => _feature.getId() === feature.getId(),
+                {
+                    // We assume the feature has no holes and is on the two axis the highest
+                    hitTolerance: 0,
+                    // Performance optimization
+                    layerFilter: (layer) => layer === this.layer,
+                }
+            ) ?? false
+        );
     }
 
     /**

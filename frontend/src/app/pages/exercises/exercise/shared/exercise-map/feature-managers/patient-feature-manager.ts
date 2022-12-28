@@ -22,7 +22,7 @@ export class PatientFeatureManager extends ElementFeatureManager<
     WithPosition<Patient>
 > {
     readonly type = 'patients';
-    private readonly popupHelper = new ImagePopupHelper(this.olMap);
+    private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
     private readonly imageStyleHelper = new ImageStyleHelper((feature) => {
         const patient = this.getElementFromFeature(feature)!.value;

@@ -1,16 +1,25 @@
-import { IsInt, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
-import type { ExerciseState, Position } from '../..';
-import { imageSizeToPosition, TransferPoint } from '../..';
-import { StartPoint } from '../../models/utils/start-points';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional, IsUUID, ValidateNested } from 'class-validator';
+import { TransferPoint } from '../../models';
+import type { Position } from '../../models/utils';
+import { StartPoint, startPointTypeOptions } from '../../models/utils';
+import type { ExerciseState } from '../../state';
+import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import type { AllowedValues } from '../../utils/validators';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
-import { getElement } from './utils/get-element';
+import { getElement } from './utils';
 import {
     removeElementPosition,
     updateElementPosition,
 } from './utils/spatial-elements';
+
+type TransferableElementType = 'personnel' | 'vehicles';
+const transferableElementTypeAllowedValues: AllowedValues<TransferableElementType> =
+    { personnel: true, vehicles: true };
 
 /**
  * Personnel/Vehicle in transfer will arrive immediately at new targetTransferPoint
@@ -19,7 +28,7 @@ import {
  */
 export function letElementArrive(
     draftState: Mutable<ExerciseState>,
-    elementType: 'personnel' | 'vehicles',
+    elementType: TransferableElementType,
     elementId: UUID
 ) {
     const element = getElement(draftState, elementType, elementId);
@@ -48,16 +57,17 @@ export function letElementArrive(
 }
 
 export class AddToTransferAction implements Action {
-    @IsString()
+    @IsValue('[Transfer] Add to transfer' as const)
     public readonly type = '[Transfer] Add to transfer';
 
-    @IsString()
-    elementType!: 'personnel' | 'vehicles';
+    @IsLiteralUnion(transferableElementTypeAllowedValues)
+    elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;
 
-    @IsObject()
+    @ValidateNested()
+    @Type(() => Object, startPointTypeOptions)
     public readonly startPoint!: StartPoint;
 
     @IsUUID(4, uuidValidationOptions)
@@ -65,11 +75,11 @@ export class AddToTransferAction implements Action {
 }
 
 export class EditTransferAction implements Action {
-    @IsString()
+    @IsValue('[Transfer] Edit transfer' as const)
     public readonly type = '[Transfer] Edit transfer';
 
-    @IsString()
-    elementType!: 'personnel' | 'vehicles';
+    @IsLiteralUnion(transferableElementTypeAllowedValues)
+    elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;
@@ -89,11 +99,11 @@ export class EditTransferAction implements Action {
 }
 
 export class FinishTransferAction implements Action {
-    @IsString()
+    @IsValue('[Transfer] Finish transfer' as const)
     public readonly type = '[Transfer] Finish transfer';
 
-    @IsString()
-    elementType!: 'personnel' | 'vehicles';
+    @IsLiteralUnion(transferableElementTypeAllowedValues)
+    elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;
@@ -103,11 +113,11 @@ export class FinishTransferAction implements Action {
 }
 
 export class TogglePauseTransferAction implements Action {
-    @IsString()
+    @IsValue('[Transfer] Toggle pause transfer' as const)
     public readonly type = '[Transfer] Toggle pause transfer';
 
-    @IsString()
-    elementType!: 'personnel' | 'vehicles';
+    @IsLiteralUnion(transferableElementTypeAllowedValues)
+    elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;

@@ -20,7 +20,7 @@ import { createPoint, ElementFeatureManager } from './element-feature-manager';
 
 export class TransferPointFeatureManager extends ElementFeatureManager<TransferPoint> {
     readonly type = 'transferPoints';
-    private readonly popupHelper = new ImagePopupHelper(this.olMap);
+    private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
     constructor(
         olMap: OlMap,

@@ -1,5 +1,6 @@
-import { IsIn, IsInt, IsString, Min } from 'class-validator';
+import { IsInt, Min } from 'class-validator';
 import { ExerciseState } from '../../state';
+import { IsLiteralUnion } from '../../utils/validators';
 
 export abstract class BaseExportImportFile {
     public static readonly currentFileVersion = 1;
@@ -13,7 +14,9 @@ export abstract class BaseExportImportFile {
     @Min(0)
     public readonly dataVersion: number = ExerciseState.currentStateVersion;
 
-    @IsIn(['complete', 'partial'])
-    @IsString()
+    @IsLiteralUnion({
+        complete: true,
+        partial: true,
+    })
     public abstract readonly type: 'complete' | 'partial';
 }
