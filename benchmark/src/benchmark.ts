@@ -1,13 +1,19 @@
 import { isEqual } from 'lodash-es';
 
 export interface BenchmarkValue<T> {
+    /**
+     * The value returned by the benchmarked function
+     */
     value: T;
+    /**
+     * The average time it took to run the function in ms
+     */
     time: number;
 }
 
 /**
  * @param functionToBenchmark the deterministic function that should be benchmarked, it will be run multiple times
- * @returns
+ * @param options additional options for the benchmark, the defaults are {@link defaultOptions}
  */
 export function benchmark<Value>(
     functionToBenchmark: () => Value,
@@ -59,12 +65,12 @@ interface BenchmarkOptions<Value> {
     numberOfIterations?: number;
     /**
      * Will be called after each iteration
-     * @param benchmarkValue the value of the function to benchmark in this iteration
+     * @param benchmarkValue the BenchmarkValue of the function to benchmark in this iteration
      */
     onAfterIteration?: (benchmarkValue: BenchmarkValue<Value>) => void;
     /**
      * Will be called once if any of the iterations returned a different value than the first iteration (by value)
-     * @param benchmarkValues the values of the function to benchmark in all iterations
+     * @param benchmarkValues the BenchmarkValues of the function to benchmark in all iterations
      */
     onNonDeterministicError?: (
         benchmarkValues: BenchmarkValue<Value>[]

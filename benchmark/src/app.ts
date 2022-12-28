@@ -37,19 +37,19 @@ interface BenchmarkResult {
 }
 
 async function benchmarkFile(
-    filename: string
+    fileName: string
 ): Promise<BenchmarkResult | undefined> {
-    const path = `${pathToData}/${filename}`;
+    const path = `${pathToData}/${fileName}`;
     let data;
     try {
         // eslint-disable-next-line no-await-in-loop
         data = await fs.readFile(path, 'utf8');
     } catch {
-        print(`Could not read file ${filename}\n`, 'red');
+        print(`Could not read file ${fileName}\n`, 'red');
         return;
     }
     const fileSize = (await fs.stat(path)).size;
-    print(`${filename}\n`, 'blue');
+    print(`${fileName}\n`, 'blue');
     let parsedData;
     try {
         parsedData = JSON.parse(data);
@@ -68,7 +68,7 @@ async function benchmarkFile(
         }
     }
     return {
-        fileName: filename,
+        fileName,
         fileSize,
         stepState,
     };
@@ -91,14 +91,3 @@ console.table(
             return table;
         }, {})
 );
-if (
-    fileBenchmarkResults.some(({ stepState }) => !stepState.endStatesAreEqual)
-) {
-    print(
-        `Some exercises were not consistent!
-This most likely means that a reducer is either not deterministic or makes some assumptions about immer specific stuff (use of "original()").
-To further debug this, you should log the endStates of the respective exercises and can compare them directly in vscode via "Compare file with".
-`,
-        'red'
-    );
-}
