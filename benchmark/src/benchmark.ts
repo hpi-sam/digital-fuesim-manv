@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash-es';
+import { defaults, isEqual } from 'lodash-es';
 
 export interface BenchmarkValue<T> {
     /**
@@ -13,14 +13,14 @@ export interface BenchmarkValue<T> {
 
 /**
  * @param functionToBenchmark the deterministic function that should be benchmarked, it will be run multiple times
- * @param options additional options for the benchmark, the defaults are {@link defaultOptions}
+ * @param options additional options for the benchmark, the defaults for the respective properties are {@link defaultOptions}
  */
 export function benchmark<Value>(
     functionToBenchmark: () => Value,
     options: BenchmarkOptions<Value> = {}
 ): BenchmarkValue<Value> {
     // eslint-disable-next-line no-param-reassign
-    options = { ...defaultOptions, ...options };
+    options = defaults(options, defaultOptions);
     const benchmarkStepValues: BenchmarkValue<Value>[] = [];
     for (let i = 0; i < options.numberOfIterations!; i++) {
         const benchmarkStepValue = runBenchmarkOnce(functionToBenchmark);
@@ -35,7 +35,7 @@ export function benchmark<Value>(
     ) {
         options.onNonDeterministicError?.(benchmarkStepValues);
     }
-    const endResult: BenchmarkValue<Value> = {
+    return {
         value: benchmarkStepValues[0]!.value,
         time:
             benchmarkStepValues.reduce(
@@ -43,7 +43,6 @@ export function benchmark<Value>(
                 0
             ) / options.numberOfIterations!,
     };
-    return endResult;
 }
 
 function runBenchmarkOnce<Value>(

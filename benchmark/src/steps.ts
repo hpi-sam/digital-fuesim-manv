@@ -2,7 +2,6 @@ import type {
     ExerciseAction,
     ExerciseState,
     StateExport,
-    StateHistoryCompound,
 } from 'digital-fuesim-manv-shared';
 import {
     applyAction,
@@ -55,7 +54,7 @@ export class StepState {
      * Sorted by time (descending)
      */
     public readonly benchmarkActions?: {
-        [key in ExerciseAction['type']]?: number;
+        [Key in ExerciseAction['type']]?: number;
     };
     /**
      * A string with the most expensive action in the exercise (by total summed-up time) and a representation of the respective time
@@ -66,7 +65,7 @@ export class StepState {
      * Sorted by amount (descending)
      */
     public readonly numberOfActionsPerType?: {
-        [key in ExerciseAction['type']]?: number;
+        [Key in ExerciseAction['type']]?: number;
     };
     /**
      * The number of actions in the exercise
@@ -104,7 +103,7 @@ export const steps: Step<StepState>[] = [
             }
             const history = migratedValues.value.history;
             freeze(history, true);
-            return history as StateHistoryCompound;
+            return history;
         },
         false
     ),
@@ -162,7 +161,7 @@ export const steps: Step<StepState>[] = [
             print(`  benchmarkActions: `);
             const { actionHistory, initialState } = freezeState!;
             const totalTimePerAction: {
-                [key in ExerciseAction['type']]?: number;
+                [Key in ExerciseAction['type']]?: number;
             } = {};
             let currentState = initialState;
             for (const action of actionHistory) {
@@ -187,8 +186,8 @@ export const steps: Step<StepState>[] = [
                         number
                     ][]
                 )
-                    .map(([type, time]) => `${type}: ${time.toFixed(2)}ms,`)
-                    .join(' ')
+                    .map(([type, time]) => `${type}: ${time.toFixed(2)}ms`)
+                    .join(', ')
             );
             print(`\n`);
             return sortedTotalTimePerAction;
@@ -233,7 +232,7 @@ export const steps: Step<StepState>[] = [
             print(`  numberOfActionsPerType: `);
             const { actionHistory } = freezeState!;
             const numberOfActionsPerType: {
-                [key in ExerciseAction['type']]?: number;
+                [Key in ExerciseAction['type']]?: number;
             } = {};
             for (const action of actionHistory) {
                 numberOfActionsPerType[action.type] =
@@ -251,8 +250,8 @@ export const steps: Step<StepState>[] = [
                         number
                     ][]
                 )
-                    .map(([type, amount]) => `${type}: ${amount},`)
-                    .join(' ')
+                    .map(([type, amount]) => `${type}: ${amount}`)
+                    .join(', ')
             );
             return sortedNumberOfActionsPerType;
         },

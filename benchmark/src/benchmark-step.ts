@@ -8,7 +8,8 @@ import { Step } from './step';
  * The printed out value is the time it took to run the benchmark
  */
 export class BenchmarkStep<
-    State extends { [key in Name]?: BenchmarkValue<any> | undefined },
+    // TS will error during transpiling with "Type parameter 'Value' has a circular constraint.",  if we use BenchmarkValue<Value> here
+    State extends { [Key in Name]?: BenchmarkValue<any> | undefined },
     Name extends string & keyof State = string & keyof State,
     Value extends NonNullable<State[Name]> extends BenchmarkValue<infer T>
         ? T
@@ -28,6 +29,7 @@ export class BenchmarkStep<
 
     protected runStep(stepState: State) {
         print(`  ${this.name}:`.padEnd(30, ' '));
+        // TS will error during transpiling with "Type parameter 'Value' has a circular constraint.", if we omit the generic type here
         const endResult = benchmark<Value>(
             () => this.functionToBenchmark(stepState),
             {

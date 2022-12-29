@@ -29,8 +29,15 @@ export abstract class Step<
     public getColumnToPrint(state: State): {
         [columnName: string]: any;
     } {
+        const value = state[this.name];
         return this.printColumn
-            ? { [this.name]: this.formatValue(state[this.name]) }
+            ? {
+                  [this.name]:
+                      value === undefined
+                          ? // If the value is undefined, the step was not run (probably because of an error in a previous step)
+                            undefined
+                          : this.formatValue(state[this.name]),
+              }
             : {};
     }
 }

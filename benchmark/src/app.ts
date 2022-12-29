@@ -1,5 +1,6 @@
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
+import { countBy } from 'lodash-es';
 import { print } from './print';
 import { steps, StepState } from './steps';
 
@@ -7,7 +8,9 @@ import { steps, StepState } from './steps';
 console.log(`
 System Information:
   OS:      ${os.version()} ${os.release()}
-  #CPUs:   ${os.cpus().length}
+  CPUs:    ${Object.entries(countBy(os.cpus(), (cpu) => cpu.model))
+      .map(([model, count]) => `${count} × ${model}`)
+      .join(', ')}
   RAM:     ${Math.round(os.totalmem() / 1024 / 1024)}MB
   Node.js: ${process.version}
 
@@ -27,12 +30,33 @@ for (const filename of filenames) {
     }
 }
 
+// Print the end results to the console
+print('\n');
+console.table(
+    fileBenchmarkResults
+        .map((result) => ({
+            fileName: result.fileName,
+            fileSize: `${(result.fileSize / 1024 / 1024).toPrecision(2)}MB`,
+            ...steps
+                .map((step) => step.getColumnToPrint(result.stepState))
+                .reduce((columns, column) => ({ ...columns, ...column }), {}),
+        }))
+        // We don't want an extra column for the array index
+        .reduce<{ [fileName: string]: any }>((table, { fileName, ...rest }) => {
+            table[fileName] = rest;
+            return table;
+        }, {})
+);
+
 interface BenchmarkResult {
     fileName: string;
     /**
      * Size of the file in bytes
      */
     fileSize: number;
+    /**
+     * Not all steps results must be included in this state, as some steps might not be run because of an error in a previous step
+     */
     stepState: StepState;
 }
 
@@ -62,9 +86,9 @@ async function benchmarkFile(
     for (const step of steps) {
         try {
             step.run(stepState);
-        } catch {
-            print(`Error in step ${step.name}\n`, 'red');
-            return;
+        } catch (error: any) {
+            print(`${error}\n`, 'red');
+            break;
         }
     }
     return {
@@ -73,21 +97,3 @@ async function benchmarkFile(
         stepState,
     };
 }
-
-// Print the end results to the console
-print('\n');
-console.table(
-    fileBenchmarkResults
-        .map((result) => ({
-            fileName: result.fileName,
-            fileSize: `${(result.fileSize / 1024 / 1024).toPrecision(2)}MB`,
-            ...steps
-                .map((step) => step.getColumnToPrint(result.stepState))
-                .reduce((columns, column) => ({ ...columns, ...column }), {}),
-        }))
-        // We don't want an extra column for the array index
-        .reduce<{ [fileName: string]: any }>((table, { fileName, ...rest }) => {
-            table[fileName] = rest;
-            return table;
-        }, {})
-);
