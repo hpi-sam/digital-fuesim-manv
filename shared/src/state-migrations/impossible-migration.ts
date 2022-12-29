@@ -1,6 +1,5 @@
 import type { UUID } from '../utils';
 import type { Migration } from './migration-functions';
-import { RestoreError } from './restore-error';
 
 export const impossibleMigration: Migration = {
     actions: (initialState, actions) => {
@@ -16,3 +15,15 @@ export const impossibleMigration: Migration = {
         );
     },
 };
+
+// TODO: Rename into `MigrationError` (upstream changes in the backend)
+class RestoreError extends Error {
+    public constructor(
+        message: string,
+        public readonly exerciseId: UUID,
+        innerError?: Error
+    ) {
+        super(`Failed to restore exercise \`${exerciseId}\`: ${message}`);
+        this.cause = innerError;
+    }
+}
