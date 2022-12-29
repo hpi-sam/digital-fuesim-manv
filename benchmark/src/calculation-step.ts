@@ -14,9 +14,9 @@ export class CalculationStep<
     constructor(
         name: Name,
         public readonly calculate: (state: State) => Value,
-        print = true
+        printColumn = true
     ) {
-        super(name, print);
+        super(name, printColumn);
     }
 
     public runStep(stepState: State) {

@@ -10,7 +10,7 @@ export abstract class Step<
         /**
          * Whether a column with the values of this step should be added to the printed table at the end
          */
-        private readonly print: boolean
+        private readonly printColumn: boolean
     ) {}
 
     protected abstract runStep(state: State): NonNullable<Value>;
@@ -29,7 +29,7 @@ export abstract class Step<
     public getColumnToPrint(state: State): {
         [columnName: string]: any;
     } {
-        return this.print
+        return this.printColumn
             ? { [this.name]: this.formatValue(state[this.name]) }
             : {};
     }

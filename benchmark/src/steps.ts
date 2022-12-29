@@ -31,7 +31,9 @@ export class StepState {
      * The end result of the exercise validation
      * The value is an array of the errors
      */
-    public readonly validateExercise?: BenchmarkValue<any[]>;
+    public readonly validateExercise?: BenchmarkValue<
+        ReturnType<typeof validateExerciseExport>
+    >;
     /**
      * The frozen state of the exercise
      */
