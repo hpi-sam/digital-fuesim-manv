@@ -56,7 +56,7 @@ export class StepState {
         [key in ExerciseAction['type']]?: number;
     };
     /**
-     * The most expensive action in the exercise (summed up time)
+     * A string with the most expensive action in the exercise (by total summed-up time) and a representation of the respective time
      */
     public readonly mostExpensiveAction?: string;
     /**
@@ -69,6 +69,7 @@ export class StepState {
     /**
      * The number of actions in the exercise
      */
+    // The key is used as the column-name in the table, therefore the weird name
     public readonly '#actions'?: number;
 
     constructor(public readonly data: StateExport) {}
@@ -77,12 +78,12 @@ export class StepState {
 /**
  * The steps are executed for each state export.
  * The steps are executed in the order they are defined.
- * The result of each step is stored in the stepState under the name of the state.
+ * The result of each step is stored in `stepState[stateName]`.
  * Each step can only access the results of the previous steps.
- * An exception is the data property of the stepState.
+ *`stepState.data` is always available.
  *
  * Steps can print to the console and throw errors to stop the execution of the specific exercise-state.
- * In addition, at the end of the benchmark, there is a summary of the results.
+ * In addition, at the end of the benchmark, there is a summary of the results in the form of a table.
  * A lot of this is specified in the individual step classes.
  */
 export const steps: Step<StepState>[] = [

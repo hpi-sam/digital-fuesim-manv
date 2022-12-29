@@ -8,7 +8,7 @@ export abstract class Step<
     constructor(
         public readonly name: Name,
         /**
-         * Wether the value should be printed out
+         * Whether a column with the values of this step should be added to the printed table at the end
          */
         private readonly print: boolean
     ) {}

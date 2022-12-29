@@ -20,7 +20,7 @@ Keep in mind to add new exports to the `index.ts` file in the folder.
 
 Note that whenever the state types get updated you have to increase `ExerciseState.currentStateVersion` in [`state.ts`](./src/state.ts).
 
-In addition, you have to add a migration to [`state-migrations`](./src/state-migrations). Look at [`./src/state-migrations/migration-functions.ts`](./src/state-migrations/migration-functions.ts) for more information.
+In addition, you have to add a migration in [`state-migrations`](./src/state-migrations). Look at [`./src/state-migrations/migration-functions.ts`](./src/state-migrations/migration-functions.ts) for more information.
 To test the migrations, you can use the benchmarks in [`../benchmark`](../benchmark) and look for errors.
 
 ## Adding new `Action`s
