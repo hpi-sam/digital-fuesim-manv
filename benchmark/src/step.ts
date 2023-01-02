@@ -36,7 +36,7 @@ export abstract class Step<
                       value === undefined
                           ? // If the value is undefined, the step was not run (probably because of an error in a previous step)
                             undefined
-                          : this.formatValue(state[this.name]),
+                          : this.formatValue(value),
               }
             : {};
     }

@@ -36,7 +36,7 @@ export interface Migration {
 }
 
 export const migrations: {
-    [CurrentStateVersionToMigrateTo: number]: Migration;
+    [TargetStateVersion: number]: Migration;
 } = {
     2: impossibleMigration,
     3: updateEocLog3,

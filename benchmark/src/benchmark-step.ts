@@ -29,16 +29,12 @@ export class BenchmarkStep<
 
     protected runStep(stepState: State) {
         print(`  ${this.name}:`.padEnd(30, ' '));
-        // TS will error during transpiling with "Type parameter 'Value' has a circular constraint.", if we omit the generic type here
-        const endResult = benchmark<Value>(
-            () => this.functionToBenchmark(stepState),
-            {
-                onAfterIteration: (benchmarkValue) =>
-                    print(this.formatValue(benchmarkValue).padEnd(10, ' ')),
-                onNonDeterministicError: () =>
-                    print('    Not deterministic!', 'red'),
-            }
-        );
+        const endResult = benchmark(() => this.functionToBenchmark(stepState), {
+            onAfterIteration: (benchmarkValue) =>
+                print(this.formatValue(benchmarkValue).padEnd(10, ' ')),
+            onNonDeterministicError: () =>
+                print('    Not deterministic!', 'red'),
+        });
         print('\n');
         // TODO: I couldn't get the typings to work here correctly
         return endResult as NonNullable<State[Name]>;
