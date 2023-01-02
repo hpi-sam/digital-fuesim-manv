@@ -1,6 +1,6 @@
-import { ExerciseState } from 'digital-fuesim-manv-shared';
 import { range } from 'lodash-es';
-import { migrations } from './migrations';
+import { ExerciseState } from '../state';
+import { migrations } from './migration-functions';
 
 describe('migrations definition', () => {
     it('has the correct versions', () => {

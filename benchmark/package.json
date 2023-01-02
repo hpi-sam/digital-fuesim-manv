@@ -1,0 +1,35 @@
+{
+    "name": "digital-fuesim-manv-benchmark",
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,html}\"",
+        "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,html}\"",
+        "benchmark:linux-macos": "NODE_ENV=production node --experimental-specifier-resolution=node --loader ts-node/esm src/app.ts",
+        "benchmark:windows": "set NODE_ENV=production&& node --experimental-specifier-resolution=node --loader ts-node/esm src/app.ts",
+        "benchmark": "(pwd && npm run benchmark:linux-macos) || npm run benchmark:windows"
+    },
+    "private": true,
+    "engines": {
+        "node": ">=16",
+        "npm": ">=8"
+    },
+    "dependencies": {
+        "immer": "^9.0.16",
+        "lodash-es": "^4.17.21",
+        "digital-fuesim-manv-shared": "file:../shared"
+    },
+    "devDependencies": {
+        "@types/lodash-es": "^4.17.6",
+        "@types/node": "^18.11.16",
+        "@typescript-eslint/eslint-plugin": "5.46.1",
+        "@typescript-eslint/parser": "5.46.1",
+        "eslint": "^8.29.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-import": "~2.26.0",
+        "eslint-plugin-total-functions": "6.0.0",
+        "eslint-plugin-unicorn": "^45.0.2",
+        "ts-node": "^10.9.1",
+        "typescript": "~4.8.2"
+    }
+}

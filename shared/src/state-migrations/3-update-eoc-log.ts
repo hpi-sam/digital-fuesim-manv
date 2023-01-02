@@ -1,5 +1,6 @@
-import type { Client, EocLogEntry, UUID } from 'digital-fuesim-manv-shared';
-import type { Migration } from './migrations';
+import type { Client, EocLogEntry } from '../models';
+import type { UUID } from '../utils';
+import type { Migration } from './migration-functions';
 
 export const updateEocLog3: Migration = {
     actions: null,

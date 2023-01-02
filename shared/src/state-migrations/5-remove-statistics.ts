@@ -1,4 +1,4 @@
-import type { Migration } from './migrations';
+import type { Migration } from './migration-functions';
 
 export const removeStatistics5: Migration = {
     actions: null,

@@ -19,7 +19,7 @@ module.exports = {
         'no-console': [
             'warn',
             {
-                allow: ['log', 'warn', 'error', 'assert'],
+                allow: ['log', 'warn', 'error', 'assert', 'table'],
             },
         ],
         'no-promise-executor-return': 'warn',
