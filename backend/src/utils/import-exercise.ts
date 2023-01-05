@@ -1,12 +1,12 @@
 import { plainToInstance } from 'class-transformer';
 import type { ExerciseIds } from 'digital-fuesim-manv-shared';
 import {
+    migrateStateExport,
     ReducerError,
     StateExport,
     validateExerciseExport,
 } from 'digital-fuesim-manv-shared';
 import type { DatabaseService } from '../database/services/database-service';
-import { migrateStateExport } from '../database/state-migrations/migrations';
 import { ExerciseWrapper } from '../exercise/exercise-wrapper';
 import type { HttpResponse } from '../exercise/http-handler/utils';
 

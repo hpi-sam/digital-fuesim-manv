@@ -1,25 +1,26 @@
 import { Type } from 'class-transformer';
 import {
-    IsDefined,
-    IsNumber,
-    IsOptional,
-    IsString,
     IsUUID,
-    Max,
-    Min,
+    IsString,
     ValidateNested,
+    IsNumber,
+    Min,
+    Max,
+    IsOptional,
 } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
-import { UUID, UUIDSet, uuid, uuidValidationOptions } from '../utils';
+import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
+import { IsLiteralUnion, IsUUIDSet } from '../utils/validators';
 import type { PersonnelTemplate } from './personnel-template';
 import {
-    CanCaterFor,
-    Position,
-    ImageProperties,
     PersonnelType,
-    getCreate,
+    CanCaterFor,
+    ImageProperties,
+    Position,
     Transfer,
+    getCreate,
 } from './utils';
+import { personnelTypeAllowedValues } from './utils/personnel-type';
 
 export class Personnel {
     @IsUUID(4, uuidValidationOptions)
@@ -28,15 +29,13 @@ export class Personnel {
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId: UUID;
 
-    // TODO
-    @IsString()
+    @IsLiteralUnion(personnelTypeAllowedValues)
     public readonly personnelType: PersonnelType;
 
     @IsString()
     public readonly vehicleName: string;
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly assignedPatientIds: UUIDSet;
 
     @ValidateNested()

@@ -11,6 +11,7 @@ import {
     UUID,
     uuidValidationOptions,
 } from '../../utils';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { deletePatient } from './patient';
@@ -43,7 +44,7 @@ export function deleteVehicle(
 }
 
 export class AddVehicleAction implements Action {
-    @IsString()
+    @IsValue('[Vehicle] Add vehicle' as const)
     public readonly type = '[Vehicle] Add vehicle';
     @ValidateNested()
     @Type(() => Vehicle)
@@ -61,7 +62,7 @@ export class AddVehicleAction implements Action {
 }
 
 export class RenameVehicleAction implements Action {
-    @IsString()
+    @IsValue('[Vehicle] Rename vehicle' as const)
     public readonly type = '[Vehicle] Rename vehicle';
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
@@ -71,7 +72,7 @@ export class RenameVehicleAction implements Action {
 }
 
 export class MoveVehicleAction implements Action {
-    @IsString()
+    @IsValue('[Vehicle] Move vehicle' as const)
     public readonly type = '[Vehicle] Move vehicle';
 
     @IsUUID(4, uuidValidationOptions)
@@ -83,27 +84,31 @@ export class MoveVehicleAction implements Action {
 }
 
 export class RemoveVehicleAction implements Action {
-    @IsString()
+    @IsValue('[Vehicle] Remove vehicle' as const)
     public readonly type = '[Vehicle] Remove vehicle';
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
 }
 
 export class UnloadVehicleAction implements Action {
-    @IsString()
+    @IsValue('[Vehicle] Unload vehicle' as const)
     public readonly type = '[Vehicle] Unload vehicle';
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
 }
 
 export class LoadVehicleAction implements Action {
-    @IsString()
+    @IsValue('[Vehicle] Load vehicle' as const)
     public readonly type = '[Vehicle] Load vehicle';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
 
-    @IsString()
+    @IsLiteralUnion({
+        materials: true,
+        patients: true,
+        personnel: true,
+    })
     public readonly elementToBeLoadedType!:
         | 'materials'
         | 'patients'

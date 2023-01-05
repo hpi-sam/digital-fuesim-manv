@@ -1,0 +1,21 @@
+{
+    "root": true,
+    "overrides": [
+        {
+            "files": ["*.ts", "*.js"],
+            "parserOptions": {
+                "project": ["tsconfig.json"],
+                "createDefaultProgram": true,
+                // TODO: No idea why eslint seems to look for the tsconfig in the root directory instead of relative to this config
+                // It doesn't seem to do this in "shared"
+                "tsconfigRootDir": "./benchmark"
+            },
+            "parser": "@typescript-eslint/parser",
+            "extends": [
+                "../.eslint/typescript.eslintrc.cjs",
+                "../.eslint/total-functions.eslintrc.cjs",
+                "prettier"
+            ]
+        }
+    ]
+}

@@ -12,12 +12,16 @@ Keep in mind to add new exports to the `index.ts` file in the folder.
     -   Note that in all cases (other than validation) plain objects of these classes have to be used (instead of instance objects). You can use the `create` methods of all models for this.
 -   [src/socket-api/](./src/socket-api) the types for [socket.io](https://socket.io/docs/v4/typescript/)
 -   [src/state-helpers/](./src/state-helpers) utilities for working with the state.
+-   [src/state-migrations/](./src/state-migrations) migrations to update old states and actions to the newest version.
 -   [src/store/](./src/store) reducers, actions and utilities that are used with the state
 -   [src/utils/](./src/utils) general utilities
 
-## Updates to state types
+## Updates to state types and migrations
 
 Note that whenever the state types get updated you have to increase `ExerciseState.currentStateVersion` in [`state.ts`](./src/state.ts).
+
+In addition, you have to add a migration in [`state-migrations`](./src/state-migrations). Look at [`./src/state-migrations/migration-functions.ts`](./src/state-migrations/migration-functions.ts) for more information.
+To test the migrations, you can use the benchmarks in [`../benchmark`](../benchmark) and look for errors.
 
 ## Adding new `Action`s
 

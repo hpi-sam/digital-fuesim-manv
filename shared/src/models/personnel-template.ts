@@ -1,16 +1,18 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsString, Max, Min, ValidateNested } from 'class-validator';
+import { IsNumber, Max, Min, ValidateNested } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
+import { IsLiteralUnion } from '../utils/validators';
 import {
-    CanCaterFor,
-    getCreate,
-    ImageProperties,
     PersonnelType,
+    CanCaterFor,
+    ImageProperties,
+    getCreate,
 } from './utils';
+import { personnelTypeAllowedValues } from './utils/personnel-type';
 
 // TODO: These are not (yet) saved in the state -> Decide whether they should and if not move this file from the models folder away
 export class PersonnelTemplate {
-    @IsString()
+    @IsLiteralUnion(personnelTypeAllowedValues)
     public readonly personnelType: PersonnelType;
 
     @ValidateNested()

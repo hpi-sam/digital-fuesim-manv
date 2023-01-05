@@ -1,10 +1,11 @@
 import { IsString, MaxLength } from 'class-validator';
 import { EocLogEntry } from '../../models';
-import type { Action, ActionReducer } from '../action-reducer';
 import { cloneDeepMutable } from '../../utils';
+import { IsValue } from '../../utils/validators';
+import type { Action, ActionReducer } from '../action-reducer';
 
 export class AddLogEntryAction implements Action {
-    @IsString()
+    @IsValue('[Emergency Operation Center] Add Log Entry' as const)
     public readonly type = '[Emergency Operation Center] Add Log Entry';
     @IsString()
     @MaxLength(255)

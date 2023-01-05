@@ -1,5 +1,5 @@
-import type { Action } from 'digital-fuesim-manv-shared';
-import type { Migration } from './migrations';
+import type { Action } from '../store';
+import type { Migration } from './migration-functions';
 
 export const removeStateHistory6: Migration = {
     actions: (_initialState, actions) => {

@@ -145,6 +145,11 @@ If a test fails a new screenshot is taken and put in the `comparison` folder.
 If the new screenshot is the new desired result, then you only have to move it in the `baseline` folder and replace the old reference screenshot with the same name.
 In the `diff` folder you can see the changes between the baseline and the comparison screenshot.
 
+## Benchmarking
+
+You can run the benchmarks via `npm run benchmark` in the root folder.
+Look at the [benchmark readme](./benchmark/README.md) for more information.
+
 ## Styleguide
 
 -   names are never unique, ids are
@@ -172,7 +177,8 @@ This repository is a monorepo that consists of the following packages:
 
 -   [frontend](./frontend) the browser-based client application ([Angular](https://angular.io/))
 -   [backend](./backend) the server-side application ([NodeJs](https://nodejs.org/))
--   [shared](./shared) the shared code that is used by both frontend and backend
+-   [benchmark](./benchmark/) benchmarks and tests some parts of the application
+-   [shared](./shared) the shared code that is used by the frontend, backend and the benchmark package
 
 Each package has its own `README.md` file with additional documentation. Please check them out before you start working on the project.
 

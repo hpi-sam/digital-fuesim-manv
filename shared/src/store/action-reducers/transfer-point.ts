@@ -8,7 +8,8 @@ import {
 } from 'class-validator';
 import { TransferPoint } from '../../models';
 import { Position } from '../../models/utils';
-import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { letElementArrive } from './transfer';
@@ -18,7 +19,7 @@ import { getElement } from './utils/get-element';
 // TODO check: type "TransferPoint" the T is big, in other files, the second word starts with a small letter
 
 export class AddTransferPointAction implements Action {
-    @IsString()
+    @IsValue('[TransferPoint] Add TransferPoint' as const)
     public readonly type = `[TransferPoint] Add TransferPoint`;
     @ValidateNested()
     @Type(() => TransferPoint)
@@ -26,7 +27,7 @@ export class AddTransferPointAction implements Action {
 }
 
 export class MoveTransferPointAction implements Action {
-    @IsString()
+    @IsValue('[TransferPoint] Move TransferPoint' as const)
     public readonly type = '[TransferPoint] Move TransferPoint';
 
     @IsUUID(4, uuidValidationOptions)
@@ -38,7 +39,7 @@ export class MoveTransferPointAction implements Action {
 }
 
 export class RenameTransferPointAction implements Action {
-    @IsString()
+    @IsValue('[TransferPoint] Rename TransferPoint' as const)
     public readonly type = '[TransferPoint] Rename TransferPoint';
 
     @IsUUID(4, uuidValidationOptions)
@@ -54,7 +55,7 @@ export class RenameTransferPointAction implements Action {
 }
 
 export class RemoveTransferPointAction implements Action {
-    @IsString()
+    @IsValue('[TransferPoint] Remove TransferPoint' as const)
     public readonly type = '[TransferPoint] Remove TransferPoint';
 
     @IsUUID(4, uuidValidationOptions)
@@ -62,7 +63,7 @@ export class RemoveTransferPointAction implements Action {
 }
 
 export class ConnectTransferPointsAction implements Action {
-    @IsString()
+    @IsValue('[TransferPoint] Connect TransferPoints' as const)
     public readonly type = '[TransferPoint] Connect TransferPoints';
 
     @IsUUID(4, uuidValidationOptions)
@@ -77,7 +78,7 @@ export class ConnectTransferPointsAction implements Action {
 }
 
 export class DisconnectTransferPointsAction implements Action {
-    @IsString()
+    @IsValue('[TransferPoint] Disconnect TransferPoints' as const)
     public readonly type = '[TransferPoint] Disconnect TransferPoints';
 
     @IsUUID(4, uuidValidationOptions)
@@ -88,7 +89,7 @@ export class DisconnectTransferPointsAction implements Action {
 }
 
 export class ConnectHospitalAction implements Action {
-    @IsString()
+    @IsValue('[TransferPoint] Connect hospital' as const)
     public readonly type = '[TransferPoint] Connect hospital';
     @IsUUID(4, uuidValidationOptions)
     public readonly hospitalId!: UUID;
@@ -98,7 +99,7 @@ export class ConnectHospitalAction implements Action {
 }
 
 export class DisconnectHospitalAction implements Action {
-    @IsString()
+    @IsValue('[TransferPoint] Disconnect hospital' as const)
     public readonly type = '[TransferPoint] Disconnect hospital';
     @IsUUID(4, uuidValidationOptions)
     public readonly hospitalId!: UUID;
