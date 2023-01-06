@@ -3,6 +3,7 @@ import { Store } from '@ngrx/store';
 import type {
     ImageProperties,
     MapImageTemplate,
+    PatientCategory,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
 import {
@@ -13,7 +14,6 @@ import {
     TransferPoint,
     Viewport,
 } from 'digital-fuesim-manv-shared';
-import type { PatientCategory } from 'digital-fuesim-manv-shared/dist/models/patient-category';
 import type OlMap from 'ol/Map';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
