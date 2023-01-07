@@ -38,9 +38,6 @@ export class TimeTravelHelper {
      * @param exerciseTime The time to travel to, if it isn't in the timeConstraints, it will be clamped appropriately
      */
     public async jumpToTime(exerciseTime: number): Promise<void> {
-        if (!this.timeConstraints || !this.timeJumpHelper) {
-            throw new Error('Start the time travel before jumping to a time!');
-        }
         const clampedTime = Math.max(
             this.timeConstraints.start,
             Math.min(this.timeConstraints.end, exerciseTime)
