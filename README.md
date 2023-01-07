@@ -24,8 +24,7 @@ This project is currently developed as a [bachelor project](https://hpi.de/en/st
 
 ## Links for collaborators
 
--   [(internal) documentation](https://github.com/hpi-sam/BP2021HG1)
--   [(internal) project-board](https://github.com/orgs/hpi-sam/projects/4).
+-   [(internal) Test scenarios](https://github.com/hpi-sam/digital-fuesim-manv_test-scenarios)
 
 ## Installation
 
@@ -109,10 +108,9 @@ There are already the following [debug configurations](https://code.visualstudio
 -   `Launch Frontend [Firefox]` (You have to install an extra extension)
 -   `Debug Jest Tests`
 
-In addition you can make use of the following browser extensions:
+In addition, you can make use of the following browser extensions:
 
 -   [Angular DevTools](https://chrome.google.com/webstore/detail/angular-devtools/ienfalfjdbdpebioblfackkekamfmbnh)
--   [Redux DevTools Extension](https://github.com/zalmoxisus/redux-devtools-extension/) for [NgRx](https://ngrx.io/guide/store-devtools)
 
 ## Testing
 
@@ -120,12 +118,14 @@ In addition you can make use of the following browser extensions:
 
 We are using [Jest](https://jestjs.io/) for our unit tests.
 
-You can run it during development
+You can run it during the development
 
 -   from the terminal via `npm run test:watch` in the root, `/shared`, `/backend` or `/frontend` folder
--   or via the [recommended vscode extension](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest).
+-   or via the [recommended vscode extension](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest). **(Note: this option is currently broken)**
 
 ### End to end tests
+
+**Note: We don't really have end-to-end tests yet.**
 
 We are using [cypress](https://www.npmjs.com/package/cypress) to run the end-to-end tests. You can find the code under `/frontend/cypress` in the repository.
 
@@ -170,6 +170,11 @@ Look at the [benchmark readme](./benchmark/README.md) for more information.
      */
     ```
 -   You should use the keyword `TODO` to mark things that need to be done later. Whether an issue should be created is an individual decision.
+    -   You are encouraged to add expiration conditions to your TODOs. Eslint will complain as soon as the condition is met. See [here](https://github.com/sindresorhus/eslint-plugin-unicorn/blob/main/docs/rules/expiring-todo-comments.md) for more information.
+    ```ts
+    // TODO [engine:node@>=8]: We can use async/await now.
+    // TODO [typescript@>=4.9]: Use satisfies https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator
+    ```
 
 # Architecture
 
@@ -257,8 +262,7 @@ A consequence of the synchronization strategy described before is that it takes 
 
 This is where optimistic updates come into play. We just assume optimistically that the proposed action will be applied on the server. Therefore we can apply the action on the client directly without waiting for a `performAction` from the server.
 
-If the server rejects the proposal or a race condition occurs, the client corrects its state again.
-In our case the [optimisticActionHandler](./frontend/src/app/core/optimistic-action-handler.ts) encapsulates this functionality.
+If the server rejects the proposal or a race condition occurs, the client corrects its state again. In our case, the [optimisticActionHandler](./frontend/src/app/core/optimistic-action-handler.ts) encapsulates this functionality.
 
 The state in the frontend is not guaranteed to be correct. It is only guaranteed to automatically correct itself.
 
@@ -266,7 +270,6 @@ If you need to read from the state to change it, you should do this inside the a
 
 ### Performance considerations
 
--   Do _not_ save a very large JS primitve (a large string like a base64 encoded image) in a part of the state that is often modified (like the root). This primitive would be copied on each change. Instead, the primitive should be saved as part of a separate object. This makes use of the performance benefits of shallow copies.
 -   Currently, every client maintains the whole state, and every action is sent to all clients. There is no way to only subscribe to a part of the state and only receive updates for that part.
 
 ## Licenses and Attributions
