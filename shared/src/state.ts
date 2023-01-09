@@ -25,6 +25,7 @@ import {
     MapImageTemplate,
     Material,
     Patient,
+    PatientCategory,
     Personnel,
     TransferPoint,
     Vehicle,
@@ -33,7 +34,6 @@ import {
 } from './models';
 import { ExerciseConfiguration } from './models/exercise-configuration';
 import type { MaterialTemplate } from './models/material-template';
-import { PatientCategory } from './models/patient-category';
 import type { PersonnelTemplate } from './models/personnel-template';
 import type { PersonnelType } from './models/utils';
 import {

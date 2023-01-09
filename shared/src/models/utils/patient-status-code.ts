@@ -29,6 +29,7 @@ export const colorCodeMap = {
     Z: 'red',
 } as const;
 
+// TODO [typescript@>=4.9]: Use satisfies https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator
 // This is only for typesafety
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const _colorCodeMap: { readonly [key in ColorCode]: string } = colorCodeMap;

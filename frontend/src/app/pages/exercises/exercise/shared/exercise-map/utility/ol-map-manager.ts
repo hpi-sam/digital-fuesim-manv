@@ -543,7 +543,7 @@ export class OlMapManager {
 
     public destroy() {
         this.destroy$.next();
-        this.olMap?.dispose();
-        this.olMap?.setTarget(undefined);
+        this.olMap.dispose();
+        this.olMap.setTarget(undefined);
     }
 }
