@@ -42,6 +42,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 // @ts-expect-error there is no type definition for this package yet
+// eslint-disable-next-line no-restricted-imports
 import * as cypressImageDiffCommand from 'cypress-image-diff-js/dist/command';
 
 cypressImageDiffCommand();

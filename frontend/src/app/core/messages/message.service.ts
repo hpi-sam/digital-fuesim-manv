@@ -84,7 +84,7 @@ export class MessageService {
             ...(type === 'toast' ? this.toastMessages : this.alertMessages),
         ];
         // Set/update the newest message
-        let newestMessage: Message | undefined = messages[messages.length - 1];
+        let newestMessage: Message | undefined = messages.at(-1);
         if (!newestMessage || !isEqual(newestMessage.config, config)) {
             newestMessage = new Message(config, timeout);
             firstValueFrom(newestMessage.destroyed$).then(() => {
