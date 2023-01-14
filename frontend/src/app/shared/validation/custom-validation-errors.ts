@@ -15,7 +15,7 @@ export type CustomValidationErrors = Partial<
     >
 >;
 
-type CustomValidator = typeof CustomValidators[keyof typeof CustomValidators];
+type CustomValidator = (typeof CustomValidators)[keyof typeof CustomValidators];
 type CustomValidatorFn = ReturnType<CustomValidator>;
 type CustomValidationError = ReturnType<CustomValidatorFn> extends Promise<any>
     ? Awaited<ReturnType<CustomValidatorFn>>
