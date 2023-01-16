@@ -35,7 +35,8 @@ const actionReducers = {
     ...EmergencyOperationCenterActionReducers,
 };
 
-type ExerciseActionReducer = typeof actionReducers[keyof typeof actionReducers];
+type ExerciseActionReducer =
+    (typeof actionReducers)[keyof typeof actionReducers];
 
 type ExerciseActionTypeDictionary = {
     [_ActionReducer in ExerciseActionReducer as InstanceType<
