@@ -27,6 +27,7 @@ import {
     Patient,
     PatientCategory,
     Personnel,
+    SimulatedRegion,
     TransferPoint,
     Vehicle,
     VehicleTemplate,
@@ -65,6 +66,10 @@ export class ExerciseState {
     public readonly currentStatus: ExerciseStatus = 'notStarted';
     @IsIdMap(Viewport)
     public readonly viewports: { readonly [key: UUID]: Viewport } = {};
+    @IsIdMap(SimulatedRegion)
+    public readonly simulatedRegions: {
+        readonly [key: UUID]: SimulatedRegion;
+    } = {};
     @IsIdMap(Vehicle)
     public readonly vehicles: { readonly [key: UUID]: Vehicle } = {};
     @IsIdMap(Personnel)
