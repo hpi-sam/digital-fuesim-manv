@@ -7,7 +7,6 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
-import { primaryAction, shiftKeyOnly } from 'ol/events/condition';
 import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
 import type Point from 'ol/geom/Point';
@@ -58,10 +57,9 @@ import {
     ViewportFeatureManager,
 } from '../feature-managers/viewport-feature-manager';
 import type { FeatureManager } from './feature-manager';
-import { ModifyHelper } from './modify-helper';
 import type { OpenPopupOptions } from './popup-manager';
+import { ResizeRectangleInteraction } from './resize-rectangle-interaction';
 import { TranslateInteraction } from './translate-interaction';
-import { createViewportModify } from './viewport-modify';
 
 /**
  * This class should run outside the Angular zone for performance reasons.
@@ -160,20 +158,14 @@ export class OlMapManager {
                     : featureManager.isFeatureTranslatable(feature);
             },
         });
-        const viewportModify = createViewportModify(viewportLayer);
-
-        const viewportTranslate = new TranslateInteraction({
-            layers: [viewportLayer],
-            condition: (event) => primaryAction(event) && !shiftKeyOnly(event),
-            hitTolerance: 10,
-        });
-
-        ModifyHelper.registerModifyEvents(viewportModify);
+        const resizeViewportInteraction = new ResizeRectangleInteraction(
+            viewportLayer.getSource()!
+        );
 
         const alwaysInteractions = [translateInteraction];
         const customInteractions =
             selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
-                ? [...alwaysInteractions, viewportTranslate, viewportModify]
+                ? [...alwaysInteractions, resizeViewportInteraction]
                 : alwaysInteractions;
 
         this.olMap = new OlMap({
@@ -294,7 +286,6 @@ export class OlMapManager {
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
-        this.registerDropHandler(viewportTranslate);
         this.registerViewportRestriction();
 
         // Register handlers that disable or enable certain interactions
