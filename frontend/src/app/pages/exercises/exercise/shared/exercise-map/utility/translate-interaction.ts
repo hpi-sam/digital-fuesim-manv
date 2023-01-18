@@ -1,9 +1,12 @@
 import { Position } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
 import type { Feature, MapBrowserEvent } from 'ol';
-import type { LineString, Point } from 'ol/geom';
+import type { LineString, Point, Polygon } from 'ol/geom';
 import { Translate } from 'ol/interaction';
-import { isCoordinateArray } from '../feature-managers/element-feature-manager';
+import {
+    isCoordinateArray,
+    isCoordinateArrayOfArrays,
+} from '../feature-managers/element-feature-manager';
 
 /**
  * Translates (moves) a feature to a new position.
@@ -47,7 +50,9 @@ export class TranslateInteraction extends Translate {
      *
      * You can only call this function if the layer of the feature has this Interaction.
      */
-    public static onTranslateEnd<T extends LineString | Point = Point>(
+    public static onTranslateEnd<
+        T extends LineString | Point | Polygon = Point
+    >(
         feature: Feature<T>,
         callback: (
             newCoordinates: T extends Point ? Position : Position[]
@@ -58,7 +63,10 @@ export class TranslateInteraction extends Translate {
             const coordinates = feature.getGeometry()!.getCoordinates();
             if (isCoordinateArray(coordinates)) {
                 callback(
-                    coordinates.map((coordinate) =>
+                    (isCoordinateArrayOfArrays(coordinates)
+                        ? coordinates[0]!
+                        : coordinates
+                    ).map((coordinate) =>
                         Position.create(coordinate[0]!, coordinate[1]!)
                     ) as T extends Point ? never : Position[]
                 );

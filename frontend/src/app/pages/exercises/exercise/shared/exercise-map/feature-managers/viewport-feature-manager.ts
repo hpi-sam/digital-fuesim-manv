@@ -3,7 +3,7 @@ import type { UUID } from 'digital-fuesim-manv-shared';
 import { Position, Size, Viewport } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
-import type LineString from 'ol/geom/LineString';
+import type { Polygon } from 'ol/geom';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
@@ -18,7 +18,7 @@ import { calculatePopupPositioning } from '../utility/calculate-popup-positionin
 import type { FeatureManager } from '../utility/feature-manager';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
 import {
-    createLineString,
+    createPolygon,
     ElementFeatureManager,
     getCoordinateArray,
 } from './element-feature-manager';
@@ -34,8 +34,8 @@ export function isInViewport(
 }
 
 export class ViewportFeatureManager
-    extends ElementFeatureManager<Viewport, LineString>
-    implements FeatureManager<Feature<LineString>>
+    extends ElementFeatureManager<Viewport, Polygon>
+    implements FeatureManager<Feature<Polygon>>
 {
     readonly type = 'viewports';
 
@@ -43,7 +43,7 @@ export class ViewportFeatureManager
 
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<LineString>>,
+        layer: VectorLayer<VectorSource<Polygon>>,
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {
@@ -57,19 +57,20 @@ export class ViewportFeatureManager
                     targetPosition: targetPositions[0]!,
                 });
             },
-            createLineString
+            createPolygon
         );
         this.layer.setStyle(this.style);
     }
 
     private readonly style = new Style({
+        fill: undefined,
         stroke: new Stroke({
             color: '#fafaff',
             width: 2,
         }),
     });
 
-    override createFeature(element: Viewport): Feature<LineString> {
+    override createFeature(element: Viewport): Feature<Polygon> {
         const feature = super.createFeature(element);
         ResizeRectangleInteraction.onResize(
             feature,
@@ -100,7 +101,7 @@ export class ViewportFeatureManager
         oldElement: Viewport,
         newElement: Viewport,
         changedProperties: ReadonlySet<keyof Viewport>,
-        elementFeature: Feature<LineString>
+        elementFeature: Feature<Polygon>
     ): void {
         if (
             changedProperties.has('position') ||
@@ -110,10 +111,9 @@ export class ViewportFeatureManager
             if (!newFeature) {
                 throw new TypeError('newFeature undefined');
             }
-            this.movementAnimator.animateFeatureMovement(
-                elementFeature,
-                getCoordinateArray(newElement)
-            );
+            this.movementAnimator.animateFeatureMovement(elementFeature, [
+                getCoordinateArray(newElement),
+            ]);
         }
         // If the style has updated, we need to redraw the feature
         elementFeature.changed();
@@ -147,9 +147,7 @@ export class ViewportFeatureManager
         });
     }
 
-    public override isFeatureTranslatable(
-        feature: Feature<LineString>
-    ): boolean {
+    public override isFeatureTranslatable(feature: Feature<Polygon>): boolean {
         return selectStateSnapshot(selectCurrentRole, this.store) === 'trainer';
     }
 }

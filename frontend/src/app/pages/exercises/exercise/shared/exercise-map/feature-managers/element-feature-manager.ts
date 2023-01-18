@@ -8,7 +8,7 @@ import { isArray } from 'lodash-es';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
-import { LineString } from 'ol/geom';
+import { LineString, Polygon } from 'ol/geom';
 import Point from 'ol/geom/Point';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
@@ -33,15 +33,27 @@ export interface ResizableElement extends PositionableElement {
 }
 
 function isLineString(
-    feature: Feature<LineString | Point>
+    feature: Feature<LineString | Point | Polygon>
 ): feature is Feature<LineString> {
     return feature.getGeometry()!.getType() === 'LineString';
 }
 
+function isPolygon(
+    feature: Feature<LineString | Point | Polygon>
+): feature is Feature<Polygon> {
+    return feature.getGeometry()!.getType() === 'Polygon';
+}
+
 export function isCoordinateArray(
-    coordinates: Coordinate | Coordinate[]
-): coordinates is Coordinate[] {
+    coordinates: Coordinate | Coordinate[] | Coordinate[][]
+): coordinates is Coordinate[] | Coordinate[][] {
     return isArray(coordinates[0]);
+}
+
+export function isCoordinateArrayOfArrays(
+    coordinates: Coordinate[] | Coordinate[][]
+): coordinates is Coordinate[][] {
+    return isArray(coordinates[0]![0]);
 }
 
 export const createPoint = (element: WithPosition<any>): Feature<Point> =>
@@ -51,6 +63,9 @@ export const createLineString = (
     element: ResizableElement
 ): Feature<LineString> =>
     new Feature(new LineString(getCoordinateArray(element)));
+
+export const createPolygon = (element: ResizableElement): Feature<Polygon> =>
+    new Feature(new Polygon([getCoordinateArray(element)]));
 
 export function getCoordinateArray(element: ResizableElement) {
     return [
@@ -72,7 +87,7 @@ export function getCoordinateArray(element: ResizableElement) {
  */
 export abstract class ElementFeatureManager<
         Element extends PositionableElement,
-        FeatureType extends LineString | Point = Point,
+        FeatureType extends LineString | Point | Polygon = Point,
         ElementFeature extends Feature<FeatureType> = Feature<FeatureType>
     >
     extends ElementManager<
@@ -141,8 +156,10 @@ export abstract class ElementFeatureManager<
             }
             this.movementAnimator.animateFeatureMovement(
                 elementFeature,
-                (isLineString(newFeature)
-                    ? (newFeature.getGeometry()! as LineString).getCoordinates()
+                (isLineString(newFeature) || isPolygon(newFeature)
+                    ? (
+                          newFeature.getGeometry()! as LineString | Polygon
+                      ).getCoordinates()
                     : [
                           newElement.position.x,
                           newElement.position.y,
@@ -167,15 +184,28 @@ export abstract class ElementFeatureManager<
         if (!isCoordinateArray(coordinates)) {
             return coordinates;
         }
+        if (!isCoordinateArrayOfArrays(coordinates)) {
+            // We need index 0 and 2 for the center
+            if (coordinates.length < 3) {
+                throw new Error(`Unexpectedly short array: ${coordinates}`);
+            }
+            return [
+                coordinates[0]![0]! +
+                    (coordinates[2]![0]! - coordinates[0]![0]!) / 2,
+                coordinates[0]![1]! +
+                    (coordinates[2]![1]! - coordinates[0]![1]!) / 2,
+            ];
+        }
+
         // We need index 0 and 2 for the center
-        if (coordinates.length < 3) {
-            throw new Error(`Unexpectedly short array: ${coordinates}`);
+        if (coordinates[0]!.length < 3) {
+            throw new Error(`Unexpectedly short array: ${coordinates[0]!}`);
         }
         return [
-            coordinates[0]![0]! +
-                (coordinates[2]![0]! - coordinates[0]![0]!) / 2,
-            coordinates[0]![1]! +
-                (coordinates[2]![1]! - coordinates[0]![1]!) / 2,
+            coordinates[0]![0]![0]! +
+                (coordinates[0]![2]![0]! - coordinates[0]![0]![0]!) / 2,
+            coordinates[0]![0]![1]! +
+                (coordinates[0]![2]![1]! - coordinates[0]![0]![1]!) / 2,
         ];
     }
 

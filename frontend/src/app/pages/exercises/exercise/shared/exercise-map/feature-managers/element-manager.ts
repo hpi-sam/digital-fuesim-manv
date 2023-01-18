@@ -1,6 +1,6 @@
 import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
-import type { LineString, Point } from 'ol/geom';
+import type { LineString, Point, Polygon } from 'ol/geom';
 import { generateChangedProperties } from '../utility/generate-changed-properties';
 
 /**
@@ -11,7 +11,7 @@ import { generateChangedProperties } from '../utility/generate-changed-propertie
  */
 export abstract class ElementManager<
     Element extends ImmutableJsonObject,
-    FeatureType extends LineString | Point,
+    FeatureType extends LineString | Point | Polygon,
     ElementFeature extends Feature<FeatureType>,
     UnsupportedChangeProperties extends ReadonlySet<keyof Element>,
     SupportedChangeProperties extends Exclude<

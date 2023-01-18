@@ -7,6 +7,7 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
+import type { Polygon } from 'ol/geom';
 import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
 import type Point from 'ol/geom/Point';
@@ -126,8 +127,8 @@ export class OlMapManager {
         const patientLayer = this.createElementLayer();
         const personnelLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
-        const viewportLayer = this.createElementLayer<LineString>();
-        const simulatedRegionLayer = this.createElementLayer<LineString>();
+        const viewportLayer = this.createElementLayer<Polygon>();
+        const simulatedRegionLayer = this.createElementLayer<Polygon>();
         const mapImagesLayer = this.createElementLayer(10_000);
         const deleteFeatureLayer = this.createElementLayer();
         this.popupOverlay = new Overlay({

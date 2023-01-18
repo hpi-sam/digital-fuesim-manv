@@ -7,14 +7,17 @@ import { getVectorContext } from 'ol/render';
 import type Point from 'ol/geom/Point';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { isArray, isEqual } from 'lodash-es';
-import type { LineString } from 'ol/geom';
+import type { LineString, Polygon } from 'ol/geom';
 import type { Coordinate } from 'ol/coordinate';
 
-export type Coordinates<T extends LineString | Point> = T extends Point
-    ? Coordinate
-    : Coordinate[];
+export type Coordinates<T extends LineString | Point | Polygon> =
+    T extends Point
+        ? Coordinate
+        : T extends LineString
+        ? Coordinate[]
+        : Coordinate[][];
 
-interface CoordinatePair<T extends Coordinate | Coordinate[]> {
+interface CoordinatePair<T extends Coordinate | Coordinate[] | Coordinate[][]> {
     startPosition: T;
     endPosition: T;
 }
@@ -22,7 +25,7 @@ interface CoordinatePair<T extends Coordinate | Coordinate[]> {
 /**
  * Animates the movement of a feature to a new position.
  */
-export class MovementAnimator<T extends LineString | Point> {
+export class MovementAnimator<T extends LineString | Point | Polygon> {
     /**
      * The time in milliseconds how long the moving animation should take
      */
@@ -77,9 +80,15 @@ export class MovementAnimator<T extends LineString | Point> {
     }
 
     private isCoordinateArrayPair(
-        coordinates: CoordinatePair<Coordinates<LineString | Point>>
-    ): coordinates is CoordinatePair<Coordinates<LineString>> {
+        coordinates: CoordinatePair<Coordinates<LineString | Point | Polygon>>
+    ): coordinates is CoordinatePair<Coordinates<LineString | Polygon>> {
         return isArray(coordinates.startPosition[0]);
+    }
+
+    private isCoordinateArrayOfArraysPair(
+        coordinates: CoordinatePair<Coordinates<LineString | Polygon>>
+    ): coordinates is CoordinatePair<Coordinates<Polygon>> {
+        return isArray(coordinates.startPosition[0]![0]);
     }
 
     private interpolate(
@@ -127,7 +136,12 @@ export class MovementAnimator<T extends LineString | Point> {
         // If we have coordinate arrays, there must be at least as many endCoordinates as startCoordinates
         if (
             this.isCoordinateArrayPair(positions) &&
-            positions.startPosition.length > positions.endPosition.length
+            (this.isCoordinateArrayOfArraysPair(positions) ||
+                positions.startPosition.length >
+                    positions.endPosition.length) &&
+            (!this.isCoordinateArrayOfArraysPair(positions) ||
+                positions.startPosition[0]!.length >
+                    positions.endPosition[0]!.length)
         ) {
             throw new Error(
                 `Got unexpected too few endPositions: ${JSON.stringify(
@@ -138,13 +152,24 @@ export class MovementAnimator<T extends LineString | Point> {
         // The next position is calculated by a linear interpolation between the start and end position(s)
         const nextPosition = (
             this.isCoordinateArrayPair(positions)
-                ? positions.startPosition.map((startPos, index) =>
-                      this.interpolate(
-                          startPos,
-                          positions.endPosition[index]!,
-                          progress
+                ? this.isCoordinateArrayOfArraysPair(positions)
+                    ? positions.startPosition[0]!.map((startPos, index) =>
+                          this.interpolate(
+                              startPos,
+                              positions.endPosition[0]![index]!,
+                              progress
+                          )
                       )
-                  )
+                    : (
+                          positions as CoordinatePair<Coordinate[]>
+                      ).startPosition.map((startPos, index) =>
+                          this.interpolate(
+                              startPos,
+                              (positions as CoordinatePair<Coordinate[]>)
+                                  .endPosition[index]!,
+                              progress
+                          )
+                      )
                 : this.interpolate(
                       positions.startPosition as Coordinates<Point>,
                       positions.endPosition as Coordinates<Point>,

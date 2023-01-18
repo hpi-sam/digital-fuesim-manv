@@ -2,7 +2,7 @@ import type { Store } from '@ngrx/store';
 import type { UUID, SimulatedRegion } from 'digital-fuesim-manv-shared';
 import { Position, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
-import type LineString from 'ol/geom/LineString';
+import type { Polygon } from 'ol/geom';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
@@ -17,14 +17,14 @@ import { calculatePopupPositioning } from '../utility/calculate-popup-positionin
 import type { FeatureManager } from '../utility/feature-manager';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
 import {
-    createLineString,
+    createPolygon,
     ElementFeatureManager,
     getCoordinateArray,
 } from './element-feature-manager';
 
 export class SimulatedRegionFeatureManager
-    extends ElementFeatureManager<SimulatedRegion, LineString>
-    implements FeatureManager<Feature<LineString>>
+    extends ElementFeatureManager<SimulatedRegion, Polygon>
+    implements FeatureManager<Feature<Polygon>>
 {
     readonly type = 'simulatedRegions';
 
@@ -32,7 +32,7 @@ export class SimulatedRegionFeatureManager
 
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<LineString>>,
+        layer: VectorLayer<VectorSource<Polygon>>,
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {
@@ -46,19 +46,20 @@ export class SimulatedRegionFeatureManager
                     targetPosition: targetPositions[0]!,
                 });
             },
-            createLineString
+            createPolygon
         );
         this.layer.setStyle(this.style);
     }
 
     private readonly style = new Style({
+        fill: undefined,
         stroke: new Stroke({
             color: '#cccc00',
             width: 2,
         }),
     });
 
-    override createFeature(element: SimulatedRegion): Feature<LineString> {
+    override createFeature(element: SimulatedRegion): Feature<Polygon> {
         const feature = super.createFeature(element);
         ResizeRectangleInteraction.onResize(
             feature,
@@ -89,7 +90,7 @@ export class SimulatedRegionFeatureManager
         oldElement: SimulatedRegion,
         newElement: SimulatedRegion,
         changedProperties: ReadonlySet<keyof SimulatedRegion>,
-        elementFeature: Feature<LineString>
+        elementFeature: Feature<Polygon>
     ): void {
         if (
             changedProperties.has('position') ||
@@ -99,10 +100,9 @@ export class SimulatedRegionFeatureManager
             if (!newFeature) {
                 throw new TypeError('newFeature undefined');
             }
-            this.movementAnimator.animateFeatureMovement(
-                elementFeature,
-                getCoordinateArray(newElement)
-            );
+            this.movementAnimator.animateFeatureMovement(elementFeature, [
+                getCoordinateArray(newElement),
+            ]);
         }
         // If the style has updated, we need to redraw the feature
         elementFeature.changed();
@@ -136,9 +136,7 @@ export class SimulatedRegionFeatureManager
         });
     }
 
-    public override isFeatureTranslatable(
-        feature: Feature<LineString>
-    ): boolean {
+    public override isFeatureTranslatable(feature: Feature<Polygon>): boolean {
         return selectStateSnapshot(selectCurrentRole, this.store) === 'trainer';
     }
 }
