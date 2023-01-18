@@ -6,18 +6,22 @@ import type { LineString } from 'ol/geom';
 import PointerInteraction from 'ol/interaction/Pointer';
 import type VectorSource from 'ol/source/Vector';
 
+/**
+ * Provides the ability to resize a rectangle by dragging any of its corners.
+ */
 export class ResizeRectangleInteraction extends PointerInteraction {
     /**
      * The tolerance in coordinates for hitting a corner.
      */
     private readonly hitTolerance = 3;
 
-    private nearestCorner?: Coordinate;
-    private furthestCorner?: Coordinate;
-    private feature?: Feature<LineString>;
-    private currentScale?: { x: number; y: number };
+    /**
+     * Temporary values for the current resize operation.
+     * If undefined no resize operation is currently in progress.
+     */
+    private currentResizeValues?: CurrentResizeValues;
 
-    constructor(private readonly source: VectorSource) {
+    constructor(private readonly source: VectorSource<LineString>) {
         super({
             handleDownEvent: (event) => this._handleDownEvent(event),
             handleDragEvent: (event) => this._handleDragEvent(event),
@@ -27,9 +31,8 @@ export class ResizeRectangleInteraction extends PointerInteraction {
 
     private _handleDownEvent(event: MapBrowserEvent<any>): boolean {
         const mouseCoordinate = event.coordinate;
-        const feature = this.source.getClosestFeatureToCoordinate(
-            mouseCoordinate
-        ) as Feature<LineString>;
+        const feature =
+            this.source.getClosestFeatureToCoordinate(mouseCoordinate);
         if (!feature) {
             return false;
         }
@@ -49,44 +52,47 @@ export class ResizeRectangleInteraction extends PointerInteraction {
         if (nearestCorner === undefined || furthestCorner === undefined) {
             return false;
         }
-        this.nearestCorner = nearestCorner;
-        this.furthestCorner = furthestCorner;
-        this.feature = feature;
-        this.currentScale = { x: 1, y: 1 };
+        this.currentResizeValues = {
+            draggedCorner: nearestCorner,
+            originCorner: furthestCorner,
+            feature,
+            currentScale: { x: 1, y: 1 },
+        };
         return true;
     }
 
     private _handleDragEvent(event: MapBrowserEvent<any>): boolean {
-        if (!this.feature || !this.nearestCorner || !this.furthestCorner) {
+        if (this.currentResizeValues === undefined) {
             return false;
         }
         const mouseCoordinate = event.coordinate;
         const newXScale =
-            (mouseCoordinate[0]! - this.furthestCorner[0]!) /
-            (this.nearestCorner[0]! - this.furthestCorner[0]!);
+            (mouseCoordinate[0]! - this.currentResizeValues.originCorner[0]!) /
+            (this.currentResizeValues.draggedCorner[0]! -
+                this.currentResizeValues.originCorner[0]!);
         const newYScale =
-            (this.furthestCorner[1]! - mouseCoordinate[1]!) /
-            (this.furthestCorner[1]! - this.nearestCorner[1]!);
-        this.feature
+            (this.currentResizeValues.originCorner[1]! - mouseCoordinate[1]!) /
+            (this.currentResizeValues.originCorner[1]! -
+                this.currentResizeValues.draggedCorner[1]!);
+        this.currentResizeValues.feature
             .getGeometry()!
             .scale(
-                newXScale / this.currentScale!.x,
-                newYScale / this.currentScale!.y,
-                this.furthestCorner
+                newXScale / this.currentResizeValues.currentScale!.x,
+                newYScale / this.currentResizeValues.currentScale!.y,
+                this.currentResizeValues.originCorner
             );
-        this.currentScale = { x: newXScale, y: newYScale };
+        this.currentResizeValues.currentScale = { x: newXScale, y: newYScale };
         return true;
     }
 
     private _handleUpEvent(event: MapBrowserEvent<any>): boolean {
-        if (
-            this.feature === undefined ||
-            this.furthestCorner === undefined ||
-            this.currentScale === undefined
-        ) {
+        if (this.currentResizeValues === undefined) {
             return true;
         }
-        const coordinates = this.feature.getGeometry()!.getCoordinates()!;
+
+        const coordinates = this.currentResizeValues.feature
+            .getGeometry()!
+            .getCoordinates()!;
         const topLeftCoordinate = coordinates.reduce<Coordinate>(
             (smallestCoordinate, coordinate) =>
                 coordinate[0]! <= smallestCoordinate[0]! ||
@@ -95,17 +101,14 @@ export class ResizeRectangleInteraction extends PointerInteraction {
                     : smallestCoordinate,
             [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]
         );
-        this.feature.dispatchEvent(
+        this.currentResizeValues.feature.dispatchEvent(
             new ResizeEvent(
-                this.currentScale,
-                this.furthestCorner,
+                this.currentResizeValues.currentScale,
+                this.currentResizeValues.originCorner,
                 topLeftCoordinate
             )
         );
-        this.feature = undefined;
-        this.nearestCorner = undefined;
-        this.furthestCorner = undefined;
-        this.currentScale = undefined;
+        this.currentResizeValues = undefined;
         return false;
     }
 
@@ -120,8 +123,22 @@ export class ResizeRectangleInteraction extends PointerInteraction {
     }
 }
 
+interface CurrentResizeValues {
+    draggedCorner: Coordinate;
+    /**
+     * The corner that doesn't move during the resize.
+     */
+    originCorner: Coordinate;
+    /**
+     * The feature that is currently being resized.
+     */
+    feature: Feature<LineString>;
+    currentScale: { x: number; y: number };
+}
+
 // TODO: This doesn't work as a static member of ResizeEvent, because it is undefined at runtime. Why?
 const resizeRectangleEventType = 'resizerectangle';
+
 class ResizeEvent extends BaseEvent {
     constructor(
         public readonly scale: { x: number; y: number },

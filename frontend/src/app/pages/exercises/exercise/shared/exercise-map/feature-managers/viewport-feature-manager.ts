@@ -63,7 +63,6 @@ export class ViewportFeatureManager
     }
 
     private readonly style = new Style({
-        fill: undefined,
         stroke: new Stroke({
             color: '#fafaff',
             width: 2,
@@ -92,9 +91,6 @@ export class ViewportFeatureManager
                     },
                     true
                 );
-
-                const viewport = this.getElementFromFeature(feature)!.value;
-                this.recreateFeature(viewport);
             }
         );
         return feature;
