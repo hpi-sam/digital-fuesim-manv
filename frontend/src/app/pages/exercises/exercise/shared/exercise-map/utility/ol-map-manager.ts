@@ -62,9 +62,8 @@ import {
 import type { FeatureManager } from './feature-manager';
 import { ModifyHelper } from './modify-helper';
 import type { OpenPopupOptions } from './popup-manager';
-import { createSimulatedRegionModify } from './simulated-region-modify';
 import { TranslateInteraction } from './translate-interaction';
-import { createViewportModify } from './viewport-modify';
+import { createRectangleModify } from './rectangle-modify';
 
 /**
  * This class should run outside the Angular zone for performance reasons.
@@ -165,17 +164,12 @@ export class OlMapManager {
                     : featureManager.isFeatureTranslatable(feature);
             },
         });
-        const viewportModify = createViewportModify(viewportLayer);
+        const viewportModify = createRectangleModify(viewportLayer);
         const simulatedRegionModify =
-            createSimulatedRegionModify(simulatedRegionLayer);
+            createRectangleModify(simulatedRegionLayer);
 
-        const viewportTranslate = new TranslateInteraction({
-            layers: [viewportLayer],
-            condition: (event) => primaryAction(event) && !shiftKeyOnly(event),
-            hitTolerance: 10,
-        });
-        const simulatedRegionTranslate = new TranslateInteraction({
-            layers: [simulatedRegionLayer],
+        const rectangleTranslate = new TranslateInteraction({
+            layers: [viewportLayer, simulatedRegionLayer],
             condition: (event) => primaryAction(event) && !shiftKeyOnly(event),
             hitTolerance: 10,
         });
@@ -188,9 +182,8 @@ export class OlMapManager {
             selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
                 ? [
                       ...alwaysInteractions,
-                      viewportTranslate,
+                      rectangleTranslate,
                       viewportModify,
-                      simulatedRegionTranslate,
                       simulatedRegionModify,
                   ]
                 : alwaysInteractions;
@@ -323,8 +316,7 @@ export class OlMapManager {
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
-        this.registerDropHandler(viewportTranslate);
-        this.registerDropHandler(simulatedRegionTranslate);
+        this.registerDropHandler(rectangleTranslate);
         this.registerViewportRestriction();
 
         // Register handlers that disable or enable certain interactions

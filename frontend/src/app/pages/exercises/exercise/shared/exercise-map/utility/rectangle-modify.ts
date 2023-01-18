@@ -15,14 +15,14 @@ const originCornerDict: {
     topRight: { originIndex: 3, cornerIndex: 1 },
 };
 
-export function createViewportModify(
-    viewportLayer: VectorLayer<VectorSource<LineString>>
+export function createRectangleModify(
+    rectangleLayer: VectorLayer<VectorSource<LineString>>
 ): Modify {
-    const defaultStyle = new Modify({ source: viewportLayer.getSource()! })
+    const defaultStyle = new Modify({ source: rectangleLayer.getSource()! })
         .getOverlay()
         .getStyleFunction();
     return new Modify({
-        source: viewportLayer.getSource()!,
+        source: rectangleLayer.getSource()!,
         condition: (event) => primaryAction(event) && shiftKeyOnly(event),
         deleteCondition: () => false,
         insertVertexCondition: () => false,
@@ -60,7 +60,7 @@ export function createViewportModify(
                     origin
                 );
             });
-            // This renders the default LineString style. The function ignores all arguments.
+            // The OpenLayers typings are incorrect here. We have to provide a second argument, even though it is ignored
             return defaultStyle!(feature, 123);
         },
     });
