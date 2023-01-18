@@ -7,7 +7,6 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
-import { primaryAction, shiftKeyOnly } from 'ol/events/condition';
 import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
 import type Point from 'ol/geom/Point';
@@ -60,10 +59,9 @@ import {
     ViewportFeatureManager,
 } from '../feature-managers/viewport-feature-manager';
 import type { FeatureManager } from './feature-manager';
-import { ModifyHelper } from './modify-helper';
 import type { OpenPopupOptions } from './popup-manager';
+import { ResizeRectangleInteraction } from './resize-rectangle-interaction';
 import { TranslateInteraction } from './translate-interaction';
-import { createRectangleModify } from './rectangle-modify';
 
 /**
  * This class should run outside the Angular zone for performance reasons.
@@ -164,27 +162,19 @@ export class OlMapManager {
                     : featureManager.isFeatureTranslatable(feature);
             },
         });
-        const viewportModify = createRectangleModify(viewportLayer);
-        const simulatedRegionModify =
-            createRectangleModify(simulatedRegionLayer);
-
-        const rectangleTranslate = new TranslateInteraction({
-            layers: [viewportLayer, simulatedRegionLayer],
-            condition: (event) => primaryAction(event) && !shiftKeyOnly(event),
-            hitTolerance: 10,
-        });
-
-        ModifyHelper.registerModifyEvents(viewportModify);
-        ModifyHelper.registerModifyEvents(simulatedRegionModify);
-
+        const resizeViewportInteraction = new ResizeRectangleInteraction(
+            viewportLayer.getSource()!
+        );
+        const resizeSimulatedRegionInteraction = new ResizeRectangleInteraction(
+            simulatedRegionLayer.getSource()!
+        );
         const alwaysInteractions = [translateInteraction];
         const customInteractions =
             selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
                 ? [
                       ...alwaysInteractions,
-                      rectangleTranslate,
-                      viewportModify,
-                      simulatedRegionModify,
+                      resizeViewportInteraction,
+                      resizeSimulatedRegionInteraction,
                   ]
                 : alwaysInteractions;
 
@@ -316,7 +306,6 @@ export class OlMapManager {
 
         this.registerPopupTriggers(translateInteraction);
         this.registerDropHandler(translateInteraction);
-        this.registerDropHandler(rectangleTranslate);
         this.registerViewportRestriction();
 
         // Register handlers that disable or enable certain interactions

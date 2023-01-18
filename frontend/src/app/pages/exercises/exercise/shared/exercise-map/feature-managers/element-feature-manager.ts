@@ -123,6 +123,7 @@ export abstract class ElementFeatureManager<
 
     deleteFeature(element: Element, elementFeature: ElementFeature): void {
         this.layer.getSource()!.removeFeature(elementFeature);
+        elementFeature.dispose();
         this.movementAnimator.stopMovementAnimation(elementFeature);
     }
 
