@@ -20,6 +20,7 @@ import {
     Transfer,
     getCreate,
 } from './utils';
+import type { MetaPosition } from './utils/meta-position';
 import { personnelTypeAllowedValues } from './utils/personnel-type';
 
 export class Personnel {
@@ -65,6 +66,9 @@ export class Personnel {
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
+
+    @IsOptional()
+    public readonly metaPosition?: MetaPosition;
 
     /**
      * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or in transfer.

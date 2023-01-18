@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
 import { Position } from '../../models/utils';
+import type { MapCoordinates } from '../../models/utils/map-coordinates';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
@@ -167,6 +168,12 @@ export namespace VehicleActionReducers {
         reducer: (draftState, { vehicleId, targetPosition }) => {
             const vehicle = getElement(draftState, 'vehicles', vehicleId);
             vehicle.position = cloneDeepMutable(targetPosition);
+            vehicle.metaPosition = {
+                type: 'Coordinates',
+                position: cloneDeepMutable(
+                    targetPosition
+                ) as Mutable<MapCoordinates>,
+            };
             return draftState;
         },
         rights: 'participant',
@@ -201,12 +208,16 @@ export namespace VehicleActionReducers {
         action: UnloadVehicleAction,
         reducer: (draftState, { vehicleId }) => {
             const vehicle = getElement(draftState, 'vehicles', vehicleId);
-            const unloadPosition = vehicle.position;
-            if (!unloadPosition) {
+            const unloadMetaPosition = vehicle.metaPosition;
+            if (
+                !unloadMetaPosition ||
+                unloadMetaPosition.type !== 'Coordinates'
+            ) {
                 throw new ReducerError(
-                    `Vehicle with id ${vehicleId} is currently in transfer`
+                    `Vehicle with id ${vehicleId} is currently not on the map`
                 );
             }
+            const unloadPosition = unloadMetaPosition.position;
             const materialIds = Object.keys(vehicle.materialIds);
             const personnelIds = Object.keys(vehicle.personnelIds);
             const patientIds = Object.keys(vehicle.patientIds);

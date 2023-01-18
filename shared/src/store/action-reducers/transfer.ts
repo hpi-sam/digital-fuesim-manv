@@ -3,6 +3,7 @@ import { IsInt, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { TransferPoint } from '../../models';
 import type { Position } from '../../models/utils';
 import { StartPoint, startPointTypeOptions } from '../../models/utils';
+import type { MapCoordinates } from '../../models/utils/map-coordinates';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
@@ -52,6 +53,10 @@ export function letElementArrive(
         updateElementPosition(draftState, 'personnel', element.id, newPosition);
     } else {
         element.position = newPosition;
+        element.metaPosition = {
+            type: 'Coordinates',
+            position: newPosition as Mutable<MapCoordinates>,
+        };
     }
     delete element.transfer;
 }
@@ -167,13 +172,22 @@ export namespace TransferActionReducers {
             } else {
                 element.position = undefined;
             }
-
             // Set the element to transfer
             element.transfer = {
                 startPoint: cloneDeepMutable(startPoint),
                 targetTransferPointId,
                 endTimeStamp: draftState.currentTime + duration,
                 isPaused: false,
+            };
+
+            element.metaPosition = {
+                type: 'Transfer',
+                transfer: {
+                    startPoint: cloneDeepMutable(startPoint),
+                    targetTransferPointId,
+                    endTimeStamp: draftState.currentTime + duration,
+                    isPaused: false,
+                },
             };
 
             return draftState;
