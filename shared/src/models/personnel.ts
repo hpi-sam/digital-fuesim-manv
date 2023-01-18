@@ -20,7 +20,7 @@ import {
     Transfer,
     getCreate,
 } from './utils';
-import type { MetaPosition } from './utils/meta-position';
+import { MetaPosition } from './utils/meta-position';
 import { personnelTypeAllowedValues } from './utils/personnel-type';
 
 export class Personnel {
@@ -71,6 +71,7 @@ export class Personnel {
     public readonly metaPosition?: MetaPosition;
 
     /**
+     * * @deprecated use {@link metaPosition}
      * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or in transfer.
      */
     @ValidateNested()
@@ -79,6 +80,7 @@ export class Personnel {
     public readonly position?: Position;
 
     /**
+     * * @deprecated use {@link metaPosition}
      * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or has a {@link position}.
      */
     @ValidateNested()
@@ -132,8 +134,12 @@ export class Personnel {
     }
 
     static isInVehicle(personnel: Personnel): boolean {
-        return (
-            personnel.position === undefined && personnel.transfer === undefined
-        );
+        if (
+            personnel.metaPosition &&
+            personnel.metaPosition.type === 'Vehicle'
+        ) {
+            return true;
+        }
+        return false;
     }
 }

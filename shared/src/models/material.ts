@@ -13,6 +13,7 @@ import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsUUIDSet } from '../utils/validators';
 import type { MaterialTemplate } from './material-template';
 import { CanCaterFor, Position, ImageProperties, getCreate } from './utils';
+import { MetaPosition } from './utils/meta-position';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
@@ -50,6 +51,9 @@ export class Material {
     @Min(0)
     @Max(maxTreatmentRange)
     public readonly treatmentRange: number;
+
+    @IsOptional()
+    public readonly metaPosition?: MetaPosition;
 
     /**
      * if undefined, is in vehicle with {@link this.vehicleId}

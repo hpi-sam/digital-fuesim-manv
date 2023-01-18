@@ -1,4 +1,5 @@
 import type { Position } from '../../../models/utils';
+import type { MapCoordinates } from '../../../models/utils/map-coordinates';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
@@ -60,6 +61,10 @@ export function updateElementPosition(
         );
     }
     element.position = cloneDeepMutable(targetPosition);
+    element.metaPosition = {
+        type: 'Coordinates',
+        position: cloneDeepMutable(targetPosition) as Mutable<MapCoordinates>,
+    };
     updateTreatments(state, element);
 }
 

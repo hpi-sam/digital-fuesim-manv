@@ -25,6 +25,7 @@ import {
     HealthPoints,
     getCreate,
 } from './utils';
+import { MetaPosition } from './utils/meta-position';
 import { PersonalInformation } from './utils/personal-information';
 import { PretriageInformation } from './utils/pretriage-information';
 
@@ -61,6 +62,9 @@ export class Patient {
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
+
+    @IsOptional()
+    public readonly metaPosition?: MetaPosition;
 
     /**
      * Exclusive-or to {@link vehicleId}

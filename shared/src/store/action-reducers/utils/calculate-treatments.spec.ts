@@ -102,6 +102,10 @@ function addPersonnel(state: Mutable<ExerciseState>, position?: Position) {
     };
     if (position) {
         personnel.position = cloneDeepMutable(position);
+        personnel.metaPosition = {
+            type: 'Coordinates',
+            position: cloneDeepMutable(position),
+        };
         SpatialTree.addElement(
             state.spatialTrees.personnel,
             personnel.id,
