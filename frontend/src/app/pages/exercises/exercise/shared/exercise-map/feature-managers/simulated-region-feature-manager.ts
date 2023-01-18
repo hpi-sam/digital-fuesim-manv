@@ -54,7 +54,7 @@ export class SimulatedRegionFeatureManager
 
     private readonly style = new Style({
         fill: new Fill({
-            color: '#80808066'
+            color: '#80808066',
         }),
         stroke: new Stroke({
             color: '#cccc00',
