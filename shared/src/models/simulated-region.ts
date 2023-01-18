@@ -44,11 +44,9 @@ export class SimulatedRegion {
         region: SimulatedRegion,
         position: Position
     ): boolean {
-        return (
-            region.position.x <= position.x &&
-            position.x <= region.position.x + region.size.width &&
-            region.position.y - region.size.height <= position.y &&
-            position.y <= region.position.y
-        );
+        // This class was copied from viewport.ts
+        // We will have to implement this logic differently
+        // later, for now, this is a stub method
+        return false;
     }
 }
