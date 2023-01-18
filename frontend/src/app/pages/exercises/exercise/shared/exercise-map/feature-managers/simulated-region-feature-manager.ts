@@ -6,6 +6,7 @@ import type { Polygon } from 'ol/geom';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
+import { Fill } from 'ol/style';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import type { ExerciseService } from 'src/app/core/exercise.service';
@@ -52,7 +53,9 @@ export class SimulatedRegionFeatureManager
     }
 
     private readonly style = new Style({
-        fill: undefined,
+        fill: new Fill({
+            color: '#80808066'
+        }),
         stroke: new Stroke({
             color: '#cccc00',
             width: 2,
