@@ -88,6 +88,39 @@
                     </div>
                 </li>
                 <li class="list-group-item">
+                    <h5>Simulierte Bereiche</h5>
+                    <div
+                        class="overflow-auto w-100"
+                        style="white-space: nowrap"
+                    >
+                        <div
+                            class="d-inline-block card text-center"
+                            style="width: 10rem; text-overflow: ellipsis"
+                            (mousedown)="
+                                dragElementService.onMouseDown($event, {
+                                    type: 'simulatedRegion',
+                                    template: simulatedRegionTemplate
+                                })
+                            "
+                        >
+                            <div class="preview-image-container bg-secondary">
+                                <img
+                                    [src]="simulatedRegionTemplate.image.url"
+                                    class="card-img-top"
+                                />
+                            </div>
+                            <div class="card-body">
+                                <h5
+                                    class="card-title text-truncate"
+                                    [title]="'Simulierter Bereich'"
+                                >
+                                    Simulierter Bereich
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
                     <h5>
                         Patienten
                         <div

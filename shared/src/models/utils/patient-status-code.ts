@@ -27,13 +27,9 @@ export const colorCodeMap = {
     X: 'green',
     Y: 'yellow',
     Z: 'red',
-} as const;
+} as const satisfies { readonly [Key in ColorCode]: string };
 
-// This is only for typesafety
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _colorCodeMap: { readonly [key in ColorCode]: string } = colorCodeMap;
-
-export const behaviourCodeMap: { [key in BehaviourCode]: string } = {
+export const behaviourCodeMap: { [Key in BehaviourCode]: string } = {
     A: 'bi-arrow-right-square-fill',
     B: 'bi-heartbreak-fill',
     C: 'bi-exclamation-circle-fill',

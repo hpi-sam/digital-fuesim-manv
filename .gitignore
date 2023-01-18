@@ -24,3 +24,7 @@ shared/tsconfig.build.tsbuildinfo
 
 benchmark/data/*
 !benchmark/data/*.permanent.json
+
+.vscode/*
+!.vscode/*.example
+!.vscode/extensions.json

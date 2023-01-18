@@ -3,6 +3,7 @@ import { Store } from '@ngrx/store';
 import type {
     ImageProperties,
     MapImageTemplate,
+    PatientCategory,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
 import {
@@ -12,8 +13,8 @@ import {
     PatientTemplate,
     TransferPoint,
     Viewport,
+    SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
-import type { PatientCategory } from 'digital-fuesim-manv-shared/dist/models/patient-category';
 import type OlMap from 'ol/Map';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -228,6 +229,29 @@ export class DragElementService {
                     true
                 );
                 break;
+            case 'simulatedRegion': {
+                // This ratio has been determined by trial and error
+                const height = SimulatedRegion.image.height / 23.5;
+                const width = height * SimulatedRegion.image.aspectRatio;
+                this.exerciseService.proposeAction(
+                    {
+                        type: '[SimulatedRegion] Add simulated region',
+                        simulatedRegion: SimulatedRegion.create(
+                            {
+                                x: position.x - width / 2,
+                                y: position.y + height / 2,
+                            },
+                            {
+                                height,
+                                width,
+                            },
+                            'Einsatzabschnitt ???'
+                        ),
+                    },
+                    true
+                );
+                break;
+            }
             default:
                 break;
         }
@@ -259,6 +283,12 @@ type TransferTemplate =
     | {
           type: 'patient';
           template: PatientCategory;
+      }
+    | {
+          type: 'simulatedRegion';
+          template: {
+              image: ImageProperties;
+          };
       }
     | {
           type: 'transferPoint';

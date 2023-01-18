@@ -14,6 +14,7 @@ import { ViewportPopupComponent } from './shared/viewport-popup/viewport-popup.c
 import { PersonnelPopupComponent } from './shared/personnel-popup/personnel-popup.component';
 import { MaterialPopupComponent } from './shared/material-popup/material-popup.component';
 import { CaterCapacityComponent } from './shared/cater-capacity/cater-capacity.component';
+import { SimulatedRegionPopupComponent } from './shared/simulated-region-popup/simulated-region-popup.component';
 
 @NgModule({
     declarations: [
@@ -27,6 +28,7 @@ import { CaterCapacityComponent } from './shared/cater-capacity/cater-capacity.c
         PersonnelPopupComponent,
         MaterialPopupComponent,
         CaterCapacityComponent,
+        SimulatedRegionPopupComponent,
     ],
     imports: [
         CommonModule,
