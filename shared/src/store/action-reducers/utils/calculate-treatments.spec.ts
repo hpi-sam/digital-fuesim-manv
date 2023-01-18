@@ -6,7 +6,7 @@ import type { Patient } from '../../../models';
 import { Material, Personnel } from '../../../models';
 import type { PatientStatus } from '../../../models/utils';
 import { CanCaterFor, Position } from '../../../models/utils';
-import { MapCoordinates } from '../../../models/utils/map-coordinates';
+import type { MapCoordinates } from '../../../models/utils/map-coordinates';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
@@ -77,6 +77,10 @@ function addPatient(
     patient.realStatus = realStatus;
     if (position) {
         patient.position = cloneDeepMutable(position);
+        patient.metaPosition = {
+            type: 'Coordinates',
+            position: cloneDeepMutable(position),
+        };
         SpatialTree.addElement(
             state.spatialTrees.patients,
             patient.id,

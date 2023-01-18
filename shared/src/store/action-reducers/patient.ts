@@ -155,7 +155,10 @@ export namespace PatientActionReducers {
             const patient = getElement(draftState, 'patients', patientId);
             patient.pretriageStatus = patientStatus;
 
-            if (patient.position !== undefined) {
+            if (
+                patient.metaPosition !== undefined &&
+                patient.metaPosition.type === 'Coordinates'
+            ) {
                 updateTreatments(draftState, patient);
             }
 
