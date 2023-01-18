@@ -105,6 +105,13 @@ export class DeleteFeatureManager implements FeatureManager<Feature<Point>> {
             });
             return true;
         }
+        if (exerciseState.simulatedRegions[id]) {
+            this.exerciseService.proposeAction({
+                type: '[SimulatedRegion] Remove simulated region',
+                simulatedRegionId: id,
+            });
+            return true;
+        }
         return false;
     }
 }

@@ -13,6 +13,7 @@ import {
     PatientTemplate,
     TransferPoint,
     Viewport,
+    SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
 import type OlMap from 'ol/Map';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -228,6 +229,29 @@ export class DragElementService {
                     true
                 );
                 break;
+            case 'simulatedRegion': {
+                // This ratio has been determined by trial and error
+                const height = SimulatedRegion.image.height / 23.5;
+                const width = height * SimulatedRegion.image.aspectRatio;
+                this.exerciseService.proposeAction(
+                    {
+                        type: '[SimulatedRegion] Add simulated region',
+                        simulatedRegion: SimulatedRegion.create(
+                            {
+                                x: position.x - width / 2,
+                                y: position.y + height / 2,
+                            },
+                            {
+                                height,
+                                width,
+                            },
+                            'Einsatzabschnitt ???'
+                        ),
+                    },
+                    true
+                );
+                break;
+            }
             default:
                 break;
         }
@@ -259,6 +283,12 @@ type TransferTemplate =
     | {
           type: 'patient';
           template: PatientCategory;
+      }
+    | {
+          type: 'simulatedRegion';
+          template: {
+              image: ImageProperties;
+          };
       }
     | {
           type: 'transferPoint';

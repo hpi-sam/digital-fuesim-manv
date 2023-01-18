@@ -3,6 +3,7 @@ import { addMapImageIsLocked11 } from './11-add-map-image-is-locked';
 import { renameIncorrectPatientImages12 } from './12-rename-incorrect-patient-images';
 import { addMapImageZIndex13 } from './13-add-map-image-zindex';
 import { addPersonnelAndMaterialToState14 } from './14-add-personnel-and-material-templates-to-state';
+import { addSimulatedRegions15 } from './15-add-simulated-regions';
 import { updateEocLog3 } from './3-update-eoc-log';
 import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
 import { removeStatistics5 } from './5-remove-statistics';
@@ -51,4 +52,5 @@ export const migrations: {
     12: renameIncorrectPatientImages12,
     13: addMapImageZIndex13,
     14: addPersonnelAndMaterialToState14,
+    15: addSimulatedRegions15,
 };

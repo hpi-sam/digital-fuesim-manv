@@ -27,6 +27,7 @@ import {
     Patient,
     PatientCategory,
     Personnel,
+    SimulatedRegion,
     TransferPoint,
     Vehicle,
     VehicleTemplate,
@@ -65,6 +66,10 @@ export class ExerciseState {
     public readonly currentStatus: ExerciseStatus = 'notStarted';
     @IsIdMap(Viewport)
     public readonly viewports: { readonly [key: UUID]: Viewport } = {};
+    @IsIdMap(SimulatedRegion)
+    public readonly simulatedRegions: {
+        readonly [key: UUID]: SimulatedRegion;
+    } = {};
     @IsIdMap(Vehicle)
     public readonly vehicles: { readonly [key: UUID]: Vehicle } = {};
     @IsIdMap(Personnel)
@@ -143,5 +148,5 @@ export class ExerciseState {
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 14;
+    static readonly currentStateVersion = 15;
 }
