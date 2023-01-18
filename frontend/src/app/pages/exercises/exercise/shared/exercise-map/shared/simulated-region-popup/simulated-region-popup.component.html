@@ -1,0 +1,28 @@
+<ng-container *ngIf="simulatedRegion$ | async as simulatedRegion">
+    <h5 class="popover-header">
+        Simulierter Bereich {{ simulatedRegion.name }}
+        <button
+            (click)="closePopup.emit()"
+            type="button"
+            class="btn-close float-end"
+        ></button>
+    </h5>
+    <div class="popover-body" style="width: 350px; height: 300px">
+        <ng-container *ngIf="(currentRole$ | async) === 'trainer'">
+            <div class="form-group pb-3">
+                <label class="form-label">Name</label>
+                <input
+                    #nameInput="ngModel"
+                    [ngModel]="simulatedRegion.name"
+                    (appSaveOnTyping)="renameSimulatedRegion($event)"
+                    required
+                    type="text"
+                    class="form-control"
+                />
+                <app-display-validation
+                    [ngModelInput]="nameInput"
+                ></app-display-validation>
+            </div>
+        </ng-container>
+    </div>
+</ng-container>

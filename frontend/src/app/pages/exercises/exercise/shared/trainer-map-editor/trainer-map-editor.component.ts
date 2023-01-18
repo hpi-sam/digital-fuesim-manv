@@ -6,6 +6,7 @@ import {
     colorCodeMap,
     TransferPoint,
     Viewport,
+    SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
 import type { AppState } from 'src/app/state/app.state';
 import {
@@ -53,6 +54,10 @@ export class TrainerMapEditorComponent {
         public readonly transferLinesService: TransferLinesService,
         private readonly ngbModalService: NgbModal
     ) {}
+
+    public readonly simulatedRegionTemplate = {
+        image: SimulatedRegion.image,
+    };
 
     public readonly viewportTemplate = {
         image: Viewport.image,

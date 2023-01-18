@@ -35,6 +35,7 @@ import {
     selectVisibleMaterials,
     selectVisiblePatients,
     selectVisiblePersonnel,
+    selectVisibleSimulatedRegions,
     selectVisibleTransferPoints,
     selectVisibleVehicles,
     selectVisibleViewports,
@@ -49,6 +50,7 @@ import { MapImageFeatureManager } from '../feature-managers/map-images-feature-m
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
 import { PersonnelFeatureManager } from '../feature-managers/personnel-feature-manager';
+import { SimulatedRegionFeatureManager } from '../feature-managers/simulated-region-feature-manager';
 import { TransferLinesFeatureManager } from '../feature-managers/transfer-lines-feature-manager';
 import { TransferPointFeatureManager } from '../feature-managers/transfer-point-feature-manager';
 import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
@@ -125,6 +127,7 @@ export class OlMapManager {
         const personnelLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
         const viewportLayer = this.createElementLayer<LineString>();
+        const simulatedRegionLayer = this.createElementLayer<LineString>();
         const mapImagesLayer = this.createElementLayer(10_000);
         const deleteFeatureLayer = this.createElementLayer();
         this.popupOverlay = new Overlay({
@@ -143,6 +146,7 @@ export class OlMapManager {
             personnelLayer,
             materialLayer,
             viewportLayer,
+            simulatedRegionLayer,
         ];
 
         // Interactions
@@ -161,11 +165,17 @@ export class OlMapManager {
         const resizeViewportInteraction = new ResizeRectangleInteraction(
             viewportLayer.getSource()!
         );
-
+        const resizeSimulatedRegionInteraction = new ResizeRectangleInteraction(
+            simulatedRegionLayer.getSource()!
+        );
         const alwaysInteractions = [translateInteraction];
         const customInteractions =
             selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
-                ? [...alwaysInteractions, resizeViewportInteraction]
+                ? [
+                      ...alwaysInteractions,
+                      resizeViewportInteraction,
+                      resizeSimulatedRegionInteraction,
+                  ]
                 : alwaysInteractions;
 
         this.olMap = new OlMap({
@@ -282,6 +292,16 @@ export class OlMapManager {
                 this.store
             ),
             this.store.select(selectVisibleViewports)
+        );
+
+        this.registerFeatureElementManager(
+            new SimulatedRegionFeatureManager(
+                this.olMap,
+                simulatedRegionLayer,
+                this.exerciseService,
+                this.store
+            ),
+            this.store.select(selectVisibleSimulatedRegions)
         );
 
         this.registerPopupTriggers(translateInteraction);

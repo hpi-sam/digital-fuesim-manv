@@ -15,3 +15,4 @@ export { Vehicle } from './vehicle';
 export { VehicleTemplate } from './vehicle-template';
 export { Viewport } from './viewport';
 export { PatientCategory } from './patient-category';
+export { SimulatedRegion } from './simulated-region';

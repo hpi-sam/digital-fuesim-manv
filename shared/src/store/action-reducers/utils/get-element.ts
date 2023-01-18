@@ -15,6 +15,7 @@ export function getElement<
         | 'materials'
         | 'patients'
         | 'personnel'
+        | 'simulatedRegions'
         | 'transferPoints'
         | 'vehicles'
         | 'viewports',

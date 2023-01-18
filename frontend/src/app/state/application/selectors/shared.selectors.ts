@@ -5,6 +5,7 @@ import type {
     Patient,
     Personnel,
     Position,
+    SimulatedRegion,
     TransferPoint,
     UUID,
     Vehicle,
@@ -24,6 +25,7 @@ import {
     selectMaterials,
     selectPatients,
     selectPersonnel,
+    selectSimulatedRegion,
     selectTransferPoints,
     selectVehicles,
     selectViewports,
@@ -116,6 +118,8 @@ export const selectVisibleMapImages = selectVisibleElementsFactory<MapImage>(
 );
 export const selectVisibleTransferPoints =
     selectVisibleElementsFactory<TransferPoint>(selectTransferPoints);
+export const selectVisibleSimulatedRegions =
+    selectVisibleElementsFactory<SimulatedRegion>(selectSimulatedRegion);
 
 export const selectVisibleCateringLines = createSelector(
     selectRestrictedViewport,
