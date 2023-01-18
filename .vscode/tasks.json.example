@@ -18,6 +18,12 @@
             "problemMatcher": []
         },
         {
+            "label": "Start all but database",
+            "dependsOn": ["Start frontend", "Start backend", "Watch shared"],
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
             "label": "Run CI",
             "dependsOn": [
                 "Prettier",
