@@ -71,7 +71,7 @@ export class Personnel {
     public readonly metaPosition?: MetaPosition;
 
     /**
-     * * @deprecated use {@link metaPosition}
+     * @deprecated use {@link metaPosition}
      * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or in transfer.
      */
     @ValidateNested()
@@ -134,12 +134,9 @@ export class Personnel {
     }
 
     static isInVehicle(personnel: Personnel): boolean {
-        if (
-            personnel.metaPosition &&
+        return (
+            personnel.metaPosition !== undefined &&
             personnel.metaPosition.type === 'Vehicle'
-        ) {
-            return true;
-        }
-        return false;
+        );
     }
 }

@@ -56,6 +56,7 @@ export class Material {
     public readonly metaPosition?: MetaPosition;
 
     /**
+     * @deprecated use {@link metaPosition}
      * if undefined, is in vehicle with {@link this.vehicleId}
      */
     @ValidateNested()
@@ -110,6 +111,9 @@ export class Material {
     }
 
     static isInVehicle(material: Material): boolean {
-        return material.position === undefined;
+        return (
+            material.metaPosition !== undefined &&
+            material.metaPosition.type === 'Vehicle'
+        );
     }
 }

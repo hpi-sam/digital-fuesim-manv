@@ -67,6 +67,7 @@ export class Patient {
     public readonly metaPosition?: MetaPosition;
 
     /**
+     * @deprecated use {@link metaPosition}
      * Exclusive-or to {@link vehicleId}
      */
     @ValidateNested()
@@ -75,6 +76,7 @@ export class Patient {
     public readonly position?: Position;
 
     /**
+     * @deprecated use {@link metaPosition}
      * Exclusive-or to {@link position}
      */
     @IsUUID(4, uuidValidationOptions)
@@ -194,7 +196,10 @@ export class Patient {
     }
 
     static isInVehicle(patient: Patient): boolean {
-        return patient.position === undefined;
+        return (
+            patient.metaPosition !== undefined &&
+            patient.metaPosition.type === 'Vehicle'
+        );
     }
 
     static isTreatedByPersonnel(patient: Patient) {
