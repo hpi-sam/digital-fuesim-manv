@@ -151,12 +151,18 @@ export namespace VehicleActionReducers {
             }
             draftState.vehicles[vehicle.id] = cloneDeepMutable(vehicle);
             for (const material of cloneDeepMutable(materials)) {
-                material.metaPosition = { type: 'Vehicle', uuid: vehicle.id };
+                material.metaPosition = {
+                    type: 'Vehicle',
+                    vehicleId: vehicle.id,
+                };
                 draftState.materials[material.id] = material;
                 addElementPosition(draftState, 'materials', material.id);
             }
             for (const person of cloneDeepMutable(personnel)) {
-                person.metaPosition = { type: 'Vehicle', uuid: vehicle.id };
+                person.metaPosition = {
+                    type: 'Vehicle',
+                    vehicleId: vehicle.id,
+                };
                 draftState.personnel[person.id] = person;
                 addElementPosition(draftState, 'personnel', person.id);
             }
@@ -307,7 +313,7 @@ export namespace VehicleActionReducers {
                     }
                     material.metaPosition = {
                         type: 'Vehicle',
-                        uuid: vehicleId,
+                        vehicleId,
                     };
                     removeElementPosition(draftState, 'materials', material.id);
                     break;
@@ -330,7 +336,7 @@ export namespace VehicleActionReducers {
                     }
                     personnel.metaPosition = {
                         type: 'Vehicle',
-                        uuid: vehicleId,
+                        vehicleId,
                     };
                     removeElementPosition(
                         draftState,
@@ -357,7 +363,7 @@ export namespace VehicleActionReducers {
 
                     patient.metaPosition = {
                         type: 'Vehicle',
-                        uuid: vehicleId,
+                        vehicleId,
                     };
                     removeElementPosition(draftState, 'patients', patient.id);
 
@@ -369,7 +375,7 @@ export namespace VehicleActionReducers {
                             materialId
                         ).metaPosition = {
                             type: 'Vehicle',
-                            uuid: vehicleId,
+                            vehicleId,
                         };
                         removeElementPosition(
                             draftState,
@@ -393,7 +399,7 @@ export namespace VehicleActionReducers {
                                 personnelId
                             ).metaPosition = {
                                 type: 'Vehicle',
-                                uuid: vehicleId,
+                                vehicleId,
                             };
                             removeElementPosition(
                                 draftState,

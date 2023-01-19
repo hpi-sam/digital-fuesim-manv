@@ -1,7 +1,7 @@
 import { getCreate } from './get-create';
 import type { Transfer } from './transfer';
 
-export class MapPosition {
+export class TransferPosition {
     public readonly type: 'Transfer';
 
     public readonly transfer: Transfer;

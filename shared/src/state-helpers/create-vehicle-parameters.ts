@@ -4,6 +4,7 @@ import type { MaterialTemplate } from '../models/material-template';
 import type { PersonnelTemplate } from '../models/personnel-template';
 import type { PersonnelType, Position } from '../models/utils';
 import type { MapCoordinates } from '../models/utils/map-coordinates';
+import { MapPosition } from '../models/utils/map-position';
 import type { MaterialType } from '../models/utils/material-type';
 import { uuid } from '../utils';
 
@@ -53,10 +54,7 @@ export function createVehicleParameters(
         patientIds: {},
         personnelIds: arrayToUUIDSet(personnel.map((p) => p.id)),
         position: vehiclePosition,
-        metaPosition: {
-            type: 'Coordinates',
-            position: vehiclePosition as MapCoordinates,
-        },
+        metaPosition: MapPosition.create(vehiclePosition as MapCoordinates),
     };
     return {
         materials,
