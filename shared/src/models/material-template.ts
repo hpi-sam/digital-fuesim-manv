@@ -1,11 +1,14 @@
 import { Type } from 'class-transformer';
 import { IsNumber, Max, Min, ValidateNested } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
-import { IsLiteralUnion } from '../utils/validators';
+import { IsLiteralUnion, IsValue } from '../utils/validators';
 import { CanCaterFor, getCreate, ImageProperties } from './utils';
 import { MaterialType, materialTypeAllowedValues } from './utils/material-type';
 
 export class MaterialTemplate {
+    @IsValue('materialTemplate' as const)
+    public readonly type = 'materialTemplate';
+
     @IsLiteralUnion(materialTypeAllowedValues)
     public readonly materialType: MaterialType;
 

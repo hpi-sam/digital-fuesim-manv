@@ -53,7 +53,7 @@ export namespace ClientActionReducers {
     export const removeClient: ActionReducer<RemoveClientAction> = {
         action: RemoveClientAction,
         reducer: (draftState, { clientId }) => {
-            getElement(draftState, 'clients', clientId);
+            getElement(draftState, 'client', clientId);
             delete draftState.clients[clientId];
             return draftState;
         },
@@ -64,12 +64,12 @@ export namespace ClientActionReducers {
         {
             action: RestrictViewToViewportAction,
             reducer: (draftState, { clientId, viewportId }) => {
-                const client = getElement(draftState, 'clients', clientId);
+                const client = getElement(draftState, 'client', clientId);
                 if (viewportId === undefined) {
                     client.viewRestrictedToViewportId = viewportId;
                     return draftState;
                 }
-                getElement(draftState, 'viewports', viewportId);
+                getElement(draftState, 'viewport', viewportId);
                 client.viewRestrictedToViewportId = viewportId;
                 return draftState;
             },
@@ -79,7 +79,7 @@ export namespace ClientActionReducers {
     export const setWaitingRoom: ActionReducer<SetWaitingRoomAction> = {
         action: SetWaitingRoomAction,
         reducer: (draftState, { clientId, shouldBeInWaitingRoom }) => {
-            const client = getElement(draftState, 'clients', clientId);
+            const client = getElement(draftState, 'client', clientId);
             client.isInWaitingRoom = shouldBeInWaitingRoom;
             return draftState;
         },

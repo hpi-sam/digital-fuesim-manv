@@ -1,5 +1,7 @@
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
+import type { TypeSelectorMap } from '../../../utils/type-state-selector-map';
+import { typeSelectorMap } from '../../../utils/type-state-selector-map';
 import { ReducerError } from '../../reducer-error';
 
 /**
@@ -7,25 +9,16 @@ import { ReducerError } from '../../reducer-error';
  * @throws ReducerError if the element does not exist
  */
 export function getElement<
-    ElementType extends
-        | 'alarmGroups'
-        | 'clients'
-        | 'hospitals'
-        | 'mapImages'
-        | 'materials'
-        | 'patients'
-        | 'personnel'
-        | 'simulatedRegions'
-        | 'transferPoints'
-        | 'vehicles'
-        | 'viewports',
+    ElementType extends keyof TypeSelectorMap,
     State extends ExerciseState | Mutable<ExerciseState>
 >(
     state: State,
     elementType: ElementType,
     elementId: UUID
-): State[ElementType][UUID] {
-    const element = state[elementType][elementId] as State[ElementType][UUID];
+): State[TypeSelectorMap[ElementType]][UUID] {
+    const element = state[typeSelectorMap[elementType]][
+        elementId
+    ] as State[TypeSelectorMap[ElementType]][UUID];
     if (!element) {
         throw new ReducerError(
             `Element of type ${elementType} with id ${elementId} does not exist`

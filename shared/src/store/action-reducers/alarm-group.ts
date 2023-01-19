@@ -96,7 +96,7 @@ export namespace AlarmGroupActionReducers {
         reducer: (draftState, { alarmGroupId, name }) => {
             const alarmGroup = getElement(
                 draftState,
-                'alarmGroups',
+                'alarmGroup',
                 alarmGroupId
             );
             alarmGroup.name = name;
@@ -108,7 +108,7 @@ export namespace AlarmGroupActionReducers {
     export const removeAlarmGroup: ActionReducer<RemoveAlarmGroupAction> = {
         action: RemoveAlarmGroupAction,
         reducer: (draftState, { alarmGroupId }) => {
-            getElement(draftState, 'alarmGroups', alarmGroupId);
+            getElement(draftState, 'alarmGroup', alarmGroupId);
             delete draftState.alarmGroups[alarmGroupId];
             return draftState;
         },
@@ -121,7 +121,7 @@ export namespace AlarmGroupActionReducers {
             reducer: (draftState, { alarmGroupId, alarmGroupVehicle }) => {
                 const alarmGroup = getElement(
                     draftState,
-                    'alarmGroups',
+                    'alarmGroup',
                     alarmGroupId
                 );
                 alarmGroup.alarmGroupVehicles[alarmGroupVehicle.id] =
@@ -140,7 +140,7 @@ export namespace AlarmGroupActionReducers {
             ) => {
                 const alarmGroup = getElement(
                     draftState,
-                    'alarmGroups',
+                    'alarmGroup',
                     alarmGroupId
                 );
                 const alarmGroupVehicle = getAlarmGroupVehicle(
@@ -160,7 +160,7 @@ export namespace AlarmGroupActionReducers {
             reducer: (draftState, { alarmGroupId, alarmGroupVehicleId }) => {
                 const alarmGroup = getElement(
                     draftState,
-                    'alarmGroups',
+                    'alarmGroup',
                     alarmGroupId
                 );
                 getAlarmGroupVehicle(alarmGroup, alarmGroupVehicleId);

@@ -6,6 +6,7 @@ import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import { maxTreatmentRange } from '../../../state-helpers/max-treatment-range';
 import type { Mutable, UUID } from '../../../utils';
+import { typeSelectorMap } from '../../../utils/type-state-selector-map';
 import { getElement } from './get-element';
 
 // TODO: `caterFor` and `treat` are currently used as synonyms without a clear distinction.
@@ -82,7 +83,7 @@ function tryToCaterFor(
 
     cateringElement.assignedPatientIds[patient.id] = true;
 
-    if (isPersonnel(cateringElement)) {
+    if (cateringElement.type === 'personnel') {
         patient.assignedPersonnelIds[cateringElement.id] = true;
     } else {
         patient.assignedMaterialIds[cateringElement.id] = true;
@@ -92,26 +93,6 @@ function tryToCaterFor(
     return true;
 }
 
-// TODO: Instead, give each Element a "type" property -> discriminated union
-function isPatient(
-    element: Mutable<Material | Patient | Personnel>
-): element is Mutable<Patient> {
-    return (element as Patient).personalInformation !== undefined;
-}
-
-function isPersonnel(
-    element: Mutable<Material | Patient | Personnel>
-): element is Mutable<Personnel> {
-    return (element as Personnel).personnelType !== undefined;
-}
-
-function isMaterial(
-    element: Mutable<Material | Patient | Personnel>
-): element is Mutable<Material> {
-    // as Material does not include any distinguishable properties, we will check if it is not of type Personnel or Patient
-    return !isPersonnel(element) && !isPatient(element);
-}
-
 /**
  * @param position of the patient where all elements of {@link elementType} should be recalculated
  * @param elementIdsToBeSkipped the elements whose treatment should not be updated
@@ -119,11 +100,11 @@ function isMaterial(
 function updateCateringAroundPatient(
     state: Mutable<ExerciseState>,
     position: Position,
-    elementType: 'materials' | 'personnel',
+    elementType: 'material' | 'personnel',
     elementIdsToBeSkipped: Set<UUID>
 ) {
     const elementsInTreatmentRange = SpatialTree.findAllElementsInCircle(
-        state.spatialTrees[elementType],
+        state.spatialTrees[typeSelectorMap[elementType]],
         position,
         maxTreatmentRange
     ).filter((elementId) => !elementIdsToBeSkipped.has(elementId));
@@ -140,7 +121,7 @@ function removeTreatmentsOfElement(
     // TODO: when elements have their own type saved don't use const patient = getElement(state, 'patients', element.id);
     // instead use const patient = element;
     // same for personnel and material in the other if statements
-    if (isPatient(element)) {
+    if (element.type === 'patient') {
         const patient = element;
         // Make all personnel stop treating this patient
         for (const personnelId of Object.keys(patient.assignedPersonnelIds)) {
@@ -150,23 +131,23 @@ function removeTreatmentsOfElement(
         patient.assignedPersonnelIds = {};
         // Make all material stop treating this patient
         for (const materialId of Object.keys(patient.assignedMaterialIds)) {
-            const material = getElement(state, 'materials', materialId);
+            const material = getElement(state, 'material', materialId);
             delete material.assignedPatientIds[patient.id];
         }
         patient.assignedMaterialIds = {};
-    } else if (isPersonnel(element)) {
+    } else if (element.type === 'personnel') {
         const personnel = element;
         // This personnel doesn't treat any patients anymore
         for (const patientId of Object.keys(personnel.assignedPatientIds)) {
-            const patient = getElement(state, 'patients', patientId);
+            const patient = getElement(state, 'patient', patientId);
             delete patient.assignedPersonnelIds[personnel.id];
         }
         personnel.assignedPatientIds = {};
-    } else if (isMaterial(element)) {
+    } else if (element.type === 'material') {
         const material = element;
         // This material doesn't treat any patients anymore
         for (const patientId of Object.keys(material.assignedPatientIds)) {
-            const patient = getElement(state, 'patients', patientId);
+            const patient = getElement(state, 'patient', patientId);
             delete patient.assignedMaterialIds[material.id];
         }
         material.assignedPatientIds = {};
@@ -194,7 +175,7 @@ export function updateTreatments(
         return;
     }
 
-    if (isPersonnel(element) || isMaterial(element)) {
+    if (element.type === 'personnel' || element.type === 'material') {
         updateCatering(state, element);
         return;
     }
@@ -208,7 +189,7 @@ export function updateTreatments(
         alreadyUpdatedElementIds.add(personnelId);
     }
     for (const materialId of Object.keys(element.assignedMaterialIds)) {
-        updateCatering(state, getElement(state, 'materials', materialId));
+        updateCatering(state, getElement(state, 'material', materialId));
         // Saving materialIds of material that already got calculated - makes small movements of patients more efficient
         alreadyUpdatedElementIds.add(materialId);
     }
@@ -222,7 +203,7 @@ export function updateTreatments(
     updateCateringAroundPatient(
         state,
         element.position,
-        'materials',
+        'material',
         alreadyUpdatedElementIds
     );
     // The treatment of the patient has just been updated -> hence the visible status hasn't been changed since the last update
@@ -270,7 +251,7 @@ function updateCatering(
             tryToCaterFor(
                 cateringElement,
                 catersFor,
-                getElement(state, 'patients', patientId),
+                getElement(state, 'patient', patientId),
                 state.configuration.pretriageEnabled,
                 state.configuration.bluePatientsEnabled
             );
@@ -296,7 +277,7 @@ function updateCatering(
         )
             // Filter out every patient in the overrideTreatmentRange
             .filter((patientId) => !cateredForPatients.has(patientId))
-            .map((patientId) => getElement(state, 'patients', patientId));
+            .map((patientId) => getElement(state, 'patient', patientId));
 
     const patientsPerStatus = groupBy(patientsInTreatmentRange, (patient) =>
         getCateringStatus(

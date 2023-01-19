@@ -1,13 +1,20 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, UUIDSet, uuidValidationOptions } from '../utils';
-import { IsReachableTransferPoints, IsUUIDSet } from '../utils/validators';
+import {
+    IsReachableTransferPoints,
+    IsUUIDSet,
+    IsValue,
+} from '../utils/validators';
 import type { ImageProperties } from './utils';
 import { getCreate, Position } from './utils';
 
 export class TransferPoint {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('transferPoint' as const)
+    public readonly type = 'transferPoint';
 
     @ValidateNested()
     @Type(() => Position)

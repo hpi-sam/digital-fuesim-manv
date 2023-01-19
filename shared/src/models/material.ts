@@ -10,13 +10,16 @@ import {
 } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
-import { IsUUIDSet } from '../utils/validators';
+import { IsUUIDSet, IsValue } from '../utils/validators';
 import type { MaterialTemplate } from './material-template';
 import { CanCaterFor, Position, ImageProperties, getCreate } from './utils';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('material' as const)
+    public readonly type = 'material';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId: UUID;

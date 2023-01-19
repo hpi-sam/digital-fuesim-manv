@@ -17,9 +17,9 @@ import {
     updateElementPosition,
 } from './utils/spatial-elements';
 
-type TransferableElementType = 'personnel' | 'vehicles';
+type TransferableElementType = 'personnel' | 'vehicle';
 const transferableElementTypeAllowedValues: AllowedValues<TransferableElementType> =
-    { personnel: true, vehicles: true };
+    { personnel: true, vehicle: true };
 
 /**
  * Personnel/Vehicle in transfer will arrive immediately at new targetTransferPoint
@@ -38,7 +38,7 @@ export function letElementArrive(
     }
     const targetTransferPoint = getElement(
         draftState,
-        'transferPoints',
+        'transferPoint',
         element.transfer.targetTransferPointId
     );
     const newPosition: Mutable<Position> = {
@@ -131,7 +131,7 @@ export namespace TransferActionReducers {
             { elementType, elementId, startPoint, targetTransferPointId }
         ) => {
             // check if transferPoint exists
-            getElement(draftState, 'transferPoints', targetTransferPointId);
+            getElement(draftState, 'transferPoint', targetTransferPointId);
             const element = getElement(draftState, elementType, elementId);
             if (element.transfer) {
                 throw new ReducerError(
@@ -144,7 +144,7 @@ export namespace TransferActionReducers {
             if (startPoint.type === 'transferPoint') {
                 const transferStartPoint = getElement(
                     draftState,
-                    'transferPoints',
+                    'transferPoint',
                     startPoint.transferPointId
                 );
                 const connection =
@@ -193,7 +193,7 @@ export namespace TransferActionReducers {
             }
             if (targetTransferPointId) {
                 // check if transferPoint exists
-                getElement(draftState, 'transferPoints', targetTransferPointId);
+                getElement(draftState, 'transferPoint', targetTransferPointId);
                 element.transfer.targetTransferPointId = targetTransferPointId;
             }
             if (timeToAdd) {
@@ -215,7 +215,7 @@ export namespace TransferActionReducers {
             { elementType, elementId, targetTransferPointId }
         ) => {
             // check if transferPoint exists
-            getElement(draftState, 'transferPoints', targetTransferPointId);
+            getElement(draftState, 'transferPoint', targetTransferPointId);
             const element = getElement(draftState, elementType, elementId);
             if (!element.transfer) {
                 throw getNotInTransferError(element.id);

@@ -26,10 +26,10 @@ export function deleteVehicle(
     draftState: Mutable<ExerciseState>,
     vehicleId: UUID
 ) {
-    const vehicle = getElement(draftState, 'vehicles', vehicleId);
+    const vehicle = getElement(draftState, 'vehicle', vehicleId);
     // Delete related material and personnel
     Object.keys(vehicle.materialIds).forEach((materialId) => {
-        removeElementPosition(draftState, 'materials', materialId);
+        removeElementPosition(draftState, 'material', materialId);
         delete draftState.materials[materialId];
     });
     Object.keys(vehicle.personnelIds).forEach((personnelId) => {
@@ -151,7 +151,7 @@ export namespace VehicleActionReducers {
             draftState.vehicles[vehicle.id] = cloneDeepMutable(vehicle);
             for (const material of cloneDeepMutable(materials)) {
                 draftState.materials[material.id] = material;
-                addElementPosition(draftState, 'materials', material.id);
+                addElementPosition(draftState, 'material', material.id);
             }
             for (const person of cloneDeepMutable(personnel)) {
                 draftState.personnel[person.id] = person;
@@ -165,7 +165,7 @@ export namespace VehicleActionReducers {
     export const moveVehicle: ActionReducer<MoveVehicleAction> = {
         action: MoveVehicleAction,
         reducer: (draftState, { vehicleId, targetPosition }) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
+            const vehicle = getElement(draftState, 'vehicle', vehicleId);
             vehicle.position = cloneDeepMutable(targetPosition);
             return draftState;
         },
@@ -175,7 +175,7 @@ export namespace VehicleActionReducers {
     export const renameVehicle: ActionReducer<RenameVehicleAction> = {
         action: RenameVehicleAction,
         reducer: (draftState, { vehicleId, name }) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
+            const vehicle = getElement(draftState, 'vehicle', vehicleId);
             vehicle.name = name;
             for (const personnelId of Object.keys(vehicle.personnelIds)) {
                 draftState.personnel[personnelId]!.vehicleName = name;
@@ -200,7 +200,7 @@ export namespace VehicleActionReducers {
     export const unloadVehicle: ActionReducer<UnloadVehicleAction> = {
         action: UnloadVehicleAction,
         reducer: (draftState, { vehicleId }) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
+            const vehicle = getElement(draftState, 'vehicle', vehicleId);
             const unloadPosition = vehicle.position;
             if (!unloadPosition) {
                 throw new ReducerError(
@@ -226,7 +226,7 @@ export namespace VehicleActionReducers {
 
             for (const patientId of patientIds) {
                 x += space;
-                updateElementPosition(draftState, 'patients', patientId, {
+                updateElementPosition(draftState, 'patient', patientId, {
                     x,
                     y: unloadPosition.y,
                 });
@@ -255,13 +255,9 @@ export namespace VehicleActionReducers {
 
             for (const materialId of materialIds) {
                 x += space;
-                const material = getElement(
-                    draftState,
-                    'materials',
-                    materialId
-                );
+                const material = getElement(draftState, 'material', materialId);
                 if (Material.isInVehicle(material)) {
-                    updateElementPosition(draftState, 'materials', materialId, {
+                    updateElementPosition(draftState, 'material', materialId, {
                         x,
                         y: unloadPosition.y,
                     });
@@ -279,12 +275,12 @@ export namespace VehicleActionReducers {
             draftState,
             { vehicleId, elementToBeLoadedId, elementToBeLoadedType }
         ) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
+            const vehicle = getElement(draftState, 'vehicle', vehicleId);
             switch (elementToBeLoadedType) {
                 case 'materials': {
                     const material = getElement(
                         draftState,
-                        'materials',
+                        'material',
                         elementToBeLoadedId
                     );
                     if (!vehicle.materialIds[elementToBeLoadedId]) {
@@ -292,7 +288,7 @@ export namespace VehicleActionReducers {
                             `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
-                    removeElementPosition(draftState, 'materials', material.id);
+                    removeElementPosition(draftState, 'material', material.id);
                     break;
                 }
                 case 'personnel': {
@@ -321,7 +317,7 @@ export namespace VehicleActionReducers {
                 case 'patients': {
                     const patient = getElement(
                         draftState,
-                        'patients',
+                        'patient',
                         elementToBeLoadedId
                     );
                     if (
@@ -334,13 +330,14 @@ export namespace VehicleActionReducers {
                     }
                     vehicle.patientIds[elementToBeLoadedId] = true;
 
-                    removeElementPosition(draftState, 'patients', patient.id);
+                    // removeElementPosition(draftState, 'patient', patient.id);
+                    removeElementPosition(draftState, patient.type, patient.id);
 
                     // Load in all materials
                     Object.keys(vehicle.materialIds).forEach((materialId) => {
                         removeElementPosition(
                             draftState,
-                            'materials',
+                            'material',
                             materialId
                         );
                     });

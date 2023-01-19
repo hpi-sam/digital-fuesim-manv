@@ -11,6 +11,7 @@ import { Patient } from '../../models';
 import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
+import { typeSelectorMap } from '../../utils/type-state-selector-map';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -122,7 +123,7 @@ export namespace ExerciseActionReducers {
             });
 
             // Refresh transfers
-            refreshTransfer(draftState, 'vehicles', tickInterval);
+            refreshTransfer(draftState, 'vehicle', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);
             return draftState;
         },
@@ -130,12 +131,18 @@ export namespace ExerciseActionReducers {
     };
 }
 
+const transferTypeSelectorMap = {
+    personnel: typeSelectorMap.personnel,
+    vehicle: typeSelectorMap.vehicle,
+} as const;
+type TransferTypeSelectorMap = typeof transferTypeSelectorMap;
+
 function refreshTransfer(
     draftState: Mutable<ExerciseState>,
-    key: 'personnel' | 'vehicles',
+    type: keyof TransferTypeSelectorMap,
     tickInterval: number
 ): void {
-    const elements = draftState[key];
+    const elements = draftState[transferTypeSelectorMap[type]];
     Object.values(elements).forEach((element: Mutable<Personnel | Vehicle>) => {
         if (!element.transfer) {
             return;
@@ -148,6 +155,6 @@ function refreshTransfer(
         if (element.transfer.endTimeStamp > draftState.currentTime) {
             return;
         }
-        letElementArrive(draftState, key, element.id);
+        letElementArrive(draftState, type, element.id);
     });
 }
