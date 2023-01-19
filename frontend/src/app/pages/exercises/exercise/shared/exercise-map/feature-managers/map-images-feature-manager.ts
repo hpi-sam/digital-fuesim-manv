@@ -10,9 +10,10 @@ import type { AppState } from 'src/app/state/app.state';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popup.component';
+import { createPoint } from '../utility/ol-geometry-helpers';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
-import { createPoint, ElementFeatureManager } from './element-feature-manager';
+import { ElementFeatureManager } from './element-feature-manager';
 
 export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
     readonly type = 'mapImages';

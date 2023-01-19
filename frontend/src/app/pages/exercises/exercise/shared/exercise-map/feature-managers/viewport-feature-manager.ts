@@ -16,11 +16,10 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
+import { createPolygon, getCoordinateArray } from '../utility/ol-geometry-helpers';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
 import {
-    createPolygon,
     ElementFeatureManager,
-    getCoordinateArray,
 } from './element-feature-manager';
 
 export function isInViewport(

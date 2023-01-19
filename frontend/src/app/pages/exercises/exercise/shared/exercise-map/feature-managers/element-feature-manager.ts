@@ -1,84 +1,31 @@
 import type {
     ExerciseState,
     Position,
-    Size,
-    UUID,
 } from 'digital-fuesim-manv-shared';
-import { isArray } from 'lodash-es';
-import type { MapBrowserEvent } from 'ol';
-import { Feature } from 'ol';
-import type { Coordinate } from 'ol/coordinate';
-import { LineString, Polygon } from 'ol/geom';
-import Point from 'ol/geom/Point';
+import type { MapBrowserEvent, Feature } from 'ol';
+import type { Geometry, Polygon } from 'ol/geom';
+import type Point from 'ol/geom/Point';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import { Subject } from 'rxjs';
-import type { WithPosition } from '../../utility/types/with-position';
 import type { FeatureManager } from '../utility/feature-manager';
-import type { Coordinates } from '../utility/movement-animator';
 import { MovementAnimator } from '../utility/movement-animator';
+import {
+    Coordinates,
+    GeometryWithCoorindates,
+    getCoordinatesPoint,
+    getCoordinatesPointOrPolygon,
+    getCoordinatesPolygon,
+    isPointFeature,
+    PositionableElement} from '../utility/ol-geometry-helpers';
+import {
+    isPolygonFeature,
+} from '../utility/ol-geometry-helpers';
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { TranslateInteraction } from '../utility/translate-interaction';
 import { ElementManager } from './element-manager';
-
-export interface PositionableElement {
-    readonly id: UUID;
-    readonly position: Position;
-}
-
-export interface ResizableElement extends PositionableElement {
-    size: Size;
-}
-
-function isLineString(
-    feature: Feature<LineString | Point | Polygon>
-): feature is Feature<LineString> {
-    return feature.getGeometry()!.getType() === 'LineString';
-}
-
-function isPolygon(
-    feature: Feature<LineString | Point | Polygon>
-): feature is Feature<Polygon> {
-    return feature.getGeometry()!.getType() === 'Polygon';
-}
-
-export function isCoordinateArray(
-    coordinates: Coordinate | Coordinate[] | Coordinate[][]
-): coordinates is Coordinate[] | Coordinate[][] {
-    return isArray(coordinates[0]);
-}
-
-export function isCoordinateArrayOfArrays(
-    coordinates: Coordinate[] | Coordinate[][]
-): coordinates is Coordinate[][] {
-    return isArray(coordinates[0]![0]);
-}
-
-export const createPoint = (element: WithPosition<any>): Feature<Point> =>
-    new Feature(new Point([element.position.x, element.position.y]));
-
-export const createLineString = (
-    element: ResizableElement
-): Feature<LineString> =>
-    new Feature(new LineString(getCoordinateArray(element)));
-
-export const createPolygon = (element: ResizableElement): Feature<Polygon> =>
-    new Feature(new Polygon([getCoordinateArray(element)]));
-
-export function getCoordinateArray(element: ResizableElement) {
-    return [
-        [element.position.x, element.position.y],
-        [element.position.x + element.size.width, element.position.y],
-        [
-            element.position.x + element.size.width,
-            element.position.y - element.size.height,
-        ],
-        [element.position.x, element.position.y - element.size.height],
-        [element.position.x, element.position.y],
-    ];
-}
 
 /**
  * The base class for all element feature managers.
@@ -87,7 +34,7 @@ export function getCoordinateArray(element: ResizableElement) {
  */
 export abstract class ElementFeatureManager<
         Element extends PositionableElement,
-        FeatureType extends LineString | Point | Polygon = Point,
+        FeatureType extends GeometryWithCoorindates = Point,
         ElementFeature extends Feature<FeatureType> = Feature<FeatureType>
     >
     extends ElementManager<
@@ -154,16 +101,13 @@ export abstract class ElementFeatureManager<
             if (!newFeature) {
                 throw new TypeError('newFeature undefined');
             }
+            if (!isPointFeature(newFeature) && !isPolygonFeature(newFeature)) {
+                throw new TypeError('newFeature is not animatable')
+            }
+
             this.movementAnimator.animateFeatureMovement(
                 elementFeature,
-                (isLineString(newFeature) || isPolygon(newFeature)
-                    ? (
-                          newFeature.getGeometry()! as LineString | Polygon
-                      ).getCoordinates()
-                    : [
-                          newElement.position.x,
-                          newElement.position.y,
-                      ]) as Coordinates<FeatureType>
+                getCoordinatesPointOrPolygon(newFeature),
             );
         }
         // If the style has updated, we need to redraw the feature
@@ -177,36 +121,6 @@ export abstract class ElementFeatureManager<
                 .getFeatureById(element.id) as ElementFeature | null) ??
             undefined
         );
-    }
-
-    public getCenter(feature: ElementFeature): Coordinate {
-        const coordinates = feature.getGeometry()!.getCoordinates();
-        if (!isCoordinateArray(coordinates)) {
-            return coordinates;
-        }
-        if (!isCoordinateArrayOfArrays(coordinates)) {
-            // We need index 0 and 2 for the center
-            if (coordinates.length < 3) {
-                throw new Error(`Unexpectedly short array: ${coordinates}`);
-            }
-            return [
-                coordinates[0]![0]! +
-                    (coordinates[2]![0]! - coordinates[0]![0]!) / 2,
-                coordinates[0]![1]! +
-                    (coordinates[2]![1]! - coordinates[0]![1]!) / 2,
-            ];
-        }
-
-        // We need index 0 and 2 for the center
-        if (coordinates[0]!.length < 3) {
-            throw new Error(`Unexpectedly short array: ${coordinates[0]!}`);
-        }
-        return [
-            coordinates[0]![0]![0]! +
-                (coordinates[0]![2]![0]! - coordinates[0]![0]![0]!) / 2,
-            coordinates[0]![0]![1]! +
-                (coordinates[0]![2]![1]! - coordinates[0]![0]![1]!) / 2,
-        ];
     }
 
     public onFeatureClicked(

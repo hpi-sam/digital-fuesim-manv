@@ -6,26 +6,24 @@ import type { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
 import type Point from 'ol/geom/Point';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { isArray, isEqual } from 'lodash-es';
-import type { LineString, Polygon } from 'ol/geom';
+import { isEqual } from 'lodash-es';
+import type { Geometry, Polygon } from 'ol/geom';
 import type { Coordinate } from 'ol/coordinate';
-
-export type Coordinates<T extends LineString | Point | Polygon> =
-    T extends Point
-        ? Coordinate
-        : T extends LineString
-        ? Coordinate[]
-        : Coordinate[][];
-
-interface CoordinatePair<T extends Coordinate | Coordinate[] | Coordinate[][]> {
-    startPosition: T;
-    endPosition: T;
-}
+import {
+    Coordinates,
+    CoordinatePair,
+    isPointFeature,
+    isPolygonFeature,
+    getCoordinatesPointOrPolygon,
+    GeometryWithCoorindates} from './ol-geometry-helpers';
+import {
+    isCoordinatePairOfPolygon,
+} from './ol-geometry-helpers';
 
 /**
  * Animates the movement of a feature to a new position.
  */
-export class MovementAnimator<T extends LineString | Point | Polygon> {
+export class MovementAnimator<T extends GeometryWithCoorindates> {
     /**
      * The time in milliseconds how long the moving animation should take
      */
@@ -42,7 +40,7 @@ export class MovementAnimator<T extends LineString | Point | Polygon> {
     private readonly animationListeners = new Map<
         UUID,
         (event: RenderEvent) => void
-    >();
+        >();
 
     /**
      * This method animates the movement of the feature from its current position to the given end position
@@ -54,10 +52,13 @@ export class MovementAnimator<T extends LineString | Point | Polygon> {
         feature: Feature<T>,
         endPosition: Coordinates<T>
     ) {
+        if (!isPointFeature(feature) && !isPolygonFeature(feature)) {
+            console.error(`Unexpected animation type: ${feature.getGeometry()!.getType()}`)
+            return;
+        }
+
         const startTime = Date.now();
-        const featureGeometry = feature.getGeometry()!;
-        const startPosition =
-            featureGeometry.getCoordinates() as Coordinates<T>;
+        const startPosition = getCoordinatesPointOrPolygon(feature)
         // Stop an ongoing movement animation
         this.stopMovementAnimation(feature as Feature<T>);
         // We don't have to animate this
@@ -77,18 +78,6 @@ export class MovementAnimator<T extends LineString | Point | Polygon> {
         this.layer.on('postrender', listener);
         // Trigger the first animation tick
         this.olMap.render();
-    }
-
-    private isCoordinateArrayPair(
-        coordinates: CoordinatePair<Coordinates<LineString | Point | Polygon>>
-    ): coordinates is CoordinatePair<Coordinates<LineString | Polygon>> {
-        return isArray(coordinates.startPosition[0]);
-    }
-
-    private isCoordinateArrayOfArraysPair(
-        coordinates: CoordinatePair<Coordinates<LineString | Polygon>>
-    ): coordinates is CoordinatePair<Coordinates<Polygon>> {
-        return isArray(coordinates.startPosition[0]![0]);
     }
 
     private interpolate(
@@ -116,7 +105,7 @@ export class MovementAnimator<T extends LineString | Point | Polygon> {
     private animationTick(
         event: RenderEvent,
         startTime: number,
-        positions: CoordinatePair<Coordinates<T>>,
+        positions: CoordinatePair<T>,
         feature: Feature<T>
     ) {
         const featureGeometry = feature.getGeometry()!;
@@ -133,46 +122,19 @@ export class MovementAnimator<T extends LineString | Point | Polygon> {
             this.olMap.render();
             return;
         }
-        // If we have coordinate arrays, there must be at least as many endCoordinates as startCoordinates
-        if (
-            this.isCoordinateArrayPair(positions) &&
-            (this.isCoordinateArrayOfArraysPair(positions) ||
-                positions.startPosition.length >
-                    positions.endPosition.length) &&
-            (!this.isCoordinateArrayOfArraysPair(positions) ||
-                positions.startPosition[0]!.length >
-                    positions.endPosition[0]!.length)
-        ) {
-            throw new Error(
-                `Got unexpected too few endPositions: ${JSON.stringify(
-                    positions
-                )}`
-            );
-        }
         // The next position is calculated by a linear interpolation between the start and end position(s)
         const nextPosition = (
-            this.isCoordinateArrayPair(positions)
-                ? this.isCoordinateArrayOfArraysPair(positions)
-                    ? positions.startPosition[0]!.map((startPos, index) =>
-                          this.interpolate(
-                              startPos,
-                              positions.endPosition[0]![index]!,
-                              progress
-                          )
+            isCoordinatePairOfPolygon(positions)
+                ? positions.startPosition[0]!.map((startPos, index) =>
+                      this.interpolate(
+                          startPos,
+                          positions.endPosition[0]![index]!,
+                          progress
                       )
-                    : (
-                          positions as CoordinatePair<Coordinate[]>
-                      ).startPosition.map((startPos, index) =>
-                          this.interpolate(
-                              startPos,
-                              (positions as CoordinatePair<Coordinate[]>)
-                                  .endPosition[index]!,
-                              progress
-                          )
-                      )
+                  )
                 : this.interpolate(
-                      positions.startPosition as Coordinates<Point>,
-                      positions.endPosition as Coordinates<Point>,
+                      (positions as CoordinatePair<Point>).startPosition,
+                      (positions as CoordinatePair<Point>).endPosition,
                       progress
                   )
         ) as Coordinates<T>;

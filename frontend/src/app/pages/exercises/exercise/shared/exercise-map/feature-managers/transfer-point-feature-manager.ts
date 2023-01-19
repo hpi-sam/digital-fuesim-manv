@@ -13,10 +13,11 @@ import { selectCurrentRole } from 'src/app/state/application/selectors/shared.se
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
+import { createPoint } from '../utility/ol-geometry-helpers';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { createPoint, ElementFeatureManager } from './element-feature-manager';
+import { ElementFeatureManager } from './element-feature-manager';
 
 export class TransferPointFeatureManager extends ElementFeatureManager<TransferPoint> {
     readonly type = 'transferPoints';

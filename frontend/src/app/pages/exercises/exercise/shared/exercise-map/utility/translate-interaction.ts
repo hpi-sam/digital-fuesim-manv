@@ -1,12 +1,9 @@
 import { Position } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
 import type { Feature, MapBrowserEvent } from 'ol';
-import type { LineString, Point, Polygon } from 'ol/geom';
+import type { Geometry, Point, Polygon } from 'ol/geom';
 import { Translate } from 'ol/interaction';
-import {
-    isCoordinateArray,
-    isCoordinateArrayOfArrays,
-} from '../feature-managers/element-feature-manager';
+import { GeometryWithCoorindates, getCoordinatesPoint, getCoordinatesPolygon, isPointFeature, isPolygonFeature } from './ol-geometry-helpers';
 
 /**
  * Translates (moves) a feature to a new position.
@@ -50,23 +47,21 @@ export class TranslateInteraction extends Translate {
      *
      * You can only call this function if the layer of the feature has this Interaction.
      */
-    public static onTranslateEnd<
-        T extends LineString | Point | Polygon = Point
-    >(
+    public static onTranslateEnd<T extends GeometryWithCoorindates = Point>(
         feature: Feature<T>,
         callback: (
             newCoordinates: T extends Point ? Position : Position[]
         ) => void
     ) {
+        if (!isPointFeature(feature) && !isPolygonFeature(feature)) {
+            throw new TypeError(`onTranslateEnd not supported for type ${feature.getGeometry()!.getType()}`)
+        }
+
         feature.addEventListener('translateend', (event) => {
             // The end coordinates in the event are the mouse coordinates and not the feature coordinates.
-            const coordinates = feature.getGeometry()!.getCoordinates();
-            if (isCoordinateArray(coordinates)) {
+            if (isPolygonFeature(feature)) {
                 callback(
-                    (isCoordinateArrayOfArrays(coordinates)
-                        ? coordinates[0]!
-                        : coordinates
-                    ).map((coordinate) =>
+                    getCoordinatesPolygon(feature)[0]!.map((coordinate) =>
                         Position.create(coordinate[0]!, coordinate[1]!)
                     ) as T extends Point ? never : Position[]
                 );
@@ -74,8 +69,8 @@ export class TranslateInteraction extends Translate {
             }
             callback(
                 Position.create(
-                    coordinates[0]!,
-                    coordinates[1]!
+                    getCoordinatesPoint(feature)[0]!,
+                    getCoordinatesPoint(feature)[1]!
                 ) as T extends Point ? Position : never
             );
         });

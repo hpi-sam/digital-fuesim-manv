@@ -13,10 +13,11 @@ import { selectConfiguration } from 'src/app/state/application/selectors/exercis
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { WithPosition } from '../../utility/types/with-position';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
+import { createPoint } from '../utility/ol-geometry-helpers';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { CircleStyleHelper } from '../utility/style-helper/circle-style-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
-import { createPoint, ElementFeatureManager } from './element-feature-manager';
+import { ElementFeatureManager } from './element-feature-manager';
 
 export class PatientFeatureManager extends ElementFeatureManager<
     WithPosition<Patient>
