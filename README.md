@@ -1,5 +1,7 @@
 # Digitale FüSim MANV
 
+## If you're interested in the most recent stable release, please check out the [main](https://github.com/hpi-sam/digital-fuesim-manv/tree/main) branch.
+
 This is the codebase for a digital implementation of the "FüSim MANV" (Führungssimulation Massenanfall von Verletzen), a German simulation system for training emergency medical services leadership personnel on how to manage [Mass Casualty Incidents](https://en.wikipedia.org/wiki/Mass-casualty_incident).
 
 **You can try it out at [https://fuesim-manv.de/](https://fuesim-manv.de/)**.
