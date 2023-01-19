@@ -1,6 +1,6 @@
 import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { Size, Viewport } from 'digital-fuesim-manv-shared';
+import { Position, Size, Viewport } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
 import type LineString from 'ol/geom/LineString';
@@ -16,7 +16,7 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
-import { ModifyHelper } from '../utility/modify-helper';
+import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
 import {
     createLineString,
     ElementFeatureManager,
@@ -61,15 +61,8 @@ export class ViewportFeatureManager
         );
         this.layer.setStyle(this.style);
     }
-    private readonly modifyHelper = new ModifyHelper();
 
     private readonly style = new Style({
-        geometry(thisFeature) {
-            const modifyGeometry = thisFeature.get('modifyGeometry');
-            return modifyGeometry
-                ? modifyGeometry.geometry
-                : thisFeature.getGeometry();
-        },
         stroke: new Stroke({
             color: '#fafaff',
             width: 2,
@@ -78,34 +71,28 @@ export class ViewportFeatureManager
 
     override createFeature(element: Viewport): Feature<LineString> {
         const feature = super.createFeature(element);
-        this.modifyHelper.onModifyEnd(feature, (newPositions) => {
-            // Skip when not all coordinates are properly set.
-            if (
-                !newPositions.every(
-                    (position) =>
-                        Number.isFinite(position.x) &&
-                        Number.isFinite(position.y)
-                )
-            ) {
-                const viewport = this.getElementFromFeature(feature)!.value;
-                this.recreateFeature(viewport);
-                return;
+        ResizeRectangleInteraction.onResize(
+            feature,
+            ({ topLeftCoordinate, scale }) => {
+                const currentElement = this.getElementFromFeature(feature)!
+                    .value as Viewport;
+                this.exerciseService.proposeAction(
+                    {
+                        type: '[Viewport] Resize viewport',
+                        viewportId: element.id,
+                        targetPosition: Position.create(
+                            topLeftCoordinate[0]!,
+                            topLeftCoordinate[1]!
+                        ),
+                        newSize: Size.create(
+                            currentElement.size.width * scale.x,
+                            currentElement.size.height * scale.y
+                        ),
+                    },
+                    true
+                );
             }
-            const lineString = newPositions;
-
-            // We expect the viewport LineString to have 4 points.
-            const topLeft = lineString[0]!;
-            const bottomRight = lineString[2]!;
-            this.exerciseService.proposeAction({
-                type: '[Viewport] Resize viewport',
-                viewportId: element.id,
-                targetPosition: topLeft,
-                newSize: Size.create(
-                    bottomRight.x - topLeft.x,
-                    topLeft.y - bottomRight.y
-                ),
-            });
-        });
+        );
         return feature;
     }
 
@@ -158,5 +145,11 @@ export class ViewportFeatureManager
                 this.olMap.getView().getCenter()!
             ),
         });
+    }
+
+    public override isFeatureTranslatable(
+        feature: Feature<LineString>
+    ): boolean {
+        return selectStateSnapshot(selectCurrentRole, this.store) === 'trainer';
     }
 }

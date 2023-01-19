@@ -1,8 +1,7 @@
 import type { Store } from '@ngrx/store';
-import type { UUID } from 'digital-fuesim-manv-shared';
-import { Size, SimulatedRegion } from 'digital-fuesim-manv-shared';
+import type { UUID, SimulatedRegion } from 'digital-fuesim-manv-shared';
+import { Position, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
-import type { Coordinate } from 'ol/coordinate';
 import type LineString from 'ol/geom/LineString';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
@@ -16,22 +15,12 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { SimulatedRegionPopupComponent } from '../shared/simulated-region-popup/simulated-region-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
-import { ModifyHelper } from '../utility/modify-helper';
+import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
 import {
     createLineString,
     ElementFeatureManager,
     getCoordinateArray,
 } from './element-feature-manager';
-
-export function isInSimulatedRegion(
-    coordinate: Coordinate,
-    simulatedRegion: SimulatedRegion
-): boolean {
-    return SimulatedRegion.isInSimulatedRegion(simulatedRegion, {
-        x: coordinate[0]!,
-        y: coordinate[1]!,
-    });
-}
 
 export class SimulatedRegionFeatureManager
     extends ElementFeatureManager<SimulatedRegion, LineString>
@@ -61,15 +50,8 @@ export class SimulatedRegionFeatureManager
         );
         this.layer.setStyle(this.style);
     }
-    private readonly modifyHelper = new ModifyHelper();
 
     private readonly style = new Style({
-        geometry(thisFeature) {
-            const modifyGeometry = thisFeature.get('modifyGeometry');
-            return modifyGeometry
-                ? modifyGeometry.geometry
-                : thisFeature.getGeometry();
-        },
         stroke: new Stroke({
             color: '#cccc00',
             width: 2,
@@ -78,35 +60,28 @@ export class SimulatedRegionFeatureManager
 
     override createFeature(element: SimulatedRegion): Feature<LineString> {
         const feature = super.createFeature(element);
-        this.modifyHelper.onModifyEnd(feature, (newPositions) => {
-            // Skip when not all coordinates are properly set.
-            if (
-                !newPositions.every(
-                    (position) =>
-                        Number.isFinite(position.x) &&
-                        Number.isFinite(position.y)
-                )
-            ) {
-                const simulatedRegion =
-                    this.getElementFromFeature(feature)!.value;
-                this.recreateFeature(simulatedRegion);
-                return;
+        ResizeRectangleInteraction.onResize(
+            feature,
+            ({ topLeftCoordinate, scale }) => {
+                const currentElement = this.getElementFromFeature(feature)!
+                    .value as SimulatedRegion;
+                this.exerciseService.proposeAction(
+                    {
+                        type: '[SimulatedRegion] Resize simulated region',
+                        simulatedRegionId: element.id,
+                        targetPosition: Position.create(
+                            topLeftCoordinate[0]!,
+                            topLeftCoordinate[1]!
+                        ),
+                        newSize: Size.create(
+                            currentElement.size.width * scale.x,
+                            currentElement.size.height * scale.y
+                        ),
+                    },
+                    true
+                );
             }
-            const lineString = newPositions;
-
-            // We expect the simulatedRegion LineString to have 4 points.
-            const topLeft = lineString[0]!;
-            const bottomRight = lineString[2]!;
-            this.exerciseService.proposeAction({
-                type: '[SimulatedRegion] Resize simulated region',
-                simulatedRegionId: element.id,
-                targetPosition: topLeft,
-                newSize: Size.create(
-                    bottomRight.x - topLeft.x,
-                    topLeft.y - bottomRight.y
-                ),
-            });
-        });
+        );
         return feature;
     }
 
@@ -159,5 +134,11 @@ export class SimulatedRegionFeatureManager
                 this.olMap.getView().getCenter()!
             ),
         });
+    }
+
+    public override isFeatureTranslatable(
+        feature: Feature<LineString>
+    ): boolean {
+        return selectStateSnapshot(selectCurrentRole, this.store) === 'trainer';
     }
 }
