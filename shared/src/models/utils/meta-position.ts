@@ -1,9 +1,10 @@
 import type { UUID } from '../../utils';
-import type { MapCoordinates } from './map-coordinates';
+import type { MapPosition } from './map-position';
 import type { Transfer } from './transfer';
+import type { VehiclePosition } from './vehicle-position';
 
 export type MetaPosition =
-    | { type: 'Coordinates'; position: MapCoordinates }
+    | MapPosition
+    | VehiclePosition
     | { type: 'SimulatedRegion'; uuid: UUID }
-    | { type: 'Transfer'; transfer: Transfer }
-    | { type: 'Vehicle'; uuid: UUID };
+    | { type: 'Transfer'; transfer: Transfer };
