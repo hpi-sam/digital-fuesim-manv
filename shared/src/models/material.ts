@@ -7,6 +7,7 @@ import {
     Min,
     Max,
     IsOptional,
+    ValidateIf,
 } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
@@ -52,8 +53,10 @@ export class Material {
     @Max(maxTreatmentRange)
     public readonly treatmentRange: number;
 
-    @IsOptional()
-    public readonly metaPosition?: MetaPosition;
+    // TODO: Create a real Validator.
+    // This is a temporary fix since a Validator of some sort is needed apparently
+    @ValidateIf(() => true)
+    public readonly metaPosition: MetaPosition;
 
     /**
      * @deprecated use {@link metaPosition}
@@ -79,6 +82,7 @@ export class Material {
         canCaterFor: CanCaterFor,
         treatmentRange: number,
         overrideTreatmentRange: number,
+        metaPosition: MetaPosition,
         position?: Position
     ) {
         this.vehicleId = vehicleId;
@@ -89,6 +93,7 @@ export class Material {
         this.canCaterFor = canCaterFor;
         this.treatmentRange = treatmentRange;
         this.overrideTreatmentRange = overrideTreatmentRange;
+        this.metaPosition = metaPosition;
     }
 
     static readonly create = getCreate(this);
@@ -96,7 +101,8 @@ export class Material {
     static generateMaterial(
         materialTemplate: MaterialTemplate,
         vehicleId: UUID,
-        vehicleName: string
+        vehicleName: string,
+        metaPosition: MetaPosition
     ): Material {
         return this.create(
             vehicleId,
@@ -106,6 +112,7 @@ export class Material {
             materialTemplate.canCaterFor,
             materialTemplate.treatmentRange,
             materialTemplate.overrideTreatmentRange,
+            metaPosition,
             undefined
         );
     }

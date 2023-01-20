@@ -1,4 +1,6 @@
 export { Position } from './position';
+export { MetaPosition } from './meta-position';
+export { MapPosition } from './map-position';
 export * from './patient-status';
 export { Size } from './size';
 export { Role } from './role';

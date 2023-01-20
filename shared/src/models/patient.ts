@@ -10,6 +10,7 @@ import {
     IsString,
     MaxLength,
     isEmpty,
+    ValidateIf,
 } from 'class-validator';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsLiteralUnion, IsIdMap, IsUUIDSet } from '../utils/validators';
@@ -63,8 +64,10 @@ export class Patient {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    @IsOptional()
-    public readonly metaPosition?: MetaPosition;
+    // TODO: Create a real Validator.
+    // This is a temporary fix since a Validator of some sort is needed apparently
+    @ValidateIf(() => true)
+    public readonly metaPosition: MetaPosition;
 
     /**
      * @deprecated use {@link metaPosition}
@@ -161,7 +164,8 @@ export class Patient {
         currentHealthStateId: UUID,
         image: ImageProperties,
         health: HealthPoints,
-        remarks: string
+        remarks: string,
+        metaPosition: MetaPosition
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
@@ -174,6 +178,7 @@ export class Patient {
         this.image = image;
         this.health = health;
         this.remarks = remarks;
+        this.metaPosition = metaPosition;
     }
 
     static readonly create = getCreate(this);

@@ -22,7 +22,7 @@ export function createVehicleParameters(
     personnelTemplates: {
         [Key in PersonnelType]: PersonnelTemplate;
     },
-    vehiclePosition?: Position
+    vehiclePosition: Position
 ): {
     materials: Material[];
     personnel: Personnel[];
@@ -33,14 +33,16 @@ export function createVehicleParameters(
         Material.generateMaterial(
             materialTemplates[currentMaterial],
             vehicleId,
-            vehicleTemplate.name
+            vehicleTemplate.name,
+            MapPosition.create(vehiclePosition)
         )
     );
     const personnel = vehicleTemplate.personnel.map((currentPersonnel) =>
         Personnel.generatePersonnel(
             personnelTemplates[currentPersonnel],
             vehicleId,
-            vehicleTemplate.name
+            vehicleTemplate.name,
+            MapPosition.create(vehiclePosition)
         )
     );
 

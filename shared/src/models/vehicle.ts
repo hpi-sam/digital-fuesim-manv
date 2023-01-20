@@ -4,6 +4,7 @@ import {
     IsOptional,
     IsString,
     IsUUID,
+    ValidateIf,
     ValidateNested,
 } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
@@ -28,8 +29,10 @@ export class Vehicle {
     @IsNumber()
     public readonly patientCapacity: number;
 
-    @IsOptional()
-    public readonly metaPosition?: MetaPosition;
+    // TODO: Create a real Validator.
+    // This is a temporary fix since a Validator of some sort is needed apparently
+    @ValidateIf(() => true)
+    public readonly metaPosition: MetaPosition;
 
     /**
      * @deprecated use {@link metaPosition}
@@ -67,13 +70,15 @@ export class Vehicle {
         name: string,
         materialIds: UUIDSet,
         patientCapacity: number,
-        image: ImageProperties
+        image: ImageProperties,
+        metaPosition: MetaPosition
     ) {
         this.vehicleType = vehicleType;
         this.name = name;
         this.materialIds = materialIds;
         this.patientCapacity = patientCapacity;
         this.image = image;
+        this.metaPosition = metaPosition;
     }
 
     static readonly create = getCreate(this);

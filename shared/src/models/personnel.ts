@@ -7,6 +7,7 @@ import {
     Min,
     Max,
     IsOptional,
+    ValidateIf,
 } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
@@ -67,8 +68,10 @@ export class Personnel {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    @IsOptional()
-    public readonly metaPosition?: MetaPosition;
+    // TODO: Create a real Validator.
+    // This is a temporary fix since a Validator of some sort is needed apparently
+    @ValidateIf(() => true)
+    public readonly metaPosition: MetaPosition;
 
     /**
      * @deprecated use {@link metaPosition}
@@ -100,6 +103,7 @@ export class Personnel {
         canCaterFor: CanCaterFor,
         treatmentRange: number,
         overrideTreatmentRange: number,
+        metaPosition: MetaPosition,
         position?: Position
     ) {
         this.vehicleId = vehicleId;
@@ -111,6 +115,7 @@ export class Personnel {
         this.canCaterFor = canCaterFor;
         this.treatmentRange = treatmentRange;
         this.overrideTreatmentRange = overrideTreatmentRange;
+        this.metaPosition = metaPosition;
     }
 
     static readonly create = getCreate(this);
@@ -118,7 +123,8 @@ export class Personnel {
     static generatePersonnel(
         personnelTemplate: PersonnelTemplate,
         vehicleId: UUID,
-        vehicleName: string
+        vehicleName: string,
+        metaPosition: MetaPosition
     ): Personnel {
         return this.create(
             vehicleId,
@@ -129,6 +135,7 @@ export class Personnel {
             personnelTemplate.canCaterFor,
             personnelTemplate.treatmentRange,
             personnelTemplate.overrideTreatmentRange,
+            metaPosition,
             undefined
         );
     }

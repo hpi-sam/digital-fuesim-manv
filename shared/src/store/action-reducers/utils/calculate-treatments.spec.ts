@@ -7,6 +7,7 @@ import { Material, Personnel } from '../../../models';
 import type { PatientStatus } from '../../../models/utils';
 import { CanCaterFor, Position } from '../../../models/utils';
 import type { MapCoordinates } from '../../../models/utils/map-coordinates';
+import { MapPosition } from '../../../models/utils/map-position';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
@@ -91,12 +92,16 @@ function addPatient(
     return patient;
 }
 
-function addPersonnel(state: Mutable<ExerciseState>, position?: Position) {
+function addPersonnel(
+    state: Mutable<ExerciseState>,
+    position: Position = { x: 0, y: 0 }
+) {
     const personnel = cloneDeepMutable(
         Personnel.generatePersonnel(
             defaultPersonnelTemplates.notSan,
             uuid(),
-            'RTW 3/83/1'
+            'RTW 3/83/1',
+            MapPosition.create(position)
         )
     );
     personnel.canCaterFor = {
@@ -121,12 +126,16 @@ function addPersonnel(state: Mutable<ExerciseState>, position?: Position) {
     return personnel;
 }
 
-function addMaterial(state: Mutable<ExerciseState>, position?: Position) {
+function addMaterial(
+    state: Mutable<ExerciseState>,
+    position: Position = { x: 0, y: 0 }
+) {
     const material = cloneDeepMutable(
         Material.generateMaterial(
             defaultMaterialTemplates.standard,
             uuid(),
-            'RTW 3/83/1'
+            'RTW 3/83/1',
+            MapPosition.create(position)
         )
     );
     material.canCaterFor = {
