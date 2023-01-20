@@ -42,13 +42,11 @@ export const addMetaPosition16: Migration = {
                     type: 'coordinates',
                     position: { x: patient.position.x, y: patient.position.y },
                 };
-            } else {
-                if (patient.vehicleId) {
-                    patient.metaPosition = {
-                        type: 'vehicle',
-                        vehicleId: patient.vehicleId,
-                    };
-                }
+            } else if (patient.vehicleId) {
+                patient.metaPosition = {
+                    type: 'vehicle',
+                    vehicleId: patient.vehicleId,
+                };
             }
         });
 
@@ -61,13 +59,11 @@ export const addMetaPosition16: Migration = {
                         y: material.position.y,
                     },
                 };
-            } else {
-                if (material.vehicleId) {
-                    material.metaPosition = {
-                        type: 'vehicle',
-                        vehicleId: material.vehicleId,
-                    };
-                }
+            } else if (material.vehicleId) {
+                material.metaPosition = {
+                    type: 'vehicle',
+                    vehicleId: material.vehicleId,
+                };
             }
         });
 
@@ -77,13 +73,11 @@ export const addMetaPosition16: Migration = {
                     type: 'coordinates',
                     position: { x: vehicle.position.x, y: vehicle.position.y },
                 };
-            } else {
-                if (vehicle.transfer) {
-                    vehicle.metaPosition = {
-                        type: 'transfer',
-                        transfer: vehicle.transfer,
-                    };
-                }
+            } else if (vehicle.transfer) {
+                vehicle.metaPosition = {
+                    type: 'transfer',
+                    transfer: vehicle.transfer,
+                };
             }
         });
 
@@ -96,20 +90,16 @@ export const addMetaPosition16: Migration = {
                         y: personnel.position.y,
                     },
                 };
-            } else {
-                if (personnel.transfer) {
-                    personnel.metaPosition = {
-                        type: 'transfer',
-                        transfer: personnel.transfer,
-                    };
-                } else {
-                    if (personnel.vehicleId) {
-                        personnel.metaPosition = {
-                            type: 'vehicle',
-                            vehicleId: personnel.vehicleId,
-                        };
-                    }
-                }
+            } else if (personnel.transfer) {
+                personnel.metaPosition = {
+                    type: 'transfer',
+                    transfer: personnel.transfer,
+                };
+            } else if (personnel.vehicleId) {
+                personnel.metaPosition = {
+                    type: 'vehicle',
+                    vehicleId: personnel.vehicleId,
+                };
             }
         });
     },
