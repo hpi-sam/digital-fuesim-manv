@@ -198,7 +198,7 @@ export class Patient {
     static isInVehicle(patient: Patient): boolean {
         return (
             patient.metaPosition !== undefined &&
-            patient.metaPosition.type === 'Vehicle'
+            patient.metaPosition.type === 'vehicle'
         );
     }
 

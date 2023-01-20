@@ -2,7 +2,7 @@ import type { UUID } from '../../utils';
 import { getCreate } from './get-create';
 
 export class SimulatedRegionPosition {
-    public readonly type: 'SimulatedRegion';
+    public readonly type = 'simulatedRegion';
 
     public readonly simulatedRegionId: UUID;
 
@@ -10,7 +10,6 @@ export class SimulatedRegionPosition {
      * @deprecated Use {@link create} instead
      */
     constructor(simulatedRegionId: UUID) {
-        this.type = 'SimulatedRegion';
         this.simulatedRegionId = simulatedRegionId;
     }
 

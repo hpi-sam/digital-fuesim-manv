@@ -2,7 +2,7 @@ import type { UUID } from '../../utils';
 import { getCreate } from './get-create';
 
 export class VehiclePosition {
-    public readonly type: 'Vehicle';
+    public readonly type = 'vehicle';
 
     public readonly vehicleId: UUID;
 
@@ -10,7 +10,6 @@ export class VehiclePosition {
      * @deprecated Use {@link create} instead
      */
     constructor(vehicleId: UUID) {
-        this.type = 'Vehicle';
         this.vehicleId = vehicleId;
     }
 

@@ -2,7 +2,7 @@ import { getCreate } from './get-create';
 import type { Transfer } from './transfer';
 
 export class TransferPosition {
-    public readonly type: 'Transfer';
+    public readonly type = 'transfer';
 
     public readonly transfer: Transfer;
 
@@ -10,7 +10,6 @@ export class TransferPosition {
      * @deprecated Use {@link create} instead
      */
     constructor(transfer: Transfer) {
-        this.type = 'Transfer';
         this.transfer = transfer;
     }
 

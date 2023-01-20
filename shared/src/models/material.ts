@@ -113,7 +113,7 @@ export class Material {
     static isInVehicle(material: Material): boolean {
         return (
             material.metaPosition !== undefined &&
-            material.metaPosition.type === 'Vehicle'
+            material.metaPosition.type === 'vehicle'
         );
     }
 }

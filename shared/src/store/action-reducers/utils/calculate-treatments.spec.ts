@@ -78,7 +78,7 @@ function addPatient(
     if (position) {
         patient.position = cloneDeepMutable(position);
         patient.metaPosition = {
-            type: 'Coordinates',
+            type: 'coordinates',
             position: cloneDeepMutable(position),
         };
         SpatialTree.addElement(
@@ -108,7 +108,7 @@ function addPersonnel(state: Mutable<ExerciseState>, position?: Position) {
     if (position) {
         personnel.position = cloneDeepMutable(position);
         personnel.metaPosition = {
-            type: 'Coordinates',
+            type: 'coordinates',
             position: cloneDeepMutable(position),
         };
         SpatialTree.addElement(
@@ -138,7 +138,7 @@ function addMaterial(state: Mutable<ExerciseState>, position?: Position) {
     if (position) {
         material.position = cloneDeepMutable(position);
         material.metaPosition = {
-            type: 'Coordinates',
+            type: 'coordinates',
             position: cloneDeepMutable(position) as Mutable<MapCoordinates>,
         };
         SpatialTree.addElement(

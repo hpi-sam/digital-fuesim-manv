@@ -157,7 +157,7 @@ export namespace PatientActionReducers {
 
             if (
                 patient.metaPosition !== undefined &&
-                patient.metaPosition.type === 'Coordinates'
+                patient.metaPosition.type === 'coordinates'
             ) {
                 updateTreatments(draftState, patient);
             }

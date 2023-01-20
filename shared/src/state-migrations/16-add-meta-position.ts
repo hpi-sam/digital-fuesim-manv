@@ -39,13 +39,13 @@ export const addMetaPosition16: Migration = {
         Object.values(typedState.patients).forEach((patient) => {
             if (patient.position) {
                 patient.metaPosition = {
-                    type: 'Coordinates',
+                    type: 'coordinates',
                     position: { x: patient.position.x, y: patient.position.y },
                 };
             } else {
                 if (patient.vehicleId) {
                     patient.metaPosition = {
-                        type: 'Vehicle',
+                        type: 'vehicle',
                         vehicleId: patient.vehicleId,
                     };
                 }
@@ -55,7 +55,7 @@ export const addMetaPosition16: Migration = {
         Object.values(typedState.materials).forEach((material) => {
             if (material.position) {
                 material.metaPosition = {
-                    type: 'Coordinates',
+                    type: 'coordinates',
                     position: {
                         x: material.position.x,
                         y: material.position.y,
@@ -64,7 +64,7 @@ export const addMetaPosition16: Migration = {
             } else {
                 if (material.vehicleId) {
                     material.metaPosition = {
-                        type: 'Vehicle',
+                        type: 'vehicle',
                         vehicleId: material.vehicleId,
                     };
                 }
@@ -74,13 +74,13 @@ export const addMetaPosition16: Migration = {
         Object.values(typedState.vehicles).forEach((vehicle) => {
             if (vehicle.position) {
                 vehicle.metaPosition = {
-                    type: 'Coordinates',
+                    type: 'coordinates',
                     position: { x: vehicle.position.x, y: vehicle.position.y },
                 };
             } else {
                 if (vehicle.transfer) {
                     vehicle.metaPosition = {
-                        type: 'Transfer',
+                        type: 'transfer',
                         transfer: vehicle.transfer,
                     };
                 }
@@ -90,7 +90,7 @@ export const addMetaPosition16: Migration = {
         Object.values(typedState.personnel).forEach((personnel) => {
             if (personnel.position) {
                 personnel.metaPosition = {
-                    type: 'Coordinates',
+                    type: 'coordinates',
                     position: {
                         x: personnel.position.x,
                         y: personnel.position.y,
@@ -99,13 +99,13 @@ export const addMetaPosition16: Migration = {
             } else {
                 if (personnel.transfer) {
                     personnel.metaPosition = {
-                        type: 'Transfer',
+                        type: 'transfer',
                         transfer: personnel.transfer,
                     };
                 } else {
                     if (personnel.vehicleId) {
                         personnel.metaPosition = {
-                            type: 'Vehicle',
+                            type: 'vehicle',
                             vehicleId: personnel.vehicleId,
                         };
                     }

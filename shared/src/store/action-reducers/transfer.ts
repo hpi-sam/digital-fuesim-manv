@@ -54,7 +54,7 @@ export function letElementArrive(
     } else {
         element.position = newPosition;
         element.metaPosition = {
-            type: 'Coordinates',
+            type: 'coordinates',
             position: newPosition as Mutable<MapCoordinates>,
         };
     }
@@ -181,7 +181,7 @@ export namespace TransferActionReducers {
             };
 
             element.metaPosition = {
-                type: 'Transfer',
+                type: 'transfer',
                 transfer: {
                     startPoint: cloneDeepMutable(startPoint),
                     targetTransferPointId,
