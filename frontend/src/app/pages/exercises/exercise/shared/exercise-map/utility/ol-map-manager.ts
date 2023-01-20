@@ -456,8 +456,7 @@ export class OlMapManager {
         });
 
         this.openLayersContainer.addEventListener('keydown', (event) => {
-            const keyboardEvent = event as KeyboardEvent;
-            if (keyboardEvent.key === 'Escape') {
+            if ((event as KeyboardEvent).key === 'Escape') {
                 this.changePopup$.next(undefined);
             }
         });
