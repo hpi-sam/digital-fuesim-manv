@@ -4,11 +4,11 @@ import { defaultMaterialTemplates } from '../../../data/default-state/material-t
 import { defaultPersonnelTemplates } from '../../../data/default-state/personnel-templates';
 import type { Patient } from '../../../models';
 import { Material, Personnel } from '../../../models';
-import type { PatientStatus } from '../../../models/utils';
+import type { MetaPosition, PatientStatus } from '../../../models/utils';
 import { CanCaterFor, Position } from '../../../models/utils';
-import type { MapCoordinates } from '../../../models/utils/map-coordinates';
 import { MapPosition } from '../../../models/utils/map-position';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
+import { VehiclePosition } from '../../../models/utils/vehicle-position';
 import { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
 import { cloneDeepMutable, uuid } from '../../../utils';
@@ -94,14 +94,14 @@ function addPatient(
 
 function addPersonnel(
     state: Mutable<ExerciseState>,
-    position: Position = { x: 0, y: 0 }
+    metaPosition: MetaPosition
 ) {
     const personnel = cloneDeepMutable(
         Personnel.generatePersonnel(
             defaultPersonnelTemplates.notSan,
             uuid(),
             'RTW 3/83/1',
-            MapPosition.create(position)
+            metaPosition
         )
     );
     personnel.canCaterFor = {
@@ -110,12 +110,8 @@ function addPersonnel(
         green: 0,
         logicalOperator: 'and',
     };
-    if (position) {
-        personnel.position = cloneDeepMutable(position);
-        personnel.metaPosition = {
-            type: 'coordinates',
-            position: cloneDeepMutable(position),
-        };
+    if (metaPosition.type === 'coordinates') {
+        personnel.position = cloneDeepMutable(metaPosition.position);
         SpatialTree.addElement(
             state.spatialTrees.personnel,
             personnel.id,
@@ -128,14 +124,14 @@ function addPersonnel(
 
 function addMaterial(
     state: Mutable<ExerciseState>,
-    position: Position = { x: 0, y: 0 }
+    metaPosition: MetaPosition
 ) {
     const material = cloneDeepMutable(
         Material.generateMaterial(
             defaultMaterialTemplates.standard,
             uuid(),
             'RTW 3/83/1',
-            MapPosition.create(position)
+            metaPosition
         )
     );
     material.canCaterFor = {
@@ -144,12 +140,8 @@ function addMaterial(
         green: 0,
         logicalOperator: 'and',
     };
-    if (position) {
-        material.position = cloneDeepMutable(position);
-        material.metaPosition = {
-            type: 'coordinates',
-            position: cloneDeepMutable(position) as Mutable<MapCoordinates>,
-        };
+    if (metaPosition.type === 'coordinates') {
+        material.position = cloneDeepMutable(metaPosition.position);
         SpatialTree.addElement(
             state.spatialTrees.materials,
             material.id,
@@ -192,7 +184,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only personnel in vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPersonnel(state);
+                addPersonnel(state, VehiclePosition.create(''));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -201,7 +193,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only personnel outside vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPersonnel(state, Position.create(0, 0));
+                addPersonnel(state, VehiclePosition.create(''));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -210,7 +202,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only material in vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addMaterial(state);
+                addMaterial(state, MapPosition.create({ x: 0, y: 0 }));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -219,7 +211,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only material outside vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addMaterial(state, Position.create(0, 0));
+                addMaterial(state, MapPosition.create({ x: 0, y: 0 }));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -251,9 +243,10 @@ describe('calculate treatment', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
                 addPatient(state, 'green', 'green', Position.create(0, 0));
-                addPersonnel(state);
+                addPersonnel(state, VehiclePosition.create(''));
             }
         );
+        console.log(newState.personnel);
         expect(newState).toStrictEqual(beforeState);
     });
 
@@ -261,7 +254,7 @@ describe('calculate treatment', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
                 addPatient(state, 'green', 'green', Position.create(0, 0));
-                addMaterial(state);
+                addMaterial(state, VehiclePosition.create(''));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -287,7 +280,10 @@ describe('calculate treatment', () => {
                     'red',
                     Position.create(2, 2)
                 ).id;
-                ids.material = addMaterial(state, Position.create(0, 0)).id;
+                ids.material = addMaterial(
+                    state,
+                    MapPosition.create({ x: 0, y: 0 })
+                ).id;
             }
         );
         assertCatering(beforeState, newState, [
@@ -319,7 +315,10 @@ describe('calculate treatment', () => {
                     'red',
                     Position.create(3, 3)
                 ).id;
-                ids.material = addMaterial(state, Position.create(0, 0)).id;
+                ids.material = addMaterial(
+                    state,
+                    MapPosition.create({ x: 0, y: 0 })
+                ).id;
             }
         );
         console.log(ids);
@@ -352,7 +351,10 @@ describe('calculate treatment', () => {
                     'red',
                     Position.create(20, 20)
                 ).id;
-                ids.material = addMaterial(state, Position.create(0, 0)).id;
+                ids.material = addMaterial(
+                    state,
+                    MapPosition.create({ x: 0, y: 0 })
+                ).id;
             }
         );
         assertCatering(beforeState, newState, []);
@@ -378,7 +380,10 @@ describe('calculate treatment', () => {
                     'red',
                     Position.create(2, 2)
                 ).id;
-                const material = addMaterial(state, Position.create(0, 0));
+                const material = addMaterial(
+                    state,
+                    MapPosition.create({ x: 0, y: 0 })
+                );
                 material.canCaterFor = cloneDeepMutable(
                     CanCaterFor.create(1, 0, 1, 'and')
                 );
