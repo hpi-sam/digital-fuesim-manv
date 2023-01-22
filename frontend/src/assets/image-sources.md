@@ -35,7 +35,10 @@ Florian Greiz 23
 <https://commons.wikimedia.org/wiki/File:RTW_Altenburg.png> (edited)
 
 [material.svg](material.svg):  
-<https://commons.wikimedia.org/wiki/File:First_aid_kit_(70543)_-_The_Noun_Project.svg> (edited)
+Benildur Nickel
+
+[big-material.svg](big-material.svg):  
+Benildur Nickel
 
 [patient.svg](patient.svg):  
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
