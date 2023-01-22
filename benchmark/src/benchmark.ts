@@ -77,5 +77,5 @@ interface BenchmarkOptions<Value> {
 }
 
 const defaultOptions: BenchmarkOptions<unknown> = {
-    numberOfIterations: 3,
+    numberOfIterations: 10,
 };

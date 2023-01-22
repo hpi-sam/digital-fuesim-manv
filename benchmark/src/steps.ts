@@ -12,8 +12,9 @@ import {
     StrictObject,
     validateExerciseExport,
 } from 'digital-fuesim-manv-shared';
-import produce, { freeze } from 'immer';
+import { freeze } from 'immer';
 import { isEqual } from 'lodash-es';
+import { create } from 'mutative';
 import type { BenchmarkValue } from './benchmark';
 import { benchmark } from './benchmark';
 import { BenchmarkStep } from './benchmark-step';
@@ -120,8 +121,9 @@ export const steps: Step<StepState>[] = [
         const { actionHistory, initialState } = freezeState!;
 
         // Apply all action on the same immer draft
-        return produce(initialState, (draftState) => {
+        return create(initialState, (draftState) => {
             for (const action of actionHistory) {
+                // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
                 applyAction(draftState, action);
             }
         });
