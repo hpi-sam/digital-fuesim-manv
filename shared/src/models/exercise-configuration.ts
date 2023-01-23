@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, ValidateNested } from 'class-validator';
+import { IsBoolean, IsNumber, Min, ValidateNested } from 'class-validator';
 import { defaultTileMapProperties } from '../data';
 import { getCreate, TileMapProperties } from './utils';
 
@@ -13,6 +13,10 @@ export class ExerciseConfiguration {
     @Type(() => TileMapProperties)
     public readonly tileMapProperties: TileMapProperties =
         defaultTileMapProperties;
+
+    @IsNumber()
+    @Min(0)
+    public readonly globalPatientChangeSpeed: number = 1;
 
     /**
      * @deprecated Use {@link create} instead

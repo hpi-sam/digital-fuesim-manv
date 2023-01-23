@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type {
-    Client,
     ExerciseState,
-    Patient,
+    Client,
     Vehicle,
 } from 'digital-fuesim-manv-shared';
 import {
     loopTroughTime,
-    Personnel,
-    uuid,
     Viewport,
+    uuid,
+    Patient,
+    Personnel,
 } from 'digital-fuesim-manv-shared';
 import { countBy } from 'lodash-es';
 import { ReplaySubject } from 'rxjs';
@@ -93,6 +93,7 @@ export class StatisticsService {
         draftState: ExerciseState
     ): StatisticsEntry {
         const exerciseStatistics = this.generateAreaStatistics(
+            draftState,
             Object.values(draftState.clients),
             Object.values(draftState.patients),
             Object.values(draftState.vehicles),
@@ -103,6 +104,7 @@ export class StatisticsService {
             Object.entries(draftState.viewports).map(([id, viewport]) => [
                 id,
                 this.generateAreaStatistics(
+                    draftState,
                     Object.values(draftState.clients).filter(
                         (client) => client.viewRestrictedToViewportId === id
                     ),
@@ -133,6 +135,7 @@ export class StatisticsService {
     }
 
     private generateAreaStatistics(
+        state: ExerciseState,
         clients: Client[],
         patients: Patient[],
         vehicles: Vehicle[],
@@ -143,7 +146,13 @@ export class StatisticsService {
                 (client) =>
                     !client.isInWaitingRoom && client.role === 'participant'
             ).length,
-            patients: countBy(patients, (patient) => patient.realStatus),
+            patients: countBy(patients, (patient) =>
+                Patient.getVisibleStatus(
+                    patient,
+                    state.configuration.pretriageEnabled,
+                    state.configuration.bluePatientsEnabled
+                )
+            ),
             vehicles: countBy(vehicles, (vehicle) => vehicle.vehicleType),
             personnel: countBy(
                 personnel.filter(

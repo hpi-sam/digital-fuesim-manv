@@ -123,6 +123,18 @@
                 <li class="list-group-item">
                     <h5>
                         Patienten
+                        <label class="btn btn-outline-primary ms-5">
+                            <i class="bi-cloud-upload me-2"> </i>
+                            CSV-Import
+                            <input
+                                (input)="
+                                    importPatientsCSV($any($event.target).files)
+                                "
+                                type="file"
+                                accept="text/csv"
+                                class="d-none"
+                            />
+                        </label>
                         <div
                             ngbDropdown
                             placement="bottom-end"

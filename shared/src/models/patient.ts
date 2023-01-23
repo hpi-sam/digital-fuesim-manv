@@ -4,29 +4,32 @@ import {
     ValidateNested,
     IsOptional,
     IsNumber,
-    Max,
+    isString,
+    isNotEmpty,
+    maxLength,
+    IsString,
+    IsNotEmpty,
+    MaxLength,
     Min,
     IsBoolean,
-    IsString,
-    MaxLength,
+    IsArray,
+    IsObject,
     isEmpty,
 } from 'class-validator';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
-import { IsLiteralUnion, IsIdMap, IsUUIDSet } from '../utils/validators';
+import { IsLiteralUnion, IsMap, IsUUIDSet } from '../utils/validators';
 import { PatientHealthState } from './patient-health-state';
+import type { Catering } from './utils';
 import {
     BiometricInformation,
     PatientStatusCode,
-    PatientStatus,
     patientStatusAllowedValues,
+    PatientStatus,
     ImageProperties,
     Position,
-    healthPointsDefaults,
-    HealthPoints,
     getCreate,
 } from './utils';
 import { PersonalInformation } from './utils/personal-information';
-import { PretriageInformation } from './utils/pretriage-information';
 
 export class Patient {
     @IsUUID(4, uuidValidationOptions)
@@ -40,10 +43,6 @@ export class Patient {
     @Type(() => BiometricInformation)
     public readonly biometricInformation: BiometricInformation;
 
-    @ValidateNested()
-    @Type(() => PretriageInformation)
-    public readonly pretriageInformation: PretriageInformation;
-
     /**
      * A description of the expected patient behaviour over time
      * For the trainer
@@ -54,9 +53,6 @@ export class Patient {
 
     @IsLiteralUnion(patientStatusAllowedValues)
     public readonly pretriageStatus: PatientStatus;
-
-    @IsLiteralUnion(patientStatusAllowedValues)
-    public readonly realStatus: PatientStatus;
 
     @ValidateNested()
     @Type(() => ImageProperties)
@@ -83,24 +79,24 @@ export class Patient {
     @IsNumber()
     public readonly stateTime: number = 0;
 
-    @IsIdMap(PatientHealthState)
+    @IsMap(
+        PatientHealthState,
+        ((key) => isString(key) && isNotEmpty(key) && maxLength(key, 255)) as (
+            key: unknown
+        ) => key is string,
+        (state) => state.name
+    )
     public readonly healthStates: {
-        readonly [stateId: UUID]: PatientHealthState;
+        readonly [stateId: string]: PatientHealthState;
     } = {};
 
     /**
      * The id of the current health state in {@link healthStates}
      */
-    @IsUUID(4, uuidValidationOptions)
-    public readonly currentHealthStateId: UUID;
-
-    /**
-     * See {@link HealthPoints} for context of this property.
-     */
-    @IsNumber()
-    @Max(healthPointsDefaults.max)
-    @Min(healthPointsDefaults.min)
-    public readonly health: HealthPoints;
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(255)
+    public readonly currentHealthStateName: UUID;
 
     @IsUUIDSet()
     public readonly assignedPersonnelIds: UUIDSet = {};
@@ -113,7 +109,7 @@ export class Patient {
      */
     @IsNumber()
     @Min(0)
-    public readonly timeSpeed: number = 1;
+    public readonly changeSpeed: number = 1;
 
     /**
      * Whether the {@link getVisibleStatus} of this patient has changed
@@ -130,6 +126,9 @@ export class Patient {
     @MaxLength(65535)
     public readonly remarks: string;
 
+    /**
+     * The time a patient has been treated for
+     */
     @IsNumber()
     @Min(0)
     public treatmentTime = 0;
@@ -140,6 +139,10 @@ export class Patient {
      */
     private static readonly pretriageTimeThreshold: number = 2 * 60 * 1000;
 
+    @IsArray()
+    @IsObject({ each: true })
+    public readonly treatmentHistory: readonly Catering[] = [];
+
     /**
      * @deprecated Use {@link create} instead
      */
@@ -147,26 +150,20 @@ export class Patient {
         // TODO: Specify patient data (e.g. injuries, name, etc.)
         personalInformation: PersonalInformation,
         biometricInformation: BiometricInformation,
-        pretriageInformation: PretriageInformation,
         patientStatusCode: PatientStatusCode,
         pretriageStatus: PatientStatus,
-        realStatus: PatientStatus,
-        healthStates: { readonly [stateId: UUID]: PatientHealthState },
-        currentHealthStateId: UUID,
+        healthStates: { readonly [stateName: string]: PatientHealthState },
+        currentHealthStateName: string,
         image: ImageProperties,
-        health: HealthPoints,
         remarks: string
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
-        this.pretriageInformation = pretriageInformation;
         this.patientStatusCode = patientStatusCode;
         this.pretriageStatus = pretriageStatus;
-        this.realStatus = realStatus;
         this.healthStates = healthStates;
-        this.currentHealthStateId = currentHealthStateId;
+        this.currentHealthStateName = currentHealthStateName;
         this.image = image;
-        this.health = health;
         this.remarks = remarks;
     }
 
@@ -180,9 +177,14 @@ export class Patient {
         const status =
             !pretriageEnabled ||
             patient.treatmentTime >= this.pretriageTimeThreshold
-                ? patient.realStatus
+                ? patient.healthStates[patient.currentHealthStateName]!.status
                 : patient.pretriageStatus;
         return status === 'blue' && !bluePatientsEnabled ? 'red' : status;
+    }
+
+    static getPretriageInformation(patient: Patient) {
+        return patient.healthStates[patient.currentHealthStateName]!
+            .pretriageInformation;
     }
 
     static pretriageStatusIsLocked(patient: Patient): boolean {

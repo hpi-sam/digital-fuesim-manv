@@ -1,58 +1,22 @@
 import { Type } from 'class-transformer';
 import {
     IsBoolean,
+    IsNotEmpty,
     IsNumber,
     IsOptional,
-    IsUUID,
+    IsString,
+    MaxLength,
+    Min,
     ValidateNested,
 } from 'class-validator';
-import { uuid, UUID, uuidValidationOptions } from '../utils';
-import { getCreate, HealthPoints, IsValidHealthPoint } from './utils';
-
-/**
- * These parameters determine the increase or decrease of a patients health every second
- */
-export class FunctionParameters {
-    /**
-     * Every second the health points are increased by this value
-     */
-    @IsNumber()
-    public readonly constantChange: number;
-    /**
-     * Every second the health points are increased by this value multiplied by the weighted number of notarzt personnel
-     */
-    @IsNumber()
-    public readonly notarztModifier: number;
-    /**
-     * Every second the health points are increased by this value multiplied by the weighted number of notSan personnel
-     */
-    @IsNumber()
-    public readonly notSanModifier: number;
-    /**
-     * Every second the health points are increased by this value multiplied by the weighted number of rettSan personnel
-     */
-    @IsNumber()
-    public readonly rettSanModifier: number;
-
-    // TODO: sanModifier not included
-
-    /**
-     * @deprecated Use {@link create} instead
-     */
-    constructor(
-        constantChange: number,
-        notarztModifier: number,
-        notSanModifier: number,
-        rettSanModifier: number
-    ) {
-        this.constantChange = constantChange;
-        this.notarztModifier = notarztModifier;
-        this.rettSanModifier = rettSanModifier;
-        this.notSanModifier = notSanModifier;
-    }
-
-    static readonly create = getCreate(this);
-}
+import { uuid, UUID } from '../utils';
+import { IsLiteralUnion } from '../utils/validators';
+import {
+    getCreate,
+    PatientStatus,
+    patientStatusAllowedValues,
+    PretriageInformation,
+} from './utils';
 
 /**
  * If all conditions apply the patient should switch to the next state
@@ -64,24 +28,49 @@ export class ConditionParameters {
      */
     @IsOptional()
     @IsNumber()
+    @Min(0)
     public readonly earliestTime?: number;
+
     @IsOptional()
     @IsNumber()
+    @Min(0)
     public readonly latestTime?: number;
-    @IsOptional()
-    @IsValidHealthPoint()
-    public readonly minimumHealth?: HealthPoints;
-    @IsOptional()
-    @IsValidHealthPoint()
-    public readonly maximumHealth?: HealthPoints;
+
     @IsOptional()
     @IsBoolean()
     public readonly isBeingTreated?: boolean;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    public readonly requiredMaterialAmount?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    public readonly requiredNotArztAmount?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    public readonly requiredNotSanAmount?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    public readonly requiredRettSanAmount?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    public readonly requiredSanAmount?: number;
     /**
      * The id of the patients healthState to switch to when all the conditions match
      */
-    @IsUUID(4, uuidValidationOptions)
-    public readonly matchingHealthStateId: UUID;
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(255)
+    public readonly matchingHealthStateName: string;
 
     /**
      * @deprecated Use {@link create} instead
@@ -89,29 +78,40 @@ export class ConditionParameters {
     constructor(
         earliestTime: number | undefined,
         latestTime: number | undefined,
-        minimumHealth: HealthPoints | undefined,
-        maximumHealth: HealthPoints | undefined,
         isBeingTreated: boolean | undefined,
-        matchingHealthStateId: UUID
+        requiredMaterialAmount: number | undefined,
+        requiredNotArztAmount: number | undefined,
+        requiredNotSanAmount: number | undefined,
+        requiredRettSanAmount: number | undefined,
+        requiredSanAmount: number | undefined,
+        matchingHealthStateName: string
     ) {
         this.earliestTime = earliestTime;
         this.latestTime = latestTime;
-        this.minimumHealth = minimumHealth;
-        this.maximumHealth = maximumHealth;
         this.isBeingTreated = isBeingTreated;
-        this.matchingHealthStateId = matchingHealthStateId;
+        this.requiredMaterialAmount = requiredMaterialAmount;
+        this.requiredNotArztAmount = requiredNotArztAmount;
+        this.requiredNotSanAmount = requiredNotSanAmount;
+        this.requiredRettSanAmount = requiredRettSanAmount;
+        this.requiredSanAmount = requiredSanAmount;
+        this.matchingHealthStateName = matchingHealthStateName;
     }
 
     static readonly create = getCreate(this);
 }
 
 export class PatientHealthState {
-    @IsUUID(4, uuidValidationOptions)
-    public readonly id: UUID = uuid();
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(255)
+    public readonly name: UUID = uuid();
 
-    @Type(() => FunctionParameters)
     @ValidateNested()
-    public readonly functionParameters: FunctionParameters;
+    @Type(() => PretriageInformation)
+    public readonly pretriageInformation: PretriageInformation;
+
+    @IsLiteralUnion(patientStatusAllowedValues)
+    public readonly status: PatientStatus;
 
     /**
      * The first matching conditions are selected.
@@ -125,10 +125,14 @@ export class PatientHealthState {
      * @deprecated Use {@link create} instead
      */
     constructor(
-        functionParameters: FunctionParameters,
+        name: string,
+        pretriageInformation: PretriageInformation,
+        status: PatientStatus,
         nextStateConditions: readonly ConditionParameters[]
     ) {
-        this.functionParameters = functionParameters;
+        this.name = name;
+        this.pretriageInformation = pretriageInformation;
+        this.status = status;
         this.nextStateConditions = nextStateConditions;
     }
 

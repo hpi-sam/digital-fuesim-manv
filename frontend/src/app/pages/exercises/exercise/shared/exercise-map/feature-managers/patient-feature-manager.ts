@@ -28,7 +28,7 @@ export class PatientFeatureManager extends ElementFeatureManager<
         const patient = this.getElementFromFeature(feature)!.value;
         return {
             ...patient.image,
-            rotation: patient.pretriageInformation.isWalkable
+            rotation: Patient.getPretriageInformation(patient).isWalkable
                 ? undefined
                 : (3 * Math.PI) / 2,
         };
@@ -59,8 +59,9 @@ export class PatientFeatureManager extends ElementFeatureManager<
         },
         0.025,
         (feature) =>
-            this.getElementFromFeature(feature)!.value.pretriageInformation
-                .isWalkable
+            Patient.getPretriageInformation(
+                this.getElementFromFeature(feature)!.value
+            ).isWalkable
                 ? [0, 0.25]
                 : [-0.25, 0]
     );

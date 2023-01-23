@@ -1,5 +1,13 @@
-import { IsNumber, IsUUID, Min } from 'class-validator';
-import { HealthPoints, IsValidHealthPoint } from '../../../models/utils';
+import {
+    IsNotEmpty,
+    IsNumber,
+    IsObject,
+    IsString,
+    IsUUID,
+    MaxLength,
+    Min,
+} from 'class-validator';
+import { Catering } from '../../../models/utils';
 import { UUID, uuidValidationOptions } from '../../../utils/uuid';
 
 export class PatientUpdate {
@@ -10,16 +18,12 @@ export class PatientUpdate {
     public readonly id: UUID;
 
     /**
-     * The new {@link HealthPoints} the patient should have
-     */
-    @IsValidHealthPoint()
-    public readonly nextHealthPoints: HealthPoints;
-
-    /**
      * The next {@link PatientHealthState} the patient should be in
      */
-    @IsUUID(4, uuidValidationOptions)
-    public readonly nextStateId: UUID;
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(255)
+    public readonly nextStateName: string;
 
     /**
      * The new state time of the patient
@@ -34,17 +38,24 @@ export class PatientUpdate {
     @Min(0)
     public treatmentTime: number;
 
+    /**
+     * The resources of the {@link Patient} in this tick
+     */
+    // TODO: Better validation
+    @IsObject()
+    public newTreatment: Catering;
+
     constructor(
         id: UUID,
-        nextHealthPoints: HealthPoints,
-        nextStateId: UUID,
+        nextStateName: string,
         nextStateTime: number,
-        treatmentTime: number
+        treatmentTime: number,
+        newTreatment: Catering
     ) {
         this.id = id;
-        this.nextHealthPoints = nextHealthPoints;
-        this.nextStateId = nextStateId;
+        this.nextStateName = nextStateName;
         this.nextStateTime = nextStateTime;
         this.treatmentTime = treatmentTime;
+        this.newTreatment = newTreatment;
     }
 }

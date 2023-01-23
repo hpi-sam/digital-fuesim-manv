@@ -68,12 +68,12 @@ function assertCatering(
 function addPatient(
     state: Mutable<ExerciseState>,
     pretriageStatus: PatientStatus,
+    // TODO: Use this parameter again. When it is ignored tests will fail.
     realStatus: PatientStatus,
     position?: Position
 ): Mutable<Patient> {
     const patient = cloneDeepMutable(generateDummyPatient());
     patient.pretriageStatus = pretriageStatus;
-    patient.realStatus = realStatus;
     if (position) {
         patient.position = cloneDeepMutable(position);
         SpatialTree.addElement(

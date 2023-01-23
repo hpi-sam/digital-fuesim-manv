@@ -1,20 +1,10 @@
 import type {
+    Catering,
     ExerciseState,
-    HealthPoints,
     PatientUpdate,
-    PersonnelType,
 } from 'digital-fuesim-manv-shared';
-import {
-    getElement,
-    healthPointsDefaults,
-    isAlive,
-    Patient,
-} from 'digital-fuesim-manv-shared';
-
-/**
- * The count of assigned personnel and material that cater for a {@link Patient}.
- */
-type Catering = { [key in PersonnelType | 'material']: number };
+import { getElement, Patient } from 'digital-fuesim-manv-shared';
+import { cloneDeep } from 'lodash-es';
 
 /**
  * Apply the patient tick to the {@link state}
@@ -29,29 +19,37 @@ export function patientTick(
     return (
         Object.values(state.patients)
             // Only look at patients that are alive and have a position, i.e. are not in a vehicle
-            .filter((patient) => isAlive(patient.health) && patient.position)
+            .filter(
+                (patient) =>
+                    Patient.getVisibleStatus(
+                        patient,
+                        state.configuration.pretriageEnabled,
+                        state.configuration.bluePatientsEnabled
+                    ) !== 'black' && !Patient.isInVehicle(patient)
+            )
             .map((patient) => {
                 // update the time a patient is being treated, to check for pretriage later
                 const treatmentTime = Patient.isTreatedByPersonnel(patient)
                     ? patient.treatmentTime + patientTickInterval
                     : patient.treatmentTime;
-                const nextHealthPoints = getNextPatientHealthPoints(
+                const newTreatment = getDedicatedResources(state, patient);
+                const nextStateName = getNextStateName(
                     patient,
-                    getDedicatedResources(state, patient),
-                    patientTickInterval
+                    getAverageTreatment(patient.treatmentHistory, newTreatment)
                 );
-                const nextStateId = getNextStateId(patient);
                 const nextStateTime =
-                    nextStateId === patient.currentHealthStateId
+                    nextStateName === patient.currentHealthStateName
                         ? patient.stateTime +
-                          patientTickInterval * patient.timeSpeed
+                          patientTickInterval *
+                              patient.changeSpeed *
+                              state.configuration.globalPatientChangeSpeed
                         : 0;
                 return {
                     id: patient.id,
-                    nextHealthPoints,
-                    nextStateId,
+                    nextStateName,
                     nextStateTime,
                     treatmentTime,
+                    newTreatment,
                 };
             })
     );
@@ -88,83 +86,75 @@ function getDedicatedResources(
 }
 
 /**
- * Calculate the next {@link HealthPoints} for the {@link patient}.
- * @param patient The {@link Patient} to calculate the {@link HealthPoints} for.
- * @param treatedBy The count of personnel/material catering for the {@link patient}.
- * @param patientTickInterval The time in ms between calls to this function.
- * @returns The next {@link HealthPoints} for the {@link patient}
- */
-// This is a heuristic and doesn't have to be 100% correct - the players don't see the healthPoints but only the color
-// This function could be as complex as we want it to be (Math.sin to get something periodic, higher polynoms...)
-function getNextPatientHealthPoints(
-    patient: Patient,
-    treatedBy: Catering,
-    patientTickInterval: number
-): HealthPoints {
-    let material = treatedBy.material;
-    const notarzt = treatedBy.notarzt;
-    const notSan = treatedBy.notSan;
-    const rettSan = treatedBy.rettSan;
-    // TODO: Sans should be able to treat patients too.
-    const functionParameters =
-        patient.healthStates[patient.currentHealthStateId]!.functionParameters;
-    // To do anything the personnel needs material
-    // TODO: But a personnel should probably be able to treat a patient a bit without material - e.g. free airways, just press something on a strongly bleeding wound, etc.
-    // -> find a better heuristic
-    let equippedNotarzt = Math.min(notarzt, material);
-    material = Math.max(material - equippedNotarzt, 0);
-    let equippedNotSan = Math.min(notSan, material);
-    material = Math.max(material - equippedNotSan, 0);
-    let equippedRettSan = Math.min(rettSan, material);
-    // much more notarzt != much better patient
-    equippedNotarzt = Math.log2(equippedNotarzt + 1);
-    equippedNotSan = Math.log2(equippedNotSan + 1);
-    equippedRettSan = Math.log2(equippedRettSan + 1);
-    // TODO: some more heuristic precalculations ...
-    // e.g. each second we lose 100 health points
-    const changedHealthPerSecond =
-        functionParameters.constantChange +
-        // e.g. if we have a notarzt we gain 500 additional health points per second
-        functionParameters.notarztModifier * equippedNotarzt +
-        functionParameters.notSanModifier * equippedNotSan +
-        functionParameters.rettSanModifier * equippedRettSan;
-
-    return Math.max(
-        healthPointsDefaults.min,
-        Math.min(
-            healthPointsDefaults.max,
-            // our current health points
-            patient.health +
-                (changedHealthPerSecond / 1000) *
-                    patientTickInterval *
-                    patient.timeSpeed
-        )
-    );
-}
-
-/**
  * Find the next {@link PatientHealthState} id for the {@link patient} by using the {@link ConditionParameters}.
  * @param patient The {@link Patient} to get the next {@link PatientHealthState} id for.
  * @returns The next {@link PatientHealthState} id.
  */
-function getNextStateId(patient: Patient) {
-    const currentState = patient.healthStates[patient.currentHealthStateId]!;
+function getNextStateName(patient: Patient, dedicatedResources: Catering) {
+    const currentState = patient.healthStates[patient.currentHealthStateName]!;
     for (const nextConditions of currentState.nextStateConditions) {
         if (
             (nextConditions.earliestTime === undefined ||
                 patient.stateTime > nextConditions.earliestTime) &&
             (nextConditions.latestTime === undefined ||
                 patient.stateTime < nextConditions.latestTime) &&
-            (nextConditions.minimumHealth === undefined ||
-                patient.health > nextConditions.minimumHealth) &&
-            (nextConditions.maximumHealth === undefined ||
-                patient.health < nextConditions.maximumHealth) &&
             (nextConditions.isBeingTreated === undefined ||
                 Patient.isTreatedByPersonnel(patient) ===
-                    nextConditions.isBeingTreated)
+                    nextConditions.isBeingTreated) &&
+            (nextConditions.requiredMaterialAmount === undefined ||
+                dedicatedResources.material >=
+                    nextConditions.requiredMaterialAmount) &&
+            (nextConditions.requiredNotArztAmount === undefined ||
+                dedicatedResources.notarzt >=
+                    nextConditions.requiredNotArztAmount) &&
+            (nextConditions.requiredNotSanAmount === undefined ||
+                dedicatedResources.notSan + dedicatedResources.notarzt >=
+                    nextConditions.requiredNotSanAmount) &&
+            (nextConditions.requiredRettSanAmount === undefined ||
+                dedicatedResources.rettSan +
+                    dedicatedResources.notSan +
+                    dedicatedResources.notarzt >=
+                    nextConditions.requiredRettSanAmount) &&
+            (nextConditions.requiredSanAmount === undefined ||
+                dedicatedResources.san +
+                    dedicatedResources.rettSan +
+                    dedicatedResources.notSan +
+                    dedicatedResources.notarzt >=
+                    nextConditions.requiredSanAmount)
         ) {
-            return nextConditions.matchingHealthStateId;
+            return nextConditions.matchingHealthStateName;
         }
     }
-    return patient.currentHealthStateId;
+    return patient.currentHealthStateName;
+}
+
+/**
+ * Get the average treatment for roughly the last minute, scaled to 100% from {@link requiredPercentage}
+ */
+function getAverageTreatment(
+    treatmentHistory: readonly Catering[],
+    newTreatment: Catering,
+    requiredPercentage: number = 0.8
+) {
+    const averageCatering: Catering = cloneDeep(newTreatment);
+    treatmentHistory.forEach((catering, index) => {
+        if (index === 0) {
+            return;
+        }
+        averageCatering.gf += catering.gf;
+        averageCatering.material += catering.material;
+        averageCatering.notarzt += catering.notarzt;
+        averageCatering.notSan += catering.notSan;
+        averageCatering.rettSan += catering.rettSan;
+        averageCatering.san += catering.san;
+    });
+    const modifier = requiredPercentage * treatmentHistory.length;
+    averageCatering.gf = averageCatering.gf / modifier;
+    averageCatering.material = averageCatering.material / modifier;
+    averageCatering.notarzt = averageCatering.notarzt / modifier;
+    averageCatering.notSan = averageCatering.notSan / modifier;
+    averageCatering.rettSan = averageCatering.rettSan / modifier;
+    averageCatering.san = averageCatering.san / modifier;
+
+    return averageCatering;
 }
