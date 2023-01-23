@@ -121,12 +121,18 @@ export const steps: Step<StepState>[] = [
         const { actionHistory, initialState } = freezeState!;
 
         // Apply all action on the same immer draft
-        return create(initialState, (draftState) => {
-            for (const action of actionHistory) {
-                // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
-                applyAction(draftState, action);
+        return create(
+            initialState,
+            (draftState) => {
+                for (const action of actionHistory) {
+                    // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
+                    applyAction(draftState, action);
+                }
+            },
+            {
+                enableAutoFreeze: true,
             }
-        });
+        );
     }),
     new BenchmarkStep('noImmerDraft', ({ freezeState }) => {
         const { actionHistory, initialState } = freezeState!;

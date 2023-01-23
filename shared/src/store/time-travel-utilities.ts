@@ -45,22 +45,29 @@ export function jumpToTime(
     let lastAppliedActionIndex = 0;
     // TODO: find a heuristic for whether using produce or deepCloning it
     // Default is produce
-    const stateAtTime = create(initialState, (draftState) => {
-        for (const action of actions) {
-            // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
-            applyAction(draftState, action);
-            const nextAction = actions[lastAppliedActionIndex + 1];
-            // Because this action type is the only one that increases the currentTime
-            // and we always want the state after the last action at the currentTime
-            if (
-                nextAction?.type === '[Exercise] Tick' &&
-                draftState.currentTime >= time
-            ) {
-                break;
+    const stateAtTime = create(
+        initialState,
+        (draftState) => {
+            for (const action of actions) {
+                // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
+                applyAction(draftState, action);
+                const nextAction = actions[lastAppliedActionIndex + 1];
+                // Because this action type is the only one that increases the currentTime
+                // and we always want the state after the last action at the currentTime
+                if (
+                    nextAction?.type === '[Exercise] Tick' &&
+                    draftState.currentTime >= time
+                ) {
+                    break;
+                }
+                lastAppliedActionIndex++;
             }
-            lastAppliedActionIndex++;
+        },
+        {
+            enableAutoFreeze: true,
         }
-    });
+    );
+    // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
     return {
         lastAppliedActionIndex,
         stateAtTime,

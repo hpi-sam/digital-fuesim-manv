@@ -21,10 +21,17 @@ export function reduceExerciseState(
     // Make sure that the state isn't mutated in the reducer (short circuits if the state is already frozen)
     freeze(state, true);
     // use immer to convert mutating operations to immutable ones (https://immerjs.github.io/immer/produce)
-    return create(state, (draftState) => {
-        // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
-        applyAction(draftState, action);
-    });
+    // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
+    return create(
+        state,
+        (draftState) => {
+            // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
+            applyAction(draftState, action);
+        },
+        {
+            enableAutoFreeze: true,
+        }
+    );
 }
 
 /**
@@ -57,10 +64,17 @@ export function applyAllActions(
 ): ExerciseState {
     // TODO: find a heuristic for whether using produce or deepCloning it
     // Default is produce
-    return create(initialState, (draftState) => {
-        for (const action of actions) {
-            // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
-            applyAction(draftState, action);
+    // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
+    return create(
+        initialState,
+        (draftState) => {
+            for (const action of actions) {
+                // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
+                applyAction(draftState, action);
+            }
+        },
+        {
+            enableAutoFreeze: true,
         }
-    });
+    );
 }
