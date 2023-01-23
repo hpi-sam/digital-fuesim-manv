@@ -14,6 +14,7 @@ import { VehicleActionReducers } from './vehicle';
 import { ViewportActionReducers } from './viewport';
 import { EmergencyOperationCenterActionReducers } from './emergency-operation-center';
 import { SimulatedRegionActionReducers } from './simulated-region';
+import { PatientCategoriesActionReducers } from './patient-categories';
 
 /**
  * All action reducers of the exercise must be registered here
@@ -24,6 +25,7 @@ const actionReducers = {
     ...MaterialActionReducers,
     ...MapImagesActionReducers,
     ...PatientActionReducers,
+    ...PatientCategoriesActionReducers,
     ...PersonnelActionReducers,
     ...VehicleActionReducers,
     ...ViewportActionReducers,

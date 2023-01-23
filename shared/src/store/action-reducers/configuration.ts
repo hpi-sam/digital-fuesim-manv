@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, ValidateNested } from 'class-validator';
+import { IsBoolean, IsNumber, Min, ValidateNested } from 'class-validator';
 import { TileMapProperties } from '../../models/utils';
 import { cloneDeepMutable } from '../../utils';
 import { IsValue } from '../../utils/validators';
@@ -30,6 +30,15 @@ export class SetBluePatientsEnabledFlagAction implements Action {
     public readonly bluePatientsEnabled!: boolean;
 }
 
+export class SetGlobalPatientChangeSpeedAction implements Action {
+    @IsValue('[Configuration] Set globalPatientChangeSpeed')
+    public readonly type = '[Configuration] Set globalPatientChangeSpeed';
+
+    @IsNumber()
+    @Min(0)
+    public readonly changeSpeed!: number;
+}
+
 export namespace ConfigurationActionReducers {
     export const setTileMapProperties: ActionReducer<SetTileMapPropertiesAction> =
         {
@@ -57,6 +66,16 @@ export namespace ConfigurationActionReducers {
             reducer: (draftState, { bluePatientsEnabled }) => {
                 draftState.configuration.bluePatientsEnabled =
                     bluePatientsEnabled;
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const setGlobalPatientChangeSpeed: ActionReducer<SetGlobalPatientChangeSpeedAction> =
+        {
+            action: SetGlobalPatientChangeSpeedAction,
+            reducer: (draftState, { changeSpeed }) => {
+                draftState.configuration.globalPatientChangeSpeed = changeSpeed;
                 return draftState;
             },
             rights: 'trainer',

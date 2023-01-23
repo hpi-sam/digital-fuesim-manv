@@ -1,11 +1,30 @@
-import { FunctionParameters, Patient, PatientHealthState } from '../../models';
+import { Patient, PatientHealthState } from '../../models';
 import { PatientStatusCode } from '../../models/utils/patient-status-code';
+import {
+    Breathing,
+    Circulation,
+    Disability,
+    Exposure,
+    PretriageInformation,
+} from '../../models/utils/pretriage-information';
 import { defaultPatientCategories } from '../default-state/patient-templates';
 
 export function generateDummyPatient(): Patient {
     const template = defaultPatientCategories[0]!.patientTemplates[0]!;
     const healthState = PatientHealthState.create(
-        FunctionParameters.create(-10_000, 0, 0, 0),
+        'StateName',
+        PretriageInformation.create(
+            '',
+            '',
+            true,
+            '',
+            '',
+            Breathing.create('', '', ''),
+            Circulation.create('', '', '', ''),
+            Disability.create('', '', '', '', '', ''),
+            Exposure.create('', '')
+        ),
+        'green',
         []
     );
     return Patient.create(
@@ -15,14 +34,11 @@ export function generateDummyPatient(): Patient {
             birthdate: '1.1.',
         },
         template.biometricInformation,
-        template.pretriageInformation,
         PatientStatusCode.create('ZAZAZA'),
         'green',
-        'green',
-        { [healthState.id]: healthState },
-        healthState.id,
+        { [healthState.name]: healthState },
+        healthState.name,
         template.image,
-        template.health,
         ''
     );
 }

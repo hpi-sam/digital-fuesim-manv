@@ -75,6 +75,21 @@
                     type="checkbox"
                 />
             </div>
+            Globaler Verletzungsgeschwindigkeit-Modifikator
+            <select
+                [ngModel]="configuration.globalPatientChangeSpeed"
+                (ngModelChange)="setGlobalPatientChangeSpeed($event)"
+                class="form-select d-inline-block no-validation"
+                style="max-width: fit-content"
+            >
+                <option [value]="0.1">&times;0,1</option>
+                <option [value]="0.2">&times;0,2</option>
+                <option [value]="0.5">&times;0,5</option>
+                <option [value]="1">&times;1</option>
+                <option [value]="2">&times;2</option>
+                <option [value]="5">&times;5</option>
+                <option [value]="10">&times;10</option>
+            </select>
         </div>
     </div>
 </div>

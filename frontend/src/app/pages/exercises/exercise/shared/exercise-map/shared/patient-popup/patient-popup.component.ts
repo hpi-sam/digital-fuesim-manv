@@ -1,12 +1,12 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type { PatientStatus, UUID } from 'digital-fuesim-manv-shared';
-import {
-    healthPointsDefaults,
-    Patient,
-    statusNames,
+import type {
+    PatientStatus,
+    PretriageInformation,
+    UUID,
 } from 'digital-fuesim-manv-shared';
+import { Patient, statusNames } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -30,6 +30,7 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public patient$?: Observable<Patient>;
+    public pretriageInformation$?: Observable<PretriageInformation>;
     public visibleStatus$?: Observable<PatientStatus>;
     public pretriageStatusIsLocked$?: Observable<boolean>;
     public readonly currentRole$ = this.store.select(selectCurrentRole);
@@ -45,9 +46,6 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
                     : ['white', 'black', 'red', 'yellow', 'green']
             )
         );
-
-    // To use it in the template
-    public readonly healthPointsDefaults = healthPointsDefaults;
 
     constructor(
         private readonly store: Store<AppState>,
@@ -71,6 +69,9 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
         this.pretriageStatusIsLocked$ = this.patient$.pipe(
             map((patient) => Patient.pretriageStatusIsLocked(patient))
         );
+        this.pretriageInformation$ = this.patient$.pipe(
+            map((patient) => Patient.getPretriageInformation(patient))
+        );
     }
 
     setPretriageCategory(patientStatus: PatientStatus) {
@@ -78,6 +79,14 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
             type: '[Patient] Set Visible Status',
             patientId: this.patientId,
             patientStatus,
+        });
+    }
+
+    setPatientChangeSpeed(changeSpeed: string) {
+        this.exerciseService.proposeAction({
+            type: '[Patient] Set Change Speed',
+            patientId: this.patientId,
+            changeSpeed: Number(changeSpeed),
         });
     }
 

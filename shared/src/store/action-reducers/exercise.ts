@@ -8,7 +8,6 @@ import {
 } from 'class-validator';
 import type { Personnel, Vehicle } from '../../models';
 import { Patient } from '../../models';
-import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { IsValue } from '../../utils/validators';
@@ -98,11 +97,26 @@ export namespace ExerciseActionReducers {
                     draftState.configuration.bluePatientsEnabled
                 );
 
-                currentPatient.currentHealthStateId = patientUpdate.nextStateId;
-                currentPatient.health = patientUpdate.nextHealthPoints;
+                currentPatient.currentHealthStateName =
+                    patientUpdate.nextStateName;
                 currentPatient.stateTime = patientUpdate.nextStateTime;
                 currentPatient.treatmentTime = patientUpdate.treatmentTime;
-                currentPatient.realStatus = getStatus(currentPatient.health);
+                if (currentPatient.treatmentHistory.length === 0) {
+                    for (let i = 0; i <= (60 * 1000) / tickInterval; i++) {
+                        currentPatient.treatmentHistory.push({
+                            gf: 0,
+                            material: 0,
+                            notarzt: 0,
+                            notSan: 0,
+                            rettSan: 0,
+                            san: 0,
+                        });
+                    }
+                }
+                currentPatient.treatmentHistory.shift();
+                currentPatient.treatmentHistory.push(
+                    patientUpdate.newTreatment
+                );
 
                 const visibleStatusAfter = Patient.getVisibleStatus(
                     currentPatient,

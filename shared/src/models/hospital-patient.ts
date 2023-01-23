@@ -1,19 +1,22 @@
 import { Type } from 'class-transformer';
 import {
+    IsNotEmpty,
+    isNotEmpty,
     IsNumber,
+    isString,
     IsString,
     IsUUID,
+    MaxLength,
+    maxLength,
     Min,
     ValidateNested,
 } from 'class-validator';
 import type { Mutable } from '../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../utils';
-import { IsIdMap, IsLiteralUnion } from '../utils/validators';
+import { IsLiteralUnion, IsMap } from '../utils/validators';
 import {
     getCreate,
-    HealthPoints,
     ImageProperties,
-    IsValidHealthPoint,
     PatientStatus,
     patientStatusAllowedValues,
 } from './utils';
@@ -58,29 +61,28 @@ export class HospitalPatient {
     @IsLiteralUnion(patientStatusAllowedValues)
     public readonly pretriageStatus: PatientStatus;
 
-    @IsLiteralUnion(patientStatusAllowedValues)
-    public readonly realStatus: PatientStatus;
-
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    @IsIdMap(PatientHealthState)
+    @IsMap(
+        PatientHealthState,
+        ((key) => isString(key) && isNotEmpty(key) && maxLength(key, 255)) as (
+            key: unknown
+        ) => key is string,
+        (state) => state.name
+    )
     public readonly healthStates: {
-        readonly [stateId: UUID]: PatientHealthState;
+        readonly [stateId: string]: PatientHealthState;
     } = {};
 
     /**
      * The id of the current health state in {@link healthStates}
      */
-    @IsUUID(4, uuidValidationOptions)
-    public readonly currentHealthStateId: UUID;
-
-    /**
-     * See {@link HealthPoints} for context of this property.
-     */
-    @IsValidHealthPoint()
-    public readonly health: HealthPoints;
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(255)
+    public readonly currentHealthStateName: string;
 
     @IsNumber()
     @Min(0)
@@ -97,11 +99,9 @@ export class HospitalPatient {
         personalInformation: PersonalInformation,
         biometricInformation: BiometricInformation,
         pretriageStatus: PatientStatus,
-        realStatus: PatientStatus,
-        healthStates: { readonly [stateId: UUID]: PatientHealthState },
-        currentHealthStateId: UUID,
+        healthStates: { readonly [stateName: string]: PatientHealthState },
+        currentHealthStateName: string,
         image: ImageProperties,
-        health: HealthPoints,
         treatmentTime: number
     ) {
         this.patientId = patientId;
@@ -111,11 +111,9 @@ export class HospitalPatient {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
         this.pretriageStatus = pretriageStatus;
-        this.realStatus = realStatus;
         this.healthStates = healthStates;
-        this.currentHealthStateId = currentHealthStateId;
+        this.currentHealthStateName = currentHealthStateName;
         this.image = image;
-        this.health = health;
         this.treatmentTime = treatmentTime;
     }
 
@@ -143,11 +141,9 @@ export class HospitalPatient {
                 patient.personalInformation,
                 patient.biometricInformation,
                 patient.pretriageStatus,
-                patient.realStatus,
                 patient.healthStates,
-                patient.currentHealthStateId,
+                patient.currentHealthStateName,
                 patient.image,
-                patient.health,
                 patient.treatmentTime
             )
         );

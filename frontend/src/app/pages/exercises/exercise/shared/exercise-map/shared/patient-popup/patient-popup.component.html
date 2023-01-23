@@ -5,7 +5,8 @@
             *ngIf="
                 (currentRole$ | async) === 'participant'
                     ? (visibleStatus$ | async)
-                    : patient.realStatus as displayedStatus
+                    : patient.healthStates[patient.currentHealthStateName]!
+                          .status as displayedStatus
             "
             [ngStyle]="{ 'background-color': displayedStatus }"
             [class.text-dark]="
@@ -13,11 +14,7 @@
             "
             class="badge rounded-pill font-monospace"
         >
-            {{
-                (currentRole$ | async) !== 'participant'
-                    ? (patient.health / healthPointsDefaults.max | percent)
-                    : statusNames[displayedStatus]
-            }}
+            {{ statusNames[displayedStatus] }}
         </span>
         <button
             (click)="closePopup.emit()"
@@ -98,7 +95,36 @@
                                         Verletzungs-Geschwindigkeit
                                     </th>
                                     <td class="font-monospace">
-                                        &times;{{ patient.timeSpeed }}
+                                        <select
+                                            [ngModel]="patient.changeSpeed"
+                                            (ngModelChange)="
+                                                setPatientChangeSpeed($event)
+                                            "
+                                            class="form-select d-inline-block no-validation"
+                                            style="max-width: fit-content"
+                                        >
+                                            <option [value]="0.1">
+                                                &times;0,1
+                                            </option>
+                                            <option [value]="0.2">
+                                                &times;0,2
+                                            </option>
+                                            <option [value]="0.5">
+                                                &times;0,5
+                                            </option>
+                                            <option [value]="1">
+                                                &times;1
+                                            </option>
+                                            <option [value]="2">
+                                                &times;2
+                                            </option>
+                                            <option [value]="5">
+                                                &times;5
+                                            </option>
+                                            <option [value]="10">
+                                                &times;10
+                                            </option>
+                                        </select>
                                     </td>
                                 </tr>
                             </ng-container>
@@ -126,6 +152,10 @@
                 }}</a>
                 <ng-template ngbNavContent>
                     <table
+                        *ngIf="
+                            pretriageInformation$
+                                | async as pretriageInformation
+                        "
                         class="table table-sm small mb-0"
                         style="max-width: 300px"
                     >
@@ -189,61 +219,95 @@
                             <tr>
                                 <th scope="col">Verletzungen</th>
                                 <td class="font-monospace">
-                                    {{ patient.pretriageInformation.injuries }}
+                                    {{ pretriageInformation.injuries }}
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="col">ausführlicher Body-Check</th>
                                 <td class="font-monospace">
-                                    {{ patient.pretriageInformation.bodyCheck }}
+                                    {{ pretriageInformation.bodyCheck }}
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="col">Atmung</th>
+                                <th scope="col">X: Kritische Blutung</th>
                                 <td class="font-monospace">
-                                    {{ patient.pretriageInformation.breathing }}
+                                    {{ pretriageInformation.xCriticalBleeding }}
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="col">Bewusstsein</th>
+                                <th scope="col">A: Atemweg</th>
                                 <td class="font-monospace">
-                                    {{ patient.pretriageInformation.awareness }}
+                                    {{ pretriageInformation.aAirway }}
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="col">Puls</th>
+                                <th scope="col">B: Atmung</th>
                                 <td class="font-monospace">
-                                    {{ patient.pretriageInformation.pulse }}
+                                    {{
+                                        pretriageInformation.bBreathing.pattern
+                                    }}
+                                    {{
+                                        pretriageInformation.bBreathing
+                                            .frequency
+                                    }}/min
+                                    {{
+                                        pretriageInformation.bBreathing.zyanose
+                                    }}
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="col">Haut</th>
+                                <th scope="col">C: Kreislauf</th>
                                 <td class="font-monospace">
-                                    {{ patient.pretriageInformation.skin }}
+                                    {{
+                                        pretriageInformation.cCirculation.pulse
+                                    }}/min
+                                    {{
+                                        pretriageInformation.cCirculation.rhythm
+                                    }}
+                                    {{
+                                        pretriageInformation.cCirculation
+                                            .location
+                                    }}
+                                    ReCap
+                                    {{
+                                        pretriageInformation.cCirculation.recap
+                                    }}
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="col">Schmerzen</th>
+                                <th scope="col">D: Defizit Neurologie</th>
                                 <td class="font-monospace">
-                                    {{ patient.pretriageInformation.pain }}
+                                    Pupillen:
+                                    {{
+                                        pretriageInformation.dDisability.pupils
+                                    }}
+                                    Gcs:{{
+                                        pretriageInformation.dDisability.gcs
+                                    }}
+                                    Aug.
+                                    {{ pretriageInformation.dDisability.eyes }}
+                                    Spr.
+                                    {{
+                                        pretriageInformation.dDisability
+                                            .speaking
+                                    }}
+                                    Mo.
+                                    {{
+                                        pretriageInformation.dDisability.motoric
+                                    }}
+                                    Psyche:
+                                    {{
+                                        pretriageInformation.dDisability.psyche
+                                    }}
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="col">Pupillen</th>
+                                <th scope="col">E: Umwelteinflüsse</th>
                                 <td class="font-monospace">
-                                    {{ patient.pretriageInformation.pupils }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="col">Psyche</th>
-                                <td class="font-monospace">
-                                    {{ patient.pretriageInformation.psyche }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="col">Hörvermögen</th>
-                                <td class="font-monospace">
-                                    {{ patient.pretriageInformation.hearing }}
+                                    Schmerz:
+                                    {{ pretriageInformation.eExposure.pain }}
+                                    Haut:
+                                    {{ pretriageInformation.eExposure.skin }}
                                 </td>
                             </tr>
                         </tbody>
