@@ -68,8 +68,6 @@ function assertCatering(
 function addPatient(
     state: Mutable<ExerciseState>,
     pretriageStatus: PatientStatus,
-    // TODO: Use this parameter again. When it is ignored tests will fail.
-    realStatus: PatientStatus,
     position?: Position
 ): Mutable<Patient> {
     const patient = cloneDeepMutable(generateDummyPatient());
@@ -208,7 +206,7 @@ describe('calculate treatment', () => {
             (state) => {
                 (['green', 'yellow', 'red'] as PatientStatus[]).forEach(
                     (color) => {
-                        addPatient(state, color, color, Position.create(0, 0));
+                        addPatient(state, color, Position.create(0, 0));
                     }
                 );
             }
@@ -219,7 +217,7 @@ describe('calculate treatment', () => {
     it('does nothing when there are only dead patients', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPatient(state, 'black', 'black', Position.create(0, 0));
+                addPatient(state, 'black', Position.create(0, 0));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -228,7 +226,7 @@ describe('calculate treatment', () => {
     it('does nothing when all personnel is in a vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPatient(state, 'green', 'green', Position.create(0, 0));
+                addPatient(state, 'green', Position.create(0, 0));
                 addPersonnel(state);
             }
         );
@@ -238,7 +236,7 @@ describe('calculate treatment', () => {
     it('does nothing when all material is in a vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPatient(state, 'green', 'green', Position.create(0, 0));
+                addPatient(state, 'green', Position.create(0, 0));
                 addMaterial(state);
             }
         );
@@ -256,12 +254,10 @@ describe('calculate treatment', () => {
                 ids.greenPatient = addPatient(
                     state,
                     'green',
-                    'green',
                     Position.create(0, 0)
                 ).id;
                 ids.redPatient = addPatient(
                     state,
-                    'red',
                     'red',
                     Position.create(2, 2)
                 ).id;
@@ -288,12 +284,10 @@ describe('calculate treatment', () => {
                 ids.greenPatient = addPatient(
                     state,
                     'green',
-                    'green',
                     Position.create(-3, -3)
                 ).id;
                 ids.redPatient = addPatient(
                     state,
-                    'red',
                     'red',
                     Position.create(3, 3)
                 ).id;
@@ -321,12 +315,10 @@ describe('calculate treatment', () => {
                 ids.greenPatient = addPatient(
                     state,
                     'green',
-                    'green',
                     Position.create(-10, -10)
                 ).id;
                 ids.redPatient = addPatient(
                     state,
-                    'red',
                     'red',
                     Position.create(20, 20)
                 ).id;
@@ -347,12 +339,10 @@ describe('calculate treatment', () => {
                 ids.greenPatient = addPatient(
                     state,
                     'green',
-                    'green',
                     Position.create(-1, -1)
                 ).id;
                 ids.redPatient = addPatient(
                     state,
-                    'red',
                     'red',
                     Position.create(2, 2)
                 ).id;
