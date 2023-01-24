@@ -1,5 +1,4 @@
 import type { Position } from '../../../models/utils';
-import type { MapCoordinates } from '../../../models/utils/map-coordinates';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';

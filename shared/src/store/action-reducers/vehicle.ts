@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
 import { Position } from '../../models/utils';
-import type { MapCoordinates } from '../../models/utils/map-coordinates';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
@@ -178,9 +177,7 @@ export namespace VehicleActionReducers {
             vehicle.position = cloneDeepMutable(targetPosition);
             vehicle.metaPosition = {
                 type: 'coordinates',
-                position: cloneDeepMutable(
-                    targetPosition
-                ),
+                position: cloneDeepMutable(targetPosition),
             };
             return draftState;
         },
