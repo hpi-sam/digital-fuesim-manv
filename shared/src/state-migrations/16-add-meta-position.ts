@@ -28,7 +28,7 @@ export const addMetaPosition16: Migration = {
             };
             personnel: {
                 [personnelId: UUID]: {
-                    position?: { x: number; y: number; vehicleId: number };
+                    position?: { x: number; y: number; };
                     transfer?: any;
                     vehicleId?: UUID;
                     metaPosition?: any;
