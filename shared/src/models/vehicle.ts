@@ -9,6 +9,7 @@ import {
 } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
 import { IsUUIDSet } from '../utils/validators';
+import { IsMetaPosition } from '../utils/validators/is-metaposition';
 import { getCreate, Position, Transfer } from './utils';
 import { ImageProperties } from './utils/image-properties';
 import { MetaPosition } from './utils/meta-position';
@@ -29,9 +30,9 @@ export class Vehicle {
     @IsNumber()
     public readonly patientCapacity: number;
 
-    // TODO: Create a real Validator.
-    // This is a temporary fix since a Validator of some sort is needed apparently
-    @Allow()
+    @IsMetaPosition()
+    @ValidateNested()
+    @IsOptional()
     public readonly metaPosition: MetaPosition;
 
     /**

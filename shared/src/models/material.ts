@@ -12,6 +12,7 @@ import {
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsUUIDSet } from '../utils/validators';
+import { IsMetaPosition } from '../utils/validators/is-metaposition';
 import type { MaterialTemplate } from './material-template';
 import { CanCaterFor, Position, ImageProperties, getCreate } from './utils';
 import { MetaPosition } from './utils/meta-position';
@@ -53,9 +54,9 @@ export class Material {
     @Max(maxTreatmentRange)
     public readonly treatmentRange: number;
 
-    // TODO: Create a real Validator.
-    // This is a temporary fix since a Validator of some sort is needed apparently
-    @Allow()
+    @IsMetaPosition()
+    @ValidateNested()
+    @IsOptional()
     public readonly metaPosition: MetaPosition;
 
     /**

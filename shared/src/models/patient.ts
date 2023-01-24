@@ -14,6 +14,7 @@ import {
 } from 'class-validator';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsLiteralUnion, IsIdMap, IsUUIDSet } from '../utils/validators';
+import { IsMetaPosition } from '../utils/validators/is-metaposition';
 import { PatientHealthState } from './patient-health-state';
 import {
     BiometricInformation,
@@ -64,9 +65,9 @@ export class Patient {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    // TODO: Create a real Validator.
-    // This is a temporary fix since a Validator of some sort is needed apparently
-    @Allow()
+    @IsMetaPosition()
+    @ValidateNested()
+    @IsOptional()
     public readonly metaPosition: MetaPosition;
 
     /**

@@ -12,6 +12,7 @@ import {
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsLiteralUnion, IsUUIDSet } from '../utils/validators';
+import { IsMetaPosition } from '../utils/validators/is-metaposition';
 import type { PersonnelTemplate } from './personnel-template';
 import {
     PersonnelType,
@@ -68,9 +69,9 @@ export class Personnel {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    // TODO: Create a real Validator.
-    // This is a temporary fix since a Validator of some sort is needed apparently
-    @Allow()
+    @IsMetaPosition()
+    @ValidateNested()
+    @IsOptional()
     public readonly metaPosition: MetaPosition;
 
     /**
