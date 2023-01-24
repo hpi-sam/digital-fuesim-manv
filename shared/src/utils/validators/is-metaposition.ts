@@ -9,8 +9,8 @@ import { IsLiteralUnion } from './is-literal-union';
 class MetaPositionBase {
     @IsLiteralUnion<MetaPosition['type']>({
         coordinates: true,
-        SimulatedRegion: true,
-        Transfer: true,
+        simulatedRegion: true,
+        transfer: true,
         vehicle: true,
     })
     public type: MetaPosition['type'];

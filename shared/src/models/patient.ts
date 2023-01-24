@@ -10,7 +10,6 @@ import {
     IsString,
     MaxLength,
     isEmpty,
-    Allow,
 } from 'class-validator';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsLiteralUnion, IsIdMap, IsUUIDSet } from '../utils/validators';

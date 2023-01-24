@@ -7,7 +7,6 @@ import {
     Min,
     Max,
     IsOptional,
-    Allow,
 } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
