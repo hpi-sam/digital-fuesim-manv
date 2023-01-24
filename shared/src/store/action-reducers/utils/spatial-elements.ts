@@ -63,7 +63,7 @@ export function updateElementPosition(
     element.position = cloneDeepMutable(targetPosition);
     element.metaPosition = {
         type: 'coordinates',
-        position: cloneDeepMutable(targetPosition) as Mutable<MapCoordinates>,
+        position: cloneDeepMutable(targetPosition),
     };
     updateTreatments(state, element);
 }
