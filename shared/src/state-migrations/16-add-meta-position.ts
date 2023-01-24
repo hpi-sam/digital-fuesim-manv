@@ -2,7 +2,62 @@ import type { UUID } from '../utils';
 import type { Migration } from './migration-functions';
 
 export const addMetaPosition16: Migration = {
-    actions: null,
+    actions: (_initialState, actions) => {
+        actions.forEach((action) => {
+            if (
+                (action as { type: string } | null)?.type ===
+                '[Patient] Add patient'
+            ) {
+                const typedAction = action as {
+                    patient: {
+                        position?: { x: number; y: number };
+                        vehicleId?: UUID;
+                        metaPosition?: any;
+                    };
+                };
+                if (typedAction.patient.position) {
+                    typedAction.patient.metaPosition = {
+                        type: 'coordinates',
+                        position: {
+                            x: typedAction.patient.position.x,
+                            y: typedAction.patient.position.y,
+                        },
+                    };
+                } else if (typedAction.patient.vehicleId) {
+                    typedAction.patient.metaPosition = {
+                        type: 'vehicle',
+                        vehicleId: typedAction.patient.vehicleId,
+                    };
+                }
+            }
+            if (
+                (action as { type: string } | null)?.type ===
+                '[Vehicle] Add vehicle'
+            ) {
+                const typedAction = action as {
+                    vehicle: {
+                        position?: { x: number; y: number };
+                        transfer?: any;
+                        metaPosition?: any;
+                    };
+                };
+                if (typedAction.vehicle.position) {
+                    typedAction.vehicle.metaPosition = {
+                        type: 'coordinates',
+                        position: {
+                            x: typedAction.vehicle.position.x,
+                            y: typedAction.vehicle.position.y,
+                        },
+                    };
+                } else if (typedAction.vehicle.transfer) {
+                    typedAction.vehicle.metaPosition = {
+                        type: 'transfer',
+                        transfer: typedAction.vehicle.transfer,
+                    };
+                }
+            }
+        });
+    },
     state: (state) => {
         const typedState = state as {
             patients: {
