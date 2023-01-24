@@ -13,13 +13,18 @@ import { selectCurrentRole } from 'src/app/state/application/selectors/shared.se
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
-import { createPoint } from '../utility/ol-geometry-helpers';
+import {
+    createPoint,
+    getCoordinatesPoint,
+    getNextPositionPoint,
+    getPositionPoint,
+} from '../utility/ol-geometry-helpers';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { ElementFeatureManager } from './element-feature-manager';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class TransferPointFeatureManager extends ElementFeatureManager<TransferPoint> {
+export class TransferPointFeatureManager extends MoveableFeatureManager<TransferPoint> {
     readonly type = 'transferPoints';
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
@@ -39,7 +44,10 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                     targetPosition,
                 });
             },
-            createPoint
+            createPoint,
+            getNextPositionPoint,
+            getCoordinatesPoint,
+            getPositionPoint
         );
         layer.setStyle((thisFeature, currentZoom) => [
             this.imageStyleHelper.getStyle(

@@ -1,9 +1,8 @@
-import { Position } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
 import type { Feature, MapBrowserEvent } from 'ol';
-import type { Geometry, Point, Polygon } from 'ol/geom';
+import type { Point } from 'ol/geom';
 import { Translate } from 'ol/interaction';
-import { GeometryWithCoorindates, getCoordinatesPoint, getCoordinatesPolygon, isPointFeature, isPolygonFeature } from './ol-geometry-helpers';
+import type { GeometryWithCoorindates, Positions } from './ol-geometry-helpers';
 
 /**
  * Translates (moves) a feature to a new position.
@@ -49,30 +48,12 @@ export class TranslateInteraction extends Translate {
      */
     public static onTranslateEnd<T extends GeometryWithCoorindates = Point>(
         feature: Feature<T>,
-        callback: (
-            newCoordinates: T extends Point ? Position : Position[]
-        ) => void
+        callback: (newCoordinates: Positions<T>) => void,
+        getPosition: (feature: Feature<T>) => Positions<T>
     ) {
-        if (!isPointFeature(feature) && !isPolygonFeature(feature)) {
-            throw new TypeError(`onTranslateEnd not supported for type ${feature.getGeometry()!.getType()}`)
-        }
-
         feature.addEventListener('translateend', (event) => {
             // The end coordinates in the event are the mouse coordinates and not the feature coordinates.
-            if (isPolygonFeature(feature)) {
-                callback(
-                    getCoordinatesPolygon(feature)[0]!.map((coordinate) =>
-                        Position.create(coordinate[0]!, coordinate[1]!)
-                    ) as T extends Point ? never : Position[]
-                );
-                return;
-            }
-            callback(
-                Position.create(
-                    getCoordinatesPoint(feature)[0]!,
-                    getCoordinatesPoint(feature)[1]!
-                ) as T extends Point ? Position : never
-            );
+            callback(getPosition(feature));
         });
     }
 

@@ -1,6 +1,6 @@
 import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
-import type { Geometry, Point, Polygon } from 'ol/geom';
+import type { Geometry } from 'ol/geom';
 import { generateChangedProperties } from '../utility/generate-changed-properties';
 
 /**

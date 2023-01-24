@@ -1,9 +1,5 @@
-import type {
-    ExerciseState,
-    Position,
-} from 'digital-fuesim-manv-shared';
+import type { ExerciseState } from 'digital-fuesim-manv-shared';
 import type { MapBrowserEvent, Feature } from 'ol';
-import type { Geometry, Polygon } from 'ol/geom';
 import type Point from 'ol/geom/Point';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
@@ -12,16 +8,12 @@ import type VectorSource from 'ol/source/Vector';
 import { Subject } from 'rxjs';
 import type { FeatureManager } from '../utility/feature-manager';
 import { MovementAnimator } from '../utility/movement-animator';
-import {
+import type {
+    CoordinatePair,
     Coordinates,
     GeometryWithCoorindates,
-    getCoordinatesPoint,
-    getCoordinatesPointOrPolygon,
-    getCoordinatesPolygon,
-    isPointFeature,
-    PositionableElement} from '../utility/ol-geometry-helpers';
-import {
-    isPolygonFeature,
+    PositionableElement,
+    Positions,
 } from '../utility/ol-geometry-helpers';
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { TranslateInteraction } from '../utility/translate-interaction';
@@ -32,7 +24,7 @@ import { ElementManager } from './element-manager';
  * * manages the position of the element
  * * manages the default interactions of the element
  */
-export abstract class ElementFeatureManager<
+export abstract class MoveableFeatureManager<
         Element extends PositionableElement,
         FeatureType extends GeometryWithCoorindates = Point,
         ElementFeature extends Feature<FeatureType> = Feature<FeatureType>
@@ -47,20 +39,33 @@ export abstract class ElementFeatureManager<
 {
     abstract override readonly type: keyof ExerciseState;
     public readonly togglePopup$ = new Subject<OpenPopupOptions<any>>();
-    protected readonly movementAnimator = new MovementAnimator<FeatureType>(
-        this.olMap,
-        this.layer
-    );
+    protected readonly movementAnimator: MovementAnimator<FeatureType>;
     constructor(
         protected readonly olMap: OlMap,
         public readonly layer: VectorLayer<VectorSource<FeatureType>>,
         private readonly proposeMovementAction: (
-            newPosition: FeatureType extends Point ? Position : Position[],
+            newPosition: Positions<FeatureType>,
             element: Element
         ) => void,
-        private readonly createElement: (element: Element) => ElementFeature
+        private readonly createElement: (element: Element) => ElementFeature,
+        private readonly getNextPosition: (
+            positions: CoordinatePair<FeatureType>,
+            progress: number
+        ) => Coordinates<FeatureType>,
+        private readonly getCoordinates: (
+            feature: Feature<FeatureType>
+        ) => Coordinates<FeatureType>,
+        private readonly getPosition: (
+            feature: Feature<FeatureType>
+        ) => Positions<FeatureType>
     ) {
         super();
+        this.movementAnimator = new MovementAnimator<FeatureType>(
+            this.olMap,
+            this.layer,
+            this.getNextPosition,
+            this.getCoordinates
+        );
     }
 
     override unsupportedChangeProperties: ReadonlySet<keyof Element> = new Set(
@@ -74,7 +79,8 @@ export abstract class ElementFeatureManager<
             elementFeature,
             (newPosition) => {
                 this.proposeMovementAction(newPosition, element);
-            }
+            },
+            this.getPosition
         );
         return elementFeature;
     }
@@ -101,13 +107,10 @@ export abstract class ElementFeatureManager<
             if (!newFeature) {
                 throw new TypeError('newFeature undefined');
             }
-            if (!isPointFeature(newFeature) && !isPolygonFeature(newFeature)) {
-                throw new TypeError('newFeature is not animatable')
-            }
 
             this.movementAnimator.animateFeatureMovement(
                 elementFeature,
-                getCoordinatesPointOrPolygon(newFeature),
+                this.getCoordinates(newFeature)
             );
         }
         // If the style has updated, we need to redraw the feature

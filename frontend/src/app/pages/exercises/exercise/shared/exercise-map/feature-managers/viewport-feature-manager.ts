@@ -16,11 +16,15 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
-import { createPolygon, getCoordinateArray } from '../utility/ol-geometry-helpers';
-import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
 import {
-    ElementFeatureManager,
-} from './element-feature-manager';
+    createPolygon,
+    getCoordinateArray,
+    getCoordinatesPolygon,
+    getNextPositionPolygon,
+    getPositionPolygon,
+} from '../utility/ol-geometry-helpers';
+import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export function isInViewport(
     coordinate: Coordinate,
@@ -33,7 +37,7 @@ export function isInViewport(
 }
 
 export class ViewportFeatureManager
-    extends ElementFeatureManager<Viewport, Polygon>
+    extends MoveableFeatureManager<Viewport, Polygon>
     implements FeatureManager<Feature<Polygon>>
 {
     readonly type = 'viewports';
@@ -53,10 +57,13 @@ export class ViewportFeatureManager
                 exerciseService.proposeAction({
                     type: '[Viewport] Move viewport',
                     viewportId: viewport.id,
-                    targetPosition: targetPositions[0]!,
+                    targetPosition: targetPositions[0]![0]!,
                 });
             },
-            createPolygon
+            createPolygon,
+            getNextPositionPolygon,
+            getCoordinatesPolygon,
+            getPositionPolygon
         );
         this.layer.setStyle(this.style);
     }

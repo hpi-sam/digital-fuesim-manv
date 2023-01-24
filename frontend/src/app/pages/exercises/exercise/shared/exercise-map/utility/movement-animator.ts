@@ -4,20 +4,12 @@ import type OlMap from 'ol/Map';
 import type RenderEvent from 'ol/render/Event';
 import type { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
-import type Point from 'ol/geom/Point';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
-import type { Geometry, Polygon } from 'ol/geom';
-import type { Coordinate } from 'ol/coordinate';
-import {
+import type {
     Coordinates,
     CoordinatePair,
-    isPointFeature,
-    isPolygonFeature,
-    getCoordinatesPointOrPolygon,
-    GeometryWithCoorindates} from './ol-geometry-helpers';
-import {
-    isCoordinatePairOfPolygon,
+    GeometryWithCoorindates,
 } from './ol-geometry-helpers';
 
 /**
@@ -31,7 +23,12 @@ export class MovementAnimator<T extends GeometryWithCoorindates> {
 
     constructor(
         private readonly olMap: OlMap,
-        private readonly layer: VectorLayer<VectorSource>
+        private readonly layer: VectorLayer<VectorSource>,
+        private readonly getNextPosition: (
+            positions: CoordinatePair<T>,
+            progress: number
+        ) => Coordinates<T>,
+        private readonly getCoordinates: (feature: Feature<T>) => Coordinates<T>
     ) {}
 
     /**
@@ -40,7 +37,7 @@ export class MovementAnimator<T extends GeometryWithCoorindates> {
     private readonly animationListeners = new Map<
         UUID,
         (event: RenderEvent) => void
-        >();
+    >();
 
     /**
      * This method animates the movement of the feature from its current position to the given end position
@@ -52,13 +49,8 @@ export class MovementAnimator<T extends GeometryWithCoorindates> {
         feature: Feature<T>,
         endPosition: Coordinates<T>
     ) {
-        if (!isPointFeature(feature) && !isPolygonFeature(feature)) {
-            console.error(`Unexpected animation type: ${feature.getGeometry()!.getType()}`)
-            return;
-        }
-
         const startTime = Date.now();
-        const startPosition = getCoordinatesPointOrPolygon(feature)
+        const startPosition = this.getCoordinates(feature);
         // Stop an ongoing movement animation
         this.stopMovementAnimation(feature as Feature<T>);
         // We don't have to animate this
@@ -78,19 +70,6 @@ export class MovementAnimator<T extends GeometryWithCoorindates> {
         this.layer.on('postrender', listener);
         // Trigger the first animation tick
         this.olMap.render();
-    }
-
-    private interpolate(
-        startCoordinate: Coordinate,
-        endCoordinate: Coordinate,
-        lerpFactor: number
-    ): Coordinate {
-        return [
-            startCoordinate[0]! +
-                (endCoordinate[0]! - startCoordinate[0]!) * lerpFactor,
-            startCoordinate[1]! +
-                (endCoordinate[1]! - startCoordinate[1]!) * lerpFactor,
-        ];
     }
 
     private setCoordinates(featureGeometry: T, coordinates: Coordinates<T>) {
@@ -122,22 +101,7 @@ export class MovementAnimator<T extends GeometryWithCoorindates> {
             this.olMap.render();
             return;
         }
-        // The next position is calculated by a linear interpolation between the start and end position(s)
-        const nextPosition = (
-            isCoordinatePairOfPolygon(positions)
-                ? positions.startPosition[0]!.map((startPos, index) =>
-                      this.interpolate(
-                          startPos,
-                          positions.endPosition[0]![index]!,
-                          progress
-                      )
-                  )
-                : this.interpolate(
-                      (positions as CoordinatePair<Point>).startPosition,
-                      (positions as CoordinatePair<Point>).endPosition,
-                      progress
-                  )
-        ) as Coordinates<T>;
+        const nextPosition = this.getNextPosition(positions, progress);
         this.setCoordinates(featureGeometry, nextPosition);
         getVectorContext(event).drawGeometry(featureGeometry);
         this.olMap.render();

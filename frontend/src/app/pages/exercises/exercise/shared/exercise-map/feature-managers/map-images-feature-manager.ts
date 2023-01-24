@@ -10,12 +10,17 @@ import type { AppState } from 'src/app/state/app.state';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popup.component';
-import { createPoint } from '../utility/ol-geometry-helpers';
+import {
+    createPoint,
+    getCoordinatesPoint,
+    getNextPositionPoint,
+    getPositionPoint,
+} from '../utility/ol-geometry-helpers';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
-import { ElementFeatureManager } from './element-feature-manager';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
+export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
     readonly type = 'mapImages';
     private readonly imageStyleHelper = new ImageStyleHelper(
         (feature) => this.getElementFromFeature(feature)!.value.image
@@ -38,7 +43,10 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
                     targetPosition,
                 });
             },
-            createPoint
+            createPoint,
+            getNextPositionPoint,
+            getCoordinatesPoint,
+            getPositionPoint
         );
         this.layer.setStyle((feature, resolution) => {
             const style = this.imageStyleHelper.getStyle(
