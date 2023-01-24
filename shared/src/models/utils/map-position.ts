@@ -1,9 +1,15 @@
+import { Type } from 'class-transformer';
+import { ValidateNested } from 'class-validator';
+import { IsValue } from '../../utils/validators';
 import { getCreate } from './get-create';
-import type { MapCoordinates } from './map-coordinates';
+import { MapCoordinates } from './map-coordinates';
 
 export class MapPosition {
+    @IsValue('coordinates')
     public readonly type = 'coordinates';
 
+    @Type(() => MapCoordinates)
+    @ValidateNested()
     public readonly position: MapCoordinates;
 
     /**

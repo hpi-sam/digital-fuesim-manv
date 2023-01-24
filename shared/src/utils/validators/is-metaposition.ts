@@ -27,10 +27,10 @@ export const IsMetaPosition = () =>
         discriminator: {
             property: 'type',
             subTypes: [
-                { name: 'Coordinates', value: MapPosition },
-                { name: 'SimulatedRegion', value: SimulatedRegionPosition },
-                { name: 'Transfer', value: TransferPosition },
-                { name: 'Vehicle', value: VehiclePosition },
+                { name: 'coordinates', value: MapPosition },
+                { name: 'simulatedRegion', value: SimulatedRegionPosition },
+                { name: 'transfer', value: TransferPosition },
+                { name: 'vehicle', value: VehiclePosition },
             ],
         },
     });

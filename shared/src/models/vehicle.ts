@@ -31,7 +31,6 @@ export class Vehicle {
 
     @IsMetaPosition()
     @ValidateNested()
-    @IsOptional()
     public readonly metaPosition: MetaPosition;
 
     /**

@@ -70,7 +70,6 @@ export class Personnel {
 
     @IsMetaPosition()
     @ValidateNested()
-    @IsOptional()
     public readonly metaPosition: MetaPosition;
 
     /**

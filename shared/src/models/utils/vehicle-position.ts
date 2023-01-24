@@ -1,9 +1,13 @@
-import type { UUID } from '../../utils';
+import { IsUUID } from 'class-validator';
+import { UUID } from '../../utils';
+import { IsValue } from '../../utils/validators';
 import { getCreate } from './get-create';
 
 export class VehiclePosition {
+    @IsValue('vehicle')
     public readonly type = 'vehicle';
 
+    @IsUUID()
     public readonly vehicleId: UUID;
 
     /**

@@ -55,7 +55,6 @@ export class Material {
 
     @IsMetaPosition()
     @ValidateNested()
-    @IsOptional()
     public readonly metaPosition: MetaPosition;
 
     /**

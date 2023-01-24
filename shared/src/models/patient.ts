@@ -66,7 +66,6 @@ export class Patient {
 
     @IsMetaPosition()
     @ValidateNested()
-    @IsOptional()
     public readonly metaPosition: MetaPosition;
 
     /**

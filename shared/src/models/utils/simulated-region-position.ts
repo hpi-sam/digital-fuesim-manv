@@ -1,7 +1,9 @@
 import type { UUID } from '../../utils';
+import { IsValue } from '../../utils/validators';
 import { getCreate } from './get-create';
 
 export class SimulatedRegionPosition {
+    @IsValue('simulatedRegion')
     public readonly type = 'simulatedRegion';
 
     public readonly simulatedRegionId: UUID;
