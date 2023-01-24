@@ -3,7 +3,6 @@ import { IsInt, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { TransferPoint } from '../../models';
 import type { Position } from '../../models/utils';
 import { StartPoint, startPointTypeOptions } from '../../models/utils';
-import type { MapCoordinates } from '../../models/utils/map-coordinates';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
