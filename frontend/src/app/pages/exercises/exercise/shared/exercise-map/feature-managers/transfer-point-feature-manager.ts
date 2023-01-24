@@ -19,7 +19,6 @@ import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { createPoint, ElementFeatureManager } from './element-feature-manager';
 
 export class TransferPointFeatureManager extends ElementFeatureManager<TransferPoint> {
-    readonly type = 'transferPoints';
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
     constructor(
@@ -61,7 +60,8 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
     );
     private readonly nameStyleHelper = new NameStyleHelper(
         (feature: Feature) => ({
-            name: this.getElementFromFeature(feature)!.value.internalName,
+            name: (this.getElementFromFeature(feature) as TransferPoint)
+                .internalName,
             offsetY: 0,
         }),
         0.2,
@@ -75,14 +75,15 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
     ) {
         // TODO: droppedElement isn't necessarily a transfer point -> fix getElementFromFeature typings
         const droppedElement = this.getElementFromFeature(droppedFeature);
-        const droppedOnTransferPoint: TransferPoint =
-            this.getElementFromFeature(droppedOnFeature)!.value!;
+        const droppedOnTransferPoint = this.getElementFromFeature(
+            droppedOnFeature
+        ) as TransferPoint;
         if (!droppedElement || !droppedOnTransferPoint) {
             console.error('Could not find element for the features');
             return false;
         }
         if (
-            droppedElement.type !== 'vehicles' &&
+            droppedElement.type !== 'vehicle' &&
             droppedElement.type !== 'personnel'
         ) {
             return false;
@@ -106,7 +107,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                                 {
                                     type: '[Hospital] Transport patient to hospital',
                                     hospitalId: targetId,
-                                    vehicleId: droppedElement.value.id,
+                                    vehicleId: droppedElement.id,
                                 },
                                 true
                             );
@@ -116,7 +117,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                             {
                                 type: '[Transfer] Add to transfer',
                                 elementType: droppedElement.type,
-                                elementId: droppedElement.value.id,
+                                elementId: droppedElement.id,
                                 startPoint: TransferStartPoint.create(
                                     droppedOnTransferPoint.id
                                 ),

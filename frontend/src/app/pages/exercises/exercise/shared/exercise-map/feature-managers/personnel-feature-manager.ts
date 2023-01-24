@@ -16,13 +16,12 @@ import { createPoint, ElementFeatureManager } from './element-feature-manager';
 export class PersonnelFeatureManager extends ElementFeatureManager<
     WithPosition<Personnel>
 > {
-    readonly type = 'personnel';
     private readonly imageStyleHelper = new ImageStyleHelper(
-        (feature) => this.getElementFromFeature(feature)!.value.image
+        (feature) => (this.getElementFromFeature(feature) as Personnel).image
     );
     private readonly nameStyleHelper = new NameStyleHelper(
         (feature) => {
-            const personnel = this.getElementFromFeature(feature)!.value;
+            const personnel = this.getElementFromFeature(feature) as Personnel;
             return {
                 name: personnel.vehicleName,
                 offsetY: personnel.image.height / 2 / normalZoom,

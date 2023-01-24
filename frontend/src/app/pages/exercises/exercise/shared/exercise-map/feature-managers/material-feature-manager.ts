@@ -16,13 +16,12 @@ import { createPoint, ElementFeatureManager } from './element-feature-manager';
 export class MaterialFeatureManager extends ElementFeatureManager<
     WithPosition<Material>
 > {
-    readonly type = 'materials';
     private readonly imageStyleHelper = new ImageStyleHelper(
-        (feature) => this.getElementFromFeature(feature)!.value.image
+        (feature) => (this.getElementFromFeature(feature) as Material).image
     );
     private readonly nameStyleHelper = new NameStyleHelper(
         (feature) => {
-            const material = this.getElementFromFeature(feature)!.value;
+            const material = this.getElementFromFeature(feature) as Material;
             return {
                 name: material.vehicleName,
                 offsetY: material.image.height / 2 / normalZoom,

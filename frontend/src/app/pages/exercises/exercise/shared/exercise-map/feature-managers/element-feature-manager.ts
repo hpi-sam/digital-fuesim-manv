@@ -1,9 +1,4 @@
-import type {
-    ExerciseState,
-    Position,
-    Size,
-    UUID,
-} from 'digital-fuesim-manv-shared';
+import type { Position, Size, UUID } from 'digital-fuesim-manv-shared';
 import { isArray } from 'lodash-es';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
@@ -83,7 +78,6 @@ export abstract class ElementFeatureManager<
     >
     implements FeatureManager<ElementFeature>
 {
-    abstract override readonly type: keyof ExerciseState;
     public readonly togglePopup$ = new Subject<OpenPopupOptions<any>>();
     protected readonly movementAnimator = new MovementAnimator<FeatureType>(
         this.olMap,

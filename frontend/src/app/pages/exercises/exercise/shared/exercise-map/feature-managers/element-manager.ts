@@ -20,17 +20,10 @@ export abstract class ElementManager<
     > = Exclude<ReadonlySet<keyof Element>, UnsupportedChangeProperties>
 > {
     /**
-     * When an element gets (dragged &) dropped, this identifies the type of the dropped element.
-     * @example `patients`
-     */
-    abstract readonly type: string;
-
-    /**
      * This should be called if a new element is added.
      */
     public onElementCreated(element: Element) {
         const feature = this.createFeature(element);
-        feature.set(featureKeys.type, this.type);
         feature.set(featureKeys.value, element);
     }
 
@@ -117,10 +110,7 @@ export abstract class ElementManager<
     ): ElementFeature | undefined;
 
     public getElementFromFeature(feature: Feature<any>) {
-        return {
-            type: feature.get(featureKeys.type),
-            value: feature.get(featureKeys.value),
-        };
+        return feature.get(featureKeys.value);
     }
 
     private areAllPropertiesSupported(
@@ -140,6 +130,4 @@ export abstract class ElementManager<
  */
 const featureKeys = {
     value: 'elementValue',
-    // TODO: In the future the type should be saved in the element itself
-    type: 'elementType',
 };

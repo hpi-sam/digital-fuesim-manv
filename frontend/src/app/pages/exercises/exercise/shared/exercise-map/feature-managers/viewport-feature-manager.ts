@@ -37,8 +37,6 @@ export class ViewportFeatureManager
     extends ElementFeatureManager<Viewport, LineString>
     implements FeatureManager<Feature<LineString>>
 {
-    readonly type = 'viewports';
-
     override unsupportedChangeProperties = new Set(['id'] as const);
 
     constructor(
@@ -74,8 +72,9 @@ export class ViewportFeatureManager
         ResizeRectangleInteraction.onResize(
             feature,
             ({ topLeftCoordinate, scale }) => {
-                const currentElement = this.getElementFromFeature(feature)!
-                    .value as Viewport;
+                const currentElement = this.getElementFromFeature(
+                    feature
+                ) as Viewport;
                 this.exerciseService.proposeAction(
                     {
                         type: '[Viewport] Resize viewport',

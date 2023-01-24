@@ -105,13 +105,13 @@ export class LoadVehicleAction implements Action {
     public readonly vehicleId!: UUID;
 
     @IsLiteralUnion({
-        materials: true,
-        patients: true,
+        material: true,
+        patient: true,
         personnel: true,
     })
     public readonly elementToBeLoadedType!:
-        | 'materials'
-        | 'patients'
+        | 'material'
+        | 'patient'
         | 'personnel';
 
     @IsUUID(4, uuidValidationOptions)
@@ -277,7 +277,7 @@ export namespace VehicleActionReducers {
         ) => {
             const vehicle = getElement(draftState, 'vehicle', vehicleId);
             switch (elementToBeLoadedType) {
-                case 'materials': {
+                case 'material': {
                     const material = getElement(
                         draftState,
                         'material',
@@ -314,7 +314,7 @@ export namespace VehicleActionReducers {
                     );
                     break;
                 }
-                case 'patients': {
+                case 'patient': {
                     const patient = getElement(
                         draftState,
                         'patient',
