@@ -3,9 +3,9 @@ import { Material, Personnel } from '../models';
 import type { MaterialTemplate } from '../models/material-template';
 import type { PersonnelTemplate } from '../models/personnel-template';
 import type { PersonnelType, Position } from '../models/utils';
-import type { MapCoordinates } from '../models/utils/map-coordinates';
 import { MapPosition } from '../models/utils/map-position';
 import type { MaterialType } from '../models/utils/material-type';
+import { VehiclePosition } from '../models/utils/vehicle-position';
 import { uuid } from '../utils';
 
 import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
@@ -34,7 +34,7 @@ export function createVehicleParameters(
             materialTemplates[currentMaterial],
             vehicleId,
             vehicleTemplate.name,
-            MapPosition.create(vehiclePosition)
+            VehiclePosition.create(vehicleId)
         )
     );
     const personnel = vehicleTemplate.personnel.map((currentPersonnel) =>
@@ -42,7 +42,7 @@ export function createVehicleParameters(
             personnelTemplates[currentPersonnel],
             vehicleId,
             vehicleTemplate.name,
-            MapPosition.create(vehiclePosition)
+            VehiclePosition.create(vehicleId)
         )
     );
 
@@ -56,7 +56,7 @@ export function createVehicleParameters(
         patientIds: {},
         personnelIds: arrayToUUIDSet(personnel.map((p) => p.id)),
         position: vehiclePosition,
-        metaPosition: MapPosition.create(vehiclePosition as MapCoordinates),
+        metaPosition: MapPosition.create(vehiclePosition),
     };
     return {
         materials,
