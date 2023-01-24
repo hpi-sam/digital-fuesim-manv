@@ -218,7 +218,6 @@ export namespace VehicleActionReducers {
             const vehicle = getElement(draftState, 'vehicles', vehicleId);
             const unloadMetaPosition = vehicle.metaPosition;
             if (
-                !unloadMetaPosition ||
                 unloadMetaPosition.type !== 'coordinates'
             ) {
                 throw new ReducerError(
