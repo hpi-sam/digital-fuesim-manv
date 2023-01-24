@@ -180,7 +180,7 @@ export namespace VehicleActionReducers {
                 type: 'coordinates',
                 position: cloneDeepMutable(
                     targetPosition
-                ) as Mutable<MapCoordinates>,
+                ),
             };
             return draftState;
         },
