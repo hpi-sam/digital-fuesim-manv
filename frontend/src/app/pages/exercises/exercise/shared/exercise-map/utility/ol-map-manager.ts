@@ -455,6 +455,12 @@ export class OlMapManager {
         this.olMap.getView().on(['change:resolution', 'change:center'], () => {
             this.changePopup$.next(undefined);
         });
+
+        this.openLayersContainer.addEventListener('keydown', (event) => {
+            if ((event as KeyboardEvent).key === 'Escape') {
+                this.changePopup$.next(undefined);
+            }
+        });
     }
 
     private registerDropHandler(translateInteraction: TranslateInteraction) {
