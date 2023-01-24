@@ -11,10 +11,8 @@ import { Patient } from '../../models';
 import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
-import {
-    TypeSelectorMap,
-    typeSelectorMap,
-} from '../../utils/type-state-selector-map';
+import type { TypeSelectorMap } from '../../utils/type-state-selector-map';
+import { typeSelectorMap } from '../../utils/type-state-selector-map';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
