@@ -201,9 +201,7 @@ export class Patient {
     }
 
     static isInVehicle(patient: Patient): boolean {
-        return (
-            patient.metaPosition.type === 'vehicle'
-        );
+        return patient.metaPosition.type === 'vehicle';
     }
 
     static isTreatedByPersonnel(patient: Patient) {

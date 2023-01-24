@@ -217,9 +217,7 @@ export namespace VehicleActionReducers {
         reducer: (draftState, { vehicleId }) => {
             const vehicle = getElement(draftState, 'vehicles', vehicleId);
             const unloadMetaPosition = vehicle.metaPosition;
-            if (
-                unloadMetaPosition.type !== 'coordinates'
-            ) {
+            if (unloadMetaPosition.type !== 'coordinates') {
                 throw new ReducerError(
                     `Vehicle with id ${vehicleId} is currently not on the map`
                 );
