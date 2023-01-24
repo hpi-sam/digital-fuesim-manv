@@ -246,7 +246,6 @@ describe('calculate treatment', () => {
                 addPersonnel(state, VehiclePosition.create(''));
             }
         );
-        console.log(newState.personnel);
         expect(newState).toStrictEqual(beforeState);
     });
 
