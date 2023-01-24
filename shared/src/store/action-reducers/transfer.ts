@@ -55,7 +55,7 @@ export function letElementArrive(
         element.position = newPosition;
         element.metaPosition = {
             type: 'coordinates',
-            position: newPosition as Mutable<MapCoordinates>,
+            position: newPosition,
         };
     }
     delete element.transfer;
