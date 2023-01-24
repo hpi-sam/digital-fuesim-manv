@@ -38,7 +38,7 @@ type SubstituteCoordinateForPoint<T> = T extends Coordinate
     ? Position
     : T extends Array<ArrayElement<T>>
     ? SubstituteCoordinateForPoint<ArrayElement<T>>[]
-    : T;
+    : never;
 
 export type Positions<T extends GeometryWithCoorindates> =
     SubstituteCoordinateForPoint<Coordinates<T>>;
