@@ -3,6 +3,7 @@ import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
 import { cloneDeepMutable } from '../../../utils';
+import type { TypeSelectorMap } from '../../../utils/type-state-selector-map';
 import { typeSelectorMap } from '../../../utils/type-state-selector-map';
 import { updateTreatments } from './calculate-treatments';
 import { getElement } from './get-element';
@@ -12,13 +13,8 @@ import { getElement } from './get-element';
  * The position of the element must be changed via one of the function in this file.
  * In addition, the respective functions must be called when an element gets added or removed.
  */
-const spatialTypeSelectorMap = {
-    material: typeSelectorMap.material,
-    patient: typeSelectorMap.patient,
-    personnel: typeSelectorMap.personnel,
-} as const;
-type SpatialTypeSelectorMap = typeof spatialTypeSelectorMap;
-type SpatialElementType = keyof SpatialTypeSelectorMap;
+type SpatialElementType = 'material' | 'patient' | 'personnel';
+type SpatialTypeSelectorMap = Pick<TypeSelectorMap, SpatialElementType>;
 export type SpatialElementSelector = SpatialTypeSelectorMap[SpatialElementType];
 
 /**
@@ -35,7 +31,7 @@ export function addElementPosition(
         return;
     }
     SpatialTree.addElement(
-        state.spatialTrees[spatialTypeSelectorMap[elementType]],
+        state.spatialTrees[typeSelectorMap[elementType]],
         element.id,
         element.position
     );
@@ -55,14 +51,14 @@ export function updateElementPosition(
     const startPosition = element.position;
     if (startPosition !== undefined) {
         SpatialTree.moveElement(
-            state.spatialTrees[spatialTypeSelectorMap[elementType]],
+            state.spatialTrees[typeSelectorMap[elementType]],
             element.id,
             startPosition,
             targetPosition
         );
     } else {
         SpatialTree.addElement(
-            state.spatialTrees[spatialTypeSelectorMap[elementType]],
+            state.spatialTrees[typeSelectorMap[elementType]],
             element.id,
             targetPosition
         );
@@ -85,7 +81,7 @@ export function removeElementPosition(
         return;
     }
     SpatialTree.removeElement(
-        state.spatialTrees[spatialTypeSelectorMap[elementType]],
+        state.spatialTrees[typeSelectorMap[elementType]],
         element.id,
         element.position
     );

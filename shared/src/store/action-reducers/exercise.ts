@@ -11,7 +11,10 @@ import { Patient } from '../../models';
 import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
-import { typeSelectorMap } from '../../utils/type-state-selector-map';
+import {
+    TypeSelectorMap,
+    typeSelectorMap,
+} from '../../utils/type-state-selector-map';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -131,18 +134,14 @@ export namespace ExerciseActionReducers {
     };
 }
 
-const transferTypeSelectorMap = {
-    personnel: typeSelectorMap.personnel,
-    vehicle: typeSelectorMap.vehicle,
-} as const;
-type TransferTypeSelectorMap = typeof transferTypeSelectorMap;
+type TransferTypeSelectorMap = Pick<TypeSelectorMap, 'personnel' | 'vehicle'>;
 
 function refreshTransfer(
     draftState: Mutable<ExerciseState>,
     type: keyof TransferTypeSelectorMap,
     tickInterval: number
 ): void {
-    const elements = draftState[transferTypeSelectorMap[type]];
+    const elements = draftState[typeSelectorMap[type]];
     Object.values(elements).forEach((element: Mutable<Personnel | Vehicle>) => {
         if (!element.transfer) {
             return;
