@@ -11,7 +11,7 @@ import { MovementAnimator } from '../utility/movement-animator';
 import type {
     CoordinatePair,
     Coordinates,
-    GeometryWithCoorindates,
+    GeometryWithCoordinates,
     PositionableElement,
     Positions,
 } from '../utility/ol-geometry-helpers';
@@ -26,7 +26,7 @@ import { ElementManager } from './element-manager';
  */
 export abstract class MoveableFeatureManager<
         Element extends PositionableElement,
-        FeatureType extends GeometryWithCoorindates = Point,
+        FeatureType extends GeometryWithCoordinates = Point,
         ElementFeature extends Feature<FeatureType> = Feature<FeatureType>
     >
     extends ElementManager<

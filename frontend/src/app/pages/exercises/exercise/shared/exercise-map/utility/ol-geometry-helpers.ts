@@ -15,7 +15,7 @@ export type ResizableElement = PositionableElement & {
     size: Size;
 };
 
-export type GeometryWithCoorindates = Geometry & {
+export type GeometryWithCoordinates = Geometry & {
     getCoordinates: () => unknown;
     setCoordinates: (coordinates: any[]) => void;
 };
@@ -25,7 +25,7 @@ export type GeometryWithCoorindates = Geometry & {
  * Instead, the inferred type is null. We exclude this type
  * to exchange it with never
  */
-export type Coordinates<T extends GeometryWithCoorindates> = Exclude<
+export type Coordinates<T extends GeometryWithCoordinates> = Exclude<
     ReturnType<T['getCoordinates']>,
     null
 >;
@@ -40,10 +40,10 @@ type SubstituteCoordinateForPoint<T> = T extends Coordinate
     ? SubstituteCoordinateForPoint<ArrayElement<T>>[]
     : never;
 
-export type Positions<T extends GeometryWithCoorindates> =
+export type Positions<T extends GeometryWithCoordinates> =
     SubstituteCoordinateForPoint<Coordinates<T>>;
 
-export interface CoordinatePair<T extends GeometryWithCoorindates> {
+export interface CoordinatePair<T extends GeometryWithCoordinates> {
     startPosition: Coordinates<T>;
     endPosition: Coordinates<T>;
 }

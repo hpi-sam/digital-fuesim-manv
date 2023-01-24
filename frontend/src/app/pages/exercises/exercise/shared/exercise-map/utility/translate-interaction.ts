@@ -2,7 +2,7 @@ import { isEqual } from 'lodash-es';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Point } from 'ol/geom';
 import { Translate } from 'ol/interaction';
-import type { GeometryWithCoorindates, Positions } from './ol-geometry-helpers';
+import type { GeometryWithCoordinates, Positions } from './ol-geometry-helpers';
 
 /**
  * Translates (moves) a feature to a new position.
@@ -46,7 +46,7 @@ export class TranslateInteraction extends Translate {
      *
      * You can only call this function if the layer of the feature has this Interaction.
      */
-    public static onTranslateEnd<T extends GeometryWithCoorindates = Point>(
+    public static onTranslateEnd<T extends GeometryWithCoordinates = Point>(
         feature: Feature<T>,
         callback: (newCoordinates: Positions<T>) => void,
         getPosition: (feature: Feature<T>) => Positions<T>

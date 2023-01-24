@@ -9,13 +9,13 @@ import { isEqual } from 'lodash-es';
 import type {
     Coordinates,
     CoordinatePair,
-    GeometryWithCoorindates,
+    GeometryWithCoordinates,
 } from './ol-geometry-helpers';
 
 /**
  * Animates the movement of a feature to a new position.
  */
-export class MovementAnimator<T extends GeometryWithCoorindates> {
+export class MovementAnimator<T extends GeometryWithCoordinates> {
     /**
      * The time in milliseconds how long the moving animation should take
      */
