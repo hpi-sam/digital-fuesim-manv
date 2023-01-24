@@ -10,7 +10,7 @@ import {
     IsString,
     MaxLength,
     isEmpty,
-    ValidateIf,
+    Allow,
 } from 'class-validator';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsLiteralUnion, IsIdMap, IsUUIDSet } from '../utils/validators';
@@ -66,7 +66,7 @@ export class Patient {
 
     // TODO: Create a real Validator.
     // This is a temporary fix since a Validator of some sort is needed apparently
-    @ValidateIf(() => true)
+    @Allow()
     public readonly metaPosition: MetaPosition;
 
     /**

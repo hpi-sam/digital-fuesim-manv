@@ -7,7 +7,7 @@ import {
     Min,
     Max,
     IsOptional,
-    ValidateIf,
+    Allow,
 } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
@@ -70,7 +70,7 @@ export class Personnel {
 
     // TODO: Create a real Validator.
     // This is a temporary fix since a Validator of some sort is needed apparently
-    @ValidateIf(() => true)
+    @Allow()
     public readonly metaPosition: MetaPosition;
 
     /**

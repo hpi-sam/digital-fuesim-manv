@@ -1,10 +1,10 @@
 import { Type } from 'class-transformer';
 import {
+    Allow,
     IsNumber,
     IsOptional,
     IsString,
     IsUUID,
-    ValidateIf,
     ValidateNested,
 } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
@@ -31,7 +31,7 @@ export class Vehicle {
 
     // TODO: Create a real Validator.
     // This is a temporary fix since a Validator of some sort is needed apparently
-    @ValidateIf(() => true)
+    @Allow()
     public readonly metaPosition: MetaPosition;
 
     /**
