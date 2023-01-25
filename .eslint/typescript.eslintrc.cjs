@@ -110,6 +110,12 @@ module.exports = {
                         name: 'lodash',
                         message: 'Please use lodash-es instead.',
                     },
+                    {
+                        name: 'class-validator',
+                        importNames: ['isEmpty'],
+                        message:
+                            'You probably want to import this from lodash-es instead.',
+                    },
                 ],
                 patterns: [
                     {
