@@ -18,11 +18,12 @@ import { calculatePopupPositioning } from '../utility/calculate-popup-positionin
 import type { FeatureManager } from '../utility/feature-manager';
 import {
     createPolygon,
-    getCoordinateArray,
+    getCoordinateResizeableElement,
     getCoordinatesPolygon,
     getNextPositionPolygon,
     getPositionPolygon,
 } from '../utility/ol-geometry-helpers';
+import type { ResizableElement } from '../utility/ol-geometry-helpers'
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
@@ -63,6 +64,9 @@ export class ViewportFeatureManager
             createPolygon,
             getNextPositionPolygon,
             getCoordinatesPolygon,
+            (element: ResizableElement): Coordinate[][] => [
+                getCoordinateResizeableElement(element),
+            ],
             getPositionPolygon
         );
         this.layer.setStyle(this.style);
@@ -113,13 +117,10 @@ export class ViewportFeatureManager
             changedProperties.has('position') ||
             changedProperties.has('size')
         ) {
-            const newFeature = this.getFeatureFromElement(newElement);
-            if (!newFeature) {
-                throw new TypeError('newFeature undefined');
-            }
-            this.movementAnimator.animateFeatureMovement(elementFeature, [
-                getCoordinateArray(newElement),
-            ]);
+            this.movementAnimator.animateFeatureMovement(
+                elementFeature,
+                this.getCoordinatesElement(newElement)
+            );
         }
         // If the style has updated, we need to redraw the feature
         elementFeature.changed();

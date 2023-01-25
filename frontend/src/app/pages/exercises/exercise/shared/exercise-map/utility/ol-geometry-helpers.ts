@@ -9,7 +9,7 @@ import type { WithPosition } from '../../utility/types/with-position';
 export interface PositionableElement {
     readonly id: UUID;
     readonly position: Position;
-}
+};
 
 export type ResizableElement = PositionableElement & {
     size: Size;
@@ -49,12 +49,18 @@ export interface CoordinatePair<T extends GeometryWithCoordinates> {
 }
 
 export const createPoint = (element: WithPosition<any>): Feature<Point> =>
-    new Feature(new Point([element.position.x, element.position.y]));
+    new Feature(new Point(getCoordinatesPositionableElement(element)));
 
 export const createPolygon = (element: ResizableElement): Feature<Polygon> =>
-    new Feature(new Polygon([getCoordinateArray(element)]));
+    new Feature(new Polygon([getCoordinateResizeableElement(element)]));
 
-export const getCoordinateArray = (element: ResizableElement) => [
+export const getCoordinatesPositionableElement = (
+    element: PositionableElement
+): Coordinate => [element.position.x, element.position.y];
+
+export const getCoordinateResizeableElement = (
+    element: ResizableElement
+): Coordinate[] => [
     [element.position.x, element.position.y],
     [element.position.x + element.size.width, element.position.y],
     [

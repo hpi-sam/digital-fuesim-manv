@@ -13,6 +13,7 @@ import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popu
 import {
     createPoint,
     getCoordinatesPoint,
+    getCoordinatesPositionableElement,
     getNextPositionPoint,
     getPositionPoint,
 } from '../utility/ol-geometry-helpers';
@@ -46,6 +47,7 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
             createPoint,
             getNextPositionPoint,
             getCoordinatesPoint,
+            getCoordinatesPositionableElement,
             getPositionPoint
         );
         this.layer.setStyle((feature, resolution) => {

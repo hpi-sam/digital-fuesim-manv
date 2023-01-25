@@ -12,6 +12,7 @@ import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.com
 import {
     createPoint,
     getCoordinatesPoint,
+    getCoordinatesPositionableElement,
     getNextPositionPoint,
     getPositionPoint,
 } from '../utility/ol-geometry-helpers';
@@ -59,6 +60,7 @@ export class VehicleFeatureManager extends MoveableFeatureManager<
             createPoint,
             getNextPositionPoint,
             getCoordinatesPoint,
+            getCoordinatesPositionableElement,
             getPositionPoint
         );
         this.layer.setStyle((feature, resolution) => [

@@ -16,6 +16,7 @@ import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.com
 import {
     createPoint,
     getCoordinatesPoint,
+    getCoordinatesPositionableElement,
     getNextPositionPoint,
     getPositionPoint,
 } from '../utility/ol-geometry-helpers';
@@ -90,6 +91,7 @@ export class PatientFeatureManager extends MoveableFeatureManager<
             createPoint,
             getNextPositionPoint,
             getCoordinatesPoint,
+            getCoordinatesPositionableElement,
             getPositionPoint
         );
         this.layer.setStyle((feature, resolution) => [

@@ -16,6 +16,7 @@ import { TransferPointPopupComponent } from '../shared/transfer-point-popup/tran
 import {
     createPoint,
     getCoordinatesPoint,
+    getCoordinatesPositionableElement,
     getNextPositionPoint,
     getPositionPoint,
 } from '../utility/ol-geometry-helpers';
@@ -47,6 +48,7 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
             createPoint,
             getNextPositionPoint,
             getCoordinatesPoint,
+            getCoordinatesPositionableElement,
             getPositionPoint
         );
         layer.setStyle((thisFeature, currentZoom) => [

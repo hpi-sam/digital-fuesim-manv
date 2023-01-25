@@ -11,6 +11,7 @@ import { MaterialPopupComponent } from '../shared/material-popup/material-popup.
 import {
     createPoint,
     getCoordinatesPoint,
+    getCoordinatesPositionableElement,
     getNextPositionPoint,
     getPositionPoint,
 } from '../utility/ol-geometry-helpers';
@@ -58,6 +59,7 @@ export class MaterialFeatureManager extends MoveableFeatureManager<
             createPoint,
             getNextPositionPoint,
             getCoordinatesPoint,
+            getCoordinatesPositionableElement,
             getPositionPoint
         );
         this.layer.setStyle((feature, resolution) => [

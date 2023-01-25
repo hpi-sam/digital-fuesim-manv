@@ -52,8 +52,11 @@ export abstract class MoveableFeatureManager<
             positions: CoordinatePair<FeatureType>,
             progress: number
         ) => Coordinates<FeatureType>,
-        private readonly getCoordinates: (
+        private readonly getCoordinatesFeature: (
             feature: Feature<FeatureType>
+        ) => Coordinates<FeatureType>,
+        protected readonly getCoordinatesElement: (
+            element: Element
         ) => Coordinates<FeatureType>,
         private readonly getPosition: (
             feature: Feature<FeatureType>
@@ -64,7 +67,7 @@ export abstract class MoveableFeatureManager<
             this.olMap,
             this.layer,
             this.getNextPosition,
-            this.getCoordinates
+            this.getCoordinatesFeature
         );
     }
 
@@ -103,14 +106,9 @@ export abstract class MoveableFeatureManager<
         elementFeature: ElementFeature
     ): void {
         if (changedProperties.has('position')) {
-            const newFeature = this.getFeatureFromElement(newElement);
-            if (!newFeature) {
-                throw new TypeError('newFeature undefined');
-            }
-
             this.movementAnimator.animateFeatureMovement(
                 elementFeature,
-                this.getCoordinates(newFeature)
+                this.getCoordinatesElement(newElement)
             );
         }
         // If the style has updated, we need to redraw the feature

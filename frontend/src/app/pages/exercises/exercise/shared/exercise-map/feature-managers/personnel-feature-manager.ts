@@ -11,6 +11,7 @@ import { PersonnelPopupComponent } from '../shared/personnel-popup/personnel-pop
 import {
     createPoint,
     getCoordinatesPoint,
+    getCoordinatesPositionableElement,
     getNextPositionPoint,
     getPositionPoint,
 } from '../utility/ol-geometry-helpers';
@@ -58,6 +59,7 @@ export class PersonnelFeatureManager extends MoveableFeatureManager<
             createPoint,
             getNextPositionPoint,
             getCoordinatesPoint,
+            getCoordinatesPositionableElement,
             getPositionPoint
         );
 
