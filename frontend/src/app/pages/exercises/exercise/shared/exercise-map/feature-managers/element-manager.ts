@@ -24,7 +24,7 @@ export abstract class ElementManager<
      */
     public onElementCreated(element: Element) {
         const feature = this.createFeature(element);
-        feature.set(featureKeys.value, element);
+        feature.set(featureElementKey, element);
     }
 
     /**
@@ -62,7 +62,7 @@ export abstract class ElementManager<
             this.onElementCreated(newElement);
             return;
         }
-        elementFeature.set(featureKeys.value, newElement);
+        elementFeature.set(featureElementKey, newElement);
         this.changeFeature(
             oldElement,
             newElement,
@@ -110,7 +110,7 @@ export abstract class ElementManager<
     ): ElementFeature | undefined;
 
     public getElementFromFeature(feature: Feature<any>) {
-        return feature.get(featureKeys.value);
+        return feature.get(featureElementKey);
     }
 
     private areAllPropertiesSupported(
@@ -128,6 +128,4 @@ export abstract class ElementManager<
 /**
  * The keys of the feature, where the type and most recent value of the respective element are saved to
  */
-const featureKeys = {
-    value: 'elementValue',
-};
+const featureElementKey = 'element';
