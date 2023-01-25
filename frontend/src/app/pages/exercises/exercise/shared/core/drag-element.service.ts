@@ -14,6 +14,7 @@ import {
     TransferPoint,
     Viewport,
     SimulatedRegion,
+    MapPosition,
 } from 'digital-fuesim-manv-shared';
 import type OlMap from 'ol/Map';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -168,7 +169,8 @@ export class DragElementService {
                                         .patientTemplates.length
                             )
                         ]!,
-                        this.transferringTemplate.template.name
+                        this.transferringTemplate.template.name,
+                        MapPosition.create(position)
                     );
                     this.exerciseService.proposeAction(
                         {

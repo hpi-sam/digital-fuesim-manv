@@ -10,7 +10,7 @@ const standardMaterialTemplate = MaterialTemplate.create(
     'standard',
     {
         url: '/assets/material.svg',
-        height: 40,
+        height: 35,
         aspectRatio: 1,
     },
     CanCaterFor.create(2, 0, 0, 'and'),
@@ -21,9 +21,8 @@ const standardMaterialTemplate = MaterialTemplate.create(
 const bigMaterialTemplate = MaterialTemplate.create(
     'big',
     {
-        url: '/assets/material.svg',
-        // Roughly double the area of the standard material
-        height: 56,
+        url: '/assets/big-material.svg',
+        height: 35,
         aspectRatio: 1,
     },
     CanCaterFor.create(2, 2, 0, 'and'),

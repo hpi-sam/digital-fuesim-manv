@@ -150,10 +150,18 @@ export namespace VehicleActionReducers {
             }
             draftState.vehicles[vehicle.id] = cloneDeepMutable(vehicle);
             for (const material of cloneDeepMutable(materials)) {
+                material.metaPosition = {
+                    type: 'vehicle',
+                    vehicleId: vehicle.id,
+                };
                 draftState.materials[material.id] = material;
                 addElementPosition(draftState, 'material', material.id);
             }
             for (const person of cloneDeepMutable(personnel)) {
+                person.metaPosition = {
+                    type: 'vehicle',
+                    vehicleId: vehicle.id,
+                };
                 draftState.personnel[person.id] = person;
                 addElementPosition(draftState, 'personnel', person.id);
             }
@@ -167,6 +175,10 @@ export namespace VehicleActionReducers {
         reducer: (draftState, { vehicleId, targetPosition }) => {
             const vehicle = getElement(draftState, 'vehicle', vehicleId);
             vehicle.position = cloneDeepMutable(targetPosition);
+            vehicle.metaPosition = {
+                type: 'coordinates',
+                position: cloneDeepMutable(targetPosition),
+            };
             return draftState;
         },
         rights: 'participant',
@@ -201,12 +213,13 @@ export namespace VehicleActionReducers {
         action: UnloadVehicleAction,
         reducer: (draftState, { vehicleId }) => {
             const vehicle = getElement(draftState, 'vehicle', vehicleId);
-            const unloadPosition = vehicle.position;
-            if (!unloadPosition) {
+            const unloadMetaPosition = vehicle.metaPosition;
+            if (unloadMetaPosition.type !== 'coordinates') {
                 throw new ReducerError(
-                    `Vehicle with id ${vehicleId} is currently in transfer`
+                    `Vehicle with id ${vehicleId} is currently not on the map`
                 );
             }
+            const unloadPosition = unloadMetaPosition.position;
             const materialIds = Object.keys(vehicle.materialIds);
             const personnelIds = Object.keys(vehicle.personnelIds);
             const patientIds = Object.keys(vehicle.patientIds);
@@ -288,6 +301,10 @@ export namespace VehicleActionReducers {
                             `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
+                    material.metaPosition = {
+                        type: 'vehicle',
+                        vehicleId,
+                    };
                     removeElementPosition(draftState, 'material', material.id);
                     break;
                 }
@@ -307,6 +324,10 @@ export namespace VehicleActionReducers {
                             `Personnel with id ${personnel.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
+                    personnel.metaPosition = {
+                        type: 'vehicle',
+                        vehicleId,
+                    };
                     removeElementPosition(
                         draftState,
                         'personnel',
@@ -330,11 +351,22 @@ export namespace VehicleActionReducers {
                     }
                     vehicle.patientIds[elementToBeLoadedId] = true;
 
-                    // removeElementPosition(draftState, 'patient', patient.id);
+                    patient.metaPosition = {
+                        type: 'vehicle',
+                        vehicleId,
+                    };
                     removeElementPosition(draftState, patient.type, patient.id);
 
                     // Load in all materials
                     Object.keys(vehicle.materialIds).forEach((materialId) => {
+                        getElement(
+                            draftState,
+                            'materials',
+                            materialId
+                        ).metaPosition = {
+                            type: 'vehicle',
+                            vehicleId,
+                        };
                         removeElementPosition(
                             draftState,
                             'material',
@@ -351,6 +383,14 @@ export namespace VehicleActionReducers {
                                     .transfer === undefined
                         )
                         .forEach((personnelId) => {
+                            getElement(
+                                draftState,
+                                'personnel',
+                                personnelId
+                            ).metaPosition = {
+                                type: 'vehicle',
+                                vehicleId,
+                            };
                             removeElementPosition(
                                 draftState,
                                 'personnel',

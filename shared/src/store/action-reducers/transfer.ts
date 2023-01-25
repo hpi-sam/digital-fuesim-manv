@@ -52,6 +52,10 @@ export function letElementArrive(
         updateElementPosition(draftState, 'personnel', element.id, newPosition);
     } else {
         element.position = newPosition;
+        element.metaPosition = {
+            type: 'coordinates',
+            position: newPosition,
+        };
     }
     delete element.transfer;
 }
@@ -167,13 +171,22 @@ export namespace TransferActionReducers {
             } else {
                 element.position = undefined;
             }
-
             // Set the element to transfer
             element.transfer = {
                 startPoint: cloneDeepMutable(startPoint),
                 targetTransferPointId,
                 endTimeStamp: draftState.currentTime + duration,
                 isPaused: false,
+            };
+
+            element.metaPosition = {
+                type: 'transfer',
+                transfer: {
+                    startPoint: cloneDeepMutable(startPoint),
+                    targetTransferPointId,
+                    endTimeStamp: draftState.currentTime + duration,
+                    isPaused: false,
+                },
             };
 
             return draftState;
