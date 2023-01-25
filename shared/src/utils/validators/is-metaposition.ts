@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { MapPosition } from '../../models/utils/map-position';
 import type { MetaPosition } from '../../models/utils/meta-position';
 import { SimulatedRegionPosition } from '../../models/utils/simulated-region-position';
-import { TransferPosition } from '../../models/utils/transfer-position';
+import { TransferPosition } from '../../models/utils/position/transfer-position';
 import { VehiclePosition } from '../../models/utils/vehicle-position';
 import { IsLiteralUnion } from './is-literal-union';
 
