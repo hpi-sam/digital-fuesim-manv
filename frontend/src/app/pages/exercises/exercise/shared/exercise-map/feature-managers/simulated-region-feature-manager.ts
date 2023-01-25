@@ -24,7 +24,7 @@ import {
     getNextPositionPolygon,
     getPositionPolygon,
 } from '../utility/ol-geometry-helpers';
-import type { ResizableElement } from '../utility/ol-geometry-helpers'
+import type { ResizableElement } from '../utility/ol-geometry-helpers';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 

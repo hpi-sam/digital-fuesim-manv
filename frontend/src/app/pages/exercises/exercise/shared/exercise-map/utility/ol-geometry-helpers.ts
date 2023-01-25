@@ -9,7 +9,7 @@ import type { WithPosition } from '../../utility/types/with-position';
 export interface PositionableElement {
     readonly id: UUID;
     readonly position: Position;
-};
+}
 
 export type ResizableElement = PositionableElement & {
     size: Size;
