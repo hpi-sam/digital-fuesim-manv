@@ -9,9 +9,9 @@ import {
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
 import { IsUUIDSet } from '../utils/validators';
 import { IsMetaPosition } from '../utils/validators/is-metaposition';
-import { getCreate, Position, Transfer } from './utils';
+import { getCreate, Transfer } from './utils';
 import { ImageProperties } from './utils/image-properties';
-import { MetaPosition } from './utils/meta-position';
+import { MetaPosition } from './utils/position/meta-position';
 
 export class Vehicle {
     @IsUUID(4, uuidValidationOptions)
@@ -32,15 +32,6 @@ export class Vehicle {
     @IsMetaPosition()
     @ValidateNested()
     public readonly metaPosition: MetaPosition;
-
-    /**
-     * @deprecated use {@link metaPosition}
-     * Exclusive-or to {@link transfer}
-     */
-    @ValidateNested()
-    @Type(() => Position)
-    @IsOptional()
-    public readonly position?: Position;
 
     @ValidateNested()
     @Type(() => ImageProperties)

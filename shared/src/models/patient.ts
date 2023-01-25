@@ -21,12 +21,11 @@ import {
     PatientStatus,
     patientStatusAllowedValues,
     ImageProperties,
-    Position,
     healthPointsDefaults,
     HealthPoints,
     getCreate,
 } from './utils';
-import { MetaPosition } from './utils/meta-position';
+import { MetaPosition } from './utils/position/meta-position';
 import { PersonalInformation } from './utils/personal-information';
 import { PretriageInformation } from './utils/pretriage-information';
 
@@ -70,16 +69,6 @@ export class Patient {
 
     /**
      * @deprecated use {@link metaPosition}
-     * Exclusive-or to {@link vehicleId}
-     */
-    @ValidateNested()
-    @Type(() => Position)
-    @IsOptional()
-    public readonly position?: Position;
-
-    /**
-     * @deprecated use {@link metaPosition}
-     * Exclusive-or to {@link position}
      */
     @IsUUID(4, uuidValidationOptions)
     @IsOptional()

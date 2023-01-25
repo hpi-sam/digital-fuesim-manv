@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
-import { Position } from '../../models/utils';
+import { MapPosition, Position, VehiclePosition } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
@@ -174,11 +174,9 @@ export namespace VehicleActionReducers {
         action: MoveVehicleAction,
         reducer: (draftState, { vehicleId, targetPosition }) => {
             const vehicle = getElement(draftState, 'vehicles', vehicleId);
-            vehicle.position = cloneDeepMutable(targetPosition);
-            vehicle.metaPosition = {
-                type: 'coordinates',
-                position: cloneDeepMutable(targetPosition),
-            };
+            vehicle.metaPosition = cloneDeepMutable(
+                MapPosition.create(targetPosition)
+            );
             return draftState;
         },
         rights: 'participant',
@@ -305,11 +303,11 @@ export namespace VehicleActionReducers {
                             `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
-                    material.metaPosition = {
-                        type: 'vehicle',
-                        vehicleId,
-                    };
                     removeElementPosition(draftState, 'materials', material.id);
+                    material.metaPosition = cloneDeepMutable(
+                        VehiclePosition.create(vehicleId)
+                    );
+
                     break;
                 }
                 case 'personnel': {
@@ -328,15 +326,15 @@ export namespace VehicleActionReducers {
                             `Personnel with id ${personnel.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
-                    personnel.metaPosition = {
-                        type: 'vehicle',
-                        vehicleId,
-                    };
                     removeElementPosition(
                         draftState,
                         'personnel',
                         personnel.id
                     );
+                    personnel.metaPosition = cloneDeepMutable(
+                        VehiclePosition.create(vehicleId)
+                    );
+
                     break;
                 }
                 case 'patients': {
@@ -354,27 +352,24 @@ export namespace VehicleActionReducers {
                         );
                     }
                     vehicle.patientIds[elementToBeLoadedId] = true;
-
-                    patient.metaPosition = {
-                        type: 'vehicle',
-                        vehicleId,
-                    };
                     removeElementPosition(draftState, 'patients', patient.id);
+                    patient.metaPosition = cloneDeepMutable(
+                        VehiclePosition.create(vehicleId)
+                    );
 
                     // Load in all materials
                     Object.keys(vehicle.materialIds).forEach((materialId) => {
-                        getElement(
-                            draftState,
-                            'materials',
-                            materialId
-                        ).metaPosition = {
-                            type: 'vehicle',
-                            vehicleId,
-                        };
                         removeElementPosition(
                             draftState,
                             'materials',
                             materialId
+                        );
+                        getElement(
+                            draftState,
+                            'materials',
+                            materialId
+                        ).metaPosition = cloneDeepMutable(
+                            VehiclePosition.create(vehicleId)
                         );
                     });
 
@@ -387,18 +382,17 @@ export namespace VehicleActionReducers {
                                     .transfer === undefined
                         )
                         .forEach((personnelId) => {
-                            getElement(
-                                draftState,
-                                'personnel',
-                                personnelId
-                            ).metaPosition = {
-                                type: 'vehicle',
-                                vehicleId,
-                            };
                             removeElementPosition(
                                 draftState,
                                 'personnel',
                                 personnelId
+                            );
+                            getElement(
+                                draftState,
+                                'personnel',
+                                personnelId
+                            ).metaPosition = cloneDeepMutable(
+                                VehiclePosition.create(vehicleId)
                             );
                         });
                 }

@@ -1,8 +1,15 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { getCreate, Position, Size } from './utils';
-import type { ImageProperties } from './utils';
+import { IsMetaPosition } from '../utils/validators/is-metaposition';
+import {
+    coordinatesOf,
+    getCreate,
+    MapPosition,
+    MetaPosition,
+    Size,
+} from './utils';
+import type { ImageProperties, MapCoordinates } from './utils';
 
 export class Viewport {
     @IsUUID(4, uuidValidationOptions)
@@ -12,8 +19,8 @@ export class Viewport {
      * top-left position
      */
     @ValidateNested()
-    @Type(() => Position)
-    public readonly position: Position;
+    @IsMetaPosition()
+    public readonly metaPosition: MetaPosition;
 
     @ValidateNested()
     @Type(() => Size)
@@ -26,8 +33,8 @@ export class Viewport {
      * @param position top-left position
      * @deprecated Use {@link create} instead
      */
-    constructor(position: Position, size: Size, name: string) {
-        this.position = position;
+    constructor(position: MapCoordinates, size: Size, name: string) {
+        this.metaPosition = MapPosition.create(position);
         this.size = size;
         this.name = name;
     }
@@ -40,12 +47,12 @@ export class Viewport {
         aspectRatio: 1600 / 900,
     };
 
-    static isInViewport(viewport: Viewport, position: Position): boolean {
+    static isInViewport(viewport: Viewport, position: MapCoordinates): boolean {
         return (
-            viewport.position.x <= position.x &&
-            position.x <= viewport.position.x + viewport.size.width &&
-            viewport.position.y - viewport.size.height <= position.y &&
-            position.y <= viewport.position.y
+            coordinatesOf(viewport).x <= position.x &&
+            position.x <= coordinatesOf(viewport).x + viewport.size.width &&
+            coordinatesOf(viewport).y - viewport.size.height <= position.y &&
+            position.y <= coordinatesOf(viewport).y
         );
     }
 }

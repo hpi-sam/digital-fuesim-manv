@@ -7,7 +7,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { TransferPoint } from '../../models';
-import { Position } from '../../models/utils';
+import { coordinatesOf, MapPosition, Position } from '../../models/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -127,7 +127,9 @@ export namespace TransferPointActionReducers {
                 'transferPoints',
                 transferPointId
             );
-            transferPoint.position = cloneDeepMutable(targetPosition);
+            transferPoint.metaPosition = cloneDeepMutable(
+                MapPosition.create(targetPosition)
+            );
             return draftState;
         },
         rights: 'trainer',
@@ -184,8 +186,8 @@ export namespace TransferPointActionReducers {
                 const _duration =
                     duration ??
                     estimateDuration(
-                        transferPoint1.position,
-                        transferPoint2.position
+                        coordinatesOf(transferPoint1),
+                        coordinatesOf(transferPoint2)
                     );
                 transferPoint1.reachableTransferPoints[transferPointId2] = {
                     duration: _duration,

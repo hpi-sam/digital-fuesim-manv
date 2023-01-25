@@ -6,15 +6,15 @@ import {
     IsNumber,
     Min,
     Max,
-    IsOptional,
 } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsUUIDSet } from '../utils/validators';
 import { IsMetaPosition } from '../utils/validators/is-metaposition';
 import type { MaterialTemplate } from './material-template';
-import { CanCaterFor, Position, ImageProperties, getCreate } from './utils';
-import { MetaPosition } from './utils/meta-position';
+import type { Position } from './utils';
+import { CanCaterFor, ImageProperties, getCreate } from './utils';
+import { MetaPosition } from './utils/position/meta-position';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
@@ -57,15 +57,6 @@ export class Material {
     @ValidateNested()
     public readonly metaPosition: MetaPosition;
 
-    /**
-     * @deprecated use {@link metaPosition}
-     * if undefined, is in vehicle with {@link this.vehicleId}
-     */
-    @ValidateNested()
-    @Type(() => Position)
-    @IsOptional()
-    public readonly position?: Position;
-
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
@@ -87,7 +78,6 @@ export class Material {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
         this.assignedPatientIds = assignedPatientIds;
-        this.position = position;
         this.image = image;
         this.canCaterFor = canCaterFor;
         this.treatmentRange = treatmentRange;

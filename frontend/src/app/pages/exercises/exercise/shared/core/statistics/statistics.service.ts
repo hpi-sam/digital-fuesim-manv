@@ -7,6 +7,8 @@ import type {
     Vehicle,
 } from 'digital-fuesim-manv-shared';
 import {
+    coordinatesOf,
+    isOnMap,
     loopTroughTime,
     Personnel,
     uuid,
@@ -108,18 +110,27 @@ export class StatisticsService {
                     ),
                     Object.values(draftState.patients).filter(
                         (patient) =>
-                            patient.position &&
-                            Viewport.isInViewport(viewport, patient.position)
+                            isOnMap(patient) &&
+                            Viewport.isInViewport(
+                                viewport,
+                                coordinatesOf(patient)
+                            )
                     ),
                     Object.values(draftState.vehicles).filter(
                         (vehicle) =>
-                            vehicle.position &&
-                            Viewport.isInViewport(viewport, vehicle.position)
+                            isOnMap(vehicle) &&
+                            Viewport.isInViewport(
+                                viewport,
+                                coordinatesOf(vehicle)
+                            )
                     ),
                     Object.values(draftState.personnel).filter(
                         (personnel) =>
-                            personnel.position &&
-                            Viewport.isInViewport(viewport, personnel.position)
+                            isOnMap(personnel) &&
+                            Viewport.isInViewport(
+                                viewport,
+                                coordinatesOf(personnel)
+                            )
                     )
                 ),
             ])

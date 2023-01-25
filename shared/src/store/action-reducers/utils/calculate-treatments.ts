@@ -2,6 +2,7 @@ import { groupBy } from 'lodash-es';
 import type { Material, Personnel } from '../../../models';
 import { Patient } from '../../../models';
 import type { PatientStatus, Position } from '../../../models/utils';
+import { coordinatesOf, isNotOnMap } from '../../../models/utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import { maxTreatmentRange } from '../../../state-helpers/max-treatment-range';
@@ -188,7 +189,7 @@ export function updateTreatments(
     // Currently, the treatment pattern algorithm is stable. This means that completely done from scratch,
     // the result would semantically be the same. This could be changed later.
 
-    if (element.position === undefined) {
+    if (isNotOnMap(element)) {
         // The element is no longer in a position (get it?!) to be treated or treat a patient
         removeTreatmentsOfElement(state, element);
         return;
@@ -215,13 +216,13 @@ export function updateTreatments(
 
     updateCateringAroundPatient(
         state,
-        element.position,
+        coordinatesOf(element),
         'personnel',
         alreadyUpdatedElementIds
     );
     updateCateringAroundPatient(
         state,
-        element.position,
+        coordinatesOf(element),
         'materials',
         alreadyUpdatedElementIds
     );
@@ -244,7 +245,7 @@ function updateCatering(
             cateringElement.canCaterFor.yellow === 0 &&
             cateringElement.canCaterFor.green === 0) ||
         // The element is no longer in a position to treat a patient
-        cateringElement.position === undefined
+        isNotOnMap(cateringElement)
     ) {
         return;
     }
@@ -262,7 +263,7 @@ function updateCatering(
     if (cateringElement.overrideTreatmentRange > 0) {
         const patientIdsInOverrideRange = SpatialTree.findAllElementsInCircle(
             state.spatialTrees.patients,
-            cateringElement.position,
+            coordinatesOf(cateringElement),
             cateringElement.overrideTreatmentRange
         );
         // In the overrideTreatmentRange (the override circle) only the distance to the patient is important - his/her injuries are ignored
@@ -291,7 +292,7 @@ function updateCatering(
     const patientsInTreatmentRange: Mutable<Patient>[] =
         SpatialTree.findAllElementsInCircle(
             state.spatialTrees.patients,
-            cateringElement.position,
+            coordinatesOf(cateringElement),
             cateringElement.treatmentRange
         )
             // Filter out every patient in the overrideTreatmentRange

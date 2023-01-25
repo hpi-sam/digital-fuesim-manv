@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Viewport } from '../../models';
-import { Position, Size } from '../../models/utils';
+import { MapPosition, Position, Size } from '../../models/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -80,7 +80,9 @@ export namespace ViewportActionReducers {
         action: MoveViewportAction,
         reducer: (draftState, { viewportId, targetPosition }) => {
             const viewport = getElement(draftState, 'viewports', viewportId);
-            viewport.position = cloneDeepMutable(targetPosition);
+            viewport.metaPosition = cloneDeepMutable(
+                MapPosition.create(targetPosition)
+            );
             return draftState;
         },
         rights: 'trainer',
@@ -90,7 +92,9 @@ export namespace ViewportActionReducers {
         action: ResizeViewportAction,
         reducer: (draftState, { viewportId, targetPosition, newSize }) => {
             const viewport = getElement(draftState, 'viewports', viewportId);
-            viewport.position = cloneDeepMutable(targetPosition);
+            viewport.metaPosition = cloneDeepMutable(
+                MapPosition.create(targetPosition)
+            );
             viewport.size = cloneDeepMutable(newSize);
             return draftState;
         },

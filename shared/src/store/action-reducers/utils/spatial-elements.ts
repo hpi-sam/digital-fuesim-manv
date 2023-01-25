@@ -1,4 +1,5 @@
-import type { Position } from '../../../models/utils';
+import { isOnMap, Position } from '../../../models/utils';
+import { MapPosition, isNotOnMap, coordinatesOf } from '../../../models/utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
@@ -23,13 +24,13 @@ export function addElementPosition(
     elementId: UUID
 ) {
     const element = getElement(state, elementType, elementId);
-    if (element.position === undefined) {
+    if (isNotOnMap(element)) {
         return;
     }
     SpatialTree.addElement(
         state.spatialTrees[elementType],
         element.id,
-        element.position
+        coordinatesOf(element)
     );
     updateTreatments(state, element);
 }
@@ -44,8 +45,8 @@ export function updateElementPosition(
     targetPosition: Position
 ) {
     const element = getElement(state, elementType, elementId);
-    const startPosition = element.position;
-    if (startPosition !== undefined) {
+    if (isOnMap(element)) {
+        const startPosition = cloneDeepMutable(coordinatesOf(element));
         SpatialTree.moveElement(
             state.spatialTrees[elementType],
             element.id,
@@ -59,11 +60,7 @@ export function updateElementPosition(
             targetPosition
         );
     }
-    element.position = cloneDeepMutable(targetPosition);
-    element.metaPosition = {
-        type: 'coordinates',
-        position: cloneDeepMutable(targetPosition),
-    };
+    element.metaPosition = cloneDeepMutable(MapPosition.create(targetPosition));
     updateTreatments(state, element);
 }
 
@@ -77,14 +74,13 @@ export function removeElementPosition(
     elementId: UUID
 ) {
     const element = getElement(state, elementType, elementId);
-    if (element.position === undefined) {
+    if (isNotOnMap(element)) {
         return;
     }
     SpatialTree.removeElement(
         state.spatialTrees[elementType],
         element.id,
-        element.position
+        cloneDeepMutable(coordinatesOf(element))
     );
-    element.position = undefined;
     updateTreatments(state, element);
 }

@@ -6,6 +6,7 @@ import type {
     UUID,
     Vehicle,
 } from 'digital-fuesim-manv-shared';
+import { coordinatesOf } from 'digital-fuesim-manv-shared';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
 import type { AppState } from '../../app.state';
 
@@ -119,8 +120,10 @@ export const selectTransferLines = createSelector(
                 Object.entries(transferPoint.reachableTransferPoints).map(
                     ([connectedId, { duration }]) => ({
                         id: `${transferPoint.id}:${connectedId}` as const,
-                        startPosition: transferPoint.position,
-                        endPosition: transferPoints[connectedId]!.position,
+                        startPosition: coordinatesOf(transferPoint),
+                        endPosition: coordinatesOf(
+                            transferPoints[connectedId]!
+                        ),
                         duration,
                     })
                 )

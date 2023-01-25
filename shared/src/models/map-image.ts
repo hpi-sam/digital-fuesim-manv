@@ -1,15 +1,17 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsInt, IsUUID, ValidateNested } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
-import { Position, getCreate, ImageProperties } from './utils';
+import { IsMetaPosition } from '../utils/validators/is-metaposition';
+import type { MapCoordinates } from './utils';
+import { MapPosition, getCreate, ImageProperties, MetaPosition } from './utils';
 
 export class MapImage {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
 
     @ValidateNested()
-    @Type(() => Position)
-    public readonly position: Position;
+    @IsMetaPosition()
+    public readonly metaPosition: MetaPosition;
 
     @ValidateNested()
     @Type(() => ImageProperties)
@@ -34,12 +36,12 @@ export class MapImage {
      * @deprecated Use {@link create} instead
      */
     constructor(
-        topLeft: Position,
+        topLeft: MapCoordinates,
         image: ImageProperties,
         isLocked: boolean,
         zIndex: number
     ) {
-        this.position = topLeft;
+        this.metaPosition = MapPosition.create(topLeft);
         this.image = image;
         this.isLocked = isLocked;
         this.zIndex = zIndex;

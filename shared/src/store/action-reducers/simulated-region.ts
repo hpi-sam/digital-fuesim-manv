@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { SimulatedRegion } from '../../models';
-import { Position, Size } from '../../models/utils';
+import { MapPosition, Position, Size } from '../../models/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -87,7 +87,9 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegions',
                     simulatedRegionId
                 );
-                simulatedRegion.position = cloneDeepMutable(targetPosition);
+                simulatedRegion.metaPosition = cloneDeepMutable(
+                    MapPosition.create(targetPosition)
+                );
                 return draftState;
             },
             rights: 'trainer',
@@ -105,7 +107,9 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegions',
                     simulatedRegionId
                 );
-                simulatedRegion.position = cloneDeepMutable(targetPosition);
+                simulatedRegion.metaPosition = cloneDeepMutable(
+                    MapPosition.create(targetPosition)
+                );
                 simulatedRegion.size = cloneDeepMutable(newSize);
                 return draftState;
             },

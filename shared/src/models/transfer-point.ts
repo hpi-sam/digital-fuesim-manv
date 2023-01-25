@@ -1,17 +1,17 @@
-import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, UUIDSet, uuidValidationOptions } from '../utils';
 import { IsReachableTransferPoints, IsUUIDSet } from '../utils/validators';
-import type { ImageProperties } from './utils';
-import { getCreate, Position } from './utils';
+import { IsMetaPosition } from '../utils/validators/is-metaposition';
+import type { ImageProperties, MapCoordinates } from './utils';
+import { MapPosition, MetaPosition, getCreate } from './utils';
 
 export class TransferPoint {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
 
     @ValidateNested()
-    @Type(() => Position)
-    public readonly position: Position;
+    @IsMetaPosition()
+    public readonly metaPosition: MetaPosition;
 
     @IsReachableTransferPoints()
     public readonly reachableTransferPoints: ReachableTransferPoints;
@@ -29,13 +29,13 @@ export class TransferPoint {
      * @deprecated Use {@link create} instead
      */
     constructor(
-        position: Position,
+        position: MapCoordinates,
         reachableTransferPoints: ReachableTransferPoints,
         reachableHospitals: UUIDSet,
         internalName: string,
         externalName: string
     ) {
-        this.position = position;
+        this.metaPosition = MapPosition.create(position);
         this.reachableTransferPoints = reachableTransferPoints;
         this.reachableHospitals = reachableHospitals;
         this.internalName = internalName;

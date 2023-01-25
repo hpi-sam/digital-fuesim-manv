@@ -9,7 +9,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { MapImage } from '../../models';
-import { Position } from '../../models/utils';
+import { MapPosition, Position } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import {
@@ -134,7 +134,9 @@ export namespace MapImagesActionReducers {
         action: MoveMapImageAction,
         reducer: (draftState, { mapImageId, targetPosition }) => {
             const mapImage = getElement(draftState, 'mapImages', mapImageId);
-            mapImage.position = cloneDeepMutable(targetPosition);
+            mapImage.metaPosition = cloneDeepMutable(
+                MapPosition.create(targetPosition)
+            );
             return draftState;
         },
         rights: 'trainer',

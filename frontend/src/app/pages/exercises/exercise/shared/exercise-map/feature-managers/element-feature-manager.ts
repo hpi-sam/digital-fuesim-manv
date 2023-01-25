@@ -1,9 +1,12 @@
 import type {
     ExerciseState,
+    MetaPosition,
+    WithMetaPosition,
     Position,
     Size,
     UUID,
 } from 'digital-fuesim-manv-shared';
+import { coordinatesOf } from 'digital-fuesim-manv-shared';
 import { isArray } from 'lodash-es';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
@@ -15,7 +18,6 @@ import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import { Subject } from 'rxjs';
-import type { WithPosition } from '../../utility/types/with-position';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { Coordinates } from '../utility/movement-animator';
 import { MovementAnimator } from '../utility/movement-animator';
@@ -25,7 +27,7 @@ import { ElementManager } from './element-manager';
 
 export interface PositionableElement {
     readonly id: UUID;
-    readonly position: Position;
+    readonly metaPosition: MetaPosition;
 }
 
 export interface ResizableElement extends PositionableElement {
@@ -44,8 +46,10 @@ export function isCoordinateArray(
     return isArray(coordinates[0]);
 }
 
-export const createPoint = (element: WithPosition<any>): Feature<Point> =>
-    new Feature(new Point([element.position.x, element.position.y]));
+export const createPoint = (element: WithMetaPosition): Feature<Point> =>
+    new Feature(
+        new Point([coordinatesOf(element).x, coordinatesOf(element).y])
+    );
 
 export const createLineString = (
     element: ResizableElement
@@ -54,14 +58,20 @@ export const createLineString = (
 
 export function getCoordinateArray(element: ResizableElement) {
     return [
-        [element.position.x, element.position.y],
-        [element.position.x + element.size.width, element.position.y],
+        [coordinatesOf(element).x, coordinatesOf(element).y],
         [
-            element.position.x + element.size.width,
-            element.position.y - element.size.height,
+            coordinatesOf(element).x + element.size.width,
+            coordinatesOf(element).y,
         ],
-        [element.position.x, element.position.y - element.size.height],
-        [element.position.x, element.position.y],
+        [
+            coordinatesOf(element).x + element.size.width,
+            coordinatesOf(element).y - element.size.height,
+        ],
+        [
+            coordinatesOf(element).x,
+            coordinatesOf(element).y - element.size.height,
+        ],
+        [coordinatesOf(element).x, coordinatesOf(element).y],
     ];
 }
 
@@ -134,7 +144,7 @@ export abstract class ElementFeatureManager<
         changedProperties: ReadonlySet<keyof Element>,
         elementFeature: ElementFeature
     ): void {
-        if (changedProperties.has('position')) {
+        if (changedProperties.has('metaPosition')) {
             const newFeature = this.getFeatureFromElement(newElement);
             if (!newFeature) {
                 throw new TypeError('newFeature undefined');
@@ -144,8 +154,8 @@ export abstract class ElementFeatureManager<
                 (isLineString(newFeature)
                     ? (newFeature.getGeometry()! as LineString).getCoordinates()
                     : [
-                          newElement.position.x,
-                          newElement.position.y,
+                          coordinatesOf(newElement).x,
+                          coordinatesOf(newElement).y,
                       ]) as Coordinates<FeatureType>
             );
         }

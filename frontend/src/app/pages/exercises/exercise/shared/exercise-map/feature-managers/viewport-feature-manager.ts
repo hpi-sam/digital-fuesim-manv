@@ -103,7 +103,7 @@ export class ViewportFeatureManager
         elementFeature: Feature<LineString>
     ): void {
         if (
-            changedProperties.has('position') ||
+            changedProperties.has('metaPosition') ||
             changedProperties.has('size')
         ) {
             const newFeature = this.getFeatureFromElement(newElement);

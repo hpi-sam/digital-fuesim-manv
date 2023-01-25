@@ -1,8 +1,17 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { getCreate, Position, Size } from './utils';
-import type { ImageProperties } from './utils';
+import { IsMetaPosition } from '../utils/validators/is-metaposition';
+import {
+    getCreate,
+    isInSimulatedRegion,
+    MapPosition,
+    MetaPosition,
+    simulatedRegionItsIn,
+    Size,
+} from './utils';
+import type { ImageProperties, MapCoordinates } from './utils';
+import type { WithMetaPosition } from './utils/position/with-meta-position';
 
 export class SimulatedRegion {
     @IsUUID(4, uuidValidationOptions)
@@ -12,8 +21,8 @@ export class SimulatedRegion {
      * top-left position
      */
     @ValidateNested()
-    @Type(() => Position)
-    public readonly position: Position;
+    @IsMetaPosition()
+    public readonly metaPosition: MetaPosition;
 
     @ValidateNested()
     @Type(() => Size)
@@ -26,8 +35,8 @@ export class SimulatedRegion {
      * @param position top-left position
      * @deprecated Use {@link create} instead
      */
-    constructor(position: Position, size: Size, name: string) {
-        this.position = position;
+    constructor(position: MapCoordinates, size: Size, name: string) {
+        this.metaPosition = MapPosition.create(position);
         this.size = size;
         this.name = name;
     }
@@ -42,11 +51,11 @@ export class SimulatedRegion {
 
     static isInSimulatedRegion(
         region: SimulatedRegion,
-        position: Position
+        withMetaPosition: WithMetaPosition
     ): boolean {
-        // This class was copied from viewport.ts
-        // We will have to implement this logic differently
-        // later, for now, this is a stub method
-        return false;
+        return (
+            isInSimulatedRegion(withMetaPosition) &&
+            simulatedRegionItsIn(withMetaPosition) === region.id
+        );
     }
 }

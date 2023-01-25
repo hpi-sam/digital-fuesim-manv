@@ -5,6 +5,7 @@ import type {
     MergeIntersection,
     UUID,
 } from 'digital-fuesim-manv-shared';
+import { coordinatesOf } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
 import type Geometry from 'ol/geom/Geometry';
@@ -355,10 +356,10 @@ export class OlMapManager {
                 const center = view.getCenter()!;
                 const previousZoom = view.getZoom()!;
                 const targetExtent = [
-                    viewport.position.x,
-                    viewport.position.y - viewport.size.height,
-                    viewport.position.x + viewport.size.width,
-                    viewport.position.y,
+                    coordinatesOf(viewport).x,
+                    coordinatesOf(viewport).y - viewport.size.height,
+                    coordinatesOf(viewport).x + viewport.size.width,
+                    coordinatesOf(viewport).y,
                 ];
                 view.fit(targetExtent);
                 const matchingZoom = view.getZoom()!;
@@ -527,20 +528,20 @@ export class OlMapManager {
             return;
         }
         const minX = Math.min(
-            ...viewports.map((viewport) => viewport.position.x)
+            ...viewports.map((viewport) => coordinatesOf(viewport).x)
         );
         const minY = Math.min(
             ...viewports.map(
-                (viewport) => viewport.position.y - viewport.size.height
+                (viewport) => coordinatesOf(viewport).y - viewport.size.height
             )
         );
         const maxX = Math.max(
             ...viewports.map(
-                (viewport) => viewport.position.x + viewport.size.width
+                (viewport) => coordinatesOf(viewport).x + viewport.size.width
             )
         );
         const maxY = Math.max(
-            ...viewports.map((viewport) => viewport.position.y)
+            ...viewports.map((viewport) => coordinatesOf(viewport).y)
         );
         const padding = 25;
         view.fit([minX, minY, maxX, maxY], {

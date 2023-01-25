@@ -16,7 +16,7 @@ import { Patient } from './patient';
 import type { FunctionParameters } from './patient-health-state';
 import { PretriageInformation } from './utils/pretriage-information';
 import { PatientHealthState } from './patient-health-state';
-import type { MetaPosition } from './utils/meta-position';
+import type { MetaPosition } from './utils/position/meta-position';
 
 export class PatientTemplate {
     @IsUUID(4, uuidValidationOptions)

@@ -2,7 +2,12 @@ import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { TransferPoint } from '../../models';
 import type { Position } from '../../models/utils';
-import { StartPoint, startPointTypeOptions } from '../../models/utils';
+import {
+    coordinatesOf,
+    MapPosition,
+    StartPoint,
+    startPointTypeOptions,
+} from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
@@ -42,20 +47,18 @@ export function letElementArrive(
         element.transfer.targetTransferPointId
     );
     const newPosition: Mutable<Position> = {
-        x: targetTransferPoint.position.x,
+        x: coordinatesOf(targetTransferPoint).x,
         y:
-            targetTransferPoint.position.y +
+            coordinatesOf(targetTransferPoint).y +
             // Position it in the upper half of the transferPoint
             imageSizeToPosition(TransferPoint.image.height / 3),
     };
     if (elementType === 'personnel') {
         updateElementPosition(draftState, 'personnel', element.id, newPosition);
     } else {
-        element.position = newPosition;
-        element.metaPosition = {
-            type: 'coordinates',
-            position: newPosition,
-        };
+        element.metaPosition = cloneDeepMutable(
+            MapPosition.create(newPosition)
+        );
     }
     delete element.transfer;
 }
@@ -168,8 +171,6 @@ export namespace TransferActionReducers {
             // Remove the position of the element
             if (elementType === 'personnel') {
                 removeElementPosition(draftState, 'personnel', element.id);
-            } else {
-                element.position = undefined;
             }
             // Set the element to transfer
             element.transfer = {

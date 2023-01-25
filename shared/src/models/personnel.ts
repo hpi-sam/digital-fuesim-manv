@@ -13,15 +13,15 @@ import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsLiteralUnion, IsUUIDSet } from '../utils/validators';
 import { IsMetaPosition } from '../utils/validators/is-metaposition';
 import type { PersonnelTemplate } from './personnel-template';
+import type { Position } from './utils';
 import {
     PersonnelType,
     CanCaterFor,
     ImageProperties,
-    Position,
     Transfer,
     getCreate,
 } from './utils';
-import { MetaPosition } from './utils/meta-position';
+import { MetaPosition } from './utils/position/meta-position';
 import { personnelTypeAllowedValues } from './utils/personnel-type';
 
 export class Personnel {
@@ -73,15 +73,6 @@ export class Personnel {
     public readonly metaPosition: MetaPosition;
 
     /**
-     * @deprecated use {@link metaPosition}
-     * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or in transfer.
-     */
-    @ValidateNested()
-    @Type(() => Position)
-    @IsOptional()
-    public readonly position?: Position;
-
-    /**
      * * @deprecated use {@link metaPosition}
      * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or has a {@link position}.
      */
@@ -109,7 +100,6 @@ export class Personnel {
         this.vehicleName = vehicleName;
         this.personnelType = personnelType;
         this.assignedPatientIds = assignedPatientIds;
-        this.position = position;
         this.image = image;
         this.canCaterFor = canCaterFor;
         this.treatmentRange = treatmentRange;
