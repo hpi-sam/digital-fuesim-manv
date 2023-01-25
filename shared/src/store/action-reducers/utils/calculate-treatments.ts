@@ -6,7 +6,7 @@ import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import { maxTreatmentRange } from '../../../state-helpers/max-treatment-range';
 import type { Mutable, UUID } from '../../../utils';
-import { typeSelectorMap } from '../../../utils/type-state-selector-map';
+import { elementTypePluralMap } from '../../../utils/type-state-selector-map';
 import { getElement } from './get-element';
 
 // TODO: `caterFor` and `treat` are currently used as synonyms without a clear distinction.
@@ -104,7 +104,7 @@ function updateCateringAroundPatient(
     elementIdsToBeSkipped: Set<UUID>
 ) {
     const elementsInTreatmentRange = SpatialTree.findAllElementsInCircle(
-        state.spatialTrees[typeSelectorMap[elementType]],
+        state.spatialTrees[elementTypePluralMap[elementType]],
         position,
         maxTreatmentRange
     ).filter((elementId) => !elementIdsToBeSkipped.has(elementId));

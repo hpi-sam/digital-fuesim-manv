@@ -11,8 +11,8 @@ import { Patient } from '../../models';
 import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
-import type { TypeSelectorMap } from '../../utils/type-state-selector-map';
-import { typeSelectorMap } from '../../utils/type-state-selector-map';
+import type { ElementTypePluralMap } from '../../utils/type-state-selector-map';
+import { elementTypePluralMap } from '../../utils/type-state-selector-map';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
@@ -132,14 +132,17 @@ export namespace ExerciseActionReducers {
     };
 }
 
-type TransferTypeSelectorMap = Pick<TypeSelectorMap, 'personnel' | 'vehicle'>;
+type TransferTypePluralMap = Pick<
+    ElementTypePluralMap,
+    'personnel' | 'vehicle'
+>;
 
 function refreshTransfer(
     draftState: Mutable<ExerciseState>,
-    type: keyof TransferTypeSelectorMap,
+    type: keyof TransferTypePluralMap,
     tickInterval: number
 ): void {
-    const elements = draftState[typeSelectorMap[type]];
+    const elements = draftState[elementTypePluralMap[type]];
     Object.values(elements).forEach((element: Mutable<Personnel | Vehicle>) => {
         if (!element.transfer) {
             return;
