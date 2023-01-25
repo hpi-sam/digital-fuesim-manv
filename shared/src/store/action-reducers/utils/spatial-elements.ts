@@ -60,6 +60,10 @@ export function updateElementPosition(
         );
     }
     element.position = cloneDeepMutable(targetPosition);
+    element.metaPosition = {
+        type: 'coordinates',
+        position: cloneDeepMutable(targetPosition),
+    };
     updateTreatments(state, element);
 }
 

@@ -11,6 +11,7 @@ import {
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsLiteralUnion, IsUUIDSet } from '../utils/validators';
+import { IsMetaPosition } from '../utils/validators/is-metaposition';
 import type { PersonnelTemplate } from './personnel-template';
 import {
     PersonnelType,
@@ -20,6 +21,7 @@ import {
     Transfer,
     getCreate,
 } from './utils';
+import { MetaPosition } from './utils/meta-position';
 import { personnelTypeAllowedValues } from './utils/personnel-type';
 
 export class Personnel {
@@ -66,7 +68,12 @@ export class Personnel {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
+    @IsMetaPosition()
+    @ValidateNested()
+    public readonly metaPosition: MetaPosition;
+
     /**
+     * @deprecated use {@link metaPosition}
      * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or in transfer.
      */
     @ValidateNested()
@@ -75,6 +82,7 @@ export class Personnel {
     public readonly position?: Position;
 
     /**
+     * * @deprecated use {@link metaPosition}
      * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or has a {@link position}.
      */
     @ValidateNested()
@@ -94,6 +102,7 @@ export class Personnel {
         canCaterFor: CanCaterFor,
         treatmentRange: number,
         overrideTreatmentRange: number,
+        metaPosition: MetaPosition,
         position?: Position
     ) {
         this.vehicleId = vehicleId;
@@ -105,6 +114,7 @@ export class Personnel {
         this.canCaterFor = canCaterFor;
         this.treatmentRange = treatmentRange;
         this.overrideTreatmentRange = overrideTreatmentRange;
+        this.metaPosition = metaPosition;
     }
 
     static readonly create = getCreate(this);
@@ -112,7 +122,8 @@ export class Personnel {
     static generatePersonnel(
         personnelTemplate: PersonnelTemplate,
         vehicleId: UUID,
-        vehicleName: string
+        vehicleName: string,
+        metaPosition: MetaPosition
     ): Personnel {
         return this.create(
             vehicleId,
@@ -123,13 +134,12 @@ export class Personnel {
             personnelTemplate.canCaterFor,
             personnelTemplate.treatmentRange,
             personnelTemplate.overrideTreatmentRange,
+            metaPosition,
             undefined
         );
     }
 
     static isInVehicle(personnel: Personnel): boolean {
-        return (
-            personnel.position === undefined && personnel.transfer === undefined
-        );
+        return personnel.metaPosition.type === 'vehicle';
     }
 }

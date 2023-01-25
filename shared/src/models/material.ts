@@ -11,8 +11,10 @@ import {
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsUUIDSet } from '../utils/validators';
+import { IsMetaPosition } from '../utils/validators/is-metaposition';
 import type { MaterialTemplate } from './material-template';
 import { CanCaterFor, Position, ImageProperties, getCreate } from './utils';
+import { MetaPosition } from './utils/meta-position';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
@@ -51,7 +53,12 @@ export class Material {
     @Max(maxTreatmentRange)
     public readonly treatmentRange: number;
 
+    @IsMetaPosition()
+    @ValidateNested()
+    public readonly metaPosition: MetaPosition;
+
     /**
+     * @deprecated use {@link metaPosition}
      * if undefined, is in vehicle with {@link this.vehicleId}
      */
     @ValidateNested()
@@ -74,6 +81,7 @@ export class Material {
         canCaterFor: CanCaterFor,
         treatmentRange: number,
         overrideTreatmentRange: number,
+        metaPosition: MetaPosition,
         position?: Position
     ) {
         this.vehicleId = vehicleId;
@@ -84,6 +92,7 @@ export class Material {
         this.canCaterFor = canCaterFor;
         this.treatmentRange = treatmentRange;
         this.overrideTreatmentRange = overrideTreatmentRange;
+        this.metaPosition = metaPosition;
     }
 
     static readonly create = getCreate(this);
@@ -91,7 +100,8 @@ export class Material {
     static generateMaterial(
         materialTemplate: MaterialTemplate,
         vehicleId: UUID,
-        vehicleName: string
+        vehicleName: string,
+        metaPosition: MetaPosition
     ): Material {
         return this.create(
             vehicleId,
@@ -101,11 +111,12 @@ export class Material {
             materialTemplate.canCaterFor,
             materialTemplate.treatmentRange,
             materialTemplate.overrideTreatmentRange,
+            metaPosition,
             undefined
         );
     }
 
     static isInVehicle(material: Material): boolean {
-        return material.position === undefined;
+        return material.metaPosition.type === 'vehicle';
     }
 }
