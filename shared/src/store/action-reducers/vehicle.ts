@@ -361,7 +361,7 @@ export namespace VehicleActionReducers {
                     Object.keys(vehicle.materialIds).forEach((materialId) => {
                         getElement(
                             draftState,
-                            'materials',
+                            'material',
                             materialId
                         ).metaPosition = {
                             type: 'vehicle',
