@@ -46,7 +46,7 @@ export abstract class MoveableFeatureManager<
         this.movementAnimator = new MovementAnimator<FeatureType>(
             this.olMap,
             this.layer,
-            this.geometryHelper.getNextPosition,
+            this.geometryHelper.interpolateCoordinates,
             this.geometryHelper.getFeatureCoordinates
         );
     }

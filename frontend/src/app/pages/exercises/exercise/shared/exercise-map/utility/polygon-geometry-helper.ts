@@ -36,7 +36,7 @@ export class PolygonGeometryHelper
         return feature.getGeometry()!.getCoordinates();
     }
 
-    getNextPosition(
+    interpolateCoordinates(
         positions: CoordinatePair<Polygon>,
         progress: number
     ): Coordinates<Polygon> {

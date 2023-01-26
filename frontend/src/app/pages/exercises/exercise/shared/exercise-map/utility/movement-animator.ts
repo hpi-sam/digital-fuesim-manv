@@ -24,7 +24,7 @@ export class MovementAnimator<T extends GeometryWithCoordinates> {
     constructor(
         private readonly olMap: OlMap,
         private readonly layer: VectorLayer<VectorSource>,
-        private readonly getNextPosition: (
+        private readonly interpolateCoordinates: (
             positions: CoordinatePair<T>,
             progress: number
         ) => Coordinates<T>,
@@ -101,7 +101,7 @@ export class MovementAnimator<T extends GeometryWithCoordinates> {
             this.olMap.render();
             return;
         }
-        const nextPosition = this.getNextPosition(positions, progress);
+        const nextPosition = this.interpolateCoordinates(positions, progress);
         this.setCoordinates(featureGeometry, nextPosition);
         getVectorContext(event).drawGeometry(featureGeometry);
         this.olMap.render();

@@ -52,7 +52,7 @@ export interface GeometryHelper<
     create: (element: Element) => Feature<T>;
     getElementCoordinates: (element: Element) => Coordinates<T>;
     getFeatureCoordinates: (feature: Feature<T>) => Coordinates<T>;
-    getNextPosition: (
+    interpolateCoordinates: (
         positions: CoordinatePair<T>,
         progress: number
     ) => Coordinates<T>;

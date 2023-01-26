@@ -23,7 +23,7 @@ export class PointGeometryHelper implements GeometryHelper<Point> {
         return feature.getGeometry()!.getCoordinates();
     }
 
-    getNextPosition(
+    interpolateCoordinates(
         positions: CoordinatePair<Point>,
         progress: number
     ): Coordinates<Point> {
