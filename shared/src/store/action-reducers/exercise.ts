@@ -1,22 +1,24 @@
 import { Type } from 'class-transformer';
 import {
     IsArray,
+    ValidateNested,
     IsBoolean,
     IsInt,
     IsPositive,
-    ValidateNested,
 } from 'class-validator';
+import { PartialExport } from '../../export-import/file-format';
 import type { Personnel, Vehicle } from '../../models';
 import { Patient } from '../../models';
 import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
-import { IsValue } from '../../utils/validators';
+import { cloneDeepMutable, uuid } from '../../utils';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { letElementArrive } from './transfer';
+import { PatientUpdate } from './utils';
 import { updateTreatments } from './utils/calculate-treatments';
-import { PatientUpdate } from './utils/patient-updates';
 
 export class PauseExerciseAction implements Action {
     @IsValue('[Exercise] Pause' as const)
@@ -52,6 +54,18 @@ export class ExerciseTickAction implements Action {
     @IsInt()
     @IsPositive()
     public readonly tickInterval!: number;
+}
+
+export class ImportTemplatesAction implements Action {
+    @IsValue('[Exercise] Import Templates' as const)
+    public readonly type = '[Exercise] Import Templates';
+
+    @IsLiteralUnion({ append: true, overwrite: true })
+    public readonly mode!: 'append' | 'overwrite';
+
+    @ValidateNested()
+    @Type(() => PartialExport)
+    public readonly partialExport!: PartialExport;
 }
 
 export namespace ExerciseActionReducers {
@@ -128,6 +142,51 @@ export namespace ExerciseActionReducers {
         },
         rights: 'server',
     };
+
+    export const templateImport: ActionReducer<ImportTemplatesAction> = {
+        action: ImportTemplatesAction,
+        reducer: (draftState, { mode, partialExport }) => {
+            const mutablePartialExport = cloneDeepMutable(partialExport);
+            if (mutablePartialExport.mapImageTemplates !== undefined) {
+                if (mode === 'append') {
+                    draftState.mapImageTemplates.push(
+                        ...mutablePartialExport.mapImageTemplates
+                    );
+                } else {
+                    draftState.mapImageTemplates =
+                        mutablePartialExport.mapImageTemplates;
+                }
+            }
+            if (mutablePartialExport.patientCategories !== undefined) {
+                if (mode === 'append') {
+                    draftState.patientCategories.push(
+                        ...mutablePartialExport.patientCategories
+                    );
+                } else {
+                    draftState.patientCategories =
+                        mutablePartialExport.patientCategories;
+                }
+            }
+            if (mutablePartialExport.vehicleTemplates !== undefined) {
+                if (mode === 'append') {
+                    draftState.vehicleTemplates.push(
+                        ...mutablePartialExport.vehicleTemplates
+                    );
+                } else {
+                    // Remove all vehicles from all alarm groups as all existing vehicle templates are being removed
+                    for (const alarmGroup of Object.values(
+                        draftState.alarmGroups
+                    )) {
+                        alarmGroup.alarmGroupVehicles = {};
+                    }
+                    draftState.vehicleTemplates =
+                        mutablePartialExport.vehicleTemplates;
+                }
+            }
+            return draftState;
+        },
+        rights: 'trainer',
+    };
 }
 
 function refreshTransfer(
@@ -150,4 +209,27 @@ function refreshTransfer(
         }
         letElementArrive(draftState, key, element.id);
     });
+}
+
+/**
+ * Prepare a {@link PartialExport} for import.
+ *
+ * This includes resetting UUIDs as this cannot be done in the reducer.
+ * @param partialExport The {@link PartialExport} to prepare.
+ */
+export function preparePartialExportForImport(
+    partialExport: PartialExport
+): PartialExport {
+    const copy = cloneDeepMutable(partialExport);
+    // `patientCategories` don't have an `id`
+    const templateTypes = ['mapImageTemplates', 'vehicleTemplates'] as const;
+    for (const templateType of templateTypes) {
+        const templates = copy[templateType];
+        if (templates !== undefined) {
+            for (const template of templates) {
+                template.id = uuid();
+            }
+        }
+    }
+    return copy;
 }

@@ -1,0 +1,47 @@
+<div class="modal-header">
+    <h4 class="modal-title">Partieller Export</h4>
+    <button type="button" class="btn-close" (click)="close()"></button>
+</div>
+<div class="modal-body">
+    <p>Wählen Sie aus, welche Vorlagen exportiert werden sollen.</p>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+            <input
+                [(ngModel)]="configuration.patientCategories"
+                class="form-check-input"
+                type="checkbox"
+            />
+            Patientenvorlagen
+        </li>
+        <li class="list-group-item">
+            <input
+                [(ngModel)]="configuration.vehicleTemplates"
+                class="form-check-input"
+                type="checkbox"
+            />
+            Fahrzeugvorlagen
+        </li>
+        <li class="list-group-item">
+            <input
+                [(ngModel)]="configuration.mapImageTemplates"
+                class="form-check-input"
+                type="checkbox"
+            />
+            Bildvorlagen
+        </li>
+    </ul>
+    <br />
+    <button
+        (click)="partialExport()"
+        [disabled]="
+            !(
+                configuration.mapImageTemplates ||
+                configuration.patientCategories ||
+                configuration.vehicleTemplates
+            )
+        "
+        class="btn btn-primary"
+    >
+        Exportieren
+    </button>
+</div>

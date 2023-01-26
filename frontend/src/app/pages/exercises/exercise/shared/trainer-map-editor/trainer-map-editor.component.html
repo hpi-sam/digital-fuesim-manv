@@ -5,7 +5,23 @@
         </div>
         <div class="card col-3 p-0 rounded-0 rounded-end">
             <div class="card-header text-center">
-                <h5 class="mb-0">Editor</h5>
+                <h5 class="mb-0">
+                    Editor
+                    <label class="btn btn-outline-primary btn-sm ms-3">
+                        <i class="bi-cloud-upload me-2"> </i>
+                        Vorlagen Importieren
+                        <span
+                            *ngIf="importingTemplates"
+                            class="spinner-border spinner-border-sm"
+                        ></span>
+                        <input
+                            (appFileInput)="importPartialExport($event)"
+                            type="file"
+                            accept="application/json"
+                            class="d-none"
+                        />
+                    </label>
+                </h5>
             </div>
             <!-- We want the editor panel to overflow, if it is too high -->
             <ul
