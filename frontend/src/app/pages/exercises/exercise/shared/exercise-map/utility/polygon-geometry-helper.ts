@@ -13,32 +13,34 @@ import { interpolate } from './geometry-helper';
 export class PolygonGeometryHelper
     implements GeometryHelper<Polygon, ResizableElement>
 {
-    create = (element: ResizableElement): Feature<Polygon> =>
-        new Feature(new Polygon(this.getElementCoordinates(element)));
+    create(element: ResizableElement): Feature<Polygon> {
+        return new Feature(new Polygon(this.getElementCoordinates(element)));
+    }
 
-    getElementCoordinates = (
-        element: ResizableElement
-    ): Coordinates<Polygon> => [
-        [
-            [element.position.x, element.position.y],
-            [element.position.x + element.size.width, element.position.y],
+    getElementCoordinates(element: ResizableElement): Coordinates<Polygon> {
+        return [
             [
-                element.position.x + element.size.width,
-                element.position.y - element.size.height,
+                [element.position.x, element.position.y],
+                [element.position.x + element.size.width, element.position.y],
+                [
+                    element.position.x + element.size.width,
+                    element.position.y - element.size.height,
+                ],
+                [element.position.x, element.position.y - element.size.height],
+                [element.position.x, element.position.y],
             ],
-            [element.position.x, element.position.y - element.size.height],
-            [element.position.x, element.position.y],
-        ],
-    ];
+        ];
+    }
 
-    getFeatureCoordinates = (feature: Feature<Polygon>): Coordinates<Polygon> =>
-        feature.getGeometry()!.getCoordinates();
+    getFeatureCoordinates(feature: Feature<Polygon>): Coordinates<Polygon> {
+        return feature.getGeometry()!.getCoordinates();
+    }
 
-    getNextPosition = (
+    getNextPosition(
         positions: CoordinatePair<Polygon>,
         progress: number
-    ): Coordinates<Polygon> =>
-        positions.startPosition.map((polygon, polygonIndex) =>
+    ): Coordinates<Polygon> {
+        return positions.startPosition.map((polygon, polygonIndex) =>
             polygon.map((startPos, positionIndex) =>
                 interpolate(
                     startPos,
@@ -47,11 +49,13 @@ export class PolygonGeometryHelper
                 )
             )
         );
+    }
 
-    getFeaturePosition = (feature: Feature<Polygon>): Positions<Polygon> =>
-        this.getFeatureCoordinates(feature).map((polygon) =>
+    getFeaturePosition(feature: Feature<Polygon>): Positions<Polygon> {
+        return this.getFeatureCoordinates(feature).map((polygon) =>
             polygon.map((position) =>
                 Position.create(position[0]!, position[1]!)
             )
         );
+    }
 }

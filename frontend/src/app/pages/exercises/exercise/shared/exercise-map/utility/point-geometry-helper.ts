@@ -11,25 +11,33 @@ import type {
 import { interpolate } from './geometry-helper';
 
 export class PointGeometryHelper implements GeometryHelper<Point> {
-    create = (element: WithPosition<any>): Feature<Point> =>
-        new Feature(new Point(this.getElementCoordinates(element)));
+    create(element: WithPosition<any>): Feature<Point> {
+        return new Feature(new Point(this.getElementCoordinates(element)));
+    }
 
-    getElementCoordinates = (
-        element: WithPosition<any>
-    ): Coordinates<Point> => [element.position.x, element.position.y];
+    getElementCoordinates(element: WithPosition<any>): Coordinates<Point> {
+        return [element.position.x, element.position.y];
+    }
 
-    getFeatureCoordinates = (feature: Feature<Point>): Coordinates<Point> =>
-        feature.getGeometry()!.getCoordinates();
+    getFeatureCoordinates(feature: Feature<Point>): Coordinates<Point> {
+        return feature.getGeometry()!.getCoordinates();
+    }
 
-    getNextPosition = (
+    getNextPosition(
         positions: CoordinatePair<Point>,
         progress: number
-    ): Coordinates<Point> =>
-        interpolate(positions.startPosition, positions.endPosition, progress);
+    ): Coordinates<Point> {
+        return interpolate(
+            positions.startPosition,
+            positions.endPosition,
+            progress
+        );
+    }
 
-    getFeaturePosition = (feature: Feature<Point>): Positions<Point> =>
-        Position.create(
+    getFeaturePosition(feature: Feature<Point>): Positions<Point> {
+        return Position.create(
             this.getFeatureCoordinates(feature)[0]!,
             this.getFeatureCoordinates(feature)[1]!
         );
+    }
 }
