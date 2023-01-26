@@ -8,12 +8,13 @@ import type VectorSource from 'ol/source/Vector';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { WithPosition } from '../../utility/types/with-position';
 import { MaterialPopupComponent } from '../shared/material-popup/material-popup.component';
+import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { createPoint, ElementFeatureManager } from './element-feature-manager';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class MaterialFeatureManager extends ElementFeatureManager<
+export class MaterialFeatureManager extends MoveableFeatureManager<
     WithPosition<Material>
 > {
     private readonly imageStyleHelper = new ImageStyleHelper(
@@ -48,7 +49,7 @@ export class MaterialFeatureManager extends ElementFeatureManager<
                     targetPosition,
                 });
             },
-            createPoint
+            new PointGeometryHelper()
         );
         this.layer.setStyle((feature, resolution) => [
             this.nameStyleHelper.getStyle(feature as Feature, resolution),

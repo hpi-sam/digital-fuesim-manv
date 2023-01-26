@@ -21,7 +21,7 @@ function calculateTopRightViewPoint(view: View) {
     return new Point([extent[0]!, extent[1]!]);
 }
 
-export class DeleteFeatureManager implements FeatureManager<Feature<Point>> {
+export class DeleteFeatureManager implements FeatureManager<Point> {
     constructor(
         private readonly store: Store<AppState>,
         public readonly layer: VectorLayer<VectorSource<Point>>,

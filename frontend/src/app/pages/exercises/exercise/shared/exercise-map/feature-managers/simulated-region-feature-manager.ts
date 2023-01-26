@@ -2,10 +2,11 @@ import type { Store } from '@ngrx/store';
 import type { UUID, SimulatedRegion } from 'digital-fuesim-manv-shared';
 import { Position, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
-import type LineString from 'ol/geom/LineString';
+import type { Polygon } from 'ol/geom';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
+import { Fill } from 'ol/style';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import type { ExerciseService } from 'src/app/core/exercise.service';
@@ -15,22 +16,19 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { SimulatedRegionPopupComponent } from '../shared/simulated-region-popup/simulated-region-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
+import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
-import {
-    createLineString,
-    ElementFeatureManager,
-    getCoordinateArray,
-} from './element-feature-manager';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class SimulatedRegionFeatureManager
-    extends ElementFeatureManager<SimulatedRegion, LineString>
-    implements FeatureManager<Feature<LineString>>
+    extends MoveableFeatureManager<SimulatedRegion, Polygon>
+    implements FeatureManager<Polygon>
 {
     override unsupportedChangeProperties = new Set(['id'] as const);
 
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<LineString>>,
+        layer: VectorLayer<VectorSource<Polygon>>,
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {
@@ -41,22 +39,25 @@ export class SimulatedRegionFeatureManager
                 exerciseService.proposeAction({
                     type: '[SimulatedRegion] Move simulated region',
                     simulatedRegionId: simulatedRegion.id,
-                    targetPosition: targetPositions[0]!,
+                    targetPosition: targetPositions[0]![0]!,
                 });
             },
-            createLineString
+            new PolygonGeometryHelper()
         );
         this.layer.setStyle(this.style);
     }
 
     private readonly style = new Style({
+        fill: new Fill({
+            color: '#808080cc',
+        }),
         stroke: new Stroke({
             color: '#cccc00',
             width: 2,
         }),
     });
 
-    override createFeature(element: SimulatedRegion): Feature<LineString> {
+    override createFeature(element: SimulatedRegion): Feature<Polygon> {
         const feature = super.createFeature(element);
         ResizeRectangleInteraction.onResize(
             feature,
@@ -88,19 +89,15 @@ export class SimulatedRegionFeatureManager
         oldElement: SimulatedRegion,
         newElement: SimulatedRegion,
         changedProperties: ReadonlySet<keyof SimulatedRegion>,
-        elementFeature: Feature<LineString>
+        elementFeature: Feature<Polygon>
     ): void {
         if (
             changedProperties.has('position') ||
             changedProperties.has('size')
         ) {
-            const newFeature = this.getFeatureFromElement(newElement);
-            if (!newFeature) {
-                throw new TypeError('newFeature undefined');
-            }
             this.movementAnimator.animateFeatureMovement(
                 elementFeature,
-                getCoordinateArray(newElement)
+                this.geometryHelper.getElementCoordinates(newElement)
             );
         }
         // If the style has updated, we need to redraw the feature
@@ -135,9 +132,7 @@ export class SimulatedRegionFeatureManager
         });
     }
 
-    public override isFeatureTranslatable(
-        feature: Feature<LineString>
-    ): boolean {
+    public override isFeatureTranslatable(feature: Feature<Polygon>): boolean {
         return selectStateSnapshot(selectCurrentRole, this.store) === 'trainer';
     }
 }

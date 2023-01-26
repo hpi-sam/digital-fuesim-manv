@@ -14,10 +14,9 @@ export class CateringLinesFeatureManager
     extends ElementManager<
         CateringLine,
         LineString,
-        Feature<LineString>,
         ReadonlySet<keyof CateringLine>
     >
-    implements FeatureManager<Feature<LineString>>
+    implements FeatureManager<LineString>
 {
     readonly unsupportedChangeProperties = new Set(['id'] as const);
 
