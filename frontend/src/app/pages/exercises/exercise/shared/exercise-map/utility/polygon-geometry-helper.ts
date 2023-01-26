@@ -40,11 +40,11 @@ export class PolygonGeometryHelper
         positions: CoordinatePair<Polygon>,
         progress: number
     ): Coordinates<Polygon> {
-        return positions.startPosition.map((polygon, polygonIndex) =>
-            polygon.map((startPos, positionIndex) =>
+        return positions.startPosition.map((coordinates, coordinatesIndex) =>
+            coordinates.map((startCoordinate, coordinateIndex) =>
                 interpolate(
-                    startPos,
-                    positions.endPosition[polygonIndex]![positionIndex]!,
+                    startCoordinate,
+                    positions.endPosition[coordinatesIndex]![coordinateIndex]!,
                     progress
                 )
             )
@@ -52,9 +52,9 @@ export class PolygonGeometryHelper
     }
 
     getFeaturePosition(feature: Feature<Polygon>): Positions<Polygon> {
-        return this.getFeatureCoordinates(feature).map((polygon) =>
-            polygon.map((position) =>
-                Position.create(position[0]!, position[1]!)
+        return this.getFeatureCoordinates(feature).map((coordinates) =>
+            coordinates.map((coordinate) =>
+                Position.create(coordinate[0]!, coordinate[1]!)
             )
         );
     }
