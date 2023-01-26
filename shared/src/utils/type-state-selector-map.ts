@@ -17,8 +17,6 @@ export const elementTypePluralMap = {
     vehicle: 'vehicles',
     viewport: 'viewports',
 
-    // Typescript does not allow literal types for indexes
-    // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-} as const satisfies Record<ElementType, keyof ExerciseState>;
+} as const satisfies { [Key in ElementType]: keyof ExerciseState};
 
 export type ElementTypePluralMap = typeof elementTypePluralMap;
