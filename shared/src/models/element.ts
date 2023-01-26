@@ -1,8 +1,8 @@
-import type { AlarmGroup } from './alarm-group';
-import type { Client } from './client';
-import type { Hospital } from './hospital';
-import type { MapImage } from './map-image';
 import type {
+    AlarmGroup,
+    Client,
+    Hospital,
+    MapImage,
     Material,
     Patient,
     Personnel,
