@@ -243,7 +243,7 @@ export namespace TransferPointActionReducers {
                         vehicle.transfer?.targetTransferPointId ===
                         transferPointId
                     ) {
-                        letElementArrive(draftState, 'vehicle', vehicleId);
+                        letElementArrive(draftState, vehicle.type, vehicleId);
                     }
                 }
                 for (const personnelId of Object.keys(draftState.personnel)) {
@@ -256,7 +256,11 @@ export namespace TransferPointActionReducers {
                         personnel.transfer?.targetTransferPointId ===
                         transferPointId
                     ) {
-                        letElementArrive(draftState, 'personnel', personnelId);
+                        letElementArrive(
+                            draftState,
+                            personnel.type,
+                            personnelId
+                        );
                     }
                 }
                 // TODO: If we can assume that the transfer points are always connected to each other,
