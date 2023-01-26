@@ -12,7 +12,7 @@ import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsUUIDSet } from '../utils/validators';
 import { IsMetaPosition } from '../utils/validators/is-metaposition';
 import type { MaterialTemplate } from './material-template';
-import type { Position } from './utils';
+import type { MapCoordinates } from './utils';
 import { CanCaterFor, ImageProperties, getCreate } from './utils';
 import { MetaPosition } from './utils/position/meta-position';
 
@@ -73,7 +73,7 @@ export class Material {
         treatmentRange: number,
         overrideTreatmentRange: number,
         metaPosition: MetaPosition,
-        position?: Position
+        position?: MapCoordinates
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;

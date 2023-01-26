@@ -9,7 +9,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { MapImage } from '../../models';
-import { MapPosition, Position } from '../../models/utils';
+import { MapPosition, MapCoordinates } from '../../models/utils';
 import { changePosition } from '../../models/utils/position/meta-position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
@@ -40,8 +40,8 @@ export class MoveMapImageAction implements Action {
     public readonly mapImageId!: UUID;
 
     @ValidateNested()
-    @Type(() => Position)
-    public readonly targetPosition!: Position;
+    @Type(() => MapCoordinates)
+    public readonly targetPosition!: MapCoordinates;
 }
 
 export class ScaleMapImageAction implements Action {

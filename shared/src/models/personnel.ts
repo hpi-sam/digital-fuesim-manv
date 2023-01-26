@@ -13,7 +13,7 @@ import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsLiteralUnion, IsUUIDSet } from '../utils/validators';
 import { IsMetaPosition } from '../utils/validators/is-metaposition';
 import type { PersonnelTemplate } from './personnel-template';
-import type { Position } from './utils';
+import type { MapCoordinates } from './utils';
 import {
     PersonnelType,
     CanCaterFor,
@@ -94,7 +94,7 @@ export class Personnel {
         treatmentRange: number,
         overrideTreatmentRange: number,
         metaPosition: MetaPosition,
-        position?: Position
+        position?: MapCoordinates
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;

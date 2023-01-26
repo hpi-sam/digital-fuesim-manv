@@ -1,4 +1,3 @@
-export { Position } from './position';
 export { MetaPosition } from './position/meta-position';
 export { WithMetaPosition } from './position/with-meta-position';
 export { MapPosition } from './position/map-position';

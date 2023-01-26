@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { AlarmGroup, UUID } from 'digital-fuesim-manv-shared';
 import {
-    Position,
+    MapCoordinates,
     AlarmGroupStartPoint,
     createVehicleParameters,
     TransferPoint,
@@ -100,7 +100,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                         // Here one should use a MetaPosition with the Transfer.
                         // But this is part of later Refactoring.
                         // Also it is irrelevant, because the correctMetaPosition is set immediately after this is called.
-                        Position.create(0, 0)
+                        MapCoordinates.create(0, 0)
                     );
 
                     return [

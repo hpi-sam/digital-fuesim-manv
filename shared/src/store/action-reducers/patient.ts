@@ -6,7 +6,7 @@ import {
     MapPosition,
     PatientStatus,
     patientStatusAllowedValues,
-    Position,
+    MapCoordinates,
 } from '../../models/utils';
 import {
     changePosition,
@@ -51,8 +51,8 @@ export class MovePatientAction implements Action {
     public readonly patientId!: UUID;
 
     @ValidateNested()
-    @Type(() => Position)
-    public readonly targetPosition!: Position;
+    @Type(() => MapCoordinates)
+    public readonly targetPosition!: MapCoordinates;
 }
 
 export class RemovePatientAction implements Action {

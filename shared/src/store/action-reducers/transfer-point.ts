@@ -7,7 +7,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { TransferPoint } from '../../models';
-import { coordinatesOf, MapPosition, Position } from '../../models/utils';
+import { coordinatesOf, MapCoordinates, MapPosition } from '../../models/utils';
 import { changePositionWithId } from '../../models/utils/position/meta-position-helpers-mutable';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
@@ -35,8 +35,8 @@ export class MoveTransferPointAction implements Action {
     public readonly transferPointId!: UUID;
 
     @ValidateNested()
-    @Type(() => Position)
-    public readonly targetPosition!: Position;
+    @Type(() => MapCoordinates)
+    public readonly targetPosition!: MapCoordinates;
 }
 
 export class RenameTransferPointAction implements Action {
@@ -323,7 +323,10 @@ export namespace TransferPointActionReducers {
  * @returns an estimated duration in ms to drive between the the two given positions
  * The resulting value is a multiple of 0.1 minutes.
  */
-function estimateDuration(startPosition: Position, targetPosition: Position) {
+function estimateDuration(
+    startPosition: MapCoordinates,
+    targetPosition: MapCoordinates
+) {
     // TODO: tweak these values more
     // How long in ms it takes to start + stop moving
     const overheadSummand = 10 * 1000;

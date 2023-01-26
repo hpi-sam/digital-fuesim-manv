@@ -1,4 +1,4 @@
-import { Position } from 'digital-fuesim-manv-shared';
+import { MapCoordinates } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { LineString, Point } from 'ol/geom';
@@ -50,7 +50,7 @@ export class TranslateInteraction extends Translate {
     public static onTranslateEnd<T extends LineString | Point = Point>(
         feature: Feature<T>,
         callback: (
-            newCoordinates: T extends Point ? Position : Position[]
+            newCoordinates: T extends Point ? MapCoordinates : MapCoordinates[]
         ) => void
     ) {
         feature.addEventListener('translateend', (event) => {
@@ -59,16 +59,16 @@ export class TranslateInteraction extends Translate {
             if (isCoordinateArray(coordinates)) {
                 callback(
                     coordinates.map((coordinate) =>
-                        Position.create(coordinate[0]!, coordinate[1]!)
-                    ) as T extends Point ? never : Position[]
+                        MapCoordinates.create(coordinate[0]!, coordinate[1]!)
+                    ) as T extends Point ? never : MapCoordinates[]
                 );
                 return;
             }
             callback(
-                Position.create(
+                MapCoordinates.create(
                     coordinates[0]!,
                     coordinates[1]!
-                ) as T extends Point ? Position : never
+                ) as T extends Point ? MapCoordinates : never
             );
         });
     }

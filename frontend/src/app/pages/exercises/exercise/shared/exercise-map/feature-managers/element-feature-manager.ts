@@ -2,7 +2,7 @@ import type {
     ExerciseState,
     MetaPosition,
     WithMetaPosition,
-    Position,
+    MapCoordinates,
     Size,
     UUID,
 } from 'digital-fuesim-manv-shared';
@@ -103,7 +103,9 @@ export abstract class ElementFeatureManager<
         protected readonly olMap: OlMap,
         public readonly layer: VectorLayer<VectorSource<FeatureType>>,
         private readonly proposeMovementAction: (
-            newPosition: FeatureType extends Point ? Position : Position[],
+            newPosition: FeatureType extends Point
+                ? MapCoordinates
+                : MapCoordinates[],
             element: Element
         ) => void,
         private readonly createElement: (element: Element) => ElementFeature

@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { TransferPoint } from '../../models';
-import type { Position } from '../../models/utils';
+import type { MapCoordinates } from '../../models/utils';
 import {
     TransferPosition,
     coordinatesOf,
@@ -44,7 +44,7 @@ export function letElementArrive(
         'transferPoints',
         element.transfer.targetTransferPointId
     );
-    const newPosition: Mutable<Position> = {
+    const newPosition: Mutable<MapCoordinates> = {
         x: coordinatesOf(targetTransferPoint).x,
         y:
             coordinatesOf(targetTransferPoint).y +

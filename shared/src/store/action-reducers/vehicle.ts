@@ -7,7 +7,6 @@ import {
     isNotOnMap,
     MapCoordinates,
     MapPosition,
-    Position,
     VehiclePosition,
 } from '../../models/utils';
 import {
@@ -87,8 +86,8 @@ export class MoveVehicleAction implements Action {
     public readonly vehicleId!: UUID;
 
     @ValidateNested()
-    @Type(() => Position)
-    public readonly targetPosition!: Position;
+    @Type(() => MapCoordinates)
+    public readonly targetPosition!: MapCoordinates;
 }
 
 export class RemoveVehicleAction implements Action {

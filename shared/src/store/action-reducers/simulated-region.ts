@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { SimulatedRegion } from '../../models';
-import { MapPosition, Position, Size } from '../../models/utils';
+import { MapCoordinates, MapPosition, Size } from '../../models/utils';
 import {
     changePosition,
     changePositionWithId,
@@ -32,8 +32,8 @@ export class MoveSimulatedRegionAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;
     @ValidateNested()
-    @Type(() => Position)
-    public readonly targetPosition!: Position;
+    @Type(() => MapCoordinates)
+    public readonly targetPosition!: MapCoordinates;
 }
 
 export class ResizeSimulatedRegionAction implements Action {
@@ -42,8 +42,8 @@ export class ResizeSimulatedRegionAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;
     @ValidateNested()
-    @Type(() => Position)
-    public readonly targetPosition!: Position;
+    @Type(() => MapCoordinates)
+    public readonly targetPosition!: MapCoordinates;
     @ValidateNested()
     @Type(() => Size)
     public readonly newSize!: Size;

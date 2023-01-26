@@ -1,7 +1,7 @@
 import { groupBy } from 'lodash-es';
 import type { Material, Personnel } from '../../../models';
 import { Patient } from '../../../models';
-import type { PatientStatus, Position } from '../../../models/utils';
+import type { MapCoordinates, PatientStatus } from '../../../models/utils';
 import { coordinatesOf, isNotOnMap } from '../../../models/utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
@@ -119,7 +119,7 @@ function isMaterial(
  */
 function updateCateringAroundPatient(
     state: Mutable<ExerciseState>,
-    position: Position,
+    position: MapCoordinates,
     elementType: 'materials' | 'personnel',
     elementIdsToBeSkipped: Set<UUID>
 ) {

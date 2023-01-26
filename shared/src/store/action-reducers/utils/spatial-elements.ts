@@ -1,4 +1,4 @@
-import type { Position } from '../../../models/utils';
+import type { MapCoordinates } from '../../../models/utils';
 import { isOnMap, isNotOnMap, coordinatesOf } from '../../../models/utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
@@ -40,7 +40,7 @@ export function updateElementPosition(
     state: Mutable<ExerciseState>,
     elementType: SpatialElementType,
     elementId: UUID,
-    targetPosition: Position
+    targetPosition: MapCoordinates
 ) {
     const element = getElement(state, elementType, elementId);
     if (isOnMap(element)) {

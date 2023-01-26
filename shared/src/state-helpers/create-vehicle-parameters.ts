@@ -2,7 +2,7 @@ import type { Vehicle, VehicleTemplate } from '../models';
 import { Material, Personnel } from '../models';
 import type { MaterialTemplate } from '../models/material-template';
 import type { PersonnelTemplate } from '../models/personnel-template';
-import type { PersonnelType, Position } from '../models/utils';
+import type { PersonnelType, MapCoordinates } from '../models/utils';
 import { MapPosition } from '../models/utils/position/map-position';
 import type { MaterialType } from '../models/utils/material-type';
 import { VehiclePosition } from '../models/utils/position/vehicle-position';
@@ -22,7 +22,7 @@ export function createVehicleParameters(
     personnelTemplates: {
         [Key in PersonnelType]: PersonnelTemplate;
     },
-    vehiclePosition: Position
+    vehiclePosition: MapCoordinates
 ): {
     materials: Material[];
     personnel: Personnel[];

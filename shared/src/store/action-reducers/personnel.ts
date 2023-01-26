@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
-import { MapPosition, Position } from '../../models/utils';
+import { MapPosition, MapCoordinates } from '../../models/utils';
 import { changePositionWithId } from '../../models/utils/position/meta-position-helpers-mutable';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
@@ -14,8 +14,8 @@ export class MovePersonnelAction implements Action {
     public readonly personnelId!: UUID;
 
     @ValidateNested()
-    @Type(() => Position)
-    public readonly targetPosition!: Position;
+    @Type(() => MapCoordinates)
+    public readonly targetPosition!: MapCoordinates;
 }
 
 export namespace PersonnelActionReducers {
