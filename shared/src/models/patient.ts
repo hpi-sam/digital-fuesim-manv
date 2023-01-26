@@ -9,8 +9,8 @@ import {
     IsBoolean,
     IsString,
     MaxLength,
-    isEmpty,
 } from 'class-validator';
+import { isEmpty } from 'lodash-es';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import {
     IsLiteralUnion,
