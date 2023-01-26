@@ -80,6 +80,8 @@ function updateSpatialElementTree(
     type: SpatialElementType,
     state: Mutable<ExerciseState>
 ) {
+    console.log(type);
+
     if (isOnMap(element) && isPositionOnMap(to)) {
         updateElementPosition(
             state,

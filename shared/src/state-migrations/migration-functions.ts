@@ -4,7 +4,8 @@ import { renameIncorrectPatientImages12 } from './12-rename-incorrect-patient-im
 import { addMapImageZIndex13 } from './13-add-map-image-zindex';
 import { addPersonnelAndMaterialToState14 } from './14-add-personnel-and-material-templates-to-state';
 import { addSimulatedRegions15 } from './15-add-simulated-regions';
-import { addPosition16 } from './16-add-meta-position';
+import { addMetaPosition16 } from './16-add-meta-position';
+import { replacePositionWithMetaPosition17 } from './17-replace-position-with-meta-position';
 import { updateEocLog3 } from './3-update-eoc-log';
 import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
 import { removeStatistics5 } from './5-remove-statistics';
@@ -54,5 +55,6 @@ export const migrations: {
     13: addMapImageZIndex13,
     14: addPersonnelAndMaterialToState14,
     15: addSimulatedRegions15,
-    16: addPosition16,
+    16: addMetaPosition16,
+    17: replacePositionWithMetaPosition17,
 };
