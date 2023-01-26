@@ -84,6 +84,21 @@ export const addTypeProperty17: Migration = {
                 typedAction.simulatedRegion.type = 'simulatedRegion';
             }
 
+            if (
+                actionType === '[Transfer] Add to transfer' ||
+                actionType === '[Transfer] Edit transfer' ||
+                actionType === '[Transfer] Finish transfer' ||
+                actionType === '[Transfer] Toggle pause transfer'
+            ) {
+                const typedAction = action as {
+                    elementType: 'personnel' | 'vehicle' | 'vehicles';
+                };
+
+                if (typedAction.elementType === 'vehicles') {
+                    typedAction.elementType = 'vehicle';
+                }
+            }
+
             if (actionType === '[TransferPoint] Add TransferPoint') {
                 const typedAction = action as {
                     transferPoint: {
@@ -110,6 +125,23 @@ export const addTypeProperty17: Migration = {
                 typedAction.personnel.forEach((personnel) => {
                     personnel.type = 'personnel';
                 });
+            }
+
+            if (actionType === '[Vehicle] Load vehicle') {
+                const typedAction = action as {
+                    elementToBeLoadedType:
+                        | 'material'
+                        | 'materials'
+                        | 'patient'
+                        | 'patients'
+                        | 'personnel';
+                };
+
+                if (typedAction.elementToBeLoadedType === 'materials') {
+                    typedAction.elementToBeLoadedType = 'material';
+                } else if (typedAction.elementToBeLoadedType === 'patients') {
+                    typedAction.elementToBeLoadedType = 'patient';
+                }
             }
 
             if (actionType === '[Viewport] Add viewport') {
