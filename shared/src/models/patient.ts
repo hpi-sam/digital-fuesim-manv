@@ -9,10 +9,11 @@ import {
     IsBoolean,
     IsString,
     MaxLength,
-    isEmpty,
 } from 'class-validator';
+import { isEmpty } from 'lodash-es';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsLiteralUnion, IsIdMap, IsUUIDSet } from '../utils/validators';
+import { IsMetaPosition } from '../utils/validators/is-metaposition';
 import { PatientHealthState } from './patient-health-state';
 import {
     BiometricInformation,
@@ -25,6 +26,7 @@ import {
     HealthPoints,
     getCreate,
 } from './utils';
+import { MetaPosition } from './utils/meta-position';
 import { PersonalInformation } from './utils/personal-information';
 import { PretriageInformation } from './utils/pretriage-information';
 
@@ -62,7 +64,12 @@ export class Patient {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
+    @IsMetaPosition()
+    @ValidateNested()
+    public readonly metaPosition: MetaPosition;
+
     /**
+     * @deprecated use {@link metaPosition}
      * Exclusive-or to {@link vehicleId}
      */
     @ValidateNested()
@@ -71,6 +78,7 @@ export class Patient {
     public readonly position?: Position;
 
     /**
+     * @deprecated use {@link metaPosition}
      * Exclusive-or to {@link position}
      */
     @IsUUID(4, uuidValidationOptions)
@@ -155,7 +163,8 @@ export class Patient {
         currentHealthStateId: UUID,
         image: ImageProperties,
         health: HealthPoints,
-        remarks: string
+        remarks: string,
+        metaPosition: MetaPosition
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
@@ -168,6 +177,7 @@ export class Patient {
         this.image = image;
         this.health = health;
         this.remarks = remarks;
+        this.metaPosition = metaPosition;
     }
 
     static readonly create = getCreate(this);
@@ -190,7 +200,7 @@ export class Patient {
     }
 
     static isInVehicle(patient: Patient): boolean {
-        return patient.position === undefined;
+        return patient.metaPosition.type === 'vehicle';
     }
 
     static isTreatedByPersonnel(patient: Patient) {
