@@ -9,12 +9,13 @@ import type VectorSource from 'ol/source/Vector';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { WithPosition } from '../../utility/types/with-position';
 import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
+import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { createPoint, ElementFeatureManager } from './element-feature-manager';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class VehicleFeatureManager extends ElementFeatureManager<
+export class VehicleFeatureManager extends MoveableFeatureManager<
     WithPosition<Vehicle>
 > {
     readonly type = 'vehicles';
@@ -50,7 +51,7 @@ export class VehicleFeatureManager extends ElementFeatureManager<
                     targetPosition,
                 });
             },
-            createPoint
+            new PointGeometryHelper()
         );
         this.layer.setStyle((feature, resolution) => [
             this.nameStyleHelper.getStyle(feature as Feature, resolution),

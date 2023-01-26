@@ -13,12 +13,13 @@ import { selectConfiguration } from 'src/app/state/application/selectors/exercis
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { WithPosition } from '../../utility/types/with-position';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
+import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { CircleStyleHelper } from '../utility/style-helper/circle-style-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
-import { createPoint, ElementFeatureManager } from './element-feature-manager';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class PatientFeatureManager extends ElementFeatureManager<
+export class PatientFeatureManager extends MoveableFeatureManager<
     WithPosition<Patient>
 > {
     readonly type = 'patients';
@@ -81,7 +82,7 @@ export class PatientFeatureManager extends ElementFeatureManager<
                     targetPosition,
                 });
             },
-            createPoint
+            new PointGeometryHelper()
         );
         this.layer.setStyle((feature, resolution) => [
             this.imageStyleHelper.getStyle(feature as Feature, resolution),
