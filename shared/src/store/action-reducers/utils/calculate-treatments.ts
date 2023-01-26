@@ -6,7 +6,7 @@ import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import { maxTreatmentRange } from '../../../state-helpers/max-treatment-range';
 import type { Mutable, UUID } from '../../../utils';
-import { elementTypePluralMap } from '../../../utils/type-state-selector-map';
+import { elementTypePluralMap } from '../../../utils/element-type-plural-map';
 import { getElement } from './get-element';
 
 // TODO: `caterFor` and `treat` are currently used as synonyms without a clear distinction.

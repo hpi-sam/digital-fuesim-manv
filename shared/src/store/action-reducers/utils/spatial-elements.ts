@@ -3,8 +3,8 @@ import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
 import { cloneDeepMutable } from '../../../utils';
-import type { ElementTypePluralMap } from '../../../utils/type-state-selector-map';
-import { elementTypePluralMap } from '../../../utils/type-state-selector-map';
+import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map';
+import { elementTypePluralMap } from '../../../utils/element-type-plural-map';
 import { updateTreatments } from './calculate-treatments';
 import { getElement } from './get-element';
 

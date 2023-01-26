@@ -1,7 +1,7 @@
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
-import type { ElementTypePluralMap } from '../../../utils/type-state-selector-map';
-import { elementTypePluralMap } from '../../../utils/type-state-selector-map';
+import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map';
+import { elementTypePluralMap } from '../../../utils/element-type-plural-map';
 import { ReducerError } from '../../reducer-error';
 
 /**
