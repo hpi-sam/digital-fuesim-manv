@@ -1,4 +1,3 @@
-import type { ExerciseState } from 'digital-fuesim-manv-shared';
 import type { MapBrowserEvent, Feature } from 'ol';
 import type Point from 'ol/geom/Point';
 import type { TranslateEvent } from 'ol/interaction/Translate';
