@@ -18,14 +18,12 @@ import { MoveableFeatureManager } from './moveable-feature-manager';
 export class VehicleFeatureManager extends MoveableFeatureManager<
     WithPosition<Vehicle>
 > {
-    readonly type = 'vehicles';
-
     private readonly imageStyleHelper = new ImageStyleHelper(
-        (feature) => this.getElementFromFeature(feature)!.value.image
+        (feature) => (this.getElementFromFeature(feature) as Vehicle).image
     );
     private readonly nameStyleHelper = new NameStyleHelper(
         (feature) => {
-            const vehicle = this.getElementFromFeature(feature)!.value;
+            const vehicle = this.getElementFromFeature(feature) as Vehicle;
             return {
                 name: vehicle.name,
                 offsetY: vehicle.image.height / 2 / normalZoom,
@@ -67,29 +65,26 @@ export class VehicleFeatureManager extends MoveableFeatureManager<
         const droppedElement = this.getElementFromFeature(droppedFeature);
         const droppedOnVehicle = this.getElementFromFeature(
             droppedOnFeature
-        ) as {
-            type: 'vehicles';
-            value: Vehicle;
-        };
+        ) as Vehicle;
         if (!droppedElement || !droppedOnVehicle) {
             console.error('Could not find element for the features');
             return false;
         }
         if (
             (droppedElement.type === 'personnel' &&
-                droppedOnVehicle.value.personnelIds[droppedElement.value.id]) ||
-            (droppedElement.type === 'materials' &&
-                droppedOnVehicle.value.materialIds[droppedElement.value.id]) ||
-            (droppedElement.type === 'patients' &&
-                Object.keys(droppedOnVehicle.value.patientIds).length <
-                    droppedOnVehicle.value.patientCapacity)
+                droppedOnVehicle.personnelIds[droppedElement.id]) ||
+            (droppedElement.type === 'material' &&
+                droppedOnVehicle.materialIds[droppedElement.id]) ||
+            (droppedElement.type === 'patient' &&
+                Object.keys(droppedOnVehicle.patientIds).length <
+                    droppedOnVehicle.patientCapacity)
         ) {
             // TODO: user feedback (e.g. toast)
             this.exerciseService.proposeAction(
                 {
                     type: '[Vehicle] Load vehicle',
-                    vehicleId: droppedOnVehicle.value.id,
-                    elementToBeLoadedId: droppedElement.value.id,
+                    vehicleId: droppedOnVehicle.id,
+                    elementToBeLoadedId: droppedElement.id,
                     elementToBeLoadedType: droppedElement.type,
                 },
                 true

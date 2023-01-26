@@ -11,7 +11,7 @@ import { selectCurrentTime } from 'src/app/state/application/selectors/exercise.
     styleUrls: ['./transfer-time-input.component.scss'],
 })
 export class TransferTimeInputComponent {
-    @Input() elementType!: 'personnel' | 'vehicles';
+    @Input() elementType!: 'personnel' | 'vehicle';
 
     @Input() elementId!: UUID;
 

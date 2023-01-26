@@ -18,7 +18,6 @@ export class CateringLinesFeatureManager
     >
     implements FeatureManager<LineString>
 {
-    readonly type = 'cateringLines';
     readonly unsupportedChangeProperties = new Set(['id'] as const);
 
     private readonly lineStyleHelper = new LineStyleHelper(

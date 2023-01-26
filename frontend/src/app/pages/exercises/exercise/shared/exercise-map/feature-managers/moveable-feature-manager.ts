@@ -1,4 +1,3 @@
-import type { ExerciseState } from 'digital-fuesim-manv-shared';
 import type { MapBrowserEvent, Feature } from 'ol';
 import type Point from 'ol/geom/Point';
 import type { TranslateEvent } from 'ol/interaction/Translate';
@@ -30,7 +29,6 @@ export abstract class MoveableFeatureManager<
     extends ElementManager<Element, FeatureType, ReadonlySet<keyof Element>>
     implements FeatureManager<FeatureType>
 {
-    abstract override readonly type: keyof ExerciseState;
     public readonly togglePopup$ = new Subject<OpenPopupOptions<any>>();
     protected readonly movementAnimator: MovementAnimator<FeatureType>;
     constructor(

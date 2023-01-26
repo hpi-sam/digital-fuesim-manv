@@ -24,8 +24,6 @@ export class SimulatedRegionFeatureManager
     extends MoveableFeatureManager<SimulatedRegion, Polygon>
     implements FeatureManager<Polygon>
 {
-    readonly type = 'simulatedRegions';
-
     override unsupportedChangeProperties = new Set(['id'] as const);
 
     constructor(
@@ -64,8 +62,9 @@ export class SimulatedRegionFeatureManager
         ResizeRectangleInteraction.onResize(
             feature,
             ({ topLeftCoordinate, scale }) => {
-                const currentElement = this.getElementFromFeature(feature)!
-                    .value as SimulatedRegion;
+                const currentElement = this.getElementFromFeature(
+                    feature
+                ) as SimulatedRegion;
                 this.exerciseService.proposeAction(
                     {
                         type: '[SimulatedRegion] Resize simulated region',

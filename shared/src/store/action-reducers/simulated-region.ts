@@ -71,7 +71,7 @@ export namespace SimulatedRegionActionReducers {
         {
             action: RemoveSimulatedRegionAction,
             reducer: (draftState, { simulatedRegionId }) => {
-                getElement(draftState, 'simulatedRegions', simulatedRegionId);
+                getElement(draftState, 'simulatedRegion', simulatedRegionId);
                 delete draftState.simulatedRegions[simulatedRegionId];
                 return draftState;
             },
@@ -84,7 +84,7 @@ export namespace SimulatedRegionActionReducers {
             reducer: (draftState, { simulatedRegionId, targetPosition }) => {
                 const simulatedRegion = getElement(
                     draftState,
-                    'simulatedRegions',
+                    'simulatedRegion',
                     simulatedRegionId
                 );
                 simulatedRegion.position = cloneDeepMutable(targetPosition);
@@ -102,7 +102,7 @@ export namespace SimulatedRegionActionReducers {
             ) => {
                 const simulatedRegion = getElement(
                     draftState,
-                    'simulatedRegions',
+                    'simulatedRegion',
                     simulatedRegionId
                 );
                 simulatedRegion.position = cloneDeepMutable(targetPosition);
@@ -118,7 +118,7 @@ export namespace SimulatedRegionActionReducers {
             reducer: (draftState, { simulatedRegionId, newName }) => {
                 const simulatedRegion = getElement(
                     draftState,
-                    'simulatedRegions',
+                    'simulatedRegion',
                     simulatedRegionId
                 );
                 simulatedRegion.name = newName;

@@ -24,7 +24,7 @@ export namespace MaterialActionReducers {
         reducer: (draftState, { materialId, targetPosition }) => {
             updateElementPosition(
                 draftState,
-                'materials',
+                'material',
                 materialId,
                 targetPosition
             );

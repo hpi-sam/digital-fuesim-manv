@@ -16,9 +16,8 @@ import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
-    readonly type = 'mapImages';
     private readonly imageStyleHelper = new ImageStyleHelper(
-        (feature) => this.getElementFromFeature(feature)!.value.image
+        (feature) => (this.getElementFromFeature(feature) as MapImage).image
     );
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
@@ -46,7 +45,8 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
                 resolution
             );
             style.setZIndex(
-                this.getElementFromFeature(feature as Feature)!.value.zIndex
+                (this.getElementFromFeature(feature as Feature) as MapImage)
+                    .zIndex
             );
             return style;
         });
@@ -69,7 +69,7 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
     }
 
     override isFeatureTranslatable(feature: Feature<Point>): boolean {
-        const mapImage = this.getElementFromFeature(feature).value as MapImage;
+        const mapImage = this.getElementFromFeature(feature) as MapImage;
         return (
             selectStateSnapshot(selectCurrentRole, this.store) === 'trainer' &&
             !mapImage.isLocked

@@ -22,11 +22,10 @@ import { MoveableFeatureManager } from './moveable-feature-manager';
 export class PatientFeatureManager extends MoveableFeatureManager<
     WithPosition<Patient>
 > {
-    readonly type = 'patients';
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
     private readonly imageStyleHelper = new ImageStyleHelper((feature) => {
-        const patient = this.getElementFromFeature(feature)!.value;
+        const patient = this.getElementFromFeature(feature) as Patient;
         return {
             ...patient.image,
             rotation: patient.pretriageInformation.isWalkable
@@ -37,7 +36,7 @@ export class PatientFeatureManager extends MoveableFeatureManager<
 
     private readonly circleStyleHelper = new CircleStyleHelper(
         (feature) => {
-            const patient = this.getElementFromFeature(feature)!.value;
+            const patient = this.getElementFromFeature(feature) as Patient;
             const configuration = selectStateSnapshot(
                 selectConfiguration,
                 this.store
@@ -60,8 +59,8 @@ export class PatientFeatureManager extends MoveableFeatureManager<
         },
         0.025,
         (feature) =>
-            this.getElementFromFeature(feature)!.value.pretriageInformation
-                .isWalkable
+            (this.getElementFromFeature(feature) as Patient)
+                .pretriageInformation.isWalkable
                 ? [0, 0.25]
                 : [-0.25, 0]
     );

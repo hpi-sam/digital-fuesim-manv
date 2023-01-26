@@ -34,8 +34,6 @@ export class ViewportFeatureManager
     extends MoveableFeatureManager<Viewport, Polygon>
     implements FeatureManager<Polygon>
 {
-    readonly type = 'viewports';
-
     override unsupportedChangeProperties = new Set(['id'] as const);
 
     constructor(
@@ -72,8 +70,9 @@ export class ViewportFeatureManager
         ResizeRectangleInteraction.onResize(
             feature,
             ({ topLeftCoordinate, scale }) => {
-                const currentElement = this.getElementFromFeature(feature)!
-                    .value as Viewport;
+                const currentElement = this.getElementFromFeature(
+                    feature
+                ) as Viewport;
                 this.exerciseService.proposeAction(
                     {
                         type: '[Viewport] Resize viewport',
