@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
 import { MapPosition, MapCoordinates } from '../../models/utils';
-import { changePositionWithId } from '../../models/utils/position/meta-position-helpers-mutable';
+import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';

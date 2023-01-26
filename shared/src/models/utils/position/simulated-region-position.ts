@@ -9,7 +9,7 @@ import {
     isNotInSimulatedRegion,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     simulatedRegionItsIn,
-} from './meta-position-helpers';
+} from './position-helpers';
 
 export class SimulatedRegionPosition {
     /**

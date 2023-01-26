@@ -8,10 +8,10 @@ import {
 } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
 import { IsUUIDSet } from '../utils/validators';
-import { IsMetaPosition } from '../utils/validators/is-metaposition';
+import { IsPosition } from '../utils/validators/is-position';
 import { getCreate, Transfer } from './utils';
 import { ImageProperties } from './utils/image-properties';
-import { MetaPosition } from './utils/position/meta-position';
+import { Position } from './utils/position/position';
 
 export class Vehicle {
     @IsUUID(4, uuidValidationOptions)
@@ -29,9 +29,9 @@ export class Vehicle {
     @IsNumber()
     public readonly patientCapacity: number;
 
-    @IsMetaPosition()
+    @IsPosition()
     @ValidateNested()
-    public readonly metaPosition: MetaPosition;
+    public readonly metaPosition: Position;
 
     @ValidateNested()
     @Type(() => ImageProperties)
@@ -61,7 +61,7 @@ export class Vehicle {
         materialIds: UUIDSet,
         patientCapacity: number,
         image: ImageProperties,
-        metaPosition: MetaPosition
+        metaPosition: Position
     ) {
         this.vehicleType = vehicleType;
         this.name = name;

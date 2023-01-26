@@ -13,7 +13,7 @@ import {
 import { isEmpty } from 'lodash-es';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsLiteralUnion, IsIdMap, IsUUIDSet } from '../utils/validators';
-import { IsMetaPosition } from '../utils/validators/is-metaposition';
+import { IsPosition } from '../utils/validators/is-position';
 import { PatientHealthState } from './patient-health-state';
 import {
     BiometricInformation,
@@ -25,7 +25,7 @@ import {
     HealthPoints,
     getCreate,
 } from './utils';
-import { MetaPosition } from './utils/position/meta-position';
+import { Position } from './utils/position/position';
 import { PersonalInformation } from './utils/personal-information';
 import { PretriageInformation } from './utils/pretriage-information';
 
@@ -63,9 +63,9 @@ export class Patient {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    @IsMetaPosition()
+    @IsPosition()
     @ValidateNested()
-    public readonly metaPosition: MetaPosition;
+    public readonly metaPosition: Position;
 
     @IsUUID(4, uuidValidationOptions)
     @IsOptional()
@@ -150,7 +150,7 @@ export class Patient {
         image: ImageProperties,
         health: HealthPoints,
         remarks: string,
-        metaPosition: MetaPosition
+        metaPosition: Position
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;

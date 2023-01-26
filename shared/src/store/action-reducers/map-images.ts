@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { MapImage } from '../../models';
 import { MapPosition, MapCoordinates } from '../../models/utils';
-import { changePosition } from '../../models/utils/position/meta-position-helpers-mutable';
+import { changePosition } from '../../models/utils/position/position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import {

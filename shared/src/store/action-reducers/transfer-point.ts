@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { TransferPoint } from '../../models';
 import { coordinatesOf, MapCoordinates, MapPosition } from '../../models/utils';
-import { changePositionWithId } from '../../models/utils/position/meta-position-helpers-mutable';
+import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';

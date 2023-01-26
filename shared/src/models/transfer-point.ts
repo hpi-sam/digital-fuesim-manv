@@ -1,17 +1,17 @@
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, UUIDSet, uuidValidationOptions } from '../utils';
 import { IsReachableTransferPoints, IsUUIDSet } from '../utils/validators';
-import { IsMetaPosition } from '../utils/validators/is-metaposition';
+import { IsPosition } from '../utils/validators/is-position';
 import type { ImageProperties, MapCoordinates } from './utils';
-import { MapPosition, MetaPosition, getCreate } from './utils';
+import { MapPosition, Position, getCreate } from './utils';
 
 export class TransferPoint {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
 
     @ValidateNested()
-    @IsMetaPosition()
-    public readonly metaPosition: MetaPosition;
+    @IsPosition()
+    public readonly metaPosition: Position;
 
     @IsReachableTransferPoints()
     public readonly reachableTransferPoints: ReachableTransferPoints;

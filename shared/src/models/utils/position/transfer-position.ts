@@ -10,7 +10,7 @@ import {
     isNotInTransfer,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     transferItsIn,
-} from './meta-position-helpers';
+} from './position-helpers';
 
 export class TransferPosition {
     /**

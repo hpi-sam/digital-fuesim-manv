@@ -1,17 +1,17 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { IsMetaPosition } from '../utils/validators/is-metaposition';
+import { IsPosition } from '../utils/validators/is-position';
 import {
     getCreate,
     isInSimulatedRegion,
     MapPosition,
-    MetaPosition,
+    Position,
     simulatedRegionItsIn,
     Size,
 } from './utils';
 import type { ImageProperties, MapCoordinates } from './utils';
-import type { WithMetaPosition } from './utils/position/with-meta-position';
+import type { WithPosition } from './utils/position/with-meta-position';
 
 export class SimulatedRegion {
     @IsUUID(4, uuidValidationOptions)
@@ -21,8 +21,8 @@ export class SimulatedRegion {
      * top-left position
      */
     @ValidateNested()
-    @IsMetaPosition()
-    public readonly metaPosition: MetaPosition;
+    @IsPosition()
+    public readonly metaPosition: Position;
 
     @ValidateNested()
     @Type(() => Size)
@@ -51,11 +51,11 @@ export class SimulatedRegion {
 
     static isInSimulatedRegion(
         region: SimulatedRegion,
-        withMetaPosition: WithMetaPosition
+        withPosition: WithPosition
     ): boolean {
         return (
-            isInSimulatedRegion(withMetaPosition) &&
-            simulatedRegionItsIn(withMetaPosition) === region.id
+            isInSimulatedRegion(withPosition) &&
+            simulatedRegionItsIn(withPosition) === region.id
         );
     }
 }

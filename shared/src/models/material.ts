@@ -10,11 +10,10 @@ import {
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsUUIDSet } from '../utils/validators';
-import { IsMetaPosition } from '../utils/validators/is-metaposition';
+import { IsPosition } from '../utils/validators/is-position';
 import type { MaterialTemplate } from './material-template';
-import type { MapCoordinates } from './utils';
 import { CanCaterFor, ImageProperties, getCreate } from './utils';
-import { MetaPosition } from './utils/position/meta-position';
+import { Position } from './utils/position/position';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
@@ -53,9 +52,9 @@ export class Material {
     @Max(maxTreatmentRange)
     public readonly treatmentRange: number;
 
-    @IsMetaPosition()
+    @IsPosition()
     @ValidateNested()
-    public readonly metaPosition: MetaPosition;
+    public readonly metaPosition: Position;
 
     @ValidateNested()
     @Type(() => ImageProperties)
@@ -72,8 +71,7 @@ export class Material {
         canCaterFor: CanCaterFor,
         treatmentRange: number,
         overrideTreatmentRange: number,
-        metaPosition: MetaPosition,
-        position?: MapCoordinates
+        metaPosition: Position
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
@@ -91,7 +89,7 @@ export class Material {
         materialTemplate: MaterialTemplate,
         vehicleId: UUID,
         vehicleName: string,
-        metaPosition: MetaPosition
+        metaPosition: Position
     ): Material {
         return this.create(
             vehicleId,
@@ -101,12 +99,7 @@ export class Material {
             materialTemplate.canCaterFor,
             materialTemplate.treatmentRange,
             materialTemplate.overrideTreatmentRange,
-            metaPosition,
-            undefined
+            metaPosition
         );
-    }
-
-    static isInVehicle(material: Material): boolean {
-        return material.metaPosition.type === 'vehicle';
     }
 }

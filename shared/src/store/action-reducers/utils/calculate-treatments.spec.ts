@@ -4,10 +4,10 @@ import { defaultMaterialTemplates } from '../../../data/default-state/material-t
 import { defaultPersonnelTemplates } from '../../../data/default-state/personnel-templates';
 import type { Patient } from '../../../models';
 import { Material, Personnel } from '../../../models';
-import type { MetaPosition, PatientStatus } from '../../../models/utils';
+import type { Position, PatientStatus } from '../../../models/utils';
 import {
     coordinatesOf,
-    isMetaPositionOnMap,
+    isPositionOnMap,
     CanCaterFor,
     MapCoordinates,
 } from '../../../models/utils';
@@ -96,10 +96,7 @@ function addPatient(
     return patient;
 }
 
-function addPersonnel(
-    state: Mutable<ExerciseState>,
-    metaPosition: MetaPosition
-) {
+function addPersonnel(state: Mutable<ExerciseState>, metaPosition: Position) {
     const personnel = cloneDeepMutable(
         Personnel.generatePersonnel(
             defaultPersonnelTemplates.notSan,
@@ -114,7 +111,7 @@ function addPersonnel(
         green: 0,
         logicalOperator: 'and',
     };
-    if (isMetaPositionOnMap(metaPosition)) {
+    if (isPositionOnMap(metaPosition)) {
         SpatialTree.addElement(
             state.spatialTrees.personnel,
             personnel.id,
@@ -125,10 +122,7 @@ function addPersonnel(
     return personnel;
 }
 
-function addMaterial(
-    state: Mutable<ExerciseState>,
-    metaPosition: MetaPosition
-) {
+function addMaterial(state: Mutable<ExerciseState>, metaPosition: Position) {
     const material = cloneDeepMutable(
         Material.generateMaterial(
             defaultMaterialTemplates.standard,
@@ -143,7 +137,7 @@ function addMaterial(
         green: 0,
         logicalOperator: 'and',
     };
-    if (isMetaPositionOnMap(metaPosition)) {
+    if (isPositionOnMap(metaPosition)) {
         SpatialTree.addElement(
             state.spatialTrees.materials,
             material.id,

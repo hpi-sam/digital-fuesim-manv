@@ -4,7 +4,7 @@ import { IsValue } from '../../../utils/validators';
 import { getCreate } from '../get-create';
 import { MapCoordinates } from './map-coordinates';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { isOnMap, isNotOnMap, coordinatesOf } from './meta-position-helpers';
+import { isOnMap, isNotOnMap, coordinatesOf } from './position-helpers';
 
 export class MapPosition {
     /**

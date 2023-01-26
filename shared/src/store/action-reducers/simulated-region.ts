@@ -5,7 +5,7 @@ import { MapCoordinates, MapPosition, Size } from '../../models/utils';
 import {
     changePosition,
     changePositionWithId,
-} from '../../models/utils/position/meta-position-helpers-mutable';
+} from '../../models/utils/position/position-helpers-mutable';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';

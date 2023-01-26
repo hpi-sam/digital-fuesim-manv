@@ -1,7 +1,7 @@
 import type {
     ExerciseState,
-    MetaPosition,
-    WithMetaPosition,
+    Position,
+    WithPosition,
     MapCoordinates,
     Size,
     UUID,
@@ -27,7 +27,7 @@ import { ElementManager } from './element-manager';
 
 export interface PositionableElement {
     readonly id: UUID;
-    readonly metaPosition: MetaPosition;
+    readonly metaPosition: Position;
 }
 
 export interface ResizableElement extends PositionableElement {
@@ -46,7 +46,7 @@ export function isCoordinateArray(
     return isArray(coordinates[0]);
 }
 
-export const createPoint = (element: WithMetaPosition): Feature<Point> =>
+export const createPoint = (element: WithPosition): Feature<Point> =>
     new Feature(
         new Point([coordinatesOf(element).x, coordinatesOf(element).y])
     );

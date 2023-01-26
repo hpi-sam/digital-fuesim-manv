@@ -9,7 +9,7 @@ import {
     isNotInVehicle,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     vehicleItsIn,
-} from './meta-position-helpers';
+} from './position-helpers';
 
 export class VehiclePosition {
     /**

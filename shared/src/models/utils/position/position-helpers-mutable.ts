@@ -8,21 +8,21 @@ import {
 } from '../../../store/action-reducers/utils/spatial-elements';
 import type { Mutable, UUID } from '../../../utils';
 import { cloneDeepMutable } from '../../../utils';
-import type { MetaPosition } from './meta-position';
+import type { Position } from './position';
 import {
-    coordinatesOfMetaPosition,
-    isMetaPositionNotOnMap,
-    isMetaPositionOnMap,
+    coordinatesOfPosition,
+    isPositionNotOnMap,
+    isPositionOnMap,
     isNotOnMap,
     isOnMap,
-} from './meta-position-helpers';
+} from './position-helpers';
 
-type MutableMetaPosition = Mutable<MetaPosition>;
+type MutablePosition = Mutable<Position>;
 
-interface WithMutableMetaPosition {
-    metaPosition: MutableMetaPosition;
+interface WithMutablePosition {
+    metaPosition: MutablePosition;
 }
-interface WithMutableMetaPositionAndId extends WithMutableMetaPosition {
+interface WithMutablePositionAndId extends WithMutablePosition {
     id: UUID;
 }
 type ElementType =
@@ -40,7 +40,7 @@ type ElementType =
 
 export function changePositionWithId(
     of: UUID,
-    to: MetaPosition,
+    to: Position,
     type: ElementType,
     inState: Mutable<ExerciseState>
 ) {
@@ -55,14 +55,14 @@ export function changePositionWithId(
 }
 
 export function changePosition(
-    of: WithMutableMetaPosition,
-    to: MetaPosition,
+    of: WithMutablePosition,
+    to: Position,
     type: SpatialElementType | false,
     inState: Mutable<ExerciseState>
 ) {
     if (type) {
         updateSpatialElementTree(
-            of as WithMutableMetaPositionAndId,
+            of as WithMutablePositionAndId,
             to,
             type,
             inState
@@ -75,26 +75,26 @@ export function changePosition(
 }
 
 function updateSpatialElementTree(
-    element: WithMutableMetaPositionAndId,
-    to: MetaPosition,
+    element: WithMutablePositionAndId,
+    to: Position,
     type: SpatialElementType,
     state: Mutable<ExerciseState>
 ) {
-    if (isOnMap(element) && isMetaPositionOnMap(to)) {
+    if (isOnMap(element) && isPositionOnMap(to)) {
         updateElementPosition(
             state,
             type,
             element.id,
-            coordinatesOfMetaPosition(to)
+            coordinatesOfPosition(to)
         );
-    } else if (isOnMap(element) && isMetaPositionNotOnMap(to)) {
+    } else if (isOnMap(element) && isPositionNotOnMap(to)) {
         removeElementPosition(state, type, element.id);
-    } else if (isNotOnMap(element) && isMetaPositionOnMap(to)) {
+    } else if (isNotOnMap(element) && isPositionOnMap(to)) {
         updateElementPosition(
             state,
             type,
             element.id,
-            coordinatesOfMetaPosition(to)
+            coordinatesOfPosition(to)
         );
     }
 }

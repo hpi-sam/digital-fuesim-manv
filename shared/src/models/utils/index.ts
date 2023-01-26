@@ -1,11 +1,11 @@
-export { MetaPosition } from './position/meta-position';
-export { WithMetaPosition } from './position/with-meta-position';
+export { Position } from './position/position';
+export { WithPosition } from './position/with-meta-position';
 export { MapPosition } from './position/map-position';
 export { VehiclePosition } from './position/vehicle-position';
 export { TransferPosition } from './position/transfer-position';
 export { SimulatedRegionPosition } from './position/simulated-region-position';
 export { MapCoordinates } from './position/map-coordinates';
-export * from './position/meta-position-helpers';
+export * from './position/position-helpers';
 export * from './patient-status';
 export { Size } from './size';
 export { Role } from './role';

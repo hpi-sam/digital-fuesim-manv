@@ -8,7 +8,7 @@ import type {
     TransferPoint,
     UUID,
     Vehicle,
-    WithMetaPosition,
+    WithPosition,
 } from 'digital-fuesim-manv-shared';
 import { coordinatesOf, isOnMap, Viewport } from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
@@ -62,7 +62,7 @@ export const selectRestrictedViewport = createSelector(
  * @returns a selector that returns a UUIDMap of all elements that have a position and are in the viewport restriction
  */
 function selectVisibleElementsFactory<
-    Element extends WithMetaPosition,
+    Element extends WithPosition,
     Elements extends { readonly [key: UUID]: Element } = {
         readonly [key: UUID]: Element;
     }

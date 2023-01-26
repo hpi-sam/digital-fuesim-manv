@@ -1,14 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { IsMetaPosition } from '../utils/validators/is-metaposition';
-import {
-    coordinatesOf,
-    getCreate,
-    MapPosition,
-    MetaPosition,
-    Size,
-} from './utils';
+import { IsPosition } from '../utils/validators/is-position';
+import { coordinatesOf, getCreate, MapPosition, Position, Size } from './utils';
 import type { ImageProperties, MapCoordinates } from './utils';
 
 export class Viewport {
@@ -19,8 +13,8 @@ export class Viewport {
      * top-left position
      */
     @ValidateNested()
-    @IsMetaPosition()
-    public readonly metaPosition: MetaPosition;
+    @IsPosition()
+    public readonly metaPosition: Position;
 
     @ValidateNested()
     @Type(() => Size)

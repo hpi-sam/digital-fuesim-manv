@@ -11,7 +11,7 @@ import {
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsLiteralUnion, IsUUIDSet } from '../utils/validators';
-import { IsMetaPosition } from '../utils/validators/is-metaposition';
+import { IsPosition } from '../utils/validators/is-position';
 import type { PersonnelTemplate } from './personnel-template';
 import type { MapCoordinates } from './utils';
 import {
@@ -21,7 +21,7 @@ import {
     Transfer,
     getCreate,
 } from './utils';
-import { MetaPosition } from './utils/position/meta-position';
+import { Position } from './utils/position/position';
 import { personnelTypeAllowedValues } from './utils/personnel-type';
 
 export class Personnel {
@@ -68,9 +68,9 @@ export class Personnel {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    @IsMetaPosition()
+    @IsPosition()
     @ValidateNested()
-    public readonly metaPosition: MetaPosition;
+    public readonly metaPosition: Position;
 
     /**
      * * @deprecated use {@link metaPosition}
@@ -93,7 +93,7 @@ export class Personnel {
         canCaterFor: CanCaterFor,
         treatmentRange: number,
         overrideTreatmentRange: number,
-        metaPosition: MetaPosition,
+        metaPosition: Position,
         position?: MapCoordinates
     ) {
         this.vehicleId = vehicleId;
@@ -113,7 +113,7 @@ export class Personnel {
         personnelTemplate: PersonnelTemplate,
         vehicleId: UUID,
         vehicleName: string,
-        metaPosition: MetaPosition
+        metaPosition: Position
     ): Personnel {
         return this.create(
             vehicleId,

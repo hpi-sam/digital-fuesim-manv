@@ -2,7 +2,7 @@ import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID, Vehicle } from 'digital-fuesim-manv-shared';
-import { isInVehicle, Material } from 'digital-fuesim-manv-shared';
+import { isInVehicle } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map, switchMap } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -45,7 +45,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                 ).map((materialId) =>
                     this.store
                         .select(createSelectMaterial(materialId))
-                        .pipe(map((material) => Material.isInVehicle(material)))
+                        .pipe(map((material) => isInVehicle(material)))
                 );
                 const personnelAreInVehicle$ = Object.keys(
                     _vehicle.personnelIds
