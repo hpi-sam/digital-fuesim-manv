@@ -77,11 +77,6 @@ export abstract class ElementManager<
         );
     }
 
-    public recreateFeature(element: Element) {
-        this.onElementDeleted(element);
-        this.onElementCreated(element);
-    }
-
     /**
      * Adds a new feature representing the {@link element} to the map.
      */
