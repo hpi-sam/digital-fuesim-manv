@@ -2,10 +2,16 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
 import { Patient } from '../../models';
 import {
+    isOnMap,
+    MapPosition,
     PatientStatus,
     patientStatusAllowedValues,
     Position,
 } from '../../models/utils';
+import {
+    changePosition,
+    changePositionWithId,
+} from '../../models/utils/position/meta-position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import {
@@ -19,11 +25,7 @@ import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
-import {
-    addElementPosition,
-    removeElementPosition,
-    updateElementPosition,
-} from './utils/spatial-elements';
+import { removeElementPosition } from './utils/spatial-elements';
 
 export function deletePatient(
     draftState: Mutable<ExerciseState>,
@@ -120,7 +122,12 @@ export namespace PatientActionReducers {
             }
             const mutablePatient = cloneDeepMutable(patient);
             draftState.patients[mutablePatient.id] = mutablePatient;
-            addElementPosition(draftState, 'patients', mutablePatient.id);
+            changePosition(
+                mutablePatient,
+                patient.metaPosition,
+                'patients',
+                draftState
+            );
             return draftState;
         },
         rights: 'trainer',
@@ -129,11 +136,11 @@ export namespace PatientActionReducers {
     export const movePatient: ActionReducer<MovePatientAction> = {
         action: MovePatientAction,
         reducer: (draftState, { patientId, targetPosition }) => {
-            updateElementPosition(
-                draftState,
-                'patients',
+            changePositionWithId(
                 patientId,
-                targetPosition
+                MapPosition.create(targetPosition),
+                'patients',
+                draftState
             );
             return draftState;
         },
@@ -155,7 +162,7 @@ export namespace PatientActionReducers {
             const patient = getElement(draftState, 'patients', patientId);
             patient.pretriageStatus = patientStatus;
 
-            if (patient.metaPosition.type === 'coordinates') {
+            if (isOnMap(patient)) {
                 updateTreatments(draftState, patient);
             }
 

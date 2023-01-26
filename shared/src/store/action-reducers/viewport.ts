@@ -2,6 +2,10 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Viewport } from '../../models';
 import { MapPosition, Position, Size } from '../../models/utils';
+import {
+    changePosition,
+    changePositionWithId,
+} from '../../models/utils/position/meta-position-helpers-mutable';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -79,9 +83,11 @@ export namespace ViewportActionReducers {
     export const moveViewport: ActionReducer<MoveViewportAction> = {
         action: MoveViewportAction,
         reducer: (draftState, { viewportId, targetPosition }) => {
-            const viewport = getElement(draftState, 'viewports', viewportId);
-            viewport.metaPosition = cloneDeepMutable(
-                MapPosition.create(targetPosition)
+            changePositionWithId(
+                viewportId,
+                MapPosition.create(targetPosition),
+                'viewports',
+                draftState
             );
             return draftState;
         },
@@ -92,8 +98,11 @@ export namespace ViewportActionReducers {
         action: ResizeViewportAction,
         reducer: (draftState, { viewportId, targetPosition, newSize }) => {
             const viewport = getElement(draftState, 'viewports', viewportId);
-            viewport.metaPosition = cloneDeepMutable(
-                MapPosition.create(targetPosition)
+            changePosition(
+                viewport,
+                MapPosition.create(targetPosition),
+                false,
+                draftState
             );
             viewport.size = cloneDeepMutable(newSize);
             return draftState;

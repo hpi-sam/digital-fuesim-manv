@@ -1,7 +1,19 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
-import { MapPosition, Position, VehiclePosition } from '../../models/utils';
+import {
+    coordinatesOf,
+    isInVehicle,
+    isNotOnMap,
+    MapCoordinates,
+    MapPosition,
+    Position,
+    VehiclePosition,
+} from '../../models/utils';
+import {
+    changePosition,
+    changePositionWithId,
+} from '../../models/utils/position/meta-position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
@@ -16,11 +28,7 @@ import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { deletePatient } from './patient';
 import { getElement } from './utils/get-element';
-import {
-    addElementPosition,
-    removeElementPosition,
-    updateElementPosition,
-} from './utils/spatial-elements';
+import { removeElementPosition } from './utils/spatial-elements';
 
 export function deleteVehicle(
     draftState: Mutable<ExerciseState>,
@@ -150,20 +158,22 @@ export namespace VehicleActionReducers {
             }
             draftState.vehicles[vehicle.id] = cloneDeepMutable(vehicle);
             for (const material of cloneDeepMutable(materials)) {
-                material.metaPosition = {
-                    type: 'vehicle',
-                    vehicleId: vehicle.id,
-                };
+                changePosition(
+                    material,
+                    VehiclePosition.create(vehicle.id),
+                    'materials',
+                    draftState
+                );
                 draftState.materials[material.id] = material;
-                addElementPosition(draftState, 'materials', material.id);
             }
             for (const person of cloneDeepMutable(personnel)) {
-                person.metaPosition = {
-                    type: 'vehicle',
-                    vehicleId: vehicle.id,
-                };
+                changePosition(
+                    person,
+                    VehiclePosition.create(vehicle.id),
+                    'personnel',
+                    draftState
+                );
                 draftState.personnel[person.id] = person;
-                addElementPosition(draftState, 'personnel', person.id);
             }
             return draftState;
         },
@@ -173,9 +183,11 @@ export namespace VehicleActionReducers {
     export const moveVehicle: ActionReducer<MoveVehicleAction> = {
         action: MoveVehicleAction,
         reducer: (draftState, { vehicleId, targetPosition }) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
-            vehicle.metaPosition = cloneDeepMutable(
-                MapPosition.create(targetPosition)
+            changePositionWithId(
+                vehicleId,
+                MapPosition.create(targetPosition),
+                'vehicles',
+                draftState
             );
             return draftState;
         },
@@ -211,13 +223,12 @@ export namespace VehicleActionReducers {
         action: UnloadVehicleAction,
         reducer: (draftState, { vehicleId }) => {
             const vehicle = getElement(draftState, 'vehicles', vehicleId);
-            const unloadMetaPosition = vehicle.metaPosition;
-            if (unloadMetaPosition.type !== 'coordinates') {
+            if (isNotOnMap(vehicle)) {
                 throw new ReducerError(
                     `Vehicle with id ${vehicleId} is currently not on the map`
                 );
             }
-            const unloadPosition = unloadMetaPosition.position;
+            const unloadPosition = coordinatesOf(vehicle);
             const materialIds = Object.keys(vehicle.materialIds);
             const personnelIds = Object.keys(vehicle.personnelIds);
             const patientIds = Object.keys(vehicle.patientIds);
@@ -237,10 +248,14 @@ export namespace VehicleActionReducers {
 
             for (const patientId of patientIds) {
                 x += space;
-                updateElementPosition(draftState, 'patients', patientId, {
-                    x,
-                    y: unloadPosition.y,
-                });
+                changePositionWithId(
+                    patientId,
+                    MapPosition.create(
+                        MapCoordinates.create(x, unloadPosition.y)
+                    ),
+                    'patients',
+                    draftState
+                );
                 delete vehicle.patientIds[patientId];
             }
 
@@ -251,15 +266,14 @@ export namespace VehicleActionReducers {
                     'personnel',
                     personnelId
                 );
-                if (Personnel.isInVehicle(personnel)) {
-                    updateElementPosition(
-                        draftState,
-                        'personnel',
+                if (isInVehicle(personnel)) {
+                    changePositionWithId(
                         personnelId,
-                        {
-                            x,
-                            y: unloadPosition.y,
-                        }
+                        MapPosition.create(
+                            MapCoordinates.create(x, unloadPosition.y)
+                        ),
+                        'personnel',
+                        draftState
                     );
                 }
             }
@@ -271,11 +285,15 @@ export namespace VehicleActionReducers {
                     'materials',
                     materialId
                 );
-                if (Material.isInVehicle(material)) {
-                    updateElementPosition(draftState, 'materials', materialId, {
-                        x,
-                        y: unloadPosition.y,
-                    });
+                if (isInVehicle(material)) {
+                    changePosition(
+                        material,
+                        MapPosition.create(
+                            MapCoordinates.create(x, unloadPosition.y)
+                        ),
+                        'materials',
+                        draftState
+                    );
                 }
             }
 
@@ -303,11 +321,12 @@ export namespace VehicleActionReducers {
                             `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
-                    removeElementPosition(draftState, 'materials', material.id);
-                    material.metaPosition = cloneDeepMutable(
-                        VehiclePosition.create(vehicleId)
+                    changePosition(
+                        material,
+                        VehiclePosition.create(vehicleId),
+                        'materials',
+                        draftState
                     );
-
                     break;
                 }
                 case 'personnel': {
@@ -326,15 +345,12 @@ export namespace VehicleActionReducers {
                             `Personnel with id ${personnel.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
-                    removeElementPosition(
-                        draftState,
+                    changePosition(
+                        personnel,
+                        VehiclePosition.create(vehicleId),
                         'personnel',
-                        personnel.id
+                        draftState
                     );
-                    personnel.metaPosition = cloneDeepMutable(
-                        VehiclePosition.create(vehicleId)
-                    );
-
                     break;
                 }
                 case 'patients': {
@@ -352,24 +368,19 @@ export namespace VehicleActionReducers {
                         );
                     }
                     vehicle.patientIds[elementToBeLoadedId] = true;
-                    removeElementPosition(draftState, 'patients', patient.id);
-                    patient.metaPosition = cloneDeepMutable(
-                        VehiclePosition.create(vehicleId)
+                    changePosition(
+                        patient,
+                        VehiclePosition.create(vehicleId),
+                        'patients',
+                        draftState
                     );
-
                     // Load in all materials
                     Object.keys(vehicle.materialIds).forEach((materialId) => {
-                        removeElementPosition(
-                            draftState,
+                        changePosition(
+                            getElement(draftState, 'materials', materialId),
+                            VehiclePosition.create(vehicleId),
                             'materials',
-                            materialId
-                        );
-                        getElement(
-                            draftState,
-                            'materials',
-                            materialId
-                        ).metaPosition = cloneDeepMutable(
-                            VehiclePosition.create(vehicleId)
+                            draftState
                         );
                     });
 
@@ -382,17 +393,15 @@ export namespace VehicleActionReducers {
                                     .transfer === undefined
                         )
                         .forEach((personnelId) => {
-                            removeElementPosition(
-                                draftState,
+                            changePosition(
+                                getElement(
+                                    draftState,
+                                    'personnel',
+                                    personnelId
+                                ),
+                                VehiclePosition.create(vehicleId),
                                 'personnel',
-                                personnelId
-                            );
-                            getElement(
-                                draftState,
-                                'personnel',
-                                personnelId
-                            ).metaPosition = cloneDeepMutable(
-                                VehiclePosition.create(vehicleId)
+                                draftState
                             );
                         });
                 }

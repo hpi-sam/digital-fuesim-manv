@@ -128,8 +128,4 @@ export class Personnel {
             undefined
         );
     }
-
-    static isInVehicle(personnel: Personnel): boolean {
-        return personnel.metaPosition.type === 'vehicle';
-    }
 }

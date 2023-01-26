@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 import { TransferPoint } from '../../models';
 import { coordinatesOf, MapPosition, Position } from '../../models/utils';
+import { changePositionWithId } from '../../models/utils/position/meta-position-helpers-mutable';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -122,13 +123,11 @@ export namespace TransferPointActionReducers {
     export const moveTransferPoint: ActionReducer<MoveTransferPointAction> = {
         action: MoveTransferPointAction,
         reducer: (draftState, { transferPointId, targetPosition }) => {
-            const transferPoint = getElement(
-                draftState,
+            changePositionWithId(
+                transferPointId,
+                MapPosition.create(targetPosition),
                 'transferPoints',
-                transferPointId
-            );
-            transferPoint.metaPosition = cloneDeepMutable(
-                MapPosition.create(targetPosition)
+                draftState
             );
             return draftState;
         },

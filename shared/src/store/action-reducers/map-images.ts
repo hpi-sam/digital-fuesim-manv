@@ -10,6 +10,7 @@ import {
 } from 'class-validator';
 import { MapImage } from '../../models';
 import { MapPosition, Position } from '../../models/utils';
+import { changePosition } from '../../models/utils/position/meta-position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import {
@@ -134,8 +135,11 @@ export namespace MapImagesActionReducers {
         action: MoveMapImageAction,
         reducer: (draftState, { mapImageId, targetPosition }) => {
             const mapImage = getElement(draftState, 'mapImages', mapImageId);
-            mapImage.metaPosition = cloneDeepMutable(
-                MapPosition.create(targetPosition)
+            changePosition(
+                mapImage,
+                MapPosition.create(targetPosition),
+                false,
+                draftState
             );
             return draftState;
         },

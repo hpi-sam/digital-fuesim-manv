@@ -5,10 +5,15 @@ import { defaultPersonnelTemplates } from '../../../data/default-state/personnel
 import type { Patient } from '../../../models';
 import { Material, Personnel } from '../../../models';
 import type { MetaPosition, PatientStatus } from '../../../models/utils';
-import { CanCaterFor, Position } from '../../../models/utils';
-import { MapPosition } from '../../../models/utils/map-position';
+import {
+    coordinatesOf,
+    isMetaPositionOnMap,
+    CanCaterFor,
+    Position,
+} from '../../../models/utils';
+import { MapPosition } from '../../../models/utils/position/map-position';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
-import { VehiclePosition } from '../../../models/utils/vehicle-position';
+import { VehiclePosition } from '../../../models/utils/position/vehicle-position';
 import { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
 import { cloneDeepMutable, uuid } from '../../../utils';
@@ -77,7 +82,6 @@ function addPatient(
     patient.pretriageStatus = pretriageStatus;
     patient.realStatus = realStatus;
     if (position) {
-        patient.position = cloneDeepMutable(position);
         patient.metaPosition = {
             type: 'coordinates',
             position: cloneDeepMutable(position),
@@ -85,7 +89,7 @@ function addPatient(
         SpatialTree.addElement(
             state.spatialTrees.patients,
             patient.id,
-            patient.position
+            position
         );
     }
     state.patients[patient.id] = patient;
@@ -110,12 +114,11 @@ function addPersonnel(
         green: 0,
         logicalOperator: 'and',
     };
-    if (metaPosition.type === 'coordinates') {
-        personnel.position = cloneDeepMutable(metaPosition.position);
+    if (isMetaPositionOnMap(metaPosition)) {
         SpatialTree.addElement(
             state.spatialTrees.personnel,
             personnel.id,
-            personnel.position
+            coordinatesOf(personnel)
         );
     }
     state.personnel[personnel.id] = personnel;
@@ -140,12 +143,11 @@ function addMaterial(
         green: 0,
         logicalOperator: 'and',
     };
-    if (metaPosition.type === 'coordinates') {
-        material.position = cloneDeepMutable(metaPosition.position);
+    if (isMetaPositionOnMap(metaPosition)) {
         SpatialTree.addElement(
             state.spatialTrees.materials,
             material.id,
-            material.position
+            coordinatesOf(material)
         );
     }
     state.materials[material.id] = material;

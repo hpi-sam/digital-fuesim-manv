@@ -1,15 +1,9 @@
 import type { Position } from '../../../models/utils';
-import {
-    isOnMap,
-    MapPosition,
-    isNotOnMap,
-    coordinatesOf,
-} from '../../../models/utils';
+import { isOnMap, isNotOnMap, coordinatesOf } from '../../../models/utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
 import { cloneDeepMutable } from '../../../utils';
-import { updateTreatments } from './calculate-treatments';
 import { getElement } from './get-element';
 
 /**
@@ -37,7 +31,6 @@ export function addElementPosition(
         element.id,
         coordinatesOf(element)
     );
-    updateTreatments(state, element);
 }
 
 /**
@@ -65,8 +58,6 @@ export function updateElementPosition(
             targetPosition
         );
     }
-    element.metaPosition = cloneDeepMutable(MapPosition.create(targetPosition));
-    updateTreatments(state, element);
 }
 
 /**
@@ -87,5 +78,4 @@ export function removeElementPosition(
         element.id,
         cloneDeepMutable(coordinatesOf(element))
     );
-    updateTreatments(state, element);
 }

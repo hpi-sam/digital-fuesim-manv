@@ -3,11 +3,13 @@ import { IsInt, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { TransferPoint } from '../../models';
 import type { Position } from '../../models/utils';
 import {
+    TransferPosition,
     coordinatesOf,
     MapPosition,
     StartPoint,
     startPointTypeOptions,
 } from '../../models/utils';
+import { changePosition } from '../../models/utils/position/meta-position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
@@ -17,10 +19,6 @@ import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { getElement } from './utils';
-import {
-    removeElementPosition,
-    updateElementPosition,
-} from './utils/spatial-elements';
 
 type TransferableElementType = 'personnel' | 'vehicles';
 const transferableElementTypeAllowedValues: AllowedValues<TransferableElementType> =
@@ -53,13 +51,12 @@ export function letElementArrive(
             // Position it in the upper half of the transferPoint
             imageSizeToPosition(TransferPoint.image.height / 3),
     };
-    if (elementType === 'personnel') {
-        updateElementPosition(draftState, 'personnel', element.id, newPosition);
-    } else {
-        element.metaPosition = cloneDeepMutable(
-            MapPosition.create(newPosition)
-        );
-    }
+    changePosition(
+        element,
+        MapPosition.create(newPosition),
+        elementType === 'personnel' ? elementType : false,
+        draftState
+    );
     delete element.transfer;
 }
 
@@ -168,10 +165,6 @@ export namespace TransferActionReducers {
                 duration = startPoint.duration;
             }
 
-            // Remove the position of the element
-            if (elementType === 'personnel') {
-                removeElementPosition(draftState, 'personnel', element.id);
-            }
             // Set the element to transfer
             element.transfer = {
                 startPoint: cloneDeepMutable(startPoint),
@@ -179,16 +172,12 @@ export namespace TransferActionReducers {
                 endTimeStamp: draftState.currentTime + duration,
                 isPaused: false,
             };
-
-            element.metaPosition = {
-                type: 'transfer',
-                transfer: {
-                    startPoint: cloneDeepMutable(startPoint),
-                    targetTransferPointId,
-                    endTimeStamp: draftState.currentTime + duration,
-                    isPaused: false,
-                },
-            };
+            changePosition(
+                element,
+                TransferPosition.create(element.transfer),
+                elementType === 'personnel' ? elementType : false,
+                draftState
+            );
 
             return draftState;
         },

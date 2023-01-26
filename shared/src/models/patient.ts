@@ -67,9 +67,6 @@ export class Patient {
     @ValidateNested()
     public readonly metaPosition: MetaPosition;
 
-    /**
-     * @deprecated use {@link metaPosition}
-     */
     @IsUUID(4, uuidValidationOptions)
     @IsOptional()
     public readonly vehicleId?: UUID;
@@ -186,10 +183,6 @@ export class Patient {
 
     static pretriageStatusIsLocked(patient: Patient): boolean {
         return patient.treatmentTime >= this.pretriageTimeThreshold;
-    }
-
-    static isInVehicle(patient: Patient): boolean {
-        return patient.metaPosition.type === 'vehicle';
     }
 
     static isTreatedByPersonnel(patient: Patient) {
