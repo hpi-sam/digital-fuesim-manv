@@ -3,9 +3,10 @@ import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { SimulatedRegion } from '../../models';
 import { Position, Size } from '../../models/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
+import { removeElementPosition } from './utils/spatial-elements';
 
 export class AddSimulatedRegionAction implements Action {
     @IsValue('[SimulatedRegion] Add simulated region' as const)
@@ -54,6 +55,29 @@ export class RenameSimulatedRegionAction implements Action {
 
     @IsString()
     public readonly newName!: string;
+}
+
+export class AddElementToSimulatedRegionAction implements Action {
+    @IsValue('[SimulatedRegion] Add Element' as const)
+    public readonly type = '[SimulatedRegion] Add Element';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsLiteralUnion({
+        materials: true,
+        patients: true,
+        personnel: true,
+        vehicles: true,
+    })
+    public readonly elementToBeAddedType!:
+        | 'materials'
+        | 'patients'
+        | 'personnel'
+        | 'vehicles';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly elementToBeAddedId!: UUID;
 }
 
 export namespace SimulatedRegionActionReducers {
@@ -125,5 +149,46 @@ export namespace SimulatedRegionActionReducers {
                 return draftState;
             },
             rights: 'trainer',
+        };
+
+    export const addElementToSimulatedRegion: ActionReducer<AddElementToSimulatedRegionAction> =
+        {
+            action: AddElementToSimulatedRegionAction,
+            reducer: (
+                draftState,
+                { simulatedRegionId, elementToBeAddedId, elementToBeAddedType }
+            ) => {
+                // Test for existence of the simulate
+                getElement(draftState, 'simulatedRegions', simulatedRegionId);
+                const element = getElement(
+                    draftState,
+                    elementToBeAddedType,
+                    elementToBeAddedId
+                );
+
+                switch (elementToBeAddedType) {
+                    case 'materials':
+                    case 'patients':
+                    case 'personnel':
+                        removeElementPosition(
+                            draftState,
+                            elementToBeAddedType,
+                            elementToBeAddedId
+                        );
+                        break;
+                    case 'vehicles':
+                        break;
+                }
+                // FIXME: In the old broken positioning logic, this implies the personnel is in their vehicle instead of our simulatedRegion.
+                element.position = undefined;
+
+                element.metaPosition = {
+                    type: 'simulatedRegion',
+                    simulatedRegionId,
+                };
+
+                return draftState;
+            },
+            rights: 'participant',
         };
 }

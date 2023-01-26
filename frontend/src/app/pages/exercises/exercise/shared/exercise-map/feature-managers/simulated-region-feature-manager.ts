@@ -3,6 +3,7 @@ import type { UUID, SimulatedRegion } from 'digital-fuesim-manv-shared';
 import { Position, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type LineString from 'ol/geom/LineString';
+import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
@@ -106,6 +107,40 @@ export class SimulatedRegionFeatureManager
         }
         // If the style has updated, we need to redraw the feature
         elementFeature.changed();
+    }
+
+    public override onFeatureDrop(
+        dropEvent: TranslateEvent,
+        droppedFeature: Feature<any>,
+        droppedOnFeature: Feature<any>
+    ) {
+        const droppedElement = this.getElementFromFeature(droppedFeature);
+        const droppedOnSimulatedRegion = this.getElementFromFeature(
+            droppedOnFeature
+        ) as {
+            type: 'simulatedRegions';
+            value: SimulatedRegion;
+        };
+        if (!droppedElement || !droppedOnSimulatedRegion) {
+            console.error('Could not find element for the features');
+            return false;
+        }
+        if (
+            ['vehicles', 'personnel', 'materials', 'patients'].includes(
+                droppedElement.type
+            )
+        ) {
+            this.exerciseService.proposeAction(
+                {
+                    type: '[SimulatedRegion] Add Element',
+                    simulatedRegionId: droppedOnSimulatedRegion.value.id,
+                    elementToBeAddedType: droppedElement.type,
+                    elementToBeAddedId: droppedElement.value.id,
+                },
+                true
+            );
+        }
+        return true;
     }
 
     public override onFeatureClicked(
