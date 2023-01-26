@@ -2,7 +2,6 @@ import type { Store } from '@ngrx/store';
 import type { UUID, SimulatedRegion } from 'digital-fuesim-manv-shared';
 import { Position, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
-import type { Coordinate } from 'ol/coordinate';
 import type { Polygon } from 'ol/geom';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
@@ -17,20 +16,13 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { SimulatedRegionPopupComponent } from '../shared/simulated-region-popup/simulated-region-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
-import {
-    createPolygon,
-    getCoordinateResizeableElement,
-    getCoordinatesPolygon,
-    getNextPositionPolygon,
-    getPositionPolygon,
-} from '../utility/ol-geometry-helpers';
-import type { ResizableElement } from '../utility/ol-geometry-helpers';
+import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class SimulatedRegionFeatureManager
     extends MoveableFeatureManager<SimulatedRegion, Polygon>
-    implements FeatureManager<Feature<Polygon>>
+    implements FeatureManager<Polygon>
 {
     readonly type = 'simulatedRegions';
 
@@ -52,13 +44,7 @@ export class SimulatedRegionFeatureManager
                     targetPosition: targetPositions[0]![0]!,
                 });
             },
-            createPolygon,
-            getNextPositionPolygon,
-            getCoordinatesPolygon,
-            (element: ResizableElement): Coordinate[][] => [
-                getCoordinateResizeableElement(element),
-            ],
-            getPositionPolygon
+            new PolygonGeometryHelper()
         );
         this.layer.setStyle(this.style);
     }
@@ -112,7 +98,7 @@ export class SimulatedRegionFeatureManager
         ) {
             this.movementAnimator.animateFeatureMovement(
                 elementFeature,
-                this.getCoordinatesElement(newElement)
+                this.geometryHelper.getElementCoordinates(newElement)
             );
         }
         // If the style has updated, we need to redraw the feature

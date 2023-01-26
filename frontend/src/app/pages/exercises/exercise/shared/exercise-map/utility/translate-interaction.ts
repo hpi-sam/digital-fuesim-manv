@@ -2,7 +2,7 @@ import { isEqual } from 'lodash-es';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Point } from 'ol/geom';
 import { Translate } from 'ol/interaction';
-import type { GeometryWithCoordinates, Positions } from './ol-geometry-helpers';
+import type { GeometryWithCoordinates, Positions } from './geometry-helper';
 
 /**
  * Translates (moves) a feature to a new position.

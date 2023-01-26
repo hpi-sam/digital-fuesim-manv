@@ -16,14 +16,7 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
-import {
-    createPolygon,
-    getCoordinateResizeableElement,
-    getCoordinatesPolygon,
-    getNextPositionPolygon,
-    getPositionPolygon,
-} from '../utility/ol-geometry-helpers';
-import type { ResizableElement } from '../utility/ol-geometry-helpers';
+import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
@@ -39,7 +32,7 @@ export function isInViewport(
 
 export class ViewportFeatureManager
     extends MoveableFeatureManager<Viewport, Polygon>
-    implements FeatureManager<Feature<Polygon>>
+    implements FeatureManager<Polygon>
 {
     readonly type = 'viewports';
 
@@ -61,13 +54,7 @@ export class ViewportFeatureManager
                     targetPosition: targetPositions[0]![0]!,
                 });
             },
-            createPolygon,
-            getNextPositionPolygon,
-            getCoordinatesPolygon,
-            (element: ResizableElement): Coordinate[][] => [
-                getCoordinateResizeableElement(element),
-            ],
-            getPositionPolygon
+            new PolygonGeometryHelper()
         );
         this.layer.setStyle(this.style);
     }
@@ -119,7 +106,7 @@ export class ViewportFeatureManager
         ) {
             this.movementAnimator.animateFeatureMovement(
                 elementFeature,
-                this.getCoordinatesElement(newElement)
+                this.geometryHelper.getElementCoordinates(newElement)
             );
         }
         // If the style has updated, we need to redraw the feature

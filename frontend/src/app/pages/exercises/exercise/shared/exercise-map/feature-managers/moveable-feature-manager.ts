@@ -9,12 +9,11 @@ import { Subject } from 'rxjs';
 import type { FeatureManager } from '../utility/feature-manager';
 import { MovementAnimator } from '../utility/movement-animator';
 import type {
-    CoordinatePair,
-    Coordinates,
+    GeometryHelper,
     GeometryWithCoordinates,
     PositionableElement,
     Positions,
-} from '../utility/ol-geometry-helpers';
+} from '../utility/geometry-helper';
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { TranslateInteraction } from '../utility/translate-interaction';
 import { ElementManager } from './element-manager';
@@ -26,16 +25,10 @@ import { ElementManager } from './element-manager';
  */
 export abstract class MoveableFeatureManager<
         Element extends PositionableElement,
-        FeatureType extends GeometryWithCoordinates = Point,
-        ElementFeature extends Feature<FeatureType> = Feature<FeatureType>
+        FeatureType extends GeometryWithCoordinates = Point
     >
-    extends ElementManager<
-        Element,
-        FeatureType,
-        ElementFeature,
-        ReadonlySet<keyof Element>
-    >
-    implements FeatureManager<ElementFeature>
+    extends ElementManager<Element, FeatureType, ReadonlySet<keyof Element>>
+    implements FeatureManager<FeatureType>
 {
     abstract override readonly type: keyof ExerciseState;
     public readonly togglePopup$ = new Subject<OpenPopupOptions<any>>();
@@ -47,35 +40,22 @@ export abstract class MoveableFeatureManager<
             newPosition: Positions<FeatureType>,
             element: Element
         ) => void,
-        private readonly createElement: (element: Element) => ElementFeature,
-        private readonly getNextPosition: (
-            positions: CoordinatePair<FeatureType>,
-            progress: number
-        ) => Coordinates<FeatureType>,
-        private readonly getCoordinatesFeature: (
-            feature: Feature<FeatureType>
-        ) => Coordinates<FeatureType>,
-        protected readonly getCoordinatesElement: (
-            element: Element
-        ) => Coordinates<FeatureType>,
-        private readonly getPosition: (
-            feature: Feature<FeatureType>
-        ) => Positions<FeatureType>
+        protected readonly geometryHelper: GeometryHelper<FeatureType, Element>
     ) {
         super();
         this.movementAnimator = new MovementAnimator<FeatureType>(
             this.olMap,
             this.layer,
-            this.getNextPosition,
-            this.getCoordinatesFeature
+            this.geometryHelper.getNextPosition,
+            this.geometryHelper.getFeatureCoordinates
         );
     }
 
     override unsupportedChangeProperties: ReadonlySet<keyof Element> = new Set(
         [] as const
     );
-    createFeature(element: Element): ElementFeature {
-        const elementFeature = this.createElement(element);
+    createFeature(element: Element): Feature<FeatureType> {
+        const elementFeature = this.geometryHelper.create(element);
         elementFeature.setId(element.id);
         this.layer.getSource()!.addFeature(elementFeature);
         TranslateInteraction.onTranslateEnd<FeatureType>(
@@ -83,16 +63,19 @@ export abstract class MoveableFeatureManager<
             (newPosition) => {
                 this.proposeMovementAction(newPosition, element);
             },
-            this.getPosition
+            this.geometryHelper.getFeaturePosition
         );
         return elementFeature;
     }
 
-    isFeatureTranslatable(feature: ElementFeature) {
+    isFeatureTranslatable(feature: Feature<FeatureType>) {
         return true;
     }
 
-    deleteFeature(element: Element, elementFeature: ElementFeature): void {
+    deleteFeature(
+        element: Element,
+        elementFeature: Feature<FeatureType>
+    ): void {
         this.layer.getSource()!.removeFeature(elementFeature);
         elementFeature.dispose();
         this.movementAnimator.stopMovementAnimation(elementFeature);
@@ -103,30 +86,30 @@ export abstract class MoveableFeatureManager<
         newElement: Element,
         // It is too much work to correctly type this param with {@link unsupportedChangeProperties}
         changedProperties: ReadonlySet<keyof Element>,
-        elementFeature: ElementFeature
+        elementFeature: Feature<FeatureType>
     ): void {
         if (changedProperties.has('position')) {
             this.movementAnimator.animateFeatureMovement(
                 elementFeature,
-                this.getCoordinatesElement(newElement)
+                this.geometryHelper.getElementCoordinates(newElement)
             );
         }
         // If the style has updated, we need to redraw the feature
         elementFeature.changed();
     }
 
-    getFeatureFromElement(element: Element): ElementFeature | undefined {
+    getFeatureFromElement(element: Element): Feature<FeatureType> | undefined {
         return (
             (this.layer
                 .getSource()!
-                .getFeatureById(element.id) as ElementFeature | null) ??
+                .getFeatureById(element.id) as Feature<FeatureType> | null) ??
             undefined
         );
     }
 
     public onFeatureClicked(
         event: MapBrowserEvent<any>,
-        feature: ElementFeature
+        feature: Feature<FeatureType>
         // eslint-disable-next-line @typescript-eslint/no-empty-function
     ): void {}
 
@@ -136,7 +119,7 @@ export abstract class MoveableFeatureManager<
     public onFeatureDrop(
         dropEvent: TranslateEvent,
         droppedFeature: Feature<any>,
-        droppedOnFeature: ElementFeature
+        droppedOnFeature: Feature<FeatureType>
     ): boolean {
         return false;
     }

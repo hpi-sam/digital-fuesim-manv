@@ -8,13 +8,7 @@ import type VectorSource from 'ol/source/Vector';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { WithPosition } from '../../utility/types/with-position';
 import { PersonnelPopupComponent } from '../shared/personnel-popup/personnel-popup.component';
-import {
-    createPoint,
-    getCoordinatesPoint,
-    getCoordinatesPositionableElement,
-    getNextPositionPoint,
-    getPositionPoint,
-} from '../utility/ol-geometry-helpers';
+import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
@@ -56,11 +50,7 @@ export class PersonnelFeatureManager extends MoveableFeatureManager<
                     targetPosition,
                 });
             },
-            createPoint,
-            getNextPositionPoint,
-            getCoordinatesPoint,
-            getCoordinatesPositionableElement,
-            getPositionPoint
+            new PointGeometryHelper()
         );
 
         this.layer.setStyle((feature, resolution) => [

@@ -13,13 +13,7 @@ import { selectCurrentRole } from 'src/app/state/application/selectors/shared.se
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
-import {
-    createPoint,
-    getCoordinatesPoint,
-    getCoordinatesPositionableElement,
-    getNextPositionPoint,
-    getPositionPoint,
-} from '../utility/ol-geometry-helpers';
+import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
@@ -45,11 +39,7 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
                     targetPosition,
                 });
             },
-            createPoint,
-            getNextPositionPoint,
-            getCoordinatesPoint,
-            getCoordinatesPositionableElement,
-            getPositionPoint
+            new PointGeometryHelper()
         );
         layer.setStyle((thisFeature, currentZoom) => [
             this.imageStyleHelper.getStyle(

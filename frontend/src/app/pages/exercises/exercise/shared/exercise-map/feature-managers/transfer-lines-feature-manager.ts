@@ -14,10 +14,9 @@ export class TransferLinesFeatureManager
     extends ElementManager<
         TransferLine,
         LineString,
-        Feature<LineString>,
         ReadonlySet<keyof TransferLine>
     >
-    implements FeatureManager<Feature<LineString>>
+    implements FeatureManager<LineString>
 {
     readonly type = 'transferLines';
     readonly unsupportedChangeProperties = new Set(['id'] as const);

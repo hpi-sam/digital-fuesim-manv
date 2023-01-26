@@ -10,7 +10,7 @@ import type {
     Coordinates,
     CoordinatePair,
     GeometryWithCoordinates,
-} from './ol-geometry-helpers';
+} from './geometry-helper';
 
 /**
  * Animates the movement of a feature to a new position.
