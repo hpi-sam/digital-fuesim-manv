@@ -16,7 +16,7 @@ import { elementTypePluralMap } from '../../utils/element-type-plural-map';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
-import { letElementArrive } from './transfer';
+import { letElementArrive, TransferableElementType } from './transfer';
 import { updateTreatments } from './utils/calculate-treatments';
 import { PatientUpdate } from './utils/patient-updates';
 
@@ -134,7 +134,7 @@ export namespace ExerciseActionReducers {
 
 type TransferTypePluralMap = Pick<
     ElementTypePluralMap,
-    'personnel' | 'vehicle'
+    TransferableElementType
 >;
 
 function refreshTransfer(

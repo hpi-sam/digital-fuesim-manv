@@ -17,7 +17,7 @@ import {
     updateElementPosition,
 } from './utils/spatial-elements';
 
-type TransferableElementType = 'personnel' | 'vehicle';
+export type TransferableElementType = 'personnel' | 'vehicle';
 const transferableElementTypeAllowedValues: AllowedValues<TransferableElementType> =
     { personnel: true, vehicle: true };
 
