@@ -167,7 +167,7 @@ export const addTypeProperty17: Migration = {
                     type: 'client';
                 };
             };
-            eocLog: { type: 'logEntry' }[];
+            eocLog: { type: 'eocLogEntry' }[];
             configuration: { type: 'exerciseConfiguration' };
             hospitalPatients: {
                 [key: UUID]: {
@@ -241,7 +241,7 @@ export const addTypeProperty17: Migration = {
         });
 
         Object.values(typedState.eocLog).forEach((logEntry) => {
-            logEntry.type = 'logEntry';
+            logEntry.type = 'eocLogEntry';
         });
 
         typedState.configuration.type = 'exerciseConfiguration';
