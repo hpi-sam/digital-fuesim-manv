@@ -1,5 +1,10 @@
-import { isOnMap, Position } from '../../../models/utils';
-import { MapPosition, isNotOnMap, coordinatesOf } from '../../../models/utils';
+import type { Position } from '../../../models/utils';
+import {
+    isOnMap,
+    MapPosition,
+    isNotOnMap,
+    coordinatesOf,
+} from '../../../models/utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
