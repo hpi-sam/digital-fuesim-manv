@@ -15,12 +15,12 @@ jobs:
             fail-fast: false
 
         steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
               with:
                   node-version: '16'
             - name: Cache node modules
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               id: cache-node-modules
               env:
                   cache-name: cache-node-modules
@@ -32,7 +32,7 @@ jobs:
                       backend/node_modules
                   key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
             - name: Cache shared/dist
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               id: cache-shared-dist
               env:
                   cache-name: cache-shared-dist
@@ -57,12 +57,12 @@ jobs:
             fail-fast: false
 
         steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
               with:
                   node-version: '16'
             - name: Cache node modules
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               id: cache-node-modules
               env:
                   cache-name: cache-node-modules
@@ -74,7 +74,7 @@ jobs:
                       backend/node_modules
                   key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
             - name: Cache shared/dist
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               id: cache-shared-dist
               env:
                   cache-name: cache-shared-dist
@@ -101,12 +101,12 @@ jobs:
             fail-fast: false
 
         steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
               with:
                   node-version: '16'
             - name: Cache node modules
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               id: cache-node-modules
               env:
                   cache-name: cache-node-modules
@@ -118,7 +118,7 @@ jobs:
                       backend/node_modules
                   key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
             - name: Cache shared/dist
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               id: cache-shared-dist
               env:
                   cache-name: cache-shared-dist
@@ -168,12 +168,12 @@ jobs:
             fail-fast: false
 
         steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
               with:
                   node-version: '16'
             - name: Cache node modules
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               id: cache-node-modules
               env:
                   cache-name: cache-node-modules
@@ -185,7 +185,7 @@ jobs:
                       backend/node_modules
                   key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
             - name: Cache shared/dist
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               id: cache-shared-dist
               env:
                   cache-name: cache-shared-dist
@@ -209,7 +209,7 @@ jobs:
               run: npm run merge-coverage
               if: always()
             - name: Upload coverage
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               if: always()
               with:
                   name: coverage-output
@@ -244,17 +244,17 @@ jobs:
 
         # Don't pull LFS to reduce bandwidth usage
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
             #   with:
             #       lfs: 'true'
             - name: checkoutLFS
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
             # - run: git lfs pull
-            - uses: actions/setup-node@v2
+            - uses: actions/setup-node@v3
               with:
                   node-version: '16'
             - name: Cache node modules
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               id: cache-node-modules
               env:
                   cache-name: cache-node-modules
@@ -266,7 +266,7 @@ jobs:
                       backend/node_modules
                   key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
             - name: Cache shared/dist
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               id: cache-shared-dist
               env:
                   cache-name: cache-shared-dist
@@ -274,7 +274,7 @@ jobs:
                   path: shared/dist
                   key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
             - name: Cache Cypress binary
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               id: cache-cypress
               with:
                   path: ~/.cache/Cypress
@@ -287,14 +287,14 @@ jobs:
             - name: Run migrations
               run: cd backend && npm run migration:run && cd ..
             - name: Run Cypress
-              uses: cypress-io/github-action@v2
+              uses: cypress-io/github-action@v5
               with:
                   start: npm run start:all
                   command: npm run cy:ci
                   wait-on: 'http://localhost:4200/health, http://localhost:3201/api/health'
             - name: Archive cypress
               if: always()
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               with:
                   name: cypress-output
                   path: frontend/cypress-visual-screenshots
@@ -313,20 +313,20 @@ jobs:
             fail-fast: false
 
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
               with:
                   lfs: 'true'
             - name: checkoutLFS
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
             - run: git lfs pull
             # Source: https://docs.docker.com/ci-cd/github-actions/
             - name: Login to docker
-              uses: docker/login-action@v1
+              uses: docker/login-action@v2
               with:
                   username: ${{ secrets.DOCKER_HUB_USERNAME }}
                   password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
             - name: Build and push
-              uses: docker/build-push-action@v2
+              uses: docker/build-push-action@v3
               with:
                   context: .
                   file: docker/Dockerfile
@@ -347,20 +347,20 @@ jobs:
             fail-fast: false
 
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
               with:
                   lfs: 'true'
             - name: checkoutLFS
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
             - run: git lfs pull
             # Source: https://docs.docker.com/ci-cd/github-actions/
             - name: Login to docker
-              uses: docker/login-action@v1
+              uses: docker/login-action@v2
               with:
                   username: ${{ secrets.DOCKER_HUB_USERNAME }}
                   password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
             - name: Build and push
-              uses: docker/build-push-action@v2
+              uses: docker/build-push-action@v3
               with:
                   context: .
                   file: docker/Dockerfile
