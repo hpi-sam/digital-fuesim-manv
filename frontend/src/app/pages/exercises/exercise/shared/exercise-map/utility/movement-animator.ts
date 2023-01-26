@@ -51,9 +51,7 @@ export class MovementAnimator<T extends GeometryWithCoordinates> {
     ) {
         const startTime = Date.now();
         const startPosition = this.getCoordinates(feature);
-        // Stop an ongoing movement animation
-        this.stopMovementAnimation(feature as Feature<T>);
-        // We don't have to animate this
+        this.stopMovementAnimation(feature);
         if (isEqual(startPosition, endPosition)) {
             return;
         }
