@@ -1,5 +1,5 @@
-import type { Position } from '../models/utils';
 import { Viewport } from '../models';
+import type { MapCoordinates } from '../models/utils';
 import type { ExerciseAction } from './action-reducers';
 import { validateExerciseAction } from '.';
 
@@ -126,7 +126,7 @@ describe('validateExerciseAction', () => {
                             x: 0,
                             y: 0,
                             z: 0,
-                        } as unknown as Position,
+                        } as unknown as MapCoordinates,
                     },
                 },
             })

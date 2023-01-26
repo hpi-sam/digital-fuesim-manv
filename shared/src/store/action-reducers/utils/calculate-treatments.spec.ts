@@ -9,7 +9,7 @@ import {
     coordinatesOf,
     isMetaPositionOnMap,
     CanCaterFor,
-    Position,
+    MapCoordinates,
 } from '../../../models/utils';
 import { MapPosition } from '../../../models/utils/position/map-position';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
@@ -76,7 +76,7 @@ function addPatient(
     state: Mutable<ExerciseState>,
     pretriageStatus: PatientStatus,
     realStatus: PatientStatus,
-    position?: Position
+    position?: MapCoordinates
 ): Mutable<Patient> {
     const patient = cloneDeepMutable(generateDummyPatient());
     patient.pretriageStatus = pretriageStatus;
@@ -224,7 +224,12 @@ describe('calculate treatment', () => {
             (state) => {
                 (['green', 'yellow', 'red'] as PatientStatus[]).forEach(
                     (color) => {
-                        addPatient(state, color, color, Position.create(0, 0));
+                        addPatient(
+                            state,
+                            color,
+                            color,
+                            MapCoordinates.create(0, 0)
+                        );
                     }
                 );
             }
@@ -235,7 +240,12 @@ describe('calculate treatment', () => {
     it('does nothing when there are only dead patients', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPatient(state, 'black', 'black', Position.create(0, 0));
+                addPatient(
+                    state,
+                    'black',
+                    'black',
+                    MapCoordinates.create(0, 0)
+                );
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -244,7 +254,12 @@ describe('calculate treatment', () => {
     it('does nothing when all personnel is in a vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPatient(state, 'green', 'green', Position.create(0, 0));
+                addPatient(
+                    state,
+                    'green',
+                    'green',
+                    MapCoordinates.create(0, 0)
+                );
                 addPersonnel(state, VehiclePosition.create(''));
             }
         );
@@ -254,7 +269,12 @@ describe('calculate treatment', () => {
     it('does nothing when all material is in a vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPatient(state, 'green', 'green', Position.create(0, 0));
+                addPatient(
+                    state,
+                    'green',
+                    'green',
+                    MapCoordinates.create(0, 0)
+                );
                 addMaterial(state, VehiclePosition.create(''));
             }
         );
@@ -273,13 +293,13 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    Position.create(0, 0)
+                    MapCoordinates.create(0, 0)
                 ).id;
                 ids.redPatient = addPatient(
                     state,
                     'red',
                     'red',
-                    Position.create(2, 2)
+                    MapCoordinates.create(2, 2)
                 ).id;
                 ids.material = addMaterial(
                     state,
@@ -308,13 +328,13 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    Position.create(-3, -3)
+                    MapCoordinates.create(-3, -3)
                 ).id;
                 ids.redPatient = addPatient(
                     state,
                     'red',
                     'red',
-                    Position.create(3, 3)
+                    MapCoordinates.create(3, 3)
                 ).id;
                 ids.material = addMaterial(
                     state,
@@ -344,13 +364,13 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    Position.create(-10, -10)
+                    MapCoordinates.create(-10, -10)
                 ).id;
                 ids.redPatient = addPatient(
                     state,
                     'red',
                     'red',
-                    Position.create(20, 20)
+                    MapCoordinates.create(20, 20)
                 ).id;
                 ids.material = addMaterial(
                     state,
@@ -373,13 +393,13 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    Position.create(-1, -1)
+                    MapCoordinates.create(-1, -1)
                 ).id;
                 ids.redPatient = addPatient(
                     state,
                     'red',
                     'red',
-                    Position.create(2, 2)
+                    MapCoordinates.create(2, 2)
                 ).id;
                 const material = addMaterial(
                     state,

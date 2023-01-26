@@ -159,7 +159,7 @@ interface PointRBushElement {
 }
 
 /**
- * An RBush that works with our {@link Position} format (elements being points)
+ * An RBush that works with our {@link MapCoordinates} format (elements being points)
  * @see https://github.com/mourner/rbush#data-format
  */
 class PointRBush extends RBush<PointRBushElement> {
