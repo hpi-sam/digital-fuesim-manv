@@ -76,10 +76,13 @@ describe('validateExerciseAction', () => {
                         height: 1,
                         width: 1,
                     },
-                    position: {
-                        // this is of type string instead of number
-                        x: '0' as unknown as number,
-                        y: 0,
+                    metaPosition: {
+                        type: 'coordinates',
+                        position: {
+                            // this is of type string instead of number
+                            x: '0' as unknown as number,
+                            y: 0,
+                        },
                     },
                 },
             })
@@ -117,11 +120,14 @@ describe('validateExerciseAction', () => {
                         height: 1,
                         width: 1,
                     },
-                    position: {
-                        x: 0,
-                        y: 0,
-                        z: 0,
-                    } as unknown as Position,
+                    metaPosition: {
+                        type: 'coordinates',
+                        position: {
+                            x: 0,
+                            y: 0,
+                            z: 0,
+                        } as unknown as Position,
+                    },
                 },
             })
         ).not.toEqual([]);

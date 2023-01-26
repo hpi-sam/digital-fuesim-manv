@@ -1,18 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
+import {
+    isNotInVehicle,
+    coordinatesOf,
+    isOnMap,
+    loopTroughTime,
+    uuid,
+    Viewport,
+} from 'digital-fuesim-manv-shared';
 import type {
+    Personnel,
     Client,
     ExerciseState,
     Patient,
     Vehicle,
-} from 'digital-fuesim-manv-shared';
-import {
-    coordinatesOf,
-    isOnMap,
-    loopTroughTime,
-    Personnel,
-    uuid,
-    Viewport,
 } from 'digital-fuesim-manv-shared';
 import { countBy } from 'lodash-es';
 import { ReplaySubject } from 'rxjs';
@@ -159,7 +160,7 @@ export class StatisticsService {
             personnel: countBy(
                 personnel.filter(
                     (_personnel) =>
-                        !Personnel.isInVehicle(_personnel) &&
+                        isNotInVehicle(_personnel) &&
                         _personnel.transfer === undefined
                 ),
                 (_personnel) => _personnel.personnelType
