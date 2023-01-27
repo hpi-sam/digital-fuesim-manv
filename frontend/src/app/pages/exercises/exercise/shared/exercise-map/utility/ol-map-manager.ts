@@ -378,7 +378,7 @@ export class OlMapManager {
     private registerFeatureElementManager<
         Element extends ImmutableJsonObject,
         T extends MergeIntersection<
-            ElementManager<Element, any, any> & FeatureManager<any>
+            ElementManager<Element, any> & FeatureManager<any>
         >
     >(
         featureManager: T,

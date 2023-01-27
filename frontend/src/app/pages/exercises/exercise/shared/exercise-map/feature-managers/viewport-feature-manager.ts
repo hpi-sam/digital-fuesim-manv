@@ -34,8 +34,6 @@ export class ViewportFeatureManager
     extends MoveableFeatureManager<Viewport, Polygon>
     implements FeatureManager<Polygon>
 {
-    override unsupportedChangeProperties = new Set(['id'] as const);
-
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Polygon>>,
