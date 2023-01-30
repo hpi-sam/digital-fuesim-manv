@@ -79,7 +79,7 @@ describe('validateExerciseAction', () => {
                     },
                     position: {
                         type: 'coordinates',
-                        position: {
+                        coordinates: {
                             // this is of type string instead of number
                             x: '0' as unknown as number,
                             y: 0,
@@ -124,7 +124,7 @@ describe('validateExerciseAction', () => {
                     },
                     position: {
                         type: 'coordinates',
-                        position: {
+                        coordinates: {
                             x: 0,
                             y: 0,
                             z: 0,
