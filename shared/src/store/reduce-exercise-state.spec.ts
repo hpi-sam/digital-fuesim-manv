@@ -16,7 +16,7 @@ describe('exerciseReducer', () => {
             type: 'viewport',
             name: 'Test',
             size: { width: 100, height: 100 },
-            metaPosition: MapPosition.create(MapCoordinates.create(0, 0)),
+            position: MapPosition.create(MapCoordinates.create(0, 0)),
         } as const;
     }
 

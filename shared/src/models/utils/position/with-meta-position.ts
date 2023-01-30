@@ -1,5 +1,5 @@
 import type { Position } from './position';
 
 export interface WithPosition {
-    readonly metaPosition: Position;
+    readonly position: Position;
 }

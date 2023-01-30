@@ -92,7 +92,7 @@ export class SimulatedRegionFeatureManager
         elementFeature: Feature<Polygon>
     ): void {
         if (
-            changedProperties.has('metaPosition') ||
+            changedProperties.has('position') ||
             changedProperties.has('size')
         ) {
             this.movementAnimator.animateFeatureMovement(

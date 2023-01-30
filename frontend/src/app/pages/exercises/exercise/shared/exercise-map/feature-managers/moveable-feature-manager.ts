@@ -86,7 +86,7 @@ export abstract class MoveableFeatureManager<
         changedProperties: ReadonlySet<keyof Element>,
         elementFeature: Feature<FeatureType>
     ): void {
-        if (changedProperties.has('metaPosition')) {
+        if (changedProperties.has('position')) {
             this.movementAnimator.animateFeatureMovement(
                 elementFeature,
                 this.geometryHelper.getElementCoordinates(newElement)

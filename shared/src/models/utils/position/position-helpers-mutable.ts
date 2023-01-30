@@ -20,7 +20,7 @@ import {
 type MutablePosition = Mutable<Position>;
 
 interface WithMutablePosition {
-    metaPosition: MutablePosition;
+    position: MutablePosition;
 }
 interface WithMutablePositionAndId extends WithMutablePosition {
     id: UUID;
@@ -67,11 +67,11 @@ export function changePosition(
             type,
             inState
         );
-        of.metaPosition = cloneDeepMutable(to);
+        of.position = cloneDeepMutable(to);
         updateTreatments(inState, of as any);
         return;
     }
-    of.metaPosition = cloneDeepMutable(to);
+    of.position = cloneDeepMutable(to);
 }
 
 function updateSpatialElementTree(

@@ -100,7 +100,7 @@ export class ViewportFeatureManager
         elementFeature: Feature<Polygon>
     ): void {
         if (
-            changedProperties.has('metaPosition') ||
+            changedProperties.has('position') ||
             changedProperties.has('size')
         ) {
             this.movementAnimator.animateFeatureMovement(

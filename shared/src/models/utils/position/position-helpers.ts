@@ -9,16 +9,16 @@ import type { VehiclePosition } from './vehicle-position';
 import type { WithPosition } from './with-meta-position';
 
 export function isOnMap(withPosition: WithPosition): boolean {
-    return withPosition.metaPosition.type === 'coordinates';
+    return withPosition.position.type === 'coordinates';
 }
 export function isInVehicle(withPosition: WithPosition): boolean {
-    return withPosition.metaPosition.type === 'vehicle';
+    return withPosition.position.type === 'vehicle';
 }
 export function isInTransfer(withPosition: WithPosition): boolean {
-    return withPosition.metaPosition.type === 'transfer';
+    return withPosition.position.type === 'transfer';
 }
 export function isInSimulatedRegion(withPosition: WithPosition): boolean {
-    return withPosition.metaPosition.type === 'simulatedRegion';
+    return withPosition.position.type === 'simulatedRegion';
 }
 export function isNotOnMap(withPosition: WithPosition): boolean {
     return !isOnMap(withPosition);
@@ -35,100 +35,98 @@ export function isNotInSimulatedRegion(withPosition: WithPosition): boolean {
 
 export function coordinatesOf(withPosition: WithPosition): MapCoordinates {
     if (isOnMap(withPosition)) {
-        return (withPosition.metaPosition as MapPosition).position;
+        return (withPosition.position as MapPosition).position;
     }
     throw new TypeError(
-        `Expected metaPosition of object to be on Map. Was of type ${withPosition.metaPosition.type}.`
+        `Expected position of object to be on Map. Was of type ${withPosition.position.type}.`
     );
 }
 
 export function vehicleItsIn(withPosition: WithPosition): UUID {
     if (isInVehicle(withPosition)) {
-        return (withPosition.metaPosition as VehiclePosition).vehicleId;
+        return (withPosition.position as VehiclePosition).vehicleId;
     }
     throw new TypeError(
-        `Expected metaPosition of object to be in vehicle. Was of type ${withPosition.metaPosition.type}.`
+        `Expected position of object to be in vehicle. Was of type ${withPosition.position.type}.`
     );
 }
 
 export function transferItsIn(withPosition: WithPosition): Transfer {
     if (isInTransfer(withPosition)) {
-        return (withPosition.metaPosition as TransferPosition).transfer;
+        return (withPosition.position as TransferPosition).transfer;
     }
     throw new TypeError(
-        `Expected metaPosition of object to be in transfer. Was of type ${withPosition.metaPosition.type}.`
+        `Expected position of object to be in transfer. Was of type ${withPosition.position.type}.`
     );
 }
 
 export function simulatedRegionItsIn(withPosition: WithPosition): UUID {
     if (isInSimulatedRegion(withPosition)) {
-        return (withPosition.metaPosition as SimulatedRegionPosition)
+        return (withPosition.position as SimulatedRegionPosition)
             .simulatedRegionId;
     }
     throw new TypeError(
-        `Expected metaPosition of object to be in simulatedRegion. Was of type ${withPosition.metaPosition.type}.`
+        `Expected position of object to be in simulatedRegion. Was of type ${withPosition.position.type}.`
     );
 }
 
-export function isPositionOnMap(metaPosition: Position): boolean {
-    return metaPosition.type === 'coordinates';
+export function isPositionOnMap(position: Position): boolean {
+    return position.type === 'coordinates';
 }
-export function isPositionInVehicle(metaPosition: Position): boolean {
-    return metaPosition.type === 'vehicle';
+export function isPositionInVehicle(position: Position): boolean {
+    return position.type === 'vehicle';
 }
-export function isPositionInTransfer(metaPosition: Position): boolean {
-    return metaPosition.type === 'transfer';
+export function isPositionInTransfer(position: Position): boolean {
+    return position.type === 'transfer';
 }
-export function isPositionInSimulatedRegion(metaPosition: Position): boolean {
-    return metaPosition.type === 'simulatedRegion';
+export function isPositionInSimulatedRegion(position: Position): boolean {
+    return position.type === 'simulatedRegion';
 }
-export function isPositionNotOnMap(metaPosition: Position): boolean {
-    return !isPositionOnMap(metaPosition);
+export function isPositionNotOnMap(position: Position): boolean {
+    return !isPositionOnMap(position);
 }
-export function isPositionNotInVehicle(metaPosition: Position): boolean {
-    return !isPositionInVehicle(metaPosition);
+export function isPositionNotInVehicle(position: Position): boolean {
+    return !isPositionInVehicle(position);
 }
-export function isPositionNotInTransfer(metaPosition: Position): boolean {
-    return !isPositionInTransfer(metaPosition);
+export function isPositionNotInTransfer(position: Position): boolean {
+    return !isPositionInTransfer(position);
 }
-export function isPositionNotInSimulatedRegion(
-    metaPosition: Position
-): boolean {
-    return !isPositionInSimulatedRegion(metaPosition);
+export function isPositionNotInSimulatedRegion(position: Position): boolean {
+    return !isPositionInSimulatedRegion(position);
 }
 
-export function coordinatesOfPosition(metaPosition: Position): MapCoordinates {
-    if (isPositionOnMap(metaPosition)) {
-        return (metaPosition as MapPosition).position;
+export function coordinatesOfPosition(position: Position): MapCoordinates {
+    if (isPositionOnMap(position)) {
+        return (position as MapPosition).position;
     }
     throw new TypeError(
-        `Expected metaPosition of object to be on Map. Was of type ${metaPosition.type}.`
+        `Expected position of object to be on Map. Was of type ${position.type}.`
     );
 }
 
-export function vehiclePositionIn(metaPosition: Position): UUID {
-    if (isPositionInVehicle(metaPosition)) {
-        return (metaPosition as VehiclePosition).vehicleId;
+export function vehiclePositionIn(position: Position): UUID {
+    if (isPositionInVehicle(position)) {
+        return (position as VehiclePosition).vehicleId;
     }
     throw new TypeError(
-        `Expected metaPosition of object to be in vehicle. Was of type ${metaPosition.type}.`
+        `Expected position of object to be in vehicle. Was of type ${position.type}.`
     );
 }
 
-export function transferPositionIn(metaPosition: Position): Transfer {
-    if (isPositionInTransfer(metaPosition)) {
-        return (metaPosition as TransferPosition).transfer;
+export function transferPositionIn(position: Position): Transfer {
+    if (isPositionInTransfer(position)) {
+        return (position as TransferPosition).transfer;
     }
     throw new TypeError(
-        `Expected metaPosition of object to be in transfer. Was of type ${metaPosition.type}.`
+        `Expected position of object to be in transfer. Was of type ${position.type}.`
     );
 }
 
-export function simulatedRegionPositionIn(metaPosition: Position): UUID {
-    if (isPositionInSimulatedRegion(metaPosition)) {
-        return (metaPosition as SimulatedRegionPosition).simulatedRegionId;
+export function simulatedRegionPositionIn(position: Position): UUID {
+    if (isPositionInSimulatedRegion(position)) {
+        return (position as SimulatedRegionPosition).simulatedRegionId;
     }
     throw new TypeError(
-        `Expected metaPosition of object to be in simulatedRegion. Was of type ${metaPosition.type}.`
+        `Expected position of object to be in simulatedRegion. Was of type ${position.type}.`
     );
 }

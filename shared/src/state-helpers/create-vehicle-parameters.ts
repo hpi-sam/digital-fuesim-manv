@@ -56,7 +56,7 @@ export function createVehicleParameters(
         image: vehicleTemplate.image,
         patientIds: {},
         personnelIds: arrayToUUIDSet(personnel.map((p) => p.id)),
-        metaPosition: MapPosition.create(vehiclePosition),
+        position: MapPosition.create(vehiclePosition),
     };
     return {
         materials,

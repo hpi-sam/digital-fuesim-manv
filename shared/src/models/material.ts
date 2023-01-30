@@ -57,7 +57,7 @@ export class Material {
 
     @IsPosition()
     @ValidateNested()
-    public readonly metaPosition: Position;
+    public readonly position: Position;
 
     @ValidateNested()
     @Type(() => ImageProperties)
@@ -74,7 +74,7 @@ export class Material {
         canCaterFor: CanCaterFor,
         treatmentRange: number,
         overrideTreatmentRange: number,
-        metaPosition: Position
+        position: Position
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
@@ -83,7 +83,7 @@ export class Material {
         this.canCaterFor = canCaterFor;
         this.treatmentRange = treatmentRange;
         this.overrideTreatmentRange = overrideTreatmentRange;
-        this.metaPosition = metaPosition;
+        this.position = position;
     }
 
     static readonly create = getCreate(this);
@@ -92,7 +92,7 @@ export class Material {
         materialTemplate: MaterialTemplate,
         vehicleId: UUID,
         vehicleName: string,
-        metaPosition: Position
+        position: Position
     ): Material {
         return this.create(
             vehicleId,
@@ -102,7 +102,7 @@ export class Material {
             materialTemplate.canCaterFor,
             materialTemplate.treatmentRange,
             materialTemplate.overrideTreatmentRange,
-            metaPosition
+            position
         );
     }
 }

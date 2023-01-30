@@ -18,7 +18,7 @@ export class TransferPoint {
 
     @ValidateNested()
     @IsPosition()
-    public readonly metaPosition: Position;
+    public readonly position: Position;
 
     @IsReachableTransferPoints()
     public readonly reachableTransferPoints: ReachableTransferPoints;
@@ -42,7 +42,7 @@ export class TransferPoint {
         internalName: string,
         externalName: string
     ) {
-        this.metaPosition = MapPosition.create(position);
+        this.position = MapPosition.create(position);
         this.reachableTransferPoints = reachableTransferPoints;
         this.reachableHospitals = reachableHospitals;
         this.internalName = internalName;

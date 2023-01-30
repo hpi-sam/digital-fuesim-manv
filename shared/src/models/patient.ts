@@ -73,7 +73,7 @@ export class Patient {
 
     @IsPosition()
     @ValidateNested()
-    public readonly metaPosition: Position;
+    public readonly position: Position;
 
     @IsUUID(4, uuidValidationOptions)
     @IsOptional()
@@ -158,7 +158,7 @@ export class Patient {
         image: ImageProperties,
         health: HealthPoints,
         remarks: string,
-        metaPosition: Position
+        position: Position
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
@@ -171,7 +171,7 @@ export class Patient {
         this.image = image;
         this.health = health;
         this.remarks = remarks;
-        this.metaPosition = metaPosition;
+        this.position = position;
     }
 
     static readonly create = getCreate(this);

@@ -73,10 +73,10 @@ export class Personnel {
 
     @IsPosition()
     @ValidateNested()
-    public readonly metaPosition: Position;
+    public readonly position: Position;
 
     /**
-     * * @deprecated use {@link metaPosition}
+     * * @deprecated use {@link position}
      * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or has a {@link position}.
      */
     @ValidateNested()
@@ -96,7 +96,7 @@ export class Personnel {
         canCaterFor: CanCaterFor,
         treatmentRange: number,
         overrideTreatmentRange: number,
-        metaPosition: Position,
+        position: Position,
         position?: MapCoordinates
     ) {
         this.vehicleId = vehicleId;
@@ -107,7 +107,7 @@ export class Personnel {
         this.canCaterFor = canCaterFor;
         this.treatmentRange = treatmentRange;
         this.overrideTreatmentRange = overrideTreatmentRange;
-        this.metaPosition = metaPosition;
+        this.position = position;
     }
 
     static readonly create = getCreate(this);
@@ -116,7 +116,7 @@ export class Personnel {
         personnelTemplate: PersonnelTemplate,
         vehicleId: UUID,
         vehicleName: string,
-        metaPosition: Position
+        position: Position
     ): Personnel {
         return this.create(
             vehicleId,
@@ -127,7 +127,7 @@ export class Personnel {
             personnelTemplate.canCaterFor,
             personnelTemplate.treatmentRange,
             personnelTemplate.overrideTreatmentRange,
-            metaPosition,
+            position,
             undefined
         );
     }

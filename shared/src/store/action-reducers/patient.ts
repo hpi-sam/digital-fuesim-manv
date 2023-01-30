@@ -124,7 +124,7 @@ export namespace PatientActionReducers {
             draftState.patients[mutablePatient.id] = mutablePatient;
             changePosition(
                 mutablePatient,
-                patient.metaPosition,
+                patient.position,
                 'patient',
                 draftState
             );

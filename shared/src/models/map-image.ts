@@ -15,7 +15,7 @@ export class MapImage {
 
     @ValidateNested()
     @IsPosition()
-    public readonly metaPosition: Position;
+    public readonly position: Position;
 
     @ValidateNested()
     @Type(() => ImageProperties)
@@ -45,7 +45,7 @@ export class MapImage {
         isLocked: boolean,
         zIndex: number
     ) {
-        this.metaPosition = MapPosition.create(topLeft);
+        this.position = MapPosition.create(topLeft);
         this.image = image;
         this.isLocked = isLocked;
         this.zIndex = zIndex;

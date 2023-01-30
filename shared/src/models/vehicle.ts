@@ -34,14 +34,14 @@ export class Vehicle {
 
     @IsPosition()
     @ValidateNested()
-    public readonly metaPosition: Position;
+    public readonly position: Position;
 
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
     /**
-     * @deprecated use {@link metaPosition}
+     * @deprecated use {@link position}
      * Exclusive-or to {@link position}
      */
     @ValidateNested()
@@ -64,14 +64,14 @@ export class Vehicle {
         materialIds: UUIDSet,
         patientCapacity: number,
         image: ImageProperties,
-        metaPosition: Position
+        position: Position
     ) {
         this.vehicleType = vehicleType;
         this.name = name;
         this.materialIds = materialIds;
         this.patientCapacity = patientCapacity;
         this.image = image;
-        this.metaPosition = metaPosition;
+        this.position = position;
     }
 
     static readonly create = getCreate(this);

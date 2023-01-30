@@ -10,7 +10,7 @@ import type { Geometry } from 'ol/geom';
 
 export interface PositionableElement {
     readonly id: UUID;
-    readonly metaPosition: Position;
+    readonly position: Position;
 }
 
 export type ResizableElement = PositionableElement & {

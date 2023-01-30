@@ -77,7 +77,7 @@ describe('validateExerciseAction', () => {
                         height: 1,
                         width: 1,
                     },
-                    metaPosition: {
+                    position: {
                         type: 'coordinates',
                         position: {
                             // this is of type string instead of number
@@ -122,7 +122,7 @@ describe('validateExerciseAction', () => {
                         height: 1,
                         width: 1,
                     },
-                    metaPosition: {
+                    position: {
                         type: 'coordinates',
                         position: {
                             x: 0,

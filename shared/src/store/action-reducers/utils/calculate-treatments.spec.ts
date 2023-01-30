@@ -82,7 +82,7 @@ function addPatient(
     patient.pretriageStatus = pretriageStatus;
     patient.realStatus = realStatus;
     if (position) {
-        patient.metaPosition = {
+        patient.position = {
             type: 'coordinates',
             position: cloneDeepMutable(position),
         };
@@ -96,13 +96,13 @@ function addPatient(
     return patient;
 }
 
-function addPersonnel(state: Mutable<ExerciseState>, metaPosition: Position) {
+function addPersonnel(state: Mutable<ExerciseState>, position: Position) {
     const personnel = cloneDeepMutable(
         Personnel.generatePersonnel(
             defaultPersonnelTemplates.notSan,
             uuid(),
             'RTW 3/83/1',
-            metaPosition
+            position
         )
     );
     personnel.canCaterFor = {
@@ -111,7 +111,7 @@ function addPersonnel(state: Mutable<ExerciseState>, metaPosition: Position) {
         green: 0,
         logicalOperator: 'and',
     };
-    if (isPositionOnMap(metaPosition)) {
+    if (isPositionOnMap(position)) {
         SpatialTree.addElement(
             state.spatialTrees.personnel,
             personnel.id,
@@ -122,13 +122,13 @@ function addPersonnel(state: Mutable<ExerciseState>, metaPosition: Position) {
     return personnel;
 }
 
-function addMaterial(state: Mutable<ExerciseState>, metaPosition: Position) {
+function addMaterial(state: Mutable<ExerciseState>, position: Position) {
     const material = cloneDeepMutable(
         Material.generateMaterial(
             defaultMaterialTemplates.standard,
             uuid(),
             'RTW 3/83/1',
-            metaPosition
+            position
         )
     );
     material.canCaterFor = {
@@ -137,7 +137,7 @@ function addMaterial(state: Mutable<ExerciseState>, metaPosition: Position) {
         green: 0,
         logicalOperator: 'and',
     };
-    if (isPositionOnMap(metaPosition)) {
+    if (isPositionOnMap(position)) {
         SpatialTree.addElement(
             state.spatialTrees.materials,
             material.id,

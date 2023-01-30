@@ -26,7 +26,7 @@ export class SimulatedRegion {
      */
     @ValidateNested()
     @IsPosition()
-    public readonly metaPosition: Position;
+    public readonly position: Position;
 
     @ValidateNested()
     @Type(() => Size)
@@ -40,7 +40,7 @@ export class SimulatedRegion {
      * @deprecated Use {@link create} instead
      */
     constructor(position: MapCoordinates, size: Size, name: string) {
-        this.metaPosition = MapPosition.create(position);
+        this.position = MapPosition.create(position);
         this.size = size;
         this.name = name;
     }

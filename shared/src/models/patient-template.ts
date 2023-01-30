@@ -72,7 +72,7 @@ export class PatientTemplate {
     public static generatePatient(
         template: PatientTemplate,
         patientStatusCode: PatientStatusCode,
-        metaPosition: Position
+        position: Position
     ): Patient {
         // Randomize function parameters
         const healthStates = Object.fromEntries(
@@ -113,7 +113,7 @@ export class PatientTemplate {
             template.image,
             template.health,
             '',
-            metaPosition
+            position
         );
     }
 }
