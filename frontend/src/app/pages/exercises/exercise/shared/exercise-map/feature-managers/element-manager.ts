@@ -1,18 +1,17 @@
 import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
-import type { LineString, Point } from 'ol/geom';
+import type { Geometry } from 'ol/geom';
 import { generateChangedProperties } from '../utility/generate-changed-properties';
 
 /**
  * Provides an Api to update a feature based on changes to an element (patient, vehicle, etc.).
  *
  * {@link Element} is the immutable JSON object (Patient, Vehicle, etc.)
- * {@link ElementFeature} is the OpenLayers Feature that should be rendered to represent the {@link Element}.
+ * {@link Feature<FeatureType>} is the OpenLayers Feature that should be rendered to represent the {@link Element}.
  */
 export abstract class ElementManager<
     Element extends ImmutableJsonObject,
-    FeatureType extends LineString | Point,
-    ElementFeature extends Feature<FeatureType>,
+    FeatureType extends Geometry,
     UnsupportedChangeProperties extends ReadonlySet<keyof Element>,
     SupportedChangeProperties extends Exclude<
         ReadonlySet<keyof Element>,
@@ -20,18 +19,11 @@ export abstract class ElementManager<
     > = Exclude<ReadonlySet<keyof Element>, UnsupportedChangeProperties>
 > {
     /**
-     * When an element gets (dragged &) dropped, this identifies the type of the dropped element.
-     * @example `patients`
-     */
-    abstract readonly type: string;
-
-    /**
      * This should be called if a new element is added.
      */
     public onElementCreated(element: Element) {
         const feature = this.createFeature(element);
-        feature.set(featureKeys.type, this.type);
-        feature.set(featureKeys.value, element);
+        feature.set(featureElementKey, element);
     }
 
     /**
@@ -69,7 +61,7 @@ export abstract class ElementManager<
             this.onElementCreated(newElement);
             return;
         }
-        elementFeature.set(featureKeys.value, newElement);
+        elementFeature.set(featureElementKey, newElement);
         this.changeFeature(
             oldElement,
             newElement,
@@ -78,22 +70,17 @@ export abstract class ElementManager<
         );
     }
 
-    public recreateFeature(element: Element) {
-        this.onElementDeleted(element);
-        this.onElementCreated(element);
-    }
-
     /**
      * Adds a new feature representing the {@link element} to the map.
      */
-    abstract createFeature(element: Element): ElementFeature;
+    abstract createFeature(element: Element): Feature<FeatureType>;
 
     /**
      * Delete the {@link elementFeature} representing the {@link element} from the map.
      */
     abstract deleteFeature(
         element: Element,
-        elementFeature: ElementFeature
+        elementFeature: Feature<FeatureType>
     ): void;
 
     /**
@@ -109,18 +96,15 @@ export abstract class ElementManager<
         oldElement: Element,
         newElement: Element,
         changedProperties: SupportedChangeProperties,
-        elementFeature: ElementFeature
+        elementFeature: Feature<FeatureType>
     ): void;
 
     abstract getFeatureFromElement(
         element: Element
-    ): ElementFeature | undefined;
+    ): Feature<FeatureType> | undefined;
 
     public getElementFromFeature(feature: Feature<any>) {
-        return {
-            type: feature.get(featureKeys.type),
-            value: feature.get(featureKeys.value),
-        };
+        return feature.get(featureElementKey);
     }
 
     private areAllPropertiesSupported(
@@ -138,8 +122,4 @@ export abstract class ElementManager<
 /**
  * The keys of the feature, where the type and most recent value of the respective element are saved to
  */
-const featureKeys = {
-    value: 'elementValue',
-    // TODO: In the future the type should be saved in the element itself
-    type: 'elementType',
-};
+const featureElementKey = 'element';

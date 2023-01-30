@@ -44,7 +44,7 @@ import {
     SpatialTree,
 } from './models/utils';
 import type { MaterialType } from './models/utils/material-type';
-import type { SpatialElementType } from './store/action-reducers/utils/spatial-elements';
+import type { SpatialElementPlural } from './store/action-reducers/utils/spatial-elements';
 import type { UUID } from './utils';
 import { uuid, uuidValidationOptions } from './utils';
 import { IsIdMap, IsLiteralUnion } from './utils/validators';
@@ -123,7 +123,7 @@ export class ExerciseState {
     // Mutable<ExerciseState>` could still have immutable objects in spatialTree
     @IsObject()
     public readonly spatialTrees: {
-        [type in SpatialElementType]: SpatialTree;
+        [type in SpatialElementPlural]: SpatialTree;
     } = {
         materials: SpatialTree.create(),
         patients: SpatialTree.create(),

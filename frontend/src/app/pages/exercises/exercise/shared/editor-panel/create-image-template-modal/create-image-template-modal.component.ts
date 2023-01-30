@@ -35,6 +35,7 @@ export class CreateImageTemplateModalComponent {
                 type: '[MapImageTemplate] Add mapImageTemplate',
                 mapImageTemplate: {
                     id: uuid(),
+                    type: 'mapImageTemplate',
                     image: {
                         url,
                         height,

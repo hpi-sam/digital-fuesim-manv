@@ -7,19 +7,19 @@ import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import { PersonnelPopupComponent } from '../shared/personnel-popup/personnel-popup.component';
+import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { createPoint, ElementFeatureManager } from './element-feature-manager';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class PersonnelFeatureManager extends ElementFeatureManager<Personnel> {
-    readonly type = 'personnel';
+export class PersonnelFeatureManager extends MoveableFeatureManager<Personnel> {
     private readonly imageStyleHelper = new ImageStyleHelper(
-        (feature) => this.getElementFromFeature(feature)!.value.image
+        (feature) => (this.getElementFromFeature(feature) as Personnel).image
     );
     private readonly nameStyleHelper = new NameStyleHelper(
         (feature) => {
-            const personnel = this.getElementFromFeature(feature)!.value;
+            const personnel = this.getElementFromFeature(feature) as Personnel;
             return {
                 name: personnel.vehicleName,
                 offsetY: personnel.image.height / 2 / normalZoom,
@@ -46,7 +46,7 @@ export class PersonnelFeatureManager extends ElementFeatureManager<Personnel> {
                     targetPosition,
                 });
             },
-            createPoint
+            new PointGeometryHelper()
         );
 
         this.layer.setStyle((feature, resolution) => [

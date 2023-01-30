@@ -31,7 +31,7 @@ export function deletePatient(
     draftState: Mutable<ExerciseState>,
     patientId: UUID
 ) {
-    removeElementPosition(draftState, 'patients', patientId);
+    removeElementPosition(draftState, 'patient', patientId);
     delete draftState.patients[patientId];
 }
 
@@ -125,7 +125,7 @@ export namespace PatientActionReducers {
             changePosition(
                 mutablePatient,
                 patient.metaPosition,
-                'patients',
+                'patient',
                 draftState
             );
             return draftState;
@@ -139,7 +139,7 @@ export namespace PatientActionReducers {
             changePositionWithId(
                 patientId,
                 MapPosition.create(targetPosition),
-                'patients',
+                'patient',
                 draftState
             );
             return draftState;
@@ -159,7 +159,7 @@ export namespace PatientActionReducers {
     export const setVisibleStatus: ActionReducer<SetVisibleStatusAction> = {
         action: SetVisibleStatusAction,
         reducer: (draftState, { patientId, patientStatus }) => {
-            const patient = getElement(draftState, 'patients', patientId);
+            const patient = getElement(draftState, 'patient', patientId);
             patient.pretriageStatus = patientStatus;
 
             if (isOnMap(patient)) {
@@ -174,7 +174,7 @@ export namespace PatientActionReducers {
     export const setUserTextAction: ActionReducer<SetUserTextAction> = {
         action: SetUserTextAction,
         reducer: (draftState, { patientId, remarks }) => {
-            const patient = getElement(draftState, 'patients', patientId);
+            const patient = getElement(draftState, 'patient', patientId);
             patient.remarks = remarks;
             return draftState;
         },

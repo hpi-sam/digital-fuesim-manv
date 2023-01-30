@@ -1,7 +1,7 @@
 import type { UUID } from '../utils';
 import type { Migration } from './migration-functions';
 
-export const replacePositionWithMetaPosition17: Migration = {
+export const replacePositionWithMetaPosition18: Migration = {
     actions: (_initialState, actions) => {
         console.log('Start Action Migration');
         actions.forEach((action) => {

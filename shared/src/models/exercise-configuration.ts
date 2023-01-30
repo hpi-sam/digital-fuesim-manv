@@ -1,9 +1,13 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, ValidateNested } from 'class-validator';
 import { defaultTileMapProperties } from '../data';
+import { IsValue } from '../utils/validators';
 import { getCreate, TileMapProperties } from './utils';
 
 export class ExerciseConfiguration {
+    @IsValue('exerciseConfiguration' as const)
+    public readonly type = 'exerciseConfiguration';
+
     @IsBoolean()
     public readonly pretriageEnabled: boolean = true;
     @IsBoolean()

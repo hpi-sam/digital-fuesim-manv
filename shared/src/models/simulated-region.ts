@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { IsPosition } from '../utils/validators/is-position';
+import { IsValue } from '../utils/validators';
 import {
     getCreate,
     isInSimulatedRegion,
@@ -16,6 +17,9 @@ import type { WithPosition } from './utils/position/with-meta-position';
 export class SimulatedRegion {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('simulatedRegion' as const)
+    public readonly type = 'simulatedRegion';
 
     /**
      * top-left position

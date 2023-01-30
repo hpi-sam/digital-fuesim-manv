@@ -26,17 +26,17 @@ interface WithMutablePositionAndId extends WithMutablePosition {
     id: UUID;
 }
 type ElementType =
-    | 'alarmGroups'
-    | 'clients'
-    | 'hospitals'
-    | 'mapImages'
-    | 'materials'
-    | 'patients'
+    | 'alarmGroup'
+    | 'client'
+    | 'hospital'
+    | 'mapImage'
+    | 'material'
+    | 'patient'
     | 'personnel'
-    | 'simulatedRegions'
-    | 'transferPoints'
-    | 'vehicles'
-    | 'viewports';
+    | 'simulatedRegion'
+    | 'transferPoint'
+    | 'vehicle'
+    | 'viewport';
 
 export function changePositionWithId(
     of: UUID,
@@ -47,7 +47,7 @@ export function changePositionWithId(
     changePosition(
         getElement(inState, type, of) as any,
         to,
-        type === 'personnel' || type === 'materials' || type === 'patients'
+        type === 'personnel' || type === 'material' || type === 'patient'
             ? type
             : false,
         inState

@@ -115,7 +115,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                         }),
                         this.exerciseService.proposeAction({
                             type: '[Transfer] Add to transfer',
-                            elementType: 'vehicles',
+                            elementType: vehicleParameters.vehicle.type,
                             elementId: vehicleParameters.vehicle.id,
                             startPoint: AlarmGroupStartPoint.create(
                                 alarmGroup.name,

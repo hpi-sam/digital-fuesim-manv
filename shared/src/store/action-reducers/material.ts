@@ -25,7 +25,7 @@ export namespace MaterialActionReducers {
             changePositionWithId(
                 materialId,
                 MapPosition.create(targetPosition),
-                'materials',
+                'material',
                 draftState
             );
             return draftState;

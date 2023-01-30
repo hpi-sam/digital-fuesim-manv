@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
-import { IsLiteralUnion, IsUUIDSet } from '../utils/validators';
+import { IsLiteralUnion, IsUUIDSet, IsValue } from '../utils/validators';
 import { IsPosition } from '../utils/validators/is-position';
 import type { PersonnelTemplate } from './personnel-template';
 import type { MapCoordinates } from './utils';
@@ -27,6 +27,9 @@ import { personnelTypeAllowedValues } from './utils/personnel-type';
 export class Personnel {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('personnel' as const)
+    public readonly type = 'personnel';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId: UUID;

@@ -71,6 +71,7 @@ describe('validateExerciseAction', () => {
                 type: '[Viewport] Add viewport',
                 viewport: {
                     id: 'b02c7756-ea52-427f-9fc3-0e163799544d',
+                    type: 'viewport',
                     name: '',
                     size: {
                         height: 1,
@@ -115,6 +116,7 @@ describe('validateExerciseAction', () => {
                 type: '[Viewport] Add viewport',
                 viewport: {
                     id: 'b02c7756-ea52-427f-9fc3-0e163799544d',
+                    type: 'viewport',
                     name: '',
                     size: {
                         height: 1,

@@ -4,6 +4,8 @@ import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
 import { cloneDeepMutable } from '../../../utils';
+import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map';
+import { elementTypePluralMap } from '../../../utils/element-type-plural-map';
 import { getElement } from './get-element';
 
 /**
@@ -11,7 +13,9 @@ import { getElement } from './get-element';
  * The position of the element must be changed via one of the function in this file.
  * In addition, the respective functions must be called when an element gets added or removed.
  */
-export type SpatialElementType = 'materials' | 'patients' | 'personnel';
+export type SpatialElementType = 'material' | 'patient' | 'personnel';
+type SpatialTypePluralMap = Pick<ElementTypePluralMap, SpatialElementType>;
+export type SpatialElementPlural = SpatialTypePluralMap[SpatialElementType];
 
 /**
  * Adds an element with a position and executes side effects to guarantee the consistency of the state.
@@ -27,7 +31,7 @@ export function addElementPosition(
         return;
     }
     SpatialTree.addElement(
-        state.spatialTrees[elementType],
+        state.spatialTrees[elementTypePluralMap[elementType]],
         element.id,
         coordinatesOf(element)
     );
@@ -46,14 +50,14 @@ export function updateElementPosition(
     if (isOnMap(element)) {
         const startPosition = cloneDeepMutable(coordinatesOf(element));
         SpatialTree.moveElement(
-            state.spatialTrees[elementType],
+            state.spatialTrees[elementTypePluralMap[elementType]],
             element.id,
             startPosition,
             targetPosition
         );
     } else {
         SpatialTree.addElement(
-            state.spatialTrees[elementType],
+            state.spatialTrees[elementTypePluralMap[elementType]],
             element.id,
             targetPosition
         );
@@ -74,7 +78,7 @@ export function removeElementPosition(
         return;
     }
     SpatialTree.removeElement(
-        state.spatialTrees[elementType],
+        state.spatialTrees[elementTypePluralMap[elementType]],
         element.id,
         cloneDeepMutable(coordinatesOf(element))
     );

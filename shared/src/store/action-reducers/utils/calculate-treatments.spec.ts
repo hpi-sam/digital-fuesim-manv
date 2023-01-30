@@ -27,7 +27,7 @@ interface Catering {
      * The id of the material or personnel catering
      */
     catererId: UUID;
-    catererType: 'materials' | 'personnel';
+    catererType: 'material' | 'personnel';
     /**
      * All patients treated by {@link catererId}
      */
@@ -48,11 +48,11 @@ function assertCatering(
         for (const catering of caterings) {
             // Update all the patients
             const patients = catering.patientIds.map((patientId) =>
-                getElement(draftState, 'patients', patientId)
+                getElement(draftState, 'patient', patientId)
             );
             for (const patient of patients) {
                 patient[
-                    catering.catererType === 'materials'
+                    catering.catererType === 'material'
                         ? 'assignedMaterialIds'
                         : 'assignedPersonnelIds'
                 ][catering.catererId] = true;
@@ -304,7 +304,7 @@ describe('calculate treatment', () => {
         assertCatering(beforeState, newState, [
             {
                 catererId: ids.material,
-                catererType: 'materials',
+                catererType: 'material',
                 patientIds: [ids.greenPatient],
             },
         ]);
@@ -340,7 +340,7 @@ describe('calculate treatment', () => {
         assertCatering(beforeState, newState, [
             {
                 catererId: ids.material,
-                catererType: 'materials',
+                catererType: 'material',
                 patientIds: [ids.redPatient],
             },
         ]);
@@ -408,7 +408,7 @@ describe('calculate treatment', () => {
         assertCatering(beforeState, newState, [
             {
                 catererId: ids.material,
-                catererType: 'materials',
+                catererType: 'material',
                 patientIds: [ids.redPatient, ids.greenPatient],
             },
         ]);

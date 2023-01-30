@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
 import { cloneDeepMutable, UUID, uuid, uuidValidationOptions } from '../utils';
-import { IsIdMap } from '../utils/validators';
+import { IsIdMap, IsValue } from '../utils/validators';
 import type { PatientStatusCode } from './utils';
 import {
     BiometricInformation,
@@ -21,6 +21,9 @@ import type { Position } from './utils/position/position';
 export class PatientTemplate {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('patientTemplate' as const)
+    public readonly type = 'patientTemplate';
 
     @ValidateNested()
     @Type(() => BiometricInformation)

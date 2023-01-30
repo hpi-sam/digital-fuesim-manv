@@ -12,7 +12,12 @@ import {
 } from 'class-validator';
 import { isEmpty } from 'lodash-es';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
-import { IsLiteralUnion, IsIdMap, IsUUIDSet } from '../utils/validators';
+import {
+    IsLiteralUnion,
+    IsIdMap,
+    IsUUIDSet,
+    IsValue,
+} from '../utils/validators';
 import { IsPosition } from '../utils/validators/is-position';
 import { PatientHealthState } from './patient-health-state';
 import {
@@ -32,6 +37,9 @@ import { PretriageInformation } from './utils/pretriage-information';
 export class Patient {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('patient')
+    public readonly type = 'patient';
 
     @ValidateNested()
     @Type(() => PersonalInformation)

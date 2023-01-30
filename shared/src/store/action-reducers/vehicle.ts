@@ -33,10 +33,10 @@ export function deleteVehicle(
     draftState: Mutable<ExerciseState>,
     vehicleId: UUID
 ) {
-    const vehicle = getElement(draftState, 'vehicles', vehicleId);
+    const vehicle = getElement(draftState, 'vehicle', vehicleId);
     // Delete related material and personnel
     Object.keys(vehicle.materialIds).forEach((materialId) => {
-        removeElementPosition(draftState, 'materials', materialId);
+        removeElementPosition(draftState, 'material', materialId);
         delete draftState.materials[materialId];
     });
     Object.keys(vehicle.personnelIds).forEach((personnelId) => {
@@ -112,13 +112,13 @@ export class LoadVehicleAction implements Action {
     public readonly vehicleId!: UUID;
 
     @IsLiteralUnion({
-        materials: true,
-        patients: true,
+        material: true,
+        patient: true,
         personnel: true,
     })
     public readonly elementToBeLoadedType!:
-        | 'materials'
-        | 'patients'
+        | 'material'
+        | 'patient'
         | 'personnel';
 
     @IsUUID(4, uuidValidationOptions)
@@ -160,7 +160,7 @@ export namespace VehicleActionReducers {
                 changePosition(
                     material,
                     VehiclePosition.create(vehicle.id),
-                    'materials',
+                    'material',
                     draftState
                 );
                 draftState.materials[material.id] = material;
@@ -185,7 +185,7 @@ export namespace VehicleActionReducers {
             changePositionWithId(
                 vehicleId,
                 MapPosition.create(targetPosition),
-                'vehicles',
+                'vehicle',
                 draftState
             );
             return draftState;
@@ -196,7 +196,7 @@ export namespace VehicleActionReducers {
     export const renameVehicle: ActionReducer<RenameVehicleAction> = {
         action: RenameVehicleAction,
         reducer: (draftState, { vehicleId, name }) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
+            const vehicle = getElement(draftState, 'vehicle', vehicleId);
             vehicle.name = name;
             for (const personnelId of Object.keys(vehicle.personnelIds)) {
                 draftState.personnel[personnelId]!.vehicleName = name;
@@ -221,7 +221,7 @@ export namespace VehicleActionReducers {
     export const unloadVehicle: ActionReducer<UnloadVehicleAction> = {
         action: UnloadVehicleAction,
         reducer: (draftState, { vehicleId }) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
+            const vehicle = getElement(draftState, 'vehicle', vehicleId);
             if (isNotOnMap(vehicle)) {
                 throw new ReducerError(
                     `Vehicle with id ${vehicleId} is currently not on the map`
@@ -252,7 +252,7 @@ export namespace VehicleActionReducers {
                     MapPosition.create(
                         MapCoordinates.create(x, unloadPosition.y)
                     ),
-                    'patients',
+                    'patient',
                     draftState
                 );
                 delete vehicle.patientIds[patientId];
@@ -279,18 +279,14 @@ export namespace VehicleActionReducers {
 
             for (const materialId of materialIds) {
                 x += space;
-                const material = getElement(
-                    draftState,
-                    'materials',
-                    materialId
-                );
+                const material = getElement(draftState, 'material', materialId);
                 if (isInVehicle(material)) {
                     changePosition(
                         material,
                         MapPosition.create(
                             MapCoordinates.create(x, unloadPosition.y)
                         ),
-                        'materials',
+                        'material',
                         draftState
                     );
                 }
@@ -307,12 +303,12 @@ export namespace VehicleActionReducers {
             draftState,
             { vehicleId, elementToBeLoadedId, elementToBeLoadedType }
         ) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
+            const vehicle = getElement(draftState, 'vehicle', vehicleId);
             switch (elementToBeLoadedType) {
-                case 'materials': {
+                case 'material': {
                     const material = getElement(
                         draftState,
-                        'materials',
+                        'material',
                         elementToBeLoadedId
                     );
                     if (!vehicle.materialIds[elementToBeLoadedId]) {
@@ -323,7 +319,7 @@ export namespace VehicleActionReducers {
                     changePosition(
                         material,
                         VehiclePosition.create(vehicleId),
-                        'materials',
+                        'material',
                         draftState
                     );
                     break;
@@ -352,10 +348,10 @@ export namespace VehicleActionReducers {
                     );
                     break;
                 }
-                case 'patients': {
+                case 'patient': {
                     const patient = getElement(
                         draftState,
-                        'patients',
+                        'patient',
                         elementToBeLoadedId
                     );
                     if (
@@ -370,15 +366,15 @@ export namespace VehicleActionReducers {
                     changePosition(
                         patient,
                         VehiclePosition.create(vehicleId),
-                        'patients',
+                        'patient',
                         draftState
                     );
                     // Load in all materials
                     Object.keys(vehicle.materialIds).forEach((materialId) => {
                         changePosition(
-                            getElement(draftState, 'materials', materialId),
+                            getElement(draftState, 'material', materialId),
                             VehiclePosition.create(vehicleId),
-                            'materials',
+                            'material',
                             draftState
                         );
                     });

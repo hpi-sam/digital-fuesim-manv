@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsInt, IsUUID, ValidateNested } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
+import { IsValue } from '../utils/validators';
 import { IsPosition } from '../utils/validators/is-position';
 import type { MapCoordinates } from './utils';
 import { MapPosition, getCreate, ImageProperties, Position } from './utils';
@@ -8,6 +9,9 @@ import { MapPosition, getCreate, ImageProperties, Position } from './utils';
 export class MapImage {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('mapImage' as const)
+    public readonly type = 'mapImage';
 
     @ValidateNested()
     @IsPosition()

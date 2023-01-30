@@ -12,17 +12,17 @@ import type { AppState } from 'src/app/state/app.state';
 import { selectConfiguration } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
+import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { CircleStyleHelper } from '../utility/style-helper/circle-style-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
-import { createPoint, ElementFeatureManager } from './element-feature-manager';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class PatientFeatureManager extends ElementFeatureManager<Patient> {
-    readonly type = 'patients';
+export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
     private readonly imageStyleHelper = new ImageStyleHelper((feature) => {
-        const patient = this.getElementFromFeature(feature)!.value;
+        const patient = this.getElementFromFeature(feature) as Patient;
         return {
             ...patient.image,
             rotation: patient.pretriageInformation.isWalkable
@@ -33,7 +33,7 @@ export class PatientFeatureManager extends ElementFeatureManager<Patient> {
 
     private readonly circleStyleHelper = new CircleStyleHelper(
         (feature) => {
-            const patient = this.getElementFromFeature(feature)!.value;
+            const patient = this.getElementFromFeature(feature) as Patient;
             const configuration = selectStateSnapshot(
                 selectConfiguration,
                 this.store
@@ -56,8 +56,8 @@ export class PatientFeatureManager extends ElementFeatureManager<Patient> {
         },
         0.025,
         (feature) =>
-            this.getElementFromFeature(feature)!.value.pretriageInformation
-                .isWalkable
+            (this.getElementFromFeature(feature) as Patient)
+                .pretriageInformation.isWalkable
                 ? [0, 0.25]
                 : [-0.25, 0]
     );
@@ -78,7 +78,7 @@ export class PatientFeatureManager extends ElementFeatureManager<Patient> {
                     targetPosition,
                 });
             },
-            createPoint
+            new PointGeometryHelper()
         );
         this.layer.setStyle((feature, resolution) => [
             this.imageStyleHelper.getStyle(feature as Feature, resolution),

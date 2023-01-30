@@ -7,7 +7,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
-import { IsUUIDSet } from '../utils/validators';
+import { IsUUIDSet, IsValue } from '../utils/validators';
 import { IsPosition } from '../utils/validators/is-position';
 import { getCreate, Transfer } from './utils';
 import { ImageProperties } from './utils/image-properties';
@@ -16,6 +16,9 @@ import { Position } from './utils/position/position';
 export class Vehicle {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('vehicle' as const)
+    public readonly type = 'vehicle';
 
     @IsString()
     public readonly vehicleType: string;
