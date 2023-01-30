@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import {
     IsUUID,
     ValidateNested,
-    IsOptional,
     IsNumber,
     Max,
     Min,
@@ -74,10 +73,6 @@ export class Patient {
     @IsPosition()
     @ValidateNested()
     public readonly position: Position;
-
-    @IsUUID(4, uuidValidationOptions)
-    @IsOptional()
-    public readonly vehicleId?: UUID;
 
     /**
      * The time the patient already is in the current state

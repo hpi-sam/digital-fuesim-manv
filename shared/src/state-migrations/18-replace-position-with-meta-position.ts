@@ -183,6 +183,8 @@ export const replacePositionWithMetaPosition18: Migration = {
         const typedState = state as {
             patients: {
                 [patientId: UUID]: {
+                    vehicleId?: any;
+                    transfer?: any;
                     metaPosition?:
                         | any
                         | { type: 'coordinates'; position: any }
@@ -201,6 +203,7 @@ export const replacePositionWithMetaPosition18: Migration = {
             };
             vehicles: {
                 [vehicleId: UUID]: {
+                    transfer?: any;
                     metaPosition?:
                         | any
                         | { type: 'coordinates'; position: any }
@@ -210,6 +213,7 @@ export const replacePositionWithMetaPosition18: Migration = {
             };
             personnel: {
                 [personnelId: UUID]: {
+                    transfer?: any;
                     metaPosition?:
                         | any
                         | { type: 'coordinates'; position: any }
@@ -260,6 +264,8 @@ export const replacePositionWithMetaPosition18: Migration = {
         };
 
         Object.values(typedState.patients).forEach((patient) => {
+            delete patient.transfer;
+            delete patient.vehicleId;
             if (patient.metaPosition?.type === 'coordinates') {
                 patient.metaPosition.coordinates =
                     patient.metaPosition.position;
@@ -283,6 +289,7 @@ export const replacePositionWithMetaPosition18: Migration = {
         });
 
         Object.values(typedState.vehicles).forEach((vehicle) => {
+            delete vehicle.transfer;
             if (vehicle.metaPosition?.type === 'coordinates') {
                 vehicle.metaPosition.coordinates =
                     vehicle.metaPosition.position;
@@ -293,6 +300,7 @@ export const replacePositionWithMetaPosition18: Migration = {
         });
 
         Object.values(typedState.personnel).forEach((personnel) => {
+            delete personnel.transfer;
             if (personnel.metaPosition?.type === 'coordinates') {
                 personnel.metaPosition.coordinates =
                     personnel.metaPosition.position;

@@ -3,7 +3,9 @@ import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
 import {
     coordinatesOf,
+    isInTransfer,
     isInVehicle,
+    isNotInTransfer,
     isNotOnMap,
     MapCoordinates,
     MapPosition,
@@ -330,7 +332,7 @@ export namespace VehicleActionReducers {
                         'personnel',
                         elementToBeLoadedId
                     );
-                    if (personnel.transfer !== undefined) {
+                    if (isInTransfer(personnel)) {
                         throw new ReducerError(
                             `Personnel with id ${elementToBeLoadedId} is currently in transfer`
                         );
@@ -384,8 +386,13 @@ export namespace VehicleActionReducers {
                         .filter(
                             // Skip personnel currently in transfer
                             (personnelId) =>
-                                getElement(draftState, 'personnel', personnelId)
-                                    .transfer === undefined
+                                isNotInTransfer(
+                                    getElement(
+                                        draftState,
+                                        'personnel',
+                                        personnelId
+                                    )
+                                )
                         )
                         .forEach((personnelId) => {
                             changePosition(

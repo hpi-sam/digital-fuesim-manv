@@ -6,7 +6,7 @@ import type {
     UUID,
     Vehicle,
 } from 'digital-fuesim-manv-shared';
-import { coordinatesOf } from 'digital-fuesim-manv-shared';
+import { isInTransfer, coordinatesOf } from 'digital-fuesim-manv-shared';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
 import type { AppState } from '../../app.state';
 
@@ -162,15 +162,15 @@ export function createSelectReachableHospitals(transferPointId: UUID) {
 export const selectVehiclesInTransfer = createSelector(
     selectVehicles,
     (vehicles) =>
-        Object.values(vehicles).filter(
-            (vehicle) => vehicle.transfer !== undefined
+        Object.values(vehicles).filter((vehicle) =>
+            isInTransfer(vehicle)
         ) as (Vehicle & { transfer: Transfer })[]
 );
 
 export const selectPersonnelInTransfer = createSelector(
     selectPersonnel,
     (personnel) =>
-        Object.values(personnel).filter(
-            (_personnel) => _personnel.transfer !== undefined
+        Object.values(personnel).filter((_personnel) =>
+            isInTransfer(_personnel)
         ) as (Personnel & { transfer: Transfer })[]
 );

@@ -1,15 +1,9 @@
 import { Type } from 'class-transformer';
-import {
-    IsNumber,
-    IsOptional,
-    IsString,
-    IsUUID,
-    ValidateNested,
-} from 'class-validator';
+import { IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
 import { IsUUIDSet, IsValue } from '../utils/validators';
 import { IsPosition } from '../utils/validators/is-position';
-import { getCreate, Transfer } from './utils';
+import { getCreate } from './utils';
 import { ImageProperties } from './utils/image-properties';
 import { Position } from './utils/position/position';
 
@@ -39,11 +33,6 @@ export class Vehicle {
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
-
-    @ValidateNested()
-    @Type(() => Transfer)
-    @IsOptional()
-    public readonly transfer?: Transfer;
 
     @IsUUIDSet()
     public readonly personnelIds: UUIDSet = {};

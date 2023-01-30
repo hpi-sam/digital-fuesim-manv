@@ -7,7 +7,13 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { TransferPoint } from '../../models';
-import { coordinatesOf, MapCoordinates, MapPosition } from '../../models/utils';
+import {
+    coordinatesOf,
+    isInTransfer,
+    MapCoordinates,
+    MapPosition,
+    transferItsIn,
+} from '../../models/utils';
 import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
@@ -241,8 +247,9 @@ export namespace TransferPointActionReducers {
                         vehicleId
                     );
                     if (
-                        vehicle.transfer?.targetTransferPointId ===
-                        transferPointId
+                        isInTransfer(vehicle) &&
+                        transferItsIn(vehicle).targetTransferPointId ===
+                            transferPointId
                     ) {
                         letElementArrive(draftState, vehicle.type, vehicleId);
                     }
@@ -254,8 +261,9 @@ export namespace TransferPointActionReducers {
                         personnelId
                     );
                     if (
-                        personnel.transfer?.targetTransferPointId ===
-                        transferPointId
+                        isInTransfer(personnel) &&
+                        transferItsIn(personnel).targetTransferPointId ===
+                            transferPointId
                     ) {
                         letElementArrive(
                             draftState,

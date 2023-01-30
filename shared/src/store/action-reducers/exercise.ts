@@ -8,9 +8,16 @@ import {
 } from 'class-validator';
 import type { Personnel, Vehicle } from '../../models';
 import { Patient } from '../../models';
-import { getStatus } from '../../models/utils';
+import {
+    getStatus,
+    isNotInTransfer,
+    transferItsIn,
+    TransferPosition,
+} from '../../models/utils';
+import { changePosition } from '../../models/utils/position/position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
+import { cloneDeepMutable } from '../../utils';
 import type { ElementTypePluralMap } from '../../utils/element-type-plural-map';
 import { elementTypePluralMap } from '../../utils/element-type-plural-map';
 import { IsValue } from '../../utils/validators';
@@ -145,15 +152,22 @@ function refreshTransfer(
 ): void {
     const elements = draftState[elementTypePluralMap[type]];
     Object.values(elements).forEach((element: Mutable<Personnel | Vehicle>) => {
-        if (!element.transfer) {
+        if (isNotInTransfer(element)) {
             return;
         }
-        if (element.transfer.isPaused) {
-            element.transfer.endTimeStamp += tickInterval;
+        if (transferItsIn(element).isPaused) {
+            const newTransfer = cloneDeepMutable(transferItsIn(element));
+            newTransfer.endTimeStamp += tickInterval;
+            changePosition(
+                element,
+                TransferPosition.create(newTransfer),
+                false,
+                draftState
+            );
             return;
         }
         // Not transferred yet
-        if (element.transfer.endTimeStamp > draftState.currentTime) {
+        if (transferItsIn(element).endTimeStamp > draftState.currentTime) {
             return;
         }
         letElementArrive(draftState, type, element.id);

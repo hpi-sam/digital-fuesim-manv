@@ -6,7 +6,6 @@ import {
     IsNumber,
     Min,
     Max,
-    IsOptional,
 } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
@@ -17,7 +16,6 @@ import {
     PersonnelType,
     CanCaterFor,
     ImageProperties,
-    Transfer,
     getCreate,
 } from './utils';
 import { Position } from './utils/position/position';
@@ -73,15 +71,6 @@ export class Personnel {
     @IsPosition()
     @ValidateNested()
     public readonly position: Position;
-
-    /**
-     * * @deprecated use {@link position}
-     * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or has a {@link position}.
-     */
-    @ValidateNested()
-    @Type(() => Transfer)
-    @IsOptional()
-    public readonly transfer?: Transfer;
 
     /**
      * @deprecated Use {@link create} instead

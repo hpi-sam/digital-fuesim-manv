@@ -7,6 +7,7 @@ import {
     loopTroughTime,
     uuid,
     Viewport,
+    isNotInTransfer,
 } from 'digital-fuesim-manv-shared';
 import type {
     Personnel,
@@ -161,7 +162,7 @@ export class StatisticsService {
                 personnel.filter(
                     (_personnel) =>
                         isNotInVehicle(_personnel) &&
-                        _personnel.transfer === undefined
+                        isNotInTransfer(_personnel)
                 ),
                 (_personnel) => _personnel.personnelType
             ),
