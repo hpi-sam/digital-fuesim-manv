@@ -39,7 +39,7 @@ export function letElementArrive(
 ) {
     const element = getElement(draftState, elementType, elementId);
     // check that element is in transfer, this should be always the case where this function is used
-    if (isInTransfer(element)) {
+    if (isNotInTransfer(element)) {
         throw getNotInTransferError(element.id);
     }
     const targetTransferPoint = getElement(
