@@ -2,7 +2,6 @@ import { createSelector } from '@ngrx/store';
 import type {
     ExerciseState,
     Personnel,
-    Transfer,
     UUID,
     Vehicle,
 } from 'digital-fuesim-manv-shared';
@@ -164,7 +163,7 @@ export const selectVehiclesInTransfer = createSelector(
     (vehicles) =>
         Object.values(vehicles).filter((vehicle) =>
             isInTransfer(vehicle)
-        ) as (Vehicle & { transfer: Transfer })[]
+        ) as Vehicle[]
 );
 
 export const selectPersonnelInTransfer = createSelector(
@@ -172,5 +171,5 @@ export const selectPersonnelInTransfer = createSelector(
     (personnel) =>
         Object.values(personnel).filter((_personnel) =>
             isInTransfer(_personnel)
-        ) as (Personnel & { transfer: Transfer })[]
+        ) as Personnel[]
 );
