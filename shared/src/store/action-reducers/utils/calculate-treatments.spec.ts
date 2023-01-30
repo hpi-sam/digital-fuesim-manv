@@ -336,7 +336,6 @@ describe('calculate treatment', () => {
                 ).id;
             }
         );
-        console.log(ids);
         assertCatering(beforeState, newState, [
             {
                 catererId: ids.material,

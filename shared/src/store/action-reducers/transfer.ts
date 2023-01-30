@@ -139,6 +139,7 @@ export namespace TransferActionReducers {
             // check if transferPoint exists
             getElement(draftState, 'transferPoint', targetTransferPointId);
             const element = getElement(draftState, elementType, elementId);
+
             if (isInTransfer(element)) {
                 throw new ReducerError(
                     `Element with id ${element.id} is already in transfer`

@@ -18,13 +18,13 @@ export class MapPosition {
      */
     @Type(() => MapCoordinates)
     @ValidateNested()
-    public readonly position: MapCoordinates;
+    public readonly coordinates: MapCoordinates;
 
     /**
      * @deprecated Use {@link create} instead
      */
     constructor(position: MapCoordinates) {
-        this.position = position;
+        this.coordinates = position;
     }
 
     static readonly create = getCreate(this);

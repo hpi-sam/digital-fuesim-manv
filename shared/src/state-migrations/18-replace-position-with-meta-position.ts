@@ -3,7 +3,6 @@ import type { Migration } from './migration-functions';
 
 export const replacePositionWithMetaPosition18: Migration = {
     actions: (_initialState, actions) => {
-        console.log('Start Action Migration');
         actions.forEach((action) => {
             if (
                 (action as { type: string } | null)?.type ===
@@ -38,7 +37,43 @@ export const replacePositionWithMetaPosition18: Migration = {
                             | { type: any };
                         position: any;
                     };
+                    materials: {
+                        metaPosition?:
+                            | any
+                            | { type: 'coordinates'; position: any }
+                            | { type: any };
+                        position: any;
+                    }[];
+                    personnel: {
+                        transfer?: any;
+                        metaPosition?:
+                            | any
+                            | { type: 'coordinates'; position: any }
+                            | { type: any };
+                        position: any;
+                    }[];
                 };
+                for (const material of typedAction.materials) {
+                    if (material.metaPosition?.type === 'coordinates') {
+                        material.metaPosition.coordinates =
+                            material.metaPosition.position;
+                        delete material.metaPosition.position;
+                    }
+                    material.position = material.metaPosition;
+                    delete material.metaPosition;
+                }
+
+                for (const personnel of typedAction.personnel) {
+                    delete personnel.transfer;
+                    if (personnel.metaPosition?.type === 'coordinates') {
+                        personnel.metaPosition.coordinates =
+                            personnel.metaPosition.position;
+                        delete personnel.metaPosition.position;
+                    }
+                    personnel.position = personnel.metaPosition;
+                    delete personnel.metaPosition;
+                }
+
                 if (typedAction.vehicle.metaPosition?.type === 'coordinates') {
                     typedAction.vehicle.metaPosition.coordinates =
                         typedAction.vehicle.metaPosition.position;
@@ -176,10 +211,8 @@ export const replacePositionWithMetaPosition18: Migration = {
                 };
             }
         });
-        console.log('End Action Migration');
     },
     state: (state) => {
-        console.log('Start State Migration');
         const typedState = state as {
             patients: {
                 [patientId: UUID]: {
@@ -276,9 +309,6 @@ export const replacePositionWithMetaPosition18: Migration = {
         });
 
         Object.values(typedState.materials).forEach((material) => {
-            if (material.metaPosition.type === undefined) {
-                console.log('ALARMMMMM');
-            }
             if (material.metaPosition?.type === 'coordinates') {
                 material.metaPosition.coordinates =
                     material.metaPosition.position;
@@ -290,6 +320,7 @@ export const replacePositionWithMetaPosition18: Migration = {
 
         Object.values(typedState.vehicles).forEach((vehicle) => {
             delete vehicle.transfer;
+
             if (vehicle.metaPosition?.type === 'coordinates') {
                 vehicle.metaPosition.coordinates =
                     vehicle.metaPosition.position;
@@ -351,6 +382,5 @@ export const replacePositionWithMetaPosition18: Migration = {
                 },
             };
         });
-        console.log('End State Migration');
     },
 };

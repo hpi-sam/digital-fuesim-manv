@@ -27,7 +27,7 @@ export function isNotInVehicle(withPosition: WithPosition): boolean {
     return !isInVehicle(withPosition);
 }
 export function isNotInTransfer(withPosition: WithPosition): boolean {
-    return !isInVehicle(withPosition);
+    return !isInTransfer(withPosition);
 }
 export function isNotInSimulatedRegion(withPosition: WithPosition): boolean {
     return !isInSimulatedRegion(withPosition);
@@ -35,7 +35,7 @@ export function isNotInSimulatedRegion(withPosition: WithPosition): boolean {
 
 export function coordinatesOf(withPosition: WithPosition): MapCoordinates {
     if (isOnMap(withPosition)) {
-        return (withPosition.position as MapPosition).position;
+        return (withPosition.position as MapPosition).coordinates;
     }
     throw new TypeError(
         `Expected position of object to be on Map. Was of type ${withPosition.position.type}.`
@@ -97,7 +97,7 @@ export function isPositionNotInSimulatedRegion(position: Position): boolean {
 
 export function coordinatesOfPosition(position: Position): MapCoordinates {
     if (isPositionOnMap(position)) {
-        return (position as MapPosition).position;
+        return (position as MapPosition).coordinates;
     }
     throw new TypeError(
         `Expected position of object to be on Map. Was of type ${position.type}.`
