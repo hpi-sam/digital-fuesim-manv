@@ -138,7 +138,6 @@ export namespace MapImagesActionReducers {
             changePosition(
                 mapImage,
                 MapPosition.create(targetPosition),
-                false,
                 draftState
             );
             return draftState;

@@ -101,7 +101,6 @@ export namespace ViewportActionReducers {
             changePosition(
                 viewport,
                 MapPosition.create(targetPosition),
-                false,
                 draftState
             );
             viewport.size = cloneDeepMutable(newSize);

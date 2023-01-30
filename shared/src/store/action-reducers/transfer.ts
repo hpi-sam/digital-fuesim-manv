@@ -54,12 +54,7 @@ export function letElementArrive(
             // Position it in the upper half of the transferPoint
             imageSizeToPosition(TransferPoint.image.height / 3),
     };
-    changePosition(
-        element,
-        MapPosition.create(newPosition),
-        elementType === 'personnel' ? elementType : false,
-        draftState
-    );
+    changePosition(element, MapPosition.create(newPosition), draftState);
 }
 
 export class AddToTransferAction implements Action {
@@ -177,7 +172,6 @@ export namespace TransferActionReducers {
                     endTimeStamp: draftState.currentTime + duration,
                     isPaused: false,
                 }),
-                elementType === 'personnel' ? elementType : false,
                 draftState
             );
 
@@ -213,7 +207,6 @@ export namespace TransferActionReducers {
             changePosition(
                 element,
                 TransferPosition.create(newTransfer),
-                false,
                 draftState
             );
             return draftState;
@@ -252,7 +245,6 @@ export namespace TransferActionReducers {
                 changePosition(
                     element,
                     TransferPosition.create(newTransfer),
-                    false,
                     draftState
                 );
                 return draftState;

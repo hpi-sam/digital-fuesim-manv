@@ -161,7 +161,6 @@ function refreshTransfer(
             changePosition(
                 element,
                 TransferPosition.create(newTransfer),
-                false,
                 draftState
             );
             return;

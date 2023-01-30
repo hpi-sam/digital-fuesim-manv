@@ -162,7 +162,6 @@ export namespace VehicleActionReducers {
                 changePosition(
                     material,
                     VehiclePosition.create(vehicle.id),
-                    'material',
                     draftState
                 );
                 draftState.materials[material.id] = material;
@@ -171,7 +170,6 @@ export namespace VehicleActionReducers {
                 changePosition(
                     person,
                     VehiclePosition.create(vehicle.id),
-                    'personnel',
                     draftState
                 );
                 draftState.personnel[person.id] = person;
@@ -288,7 +286,6 @@ export namespace VehicleActionReducers {
                         MapPosition.create(
                             MapCoordinates.create(x, unloadPosition.y)
                         ),
-                        'material',
                         draftState
                     );
                 }
@@ -321,7 +318,6 @@ export namespace VehicleActionReducers {
                     changePosition(
                         material,
                         VehiclePosition.create(vehicleId),
-                        'material',
                         draftState
                     );
                     break;
@@ -345,7 +341,6 @@ export namespace VehicleActionReducers {
                     changePosition(
                         personnel,
                         VehiclePosition.create(vehicleId),
-                        'personnel',
                         draftState
                     );
                     break;
@@ -368,7 +363,6 @@ export namespace VehicleActionReducers {
                     changePosition(
                         patient,
                         VehiclePosition.create(vehicleId),
-                        'patient',
                         draftState
                     );
                     // Load in all materials
@@ -376,7 +370,6 @@ export namespace VehicleActionReducers {
                         changePosition(
                             getElement(draftState, 'material', materialId),
                             VehiclePosition.create(vehicleId),
-                            'material',
                             draftState
                         );
                     });
@@ -402,7 +395,6 @@ export namespace VehicleActionReducers {
                                     personnelId
                                 ),
                                 VehiclePosition.create(vehicleId),
-                                'personnel',
                                 draftState
                             );
                         });

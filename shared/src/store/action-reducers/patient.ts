@@ -122,12 +122,7 @@ export namespace PatientActionReducers {
             }
             const mutablePatient = cloneDeepMutable(patient);
             draftState.patients[mutablePatient.id] = mutablePatient;
-            changePosition(
-                mutablePatient,
-                patient.position,
-                'patient',
-                draftState
-            );
+            changePosition(mutablePatient, patient.position, draftState);
             return draftState;
         },
         rights: 'trainer',

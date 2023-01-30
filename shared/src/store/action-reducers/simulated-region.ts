@@ -112,7 +112,6 @@ export namespace SimulatedRegionActionReducers {
                 changePosition(
                     simulatedRegion,
                     MapPosition.create(targetPosition),
-                    false,
                     draftState
                 );
                 simulatedRegion.size = cloneDeepMutable(newSize);

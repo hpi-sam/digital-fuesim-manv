@@ -21,11 +21,12 @@ type MutablePosition = Mutable<Position>;
 
 interface WithMutablePosition {
     position: MutablePosition;
+    type: MovableType;
 }
 interface WithMutablePositionAndId extends WithMutablePosition {
     id: UUID;
 }
-type ElementType =
+type MovableType =
     | 'alarmGroup'
     | 'client'
     | 'hospital'
@@ -41,30 +42,26 @@ type ElementType =
 export function changePositionWithId(
     of: UUID,
     to: Position,
-    type: ElementType,
+    type: MovableType,
     inState: Mutable<ExerciseState>
 ) {
-    changePosition(
-        getElement(inState, type, of) as any,
-        to,
-        type === 'personnel' || type === 'material' || type === 'patient'
-            ? type
-            : false,
-        inState
-    );
+    changePosition(getElement(inState, type, of) as any, to, inState);
 }
 
 export function changePosition(
     of: WithMutablePosition,
     to: Position,
-    type: SpatialElementType | false,
     inState: Mutable<ExerciseState>
 ) {
-    if (type) {
+    if (
+        of.type === 'patient' ||
+        of.type === 'personnel' ||
+        of.type === 'material'
+    ) {
         updateSpatialElementTree(
             of as WithMutablePositionAndId,
             to,
-            type,
+            of.type,
             inState
         );
         of.position = cloneDeepMutable(to);
