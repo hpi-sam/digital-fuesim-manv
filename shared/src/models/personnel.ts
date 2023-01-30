@@ -13,7 +13,6 @@ import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsLiteralUnion, IsUUIDSet, IsValue } from '../utils/validators';
 import { IsPosition } from '../utils/validators/is-position';
 import type { PersonnelTemplate } from './personnel-template';
-import type { MapCoordinates } from './utils';
 import {
     PersonnelType,
     CanCaterFor,
@@ -96,8 +95,7 @@ export class Personnel {
         canCaterFor: CanCaterFor,
         treatmentRange: number,
         overrideTreatmentRange: number,
-        position: Position,
-        position?: MapCoordinates
+        position: Position
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
@@ -127,8 +125,7 @@ export class Personnel {
             personnelTemplate.canCaterFor,
             personnelTemplate.treatmentRange,
             personnelTemplate.overrideTreatmentRange,
-            position,
-            undefined
+            position
         );
     }
 }

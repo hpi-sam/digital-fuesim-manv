@@ -40,10 +40,6 @@ export class Vehicle {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    /**
-     * @deprecated use {@link position}
-     * Exclusive-or to {@link position}
-     */
     @ValidateNested()
     @Type(() => Transfer)
     @IsOptional()
