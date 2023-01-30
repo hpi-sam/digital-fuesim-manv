@@ -6,7 +6,7 @@ import type { Position } from './position';
 import type { SimulatedRegionPosition } from './simulated-region-position';
 import type { TransferPosition } from './transfer-position';
 import type { VehiclePosition } from './vehicle-position';
-import type { WithPosition } from './with-meta-position';
+import type { WithPosition } from './with-position';
 
 export function isOnMap(withPosition: WithPosition): boolean {
     return withPosition.position.type === 'coordinates';

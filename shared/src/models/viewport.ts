@@ -15,6 +15,8 @@ export class Viewport {
 
     /**
      * top-left position
+     *
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
      */
     @ValidateNested()
     @IsPosition()

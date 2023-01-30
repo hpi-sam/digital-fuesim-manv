@@ -1,5 +1,5 @@
 export { Position } from './position/position';
-export { WithPosition } from './position/with-meta-position';
+export { WithPosition } from './position/with-position';
 export { MapPosition } from './position/map-position';
 export { VehiclePosition } from './position/vehicle-position';
 export { TransferPosition } from './position/transfer-position';

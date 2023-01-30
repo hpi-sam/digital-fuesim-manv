@@ -13,6 +13,9 @@ export class MapImage {
     @IsValue('mapImage' as const)
     public readonly type = 'mapImage';
 
+    /**
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
+     */
     @ValidateNested()
     @IsPosition()
     public readonly position: Position;

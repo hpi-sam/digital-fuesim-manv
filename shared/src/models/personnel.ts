@@ -68,6 +68,9 @@ export class Personnel {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
+    /**
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
+     */
     @IsPosition()
     @ValidateNested()
     public readonly position: Position;

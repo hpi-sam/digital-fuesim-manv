@@ -12,7 +12,7 @@ import {
     Size,
 } from './utils';
 import type { ImageProperties, MapCoordinates } from './utils';
-import type { WithPosition } from './utils/position/with-meta-position';
+import type { WithPosition } from './utils/position/with-position';
 
 export class SimulatedRegion {
     @IsUUID(4, uuidValidationOptions)
@@ -23,6 +23,8 @@ export class SimulatedRegion {
 
     /**
      * top-left position
+     *
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
      */
     @ValidateNested()
     @IsPosition()

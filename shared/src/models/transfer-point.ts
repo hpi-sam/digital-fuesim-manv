@@ -16,6 +16,9 @@ export class TransferPoint {
     @IsValue('transferPoint' as const)
     public readonly type = 'transferPoint';
 
+    /**
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
+     */
     @ValidateNested()
     @IsPosition()
     public readonly position: Position;

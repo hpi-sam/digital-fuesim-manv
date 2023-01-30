@@ -26,6 +26,9 @@ export class Vehicle {
     @IsNumber()
     public readonly patientCapacity: number;
 
+    /**
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
+     */
     @IsPosition()
     @ValidateNested()
     public readonly position: Position;

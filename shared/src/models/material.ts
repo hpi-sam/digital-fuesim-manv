@@ -55,6 +55,9 @@ export class Material {
     @Max(maxTreatmentRange)
     public readonly treatmentRange: number;
 
+    /**
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
+     */
     @IsPosition()
     @ValidateNested()
     public readonly position: Position;
