@@ -84,7 +84,7 @@ function addPatient(
     if (position) {
         patient.position = {
             type: 'coordinates',
-            position: cloneDeepMutable(position),
+            coordinates: cloneDeepMutable(position),
         };
         SpatialTree.addElement(
             state.spatialTrees.patients,
