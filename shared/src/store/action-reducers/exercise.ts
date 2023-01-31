@@ -11,9 +11,12 @@ import { Patient } from '../../models';
 import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
+import type { ElementTypePluralMap } from '../../utils/element-type-plural-map';
+import { elementTypePluralMap } from '../../utils/element-type-plural-map';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
+import type { TransferableElementType } from './transfer';
 import { letElementArrive } from './transfer';
 import { updateTreatments } from './utils/calculate-treatments';
 import { PatientUpdate } from './utils/patient-updates';
@@ -122,7 +125,7 @@ export namespace ExerciseActionReducers {
             });
 
             // Refresh transfers
-            refreshTransfer(draftState, 'vehicles', tickInterval);
+            refreshTransfer(draftState, 'vehicle', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);
             return draftState;
         },
@@ -130,12 +133,17 @@ export namespace ExerciseActionReducers {
     };
 }
 
+type TransferTypePluralMap = Pick<
+    ElementTypePluralMap,
+    TransferableElementType
+>;
+
 function refreshTransfer(
     draftState: Mutable<ExerciseState>,
-    key: 'personnel' | 'vehicles',
+    type: keyof TransferTypePluralMap,
     tickInterval: number
 ): void {
-    const elements = draftState[key];
+    const elements = draftState[elementTypePluralMap[type]];
     Object.values(elements).forEach((element: Mutable<Personnel | Vehicle>) => {
         if (!element.transfer) {
             return;
@@ -148,6 +156,6 @@ function refreshTransfer(
         if (element.transfer.endTimeStamp > draftState.currentTime) {
             return;
         }
-        letElementArrive(draftState, key, element.id);
+        letElementArrive(draftState, type, element.id);
     });
 }

@@ -3,7 +3,9 @@ import { Material, Personnel } from '../models';
 import type { MaterialTemplate } from '../models/material-template';
 import type { PersonnelTemplate } from '../models/personnel-template';
 import type { PersonnelType, Position } from '../models/utils';
+import { MapPosition } from '../models/utils/map-position';
 import type { MaterialType } from '../models/utils/material-type';
+import { VehiclePosition } from '../models/utils/vehicle-position';
 import { uuid } from '../utils';
 
 import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
@@ -20,7 +22,7 @@ export function createVehicleParameters(
     personnelTemplates: {
         [Key in PersonnelType]: PersonnelTemplate;
     },
-    vehiclePosition?: Position
+    vehiclePosition: Position
 ): {
     materials: Material[];
     personnel: Personnel[];
@@ -31,19 +33,22 @@ export function createVehicleParameters(
         Material.generateMaterial(
             materialTemplates[currentMaterial],
             vehicleId,
-            vehicleTemplate.name
+            vehicleTemplate.name,
+            VehiclePosition.create(vehicleId)
         )
     );
     const personnel = vehicleTemplate.personnel.map((currentPersonnel) =>
         Personnel.generatePersonnel(
             personnelTemplates[currentPersonnel],
             vehicleId,
-            vehicleTemplate.name
+            vehicleTemplate.name,
+            VehiclePosition.create(vehicleId)
         )
     );
 
     const vehicle: Vehicle = {
         id: vehicleId,
+        type: 'vehicle',
         materialIds: arrayToUUIDSet(materials.map((m) => m.id)),
         vehicleType: vehicleTemplate.vehicleType,
         name: vehicleTemplate.name,
@@ -52,6 +57,7 @@ export function createVehicleParameters(
         patientIds: {},
         personnelIds: arrayToUUIDSet(personnel.map((p) => p.id)),
         position: vehiclePosition,
+        metaPosition: MapPosition.create(vehiclePosition),
     };
     return {
         materials,

@@ -4,25 +4,18 @@ import type OlMap from 'ol/Map';
 import type RenderEvent from 'ol/render/Event';
 import type { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
-import type Point from 'ol/geom/Point';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { isArray, isEqual } from 'lodash-es';
-import type { LineString } from 'ol/geom';
-import type { Coordinate } from 'ol/coordinate';
-
-export type Coordinates<T extends LineString | Point> = T extends Point
-    ? Coordinate
-    : Coordinate[];
-
-interface CoordinatePair<T extends Coordinate | Coordinate[]> {
-    startPosition: T;
-    endPosition: T;
-}
+import { isEqual } from 'lodash-es';
+import type {
+    Coordinates,
+    CoordinatePair,
+    GeometryWithCoordinates,
+} from './geometry-helper';
 
 /**
  * Animates the movement of a feature to a new position.
  */
-export class MovementAnimator<T extends LineString | Point> {
+export class MovementAnimator<T extends GeometryWithCoordinates> {
     /**
      * The time in milliseconds how long the moving animation should take
      */
@@ -30,7 +23,12 @@ export class MovementAnimator<T extends LineString | Point> {
 
     constructor(
         private readonly olMap: OlMap,
-        private readonly layer: VectorLayer<VectorSource>
+        private readonly layer: VectorLayer<VectorSource>,
+        private readonly interpolateCoordinates: (
+            positions: CoordinatePair<T>,
+            progress: number
+        ) => Coordinates<T>,
+        private readonly getCoordinates: (feature: Feature<T>) => Coordinates<T>
     ) {}
 
     /**
@@ -52,12 +50,8 @@ export class MovementAnimator<T extends LineString | Point> {
         endPosition: Coordinates<T>
     ) {
         const startTime = Date.now();
-        const featureGeometry = feature.getGeometry()!;
-        const startPosition =
-            featureGeometry.getCoordinates() as Coordinates<T>;
-        // Stop an ongoing movement animation
-        this.stopMovementAnimation(feature as Feature<T>);
-        // We don't have to animate this
+        const startPosition = this.getCoordinates(feature);
+        this.stopMovementAnimation(feature);
         if (isEqual(startPosition, endPosition)) {
             return;
         }
@@ -76,25 +70,6 @@ export class MovementAnimator<T extends LineString | Point> {
         this.olMap.render();
     }
 
-    private isCoordinateArrayPair(
-        coordinates: CoordinatePair<Coordinates<LineString | Point>>
-    ): coordinates is CoordinatePair<Coordinates<LineString>> {
-        return isArray(coordinates.startPosition[0]);
-    }
-
-    private interpolate(
-        startCoordinate: Coordinate,
-        endCoordinate: Coordinate,
-        lerpFactor: number
-    ): Coordinate {
-        return [
-            startCoordinate[0]! +
-                (endCoordinate[0]! - startCoordinate[0]!) * lerpFactor,
-            startCoordinate[1]! +
-                (endCoordinate[1]! - startCoordinate[1]!) * lerpFactor,
-        ];
-    }
-
     private setCoordinates(featureGeometry: T, coordinates: Coordinates<T>) {
         // The ol typings are incorrect
         featureGeometry.setCoordinates(coordinates as any);
@@ -107,7 +82,7 @@ export class MovementAnimator<T extends LineString | Point> {
     private animationTick(
         event: RenderEvent,
         startTime: number,
-        positions: CoordinatePair<Coordinates<T>>,
+        positions: CoordinatePair<T>,
         feature: Feature<T>
     ) {
         const featureGeometry = feature.getGeometry()!;
@@ -124,33 +99,7 @@ export class MovementAnimator<T extends LineString | Point> {
             this.olMap.render();
             return;
         }
-        // If we have coordinate arrays, there must be at least as many endCoordinates as startCoordinates
-        if (
-            this.isCoordinateArrayPair(positions) &&
-            positions.startPosition.length > positions.endPosition.length
-        ) {
-            throw new Error(
-                `Got unexpected too few endPositions: ${JSON.stringify(
-                    positions
-                )}`
-            );
-        }
-        // The next position is calculated by a linear interpolation between the start and end position(s)
-        const nextPosition = (
-            this.isCoordinateArrayPair(positions)
-                ? positions.startPosition.map((startPos, index) =>
-                      this.interpolate(
-                          startPos,
-                          positions.endPosition[index]!,
-                          progress
-                      )
-                  )
-                : this.interpolate(
-                      positions.startPosition as Coordinates<Point>,
-                      positions.endPosition as Coordinates<Point>,
-                      progress
-                  )
-        ) as Coordinates<T>;
+        const nextPosition = this.interpolateCoordinates(positions, progress);
         this.setCoordinates(featureGeometry, nextPosition);
         getVectorContext(event).drawGeometry(featureGeometry);
         this.olMap.render();

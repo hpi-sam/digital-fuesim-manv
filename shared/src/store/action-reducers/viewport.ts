@@ -69,7 +69,7 @@ export namespace ViewportActionReducers {
     export const removeViewport: ActionReducer<RemoveViewportAction> = {
         action: RemoveViewportAction,
         reducer: (draftState, { viewportId }) => {
-            getElement(draftState, 'viewports', viewportId);
+            getElement(draftState, 'viewport', viewportId);
             delete draftState.viewports[viewportId];
             return draftState;
         },
@@ -79,7 +79,7 @@ export namespace ViewportActionReducers {
     export const moveViewport: ActionReducer<MoveViewportAction> = {
         action: MoveViewportAction,
         reducer: (draftState, { viewportId, targetPosition }) => {
-            const viewport = getElement(draftState, 'viewports', viewportId);
+            const viewport = getElement(draftState, 'viewport', viewportId);
             viewport.position = cloneDeepMutable(targetPosition);
             return draftState;
         },
@@ -89,7 +89,7 @@ export namespace ViewportActionReducers {
     export const resizeViewport: ActionReducer<ResizeViewportAction> = {
         action: ResizeViewportAction,
         reducer: (draftState, { viewportId, targetPosition, newSize }) => {
-            const viewport = getElement(draftState, 'viewports', viewportId);
+            const viewport = getElement(draftState, 'viewport', viewportId);
             viewport.position = cloneDeepMutable(targetPosition);
             viewport.size = cloneDeepMutable(newSize);
             return draftState;
@@ -100,7 +100,7 @@ export namespace ViewportActionReducers {
     export const renameViewport: ActionReducer<RenameViewportAction> = {
         action: RenameViewportAction,
         reducer: (draftState, { viewportId, newName }) => {
-            const viewport = getElement(draftState, 'viewports', viewportId);
+            const viewport = getElement(draftState, 'viewport', viewportId);
             viewport.name = newName;
             return draftState;
         },

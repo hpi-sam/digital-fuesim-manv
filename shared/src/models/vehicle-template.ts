@@ -7,7 +7,7 @@ import {
     IsArray,
 } from 'class-validator';
 import { uuidValidationOptions, UUID, uuid } from '../utils';
-import { IsLiteralUnion } from '../utils/validators';
+import { IsLiteralUnion, IsValue } from '../utils/validators';
 import type { PersonnelType } from './utils';
 import {
     ImageProperties,
@@ -20,6 +20,9 @@ import { materialTypeAllowedValues } from './utils/material-type';
 export class VehicleTemplate {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('vehicleTemplate' as const)
+    public readonly type = 'vehicleTemplate';
 
     @IsString()
     public readonly vehicleType: string;

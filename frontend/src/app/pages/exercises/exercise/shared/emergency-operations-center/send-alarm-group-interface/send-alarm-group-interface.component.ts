@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { AlarmGroup, UUID } from 'digital-fuesim-manv-shared';
 import {
+    Position,
     AlarmGroupStartPoint,
     createVehicleParameters,
     TransferPoint,
@@ -94,7 +95,12 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                         selectStateSnapshot(
                             selectPersonnelTemplates,
                             this.store
-                        )
+                        ),
+                        // TODO: This position is not correct but needs to be provided.
+                        // Here one should use a MetaPosition with the Transfer.
+                        // But this is part of later Refactoring.
+                        // Also it is irrelevant, because the correctMetaPosition is set immediately after this is called.
+                        Position.create(0, 0)
                     );
 
                     return [
@@ -106,7 +112,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                         }),
                         this.exerciseService.proposeAction({
                             type: '[Transfer] Add to transfer',
-                            elementType: 'vehicles',
+                            elementType: vehicleParameters.vehicle.type,
                             elementId: vehicleParameters.vehicle.id,
                             startPoint: AlarmGroupStartPoint.create(
                                 alarmGroup.name,

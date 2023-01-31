@@ -12,6 +12,7 @@ describe('exerciseReducer', () => {
     function generateViewport(): Viewport {
         return {
             id: uuid(),
+            type: 'viewport',
             name: 'Test',
             size: { width: 100, height: 100 },
             position: { x: 0, y: 0 },

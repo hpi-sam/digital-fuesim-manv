@@ -7,13 +7,18 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
-import { IsUUIDSet } from '../utils/validators';
+import { IsUUIDSet, IsValue } from '../utils/validators';
+import { IsMetaPosition } from '../utils/validators/is-metaposition';
 import { getCreate, Position, Transfer } from './utils';
 import { ImageProperties } from './utils/image-properties';
+import { MetaPosition } from './utils/meta-position';
 
 export class Vehicle {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('vehicle' as const)
+    public readonly type = 'vehicle';
 
     @IsString()
     public readonly vehicleType: string;
@@ -27,7 +32,12 @@ export class Vehicle {
     @IsNumber()
     public readonly patientCapacity: number;
 
+    @IsMetaPosition()
+    @ValidateNested()
+    public readonly metaPosition: MetaPosition;
+
     /**
+     * @deprecated use {@link metaPosition}
      * Exclusive-or to {@link transfer}
      */
     @ValidateNested()
@@ -40,6 +50,7 @@ export class Vehicle {
     public readonly image: ImageProperties;
 
     /**
+     * @deprecated use {@link metaPosition}
      * Exclusive-or to {@link position}
      */
     @ValidateNested()
@@ -61,13 +72,15 @@ export class Vehicle {
         name: string,
         materialIds: UUIDSet,
         patientCapacity: number,
-        image: ImageProperties
+        image: ImageProperties,
+        metaPosition: MetaPosition
     ) {
         this.vehicleType = vehicleType;
         this.name = name;
         this.materialIds = materialIds;
         this.patientCapacity = patientCapacity;
         this.image = image;
+        this.metaPosition = metaPosition;
     }
 
     static readonly create = getCreate(this);

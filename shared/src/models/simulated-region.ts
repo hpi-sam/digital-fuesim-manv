@@ -1,12 +1,16 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { IsValue } from '../utils/validators';
 import { getCreate, Position, Size } from './utils';
 import type { ImageProperties } from './utils';
 
 export class SimulatedRegion {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('simulatedRegion' as const)
+    public readonly type = 'simulatedRegion';
 
     /**
      * top-left position

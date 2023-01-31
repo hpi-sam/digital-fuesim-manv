@@ -1,4 +1,10 @@
 export { Position } from './position';
+export { MetaPosition } from './meta-position';
+export { MapPosition } from './map-position';
+export { VehiclePosition } from './vehicle-position';
+export { TransferPosition } from './transfer-position';
+export { SimulatedRegionPosition } from './simulated-region-position';
+export { MapCoordinates } from './map-coordinates';
 export * from './patient-status';
 export { Size } from './size';
 export { Role } from './role';

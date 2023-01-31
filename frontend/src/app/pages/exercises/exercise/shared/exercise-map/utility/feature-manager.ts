@@ -1,4 +1,5 @@
 import type { Feature, MapBrowserEvent } from 'ol';
+import type { Geometry } from 'ol/geom';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
@@ -8,7 +9,7 @@ import type { OpenPopupOptions } from './popup-manager';
 /**
  * The Api to interact with a feature
  */
-export interface FeatureManager<ElementFeature extends Feature<any>> {
+export interface FeatureManager<T extends Geometry> {
     readonly layer: VectorLayer<VectorSource>;
 
     /**
@@ -23,13 +24,13 @@ export interface FeatureManager<ElementFeature extends Feature<any>> {
      */
     onFeatureClicked: (
         event: MapBrowserEvent<any>,
-        feature: ElementFeature
+        feature: Feature<T>
     ) => void;
 
     /**
      * @returns whether the feature can be moved by the user
      */
-    isFeatureTranslatable: (feature: ElementFeature) => boolean;
+    isFeatureTranslatable: (feature: Feature<T>) => boolean;
 
     /**
      * @param dropEvent The drop event that triggered the call
@@ -40,6 +41,6 @@ export interface FeatureManager<ElementFeature extends Feature<any>> {
     onFeatureDrop: (
         dropEvent: TranslateEvent,
         droppedFeature: Feature<any>,
-        droppedOnFeature: ElementFeature
+        droppedOnFeature: Feature<T>
     ) => boolean;
 }
