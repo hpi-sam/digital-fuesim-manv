@@ -109,7 +109,9 @@ export class SimulatedRegionFeatureManager
         droppedOnFeature: Feature<any>
     ) {
         const droppedElement = this.getElementFromFeature(droppedFeature);
-        const droppedOnSimulatedRegion = this.getElementFromFeature(droppedOnFeature) as SimulatedRegion
+        const droppedOnSimulatedRegion = this.getElementFromFeature(
+            droppedOnFeature
+        ) as SimulatedRegion;
         if (!droppedElement || !droppedOnSimulatedRegion) {
             console.error('Could not find element for the features');
             return false;
