@@ -3,6 +3,7 @@ import { ValidateNested } from 'class-validator';
 import { IsValue } from '../../../utils/validators';
 import { getCreate } from '../get-create';
 import { MapCoordinates } from './map-coordinates';
+// import needed to display @link Links in Comments
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { isOnMap, isNotOnMap, currentCoordinatesOf } from './position-helpers';
 

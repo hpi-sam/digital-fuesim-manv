@@ -3,10 +3,13 @@ import { UUID } from '../../../utils';
 import { IsValue } from '../../../utils/validators';
 import { getCreate } from '../get-create';
 import {
+    // import needed to display @link Links in Comments
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isInSimulatedRegion,
+    // import needed to display @link Links in Comments
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isNotInSimulatedRegion,
+    // import needed to display @link Links in Comments
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     currentSimulatedRegionIdOf,
 } from './position-helpers';
