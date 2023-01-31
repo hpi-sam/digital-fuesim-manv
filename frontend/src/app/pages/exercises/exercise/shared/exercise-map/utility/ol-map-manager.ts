@@ -424,13 +424,11 @@ export class OlMapManager {
                     }
                     this.layerFeatureManagerDictionary
                         .get(
-                            layer as VectorLayer<
-                                VectorSource<LineString | Point>
-                            >
+                            layer as VectorLayer<VectorSource>
                         )!
                         .onFeatureClicked(
                             event,
-                            feature as Feature<LineString | Point>
+                            feature as Feature
                         );
                     // we only want the top one -> a truthy return breaks this loop
                     return true;
@@ -474,14 +472,12 @@ export class OlMapManager {
                 // We stop propagating the event as soon as the onFeatureDropped function returns true
                 return this.layerFeatureManagerDictionary
                     .get(
-                        layer as VectorLayer<VectorSource<LineString | Point>>
+                        layer as VectorLayer<VectorSource>
                     )!
                     .onFeatureDrop(
                         event,
-                        event.features.getArray()[0] as Feature<
-                            LineString | Point
-                        >,
-                        feature as Feature<Point>
+                        event.features.getArray()[0]!,
+                        feature as Feature
                     );
             });
         });
