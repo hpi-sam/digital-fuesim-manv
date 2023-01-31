@@ -38,6 +38,7 @@ describe('Exercise saving', () => {
                         alarmGroup: {
                             alarmGroupVehicles: {},
                             id: uuid(),
+                            type: 'alarmGroup',
                             name: 'Alarm Group',
                         },
                     },

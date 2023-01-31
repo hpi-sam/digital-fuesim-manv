@@ -2,7 +2,7 @@ import type { Feature, MapBrowserEvent } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
 import { distance } from 'ol/coordinate';
 import BaseEvent from 'ol/events/Event';
-import type { LineString } from 'ol/geom';
+import type { Polygon } from 'ol/geom';
 import PointerInteraction from 'ol/interaction/Pointer';
 import type VectorSource from 'ol/source/Vector';
 
@@ -21,7 +21,7 @@ export class ResizeRectangleInteraction extends PointerInteraction {
      */
     private currentResizeValues?: CurrentResizeValues;
 
-    constructor(private readonly source: VectorSource<LineString>) {
+    constructor(private readonly source: VectorSource<Polygon>) {
         super({
             handleDownEvent: (event) => this._handleDownEvent(event),
             handleDragEvent: (event) => this._handleDragEvent(event),
@@ -37,7 +37,7 @@ export class ResizeRectangleInteraction extends PointerInteraction {
             return false;
         }
         const geometry = feature.getGeometry()!;
-        const corners = geometry.getCoordinates()!;
+        const corners = geometry.getCoordinates()![0]!;
         const distances = corners.map((corner) =>
             distance(corner, mouseCoordinate)
         );
@@ -92,7 +92,7 @@ export class ResizeRectangleInteraction extends PointerInteraction {
 
         const coordinates = this.currentResizeValues.feature
             .getGeometry()!
-            .getCoordinates()!;
+            .getCoordinates()![0]!;
         const topLeftCoordinate = coordinates.reduce<Coordinate>(
             (smallestCoordinate, coordinate) =>
                 coordinate[0]! <= smallestCoordinate[0]! ||
@@ -113,7 +113,7 @@ export class ResizeRectangleInteraction extends PointerInteraction {
     }
 
     static onResize(
-        feature: Feature<LineString>,
+        feature: Feature<Polygon>,
         callback: (event: ResizeEvent) => void
     ) {
         feature.addEventListener(
@@ -132,7 +132,7 @@ interface CurrentResizeValues {
     /**
      * The feature that is currently being resized.
      */
-    feature: Feature<LineString>;
+    feature: Feature<Polygon>;
     currentScale: { x: number; y: number };
 }
 

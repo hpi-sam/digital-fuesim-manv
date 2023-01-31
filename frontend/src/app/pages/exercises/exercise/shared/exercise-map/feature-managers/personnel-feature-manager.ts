@@ -8,21 +8,21 @@ import type VectorSource from 'ol/source/Vector';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { WithPosition } from '../../utility/types/with-position';
 import { PersonnelPopupComponent } from '../shared/personnel-popup/personnel-popup.component';
+import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { createPoint, ElementFeatureManager } from './element-feature-manager';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class PersonnelFeatureManager extends ElementFeatureManager<
+export class PersonnelFeatureManager extends MoveableFeatureManager<
     WithPosition<Personnel>
 > {
-    readonly type = 'personnel';
     private readonly imageStyleHelper = new ImageStyleHelper(
-        (feature) => this.getElementFromFeature(feature)!.value.image
+        (feature) => (this.getElementFromFeature(feature) as Personnel).image
     );
     private readonly nameStyleHelper = new NameStyleHelper(
         (feature) => {
-            const personnel = this.getElementFromFeature(feature)!.value;
+            const personnel = this.getElementFromFeature(feature) as Personnel;
             return {
                 name: personnel.vehicleName,
                 offsetY: personnel.image.height / 2 / normalZoom,
@@ -49,7 +49,7 @@ export class PersonnelFeatureManager extends ElementFeatureManager<
                     targetPosition,
                 });
             },
-            createPoint
+            new PointGeometryHelper()
         );
 
         this.layer.setStyle((feature, resolution) => [
@@ -57,8 +57,6 @@ export class PersonnelFeatureManager extends ElementFeatureManager<
             this.imageStyleHelper.getStyle(feature as Feature, resolution),
         ]);
     }
-
-    override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 
     public override onFeatureClicked(
         event: MapBrowserEvent<any>,

@@ -29,7 +29,7 @@ export function deletePatient(
     draftState: Mutable<ExerciseState>,
     patientId: UUID
 ) {
-    removeElementPosition(draftState, 'patients', patientId);
+    removeElementPosition(draftState, 'patient', patientId);
     delete draftState.patients[patientId];
 }
 
@@ -120,7 +120,7 @@ export namespace PatientActionReducers {
             }
             const mutablePatient = cloneDeepMutable(patient);
             draftState.patients[mutablePatient.id] = mutablePatient;
-            addElementPosition(draftState, 'patients', mutablePatient.id);
+            addElementPosition(draftState, 'patient', mutablePatient.id);
             return draftState;
         },
         rights: 'trainer',
@@ -131,7 +131,7 @@ export namespace PatientActionReducers {
         reducer: (draftState, { patientId, targetPosition }) => {
             updateElementPosition(
                 draftState,
-                'patients',
+                'patient',
                 patientId,
                 targetPosition
             );
@@ -152,7 +152,7 @@ export namespace PatientActionReducers {
     export const setVisibleStatus: ActionReducer<SetVisibleStatusAction> = {
         action: SetVisibleStatusAction,
         reducer: (draftState, { patientId, patientStatus }) => {
-            const patient = getElement(draftState, 'patients', patientId);
+            const patient = getElement(draftState, 'patient', patientId);
             patient.pretriageStatus = patientStatus;
 
             if (patient.metaPosition.type === 'coordinates') {
@@ -167,7 +167,7 @@ export namespace PatientActionReducers {
     export const setUserTextAction: ActionReducer<SetUserTextAction> = {
         action: SetUserTextAction,
         reducer: (draftState, { patientId, remarks }) => {
-            const patient = getElement(draftState, 'patients', patientId);
+            const patient = getElement(draftState, 'patient', patientId);
             patient.remarks = remarks;
             return draftState;
         },

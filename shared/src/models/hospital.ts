@@ -1,11 +1,14 @@
 import { IsNumber, IsString, IsUUID, Min } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
-import { IsUUIDSet } from '../utils/validators';
+import { IsUUIDSet, IsValue } from '../utils/validators';
 import { getCreate } from './utils';
 
 export class Hospital {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('hospital' as const)
+    public readonly type = 'hospital';
 
     @IsString()
     public readonly name: string;

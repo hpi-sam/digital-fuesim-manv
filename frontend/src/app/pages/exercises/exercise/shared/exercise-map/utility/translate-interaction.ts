@@ -1,9 +1,8 @@
-import { Position } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
 import type { Feature, MapBrowserEvent } from 'ol';
-import type { LineString, Point } from 'ol/geom';
+import type { Point } from 'ol/geom';
 import { Translate } from 'ol/interaction';
-import { isCoordinateArray } from '../feature-managers/element-feature-manager';
+import type { GeometryWithCoordinates, Positions } from './geometry-helper';
 
 /**
  * Translates (moves) a feature to a new position.
@@ -47,29 +46,14 @@ export class TranslateInteraction extends Translate {
      *
      * You can only call this function if the layer of the feature has this Interaction.
      */
-    public static onTranslateEnd<T extends LineString | Point = Point>(
+    public static onTranslateEnd<T extends GeometryWithCoordinates = Point>(
         feature: Feature<T>,
-        callback: (
-            newCoordinates: T extends Point ? Position : Position[]
-        ) => void
+        callback: (newCoordinates: Positions<T>) => void,
+        getPosition: (feature: Feature<T>) => Positions<T>
     ) {
         feature.addEventListener('translateend', (event) => {
             // The end coordinates in the event are the mouse coordinates and not the feature coordinates.
-            const coordinates = feature.getGeometry()!.getCoordinates();
-            if (isCoordinateArray(coordinates)) {
-                callback(
-                    coordinates.map((coordinate) =>
-                        Position.create(coordinate[0]!, coordinate[1]!)
-                    ) as T extends Point ? never : Position[]
-                );
-                return;
-            }
-            callback(
-                Position.create(
-                    coordinates[0]!,
-                    coordinates[1]!
-                ) as T extends Point ? Position : never
-            );
+            callback(getPosition(feature));
         });
     }
 

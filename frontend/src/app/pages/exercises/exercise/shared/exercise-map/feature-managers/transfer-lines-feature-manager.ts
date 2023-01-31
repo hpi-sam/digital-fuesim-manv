@@ -11,17 +11,9 @@ import type { FeatureManager } from '../utility/feature-manager';
 import { ElementManager } from './element-manager';
 
 export class TransferLinesFeatureManager
-    extends ElementManager<
-        TransferLine,
-        LineString,
-        Feature<LineString>,
-        ReadonlySet<keyof TransferLine>
-    >
-    implements FeatureManager<Feature<LineString>>
+    extends ElementManager<TransferLine, LineString>
+    implements FeatureManager<LineString>
 {
-    readonly type = 'transferLines';
-    readonly unsupportedChangeProperties = new Set(['id'] as const);
-
     constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {
         super();
         layer.setStyle(

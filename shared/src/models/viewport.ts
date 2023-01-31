@@ -1,12 +1,16 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { IsValue } from '../utils/validators';
 import { getCreate, Position, Size } from './utils';
 import type { ImageProperties } from './utils';
 
 export class Viewport {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('viewport' as const)
+    public readonly type = 'viewport';
 
     /**
      * top-left position

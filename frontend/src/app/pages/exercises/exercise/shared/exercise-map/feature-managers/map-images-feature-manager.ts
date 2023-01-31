@@ -10,14 +10,14 @@ import type { AppState } from 'src/app/state/app.state';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popup.component';
+import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
-import { createPoint, ElementFeatureManager } from './element-feature-manager';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
-    readonly type = 'mapImages';
+export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
     private readonly imageStyleHelper = new ImageStyleHelper(
-        (feature) => this.getElementFromFeature(feature)!.value.image
+        (feature) => (this.getElementFromFeature(feature) as MapImage).image
     );
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
@@ -37,7 +37,7 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
                     targetPosition,
                 });
             },
-            createPoint
+            new PointGeometryHelper()
         );
         this.layer.setStyle((feature, resolution) => {
             const style = this.imageStyleHelper.getStyle(
@@ -45,7 +45,8 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
                 resolution
             );
             style.setZIndex(
-                this.getElementFromFeature(feature as Feature)!.value.zIndex
+                (this.getElementFromFeature(feature as Feature) as MapImage)
+                    .zIndex
             );
             return style;
         });
@@ -68,12 +69,10 @@ export class MapImageFeatureManager extends ElementFeatureManager<MapImage> {
     }
 
     override isFeatureTranslatable(feature: Feature<Point>): boolean {
-        const mapImage = this.getElementFromFeature(feature).value as MapImage;
+        const mapImage = this.getElementFromFeature(feature) as MapImage;
         return (
             selectStateSnapshot(selectCurrentRole, this.store) === 'trainer' &&
             !mapImage.isLocked
         );
     }
-
-    override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 }

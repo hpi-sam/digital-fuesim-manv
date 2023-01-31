@@ -9,22 +9,21 @@ import type VectorSource from 'ol/source/Vector';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { WithPosition } from '../../utility/types/with-position';
 import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
+import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { createPoint, ElementFeatureManager } from './element-feature-manager';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class VehicleFeatureManager extends ElementFeatureManager<
+export class VehicleFeatureManager extends MoveableFeatureManager<
     WithPosition<Vehicle>
 > {
-    readonly type = 'vehicles';
-
     private readonly imageStyleHelper = new ImageStyleHelper(
-        (feature) => this.getElementFromFeature(feature)!.value.image
+        (feature) => (this.getElementFromFeature(feature) as Vehicle).image
     );
     private readonly nameStyleHelper = new NameStyleHelper(
         (feature) => {
-            const vehicle = this.getElementFromFeature(feature)!.value;
+            const vehicle = this.getElementFromFeature(feature) as Vehicle;
             return {
                 name: vehicle.name,
                 offsetY: vehicle.image.height / 2 / normalZoom,
@@ -50,7 +49,7 @@ export class VehicleFeatureManager extends ElementFeatureManager<
                     targetPosition,
                 });
             },
-            createPoint
+            new PointGeometryHelper()
         );
         this.layer.setStyle((feature, resolution) => [
             this.nameStyleHelper.getStyle(feature as Feature, resolution),
@@ -66,29 +65,26 @@ export class VehicleFeatureManager extends ElementFeatureManager<
         const droppedElement = this.getElementFromFeature(droppedFeature);
         const droppedOnVehicle = this.getElementFromFeature(
             droppedOnFeature
-        ) as {
-            type: 'vehicles';
-            value: Vehicle;
-        };
+        ) as Vehicle;
         if (!droppedElement || !droppedOnVehicle) {
             console.error('Could not find element for the features');
             return false;
         }
         if (
             (droppedElement.type === 'personnel' &&
-                droppedOnVehicle.value.personnelIds[droppedElement.value.id]) ||
-            (droppedElement.type === 'materials' &&
-                droppedOnVehicle.value.materialIds[droppedElement.value.id]) ||
-            (droppedElement.type === 'patients' &&
-                Object.keys(droppedOnVehicle.value.patientIds).length <
-                    droppedOnVehicle.value.patientCapacity)
+                droppedOnVehicle.personnelIds[droppedElement.id]) ||
+            (droppedElement.type === 'material' &&
+                droppedOnVehicle.materialIds[droppedElement.id]) ||
+            (droppedElement.type === 'patient' &&
+                Object.keys(droppedOnVehicle.patientIds).length <
+                    droppedOnVehicle.patientCapacity)
         ) {
             // TODO: user feedback (e.g. toast)
             this.exerciseService.proposeAction(
                 {
                     type: '[Vehicle] Load vehicle',
-                    vehicleId: droppedOnVehicle.value.id,
-                    elementToBeLoadedId: droppedElement.value.id,
+                    vehicleId: droppedOnVehicle.id,
+                    elementToBeLoadedId: droppedElement.id,
                     elementToBeLoadedType: droppedElement.type,
                 },
                 true
@@ -97,8 +93,6 @@ export class VehicleFeatureManager extends ElementFeatureManager<
         }
         return false;
     }
-
-    override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 
     public override onFeatureClicked(
         event: MapBrowserEvent<any>,
