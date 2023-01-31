@@ -156,9 +156,4 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
     override isFeatureTranslatable(feature: Feature<Point>): boolean {
         return selectStateSnapshot(selectCurrentRole, this.store) === 'trainer';
     }
-
-    override unsupportedChangeProperties = new Set([
-        'id',
-        'internalName',
-    ] as const);
 }

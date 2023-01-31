@@ -11,12 +11,7 @@ import { generateChangedProperties } from '../utility/generate-changed-propertie
  */
 export abstract class ElementManager<
     Element extends ImmutableJsonObject,
-    FeatureType extends Geometry,
-    UnsupportedChangeProperties extends ReadonlySet<keyof Element>,
-    SupportedChangeProperties extends Exclude<
-        ReadonlySet<keyof Element>,
-        UnsupportedChangeProperties
-    > = Exclude<ReadonlySet<keyof Element>, UnsupportedChangeProperties>
+    FeatureType extends Geometry
 > {
     /**
      * This should be called if a new element is added.
@@ -40,10 +35,6 @@ export abstract class ElementManager<
 
     /**
      * This should be called if an element is changed.
-     *
-     * The best way to reflect the changes on the feature is mostly to update the already created feature directly. This is done in {@link changeFeature}.
-     * But, because this requires extra code for each changed property, it is not feasible to do for all properties.
-     * If any property in {@link unsupportedChangeProperties} has changed, we deleted the old feature and create a new one instead.
      */
     public onElementChanged(oldElement: Element, newElement: Element): void {
         const elementFeature = this.getFeatureFromElement(oldElement);
@@ -56,11 +47,6 @@ export abstract class ElementManager<
             oldElement,
             newElement
         );
-        if (!this.areAllPropertiesSupported(changedProperties)) {
-            this.onElementDeleted(oldElement);
-            this.onElementCreated(newElement);
-            return;
-        }
         elementFeature.set(featureElementKey, newElement);
         this.changeFeature(
             oldElement,
@@ -84,18 +70,13 @@ export abstract class ElementManager<
     ): void;
 
     /**
-     * The properties of {@link Element} for which custom changes cannot be handled in {@link changeFeature}.
-     */
-    abstract readonly unsupportedChangeProperties: UnsupportedChangeProperties;
-    /**
-     * This method must only be called if no properties in {@link unsupportedChangeProperties} are different between the two elements
      * @param changedProperties The properties that have changed between the {@link oldElement} and the {@link newElement}
      * @param elementFeature The openLayers feature that should be updated to reflect the changes
      */
     abstract changeFeature(
         oldElement: Element,
         newElement: Element,
-        changedProperties: SupportedChangeProperties,
+        changedProperties: ReadonlySet<keyof Element>,
         elementFeature: Feature<FeatureType>
     ): void;
 
@@ -105,17 +86,6 @@ export abstract class ElementManager<
 
     public getElementFromFeature(feature: Feature<any>) {
         return feature.get(featureElementKey);
-    }
-
-    private areAllPropertiesSupported(
-        changedProperties: ReadonlySet<keyof Element>
-    ): changedProperties is SupportedChangeProperties {
-        for (const changedProperty of changedProperties) {
-            if (this.unsupportedChangeProperties.has(changedProperty)) {
-                return false;
-            }
-        }
-        return true;
     }
 }
 
