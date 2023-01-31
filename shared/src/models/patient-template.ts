@@ -16,7 +16,7 @@ import { Patient } from './patient';
 import type { FunctionParameters } from './patient-health-state';
 import { PretriageInformation } from './utils/pretriage-information';
 import { PatientHealthState } from './patient-health-state';
-import type { MetaPosition } from './utils/meta-position';
+import type { Position } from './utils/position/position';
 
 export class PatientTemplate {
     @IsUUID(4, uuidValidationOptions)
@@ -72,7 +72,7 @@ export class PatientTemplate {
     public static generatePatient(
         template: PatientTemplate,
         patientStatusCode: PatientStatusCode,
-        metaPosition: MetaPosition
+        position: Position
     ): Patient {
         // Randomize function parameters
         const healthStates = Object.fromEntries(
@@ -113,7 +113,7 @@ export class PatientTemplate {
             template.image,
             template.health,
             '',
-            metaPosition
+            position
         );
     }
 }

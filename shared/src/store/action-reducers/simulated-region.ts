@@ -1,7 +1,11 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { SimulatedRegion } from '../../models';
-import { Position, Size } from '../../models/utils';
+import { MapCoordinates, MapPosition, Size } from '../../models/utils';
+import {
+    changePosition,
+    changePositionWithId,
+} from '../../models/utils/position/position-helpers-mutable';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -28,8 +32,8 @@ export class MoveSimulatedRegionAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;
     @ValidateNested()
-    @Type(() => Position)
-    public readonly targetPosition!: Position;
+    @Type(() => MapCoordinates)
+    public readonly targetPosition!: MapCoordinates;
 }
 
 export class ResizeSimulatedRegionAction implements Action {
@@ -38,8 +42,8 @@ export class ResizeSimulatedRegionAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;
     @ValidateNested()
-    @Type(() => Position)
-    public readonly targetPosition!: Position;
+    @Type(() => MapCoordinates)
+    public readonly targetPosition!: MapCoordinates;
     @ValidateNested()
     @Type(() => Size)
     public readonly newSize!: Size;
@@ -82,12 +86,12 @@ export namespace SimulatedRegionActionReducers {
         {
             action: MoveSimulatedRegionAction,
             reducer: (draftState, { simulatedRegionId, targetPosition }) => {
-                const simulatedRegion = getElement(
-                    draftState,
+                changePositionWithId(
+                    simulatedRegionId,
+                    MapPosition.create(targetPosition),
                     'simulatedRegion',
-                    simulatedRegionId
+                    draftState
                 );
-                simulatedRegion.position = cloneDeepMutable(targetPosition);
                 return draftState;
             },
             rights: 'trainer',
@@ -105,7 +109,11 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                simulatedRegion.position = cloneDeepMutable(targetPosition);
+                changePosition(
+                    simulatedRegion,
+                    MapPosition.create(targetPosition),
+                    draftState
+                );
                 simulatedRegion.size = cloneDeepMutable(newSize);
                 return draftState;
             },

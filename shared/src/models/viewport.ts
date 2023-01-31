@@ -1,9 +1,16 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { IsPosition } from '../utils/validators/is-position';
 import { IsValue } from '../utils/validators';
-import { getCreate, Position, Size } from './utils';
-import type { ImageProperties } from './utils';
+import {
+    currentCoordinatesOf,
+    getCreate,
+    MapPosition,
+    Position,
+    Size,
+} from './utils';
+import type { ImageProperties, MapCoordinates } from './utils';
 
 export class Viewport {
     @IsUUID(4, uuidValidationOptions)
@@ -14,9 +21,11 @@ export class Viewport {
 
     /**
      * top-left position
+     *
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
      */
     @ValidateNested()
-    @Type(() => Position)
+    @IsPosition()
     public readonly position: Position;
 
     @ValidateNested()
@@ -30,8 +39,8 @@ export class Viewport {
      * @param position top-left position
      * @deprecated Use {@link create} instead
      */
-    constructor(position: Position, size: Size, name: string) {
-        this.position = position;
+    constructor(position: MapCoordinates, size: Size, name: string) {
+        this.position = MapPosition.create(position);
         this.size = size;
         this.name = name;
     }
@@ -44,12 +53,14 @@ export class Viewport {
         aspectRatio: 1600 / 900,
     };
 
-    static isInViewport(viewport: Viewport, position: Position): boolean {
+    static isInViewport(viewport: Viewport, position: MapCoordinates): boolean {
         return (
-            viewport.position.x <= position.x &&
-            position.x <= viewport.position.x + viewport.size.width &&
-            viewport.position.y - viewport.size.height <= position.y &&
-            position.y <= viewport.position.y
+            currentCoordinatesOf(viewport).x <= position.x &&
+            position.x <=
+                currentCoordinatesOf(viewport).x + viewport.size.width &&
+            currentCoordinatesOf(viewport).y - viewport.size.height <=
+                position.y &&
+            position.y <= currentCoordinatesOf(viewport).y
         );
     }
 }

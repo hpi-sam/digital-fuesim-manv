@@ -1,6 +1,6 @@
 import type { Store } from '@ngrx/store';
 import type { UUID, SimulatedRegion } from 'digital-fuesim-manv-shared';
-import { Position, Size } from 'digital-fuesim-manv-shared';
+import { MapCoordinates, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Polygon } from 'ol/geom';
 import type VectorLayer from 'ol/layer/Vector';
@@ -67,7 +67,7 @@ export class SimulatedRegionFeatureManager
                     {
                         type: '[SimulatedRegion] Resize simulated region',
                         simulatedRegionId: element.id,
-                        targetPosition: Position.create(
+                        targetPosition: MapCoordinates.create(
                             topLeftCoordinate[0]!,
                             topLeftCoordinate[1]!
                         ),

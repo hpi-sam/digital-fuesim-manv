@@ -1,9 +1,18 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { IsPosition } from '../utils/validators/is-position';
 import { IsValue } from '../utils/validators';
-import { getCreate, Position, Size } from './utils';
-import type { ImageProperties } from './utils';
+import {
+    getCreate,
+    isInSimulatedRegion,
+    MapPosition,
+    Position,
+    currentSimulatedRegionIdOf,
+    Size,
+} from './utils';
+import type { ImageProperties, MapCoordinates } from './utils';
+import type { WithPosition } from './utils/position/with-position';
 
 export class SimulatedRegion {
     @IsUUID(4, uuidValidationOptions)
@@ -14,9 +23,11 @@ export class SimulatedRegion {
 
     /**
      * top-left position
+     *
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
      */
     @ValidateNested()
-    @Type(() => Position)
+    @IsPosition()
     public readonly position: Position;
 
     @ValidateNested()
@@ -30,8 +41,8 @@ export class SimulatedRegion {
      * @param position top-left position
      * @deprecated Use {@link create} instead
      */
-    constructor(position: Position, size: Size, name: string) {
-        this.position = position;
+    constructor(position: MapCoordinates, size: Size, name: string) {
+        this.position = MapPosition.create(position);
         this.size = size;
         this.name = name;
     }
@@ -46,11 +57,11 @@ export class SimulatedRegion {
 
     static isInSimulatedRegion(
         region: SimulatedRegion,
-        position: Position
+        withPosition: WithPosition
     ): boolean {
-        // This class was copied from viewport.ts
-        // We will have to implement this logic differently
-        // later, for now, this is a stub method
-        return false;
+        return (
+            isInSimulatedRegion(withPosition) &&
+            currentSimulatedRegionIdOf(withPosition) === region.id
+        );
     }
 }

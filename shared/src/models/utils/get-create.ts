@@ -9,7 +9,7 @@ import type { Constructor } from '../../utils';
  *
  * @example
  * ```typescript
- *   export class Position {
+ *   export class Coordinates {
  *       @IsNumber()
  *       public a: number;
  *       /**

@@ -1,5 +1,6 @@
 import type { Viewport } from '../models';
 import type { ExerciseStatus } from '../models/utils';
+import { MapCoordinates, MapPosition } from '../models/utils';
 import { ExerciseState } from '../state';
 import type { UUID } from '../utils';
 import { uuid } from '../utils';
@@ -15,7 +16,7 @@ describe('exerciseReducer', () => {
             type: 'viewport',
             name: 'Test',
             size: { width: 100, height: 100 },
-            position: { x: 0, y: 0 },
+            position: MapPosition.create(MapCoordinates.create(0, 0)),
         } as const;
     }
 
