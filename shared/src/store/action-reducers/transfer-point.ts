@@ -8,11 +8,11 @@ import {
 } from 'class-validator';
 import { TransferPoint } from '../../models';
 import {
-    coordinatesOf,
+    currentCoordinatesOf,
     isInTransfer,
     MapCoordinates,
     MapPosition,
-    transferItsIn,
+    currentTransferOf,
 } from '../../models/utils';
 import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
@@ -191,8 +191,8 @@ export namespace TransferPointActionReducers {
                 const _duration =
                     duration ??
                     estimateDuration(
-                        coordinatesOf(transferPoint1),
-                        coordinatesOf(transferPoint2)
+                        currentCoordinatesOf(transferPoint1),
+                        currentCoordinatesOf(transferPoint2)
                     );
                 transferPoint1.reachableTransferPoints[transferPointId2] = {
                     duration: _duration,
@@ -248,7 +248,7 @@ export namespace TransferPointActionReducers {
                     );
                     if (
                         isInTransfer(vehicle) &&
-                        transferItsIn(vehicle).targetTransferPointId ===
+                        currentTransferOf(vehicle).targetTransferPointId ===
                             transferPointId
                     ) {
                         letElementArrive(draftState, vehicle.type, vehicleId);
@@ -262,7 +262,7 @@ export namespace TransferPointActionReducers {
                     );
                     if (
                         isInTransfer(personnel) &&
-                        transferItsIn(personnel).targetTransferPointId ===
+                        currentTransferOf(personnel).targetTransferPointId ===
                             transferPointId
                     ) {
                         letElementArrive(

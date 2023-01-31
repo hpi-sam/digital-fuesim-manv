@@ -1,5 +1,8 @@
 import type { WithPosition } from 'digital-fuesim-manv-shared';
-import { MapCoordinates, coordinatesOf } from 'digital-fuesim-manv-shared';
+import {
+    MapCoordinates,
+    currentCoordinatesOf,
+} from 'digital-fuesim-manv-shared';
 import { Feature } from 'ol';
 import { Point } from 'ol/geom';
 import type {
@@ -15,8 +18,8 @@ export class PointGeometryHelper implements GeometryHelper<Point> {
         new Feature(new Point(this.getElementCoordinates(element)));
 
     getElementCoordinates = (element: WithPosition): Coordinates<Point> => [
-        coordinatesOf(element).x,
-        coordinatesOf(element).y,
+        currentCoordinatesOf(element).x,
+        currentCoordinatesOf(element).y,
     ];
 
     getFeatureCoordinates = (feature: Feature<Point>): Coordinates<Point> =>

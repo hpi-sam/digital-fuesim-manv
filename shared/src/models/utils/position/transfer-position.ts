@@ -9,7 +9,7 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isNotInTransfer,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    transferItsIn,
+    currentTransferOf,
 } from './position-helpers';
 
 export class TransferPosition {
@@ -20,7 +20,7 @@ export class TransferPosition {
     public readonly type = 'transfer';
 
     /**
-     * @deprecated Use {@link transferItsIn } instead
+     * @deprecated Use {@link currentTransferOf } instead
      */
     @Type(() => Transfer)
     @ValidateNested()

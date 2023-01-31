@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
     isNotInVehicle,
-    coordinatesOf,
+    currentCoordinatesOf,
     isOnMap,
     loopTroughTime,
     uuid,
@@ -115,7 +115,7 @@ export class StatisticsService {
                             isOnMap(patient) &&
                             Viewport.isInViewport(
                                 viewport,
-                                coordinatesOf(patient)
+                                currentCoordinatesOf(patient)
                             )
                     ),
                     Object.values(draftState.vehicles).filter(
@@ -123,7 +123,7 @@ export class StatisticsService {
                             isOnMap(vehicle) &&
                             Viewport.isInViewport(
                                 viewport,
-                                coordinatesOf(vehicle)
+                                currentCoordinatesOf(vehicle)
                             )
                     ),
                     Object.values(draftState.personnel).filter(
@@ -131,7 +131,7 @@ export class StatisticsService {
                             isOnMap(personnel) &&
                             Viewport.isInViewport(
                                 viewport,
-                                coordinatesOf(personnel)
+                                currentCoordinatesOf(personnel)
                             )
                     )
                 ),

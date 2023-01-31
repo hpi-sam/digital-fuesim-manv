@@ -2,7 +2,7 @@ import { groupBy } from 'lodash-es';
 import type { Material, Personnel } from '../../../models';
 import { Patient } from '../../../models';
 import type { MapCoordinates, PatientStatus } from '../../../models/utils';
-import { coordinatesOf, isNotOnMap } from '../../../models/utils';
+import { currentCoordinatesOf, isNotOnMap } from '../../../models/utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import { maxTreatmentRange } from '../../../state-helpers/max-treatment-range';
@@ -197,13 +197,13 @@ export function updateTreatments(
 
     updateCateringAroundPatient(
         state,
-        coordinatesOf(element),
+        currentCoordinatesOf(element),
         'personnel',
         alreadyUpdatedElementIds
     );
     updateCateringAroundPatient(
         state,
-        coordinatesOf(element),
+        currentCoordinatesOf(element),
         'material',
         alreadyUpdatedElementIds
     );
@@ -244,7 +244,7 @@ function updateCatering(
     if (cateringElement.overrideTreatmentRange > 0) {
         const patientIdsInOverrideRange = SpatialTree.findAllElementsInCircle(
             state.spatialTrees.patients,
-            coordinatesOf(cateringElement),
+            currentCoordinatesOf(cateringElement),
             cateringElement.overrideTreatmentRange
         );
         // In the overrideTreatmentRange (the override circle) only the distance to the patient is important - his/her injuries are ignored
@@ -273,7 +273,7 @@ function updateCatering(
     const patientsInTreatmentRange: Mutable<Patient>[] =
         SpatialTree.findAllElementsInCircle(
             state.spatialTrees.patients,
-            coordinatesOf(cateringElement),
+            currentCoordinatesOf(cateringElement),
             cateringElement.treatmentRange
         )
             // Filter out every patient in the overrideTreatmentRange

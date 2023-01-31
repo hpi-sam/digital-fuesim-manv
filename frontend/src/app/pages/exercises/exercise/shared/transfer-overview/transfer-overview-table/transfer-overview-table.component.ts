@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { transferItsIn } from 'digital-fuesim-manv-shared';
+import { currentTransferOf } from 'digital-fuesim-manv-shared';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectExerciseStatus,
@@ -21,7 +21,7 @@ export class TransferOverviewTableComponent {
         selectPersonnelInTransfer
     );
 
-    public transferItsIn = transferItsIn;
+    public currentTransferOf = currentTransferOf;
 
     public readonly exerciseStatus$ = this.store.select(selectExerciseStatus);
 

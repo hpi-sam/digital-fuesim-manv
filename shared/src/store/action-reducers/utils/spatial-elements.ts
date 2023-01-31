@@ -1,5 +1,9 @@
 import type { MapCoordinates } from '../../../models/utils';
-import { isOnMap, isNotOnMap, coordinatesOf } from '../../../models/utils';
+import {
+    isOnMap,
+    isNotOnMap,
+    currentCoordinatesOf,
+} from '../../../models/utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
@@ -33,7 +37,7 @@ export function addElementPosition(
     SpatialTree.addElement(
         state.spatialTrees[elementTypePluralMap[elementType]],
         element.id,
-        coordinatesOf(element)
+        currentCoordinatesOf(element)
     );
 }
 
@@ -48,7 +52,7 @@ export function updateElementPosition(
 ) {
     const element = getElement(state, elementType, elementId);
     if (isOnMap(element)) {
-        const startPosition = cloneDeepMutable(coordinatesOf(element));
+        const startPosition = cloneDeepMutable(currentCoordinatesOf(element));
         SpatialTree.moveElement(
             state.spatialTrees[elementTypePluralMap[elementType]],
             element.id,
@@ -80,6 +84,6 @@ export function removeElementPosition(
     SpatialTree.removeElement(
         state.spatialTrees[elementTypePluralMap[elementType]],
         element.id,
-        cloneDeepMutable(coordinatesOf(element))
+        cloneDeepMutable(currentCoordinatesOf(element))
     );
 }

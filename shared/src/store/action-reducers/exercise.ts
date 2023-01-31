@@ -11,7 +11,7 @@ import { Patient } from '../../models';
 import {
     getStatus,
     isNotInTransfer,
-    transferItsIn,
+    currentTransferOf,
     TransferPosition,
 } from '../../models/utils';
 import { changePosition } from '../../models/utils/position/position-helpers-mutable';
@@ -155,8 +155,8 @@ function refreshTransfer(
         if (isNotInTransfer(element)) {
             return;
         }
-        if (transferItsIn(element).isPaused) {
-            const newTransfer = cloneDeepMutable(transferItsIn(element));
+        if (currentTransferOf(element).isPaused) {
+            const newTransfer = cloneDeepMutable(currentTransferOf(element));
             newTransfer.endTimeStamp += tickInterval;
             changePosition(
                 element,
@@ -166,7 +166,7 @@ function refreshTransfer(
             return;
         }
         // Not transferred yet
-        if (transferItsIn(element).endTimeStamp > draftState.currentTime) {
+        if (currentTransferOf(element).endTimeStamp > draftState.currentTime) {
             return;
         }
         letElementArrive(draftState, type, element.id);

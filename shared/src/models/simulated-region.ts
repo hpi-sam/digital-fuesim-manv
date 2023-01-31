@@ -8,7 +8,7 @@ import {
     isInSimulatedRegion,
     MapPosition,
     Position,
-    simulatedRegionItsIn,
+    currentSimulatedRegionIdOf,
     Size,
 } from './utils';
 import type { ImageProperties, MapCoordinates } from './utils';
@@ -61,7 +61,7 @@ export class SimulatedRegion {
     ): boolean {
         return (
             isInSimulatedRegion(withPosition) &&
-            simulatedRegionItsIn(withPosition) === region.id
+            currentSimulatedRegionIdOf(withPosition) === region.id
         );
     }
 }

@@ -8,7 +8,7 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isNotInSimulatedRegion,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    simulatedRegionItsIn,
+    currentSimulatedRegionIdOf,
 } from './position-helpers';
 
 export class SimulatedRegionPosition {
@@ -19,7 +19,7 @@ export class SimulatedRegionPosition {
     public readonly type = 'simulatedRegion';
 
     /**
-     * @deprecated Use {@link simulatedRegionItsIn } instead
+     * @deprecated Use {@link currentSimulatedRegionIdOf } instead
      */
     @IsUUID()
     public readonly simulatedRegionId: UUID;

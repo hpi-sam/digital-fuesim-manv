@@ -6,7 +6,7 @@ import type { Patient } from '../../../models';
 import { Material, Personnel } from '../../../models';
 import type { Position, PatientStatus } from '../../../models/utils';
 import {
-    coordinatesOf,
+    currentCoordinatesOf,
     isPositionOnMap,
     CanCaterFor,
     MapCoordinates,
@@ -115,7 +115,7 @@ function addPersonnel(state: Mutable<ExerciseState>, position: Position) {
         SpatialTree.addElement(
             state.spatialTrees.personnel,
             personnel.id,
-            coordinatesOf(personnel)
+            currentCoordinatesOf(personnel)
         );
     }
     state.personnel[personnel.id] = personnel;
@@ -141,7 +141,7 @@ function addMaterial(state: Mutable<ExerciseState>, position: Position) {
         SpatialTree.addElement(
             state.spatialTrees.materials,
             material.id,
-            coordinatesOf(material)
+            currentCoordinatesOf(material)
         );
     }
     state.materials[material.id] = material;

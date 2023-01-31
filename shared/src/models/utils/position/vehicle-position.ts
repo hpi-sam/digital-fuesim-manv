@@ -8,7 +8,7 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isNotInVehicle,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    vehicleItsIn,
+    currentVehicleIdOf,
 } from './position-helpers';
 
 export class VehiclePosition {
@@ -19,7 +19,7 @@ export class VehiclePosition {
     public readonly type = 'vehicle';
 
     /**
-     * @deprecated Use {@link vehicleItsIn } instead
+     * @deprecated Use {@link currentVehicleIdOf } instead
      */
     @IsUUID()
     public readonly vehicleId: UUID;

@@ -10,7 +10,11 @@ import type {
     Vehicle,
     WithPosition,
 } from 'digital-fuesim-manv-shared';
-import { coordinatesOf, isOnMap, Viewport } from 'digital-fuesim-manv-shared';
+import {
+    currentCoordinatesOf,
+    isOnMap,
+    Viewport,
+} from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { AppState } from '../../app.state';
@@ -71,7 +75,7 @@ function selectVisibleElementsFactory<
     isInViewport: (element: Element, viewport: Viewport) => boolean = (
         element,
         viewport
-    ) => Viewport.isInViewport(viewport, coordinatesOf(element))
+    ) => Viewport.isInViewport(viewport, currentCoordinatesOf(element))
 ) {
     return createSelector(
         selectRestrictedViewport,
@@ -132,9 +136,9 @@ export const selectVisibleCateringLines = createSelector(
                     ),
                 ].map((caterer) => ({
                     id: `${caterer.id}:${patient.id}` as const,
-                    patientPosition: coordinatesOf(patient),
+                    patientPosition: currentCoordinatesOf(patient),
                     // If the catering element is treating a patient, it must have a position
-                    catererPosition: coordinatesOf(caterer),
+                    catererPosition: currentCoordinatesOf(caterer),
                 }))
             )
             // To improve performance, all Lines where both ends are not in the viewport

@@ -38,21 +38,21 @@
             </td>
             <td class="align-middle">
                 <app-start-point-name
-                    [startPoint]="transferItsIn(vehicle).startPoint"
+                    [startPoint]="currentTransferOf(vehicle).startPoint"
                 ></app-start-point-name>
             </td>
             <td class="align-middle">
                 <app-transfer-target-input
                     [elementType]="'vehicle'"
                     [elementId]="vehicle.id"
-                    [transfer]="transferItsIn(vehicle)"
+                    [transfer]="currentTransferOf(vehicle)"
                 ></app-transfer-target-input>
             </td>
             <td class="align-middle">
                 <app-transfer-time-input
                     [elementType]="'vehicle'"
                     [elementId]="vehicle.id"
-                    [transfer]="transferItsIn(vehicle)"
+                    [transfer]="currentTransferOf(vehicle)"
                 ></app-transfer-time-input>
             </td>
         </tr>
@@ -72,21 +72,21 @@
             </td>
             <td class="align-middle">
                 <app-start-point-name
-                    [startPoint]="transferItsIn(personnel).startPoint"
+                    [startPoint]="currentTransferOf(personnel).startPoint"
                 ></app-start-point-name>
             </td>
             <td class="align-middle">
                 <app-transfer-target-input
                     [elementType]="'personnel'"
                     [elementId]="personnel.id"
-                    [transfer]="transferItsIn(personnel)"
+                    [transfer]="currentTransferOf(personnel)"
                 ></app-transfer-target-input>
             </td>
             <td class="align-middle">
                 <app-transfer-time-input
                     [elementType]="'personnel'"
                     [elementId]="personnel.id"
-                    [transfer]="transferItsIn(personnel)"
+                    [transfer]="currentTransferOf(personnel)"
                 ></app-transfer-time-input>
             </td>
         </tr>

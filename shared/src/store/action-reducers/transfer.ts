@@ -5,9 +5,9 @@ import type { MapCoordinates } from '../../models/utils';
 import {
     isInTransfer,
     isNotInTransfer,
-    transferItsIn,
+    currentTransferOf,
     TransferPosition,
-    coordinatesOf,
+    currentCoordinatesOf,
     MapPosition,
     StartPoint,
     startPointTypeOptions,
@@ -45,12 +45,12 @@ export function letElementArrive(
     const targetTransferPoint = getElement(
         draftState,
         'transferPoint',
-        transferItsIn(element).targetTransferPointId
+        currentTransferOf(element).targetTransferPointId
     );
     const newPosition: Mutable<MapCoordinates> = {
-        x: coordinatesOf(targetTransferPoint).x,
+        x: currentCoordinatesOf(targetTransferPoint).x,
         y:
-            coordinatesOf(targetTransferPoint).y +
+            currentCoordinatesOf(targetTransferPoint).y +
             // Position it in the upper half of the transferPoint
             imageSizeToPosition(TransferPoint.image.height / 3),
     };
@@ -190,7 +190,7 @@ export namespace TransferActionReducers {
             if (isNotInTransfer(element)) {
                 throw getNotInTransferError(element.id);
             }
-            const newTransfer = cloneDeepMutable(transferItsIn(element));
+            const newTransfer = cloneDeepMutable(currentTransferOf(element));
             if (targetTransferPointId) {
                 // check if transferPoint exists
 
@@ -240,7 +240,9 @@ export namespace TransferActionReducers {
                 if (isNotInTransfer(element)) {
                     throw getNotInTransferError(element.id);
                 }
-                const newTransfer = cloneDeepMutable(transferItsIn(element));
+                const newTransfer = cloneDeepMutable(
+                    currentTransferOf(element)
+                );
                 newTransfer.isPaused = !newTransfer.isPaused;
                 changePosition(
                     element,

@@ -4,7 +4,7 @@ import { IsValue } from '../../../utils/validators';
 import { getCreate } from '../get-create';
 import { MapCoordinates } from './map-coordinates';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { isOnMap, isNotOnMap, coordinatesOf } from './position-helpers';
+import { isOnMap, isNotOnMap, currentCoordinatesOf } from './position-helpers';
 
 export class MapPosition {
     /**
@@ -14,7 +14,7 @@ export class MapPosition {
     public readonly type = 'coordinates';
 
     /**
-     * @deprecated Use {@link coordinatesOf} instead
+     * @deprecated Use {@link currentCoordinatesOf} instead
      */
     @Type(() => MapCoordinates)
     @ValidateNested()

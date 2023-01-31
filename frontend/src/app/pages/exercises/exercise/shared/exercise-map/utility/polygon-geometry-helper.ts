@@ -1,4 +1,7 @@
-import { coordinatesOf, MapCoordinates } from 'digital-fuesim-manv-shared';
+import {
+    currentCoordinatesOf,
+    MapCoordinates,
+} from 'digital-fuesim-manv-shared';
 import { Feature } from 'ol';
 import { Polygon } from 'ol/geom';
 import type {
@@ -20,20 +23,20 @@ export class PolygonGeometryHelper
         element: ResizableElement
     ): Coordinates<Polygon> => [
         [
-            [coordinatesOf(element).x, coordinatesOf(element).y],
+            [currentCoordinatesOf(element).x, currentCoordinatesOf(element).y],
             [
-                coordinatesOf(element).x + element.size.width,
-                coordinatesOf(element).y,
+                currentCoordinatesOf(element).x + element.size.width,
+                currentCoordinatesOf(element).y,
             ],
             [
-                coordinatesOf(element).x + element.size.width,
-                coordinatesOf(element).y - element.size.height,
+                currentCoordinatesOf(element).x + element.size.width,
+                currentCoordinatesOf(element).y - element.size.height,
             ],
             [
-                coordinatesOf(element).x,
-                coordinatesOf(element).y - element.size.height,
+                currentCoordinatesOf(element).x,
+                currentCoordinatesOf(element).y - element.size.height,
             ],
-            [coordinatesOf(element).x, coordinatesOf(element).y],
+            [currentCoordinatesOf(element).x, currentCoordinatesOf(element).y],
         ],
     ];
 

@@ -33,7 +33,9 @@ export function isNotInSimulatedRegion(withPosition: WithPosition): boolean {
     return !isInSimulatedRegion(withPosition);
 }
 
-export function coordinatesOf(withPosition: WithPosition): MapCoordinates {
+export function currentCoordinatesOf(
+    withPosition: WithPosition
+): MapCoordinates {
     if (isOnMap(withPosition)) {
         return coordinatesOfPosition(withPosition.position);
     }
@@ -42,27 +44,27 @@ export function coordinatesOf(withPosition: WithPosition): MapCoordinates {
     );
 }
 
-export function vehicleItsIn(withPosition: WithPosition): UUID {
+export function currentVehicleIdOf(withPosition: WithPosition): UUID {
     if (isInVehicle(withPosition)) {
-        return vehiclePositionIsIn(withPosition.position);
+        return vehicleIdOfPosition(withPosition.position);
     }
     throw new TypeError(
         `Expected position of object to be in vehicle. Was of type ${withPosition.position.type}.`
     );
 }
 
-export function transferItsIn(withPosition: WithPosition): Transfer {
+export function currentTransferOf(withPosition: WithPosition): Transfer {
     if (isInTransfer(withPosition)) {
-        return transferPositionIsIn(withPosition.position);
+        return transferOfPosition(withPosition.position);
     }
     throw new TypeError(
         `Expected position of object to be in transfer. Was of type ${withPosition.position.type}.`
     );
 }
 
-export function simulatedRegionItsIn(withPosition: WithPosition): UUID {
+export function currentSimulatedRegionIdOf(withPosition: WithPosition): UUID {
     if (isInSimulatedRegion(withPosition)) {
-        return simulatedRegionPositionIsIn(withPosition.position);
+        return simulatedRegionIdOfPosition(withPosition.position);
     }
     throw new TypeError(
         `Expected position of object to be in simulatedRegion. Was of type ${withPosition.position.type}.`
@@ -103,7 +105,7 @@ export function coordinatesOfPosition(position: Position): MapCoordinates {
     );
 }
 
-export function vehiclePositionIsIn(position: Position): UUID {
+export function vehicleIdOfPosition(position: Position): UUID {
     if (isPositionInVehicle(position)) {
         return (position as VehiclePosition).vehicleId;
     }
@@ -112,7 +114,7 @@ export function vehiclePositionIsIn(position: Position): UUID {
     );
 }
 
-export function transferPositionIsIn(position: Position): Transfer {
+export function transferOfPosition(position: Position): Transfer {
     if (isPositionInTransfer(position)) {
         return (position as TransferPosition).transfer;
     }
@@ -121,7 +123,7 @@ export function transferPositionIsIn(position: Position): Transfer {
     );
 }
 
-export function simulatedRegionPositionIsIn(position: Position): UUID {
+export function simulatedRegionIdOfPosition(position: Position): UUID {
     if (isPositionInSimulatedRegion(position)) {
         return (position as SimulatedRegionPosition).simulatedRegionId;
     }

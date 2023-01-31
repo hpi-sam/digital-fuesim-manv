@@ -3,7 +3,13 @@ import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { IsPosition } from '../utils/validators/is-position';
 import { IsValue } from '../utils/validators';
-import { coordinatesOf, getCreate, MapPosition, Position, Size } from './utils';
+import {
+    currentCoordinatesOf,
+    getCreate,
+    MapPosition,
+    Position,
+    Size,
+} from './utils';
 import type { ImageProperties, MapCoordinates } from './utils';
 
 export class Viewport {
@@ -49,10 +55,12 @@ export class Viewport {
 
     static isInViewport(viewport: Viewport, position: MapCoordinates): boolean {
         return (
-            coordinatesOf(viewport).x <= position.x &&
-            position.x <= coordinatesOf(viewport).x + viewport.size.width &&
-            coordinatesOf(viewport).y - viewport.size.height <= position.y &&
-            position.y <= coordinatesOf(viewport).y
+            currentCoordinatesOf(viewport).x <= position.x &&
+            position.x <=
+                currentCoordinatesOf(viewport).x + viewport.size.width &&
+            currentCoordinatesOf(viewport).y - viewport.size.height <=
+                position.y &&
+            position.y <= currentCoordinatesOf(viewport).y
         );
     }
 }

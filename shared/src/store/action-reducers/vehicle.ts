@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
 import {
-    coordinatesOf,
+    currentCoordinatesOf,
     isInTransfer,
     isInVehicle,
     isNotInTransfer,
@@ -227,7 +227,7 @@ export namespace VehicleActionReducers {
                     `Vehicle with id ${vehicleId} is currently not on the map`
                 );
             }
-            const unloadPosition = coordinatesOf(vehicle);
+            const unloadPosition = currentCoordinatesOf(vehicle);
             const materialIds = Object.keys(vehicle.materialIds);
             const personnelIds = Object.keys(vehicle.personnelIds);
             const patientIds = Object.keys(vehicle.patientIds);
