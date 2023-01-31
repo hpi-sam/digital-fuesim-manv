@@ -278,6 +278,8 @@ If you need to read from the state to change it, you should do this inside the a
 
 ## Licenses and Attributions
 
+-   Read [LICENSE-README](LICENSE-README) for information about the used license
+    -   Update the date at the top accordingly (see https://www.gnu.org/licenses/gpl-howto.html.en under copyright notice)
 -   License information about used images can be found [here](frontend/src/assets/image-sources.md). All images are licensed under their original license.
 
 ## Contributors
