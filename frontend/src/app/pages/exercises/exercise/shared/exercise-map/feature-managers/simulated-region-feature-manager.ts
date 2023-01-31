@@ -109,27 +109,22 @@ export class SimulatedRegionFeatureManager
         droppedOnFeature: Feature<any>
     ) {
         const droppedElement = this.getElementFromFeature(droppedFeature);
-        const droppedOnSimulatedRegion = this.getElementFromFeature(
-            droppedOnFeature
-        ) as {
-            type: 'simulatedRegions';
-            value: SimulatedRegion;
-        };
+        const droppedOnSimulatedRegion = this.getElementFromFeature(droppedOnFeature) as SimulatedRegion
         if (!droppedElement || !droppedOnSimulatedRegion) {
             console.error('Could not find element for the features');
             return false;
         }
         if (
-            ['vehicles', 'personnel', 'materials', 'patients'].includes(
+            ['vehicle', 'personnel', 'material', 'patient'].includes(
                 droppedElement.type
             )
         ) {
             this.exerciseService.proposeAction(
                 {
                     type: '[SimulatedRegion] Add Element',
-                    simulatedRegionId: droppedOnSimulatedRegion.value.id,
+                    simulatedRegionId: droppedOnSimulatedRegion.id,
                     elementToBeAddedType: droppedElement.type,
-                    elementToBeAddedId: droppedElement.value.id,
+                    elementToBeAddedId: droppedElement.id,
                 },
                 true
             );

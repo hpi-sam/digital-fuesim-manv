@@ -65,16 +65,16 @@ export class AddElementToSimulatedRegionAction implements Action {
     public readonly simulatedRegionId!: UUID;
 
     @IsLiteralUnion({
-        materials: true,
-        patients: true,
+        material: true,
+        patient: true,
         personnel: true,
-        vehicles: true,
+        vehicle: true,
     })
     public readonly elementToBeAddedType!:
-        | 'materials'
-        | 'patients'
+        | 'material'
+        | 'patient'
         | 'personnel'
-        | 'vehicles';
+        | 'vehicle';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementToBeAddedId!: UUID;
@@ -159,7 +159,7 @@ export namespace SimulatedRegionActionReducers {
                 { simulatedRegionId, elementToBeAddedId, elementToBeAddedType }
             ) => {
                 // Test for existence of the simulate
-                getElement(draftState, 'simulatedRegions', simulatedRegionId);
+                getElement(draftState, 'simulatedRegion', simulatedRegionId);
                 const element = getElement(
                     draftState,
                     elementToBeAddedType,
@@ -167,8 +167,8 @@ export namespace SimulatedRegionActionReducers {
                 );
 
                 switch (elementToBeAddedType) {
-                    case 'materials':
-                    case 'patients':
+                    case 'material':
+                    case 'patient':
                     case 'personnel':
                         removeElementPosition(
                             draftState,
@@ -176,7 +176,7 @@ export namespace SimulatedRegionActionReducers {
                             elementToBeAddedId
                         );
                         break;
-                    case 'vehicles':
+                    case 'vehicle':
                         break;
                 }
                 // FIXME: In the old broken positioning logic, this implies the personnel is in their vehicle instead of our simulatedRegion.
