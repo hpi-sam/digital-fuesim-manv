@@ -91,8 +91,6 @@ export class VehicleFeatureManager extends MoveableFeatureManager<Vehicle> {
         return false;
     }
 
-    override unsupportedChangeProperties = new Set(['id', 'image'] as const);
-
     public override onFeatureClicked(
         event: MapBrowserEvent<any>,
         feature: Feature<any>

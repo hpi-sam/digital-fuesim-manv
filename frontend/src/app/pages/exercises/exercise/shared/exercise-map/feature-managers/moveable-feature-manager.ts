@@ -18,15 +18,15 @@ import { TranslateInteraction } from '../utility/translate-interaction';
 import { ElementManager } from './element-manager';
 
 /**
- * The base class for all element feature managers.
- * * manages the position of the element
- * * manages the default interactions of the element
+ * Manages the position of the element.
+ * Manages the default interactions of the element.
+ * Automatically redraws a feature (= reevaluates its style function) when an element property has changed.
  */
 export abstract class MoveableFeatureManager<
         Element extends PositionableElement,
         FeatureType extends GeometryWithCoordinates = Point
     >
-    extends ElementManager<Element, FeatureType, ReadonlySet<keyof Element>>
+    extends ElementManager<Element, FeatureType>
     implements FeatureManager<FeatureType>
 {
     public readonly togglePopup$ = new Subject<OpenPopupOptions<any>>();
@@ -49,9 +49,6 @@ export abstract class MoveableFeatureManager<
         );
     }
 
-    override unsupportedChangeProperties: ReadonlySet<keyof Element> = new Set(
-        [] as const
-    );
     createFeature(element: Element): Feature<FeatureType> {
         const elementFeature = this.geometryHelper.create(element);
         elementFeature.setId(element.id);
@@ -82,7 +79,6 @@ export abstract class MoveableFeatureManager<
     changeFeature(
         oldElement: Element,
         newElement: Element,
-        // It is too much work to correctly type this param with {@link unsupportedChangeProperties}
         changedProperties: ReadonlySet<keyof Element>,
         elementFeature: Feature<FeatureType>
     ): void {
@@ -92,7 +88,7 @@ export abstract class MoveableFeatureManager<
                 this.geometryHelper.getElementCoordinates(newElement)
             );
         }
-        // If the style has updated, we need to redraw the feature
+        // Redraw the feature to reevaluate its style function
         elementFeature.changed();
     }
 

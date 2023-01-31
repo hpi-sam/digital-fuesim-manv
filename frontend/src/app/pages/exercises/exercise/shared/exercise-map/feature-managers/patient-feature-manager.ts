@@ -98,6 +98,4 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
             })
         );
     }
-
-    override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 }

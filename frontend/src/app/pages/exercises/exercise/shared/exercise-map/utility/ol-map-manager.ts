@@ -379,7 +379,7 @@ export class OlMapManager {
     private registerFeatureElementManager<
         Element extends ImmutableJsonObject,
         T extends MergeIntersection<
-            ElementManager<Element, any, any> & FeatureManager<any>
+            ElementManager<Element, any> & FeatureManager<any>
         >
     >(
         featureManager: T,
@@ -424,15 +424,8 @@ export class OlMapManager {
                         return false;
                     }
                     this.layerFeatureManagerDictionary
-                        .get(
-                            layer as VectorLayer<
-                                VectorSource<LineString | Point>
-                            >
-                        )!
-                        .onFeatureClicked(
-                            event,
-                            feature as Feature<LineString | Point>
-                        );
+                        .get(layer as VectorLayer<VectorSource>)!
+                        .onFeatureClicked(event, feature as Feature);
                     // we only want the top one -> a truthy return breaks this loop
                     return true;
                 },
@@ -474,15 +467,11 @@ export class OlMapManager {
                 }
                 // We stop propagating the event as soon as the onFeatureDropped function returns true
                 return this.layerFeatureManagerDictionary
-                    .get(
-                        layer as VectorLayer<VectorSource<LineString | Point>>
-                    )!
+                    .get(layer as VectorLayer<VectorSource>)!
                     .onFeatureDrop(
                         event,
-                        event.features.getArray()[0] as Feature<
-                            LineString | Point
-                        >,
-                        feature as Feature<Point>
+                        event.features.getArray()[0]!,
+                        feature as Feature
                     );
             });
         });

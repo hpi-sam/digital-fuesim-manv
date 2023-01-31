@@ -75,6 +75,4 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
             !mapImage.isLocked
         );
     }
-
-    override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 }

@@ -24,8 +24,6 @@ export class SimulatedRegionFeatureManager
     extends MoveableFeatureManager<SimulatedRegion, Polygon>
     implements FeatureManager<Polygon>
 {
-    override unsupportedChangeProperties = new Set(['id'] as const);
-
     constructor(
         olMap: OlMap,
         layer: VectorLayer<VectorSource<Polygon>>,

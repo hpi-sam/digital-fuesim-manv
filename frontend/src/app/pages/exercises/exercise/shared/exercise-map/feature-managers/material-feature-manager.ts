@@ -54,8 +54,6 @@ export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
         ]);
     }
 
-    override unsupportedChangeProperties = new Set(['id', 'image'] as const);
-
     public override onFeatureClicked(
         event: MapBrowserEvent<any>,
         feature: Feature<any>
