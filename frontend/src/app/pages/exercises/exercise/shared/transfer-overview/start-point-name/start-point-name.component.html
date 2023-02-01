@@ -1,7 +1,7 @@
-<ng-container *ngIf="startPoint.type === 'alarmGroup'">
+<ng-container *ngIf="startPoint.type === 'alarmGroupStartPoint'">
     {{ startPoint.alarmGroupName }}
 </ng-container>
 <app-transfer-point-name
-    *ngIf="startPoint.type === 'transferPoint'"
+    *ngIf="startPoint.type === 'transferStartPoint'"
     [transferPointId]="startPoint.transferPointId"
 ></app-transfer-point-name>
