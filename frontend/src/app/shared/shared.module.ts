@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { HospitalNameComponent } from './components/hospital-name/hospital-name.component';
 import { PatientStatusDataFieldComponent } from './components/patient-status-displayl/patient-status-data-field/patient-status-data-field.component';
 import { PatientStatusDisplayComponent } from './components/patient-status-displayl/patient-status-display/patient-status-display.component';
@@ -24,6 +25,7 @@ import { FileInputDirective } from './directives/file-input.directive';
 import { JoinIdDirective } from './validation/join-id-validator.directive';
 import { PersonnelNamePipe } from './pipes/personnel-name.pipe';
 import { CaterCapacityCountPipe } from './pipes/cater-capacity-count.pipe';
+import { FooterComponent } from './components/footer/footer.component';
 
 @NgModule({
     declarations: [
@@ -51,8 +53,9 @@ import { CaterCapacityCountPipe } from './pipes/cater-capacity-count.pipe';
         PersonnelNamePipe,
         CaterCapacityCountPipe,
         FileInputDirective,
+        FooterComponent,
     ],
-    imports: [CommonModule],
+    imports: [CommonModule, RouterModule],
     exports: [
         AutofocusDirective,
         AppSaveOnTypingDirective,
@@ -77,6 +80,7 @@ import { CaterCapacityCountPipe } from './pipes/cater-capacity-count.pipe';
         IntegerValidatorDirective,
         PatientStatusBadgeComponent,
         FileInputDirective,
+        FooterComponent,
     ],
 })
 export class SharedModule {}
