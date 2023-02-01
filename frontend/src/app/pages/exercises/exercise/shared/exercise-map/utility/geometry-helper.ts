@@ -1,4 +1,9 @@
-import type { Position, Size, UUID } from 'digital-fuesim-manv-shared';
+import type {
+    MapCoordinates,
+    Position,
+    Size,
+    UUID,
+} from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
 import type { Geometry } from 'ol/geom';
@@ -32,7 +37,7 @@ type ArrayElement<ArrayType> = ArrayType extends readonly (infer ElementType)[]
     : never;
 
 type SubstituteCoordinateForPoint<T> = T extends Coordinate
-    ? Position
+    ? MapCoordinates
     : T extends Array<ArrayElement<T>>
     ? SubstituteCoordinateForPoint<ArrayElement<T>>[]
     : never;

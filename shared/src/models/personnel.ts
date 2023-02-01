@@ -6,22 +6,19 @@ import {
     IsNumber,
     Min,
     Max,
-    IsOptional,
 } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsLiteralUnion, IsUUIDSet, IsValue } from '../utils/validators';
-import { IsMetaPosition } from '../utils/validators/is-metaposition';
+import { IsPosition } from '../utils/validators/is-position';
 import type { PersonnelTemplate } from './personnel-template';
 import {
     PersonnelType,
     CanCaterFor,
     ImageProperties,
-    Position,
-    Transfer,
     getCreate,
 } from './utils';
-import { MetaPosition } from './utils/meta-position';
+import { Position } from './utils/position/position';
 import { personnelTypeAllowedValues } from './utils/personnel-type';
 
 export class Personnel {
@@ -71,27 +68,12 @@ export class Personnel {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    @IsMetaPosition()
-    @ValidateNested()
-    public readonly metaPosition: MetaPosition;
-
     /**
-     * @deprecated use {@link metaPosition}
-     * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or in transfer.
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
      */
+    @IsPosition()
     @ValidateNested()
-    @Type(() => Position)
-    @IsOptional()
-    public readonly position?: Position;
-
-    /**
-     * * @deprecated use {@link metaPosition}
-     * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or has a {@link position}.
-     */
-    @ValidateNested()
-    @Type(() => Transfer)
-    @IsOptional()
-    public readonly transfer?: Transfer;
+    public readonly position: Position;
 
     /**
      * @deprecated Use {@link create} instead
@@ -105,19 +87,17 @@ export class Personnel {
         canCaterFor: CanCaterFor,
         treatmentRange: number,
         overrideTreatmentRange: number,
-        metaPosition: MetaPosition,
-        position?: Position
+        position: Position
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
         this.personnelType = personnelType;
         this.assignedPatientIds = assignedPatientIds;
-        this.position = position;
         this.image = image;
         this.canCaterFor = canCaterFor;
         this.treatmentRange = treatmentRange;
         this.overrideTreatmentRange = overrideTreatmentRange;
-        this.metaPosition = metaPosition;
+        this.position = position;
     }
 
     static readonly create = getCreate(this);
@@ -126,7 +106,7 @@ export class Personnel {
         personnelTemplate: PersonnelTemplate,
         vehicleId: UUID,
         vehicleName: string,
-        metaPosition: MetaPosition
+        position: Position
     ): Personnel {
         return this.create(
             vehicleId,
@@ -137,12 +117,7 @@ export class Personnel {
             personnelTemplate.canCaterFor,
             personnelTemplate.treatmentRange,
             personnelTemplate.overrideTreatmentRange,
-            metaPosition,
-            undefined
+            position
         );
-    }
-
-    static isInVehicle(personnel: Personnel): boolean {
-        return personnel.metaPosition.type === 'vehicle';
     }
 }

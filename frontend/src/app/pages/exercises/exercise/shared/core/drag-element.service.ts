@@ -175,10 +175,7 @@ export class DragElementService {
                     this.exerciseService.proposeAction(
                         {
                             type: '[Patient] Add patient',
-                            patient: {
-                                ...patient,
-                                position,
-                            },
+                            patient,
                         },
                         true
                     );

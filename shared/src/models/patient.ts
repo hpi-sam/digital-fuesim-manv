@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import {
     IsUUID,
     ValidateNested,
-    IsOptional,
     IsNumber,
     Max,
     Min,
@@ -18,7 +17,7 @@ import {
     IsUUIDSet,
     IsValue,
 } from '../utils/validators';
-import { IsMetaPosition } from '../utils/validators/is-metaposition';
+import { IsPosition } from '../utils/validators/is-position';
 import { PatientHealthState } from './patient-health-state';
 import {
     BiometricInformation,
@@ -26,12 +25,11 @@ import {
     PatientStatus,
     patientStatusAllowedValues,
     ImageProperties,
-    Position,
     healthPointsDefaults,
     HealthPoints,
     getCreate,
 } from './utils';
-import { MetaPosition } from './utils/meta-position';
+import { Position } from './utils/position/position';
 import { PersonalInformation } from './utils/personal-information';
 import { PretriageInformation } from './utils/pretriage-information';
 
@@ -72,26 +70,12 @@ export class Patient {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    @IsMetaPosition()
-    @ValidateNested()
-    public readonly metaPosition: MetaPosition;
-
     /**
-     * @deprecated use {@link metaPosition}
-     * Exclusive-or to {@link vehicleId}
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
      */
+    @IsPosition()
     @ValidateNested()
-    @Type(() => Position)
-    @IsOptional()
-    public readonly position?: Position;
-
-    /**
-     * @deprecated use {@link metaPosition}
-     * Exclusive-or to {@link position}
-     */
-    @IsUUID(4, uuidValidationOptions)
-    @IsOptional()
-    public readonly vehicleId?: UUID;
+    public readonly position: Position;
 
     /**
      * The time the patient already is in the current state
@@ -172,7 +156,7 @@ export class Patient {
         image: ImageProperties,
         health: HealthPoints,
         remarks: string,
-        metaPosition: MetaPosition
+        position: Position
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
@@ -185,7 +169,7 @@ export class Patient {
         this.image = image;
         this.health = health;
         this.remarks = remarks;
-        this.metaPosition = metaPosition;
+        this.position = position;
     }
 
     static readonly create = getCreate(this);
@@ -205,10 +189,6 @@ export class Patient {
 
     static pretriageStatusIsLocked(patient: Patient): boolean {
         return patient.treatmentTime >= this.pretriageTimeThreshold;
-    }
-
-    static isInVehicle(patient: Patient): boolean {
-        return patient.metaPosition.type === 'vehicle';
     }
 
     static isTreatedByPersonnel(patient: Patient) {

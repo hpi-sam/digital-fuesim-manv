@@ -5,6 +5,7 @@ import type {
     MergeIntersection,
     UUID,
 } from 'digital-fuesim-manv-shared';
+import { currentCoordinatesOf } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
 import type { Polygon } from 'ol/geom';
@@ -356,10 +357,10 @@ export class OlMapManager {
                 const center = view.getCenter()!;
                 const previousZoom = view.getZoom()!;
                 const targetExtent = [
-                    viewport.position.x,
-                    viewport.position.y - viewport.size.height,
-                    viewport.position.x + viewport.size.width,
-                    viewport.position.y,
+                    currentCoordinatesOf(viewport).x,
+                    currentCoordinatesOf(viewport).y - viewport.size.height,
+                    currentCoordinatesOf(viewport).x + viewport.size.width,
+                    currentCoordinatesOf(viewport).y,
                 ];
                 view.fit(targetExtent);
                 const matchingZoom = view.getZoom()!;
@@ -423,15 +424,8 @@ export class OlMapManager {
                         return false;
                     }
                     this.layerFeatureManagerDictionary
-                        .get(
-                            layer as VectorLayer<
-                                VectorSource<LineString | Point>
-                            >
-                        )!
-                        .onFeatureClicked(
-                            event,
-                            feature as Feature<LineString | Point>
-                        );
+                        .get(layer as VectorLayer<VectorSource>)!
+                        .onFeatureClicked(event, feature as Feature);
                     // we only want the top one -> a truthy return breaks this loop
                     return true;
                 },
@@ -473,15 +467,11 @@ export class OlMapManager {
                 }
                 // We stop propagating the event as soon as the onFeatureDropped function returns true
                 return this.layerFeatureManagerDictionary
-                    .get(
-                        layer as VectorLayer<VectorSource<LineString | Point>>
-                    )!
+                    .get(layer as VectorLayer<VectorSource>)!
                     .onFeatureDrop(
                         event,
-                        event.features.getArray()[0] as Feature<
-                            LineString | Point
-                        >,
-                        feature as Feature<Point>
+                        event.features.getArray()[0]!,
+                        feature as Feature
                     );
             });
         });
@@ -528,20 +518,22 @@ export class OlMapManager {
             return;
         }
         const minX = Math.min(
-            ...viewports.map((viewport) => viewport.position.x)
+            ...viewports.map((viewport) => currentCoordinatesOf(viewport).x)
         );
         const minY = Math.min(
             ...viewports.map(
-                (viewport) => viewport.position.y - viewport.size.height
+                (viewport) =>
+                    currentCoordinatesOf(viewport).y - viewport.size.height
             )
         );
         const maxX = Math.max(
             ...viewports.map(
-                (viewport) => viewport.position.x + viewport.size.width
+                (viewport) =>
+                    currentCoordinatesOf(viewport).x + viewport.size.width
             )
         );
         const maxY = Math.max(
-            ...viewports.map((viewport) => viewport.position.y)
+            ...viewports.map((viewport) => currentCoordinatesOf(viewport).y)
         );
         const padding = 25;
         view.fit([minX, minY, maxX, maxY], {
