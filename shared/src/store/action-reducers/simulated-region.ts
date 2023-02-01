@@ -10,7 +10,6 @@ import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
-import { removeElementPosition } from './utils/spatial-elements';
 
 export class AddSimulatedRegionAction implements Action {
     @IsValue('[SimulatedRegion] Add simulated region' as const)
@@ -174,26 +173,14 @@ export namespace SimulatedRegionActionReducers {
                     elementToBeAddedId
                 );
 
-                switch (elementToBeAddedType) {
-                    case 'material':
-                    case 'patient':
-                    case 'personnel':
-                        removeElementPosition(
-                            draftState,
-                            elementToBeAddedType,
-                            elementToBeAddedId
-                        );
-                        break;
-                    case 'vehicle':
-                        break;
-                }
-                // FIXME: In the old broken positioning logic, this implies the personnel is in their vehicle instead of our simulatedRegion.
-                element.position = undefined;
-
-                element.metaPosition = {
-                    type: 'simulatedRegion',
-                    simulatedRegionId,
-                };
+                changePosition(
+                    element,
+                    {
+                        type: 'simulatedRegion',
+                        simulatedRegionId,
+                    },
+                    draftState
+                );
 
                 return draftState;
             },

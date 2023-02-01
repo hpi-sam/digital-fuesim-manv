@@ -130,8 +130,9 @@ export class SimulatedRegionFeatureManager
                 },
                 true
             );
+            return true;
         }
-        return true;
+        return false;
     }
 
     public override onFeatureClicked(
