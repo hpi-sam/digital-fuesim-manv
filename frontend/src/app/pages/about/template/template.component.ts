@@ -16,7 +16,7 @@ export class TemplateComponent implements OnDestroy, OnInit {
     /**
      * The title of the page shown as h2 headline.
      */
-    @Input() title = '';
+    @Input() pageTitle = '';
 
     /**
      * The filename in the assets/about/ directory where the page content should be loaded from.
