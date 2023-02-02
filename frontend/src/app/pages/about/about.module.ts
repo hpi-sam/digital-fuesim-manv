@@ -9,7 +9,12 @@ import { LicenseComponent } from './license/license.component';
 import { TemplateComponent } from './template/template.component';
 
 @NgModule({
-    declarations: [ImprintComponent, PrivacyComponent, LicenseComponent, TemplateComponent],
+    declarations: [
+        ImprintComponent,
+        PrivacyComponent,
+        LicenseComponent,
+        TemplateComponent,
+    ],
     imports: [CommonModule, AboutRoutingModule, SharedModule],
 })
 export class AboutModule {}
