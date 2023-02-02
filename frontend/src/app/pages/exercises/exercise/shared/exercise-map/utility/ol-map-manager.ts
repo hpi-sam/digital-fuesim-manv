@@ -436,13 +436,11 @@ export class OlMapManager {
             }
         });
 
-        // Automatically close the popup
         translateInteraction.on('translating', (event) => {
             if (
                 event.coordinate[0] === event.startCoordinate[0] &&
                 event.coordinate[1] === event.startCoordinate[1]
             ) {
-                return;
             }
         });
 
