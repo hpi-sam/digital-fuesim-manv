@@ -11,7 +11,7 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class TemplateComponent implements OnDestroy, OnInit {
     private readonly destroy$ = new Subject<void>();
-    imprintContent?: string;
+    content?: string;
 
     /**
      * The title of the page shown as h2 headline.
@@ -32,7 +32,7 @@ export class TemplateComponent implements OnDestroy, OnInit {
         this.http
             .get(`assets/about/${this.contentFile}`, { responseType: 'text' })
             .pipe(takeUntil(this.destroy$))
-            .subscribe((response) => (this.imprintContent = response));
+            .subscribe((response) => (this.content = response));
     }
 
     ngOnDestroy(): void {

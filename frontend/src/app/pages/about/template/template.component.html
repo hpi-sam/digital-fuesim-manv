@@ -6,16 +6,18 @@
         <a (click)="back($event)" href="#">Zurück zur vorherigen Seite</a>
     </p>
 
-    <div *ngIf="imprintContent" [innerHTML]="imprintContent"></div>
-    <p *ngIf="!imprintContent">
-        Sie können den Inhalt der Seite unter
-        <code>frontend/src/assets/about/{{ contentFile }}</code> bearbeiten.
-    </p>
-    <p>
-        Falls Sie das Docker-Deployment verwenden, finden Sie in der
-        <code>docker-compose.yml</code> Beispiel-Datei eine Anleitung, wie Sie
-        Inhalte für diese Seite bereitstellen können.
-    </p>
+    <div *ngIf="content; else placeholder" [innerHTML]="content"></div>
+    <ng-template #placeholder>
+        <p>
+            Sie können den Inhalt der Seite unter
+            <code>frontend/src/assets/about/{{ contentFile }}</code> bearbeiten.
+        </p>
+        <p>
+            Falls Sie das Docker-Deployment verwenden, finden Sie in der
+            <code>docker-compose.yml</code> Beispiel-Datei eine Anleitung, wie
+            Sie Inhalte für diese Seite bereitstellen können.
+        </p>
+    </ng-template>
 
     <div class="my-4 p-2 bg-light rounded-3">
         <app-footer />
