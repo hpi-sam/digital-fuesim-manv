@@ -139,6 +139,7 @@ export class OlMapManager {
         // The order in this array represents the order of the layers on the map (last element is on top)
         const featureLayers = [
             deleteFeatureLayer,
+            simulatedRegionLayer,
             mapImagesLayer,
             transferLinesLayer,
             transferPointLayer,
@@ -148,7 +149,6 @@ export class OlMapManager {
             personnelLayer,
             materialLayer,
             viewportLayer,
-            simulatedRegionLayer,
         ];
 
         // Interactions
@@ -460,20 +460,31 @@ export class OlMapManager {
     private registerDropHandler(translateInteraction: TranslateInteraction) {
         translateInteraction.on('translateend', (event) => {
             const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
-            this.olMap.forEachFeatureAtPixel(pixel, (feature, layer) => {
-                // Skip layer when unset
-                if (layer === null) {
-                    return;
+            const droppedFeature: Feature = event.features.getArray()[0]!;
+
+            this.olMap.forEachFeatureAtPixel(
+                pixel,
+                (droppedOnFeature, layer) => {
+                    // Skip layer when unset
+                    if (layer === null) {
+                        return;
+                    }
+
+                    // Do not drop a feature on itself
+                    if (droppedFeature === droppedOnFeature) {
+                        return;
+                    }
+
+                    // We stop propagating the event as soon as the onFeatureDropped function returns true
+                    return this.layerFeatureManagerDictionary
+                        .get(layer as VectorLayer<VectorSource>)!
+                        .onFeatureDrop(
+                            event,
+                            droppedFeature,
+                            droppedOnFeature as Feature
+                        );
                 }
-                // We stop propagating the event as soon as the onFeatureDropped function returns true
-                return this.layerFeatureManagerDictionary
-                    .get(layer as VectorLayer<VectorSource>)!
-                    .onFeatureDrop(
-                        event,
-                        event.features.getArray()[0]!,
-                        feature as Feature
-                    );
-            });
+            );
         });
     }
 
