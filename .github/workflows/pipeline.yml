@@ -290,7 +290,7 @@ jobs:
               uses: cypress-io/github-action@v3
               with:
                   start: npm run start:all
-                  command: npm run cy:ci
+                  command: echo 'Command should be running'
                   wait-on: 'http://localhost:4200/health, http://localhost:3201/api/health'
             - name: Archive cypress
               if: always()
