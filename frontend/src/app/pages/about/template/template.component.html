@@ -6,7 +6,10 @@
         <a (click)="back($event)" href="#">Zurück zur vorherigen Seite</a>
     </p>
 
-    <div *ngIf="content; else placeholder" [innerHTML]="content"></div>
+    <div
+        *ngIf="content$ | async; else placeholder"
+        [innerHTML]="content$ | async"
+    ></div>
     <ng-template #placeholder>
         <p>
             Sie können den Inhalt der Seite unter
