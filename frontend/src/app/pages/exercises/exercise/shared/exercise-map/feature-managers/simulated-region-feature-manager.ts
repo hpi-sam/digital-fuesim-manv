@@ -2,6 +2,7 @@ import type { Store } from '@ngrx/store';
 import type { UUID, SimulatedRegion } from 'digital-fuesim-manv-shared';
 import { MapCoordinates, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
+import type { TranslateEvent } from 'ol/interaction/Translate';
 import type { Polygon } from 'ol/geom';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
@@ -100,6 +101,38 @@ export class SimulatedRegionFeatureManager
         }
         // If the style has updated, we need to redraw the feature
         elementFeature.changed();
+    }
+
+    public override onFeatureDrop(
+        dropEvent: TranslateEvent,
+        droppedFeature: Feature<any>,
+        droppedOnFeature: Feature<any>
+    ) {
+        const droppedElement = this.getElementFromFeature(droppedFeature);
+        const droppedOnSimulatedRegion = this.getElementFromFeature(
+            droppedOnFeature
+        ) as SimulatedRegion;
+        if (!droppedElement || !droppedOnSimulatedRegion) {
+            console.error('Could not find element for the features');
+            return false;
+        }
+        if (
+            ['vehicle', 'personnel', 'material', 'patient'].includes(
+                droppedElement.type
+            )
+        ) {
+            this.exerciseService.proposeAction(
+                {
+                    type: '[SimulatedRegion] Add Element',
+                    simulatedRegionId: droppedOnSimulatedRegion.id,
+                    elementToBeAddedType: droppedElement.type,
+                    elementToBeAddedId: droppedElement.id,
+                },
+                true
+            );
+            return true;
+        }
+        return false;
     }
 
     public override onFeatureClicked(
