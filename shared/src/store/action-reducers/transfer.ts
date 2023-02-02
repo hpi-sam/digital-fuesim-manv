@@ -143,7 +143,7 @@ export namespace TransferActionReducers {
 
             // Get the duration
             let duration: number;
-            if (startPoint.type === 'transferPoint') {
+            if (startPoint.type === 'transferStartPoint') {
                 const transferStartPoint = getElement(
                     draftState,
                     'transferPoint',
