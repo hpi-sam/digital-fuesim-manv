@@ -29,62 +29,50 @@ export const renameStartPointTypes19: Migration = {
         const typedState = state as {
             materials: {
                 [materialId: UUID]: {
-                    position:
-                        | {
-                              type: 'transfer';
-                              transfer: {
-                                  startPoint: {
-                                      type:
-                                          | 'alarmGroup'
-                                          | 'alarmGroupStartPoint'
-                                          | 'transferPoint'
-                                          | 'transferStartPoint';
-                                  };
-                              };
-                          }
-                        | { type: 'coordinates' }
-                        | { type: 'simulatedRegion' }
-                        | { type: 'vehicle' };
+                    position: {
+                        type: 'transfer';
+                        transfer: {
+                            startPoint: {
+                                type:
+                                    | 'alarmGroup'
+                                    | 'alarmGroupStartPoint'
+                                    | 'transferPoint'
+                                    | 'transferStartPoint';
+                            };
+                        };
+                    };
                 };
             };
             vehicles: {
                 [vehicleId: UUID]: {
-                    position:
-                        | {
-                              type: 'transfer';
-                              transfer: {
-                                  startPoint: {
-                                      type:
-                                          | 'alarmGroup'
-                                          | 'alarmGroupStartPoint'
-                                          | 'transferPoint'
-                                          | 'transferStartPoint';
-                                  };
-                              };
-                          }
-                        | { type: 'coordinates' }
-                        | { type: 'simulatedRegion' }
-                        | { type: 'vehicle' };
+                    position: {
+                        type: 'transfer';
+                        transfer: {
+                            startPoint: {
+                                type:
+                                    | 'alarmGroup'
+                                    | 'alarmGroupStartPoint'
+                                    | 'transferPoint'
+                                    | 'transferStartPoint';
+                            };
+                        };
+                    };
                 };
             };
             personnel: {
                 [personnelId: UUID]: {
-                    position:
-                        | {
-                              type: 'transfer';
-                              transfer: {
-                                  startPoint: {
-                                      type:
-                                          | 'alarmGroup'
-                                          | 'alarmGroupStartPoint'
-                                          | 'transferPoint'
-                                          | 'transferStartPoint';
-                                  };
-                              };
-                          }
-                        | { type: 'coordinates' }
-                        | { type: 'simulatedRegion' }
-                        | { type: 'vehicle' };
+                    position: {
+                        type: 'transfer';
+                        transfer: {
+                            startPoint: {
+                                type:
+                                    | 'alarmGroup'
+                                    | 'alarmGroupStartPoint'
+                                    | 'transferPoint'
+                                    | 'transferStartPoint';
+                            };
+                        };
+                    };
                 };
             };
         };
