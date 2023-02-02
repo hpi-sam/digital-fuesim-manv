@@ -93,6 +93,14 @@ export const addMetaPosition16: Migration = {
                             type: 'vehicle',
                             vehicleId: personnel.vehicleId,
                         };
+                    } else {
+                        personnel.metaPosition = {
+                            type: 'coordinates',
+                            position: {
+                                x: 0,
+                                y: 0,
+                            },
+                        };
                     }
                 }
 
@@ -109,6 +117,14 @@ export const addMetaPosition16: Migration = {
                         material.metaPosition = {
                             type: 'vehicle',
                             vehicleId: material.vehicleId,
+                        };
+                    } else {
+                        material.metaPosition = {
+                            type: 'coordinates',
+                            position: {
+                                x: 0,
+                                y: 0,
+                            },
                         };
                     }
                 }
