@@ -7,8 +7,8 @@ import { getCreate } from './get-create';
 export type StartPoint = AlarmGroupStartPoint | TransferStartPoint;
 
 export class TransferStartPoint {
-    @IsValue('transferPoint' as const)
-    public readonly type = 'transferPoint';
+    @IsValue('transferStartPoint' as const)
+    public readonly type = 'transferStartPoint';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly transferPointId: UUID;
@@ -24,8 +24,8 @@ export class TransferStartPoint {
 }
 
 export class AlarmGroupStartPoint {
-    @IsValue('alarmGroup' as const)
-    public readonly type = 'alarmGroup';
+    @IsValue('alarmGroupStartPoint' as const)
+    public readonly type = 'alarmGroupStartPoint';
 
     @IsString()
     public readonly alarmGroupName: string;
@@ -51,11 +51,11 @@ export const startPointTypeOptions: TypeOptions = {
         property: 'type',
         subTypes: [
             {
-                name: 'alarmGroup',
+                name: 'alarmGroupStartPoint',
                 value: AlarmGroupStartPoint,
             },
             {
-                name: 'transferPoint',
+                name: 'transferStartPoint',
                 value: TransferStartPoint,
             },
         ],
