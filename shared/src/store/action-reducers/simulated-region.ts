@@ -1,7 +1,12 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { SimulatedRegion } from '../../models';
-import { MapCoordinates, MapPosition, Size } from '../../models/utils';
+import {
+    MapCoordinates,
+    MapPosition,
+    SimulatedRegionPosition,
+    Size,
+} from '../../models/utils';
 import {
     changePosition,
     changePositionWithId,
@@ -175,10 +180,7 @@ export namespace SimulatedRegionActionReducers {
 
                 changePosition(
                     element,
-                    {
-                        type: 'simulatedRegion',
-                        simulatedRegionId,
-                    },
+                    SimulatedRegionPosition.create(simulatedRegionId),
                     draftState
                 );
 
