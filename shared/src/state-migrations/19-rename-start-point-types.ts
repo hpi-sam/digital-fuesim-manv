@@ -1,7 +1,7 @@
 import type { UUID } from '../utils';
 import type { Migration } from './migration-functions';
 
-export const replacePositionWithMetaPosition18: Migration = {
+export const renameStartPointTypes19: Migration = {
     actions: (_initialState, actions) => {
         actions.forEach((action) => {
             if (
