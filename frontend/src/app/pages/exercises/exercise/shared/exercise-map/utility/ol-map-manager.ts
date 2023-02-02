@@ -306,7 +306,7 @@ export class OlMapManager {
             this.store.select(selectVisibleSimulatedRegions)
         );
 
-        this.registerPopupTriggers(translateInteraction);
+        this.registerPopupTriggers();
         this.registerDropHandler(translateInteraction);
         this.registerViewportRestriction();
 
@@ -411,7 +411,7 @@ export class OlMapManager {
             });
     }
 
-    private registerPopupTriggers(translateInteraction: TranslateInteraction) {
+    private registerPopupTriggers() {
         this.olMap.on('singleclick', (event) => {
             if (!this.popupsEnabled) {
                 return;
@@ -433,14 +433,6 @@ export class OlMapManager {
             );
             if (!this.olMap!.hasFeatureAtPixel(event.pixel)) {
                 this.changePopup$.next(undefined);
-            }
-        });
-
-        translateInteraction.on('translating', (event) => {
-            if (
-                event.coordinate[0] === event.startCoordinate[0] &&
-                event.coordinate[1] === event.startCoordinate[1]
-            ) {
             }
         });
 
