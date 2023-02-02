@@ -5,11 +5,11 @@ import { Component, Input } from '@angular/core';
 import type { Observable } from 'rxjs';
 
 @Component({
-    selector: 'app-template',
-    templateUrl: './template.component.html',
-    styleUrls: ['./template.component.scss'],
+    selector: 'app-about-placeholder',
+    templateUrl: './about-placeholder.component.html',
+    styleUrls: ['./about-placeholder.component.scss'],
 })
-export class TemplateComponent implements OnInit {
+export class AboutPlaceholderComponent implements OnInit {
     content$!: Observable<string>;
 
     /**

@@ -6,14 +6,14 @@ import { AboutRoutingModule } from './about-routing.module';
 import { ImprintComponent } from './imprint/imprint.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { LicenseComponent } from './license/license.component';
-import { TemplateComponent } from './template/template.component';
+import { AboutPlaceholderComponent } from './about-placeholder/about-placeholder.component';
 
 @NgModule({
     declarations: [
         ImprintComponent,
         PrivacyComponent,
         LicenseComponent,
-        TemplateComponent,
+        AboutPlaceholderComponent,
     ],
     imports: [CommonModule, AboutRoutingModule, SharedModule],
 })
