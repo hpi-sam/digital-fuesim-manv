@@ -41,6 +41,11 @@ export class TemplateComponent implements OnDestroy, OnInit {
 
     back(event: MouseEvent): void {
         event.preventDefault();
-        this.location.back();
+
+        if (history.length > 1) {
+            this.location.back();
+        } else {
+            window.close();
+        }
     }
 }
