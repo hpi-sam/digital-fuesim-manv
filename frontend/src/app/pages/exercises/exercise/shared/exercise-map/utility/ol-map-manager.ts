@@ -444,10 +444,6 @@ export class OlMapManager {
             ) {
                 return;
             }
-            this.changePopup$.next(undefined);
-        });
-        this.olMap.getView().on(['change:resolution', 'change:center'], () => {
-            this.changePopup$.next(undefined);
         });
 
         this.openLayersContainer.addEventListener('keydown', (event) => {
