@@ -23,6 +23,7 @@ import {
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
+import Package from 'package.json';
 
 @Component({
     selector: 'app-exercise',
@@ -38,6 +39,8 @@ export class ExerciseComponent implements OnDestroy {
     public readonly participantId$ = this.store.select(selectParticipantId);
     public readonly timeConstraints$ = this.store.select(selectTimeConstraints);
     public readonly ownClient$ = this.store.select(selectOwnClient);
+
+    readonly version: string = Package.version;
 
     constructor(
         private readonly store: Store<AppState>,
