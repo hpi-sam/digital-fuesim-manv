@@ -5,13 +5,17 @@ This software is a digital implementation of the "FÃ¼Sim MANV"/"FueSim MANV" (FÃ
 The software is licensed with the GNU Affero General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
-Some files are explicitly excluded and have their own license. These files are images that are used in the software. This exlusion is not allowed to be exploited, e.g. to enhance the features of this software and every image must be easily replacable by a person wanting to use this software, by just replacing the URL link for each image in an export created via the user interface of this software. The individual licenses for the images can be looked up in frontend/src/assets/image-sources.md. This path to the images can be changed in this file (LICENSE-README), if the structure of this software needs it, but must be included, as long as they are images.
+Exceptions apply to image files in the frontend/src/assets folder, which may be covered by and therefore distributed under different licenses. The individual license for each image can be found in frontend/src/assets/image-sources.md. Files added to this project may only use this exception if these files serve the only purpose of being displayed and will only be parsed for the purpose of displaying them. Especially, you must not use this exception for source code files. Another exception exists for datasets. Datasets are files that include no new features and just different compositions allowed through the source code given template class. Datasets must always be in human readable formats (for example csv, JSON, txt). Datasets are for example different patients, different vehicles, different personnel. These datasets are not allowed to create any new features or enhance the software in any way, as to create elements that can be part of an export and are importable into the distributed source code (this software) under the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version. Therefore any dataset must be able to be part of an export and must be able to be imported into this software that must be made available under the terms of GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+All exceptions can be part of another license chosen by the author, but using this software with such exceptions allows everyone for testing purposes to inspect these exceptions and test if they conform to the given restrictions (rules) given to them, for example can datasets be exported by a user and imported for testing purpose only or read with a program, to check they comply to the restrictions. For this the user that uses such datasets in a software must have the permission of the author to give the users of this software these rights.
+
 We have decided to not have the license header in every file, as this LICENSE-README file should be enough (https://www.gnu.org/licenses/gpl-howto.html.en) to make it clear that the whole software/program is under the chosen license. But if it will become necessary this option is possible. Still every file in this repository/folder and subfolders are under the mentioned license, except the mentioned exluded images.
 
 Fuesim MANV is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+(at your option) any later version. Exceptions are mentioned in this file (LICENSE-README).
 
 Fuesim MANV is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
