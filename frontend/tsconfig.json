@@ -24,7 +24,8 @@
         "lib": ["ES2022", "dom"],
         // needed for https://github.com/typescript-eslint/typescript-eslint/issues/2559#issuecomment-692882427
         "emitDecoratorMetadata": true,
-        "useDefineForClassFields": false
+        "useDefineForClassFields": false,
+        "resolveJsonModule": true
     },
     // this fixes jest globals in .spec.ts being overwritten by cypress globals
     "include": ["src"],
