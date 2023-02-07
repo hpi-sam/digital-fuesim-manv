@@ -15,6 +15,7 @@ import { LandingPageModule } from './pages/landing-page/landing-page.module';
 import { SharedModule } from './shared/shared.module';
 import { appReducers } from './state/app.reducer';
 import type { AppState } from './state/app.state';
+import { AboutModule } from './pages/about/about.module';
 
 @NgModule({
     declarations: [AppComponent, HealthPageComponent],
@@ -30,6 +31,7 @@ import type { AppState } from './state/app.state';
         SharedModule,
         ConfirmationModalModule,
         MessagesModule,
+        AboutModule,
     ],
     providers: [],
     bootstrap: [AppComponent],
