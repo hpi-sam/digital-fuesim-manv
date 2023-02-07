@@ -121,17 +121,6 @@ export class OlMapManager {
                     })
                 );
             });
-        const transferPointLayer = this.createElementLayer(600);
-        const vehicleLayer = this.createElementLayer(1000);
-        const cateringLinesLayer = this.createElementLayer<LineString>();
-        const transferLinesLayer = this.createElementLayer<LineString>();
-        const patientLayer = this.createElementLayer();
-        const personnelLayer = this.createElementLayer();
-        const materialLayer = this.createElementLayer();
-        const viewportLayer = this.createElementLayer<Polygon>();
-        const simulatedRegionLayer = this.createElementLayer<Polygon>();
-        const mapImagesLayer = this.createElementLayer(10_000);
-        const deleteFeatureLayer = this.createElementLayer();
         this.popupOverlay = new Overlay({
             element: this.popoverContainer,
         });
@@ -165,7 +154,7 @@ export class OlMapManager {
             },
         });
         const resizeViewportInteraction = new ResizeRectangleInteraction(
-            viewportLayer.getSource()!
+            viewportFeatureManager.layer.getSource()!
         );
         const resizeSimulatedRegionInteraction = new ResizeRectangleInteraction(
             simulatedRegionLayer.getSource()!
@@ -204,105 +193,110 @@ export class OlMapManager {
         });
 
         // FeatureManagers
+
+        const transferLinesFeatureManager = new TransferLinesFeatureManager();
+        const transferPointFeatureManager = new TransferPointFeatureManager(
+            this.olMap,
+            this.store,
+            this.exerciseService
+        );
+        const patientFeatureManager = new PatientFeatureManager(
+            this.store,
+            this.olMap,
+            this.exerciseService
+        );
+        const vehicleFeatureManager = new VehicleFeatureManager(
+            this.olMap,
+            this.exerciseService
+        );
+        const personnelFeatureManager = new PersonnelFeatureManager(
+            this.olMap,
+            this.exerciseService
+        );
+        const materialFeatureManager = new MaterialFeatureManager(
+            this.olMap,
+            this.exerciseService
+        );
+        const mapImageFeatureManager = new MapImageFeatureManager(
+            this.olMap,
+            this.exerciseService,
+            this.store
+        );
+        const cateringLinesFeatureManager = new CateringLinesFeatureManager();
+
+        const viewportFeatureManager = new ViewportFeatureManager(
+            this.olMap,
+            this.exerciseService,
+            this.store
+        );
+        const simulatedRegionFeatureManager = new SimulatedRegionFeatureManager(
+            this.olMap,
+            this.exerciseService,
+            this.store
+        );
+
         if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
             this.registerFeatureElementManager(
-                new TransferLinesFeatureManager(transferLinesLayer),
+                transferLinesFeatureManager,
                 this.store.select(selectTransferLines)
             );
             transferLinesService.displayTransferLines$.subscribe((display) => {
-                transferLinesLayer.setVisible(display);
+                transferLinesFeatureManager.layer.setVisible(display);
             });
 
             const deleteHelper = new DeleteFeatureManager(
                 this.store,
-                deleteFeatureLayer,
                 this.olMap,
                 this.exerciseService
             );
             this.layerFeatureManagerDictionary.set(
-                deleteFeatureLayer,
+                deleteHelper.layer,
                 deleteHelper
             );
         }
+
         this.registerFeatureElementManager(
-            new TransferPointFeatureManager(
-                this.olMap,
-                transferPointLayer,
-                this.store,
-                this.exerciseService
-            ),
+            transferPointFeatureManager,
             this.store.select(selectVisibleTransferPoints)
         );
 
         this.registerFeatureElementManager(
-            new PatientFeatureManager(
-                this.store,
-                this.olMap,
-                patientLayer,
-                this.exerciseService
-            ),
+            patientFeatureManager,
             this.store.select(selectVisiblePatients)
         );
 
         this.registerFeatureElementManager(
-            new VehicleFeatureManager(
-                this.olMap,
-                vehicleLayer,
-                this.exerciseService
-            ),
+            vehicleFeatureManager,
             this.store.select(selectVisibleVehicles)
         );
 
         this.registerFeatureElementManager(
-            new PersonnelFeatureManager(
-                this.olMap,
-                personnelLayer,
-                this.exerciseService
-            ),
+            personnelFeatureManager,
             this.store.select(selectVisiblePersonnel)
         );
 
         this.registerFeatureElementManager(
-            new MaterialFeatureManager(
-                this.olMap,
-                materialLayer,
-                this.exerciseService
-            ),
+            materialFeatureManager,
             this.store.select(selectVisibleMaterials)
         );
 
         this.registerFeatureElementManager(
-            new MapImageFeatureManager(
-                this.olMap,
-                mapImagesLayer,
-                this.exerciseService,
-                this.store
-            ),
+            mapImageFeatureManager,
             this.store.select(selectVisibleMapImages)
         );
 
         this.registerFeatureElementManager(
-            new CateringLinesFeatureManager(cateringLinesLayer),
+            cateringLinesFeatureManager,
             this.store.select(selectVisibleCateringLines)
         );
 
         this.registerFeatureElementManager(
-            new ViewportFeatureManager(
-                this.olMap,
-                viewportLayer,
-                this.exerciseService,
-                this.store
-            ),
+            viewportFeatureManager,
             this.store.select(selectVisibleViewports)
         );
 
         this.registerFeatureElementManager(
-            new SimulatedRegionFeatureManager(
-                this.olMap,
-                simulatedRegionLayer,
-                this.exerciseService,
-                this.store
-            ),
+            simulatedRegionFeatureManager,
             this.store.select(selectVisibleSimulatedRegions)
         );
 
@@ -471,21 +465,6 @@ export class OlMapManager {
                         );
                 }
             );
-        });
-    }
-
-    /**
-     * @param renderBuffer The size of the largest symbol, line width or label on the highest zoom level.
-     */
-    private createElementLayer<LayerGeometry extends Geometry = Point>(
-        renderBuffer = 250
-    ) {
-        return new VectorLayer({
-            // These two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
-            updateWhileAnimating: true,
-            updateWhileInteracting: true,
-            renderBuffer,
-            source: new VectorSource<LayerGeometry>(),
         });
     }
 

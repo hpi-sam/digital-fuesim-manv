@@ -5,9 +5,9 @@ import { Feature } from 'ol';
 import { getTopRight } from 'ol/extent';
 import { Point } from 'ol/geom';
 import type { TranslateEvent } from 'ol/interaction/Translate';
-import type VectorLayer from 'ol/layer/Vector';
+import VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
-import type VectorSource from 'ol/source/Vector';
+import VectorSource from 'ol/source/Vector';
 import Icon from 'ol/style/Icon';
 import Style from 'ol/style/Style';
 import type { ExerciseService } from 'src/app/core/exercise.service';
@@ -22,12 +22,19 @@ function calculateTopRightViewPoint(view: View) {
 }
 
 export class DeleteFeatureManager implements FeatureManager<Point> {
+    layer: VectorLayer<VectorSource<Point>>;
     constructor(
         private readonly store: Store<AppState>,
-        public readonly layer: VectorLayer<VectorSource<Point>>,
         private readonly olMap: OlMap,
         private readonly exerciseService: ExerciseService
     ) {
+        this.layer = new VectorLayer({
+            // These two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
+            updateWhileAnimating: true,
+            updateWhileInteracting: true,
+            renderBuffer: 250,
+            source: new VectorSource<Point>(),
+        });
         this.layer.setStyle(
             new Style({
                 image: new Icon({

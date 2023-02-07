@@ -14,9 +14,11 @@ export class TransferLinesFeatureManager
     extends ElementManager<TransferLine, LineString>
     implements FeatureManager<LineString>
 {
-    constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {
+    public readonly layer: VectorLayer<VectorSource<LineString>>;
+    constructor() {
         super();
-        layer.setStyle(
+        this.layer = this.createElementLayer<LineString>();
+        this.layer.setStyle(
             new Style({
                 stroke: new Stroke({
                     color: '#fd7e14',

@@ -33,12 +33,10 @@ export class VehicleFeatureManager extends MoveableFeatureManager<Vehicle> {
 
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<Point>>,
         private readonly exerciseService: ExerciseService
     ) {
         super(
             olMap,
-            layer,
             (targetPosition, vehicle) => {
                 exerciseService.proposeAction({
                     type: '[Vehicle] Move vehicle',
@@ -46,7 +44,8 @@ export class VehicleFeatureManager extends MoveableFeatureManager<Vehicle> {
                     targetPosition,
                 });
             },
-            new PointGeometryHelper()
+            new PointGeometryHelper(),
+            1000
         );
         this.layer.setStyle((feature, resolution) => [
             this.nameStyleHelper.getStyle(feature as Feature, resolution),

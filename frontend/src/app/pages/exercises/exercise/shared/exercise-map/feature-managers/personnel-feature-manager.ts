@@ -31,14 +31,9 @@ export class PersonnelFeatureManager extends MoveableFeatureManager<Personnel> {
 
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
-    constructor(
-        olMap: OlMap,
-        layer: VectorLayer<VectorSource<Point>>,
-        exerciseService: ExerciseService
-    ) {
+    constructor(olMap: OlMap, exerciseService: ExerciseService) {
         super(
             olMap,
-            layer,
             (targetPosition, personnel) => {
                 exerciseService.proposeAction({
                     type: '[Personnel] Move personnel',

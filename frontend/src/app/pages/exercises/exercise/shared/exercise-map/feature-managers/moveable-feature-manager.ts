@@ -16,6 +16,7 @@ import type {
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { TranslateInteraction } from '../utility/translate-interaction';
 import { ElementManager } from './element-manager';
+import { Geometry } from 'ol/geom';
 
 /**
  * Manages the position of the element.
@@ -30,18 +31,24 @@ export abstract class MoveableFeatureManager<
     implements FeatureManager<FeatureType>
 {
     public readonly togglePopup$ = new Subject<OpenPopupOptions<any>>();
-    protected readonly movementAnimator: MovementAnimator<FeatureType>;
+    protected movementAnimator: MovementAnimator<FeatureType>;
+    public layer: VectorLayer<VectorSource<FeatureType>>;
     constructor(
         protected readonly olMap: OlMap,
-        public readonly layer: VectorLayer<VectorSource<FeatureType>>,
         private readonly proposeMovementAction: (
             newPosition: Positions<FeatureType>,
             element: Element
         ) => void,
-        protected readonly geometryHelper: GeometryHelper<FeatureType, Element>
+        protected readonly geometryHelper: GeometryHelper<FeatureType, Element>,
+        renderBuffer?: number
     ) {
         super();
-        this.movementAnimator = new MovementAnimator<FeatureType>(
+        this.layer = super.createElementLayer<FeatureType>(renderBuffer);
+        this.movementAnimator = this.createMovementAnimator();
+    }
+
+    createMovementAnimator() {
+        return new MovementAnimator<FeatureType>(
             this.olMap,
             this.layer,
             this.geometryHelper.interpolateCoordinates,

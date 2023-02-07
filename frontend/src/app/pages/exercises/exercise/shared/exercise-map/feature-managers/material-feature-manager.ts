@@ -1,6 +1,7 @@
 import type { Material, UUID } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
+import { LineString } from 'ol/geom';
 import type Point from 'ol/geom/Point';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
@@ -11,6 +12,7 @@ import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
+import { ElementManager } from './element-manager';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
@@ -31,14 +33,9 @@ export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
 
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
-    constructor(
-        olMap: OlMap,
-        layer: VectorLayer<VectorSource<Point>>,
-        exerciseService: ExerciseService
-    ) {
+    constructor(olMap: OlMap, exerciseService: ExerciseService) {
         super(
             olMap,
-            layer,
             (targetPosition, material) => {
                 exerciseService.proposeAction({
                     type: '[Material] Move material',

@@ -4,9 +4,7 @@ import { TransferPoint, TransferStartPoint } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
 import type { TranslateEvent } from 'ol/interaction/Translate';
-import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
-import type VectorSource from 'ol/source/Vector';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
@@ -24,13 +22,11 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
 
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<Point>>,
         private readonly store: Store<AppState>,
         private readonly exerciseService: ExerciseService
     ) {
         super(
             olMap,
-            layer,
             (targetPosition, transferPoint) => {
                 exerciseService.proposeAction({
                     type: '[TransferPoint] Move TransferPoint',
@@ -38,9 +34,10 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
                     targetPosition,
                 });
             },
-            new PointGeometryHelper()
+            new PointGeometryHelper(),
+            600
         );
-        layer.setStyle((thisFeature, currentZoom) => [
+        this.layer.setStyle((thisFeature, currentZoom) => [
             this.imageStyleHelper.getStyle(
                 thisFeature as Feature<Point>,
                 currentZoom

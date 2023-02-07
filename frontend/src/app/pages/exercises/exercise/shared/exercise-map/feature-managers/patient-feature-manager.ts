@@ -65,12 +65,10 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
     constructor(
         private readonly store: Store<AppState>,
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<Point>>,
         exerciseService: ExerciseService
     ) {
         super(
             olMap,
-            layer,
             (targetPosition, patient) => {
                 exerciseService.proposeAction({
                     type: '[Patient] Move patient',

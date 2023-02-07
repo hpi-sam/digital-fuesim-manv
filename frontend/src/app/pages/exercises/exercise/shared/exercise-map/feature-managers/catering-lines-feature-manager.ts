@@ -20,10 +20,12 @@ export class CateringLinesFeatureManager
         }),
         0.05
     );
+    public readonly layer: VectorLayer<VectorSource<LineString>>;
 
-    constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {
+    constructor() {
         super();
-        layer.setStyle((feature, currentZoom) =>
+        this.layer = super.createElementLayer<LineString>();
+        this.layer.setStyle((feature, currentZoom) =>
             this.lineStyleHelper.getStyle(feature as Feature, currentZoom)
         );
     }

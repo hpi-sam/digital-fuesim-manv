@@ -36,13 +36,11 @@ export class ViewportFeatureManager
 {
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<Polygon>>,
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {
         super(
             olMap,
-            layer,
             (targetPositions, viewport) => {
                 exerciseService.proposeAction({
                     type: '[Viewport] Move viewport',

@@ -27,13 +27,11 @@ export class SimulatedRegionFeatureManager
 {
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<Polygon>>,
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {
         super(
             olMap,
-            layer,
             (targetPositions, simulatedRegion) => {
                 exerciseService.proposeAction({
                     type: '[SimulatedRegion] Move simulated region',

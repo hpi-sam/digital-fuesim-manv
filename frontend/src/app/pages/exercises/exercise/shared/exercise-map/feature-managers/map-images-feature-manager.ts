@@ -23,13 +23,11 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
 
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<Point>>,
         exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {
         super(
             olMap,
-            layer,
             (targetPosition, mapImage) => {
                 exerciseService.proposeAction({
                     type: '[MapImage] Move MapImage',
@@ -37,7 +35,8 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
                     targetPosition,
                 });
             },
-            new PointGeometryHelper()
+            new PointGeometryHelper(),
+            10_000
         );
         this.layer.setStyle((feature, resolution) => {
             const style = this.imageStyleHelper.getStyle(
