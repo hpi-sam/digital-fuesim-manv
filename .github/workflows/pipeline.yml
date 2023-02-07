@@ -289,8 +289,9 @@ jobs:
             - name: Run Cypress
               uses: cypress-io/github-action@v5
               with:
-                  start: npm run start:all
-                  command: npm run --prefix frontend -- cy:run
+                  start: cd .. && npm run start:all
+                  command: npm run cy:run
+                  working-directory: frontend
                   wait-on: 'http://localhost:4200/health, http://localhost:3201/api/health'
             - name: Archive cypress
               if: always()
