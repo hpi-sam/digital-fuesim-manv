@@ -5,6 +5,9 @@ import { addMapImageZIndex13 } from './13-add-map-image-zindex';
 import { addPersonnelAndMaterialToState14 } from './14-add-personnel-and-material-templates-to-state';
 import { addSimulatedRegions15 } from './15-add-simulated-regions';
 import { addMetaPosition16 } from './16-add-meta-position';
+import { addTypeProperty17 } from './17-add-type-property';
+import { replacePositionWithMetaPosition18 } from './18-replace-position-with-meta-position';
+import { renameStartPointTypes19 } from './19-rename-start-point-types';
 import { updateEocLog3 } from './3-update-eoc-log';
 import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
 import { removeStatistics5 } from './5-remove-statistics';
@@ -55,4 +58,7 @@ export const migrations: {
     14: addPersonnelAndMaterialToState14,
     15: addSimulatedRegions15,
     16: addMetaPosition16,
+    17: addTypeProperty17,
+    18: replacePositionWithMetaPosition18,
+    19: renameStartPointTypes19,
 };

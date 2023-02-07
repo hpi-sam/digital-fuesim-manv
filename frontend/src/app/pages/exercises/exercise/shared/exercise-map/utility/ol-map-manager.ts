@@ -5,8 +5,10 @@ import type {
     MergeIntersection,
     UUID,
 } from 'digital-fuesim-manv-shared';
+import { currentCoordinatesOf } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
+import type { Polygon } from 'ol/geom';
 import type Geometry from 'ol/geom/Geometry';
 import type LineString from 'ol/geom/LineString';
 import type Point from 'ol/geom/Point';
@@ -126,8 +128,8 @@ export class OlMapManager {
         const patientLayer = this.createElementLayer();
         const personnelLayer = this.createElementLayer();
         const materialLayer = this.createElementLayer();
-        const viewportLayer = this.createElementLayer<LineString>();
-        const simulatedRegionLayer = this.createElementLayer<LineString>();
+        const viewportLayer = this.createElementLayer<Polygon>();
+        const simulatedRegionLayer = this.createElementLayer<Polygon>();
         const mapImagesLayer = this.createElementLayer(10_000);
         const deleteFeatureLayer = this.createElementLayer();
         this.popupOverlay = new Overlay({
@@ -137,6 +139,7 @@ export class OlMapManager {
         // The order in this array represents the order of the layers on the map (last element is on top)
         const featureLayers = [
             deleteFeatureLayer,
+            simulatedRegionLayer,
             mapImagesLayer,
             transferLinesLayer,
             transferPointLayer,
@@ -146,7 +149,6 @@ export class OlMapManager {
             personnelLayer,
             materialLayer,
             viewportLayer,
-            simulatedRegionLayer,
         ];
 
         // Interactions
@@ -355,10 +357,10 @@ export class OlMapManager {
                 const center = view.getCenter()!;
                 const previousZoom = view.getZoom()!;
                 const targetExtent = [
-                    viewport.position.x,
-                    viewport.position.y - viewport.size.height,
-                    viewport.position.x + viewport.size.width,
-                    viewport.position.y,
+                    currentCoordinatesOf(viewport).x,
+                    currentCoordinatesOf(viewport).y - viewport.size.height,
+                    currentCoordinatesOf(viewport).x + viewport.size.width,
+                    currentCoordinatesOf(viewport).y,
                 ];
                 view.fit(targetExtent);
                 const matchingZoom = view.getZoom()!;
@@ -377,7 +379,7 @@ export class OlMapManager {
     private registerFeatureElementManager<
         Element extends ImmutableJsonObject,
         T extends MergeIntersection<
-            ElementManager<Element, any, any, any> & FeatureManager<any>
+            ElementManager<Element, any> & FeatureManager<any>
         >
     >(
         featureManager: T,
@@ -422,15 +424,8 @@ export class OlMapManager {
                         return false;
                     }
                     this.layerFeatureManagerDictionary
-                        .get(
-                            layer as VectorLayer<
-                                VectorSource<LineString | Point>
-                            >
-                        )!
-                        .onFeatureClicked(
-                            event,
-                            feature as Feature<LineString | Point>
-                        );
+                        .get(layer as VectorLayer<VectorSource>)!
+                        .onFeatureClicked(event, feature as Feature);
                     // we only want the top one -> a truthy return breaks this loop
                     return true;
                 },
@@ -465,24 +460,31 @@ export class OlMapManager {
     private registerDropHandler(translateInteraction: TranslateInteraction) {
         translateInteraction.on('translateend', (event) => {
             const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
-            this.olMap.forEachFeatureAtPixel(pixel, (feature, layer) => {
-                // Skip layer when unset
-                if (layer === null) {
-                    return;
+            const droppedFeature: Feature = event.features.getArray()[0]!;
+
+            this.olMap.forEachFeatureAtPixel(
+                pixel,
+                (droppedOnFeature, layer) => {
+                    // Skip layer when unset
+                    if (layer === null) {
+                        return;
+                    }
+
+                    // Do not drop a feature on itself
+                    if (droppedFeature === droppedOnFeature) {
+                        return;
+                    }
+
+                    // We stop propagating the event as soon as the onFeatureDropped function returns true
+                    return this.layerFeatureManagerDictionary
+                        .get(layer as VectorLayer<VectorSource>)!
+                        .onFeatureDrop(
+                            event,
+                            droppedFeature,
+                            droppedOnFeature as Feature
+                        );
                 }
-                // We stop propagating the event as soon as the onFeatureDropped function returns true
-                return this.layerFeatureManagerDictionary
-                    .get(
-                        layer as VectorLayer<VectorSource<LineString | Point>>
-                    )!
-                    .onFeatureDrop(
-                        event,
-                        event.features.getArray()[0] as Feature<
-                            LineString | Point
-                        >,
-                        feature as Feature<Point>
-                    );
-            });
+            );
         });
     }
 
@@ -527,20 +529,22 @@ export class OlMapManager {
             return;
         }
         const minX = Math.min(
-            ...viewports.map((viewport) => viewport.position.x)
+            ...viewports.map((viewport) => currentCoordinatesOf(viewport).x)
         );
         const minY = Math.min(
             ...viewports.map(
-                (viewport) => viewport.position.y - viewport.size.height
+                (viewport) =>
+                    currentCoordinatesOf(viewport).y - viewport.size.height
             )
         );
         const maxX = Math.max(
             ...viewports.map(
-                (viewport) => viewport.position.x + viewport.size.width
+                (viewport) =>
+                    currentCoordinatesOf(viewport).x + viewport.size.width
             )
         );
         const maxY = Math.max(
-            ...viewports.map((viewport) => viewport.position.y)
+            ...viewports.map((viewport) => currentCoordinatesOf(viewport).y)
         );
         const padding = 25;
         view.fit([minX, minY, maxX, maxY], {

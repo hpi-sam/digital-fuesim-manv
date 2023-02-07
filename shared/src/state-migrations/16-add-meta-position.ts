@@ -40,6 +40,17 @@ export const addMetaPosition16: Migration = {
                         transfer?: any;
                         metaPosition?: any;
                     };
+                    materials: {
+                        position?: { x: number; y: number };
+                        vehicleId?: UUID;
+                        metaPosition?: any;
+                    }[];
+                    personnel: {
+                        position?: { x: number; y: number };
+                        transfer?: any;
+                        vehicleId?: UUID;
+                        metaPosition?: any;
+                    }[];
                 };
                 if (typedAction.vehicle.position) {
                     typedAction.vehicle.metaPosition = {
@@ -54,6 +65,52 @@ export const addMetaPosition16: Migration = {
                         type: 'transfer',
                         transfer: typedAction.vehicle.transfer,
                     };
+                } else {
+                    typedAction.vehicle.metaPosition = {
+                        type: 'coordinates',
+                        position: {
+                            x: 0,
+                            y: 0,
+                        },
+                    };
+                }
+                for (const personnel of typedAction.personnel) {
+                    if (personnel.position) {
+                        personnel.metaPosition = {
+                            type: 'coordinates',
+                            position: {
+                                x: personnel.position.x,
+                                y: personnel.position.y,
+                            },
+                        };
+                    } else if (personnel.transfer) {
+                        personnel.metaPosition = {
+                            type: 'transfer',
+                            transfer: personnel.transfer,
+                        };
+                    } else if (personnel.vehicleId) {
+                        personnel.metaPosition = {
+                            type: 'vehicle',
+                            vehicleId: personnel.vehicleId,
+                        };
+                    }
+                }
+
+                for (const material of typedAction.materials) {
+                    if (material.position) {
+                        material.metaPosition = {
+                            type: 'coordinates',
+                            position: {
+                                x: material.position.x,
+                                y: material.position.y,
+                            },
+                        };
+                    } else if (material.vehicleId) {
+                        material.metaPosition = {
+                            type: 'vehicle',
+                            vehicleId: material.vehicleId,
+                        };
+                    }
                 }
             }
         });

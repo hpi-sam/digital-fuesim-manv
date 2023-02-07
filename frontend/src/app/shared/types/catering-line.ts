@@ -1,8 +1,8 @@
-import type { UUID, Position } from 'digital-fuesim-manv-shared';
+import type { UUID, MapCoordinates } from 'digital-fuesim-manv-shared';
 
 export interface CateringLine {
     readonly id: `${UUID}:${UUID}`;
 
-    readonly catererPosition: Position;
-    readonly patientPosition: Position;
+    readonly catererPosition: MapCoordinates;
+    readonly patientPosition: MapCoordinates;
 }

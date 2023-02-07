@@ -1,28 +1,28 @@
 import { Type } from 'class-transformer';
-import { MapPosition } from '../../models/utils/map-position';
-import type { MetaPosition } from '../../models/utils/meta-position';
-import { SimulatedRegionPosition } from '../../models/utils/simulated-region-position';
-import { TransferPosition } from '../../models/utils/transfer-position';
-import { VehiclePosition } from '../../models/utils/vehicle-position';
+import { MapPosition } from '../../models/utils/position/map-position';
+import type { Position } from '../../models/utils/position/position';
+import { SimulatedRegionPosition } from '../../models/utils/position/simulated-region-position';
+import { TransferPosition } from '../../models/utils/position/transfer-position';
+import { VehiclePosition } from '../../models/utils/position/vehicle-position';
 import { IsLiteralUnion } from './is-literal-union';
 
-class MetaPositionBase {
-    @IsLiteralUnion<MetaPosition['type']>({
+class PositionBase {
+    @IsLiteralUnion<Position['type']>({
         coordinates: true,
         simulatedRegion: true,
         transfer: true,
         vehicle: true,
     })
-    public type: MetaPosition['type'];
+    public type: Position['type'];
 
-    constructor(type: MetaPosition['type']) {
+    constructor(type: Position['type']) {
         this.type = type;
     }
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const IsMetaPosition = () =>
-    Type(() => MetaPositionBase, {
+export const IsPosition = () =>
+    Type(() => PositionBase, {
         keepDiscriminatorProperty: true,
         discriminator: {
             property: 'type',

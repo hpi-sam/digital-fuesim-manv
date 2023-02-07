@@ -1,10 +1,10 @@
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
-import { Position } from '../../models/utils';
+import { MapPosition, MapCoordinates } from '../../models/utils';
+import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { updateElementPosition } from './utils/spatial-elements';
 
 export class MoveMaterialAction implements Action {
     @IsValue('[Material] Move material' as const)
@@ -14,19 +14,19 @@ export class MoveMaterialAction implements Action {
     public readonly materialId!: UUID;
 
     @ValidateNested()
-    @Type(() => Position)
-    public readonly targetPosition!: Position;
+    @Type(() => MapCoordinates)
+    public readonly targetPosition!: MapCoordinates;
 }
 
 export namespace MaterialActionReducers {
     export const moveMaterial: ActionReducer<MoveMaterialAction> = {
         action: MoveMaterialAction,
         reducer: (draftState, { materialId, targetPosition }) => {
-            updateElementPosition(
-                draftState,
-                'materials',
+            changePositionWithId(
                 materialId,
-                targetPosition
+                MapPosition.create(targetPosition),
+                'material',
+                draftState
             );
             return draftState;
         },

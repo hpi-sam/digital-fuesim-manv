@@ -11,17 +11,9 @@ import { LineStyleHelper } from '../utility/style-helper/line-style-helper';
 import { ElementManager } from './element-manager';
 
 export class CateringLinesFeatureManager
-    extends ElementManager<
-        CateringLine,
-        LineString,
-        Feature<LineString>,
-        ReadonlySet<keyof CateringLine>
-    >
-    implements FeatureManager<Feature<LineString>>
+    extends ElementManager<CateringLine, LineString>
+    implements FeatureManager<LineString>
 {
-    readonly type = 'cateringLines';
-    readonly unsupportedChangeProperties = new Set(['id'] as const);
-
     private readonly lineStyleHelper = new LineStyleHelper(
         (feature) => ({
             color: rgbColorPalette.cyan,

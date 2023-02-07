@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import type { Mutable } from '../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../utils';
-import { IsIdMap, IsLiteralUnion } from '../utils/validators';
+import { IsIdMap, IsLiteralUnion, IsValue } from '../utils/validators';
 import {
     getCreate,
     HealthPoints,
@@ -28,6 +28,9 @@ export class HospitalPatient {
      */
     @IsUUID(4, uuidValidationOptions)
     public readonly patientId: UUID;
+
+    @IsValue('hospitalPatient' as const)
+    public readonly type = 'hospitalPatient';
 
     /**
      * the vehicle that a patient was transported with

@@ -7,7 +7,14 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { TransferPoint } from '../../models';
-import { Position } from '../../models/utils';
+import {
+    currentCoordinatesOf,
+    isInTransfer,
+    MapCoordinates,
+    MapPosition,
+    currentTransferOf,
+} from '../../models/utils';
+import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -34,8 +41,8 @@ export class MoveTransferPointAction implements Action {
     public readonly transferPointId!: UUID;
 
     @ValidateNested()
-    @Type(() => Position)
-    public readonly targetPosition!: Position;
+    @Type(() => MapCoordinates)
+    public readonly targetPosition!: MapCoordinates;
 }
 
 export class RenameTransferPointAction implements Action {
@@ -122,12 +129,12 @@ export namespace TransferPointActionReducers {
     export const moveTransferPoint: ActionReducer<MoveTransferPointAction> = {
         action: MoveTransferPointAction,
         reducer: (draftState, { transferPointId, targetPosition }) => {
-            const transferPoint = getElement(
-                draftState,
-                'transferPoints',
-                transferPointId
+            changePositionWithId(
+                transferPointId,
+                MapPosition.create(targetPosition),
+                'transferPoint',
+                draftState
             );
-            transferPoint.position = cloneDeepMutable(targetPosition);
             return draftState;
         },
         rights: 'trainer',
@@ -142,7 +149,7 @@ export namespace TransferPointActionReducers {
             ) => {
                 const transferPoint = getElement(
                     draftState,
-                    'transferPoints',
+                    'transferPoint',
                     transferPointId
                 );
                 // Empty strings are ignored
@@ -173,19 +180,19 @@ export namespace TransferPointActionReducers {
                 }
                 const transferPoint1 = getElement(
                     draftState,
-                    'transferPoints',
+                    'transferPoint',
                     transferPointId1
                 );
                 const transferPoint2 = getElement(
                     draftState,
-                    'transferPoints',
+                    'transferPoint',
                     transferPointId2
                 );
                 const _duration =
                     duration ??
                     estimateDuration(
-                        transferPoint1.position,
-                        transferPoint2.position
+                        currentCoordinatesOf(transferPoint1),
+                        currentCoordinatesOf(transferPoint2)
                     );
                 transferPoint1.reachableTransferPoints[transferPointId2] = {
                     duration: _duration,
@@ -210,12 +217,12 @@ export namespace TransferPointActionReducers {
                 }
                 const transferPoint1 = getElement(
                     draftState,
-                    'transferPoints',
+                    'transferPoint',
                     transferPointId1
                 );
                 const transferPoint2 = getElement(
                     draftState,
-                    'transferPoints',
+                    'transferPoint',
                     transferPointId2
                 );
                 delete transferPoint1.reachableTransferPoints[transferPointId2];
@@ -230,20 +237,21 @@ export namespace TransferPointActionReducers {
             action: RemoveTransferPointAction,
             reducer: (draftState, { transferPointId }) => {
                 // check if transferPoint exists
-                getElement(draftState, 'transferPoints', transferPointId);
+                getElement(draftState, 'transferPoint', transferPointId);
                 // TODO: make it dynamic (if at any time something else is able to transfer this part needs to be changed accordingly)
                 // Let all vehicles and personnel arrive that are on transfer to this transferPoint before deleting it
                 for (const vehicleId of Object.keys(draftState.vehicles)) {
                     const vehicle = getElement(
                         draftState,
-                        'vehicles',
+                        'vehicle',
                         vehicleId
                     );
                     if (
-                        vehicle.transfer?.targetTransferPointId ===
-                        transferPointId
+                        isInTransfer(vehicle) &&
+                        currentTransferOf(vehicle).targetTransferPointId ===
+                            transferPointId
                     ) {
-                        letElementArrive(draftState, 'vehicles', vehicleId);
+                        letElementArrive(draftState, vehicle.type, vehicleId);
                     }
                 }
                 for (const personnelId of Object.keys(draftState.personnel)) {
@@ -253,10 +261,15 @@ export namespace TransferPointActionReducers {
                         personnelId
                     );
                     if (
-                        personnel.transfer?.targetTransferPointId ===
-                        transferPointId
+                        isInTransfer(personnel) &&
+                        currentTransferOf(personnel).targetTransferPointId ===
+                            transferPointId
                     ) {
-                        letElementArrive(draftState, 'personnel', personnelId);
+                        letElementArrive(
+                            draftState,
+                            personnel.type,
+                            personnelId
+                        );
                     }
                 }
                 // TODO: If we can assume that the transfer points are always connected to each other,
@@ -286,10 +299,10 @@ export namespace TransferPointActionReducers {
         action: ConnectHospitalAction,
         reducer: (draftState, { transferPointId, hospitalId }) => {
             // Check if hospital with this Id exists
-            getElement(draftState, 'hospitals', hospitalId);
+            getElement(draftState, 'hospital', hospitalId);
             const transferPoint = getElement(
                 draftState,
-                'transferPoints',
+                'transferPoint',
                 transferPointId
             );
             transferPoint.reachableHospitals[hospitalId] = true;
@@ -302,10 +315,10 @@ export namespace TransferPointActionReducers {
         action: DisconnectHospitalAction,
         reducer: (draftState, { hospitalId, transferPointId }) => {
             // Check if hospital with this Id exists
-            getElement(draftState, 'hospitals', hospitalId);
+            getElement(draftState, 'hospital', hospitalId);
             const transferPoint = getElement(
                 draftState,
-                'transferPoints',
+                'transferPoint',
                 transferPointId
             );
             delete transferPoint.reachableHospitals[hospitalId];
@@ -322,7 +335,10 @@ export namespace TransferPointActionReducers {
  * @returns an estimated duration in ms to drive between the the two given positions
  * The resulting value is a multiple of 0.1 minutes.
  */
-function estimateDuration(startPosition: Position, targetPosition: Position) {
+function estimateDuration(
+    startPosition: MapCoordinates,
+    targetPosition: MapCoordinates
+) {
     // TODO: tweak these values more
     // How long in ms it takes to start + stop moving
     const overheadSummand = 10 * 1000;

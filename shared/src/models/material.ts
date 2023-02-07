@@ -6,19 +6,21 @@ import {
     IsNumber,
     Min,
     Max,
-    IsOptional,
 } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
-import { IsUUIDSet } from '../utils/validators';
-import { IsMetaPosition } from '../utils/validators/is-metaposition';
+import { IsUUIDSet, IsValue } from '../utils/validators';
+import { IsPosition } from '../utils/validators/is-position';
 import type { MaterialTemplate } from './material-template';
-import { CanCaterFor, Position, ImageProperties, getCreate } from './utils';
-import { MetaPosition } from './utils/meta-position';
+import { CanCaterFor, ImageProperties, getCreate } from './utils';
+import { Position } from './utils/position/position';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('material' as const)
+    public readonly type = 'material';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId: UUID;
@@ -53,18 +55,12 @@ export class Material {
     @Max(maxTreatmentRange)
     public readonly treatmentRange: number;
 
-    @IsMetaPosition()
-    @ValidateNested()
-    public readonly metaPosition: MetaPosition;
-
     /**
-     * @deprecated use {@link metaPosition}
-     * if undefined, is in vehicle with {@link this.vehicleId}
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
      */
+    @IsPosition()
     @ValidateNested()
-    @Type(() => Position)
-    @IsOptional()
-    public readonly position?: Position;
+    public readonly position: Position;
 
     @ValidateNested()
     @Type(() => ImageProperties)
@@ -81,18 +77,16 @@ export class Material {
         canCaterFor: CanCaterFor,
         treatmentRange: number,
         overrideTreatmentRange: number,
-        metaPosition: MetaPosition,
-        position?: Position
+        position: Position
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
         this.assignedPatientIds = assignedPatientIds;
-        this.position = position;
         this.image = image;
         this.canCaterFor = canCaterFor;
         this.treatmentRange = treatmentRange;
         this.overrideTreatmentRange = overrideTreatmentRange;
-        this.metaPosition = metaPosition;
+        this.position = position;
     }
 
     static readonly create = getCreate(this);
@@ -101,7 +95,7 @@ export class Material {
         materialTemplate: MaterialTemplate,
         vehicleId: UUID,
         vehicleName: string,
-        metaPosition: MetaPosition
+        position: Position
     ): Material {
         return this.create(
             vehicleId,
@@ -111,12 +105,7 @@ export class Material {
             materialTemplate.canCaterFor,
             materialTemplate.treatmentRange,
             materialTemplate.overrideTreatmentRange,
-            metaPosition,
-            undefined
+            position
         );
-    }
-
-    static isInVehicle(material: Material): boolean {
-        return material.metaPosition.type === 'vehicle';
     }
 }

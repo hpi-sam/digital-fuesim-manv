@@ -1,21 +1,18 @@
 import { Type } from 'class-transformer';
-import {
-    IsNumber,
-    IsOptional,
-    IsString,
-    IsUUID,
-    ValidateNested,
-} from 'class-validator';
+import { IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
-import { IsUUIDSet } from '../utils/validators';
-import { IsMetaPosition } from '../utils/validators/is-metaposition';
-import { getCreate, Position, Transfer } from './utils';
+import { IsUUIDSet, IsValue } from '../utils/validators';
+import { IsPosition } from '../utils/validators/is-position';
+import { getCreate } from './utils';
 import { ImageProperties } from './utils/image-properties';
-import { MetaPosition } from './utils/meta-position';
+import { Position } from './utils/position/position';
 
 export class Vehicle {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('vehicle' as const)
+    public readonly type = 'vehicle';
 
     @IsString()
     public readonly vehicleType: string;
@@ -29,31 +26,16 @@ export class Vehicle {
     @IsNumber()
     public readonly patientCapacity: number;
 
-    @IsMetaPosition()
-    @ValidateNested()
-    public readonly metaPosition: MetaPosition;
-
     /**
-     * @deprecated use {@link metaPosition}
-     * Exclusive-or to {@link transfer}
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
      */
+    @IsPosition()
     @ValidateNested()
-    @Type(() => Position)
-    @IsOptional()
-    public readonly position?: Position;
+    public readonly position: Position;
 
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
-
-    /**
-     * @deprecated use {@link metaPosition}
-     * Exclusive-or to {@link position}
-     */
-    @ValidateNested()
-    @Type(() => Transfer)
-    @IsOptional()
-    public readonly transfer?: Transfer;
 
     @IsUUIDSet()
     public readonly personnelIds: UUIDSet = {};
@@ -70,14 +52,14 @@ export class Vehicle {
         materialIds: UUIDSet,
         patientCapacity: number,
         image: ImageProperties,
-        metaPosition: MetaPosition
+        position: Position
     ) {
         this.vehicleType = vehicleType;
         this.name = name;
         this.materialIds = materialIds;
         this.patientCapacity = patientCapacity;
         this.image = image;
-        this.metaPosition = metaPosition;
+        this.position = position;
     }
 
     static readonly create = getCreate(this);

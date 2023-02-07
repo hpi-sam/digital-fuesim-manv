@@ -8,12 +8,22 @@ import {
 } from 'class-validator';
 import type { Personnel, Vehicle } from '../../models';
 import { Patient } from '../../models';
-import { getStatus } from '../../models/utils';
+import {
+    getStatus,
+    isNotInTransfer,
+    currentTransferOf,
+    TransferPosition,
+} from '../../models/utils';
+import { changePosition } from '../../models/utils/position/position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
+import { cloneDeepMutable } from '../../utils';
+import type { ElementTypePluralMap } from '../../utils/element-type-plural-map';
+import { elementTypePluralMap } from '../../utils/element-type-plural-map';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
+import type { TransferableElementType } from './transfer';
 import { letElementArrive } from './transfer';
 import { updateTreatments } from './utils/calculate-treatments';
 import { PatientUpdate } from './utils/patient-updates';
@@ -122,7 +132,7 @@ export namespace ExerciseActionReducers {
             });
 
             // Refresh transfers
-            refreshTransfer(draftState, 'vehicles', tickInterval);
+            refreshTransfer(draftState, 'vehicle', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);
             return draftState;
         },
@@ -130,24 +140,35 @@ export namespace ExerciseActionReducers {
     };
 }
 
+type TransferTypePluralMap = Pick<
+    ElementTypePluralMap,
+    TransferableElementType
+>;
+
 function refreshTransfer(
     draftState: Mutable<ExerciseState>,
-    key: 'personnel' | 'vehicles',
+    type: keyof TransferTypePluralMap,
     tickInterval: number
 ): void {
-    const elements = draftState[key];
+    const elements = draftState[elementTypePluralMap[type]];
     Object.values(elements).forEach((element: Mutable<Personnel | Vehicle>) => {
-        if (!element.transfer) {
+        if (isNotInTransfer(element)) {
             return;
         }
-        if (element.transfer.isPaused) {
-            element.transfer.endTimeStamp += tickInterval;
+        if (currentTransferOf(element).isPaused) {
+            const newTransfer = cloneDeepMutable(currentTransferOf(element));
+            newTransfer.endTimeStamp += tickInterval;
+            changePosition(
+                element,
+                TransferPosition.create(newTransfer),
+                draftState
+            );
             return;
         }
         // Not transferred yet
-        if (element.transfer.endTimeStamp > draftState.currentTime) {
+        if (currentTransferOf(element).endTimeStamp > draftState.currentTime) {
             return;
         }
-        letElementArrive(draftState, key, element.id);
+        letElementArrive(draftState, type, element.id);
     });
 }

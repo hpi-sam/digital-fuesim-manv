@@ -9,7 +9,8 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { MapImage } from '../../models';
-import { Position } from '../../models/utils';
+import { MapPosition, MapCoordinates } from '../../models/utils';
+import { changePosition } from '../../models/utils/position/position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import {
@@ -39,8 +40,8 @@ export class MoveMapImageAction implements Action {
     public readonly mapImageId!: UUID;
 
     @ValidateNested()
-    @Type(() => Position)
-    public readonly targetPosition!: Position;
+    @Type(() => MapCoordinates)
+    public readonly targetPosition!: MapCoordinates;
 }
 
 export class ScaleMapImageAction implements Action {
@@ -133,8 +134,12 @@ export namespace MapImagesActionReducers {
     export const moveMapImage: ActionReducer<MoveMapImageAction> = {
         action: MoveMapImageAction,
         reducer: (draftState, { mapImageId, targetPosition }) => {
-            const mapImage = getElement(draftState, 'mapImages', mapImageId);
-            mapImage.position = cloneDeepMutable(targetPosition);
+            const mapImage = getElement(draftState, 'mapImage', mapImageId);
+            changePosition(
+                mapImage,
+                MapPosition.create(targetPosition),
+                draftState
+            );
             return draftState;
         },
         rights: 'trainer',
@@ -143,7 +148,7 @@ export namespace MapImagesActionReducers {
     export const scaleMapImage: ActionReducer<ScaleMapImageAction> = {
         action: ScaleMapImageAction,
         reducer: (draftState, { mapImageId, newHeight, newAspectRatio }) => {
-            const mapImage = getElement(draftState, 'mapImages', mapImageId);
+            const mapImage = getElement(draftState, 'mapImage', mapImageId);
             if (newHeight) {
                 mapImage.image.height = newHeight;
             }
@@ -158,7 +163,7 @@ export namespace MapImagesActionReducers {
     export const removeMapImage: ActionReducer<RemoveMapImageAction> = {
         action: RemoveMapImageAction,
         reducer: (draftState, { mapImageId }) => {
-            getElement(draftState, 'mapImages', mapImageId);
+            getElement(draftState, 'mapImage', mapImageId);
             delete draftState.mapImages[mapImageId];
             return draftState;
         },
@@ -169,11 +174,7 @@ export namespace MapImagesActionReducers {
         {
             action: ReconfigureMapImageUrlAction,
             reducer: (draftState, { mapImageId, newUrl }) => {
-                const mapImage = getElement(
-                    draftState,
-                    'mapImages',
-                    mapImageId
-                );
+                const mapImage = getElement(draftState, 'mapImage', mapImageId);
                 mapImage.image.url = newUrl;
                 return draftState;
             },
@@ -183,7 +184,7 @@ export namespace MapImagesActionReducers {
     export const setLockedMapImage: ActionReducer<SetIsLockedMapImageAction> = {
         action: SetIsLockedMapImageAction,
         reducer: (draftState, { mapImageId, newLocked }) => {
-            const mapImage = getElement(draftState, 'mapImages', mapImageId);
+            const mapImage = getElement(draftState, 'mapImage', mapImageId);
             mapImage.isLocked = newLocked;
             return draftState;
         },
@@ -193,7 +194,7 @@ export namespace MapImagesActionReducers {
     export const changeZIndex: ActionReducer<ChangeZIndexMapImageAction> = {
         action: ChangeZIndexMapImageAction,
         reducer: (draftState, { mapImageId, mode }) => {
-            const mapImage = getElement(draftState, 'mapImages', mapImageId);
+            const mapImage = getElement(draftState, 'mapImage', mapImageId);
             switch (mode) {
                 case 'bringToFront':
                 case 'bringToBack': {

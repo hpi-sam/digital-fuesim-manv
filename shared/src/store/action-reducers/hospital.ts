@@ -74,11 +74,7 @@ export namespace HospitalActionReducers {
         {
             action: EditTransportDurationToHospitalAction,
             reducer: (draftState, { hospitalId, transportDuration }) => {
-                const hospital = getElement(
-                    draftState,
-                    'hospitals',
-                    hospitalId
-                );
+                const hospital = getElement(draftState, 'hospital', hospitalId);
                 hospital.transportDuration = transportDuration;
                 return draftState;
             },
@@ -88,7 +84,7 @@ export namespace HospitalActionReducers {
     export const renameHospital: ActionReducer<RenameHospitalAction> = {
         action: RenameHospitalAction,
         reducer: (draftState, { hospitalId, name }) => {
-            const hospital = getElement(draftState, 'hospitals', hospitalId);
+            const hospital = getElement(draftState, 'hospital', hospitalId);
             hospital.name = name;
             return draftState;
         },
@@ -98,7 +94,7 @@ export namespace HospitalActionReducers {
     export const removeHospital: ActionReducer<RemoveHospitalAction> = {
         action: RemoveHospitalAction,
         reducer: (draftState, { hospitalId }) => {
-            const hospital = getElement(draftState, 'hospitals', hospitalId);
+            const hospital = getElement(draftState, 'hospital', hospitalId);
             // TODO: maybe make a hospital undeletable (if at least one patient is in it)
             for (const patientId of Object.keys(hospital.patientIds)) {
                 delete draftState.hospitalPatients[patientId];
@@ -118,17 +114,13 @@ export namespace HospitalActionReducers {
         {
             action: TransportPatientToHospitalAction,
             reducer: (draftState, { hospitalId, vehicleId }) => {
-                const hospital = getElement(
-                    draftState,
-                    'hospitals',
-                    hospitalId
-                );
-                const vehicle = getElement(draftState, 'vehicles', vehicleId);
+                const hospital = getElement(draftState, 'hospital', hospitalId);
+                const vehicle = getElement(draftState, 'vehicle', vehicleId);
                 // TODO: Block vehicles whose material and personnel are unloaded
                 for (const patientId of Object.keys(vehicle.patientIds)) {
                     const patient = getElement(
                         draftState,
-                        'patients',
+                        'patient',
                         patientId
                     );
                     draftState.hospitalPatients[patientId] =
