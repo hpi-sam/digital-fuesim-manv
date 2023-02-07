@@ -1,6 +1,6 @@
 {
     "root": true,
-    "ignorePatterns": "index.html",
+    "ignorePatterns": ["index.html", "**/assets/about/*.html"],
     "overrides": [
         {
             "files": ["*.ts", "*.js"],
