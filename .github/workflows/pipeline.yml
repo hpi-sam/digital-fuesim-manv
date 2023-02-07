@@ -289,7 +289,7 @@ jobs:
             - name: Run Cypress
               uses: cypress-io/github-action@v5
               with:
-                  start: cd .. && npm run start:all
+                  start: npm --prefix .. -- run start:all
                   command: npm run cy:run
                   working-directory: frontend
                   wait-on: 'http://localhost:4200/health, http://localhost:3201/api/health'
