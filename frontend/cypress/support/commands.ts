@@ -41,8 +41,98 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
-// @ts-expect-error there is no type definition for this package yet
-// eslint-disable-next-line no-restricted-imports
-import * as cypressImageDiffCommand from 'cypress-image-diff-js/dist/command';
 
-cypressImageDiffCommand();
+const performedActionsStack: any[] = [];
+
+export function dragToMap(
+    elementSelector: string,
+    offset?: { x: number; y: number }
+) {
+    cy.log(`dragging ${elementSelector} to the map`);
+    const mapSelector = '[data-cy=openLayersContainer]';
+
+    cy.get(elementSelector).first().trigger('mousedown');
+
+    return (
+        cy
+            .get(mapSelector)
+            /**
+             * We have to force the click here, as the img
+             * of the element being dragged is in front of the map
+             **/
+            .trigger('mousemove', { force: true, ...offset })
+            .click({ force: true })
+    );
+}
+
+export function storeState() {
+    return cy
+        .window()
+        .its('store')
+        .then((store: any) => store.source._value.application);
+}
+
+export function socket() {
+    return cy.window().its('socket');
+}
+
+export function registerSocketListener() {
+    performedActionsStack.length = 0;
+    cy.socket().then((s) =>
+        s.on('performAction', (action: any) =>
+            performedActionsStack.push(action)
+        )
+    );
+    return cy;
+}
+
+export function performedActions() {
+    return cy.wrap(performedActionsStack);
+}
+
+export function createExercise() {
+    cy.visit('/');
+    cy.window().its('backendBaseUrl').as('backendBaseUrl');
+
+    cy.get('@backendBaseUrl').then((backendBaseUrl) =>
+        cy
+            .request('POST', `${backendBaseUrl}/api/exercise`)
+            .its('body')
+            .as('createBody')
+    );
+    cy.get('@createBody').its('trainerId').as('trainerId');
+    cy.get('@createBody').its('participantId').as('participantId');
+    return cy;
+}
+
+export function joinExerciseAsTrainer() {
+    cy.get('@trainerId').then((trainerId) =>
+        cy.visit(`exercises/${trainerId}`)
+    );
+    cy.get('[data-cy=joinExerciseModalButton]').click();
+    cy.registerSocketListener();
+    return cy;
+}
+
+export function joinExerciseAsParticipant() {
+    cy.get('@participantId').then((participantId) =>
+        cy.visit(`exercises/${participantId}`)
+    );
+    cy.get('[data-cy=joinExerciseModalButton]').click();
+    cy.registerSocketListener();
+    return cy;
+}
+
+export function deleteExercise() {
+    cy.get('@backendBaseUrl').then((backendBaseUrl) =>
+        cy
+            .get('@trainerId')
+            .then((trainerId) =>
+                cy.request(
+                    'DELETE',
+                    `${backendBaseUrl}/api/exercise/${trainerId}`
+                )
+            )
+    );
+    return cy;
+}

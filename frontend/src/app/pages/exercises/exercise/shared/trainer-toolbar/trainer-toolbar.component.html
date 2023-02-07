@@ -9,6 +9,7 @@
             type="button"
             class="btn btn-outline-primary ms-3"
             ngbDropdownToggle
+            data-cy="trainerToolbarCreationButton"
         >
             Erstellung
         </button>
@@ -17,6 +18,7 @@
                 ngbDropdownItem
                 (click)="openAlarmGroupOverview()"
                 class="btn btn-primary"
+                data-cy="trainerToolbarAlarmGroupsButton"
             >
                 Alarmierungsgruppen
             </button>
@@ -24,6 +26,7 @@
                 ngbDropdownItem
                 (click)="openHospitalEditor()"
                 class="btn btn-primary"
+                data-cy="trainerToolbarHospitalsButton"
             >
                 Krankenhäuser
             </button>
@@ -35,6 +38,7 @@
             type="button"
             class="btn btn-outline-primary ms-3"
             ngbDropdownToggle
+            data-cy="trainerToolbarExecutionButton"
         >
             Durchführung
         </button>
@@ -43,6 +47,7 @@
                 ngbDropdownItem
                 (click)="openClientOverview()"
                 class="btn btn-primary"
+                data-cy="trainerToolbarParticipantsButton"
             >
                 Teilnehmerübersicht
             </button>
@@ -50,6 +55,7 @@
                 ngbDropdownItem
                 (click)="openTransferOverview()"
                 class="btn btn-primary"
+                data-cy="trainerToolbarTransferButton"
             >
                 Transferübersicht
             </button>
@@ -57,6 +63,7 @@
                 ngbDropdownItem
                 (click)="openEmergencyOperationsCenter()"
                 class="btn btn-primary"
+                data-cy="trainerToolbarControlCenterButton"
             >
                 Leitstelle
             </button>
@@ -68,6 +75,7 @@
             type="button"
             class="btn btn-outline-primary ms-3"
             ngbDropdownToggle
+            data-cy="trainerToolbarEvaluationButton"
         >
             Auswertung
         </button>
@@ -76,6 +84,7 @@
                 ngbDropdownItem
                 (click)="openExerciseStatisticsModal()"
                 class="btn btn-primary"
+                data-cy="trainerToolbarStatisticsButton"
             >
                 Statistiken
             </button>
@@ -83,6 +92,7 @@
                 ngbDropdownItem
                 (click)="applicationService.startTimeTravel()"
                 class="btn btn-primary"
+                data-cy="trainerToolbarRecordingButton"
             >
                 Aufzeichnung
             </button>
