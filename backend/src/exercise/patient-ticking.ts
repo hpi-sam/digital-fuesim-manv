@@ -5,10 +5,8 @@ import type {
     PersonnelType,
 } from 'digital-fuesim-manv-shared';
 import {
-    isOnMap,
     getElement,
     healthPointsDefaults,
-    isAlive,
     Patient,
 } from 'digital-fuesim-manv-shared';
 
@@ -30,7 +28,7 @@ export function patientTick(
     return (
         Object.values(state.patients)
             // Only look at patients that are alive and have a position, i.e. are not in a vehicle
-            .filter((patient) => isAlive(patient.health) && isOnMap(patient))
+            .filter((patient) => Patient.canBeTreated(patient))
             .map((patient) => {
                 // update the time a patient is being treated, to check for pretriage later
                 const treatmentTime = Patient.isTreatedByPersonnel(patient)
