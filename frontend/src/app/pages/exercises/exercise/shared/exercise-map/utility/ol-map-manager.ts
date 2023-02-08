@@ -8,15 +8,11 @@ import type {
 import { currentCoordinatesOf } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
-import type { Polygon } from 'ol/geom';
-import type Geometry from 'ol/geom/Geometry';
-import type LineString from 'ol/geom/LineString';
-import type Point from 'ol/geom/Point';
 import { defaults as defaultInteractions } from 'ol/interaction';
 import TileLayer from 'ol/layer/Tile';
-import VectorLayer from 'ol/layer/Vector';
+import type VectorLayer from 'ol/layer/Vector';
 import OlMap from 'ol/Map';
-import VectorSource from 'ol/source/Vector';
+import type VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import type { Observable } from 'rxjs';
 import { combineLatest, pairwise, startWith, Subject, takeUntil } from 'rxjs';
@@ -125,62 +121,14 @@ export class OlMapManager {
             element: this.popoverContainer,
         });
 
-        // The order in this array represents the order of the layers on the map (last element is on top)
-        const featureLayers = [
-            deleteFeatureLayer,
-            simulatedRegionLayer,
-            mapImagesLayer,
-            transferLinesLayer,
-            transferPointLayer,
-            vehicleLayer,
-            cateringLinesLayer,
-            patientLayer,
-            personnelLayer,
-            materialLayer,
-            viewportLayer,
-        ];
-
-        // Interactions
-        const translateInteraction = new TranslateInteraction({
-            layers: featureLayers,
-            hitTolerance: 10,
-            filter: (feature, layer) => {
-                const featureManager = this.layerFeatureManagerDictionary.get(
-                    layer as VectorLayer<VectorSource>
-                );
-                return featureManager === undefined
-                    ? false
-                    : featureManager.isFeatureTranslatable(feature);
-            },
-        });
-        const resizeViewportInteraction = new ResizeRectangleInteraction(
-            viewportFeatureManager.layer.getSource()!
-        );
-        const resizeSimulatedRegionInteraction = new ResizeRectangleInteraction(
-            simulatedRegionLayer.getSource()!
-        );
-        const alwaysInteractions = [translateInteraction];
-        const customInteractions =
-            selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
-                ? [
-                      ...alwaysInteractions,
-                      resizeViewportInteraction,
-                      resizeSimulatedRegionInteraction,
-                  ]
-                : alwaysInteractions;
-
         this.olMap = new OlMap({
-            interactions: defaultInteractions({
-                pinchRotate: false,
-                altShiftDragRotate: false,
-                keyboard: true,
-            }).extend(customInteractions),
+            interactions: [],
             // We use Angular buttons instead
             controls: [],
             target: this.openLayersContainer,
             // Note: The order of this array determines the order of the objects on the map.
             // The most bottom objects must be at the top of the array.
-            layers: [satelliteLayer, ...featureLayers],
+            layers: [],
             overlays: [this.popupOverlay],
             view: new View({
                 center: [startingPosition.x, startingPosition.y],
@@ -235,7 +183,13 @@ export class OlMapManager {
             this.store
         );
 
+        const deleteFeatureManager = new DeleteFeatureManager(
+            this.store,
+            this.olMap,
+            this.exerciseService
+        );
         if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
+            deleteFeatureManager.makeVisible();
             this.registerFeatureElementManager(
                 transferLinesFeatureManager,
                 this.store.select(selectTransferLines)
@@ -243,15 +197,9 @@ export class OlMapManager {
             transferLinesService.displayTransferLines$.subscribe((display) => {
                 transferLinesFeatureManager.layer.setVisible(display);
             });
-
-            const deleteHelper = new DeleteFeatureManager(
-                this.store,
-                this.olMap,
-                this.exerciseService
-            );
             this.layerFeatureManagerDictionary.set(
-                deleteHelper.layer,
-                deleteHelper
+                deleteFeatureManager.layer,
+                deleteFeatureManager
             );
         }
 
@@ -299,6 +247,72 @@ export class OlMapManager {
             simulatedRegionFeatureManager,
             this.store.select(selectVisibleSimulatedRegions)
         );
+
+        // Register the Layers in the correct Order
+        // The order represents the order of the layers on the map (last element is on top)
+
+        this.olMap.getLayers().clear();
+        this.olMap.addLayer(satelliteLayer);
+
+        const featureLayers = [
+            deleteFeatureManager.layer,
+            simulatedRegionFeatureManager.layer,
+            mapImageFeatureManager.layer,
+            transferLinesFeatureManager.layer,
+            transferPointFeatureManager.layer,
+            vehicleFeatureManager.layer,
+            cateringLinesFeatureManager.layer,
+            patientFeatureManager.layer,
+            personnelFeatureManager.layer,
+            materialFeatureManager.layer,
+            viewportFeatureManager.layer,
+        ];
+
+        // We just want to modify this for the Map not do anything with it after so we ignore the returned value
+        // eslint-disable-next-line rxjs/no-ignored-observable
+        this.olMap.getLayers().extend(featureLayers);
+
+        // Create Interactions
+
+        const translateInteraction = new TranslateInteraction({
+            layers: featureLayers,
+            hitTolerance: 10,
+            filter: (feature, layer) => {
+                const featureManager = this.layerFeatureManagerDictionary.get(
+                    layer as VectorLayer<VectorSource>
+                );
+                return featureManager === undefined
+                    ? false
+                    : featureManager.isFeatureTranslatable(feature);
+            },
+        });
+
+        const resizeViewportInteraction = new ResizeRectangleInteraction(
+            viewportFeatureManager.layer.getSource()!
+        );
+        const resizeSimulatedRegionInteraction = new ResizeRectangleInteraction(
+            simulatedRegionFeatureManager.layer.getSource()!
+        );
+        const alwaysInteractions = [translateInteraction];
+        const customInteractions =
+            selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
+                ? [
+                      ...alwaysInteractions,
+                      resizeViewportInteraction,
+                      resizeSimulatedRegionInteraction,
+                  ]
+                : alwaysInteractions;
+        const interactions = defaultInteractions({
+            pinchRotate: false,
+            altShiftDragRotate: false,
+            keyboard: true,
+        }).extend(customInteractions);
+
+        const mapInteractions = this.olMap.getInteractions();
+        mapInteractions.clear();
+        // We just want to modify this for the Map not do anything with it after so we ignore the returned value
+        // eslint-disable-next-line rxjs/no-ignored-observable
+        mapInteractions.extend(interactions.getArray());
 
         this.registerPopupTriggers();
         this.registerDropHandler(translateInteraction);

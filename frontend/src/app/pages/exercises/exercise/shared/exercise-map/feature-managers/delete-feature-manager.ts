@@ -35,6 +35,8 @@ export class DeleteFeatureManager implements FeatureManager<Point> {
             renderBuffer: 250,
             source: new VectorSource<Point>(),
         });
+    }
+    public makeVisible() {
         this.layer.setStyle(
             new Style({
                 image: new Icon({
@@ -56,6 +58,7 @@ export class DeleteFeatureManager implements FeatureManager<Point> {
             );
         });
     }
+
     public onFeatureClicked(
         event: MapBrowserEvent<any>,
         feature: Feature<any>
