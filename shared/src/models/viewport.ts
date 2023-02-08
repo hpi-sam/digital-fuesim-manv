@@ -6,9 +6,11 @@ import { IsValue } from '../utils/validators';
 import {
     currentCoordinatesOf,
     getCreate,
+    lowerRightCornerOf,
     MapPosition,
     Position,
     Size,
+    upperLeftCornerOf,
 } from './utils';
 import type { ImageProperties, MapCoordinates } from './utils';
 
@@ -54,13 +56,13 @@ export class Viewport {
     };
 
     static isInViewport(viewport: Viewport, position: MapCoordinates): boolean {
+        const upperLeftCorner = upperLeftCornerOf(viewport);
+        const lowerRightCorner = lowerRightCornerOf(viewport);
         return (
-            currentCoordinatesOf(viewport).x <= position.x &&
-            position.x <=
-                currentCoordinatesOf(viewport).x + viewport.size.width &&
-            currentCoordinatesOf(viewport).y - viewport.size.height <=
-                position.y &&
-            position.y <= currentCoordinatesOf(viewport).y
+            upperLeftCorner.x <= position.x &&
+            position.x <= lowerRightCorner.x &&
+            lowerRightCorner.y <= position.y &&
+            position.y <= upperLeftCorner.y
         );
     }
 }
