@@ -2,7 +2,11 @@ import { groupBy } from 'lodash-es';
 import type { Material, Personnel } from '../../../models';
 import { Patient } from '../../../models';
 import type { MapCoordinates, PatientStatus } from '../../../models/utils';
-import { currentCoordinatesOf, isNotOnMap, isInSimulatedRegion } from '../../../models/utils';
+import {
+    currentCoordinatesOf,
+    isNotOnMap,
+    isInSimulatedRegion,
+} from '../../../models/utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import { maxTreatmentRange } from '../../../state-helpers/max-treatment-range';
@@ -168,7 +172,7 @@ export function updateTreatments(
     // the result would semantically be the same. This could be changed later.
 
     if (isInSimulatedRegion(element)) {
-        return
+        return;
     }
 
     if (isNotOnMap(element)) {

@@ -10,9 +10,7 @@ import type { Mutable, UUID } from '../../../utils';
 import { cloneDeepMutable } from '../../../utils';
 import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map';
 import { elementTypePluralMap } from '../../../utils/element-type-plural-map';
-import {
-    removeTreatmentsOfElement,
-} from './calculate-treatments';
+import { removeTreatmentsOfElement } from './calculate-treatments';
 import { getElement } from './get-element';
 
 /**
