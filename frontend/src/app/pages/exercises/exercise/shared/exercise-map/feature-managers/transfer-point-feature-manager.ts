@@ -1,3 +1,4 @@
+import type { NgZone } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { TransferPoint, TransferStartPoint } from 'digital-fuesim-manv-shared';
@@ -5,14 +6,19 @@ import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type OlMap from 'ol/Map';
+import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
+import {
+    selectCurrentRole,
+    selectVisibleTransferPoints,
+} from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
+import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { MoveableFeatureManager } from './moveable-feature-manager';
@@ -47,6 +53,19 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
                 currentZoom
             ),
         ]);
+    }
+
+    public register(
+        changePopup$: Subject<OpenPopupOptions<any> | undefined>,
+        destroy$: Subject<void>,
+        ngZone: NgZone
+    ) {
+        super.registerFeatureElementManager(
+            this.store.select(selectVisibleTransferPoints),
+            changePopup$,
+            destroy$,
+            ngZone
+        );
     }
 
     private readonly imageStyleHelper = new ImageStyleHelper(

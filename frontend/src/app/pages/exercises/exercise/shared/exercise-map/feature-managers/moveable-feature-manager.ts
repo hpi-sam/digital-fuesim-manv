@@ -4,7 +4,11 @@ import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
-import { Subject } from 'rxjs';
+import type { Observable } from 'rxjs';
+import { pairwise, startWith, Subject, takeUntil } from 'rxjs';
+import { handleChanges } from 'src/app/shared/functions/handle-changes';
+import type { NgZone } from '@angular/core';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { FeatureManager } from '../utility/feature-manager';
 import { MovementAnimator } from '../utility/movement-animator';
 import type {
@@ -16,7 +20,6 @@ import type {
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { TranslateInteraction } from '../utility/translate-interaction';
 import { ElementManager } from './element-manager';
-import { Geometry } from 'ol/geom';
 
 /**
  * Manages the position of the element.
@@ -123,5 +126,36 @@ export abstract class MoveableFeatureManager<
         droppedOnFeature: Feature<FeatureType>
     ): boolean {
         return false;
+    }
+
+    public abstract register(
+        changePopup$: Subject<OpenPopupOptions<any> | undefined>,
+        destroy$: Subject<void>,
+        ngZone: NgZone
+    ): void;
+
+    protected registerFeatureElementManager(
+        elementDictionary$: Observable<{ [id: UUID]: Element }>,
+        changePopup$: Subject<OpenPopupOptions<any> | undefined>,
+        destroy$: Subject<void>,
+        ngZone: NgZone
+    ) {
+        this.togglePopup$?.subscribe(changePopup$);
+        // Propagate the changes on an element to the featureManager
+        elementDictionary$
+            .pipe(startWith({}), pairwise(), takeUntil(destroy$))
+            .subscribe(([oldElementDictionary, newElementDictionary]) => {
+                // run outside angular zone for better performance
+                ngZone.runOutsideAngular(() => {
+                    handleChanges(oldElementDictionary, newElementDictionary, {
+                        createHandler: (element) =>
+                            this.onElementCreated(element),
+                        deleteHandler: (element) =>
+                            this.onElementDeleted(element),
+                        changeHandler: (oldElement, newElement) =>
+                            this.onElementChanged(oldElement, newElement),
+                    });
+                });
+            });
     }
 }

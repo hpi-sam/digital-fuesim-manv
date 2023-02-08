@@ -1,3 +1,5 @@
+import type { Type, NgZone } from '@angular/core';
+import type { Store } from '@ngrx/store';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
 import LineString from 'ol/geom/LineString';
@@ -6,8 +8,17 @@ import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
+import type { Subject } from 'rxjs';
+import { pairwise, startWith, takeUntil } from 'rxjs';
+import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
+import type { AppState } from 'src/app/state/app.state';
+import { selectTransferLines } from 'src/app/state/application/selectors/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import type { TransferLinesService } from '../../core/transfer-lines.service';
 import type { FeatureManager } from '../utility/feature-manager';
+import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ElementManager } from './element-manager';
 
 export class TransferLinesFeatureManager
@@ -15,7 +26,10 @@ export class TransferLinesFeatureManager
     implements FeatureManager<LineString>
 {
     public readonly layer: VectorLayer<VectorSource<LineString>>;
-    constructor() {
+    constructor(
+        private readonly store: Store<AppState>,
+        private readonly transferLinesService: TransferLinesService
+    ) {
         super();
         this.layer = this.createElementLayer<LineString>();
         this.layer.setStyle(
@@ -27,6 +41,43 @@ export class TransferLinesFeatureManager
                 }),
             })
         );
+    }
+    togglePopup$?: Subject<OpenPopupOptions<any, Type<any>>> | undefined;
+    register(
+        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
+        destroy$: Subject<void>,
+        ngZone: NgZone
+    ) {
+        if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
+            this.store
+                .select(selectTransferLines)
+                .pipe(startWith({}), pairwise(), takeUntil(destroy$))
+                .subscribe(([oldElementDictionary, newElementDictionary]) => {
+                    // run outside angular zone for better performance
+                    ngZone.runOutsideAngular(() => {
+                        handleChanges(
+                            oldElementDictionary,
+                            newElementDictionary,
+                            {
+                                createHandler: (element) =>
+                                    this.onElementCreated(element),
+                                deleteHandler: (element) =>
+                                    this.onElementDeleted(element),
+                                changeHandler: (oldElement, newElement) =>
+                                    this.onElementChanged(
+                                        oldElement,
+                                        newElement
+                                    ),
+                            }
+                        );
+                    });
+                });
+            this.transferLinesService.displayTransferLines$.subscribe(
+                (display) => {
+                    this.layer.setVisible(display);
+                }
+            );
+        }
     }
 
     createFeature(element: TransferLine): Feature<LineString> {

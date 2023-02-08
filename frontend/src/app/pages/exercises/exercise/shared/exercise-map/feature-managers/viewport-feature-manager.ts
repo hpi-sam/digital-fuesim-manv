@@ -1,22 +1,26 @@
+import type { Type, NgZone } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { MapCoordinates, Size, Viewport } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
 import type { Polygon } from 'ol/geom';
-import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
-import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
+import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
+import {
+    selectCurrentRole,
+    selectVisibleViewports,
+} from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
 import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
+import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
@@ -34,6 +38,18 @@ export class ViewportFeatureManager
     extends MoveableFeatureManager<Viewport, Polygon>
     implements FeatureManager<Polygon>
 {
+    public register(
+        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
+        destroy$: Subject<void>,
+        ngZone: NgZone
+    ): void {
+        super.registerFeatureElementManager(
+            this.store.select(selectVisibleViewports),
+            changePopup$,
+            destroy$,
+            ngZone
+        );
+    }
     constructor(
         olMap: OlMap,
         private readonly exerciseService: ExerciseService,

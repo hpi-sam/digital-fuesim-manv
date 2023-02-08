@@ -1,71 +1,48 @@
 import type { NgZone } from '@angular/core';
 import type { Store } from '@ngrx/store';
-import type {
-    ImmutableJsonObject,
-    MergeIntersection,
-    UUID,
-} from 'digital-fuesim-manv-shared';
 import { currentCoordinatesOf } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
-import { defaults as defaultInteractions } from 'ol/interaction';
 import TileLayer from 'ol/layer/Tile';
 import type VectorLayer from 'ol/layer/Vector';
 import OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
-import type { Observable } from 'rxjs';
-import { combineLatest, pairwise, startWith, Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    selectExerciseStatus,
     selectTileMapProperties,
-    selectTransferLines,
     selectViewports,
 } from 'src/app/state/application/selectors/exercise.selectors';
-import {
-    selectCurrentRole,
-    selectRestrictedViewport,
-    selectVisibleCateringLines,
-    selectVisibleMapImages,
-    selectVisibleMaterials,
-    selectVisiblePatients,
-    selectVisiblePersonnel,
-    selectVisibleSimulatedRegions,
-    selectVisibleTransferPoints,
-    selectVisibleVehicles,
-    selectVisibleViewports,
-} from 'src/app/state/application/selectors/shared.selectors';
+import { selectRestrictedViewport } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import type { TransferLinesService } from '../../core/transfer-lines.service';
-import { startingPosition } from '../../starting-position';
-import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
-import { DeleteFeatureManager } from '../feature-managers/delete-feature-manager';
-import type { ElementManager } from '../feature-managers/element-manager';
-import { MapImageFeatureManager } from '../feature-managers/map-images-feature-manager';
-import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
-import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
-import { PersonnelFeatureManager } from '../feature-managers/personnel-feature-manager';
-import { SimulatedRegionFeatureManager } from '../feature-managers/simulated-region-feature-manager';
-import { TransferLinesFeatureManager } from '../feature-managers/transfer-lines-feature-manager';
-import { TransferPointFeatureManager } from '../feature-managers/transfer-point-feature-manager';
-import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
+import type { TransferLinesService } from '../../../core/transfer-lines.service';
+import { startingPosition } from '../../../starting-position';
+import { CateringLinesFeatureManager } from '../../feature-managers/catering-lines-feature-manager';
+import { DeleteFeatureManager } from '../../feature-managers/delete-feature-manager';
+import { MapImageFeatureManager } from '../../feature-managers/map-images-feature-manager';
+import { MaterialFeatureManager } from '../../feature-managers/material-feature-manager';
+import { PatientFeatureManager } from '../../feature-managers/patient-feature-manager';
+import { PersonnelFeatureManager } from '../../feature-managers/personnel-feature-manager';
+import { SimulatedRegionFeatureManager } from '../../feature-managers/simulated-region-feature-manager';
+import { TransferLinesFeatureManager } from '../../feature-managers/transfer-lines-feature-manager';
+import { TransferPointFeatureManager } from '../../feature-managers/transfer-point-feature-manager';
+import { VehicleFeatureManager } from '../../feature-managers/vehicle-feature-manager';
 import {
     isInViewport,
     ViewportFeatureManager,
-} from '../feature-managers/viewport-feature-manager';
-import type { FeatureManager } from './feature-manager';
-import type { OpenPopupOptions } from './popup-manager';
-import { ResizeRectangleInteraction } from './resize-rectangle-interaction';
-import { TranslateInteraction } from './translate-interaction';
+} from '../../feature-managers/viewport-feature-manager';
+import type { FeatureManager } from '../feature-manager';
+import type { OpenPopupOptions } from '../popup-manager';
+import type { TranslateInteraction } from '../translate-interaction';
+import { OlMapInteractionsManager } from './ol-map-interactions-manager';
 
 /**
  * This class should run outside the Angular zone for performance reasons.
  */
 export class OlMapManager {
-    private readonly destroy$ = new Subject<void>();
+    public readonly destroy$ = new Subject<void>();
 
     public readonly olMap: OlMap;
     /**
@@ -85,7 +62,7 @@ export class OlMapManager {
      * featureManager.layer === layer
      * ```
      */
-    private readonly layerFeatureManagerDictionary = new Map<
+    public readonly layerFeatureManagerDictionary = new Map<
         VectorLayer<VectorSource>,
         FeatureManager<any>
     >();
@@ -142,7 +119,10 @@ export class OlMapManager {
 
         // FeatureManagers
 
-        const transferLinesFeatureManager = new TransferLinesFeatureManager();
+        const transferLinesFeatureManager = new TransferLinesFeatureManager(
+            this.store,
+            transferLinesService
+        );
         const transferPointFeatureManager = new TransferPointFeatureManager(
             this.olMap,
             this.store,
@@ -155,14 +135,17 @@ export class OlMapManager {
         );
         const vehicleFeatureManager = new VehicleFeatureManager(
             this.olMap,
+            this.store,
             this.exerciseService
         );
         const personnelFeatureManager = new PersonnelFeatureManager(
             this.olMap,
+            this.store,
             this.exerciseService
         );
         const materialFeatureManager = new MaterialFeatureManager(
             this.olMap,
+            this.store,
             this.exerciseService
         );
         const mapImageFeatureManager = new MapImageFeatureManager(
@@ -170,7 +153,9 @@ export class OlMapManager {
             this.exerciseService,
             this.store
         );
-        const cateringLinesFeatureManager = new CateringLinesFeatureManager();
+        const cateringLinesFeatureManager = new CateringLinesFeatureManager(
+            this.store
+        );
 
         const viewportFeatureManager = new ViewportFeatureManager(
             this.olMap,
@@ -188,71 +173,31 @@ export class OlMapManager {
             this.olMap,
             this.exerciseService
         );
-        if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
-            deleteFeatureManager.makeVisible();
-            this.registerFeatureElementManager(
-                transferLinesFeatureManager,
-                this.store.select(selectTransferLines)
-            );
-            transferLinesService.displayTransferLines$.subscribe((display) => {
-                transferLinesFeatureManager.layer.setVisible(display);
-            });
-            this.layerFeatureManagerDictionary.set(
-                deleteFeatureManager.layer,
-                deleteFeatureManager
-            );
-        }
-
-        this.registerFeatureElementManager(
-            transferPointFeatureManager,
-            this.store.select(selectVisibleTransferPoints)
-        );
-
-        this.registerFeatureElementManager(
-            patientFeatureManager,
-            this.store.select(selectVisiblePatients)
-        );
-
-        this.registerFeatureElementManager(
-            vehicleFeatureManager,
-            this.store.select(selectVisibleVehicles)
-        );
-
-        this.registerFeatureElementManager(
-            personnelFeatureManager,
-            this.store.select(selectVisiblePersonnel)
-        );
-
-        this.registerFeatureElementManager(
-            materialFeatureManager,
-            this.store.select(selectVisibleMaterials)
-        );
-
-        this.registerFeatureElementManager(
-            mapImageFeatureManager,
-            this.store.select(selectVisibleMapImages)
-        );
-
-        this.registerFeatureElementManager(
-            cateringLinesFeatureManager,
-            this.store.select(selectVisibleCateringLines)
-        );
-
-        this.registerFeatureElementManager(
-            viewportFeatureManager,
-            this.store.select(selectVisibleViewports)
-        );
-
-        this.registerFeatureElementManager(
-            simulatedRegionFeatureManager,
-            this.store.select(selectVisibleSimulatedRegions)
-        );
 
         // Register the Layers in the correct Order
         // The order represents the order of the layers on the map (last element is on top)
 
-        this.olMap.getLayers().clear();
-        this.olMap.addLayer(satelliteLayer);
+        const featureManagers = [
+            deleteFeatureManager,
+            simulatedRegionFeatureManager,
+            mapImageFeatureManager,
+            transferLinesFeatureManager,
+            transferPointFeatureManager,
+            vehicleFeatureManager,
+            cateringLinesFeatureManager,
+            patientFeatureManager,
+            personnelFeatureManager,
+            materialFeatureManager,
+            viewportFeatureManager,
+        ];
+
+        featureManagers.forEach((featureManager) => {
+            this.layerFeatureManagerDictionary.set(
+                featureManager.layer,
+                featureManager
+            );
+            featureManager.register(this.changePopup$, this.destroy$, ngZone);
+        });
 
         const featureLayers = [
             deleteFeatureManager.layer,
@@ -268,79 +213,30 @@ export class OlMapManager {
             viewportFeatureManager.layer,
         ];
 
+        this.olMap.getLayers().clear();
+        this.olMap.addLayer(satelliteLayer);
         // We just want to modify this for the Map not do anything with it after so we ignore the returned value
         // eslint-disable-next-line rxjs/no-ignored-observable
         this.olMap.getLayers().extend(featureLayers);
 
-        // Create Interactions
-
-        const translateInteraction = new TranslateInteraction({
-            layers: featureLayers,
-            hitTolerance: 10,
-            filter: (feature, layer) => {
-                const featureManager = this.layerFeatureManagerDictionary.get(
-                    layer as VectorLayer<VectorSource>
-                );
-                return featureManager === undefined
-                    ? false
-                    : featureManager.isFeatureTranslatable(feature);
-            },
-        });
-
-        const resizeViewportInteraction = new ResizeRectangleInteraction(
-            viewportFeatureManager.layer.getSource()!
+        const mapInteractionsManager = new OlMapInteractionsManager(
+            this.olMap.getInteractions(),
+            featureLayers,
+            store,
+            this,
+            viewportFeatureManager,
+            simulatedRegionFeatureManager
         );
-        const resizeSimulatedRegionInteraction = new ResizeRectangleInteraction(
-            simulatedRegionFeatureManager.layer.getSource()!
-        );
-        const alwaysInteractions = [translateInteraction];
-        const customInteractions =
-            selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
-                ? [
-                      ...alwaysInteractions,
-                      resizeViewportInteraction,
-                      resizeSimulatedRegionInteraction,
-                  ]
-                : alwaysInteractions;
-        const interactions = defaultInteractions({
-            pinchRotate: false,
-            altShiftDragRotate: false,
-            keyboard: true,
-        }).extend(customInteractions);
-
-        const mapInteractions = this.olMap.getInteractions();
-        mapInteractions.clear();
-        // We just want to modify this for the Map not do anything with it after so we ignore the returned value
-        // eslint-disable-next-line rxjs/no-ignored-observable
-        mapInteractions.extend(interactions.getArray());
+        mapInteractionsManager.applyInteractions();
+        mapInteractionsManager.registerHandlers();
 
         this.registerPopupTriggers();
-        this.registerDropHandler(translateInteraction);
-        this.registerViewportRestriction();
 
-        // Register handlers that disable or enable certain interactions
-        combineLatest([
-            this.store.select(selectExerciseStatus),
-            this.store.select(selectCurrentRole),
-        ])
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(([status, currentRole]) => {
-                const showPausedOverlay =
-                    status !== 'running' && currentRole === 'participant';
-                customInteractions.forEach((interaction) => {
-                    interaction.setActive(
-                        !showPausedOverlay && currentRole !== 'timeTravel'
-                    );
-                });
-                this.setPopupsEnabled(!showPausedOverlay);
-                this.getOlViewportElement().style.filter = showPausedOverlay
-                    ? 'brightness(50%)'
-                    : '';
-            });
+        this.registerViewportRestriction();
     }
 
     private popupsEnabled = true;
-    private setPopupsEnabled(enabled: boolean) {
+    public setPopupsEnabled(enabled: boolean) {
         this.popupsEnabled = enabled;
         if (!enabled) {
             // Close all open popups
@@ -384,41 +280,6 @@ export class OlMapManager {
             });
     }
 
-    private registerFeatureElementManager<
-        Element extends ImmutableJsonObject,
-        T extends MergeIntersection<
-            ElementManager<Element, any> & FeatureManager<any>
-        >
-    >(
-        featureManager: T,
-        elementDictionary$: Observable<{ [id: UUID]: Element }>
-    ) {
-        this.layerFeatureManagerDictionary.set(
-            featureManager.layer,
-            featureManager
-        );
-        featureManager.togglePopup$?.subscribe(this.changePopup$);
-        // Propagate the changes on an element to the featureManager
-        elementDictionary$
-            .pipe(startWith({}), pairwise(), takeUntil(this.destroy$))
-            .subscribe(([oldElementDictionary, newElementDictionary]) => {
-                // run outside angular zone for better performance
-                this.ngZone.runOutsideAngular(() => {
-                    handleChanges(oldElementDictionary, newElementDictionary, {
-                        createHandler: (element) =>
-                            featureManager.onElementCreated(element),
-                        deleteHandler: (element) =>
-                            featureManager.onElementDeleted(element),
-                        changeHandler: (oldElement, newElement) =>
-                            featureManager.onElementChanged(
-                                oldElement,
-                                newElement
-                            ),
-                    });
-                });
-            });
-    }
-
     private registerPopupTriggers() {
         this.olMap.on('singleclick', (event) => {
             if (!this.popupsEnabled) {
@@ -451,7 +312,7 @@ export class OlMapManager {
         });
     }
 
-    private registerDropHandler(translateInteraction: TranslateInteraction) {
+    public registerDropHandler(translateInteraction: TranslateInteraction) {
         translateInteraction.on('translateend', (event) => {
             const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
             const droppedFeature: Feature = event.features.getArray()[0]!;
@@ -482,7 +343,7 @@ export class OlMapManager {
         });
     }
 
-    private getOlViewportElement(): HTMLElement {
+    public getOlViewportElement(): HTMLElement {
         return this.olMap
             .getTargetElement()
             .querySelectorAll('.ol-viewport')[0] as HTMLElement;

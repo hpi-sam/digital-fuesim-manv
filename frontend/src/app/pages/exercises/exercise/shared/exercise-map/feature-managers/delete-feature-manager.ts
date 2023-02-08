@@ -1,3 +1,4 @@
+import type { Type, NgZone } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import type { MapBrowserEvent, View } from 'ol';
@@ -10,11 +11,14 @@ import type OlMap from 'ol/Map';
 import VectorSource from 'ol/source/Vector';
 import Icon from 'ol/style/Icon';
 import Style from 'ol/style/Style';
+import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectExerciseState } from 'src/app/state/application/selectors/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { FeatureManager } from '../utility/feature-manager';
+import type { OpenPopupOptions } from '../utility/popup-manager';
 
 function calculateTopRightViewPoint(view: View) {
     const extent = getTopRight(view.calculateExtent());
@@ -35,6 +39,16 @@ export class DeleteFeatureManager implements FeatureManager<Point> {
             renderBuffer: 250,
             source: new VectorSource<Point>(),
         });
+    }
+    togglePopup$?: Subject<OpenPopupOptions<any, Type<any>>> | undefined;
+    register(
+        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
+        destroy$: Subject<void>,
+        ngZone: NgZone
+    ) {
+        if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
+            this.makeVisible();
+        }
     }
     public makeVisible() {
         this.layer.setStyle(

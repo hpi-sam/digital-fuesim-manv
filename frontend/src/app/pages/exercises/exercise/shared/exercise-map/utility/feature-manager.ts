@@ -1,3 +1,4 @@
+import type { NgZone } from '@angular/core';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Geometry } from 'ol/geom';
 import type { TranslateEvent } from 'ol/interaction/Translate';
@@ -43,4 +44,10 @@ export interface FeatureManager<T extends Geometry> {
         droppedFeature: Feature<any>,
         droppedOnFeature: Feature<T>
     ) => boolean;
+
+    register: (
+        changePopup$: Subject<OpenPopupOptions<any> | undefined>,
+        destroy$: Subject<void>,
+        ngZone: NgZone
+    ) => void;
 }
