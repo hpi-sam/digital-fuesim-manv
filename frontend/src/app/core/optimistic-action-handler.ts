@@ -18,31 +18,31 @@ import {
  *     - this performAction must be called before the action resolves successfully
  */
 export class OptimisticActionHandler<
-    Action extends Immutable<JsonObject>,
-    State extends Immutable<JsonObject>,
+    Action extends JsonObject,
+    State extends JsonObject,
     ServerResponse extends SocketResponse
 > {
     constructor(
         /**
          * This function has to set the state synchronously to another value
          */
-        private readonly setState: (state: State) => void,
+        private readonly setState: (state: Immutable<State>) => void,
         /**
          * Returns the current state synchronously
          * It is expected that the first `getState` is in sync with the server
          */
-        private readonly getState: () => State,
+        private readonly getState: () => Immutable<State>,
         /**
          * Applies (reduces) the action to the state
          * It could happen that the action is not applicable to the state.
          * This happens e.g. if an optimistic action is applied, but the server state changed in the meantime.
          * In this case the action can just be ignored.
          */
-        private readonly applyAction: (action: Action) => void,
+        private readonly applyAction: (action: Immutable<Action>) => void,
         /**
          * Sends the action to the server and resolves with the servers response
          */
-        private readonly sendAction: (action: Action) => Promise<ServerResponse>
+        private readonly sendAction: (action: Immutable<Action>) => Promise<ServerResponse>
     ) {
         setupCypressTestingValues((values) => {
             values.proposedActions = this.proposedActions;
@@ -50,8 +50,8 @@ export class OptimisticActionHandler<
         });
     }
 
-    private readonly proposedActions: Action[] = [];
-    private readonly performedActions: Action[] = [];
+    private readonly proposedActions: Immutable<Action>[] = [];
+    private readonly performedActions: Immutable<Action>[] = [];
 
     /**
      * The state that is confirmed to be valid by the server.
@@ -65,12 +65,12 @@ export class OptimisticActionHandler<
      *
      * {@link getState()} === {@link serverState} + ...{@link optimisticallyAppliedActions}
      */
-    private readonly optimisticallyAppliedActions: Action[] = [];
+    private readonly optimisticallyAppliedActions: Immutable<Action>[] = [];
 
     /**
      * Remove the first action in {@link optimisticallyAppliedActions} that is deepEqual to the given @param action
      */
-    private removeFirstOptimisticAction(action: Action) {
+    private removeFirstOptimisticAction(action: Immutable<Action>) {
         for (let i = 0; i < this.optimisticallyAppliedActions.length; i++) {
             if (
                 this.actionsAreEqual(
@@ -93,7 +93,7 @@ export class OptimisticActionHandler<
      * @returns the response of the server
      */
     public async proposeAction(
-        proposedAction: Action,
+        proposedAction: Immutable<Action>,
         beOptimistic: boolean
     ): Promise<ServerResponse> {
         if (isBeingTestedByCypress()) this.proposedActions.push(proposedAction);
@@ -122,7 +122,7 @@ export class OptimisticActionHandler<
      * It is expected that successfully proposed actions are applied via this function too
      * @param action
      */
-    public performAction(action: Action) {
+    public performAction(action: Immutable<Action>) {
         if (isBeingTestedByCypress()) this.performedActions.push(action);
 
         // This is a shortcut to improve performance for obvious cases - If you remove it the code is still correct
@@ -165,7 +165,7 @@ export class OptimisticActionHandler<
      * This is a workaround until https://www.typescriptlang.org/tsconfig#exactOptionalPropertyTypes is activated in our codebase
      * If we send an action where an optional property is deleted, it is not equal to the action with this property set to undefined.
      */
-    private actionsAreEqual(action1: Action, action2: Action) {
+    private actionsAreEqual(action1: Immutable<Action>, action2: Immutable<Action>) {
         return isEqual(
             // This removes all undefined values from the action
             JSON.parse(JSON.stringify(action1)),
