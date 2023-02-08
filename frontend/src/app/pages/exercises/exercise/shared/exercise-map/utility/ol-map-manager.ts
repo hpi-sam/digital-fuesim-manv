@@ -1,7 +1,8 @@
 import type { NgZone } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type {
-    ImmutableJsonObject,
+    Immutable,
+    JsonObject,
     MergeIntersection,
     UUID,
 } from 'digital-fuesim-manv-shared';
@@ -377,7 +378,7 @@ export class OlMapManager {
     }
 
     private registerFeatureElementManager<
-        Element extends ImmutableJsonObject,
+        Element extends Immutable<JsonObject>,
         T extends MergeIntersection<
             ElementManager<Element, any> & FeatureManager<any>
         >

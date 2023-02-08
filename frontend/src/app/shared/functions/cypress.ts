@@ -11,9 +11,10 @@ export interface CypressTestingValues {
 export const setupCypressTestingValues = (
     apply: (values: Partial<CypressTestingValues>) => void
 ) => {
-    const anyWindow = window as any
+    const anyWindow = window as any;
     if (anyWindow.Cypress && !environment.production) {
-        if (!anyWindow.cypressTestingValues) anyWindow.cypressTestingValues = {}
+        if (!anyWindow.cypressTestingValues)
+            anyWindow.cypressTestingValues = {};
         apply(anyWindow.cypressTestingValues);
     }
 };

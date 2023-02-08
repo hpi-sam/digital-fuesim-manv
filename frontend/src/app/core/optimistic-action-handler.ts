@@ -1,6 +1,6 @@
 import type {
     Immutable,
-    ImmutableJsonObject,
+    JsonObject,
     SocketResponse,
 } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
@@ -14,35 +14,31 @@ import { isEqual } from 'lodash-es';
  *     - this performAction must be called before the action resolves successfully
  */
 export class OptimisticActionHandler<
-    Action extends ImmutableJsonObject,
-    State extends ImmutableJsonObject,
-    ServerResponse extends SocketResponse,
-    ImmutableAction extends Immutable<Action> = Immutable<Action>,
-    ImmutableState extends Immutable<State> = Immutable<State>
+    Action extends Immutable<JsonObject>,
+    State extends Immutable<JsonObject>,
+    ServerResponse extends SocketResponse
 > {
     constructor(
         /**
          * This function has to set the state synchronously to another value
          */
-        private readonly setState: (state: ImmutableState) => void,
+        private readonly setState: (state: State) => void,
         /**
          * Returns the current state synchronously
          * It is expected that the first `getState` is in sync with the server
          */
-        private readonly getState: () => ImmutableState,
+        private readonly getState: () => State,
         /**
          * Applies (reduces) the action to the state
          * It could happen that the action is not applicable to the state.
          * This happens e.g. if an optimistic action is applied, but the server state changed in the meantime.
          * In this case the action can just be ignored.
          */
-        private readonly applyAction: (action: ImmutableAction) => void,
+        private readonly applyAction: (action: Action) => void,
         /**
          * Sends the action to the server and resolves with the servers response
          */
-        private readonly sendAction: (
-            action: ImmutableAction
-        ) => Promise<ServerResponse>
+        private readonly sendAction: (action: Action) => Promise<ServerResponse>
     ) {}
 
     /**
@@ -57,12 +53,12 @@ export class OptimisticActionHandler<
      *
      * {@link getState()} === {@link serverState} + ...{@link optimisticallyAppliedActions}
      */
-    private readonly optimisticallyAppliedActions: ImmutableAction[] = [];
+    private readonly optimisticallyAppliedActions: Action[] = [];
 
     /**
      * Remove the first action in {@link optimisticallyAppliedActions} that is deepEqual to the given @param action
      */
-    private removeFirstOptimisticAction(action: ImmutableAction) {
+    private removeFirstOptimisticAction(action: Action) {
         for (let i = 0; i < this.optimisticallyAppliedActions.length; i++) {
             if (
                 this.actionsAreEqual(
@@ -84,8 +80,8 @@ export class OptimisticActionHandler<
      * This means that e.g. all actions with nondeterministic values that are added by the server must be send with {@link beOptimistic} = false.
      * @returns the response of the server
      */
-    public async proposeAction<A extends ImmutableAction>(
-        proposedAction: A,
+    public async proposeAction(
+        proposedAction: Action,
         beOptimistic: boolean
     ): Promise<ServerResponse> {
         if (!beOptimistic) {
@@ -112,7 +108,7 @@ export class OptimisticActionHandler<
      * It is expected that successfully proposed actions are applied via this function too
      * @param action
      */
-    public performAction<A extends ImmutableAction>(action: A) {
+    public performAction(action: Action) {
         // This is a shortcut to improve performance for obvious cases - If you remove it the code is still correct
         if (this.optimisticallyAppliedActions.length === 0) {
             this.applyAction(action);
@@ -153,10 +149,7 @@ export class OptimisticActionHandler<
      * This is a workaround until https://www.typescriptlang.org/tsconfig#exactOptionalPropertyTypes is activated in our codebase
      * If we send an action where an optional property is deleted, it is not equal to the action with this property set to undefined.
      */
-    private actionsAreEqual(
-        action1: ImmutableAction,
-        action2: ImmutableAction
-    ) {
+    private actionsAreEqual(action1: Action, action2: Action) {
         return isEqual(
             // This removes all undefined values from the action
             JSON.parse(JSON.stringify(action1)),

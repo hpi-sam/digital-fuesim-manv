@@ -93,7 +93,10 @@ export function performedActions() {
 
 export function createExercise() {
     cy.visit('/');
-    cy.window().its('cypressTestingValues').its('backendBaseUrl').as('backendBaseUrl');
+    cy.window()
+        .its('cypressTestingValues')
+        .its('backendBaseUrl')
+        .as('backendBaseUrl');
 
     cy.get('@backendBaseUrl').then((backendBaseUrl) =>
         cy

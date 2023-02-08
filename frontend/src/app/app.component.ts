@@ -12,8 +12,8 @@ import type { AppState } from './state/app.state';
 export class AppComponent {
     constructor(private readonly store: Store<AppState>) {
         setupCypressTestingValues((values) => {
-            values.store = this.store
-            values.backendBaseUrl = httpOrigin
-        })
+            values.store = this.store;
+            values.backendBaseUrl = httpOrigin;
+        });
     }
 }

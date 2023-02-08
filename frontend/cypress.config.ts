@@ -1,11 +1,11 @@
-import { defineConfig } from 'cypress'
+import { defineConfig } from 'cypress';
 
 export default defineConfig({
-  retries: {
-    runMode: 2,
-  },
-  e2e: {
-    baseUrl: 'http://localhost:4200',
-    experimentalStudio: true,
-  },
-})
+    retries: {
+        runMode: 2,
+    },
+    e2e: {
+        baseUrl: 'http://localhost:4200',
+        experimentalStudio: true,
+    },
+});
