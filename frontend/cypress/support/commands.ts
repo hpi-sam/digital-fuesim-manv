@@ -68,12 +68,13 @@ export function dragToMap(
 export function storeState() {
     return cy
         .window()
+        .its('cypressTestingValues')
         .its('store')
         .then((store: any) => store.source._value.application);
 }
 
 export function socket() {
-    return cy.window().its('socket');
+    return cy.window().its('cypressTestingValues').its('socket');
 }
 
 export function registerSocketListener() {
@@ -92,7 +93,7 @@ export function performedActions() {
 
 export function createExercise() {
     cy.visit('/');
-    cy.window().its('backendBaseUrl').as('backendBaseUrl');
+    cy.window().its('cypressTestingValues').its('backendBaseUrl').as('backendBaseUrl');
 
     cy.get('@backendBaseUrl').then((backendBaseUrl) =>
         cy

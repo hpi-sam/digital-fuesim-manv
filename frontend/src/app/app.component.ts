@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { environment } from 'src/environments/environment';
 import { httpOrigin } from './core/api-origins';
+import { setupCypressTestingValues } from './shared/functions/cypress';
 import type { AppState } from './state/app.state';
 
 @Component({
@@ -11,10 +11,9 @@ import type { AppState } from './state/app.state';
 })
 export class AppComponent {
     constructor(private readonly store: Store<AppState>) {
-        const anyWindow = window as any
-        if (anyWindow.Cypress && !environment.production) {
-            anyWindow.store = this.store
-            anyWindow.backendBaseUrl = httpOrigin
-        }
+        setupCypressTestingValues((values) => {
+            values.store = this.store
+            values.backendBaseUrl = httpOrigin
+        })
     }
 }

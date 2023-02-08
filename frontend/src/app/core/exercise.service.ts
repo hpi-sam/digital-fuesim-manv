@@ -14,6 +14,7 @@ import { filter, pairwise, Subject, switchMap, takeUntil } from 'rxjs';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
+import { setupCypressTestingValues } from '../shared/functions/cypress';
 import { handleChanges } from '../shared/functions/handle-changes';
 import type { AppState } from '../state/app.state';
 import {
@@ -65,10 +66,9 @@ export class ExerciseService {
         private readonly store: Store<AppState>,
         private readonly messageService: MessageService
     ) {
-        const anyWindow = window as any
-        if (anyWindow.Cypress && !environment.production) {
-            anyWindow.socket = this.socket
-        }
+        setupCypressTestingValues((values) => {
+            values.socket = this.socket
+        })
 
         this.socket.on('performAction', (action: ExerciseAction) => {
             freeze(action, true);
