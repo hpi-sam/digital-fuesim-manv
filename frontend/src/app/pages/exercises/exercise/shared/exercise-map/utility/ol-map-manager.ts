@@ -345,7 +345,7 @@ export class OlMapManager {
     }
 
     private registerViewportRestriction() {
-        this.tryToFitViewToViewports(false);
+        this.tryToFitViewForOverview(false);
         this.store
             .select(selectRestrictedViewport)
             .pipe(takeUntil(this.destroy$))
@@ -502,9 +502,9 @@ export class OlMapManager {
     }
 
     /**
-     * Sets the map's view to see all viewports.
+     * Sets the map's view to see all viewports and simulated regions.
      */
-    public tryToFitViewToViewports(animate = true) {
+    public tryToFitViewForOverview(animate = true) {
         if (
             selectStateSnapshot(selectRestrictedViewport, this.store) !==
             undefined
