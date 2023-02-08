@@ -7,7 +7,7 @@ describe('The alarm group overview on the exercise page', () => {
 
     it('can create alarm groups', () => {
         cy.get('[data-cy="alarmGroupAddButton"]').click();
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[AlarmGroup] Add AlarmGroup');
@@ -28,7 +28,7 @@ describe('The alarm group overview on the exercise page', () => {
             .type('ABC123');
 
         cy.wait(1000);
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[AlarmGroup] Rename AlarmGroup');
@@ -45,7 +45,7 @@ describe('The alarm group overview on the exercise page', () => {
         cy.get('[data-cy="alarmGroupAddButton"]').click();
         cy.get('[data-cy="alarmGroupsRemoveButton"]').first().click();
 
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[AlarmGroup] Remove AlarmGroup');
@@ -65,7 +65,7 @@ describe('The alarm group overview on the exercise page', () => {
             .first()
             .click();
 
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[AlarmGroup] Add AlarmGroupVehicle');
@@ -92,7 +92,7 @@ describe('The alarm group overview on the exercise page', () => {
             .type('10');
 
         cy.wait(1000);
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[AlarmGroup] Edit AlarmGroupVehicle');
@@ -118,7 +118,7 @@ describe('The alarm group overview on the exercise page', () => {
             .click();
         cy.get('[data-cy="alarmGroupRemoveVehicleButton"]').first().click();
 
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[AlarmGroup] Remove AlarmGroupVehicle');

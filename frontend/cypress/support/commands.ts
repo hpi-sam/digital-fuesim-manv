@@ -42,8 +42,6 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-const performedActionsStack: any[] = [];
-
 export function dragToMap(
     elementSelector: string,
     offset?: { x: number; y: number }
@@ -73,22 +71,12 @@ export function storeState() {
         .then((store: any) => store.source._value.application);
 }
 
-export function socket() {
-    return cy.window().its('cypressTestingValues').its('socket');
-}
-
-export function registerSocketListener() {
-    performedActionsStack.length = 0;
-    cy.socket().then((s) =>
-        s.on('performAction', (action: any) =>
-            performedActionsStack.push(action)
-        )
-    );
-    return cy;
-}
-
 export function performedActions() {
-    return cy.wrap(performedActionsStack);
+    return cy.window().its('cypressTestingValues').its('performedActions');
+}
+
+export function proposedActions() {
+    return cy.window().its('cypressTestingValues').its('proposedActions');
 }
 
 export function createExercise() {
@@ -114,7 +102,6 @@ export function joinExerciseAsTrainer() {
         cy.visit(`exercises/${trainerId}`)
     );
     cy.get('[data-cy=joinExerciseModalButton]').click();
-    cy.registerSocketListener();
     return cy;
 }
 
@@ -123,6 +110,5 @@ export function joinExerciseAsParticipant() {
         cy.visit(`exercises/${participantId}`)
     );
     cy.get('[data-cy=joinExerciseModalButton]').click();
-    cy.registerSocketListener();
     return cy;
 }

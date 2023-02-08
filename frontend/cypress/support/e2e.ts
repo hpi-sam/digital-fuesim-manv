@@ -19,9 +19,8 @@
 import {
     dragToMap,
     storeState,
-    socket,
     performedActions,
-    registerSocketListener,
+    proposedActions,
     createExercise,
     joinExerciseAsTrainer,
     joinExerciseAsParticipant,
@@ -35,9 +34,8 @@ declare global {
                 offset?: { x: number; y: number }
             ): Chainable;
             storeState(): Chainable;
-            socket(): Chainable;
-            registerSocketListener(): Chainable;
             performedActions(): Chainable;
+            proposedActions(): Chainable;
             createExercise(): Chainable;
             joinExerciseAsTrainer(): Chainable;
             joinExerciseAsParticipant(): Chainable;
@@ -47,9 +45,8 @@ declare global {
 
 Cypress.Commands.add('dragToMap', dragToMap);
 Cypress.Commands.add('storeState', storeState);
-Cypress.Commands.add('socket', socket);
-Cypress.Commands.add('registerSocketListener', registerSocketListener);
 Cypress.Commands.add('performedActions', performedActions);
+Cypress.Commands.add('proposedActions', proposedActions);
 Cypress.Commands.add('createExercise', createExercise);
 Cypress.Commands.add('joinExerciseAsTrainer', joinExerciseAsTrainer);
 Cypress.Commands.add('joinExerciseAsParticipant', joinExerciseAsParticipant);

@@ -6,7 +6,7 @@ describe('The trainer map editor on the exercise page', () => {
     it('can drag patients to the map', () => {
         cy.dragToMap('[data-cy=getPatientDiv]');
 
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[Patient] Add patient');
@@ -22,7 +22,7 @@ describe('The trainer map editor on the exercise page', () => {
     it('can drag vehicles to the map', () => {
         cy.dragToMap('[data-cy=getVehicleDiv]');
 
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[Vehicle] Add vehicle');
@@ -38,7 +38,7 @@ describe('The trainer map editor on the exercise page', () => {
     it('can drag viewports to the map', () => {
         cy.dragToMap('[data-cy=getViewportDiv]');
 
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[Viewport] Add viewport');
@@ -54,7 +54,7 @@ describe('The trainer map editor on the exercise page', () => {
     it('can drag simulated regions to the map', () => {
         cy.dragToMap('[data-cy=getSimulatedRegionDiv]');
 
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[SimulatedRegion] Add simulated region');
@@ -70,7 +70,7 @@ describe('The trainer map editor on the exercise page', () => {
     it('can drag transfer points to the map', () => {
         cy.dragToMap('[data-cy=getTransferPointDiv]');
 
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[TransferPoint] Add TransferPoint');
@@ -86,7 +86,7 @@ describe('The trainer map editor on the exercise page', () => {
     it('can drag map images to the map', () => {
         cy.dragToMap('[data-cy=getMapImageDiv]');
 
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[MapImage] Add MapImage');

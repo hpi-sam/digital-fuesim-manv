@@ -7,7 +7,7 @@ describe('The hospital overview on the exercise page', () => {
 
     it('can create hospitals', () => {
         cy.get('[data-cy="hospitalAddButton"]').click();
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[Hospital] Add hospital');
@@ -28,7 +28,7 @@ describe('The hospital overview on the exercise page', () => {
             .type('ABC123');
 
         cy.wait(1000);
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[Hospital] Rename hospital');
@@ -49,7 +49,7 @@ describe('The hospital overview on the exercise page', () => {
             .type('30');
 
         cy.wait(1000);
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[Hospital] Edit transportDuration to hospital');
@@ -66,7 +66,7 @@ describe('The hospital overview on the exercise page', () => {
         cy.get('[data-cy="hospitalAddButton"]').click();
         cy.get('[data-cy="hospitalDeleteButton"]').click();
 
-        cy.performedActions()
+        cy.proposedActions()
             .then((a) => a.at(-1))
             .its('type')
             .should('eq', '[Hospital] Remove hospital');

@@ -13,7 +13,6 @@ import { freeze } from 'immer';
 import { filter, pairwise, Subject, switchMap, takeUntil } from 'rxjs';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
-import { setupCypressTestingValues } from '../shared/functions/cypress';
 import { handleChanges } from '../shared/functions/handle-changes';
 import type { AppState } from '../state/app.state';
 import {
@@ -65,10 +64,6 @@ export class ExerciseService {
         private readonly store: Store<AppState>,
         private readonly messageService: MessageService
     ) {
-        setupCypressTestingValues((values) => {
-            values.socket = this.socket;
-        });
-
         this.socket.on('performAction', (action: ExerciseAction) => {
             freeze(action, true);
             this.optimisticActionHandler?.performAction(action);
