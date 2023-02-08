@@ -1,7 +1,6 @@
 import type { Size } from '../size';
-import type { Position } from './position';
+import type { WithPosition } from './with-position';
 
-export interface WithExtent {
-    readonly position: Position;
+export interface WithExtent extends WithPosition {
     readonly size: Size;
 }
