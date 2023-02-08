@@ -134,6 +134,8 @@ export namespace ExerciseActionReducers {
             // Refresh transfers
             refreshTransfer(draftState, 'vehicle', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);
+
+            simulateRegions(draftState, tickInterval);
             return draftState;
         },
         rights: 'server',
@@ -170,5 +172,14 @@ function refreshTransfer(
             return;
         }
         letElementArrive(draftState, type, element.id);
+    });
+}
+
+function simulateRegions(
+    draftState: Mutable<ExerciseState>,
+    tickInterval: number
+) {
+    Object.values(draftState.simulatedRegions).forEach((simulatedRegion) => {
+        // TODO: simulation loop
     });
 }
