@@ -122,17 +122,3 @@ export function joinExerciseAsParticipant() {
     cy.registerSocketListener();
     return cy;
 }
-
-export function deleteExercise() {
-    cy.get('@backendBaseUrl').then((backendBaseUrl) =>
-        cy
-            .get('@trainerId')
-            .then((trainerId) =>
-                cy.request(
-                    'DELETE',
-                    `${backendBaseUrl}/api/exercise/${trainerId}`
-                )
-            )
-    );
-    return cy;
-}

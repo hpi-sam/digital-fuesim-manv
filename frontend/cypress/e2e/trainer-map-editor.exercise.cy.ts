@@ -3,8 +3,6 @@ describe('The trainer map editor on the exercise page', () => {
         cy.createExercise().joinExerciseAsTrainer();
     });
 
-    afterEach(() => cy.deleteExercise())
-
     it('can drag patients to the map', () => {
         cy.dragToMap('[data-cy=getPatientDiv]');
 

@@ -25,7 +25,6 @@ import {
     createExercise,
     joinExerciseAsTrainer,
     joinExerciseAsParticipant,
-    deleteExercise,
 } from './commands';
 
 declare global {
@@ -40,7 +39,6 @@ declare global {
             registerSocketListener(): Chainable;
             performedActions(): Chainable;
             createExercise(): Chainable,
-            deleteExercise(): Chainable,
             joinExerciseAsTrainer(): Chainable,
             joinExerciseAsParticipant(): Chainable,
         }
@@ -53,6 +51,5 @@ Cypress.Commands.add('socket', socket);
 Cypress.Commands.add('registerSocketListener', registerSocketListener);
 Cypress.Commands.add('performedActions', performedActions);
 Cypress.Commands.add('createExercise', createExercise)
-Cypress.Commands.add('deleteExercise', deleteExercise)
 Cypress.Commands.add('joinExerciseAsTrainer', joinExerciseAsTrainer)
 Cypress.Commands.add('joinExerciseAsParticipant', joinExerciseAsParticipant)

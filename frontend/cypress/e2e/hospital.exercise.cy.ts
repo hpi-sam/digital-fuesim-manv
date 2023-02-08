@@ -5,8 +5,6 @@ describe('The hospital overview on the exercise page', () => {
         cy.get('[data-cy=trainerToolbarHospitalsButton]').click();
     });
 
-    afterEach(() => cy.deleteExercise());
-
     it('can create hospitals', () => {
         cy.get('[data-cy="hospitalAddButton"]').click();
         cy.performedActions()

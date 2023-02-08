@@ -5,8 +5,6 @@ describe('The alarm group overview on the exercise page', () => {
         cy.get('[data-cy=trainerToolbarAlarmGroupsButton]').click();
     });
 
-    afterEach(() => cy.deleteExercise());
-
     it('can create alarm groups', () => {
         cy.get('[data-cy="alarmGroupAddButton"]').click();
         cy.performedActions()
