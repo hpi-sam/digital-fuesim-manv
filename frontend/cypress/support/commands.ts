@@ -63,12 +63,16 @@ export function dragToMap(
     );
 }
 
-export function storeState() {
-    return cy
-        .window()
-        .its('cypressTestingValues')
-        .its('store')
-        .then((store: any) => store.source._value.application);
+export function store() {
+    return cy.window().its('cypressTestingValues').its('store');
+}
+
+export function getState() {
+    return cy.wrap(new Promise((resolve) => {
+        cy.store()
+            .invoke('select', 'application')
+            .invoke('subscribe', (state: any) => resolve(state));
+    }));
 }
 
 export function performedActions() {

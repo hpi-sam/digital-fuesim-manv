@@ -11,7 +11,7 @@ describe('The trainer map editor on the exercise page', () => {
             .its('type')
             .should('eq', '[Patient] Add patient');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('patients')
             .then((patients) => Object.keys(patients))
@@ -27,7 +27,7 @@ describe('The trainer map editor on the exercise page', () => {
             .its('type')
             .should('eq', '[Vehicle] Add vehicle');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('vehicles')
             .then((vehicles) => Object.keys(vehicles))
@@ -43,7 +43,7 @@ describe('The trainer map editor on the exercise page', () => {
             .its('type')
             .should('eq', '[Viewport] Add viewport');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('viewports')
             .then((viewports) => Object.keys(viewports))
@@ -59,7 +59,7 @@ describe('The trainer map editor on the exercise page', () => {
             .its('type')
             .should('eq', '[SimulatedRegion] Add simulated region');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('simulatedRegions')
             .then((simulatedRegions) => Object.keys(simulatedRegions))
@@ -75,7 +75,7 @@ describe('The trainer map editor on the exercise page', () => {
             .its('type')
             .should('eq', '[TransferPoint] Add TransferPoint');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('transferPoints')
             .then((transferPoints) => Object.keys(transferPoints))
@@ -91,7 +91,7 @@ describe('The trainer map editor on the exercise page', () => {
             .its('type')
             .should('eq', '[MapImage] Add MapImage');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('mapImages')
             .then((mapImages) => Object.keys(mapImages))

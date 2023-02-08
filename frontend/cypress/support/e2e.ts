@@ -18,12 +18,13 @@
 
 import {
     dragToMap,
-    storeState,
+    store,
     performedActions,
     proposedActions,
     createExercise,
     joinExerciseAsTrainer,
     joinExerciseAsParticipant,
+    getState,
 } from './commands';
 
 declare global {
@@ -33,7 +34,8 @@ declare global {
                 elementSelector: string,
                 offset?: { x: number; y: number }
             ): Chainable;
-            storeState(): Chainable;
+            store(): Chainable;
+            getState(): Chainable;
             performedActions(): Chainable;
             proposedActions(): Chainable;
             createExercise(): Chainable;
@@ -44,7 +46,8 @@ declare global {
 }
 
 Cypress.Commands.add('dragToMap', dragToMap);
-Cypress.Commands.add('storeState', storeState);
+Cypress.Commands.add('store', store);
+Cypress.Commands.add('getState', getState);
 Cypress.Commands.add('performedActions', performedActions);
 Cypress.Commands.add('proposedActions', proposedActions);
 Cypress.Commands.add('createExercise', createExercise);

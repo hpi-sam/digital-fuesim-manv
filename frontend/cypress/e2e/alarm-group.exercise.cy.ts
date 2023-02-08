@@ -12,7 +12,7 @@ describe('The alarm group overview on the exercise page', () => {
             .its('type')
             .should('eq', '[AlarmGroup] Add AlarmGroup');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
             .then((alarmGroups) => Object.keys(alarmGroups))
@@ -33,7 +33,7 @@ describe('The alarm group overview on the exercise page', () => {
             .its('type')
             .should('eq', '[AlarmGroup] Rename AlarmGroup');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
             .then((alarmGroups) => alarmGroups[Object.keys(alarmGroups)[0]!])
@@ -50,7 +50,7 @@ describe('The alarm group overview on the exercise page', () => {
             .its('type')
             .should('eq', '[AlarmGroup] Remove AlarmGroup');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
             .then((alarmGroups) => Object.keys(alarmGroups))
@@ -70,7 +70,7 @@ describe('The alarm group overview on the exercise page', () => {
             .its('type')
             .should('eq', '[AlarmGroup] Add AlarmGroupVehicle');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
             .then((alarmGroups) => alarmGroups[Object.keys(alarmGroups)[0]!])
@@ -97,7 +97,7 @@ describe('The alarm group overview on the exercise page', () => {
             .its('type')
             .should('eq', '[AlarmGroup] Edit AlarmGroupVehicle');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
             .then((alarmGroups) => alarmGroups[Object.keys(alarmGroups)[0]!])
@@ -123,7 +123,7 @@ describe('The alarm group overview on the exercise page', () => {
             .its('type')
             .should('eq', '[AlarmGroup] Remove AlarmGroupVehicle');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
             .then((alarmGroups) => alarmGroups[Object.keys(alarmGroups)[0]!])

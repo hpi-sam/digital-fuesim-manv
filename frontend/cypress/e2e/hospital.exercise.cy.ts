@@ -12,7 +12,7 @@ describe('The hospital overview on the exercise page', () => {
             .its('type')
             .should('eq', '[Hospital] Add hospital');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('hospitals')
             .then((hospitals) => Object.keys(hospitals))
@@ -33,7 +33,7 @@ describe('The hospital overview on the exercise page', () => {
             .its('type')
             .should('eq', '[Hospital] Rename hospital');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('hospitals')
             .then((hospitals) => hospitals[Object.keys(hospitals)[0]!])
@@ -54,7 +54,7 @@ describe('The hospital overview on the exercise page', () => {
             .its('type')
             .should('eq', '[Hospital] Edit transportDuration to hospital');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('hospitals')
             .then((hospitals) => hospitals[Object.keys(hospitals)[0]!])
@@ -71,7 +71,7 @@ describe('The hospital overview on the exercise page', () => {
             .its('type')
             .should('eq', '[Hospital] Remove hospital');
 
-        cy.storeState()
+        cy.getState()
             .its('exerciseState')
             .its('hospitals')
             .then((hospitals) => Object.keys(hospitals))
