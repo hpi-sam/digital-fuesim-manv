@@ -4,7 +4,6 @@ import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { IsPosition } from '../utils/validators/is-position';
 import { IsValue } from '../utils/validators';
 import {
-    currentCoordinatesOf,
     getCreate,
     lowerRightCornerOf,
     MapPosition,
