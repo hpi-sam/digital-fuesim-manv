@@ -6,7 +6,6 @@ import type {
     UUID,
 } from 'digital-fuesim-manv-shared';
 import {
-    currentCoordinatesOf,
     upperLeftCornerOf,
     lowerRightCornerOf,
 } from 'digital-fuesim-manv-shared';
@@ -361,11 +360,13 @@ export class OlMapManager {
                 }
                 const center = view.getCenter()!;
                 const previousZoom = view.getZoom()!;
+                const targetUpperLeftCorner = upperLeftCornerOf(viewport);
+                const targetLowerRightCorner = lowerRightCornerOf(viewport);
                 const targetExtent = [
-                    currentCoordinatesOf(viewport).x,
-                    currentCoordinatesOf(viewport).y - viewport.size.height,
-                    currentCoordinatesOf(viewport).x + viewport.size.width,
-                    currentCoordinatesOf(viewport).y,
+                    targetUpperLeftCorner.x,
+                    targetLowerRightCorner.y,
+                    targetLowerRightCorner.x,
+                    targetUpperLeftCorner.y,
                 ];
                 view.fit(targetExtent);
                 const matchingZoom = view.getZoom()!;
