@@ -2,7 +2,11 @@ import { groupBy } from 'lodash-es';
 import type { Material, Personnel } from '../../../models';
 import { Patient } from '../../../models';
 import type { MapCoordinates, PatientStatus } from '../../../models/utils';
-import { currentCoordinatesOf, isNotOnMap } from '../../../models/utils';
+import {
+    currentCoordinatesOf,
+    isNotOnMap,
+    isInSimulatedRegion,
+} from '../../../models/utils';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import { maxTreatmentRange } from '../../../state-helpers/max-treatment-range';
@@ -115,13 +119,10 @@ function updateCateringAroundPatient(
     }
 }
 
-function removeTreatmentsOfElement(
+export function removeTreatmentsOfElement(
     state: Mutable<ExerciseState>,
     element: Mutable<Material | Patient | Personnel>
 ) {
-    // TODO: when elements have their own type saved don't use const patient = getElement(state, 'patients', element.id);
-    // instead use const patient = element;
-    // same for personnel and material in the other if statements
     if (element.type === 'patient') {
         const patient = element;
         // Make all personnel stop treating this patient
@@ -170,8 +171,11 @@ export function updateTreatments(
     // Currently, the treatment pattern algorithm is stable. This means that completely done from scratch,
     // the result would semantically be the same. This could be changed later.
 
+    if (isInSimulatedRegion(element)) {
+        return;
+    }
+
     if (isNotOnMap(element)) {
-        // The element is no longer in a position (get it?!) to be treated or treat a patient
         removeTreatmentsOfElement(state, element);
         return;
     }
@@ -225,7 +229,7 @@ function updateCatering(
         (cateringElement.canCaterFor.red === 0 &&
             cateringElement.canCaterFor.yellow === 0 &&
             cateringElement.canCaterFor.green === 0) ||
-        // The element is no longer in a position to treat a patient
+        // The element is no longer in a position to treat a patient on the map
         isNotOnMap(cateringElement)
     ) {
         return;

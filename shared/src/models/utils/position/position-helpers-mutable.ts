@@ -1,6 +1,9 @@
 import type { ExerciseState } from '../../../state';
 import { getElement } from '../../../store/action-reducers/utils';
-import { updateTreatments } from '../../../store/action-reducers/utils/calculate-treatments';
+import {
+    removeTreatmentsOfElement,
+    updateTreatments,
+} from '../../../store/action-reducers/utils/calculate-treatments';
 import type { SpatialElementType } from '../../../store/action-reducers/utils/spatial-elements';
 import {
     removeElementPosition,
@@ -49,26 +52,29 @@ export function changePositionWithId(
 }
 
 export function changePosition(
-    of: WithMutablePosition,
+    element: WithMutablePosition,
     to: Position,
-    inState: Mutable<ExerciseState>
+    state: Mutable<ExerciseState>
 ) {
     if (
-        of.type === 'patient' ||
-        of.type === 'personnel' ||
-        of.type === 'material'
+        element.type === 'patient' ||
+        element.type === 'personnel' ||
+        element.type === 'material'
     ) {
         updateSpatialElementTree(
-            of as WithMutablePositionAndId,
+            element as WithMutablePositionAndId,
             to,
-            of.type,
-            inState
+            element.type,
+            state
         );
-        of.position = cloneDeepMutable(to);
-        updateTreatments(inState, of as any);
+        if (element.position.type !== to.type) {
+            removeTreatmentsOfElement(state, element as any);
+        }
+        element.position = cloneDeepMutable(to);
+        updateTreatments(state, element as any);
         return;
     }
-    of.position = cloneDeepMutable(to);
+    element.position = cloneDeepMutable(to);
 }
 
 function updateSpatialElementTree(
