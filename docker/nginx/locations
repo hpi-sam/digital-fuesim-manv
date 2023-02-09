@@ -3,6 +3,8 @@
 
     location /assets/about {
         # Requests to this location should not fall back to index.html
+        error_page 404 /non_existent_page.html;
+        error_page 403 /non_existent_page.html;
     }
 
     location / {
