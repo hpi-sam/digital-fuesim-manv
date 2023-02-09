@@ -4,10 +4,6 @@ import type {
     SocketResponse,
 } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
-import {
-    isBeingTestedByCypress,
-    setupCypressTestingValues,
-} from '../shared/functions/cypress';
 
 /**
  * This class handles optimistic actions on a state.
@@ -45,15 +41,7 @@ export class OptimisticActionHandler<
         private readonly sendAction: (
             action: Immutable<Action>
         ) => Promise<ServerResponse>
-    ) {
-        setupCypressTestingValues((values) => {
-            values.proposedActions = this.proposedActions;
-            values.performedAcctions = this.performedActions;
-        });
-    }
-
-    private readonly proposedActions: Immutable<Action>[] = [];
-    private readonly performedActions: Immutable<Action>[] = [];
+    ) {}
 
     /**
      * The state that is confirmed to be valid by the server.
@@ -98,8 +86,6 @@ export class OptimisticActionHandler<
         proposedAction: Immutable<Action>,
         beOptimistic: boolean
     ): Promise<ServerResponse> {
-        if (isBeingTestedByCypress()) this.proposedActions.push(proposedAction);
-
         if (!beOptimistic) {
             return this.sendAction(proposedAction);
         }
@@ -125,8 +111,6 @@ export class OptimisticActionHandler<
      * @param action
      */
     public performAction(action: Immutable<Action>) {
-        if (isBeingTestedByCypress()) this.performedActions.push(action);
-
         // This is a shortcut to improve performance for obvious cases - If you remove it the code is still correct
         if (this.optimisticallyAppliedActions.length === 0) {
             this.applyAction(action);
