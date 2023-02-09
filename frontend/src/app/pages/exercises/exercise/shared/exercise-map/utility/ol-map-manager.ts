@@ -5,6 +5,10 @@ import type {
     MergeIntersection,
     UUID,
 } from 'digital-fuesim-manv-shared';
+import {
+    upperLeftCornerOf,
+    lowerRightCornerOf,
+} from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
 import type { Polygon } from 'ol/geom';
@@ -24,6 +28,7 @@ import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectExerciseStatus,
+    selectSimulatedRegion,
     selectTileMapProperties,
     selectTransferLines,
     selectViewports,
@@ -138,6 +143,7 @@ export class OlMapManager {
         // The order in this array represents the order of the layers on the map (last element is on top)
         const featureLayers = [
             deleteFeatureLayer,
+            simulatedRegionLayer,
             mapImagesLayer,
             transferLinesLayer,
             transferPointLayer,
@@ -147,7 +153,6 @@ export class OlMapManager {
             personnelLayer,
             materialLayer,
             viewportLayer,
-            simulatedRegionLayer,
         ];
 
         // Interactions
@@ -305,7 +310,7 @@ export class OlMapManager {
             this.store.select(selectVisibleSimulatedRegions)
         );
 
-        this.registerPopupTriggers(translateInteraction);
+        this.registerPopupTriggers();
         this.registerDropHandler(translateInteraction);
         this.registerViewportRestriction();
 
@@ -340,7 +345,7 @@ export class OlMapManager {
     }
 
     private registerViewportRestriction() {
-        this.tryToFitViewToViewports(false);
+        this.tryToFitViewForOverview(false);
         this.store
             .select(selectRestrictedViewport)
             .pipe(takeUntil(this.destroy$))
@@ -355,11 +360,13 @@ export class OlMapManager {
                 }
                 const center = view.getCenter()!;
                 const previousZoom = view.getZoom()!;
+                const targetUpperLeftCorner = upperLeftCornerOf(viewport);
+                const targetLowerRightCorner = lowerRightCornerOf(viewport);
                 const targetExtent = [
-                    viewport.position.x,
-                    viewport.position.y - viewport.size.height,
-                    viewport.position.x + viewport.size.width,
-                    viewport.position.y,
+                    targetUpperLeftCorner.x,
+                    targetLowerRightCorner.y,
+                    targetLowerRightCorner.x,
+                    targetUpperLeftCorner.y,
                 ];
                 view.fit(targetExtent);
                 const matchingZoom = view.getZoom()!;
@@ -410,7 +417,7 @@ export class OlMapManager {
             });
     }
 
-    private registerPopupTriggers(translateInteraction: TranslateInteraction) {
+    private registerPopupTriggers() {
         this.olMap.on('singleclick', (event) => {
             if (!this.popupsEnabled) {
                 return;
@@ -435,20 +442,6 @@ export class OlMapManager {
             }
         });
 
-        // Automatically close the popup
-        translateInteraction.on('translating', (event) => {
-            if (
-                event.coordinate[0] === event.startCoordinate[0] &&
-                event.coordinate[1] === event.startCoordinate[1]
-            ) {
-                return;
-            }
-            this.changePopup$.next(undefined);
-        });
-        this.olMap.getView().on(['change:resolution', 'change:center'], () => {
-            this.changePopup$.next(undefined);
-        });
-
         this.openLayersContainer.addEventListener('keydown', (event) => {
             if ((event as KeyboardEvent).key === 'Escape') {
                 this.changePopup$.next(undefined);
@@ -459,20 +452,31 @@ export class OlMapManager {
     private registerDropHandler(translateInteraction: TranslateInteraction) {
         translateInteraction.on('translateend', (event) => {
             const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
-            this.olMap.forEachFeatureAtPixel(pixel, (feature, layer) => {
-                // Skip layer when unset
-                if (layer === null) {
-                    return;
+            const droppedFeature: Feature = event.features.getArray()[0]!;
+
+            this.olMap.forEachFeatureAtPixel(
+                pixel,
+                (droppedOnFeature, layer) => {
+                    // Skip layer when unset
+                    if (layer === null) {
+                        return;
+                    }
+
+                    // Do not drop a feature on itself
+                    if (droppedFeature === droppedOnFeature) {
+                        return;
+                    }
+
+                    // We stop propagating the event as soon as the onFeatureDropped function returns true
+                    return this.layerFeatureManagerDictionary
+                        .get(layer as VectorLayer<VectorSource>)!
+                        .onFeatureDrop(
+                            event,
+                            droppedFeature,
+                            droppedOnFeature as Feature
+                        );
                 }
-                // We stop propagating the event as soon as the onFeatureDropped function returns true
-                return this.layerFeatureManagerDictionary
-                    .get(layer as VectorLayer<VectorSource>)!
-                    .onFeatureDrop(
-                        event,
-                        event.features.getArray()[0]!,
-                        feature as Feature
-                    );
-            });
+            );
         });
     }
 
@@ -498,9 +502,9 @@ export class OlMapManager {
     }
 
     /**
-     * Sets the map's view to see all viewports.
+     * Sets the map's view to see all viewports and simulated regions.
      */
-    public tryToFitViewToViewports(animate = true) {
+    public tryToFitViewForOverview(animate = true) {
         if (
             selectStateSnapshot(selectRestrictedViewport, this.store) !==
             undefined
@@ -508,29 +512,28 @@ export class OlMapManager {
             // We are restricted to a viewport -> you can't fit the view
             return;
         }
-        const viewports = Object.values(
-            selectStateSnapshot(selectViewports, this.store)
-        );
+        const elements = [
+            ...Object.values(selectStateSnapshot(selectViewports, this.store)),
+            ...Object.values(
+                selectStateSnapshot(selectSimulatedRegion, this.store)
+            ),
+        ];
         const view = this.olMap.getView();
-        if (viewports.length === 0) {
+        if (elements.length === 0) {
             view.setCenter([startingPosition.x, startingPosition.y]);
             return;
         }
         const minX = Math.min(
-            ...viewports.map((viewport) => viewport.position.x)
+            ...elements.map((element) => upperLeftCornerOf(element).x)
         );
         const minY = Math.min(
-            ...viewports.map(
-                (viewport) => viewport.position.y - viewport.size.height
-            )
+            ...elements.map((element) => lowerRightCornerOf(element).y)
         );
         const maxX = Math.max(
-            ...viewports.map(
-                (viewport) => viewport.position.x + viewport.size.width
-            )
+            ...elements.map((element) => lowerRightCornerOf(element).x)
         );
         const maxY = Math.max(
-            ...viewports.map((viewport) => viewport.position.y)
+            ...elements.map((element) => upperLeftCornerOf(element).y)
         );
         const padding = 25;
         view.fit([minX, minY, maxX, maxY], {

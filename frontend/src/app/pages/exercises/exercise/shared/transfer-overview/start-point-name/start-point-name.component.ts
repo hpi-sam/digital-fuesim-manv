@@ -1,8 +1,5 @@
 import { Component, Input } from '@angular/core';
-import type {
-    AlarmGroupStartPoint,
-    TransferStartPoint,
-} from 'digital-fuesim-manv-shared';
+import { StartPoint } from 'digital-fuesim-manv-shared';
 
 @Component({
     selector: 'app-start-point-name',
@@ -10,5 +7,5 @@ import type {
     styleUrls: ['./start-point-name.component.scss'],
 })
 export class StartPointNameComponent {
-    @Input() startPoint!: AlarmGroupStartPoint | TransferStartPoint;
+    @Input() startPoint!: StartPoint;
 }

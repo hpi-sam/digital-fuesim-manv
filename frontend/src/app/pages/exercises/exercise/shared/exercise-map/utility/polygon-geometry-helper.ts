@@ -1,4 +1,7 @@
-import { Position } from 'digital-fuesim-manv-shared';
+import {
+    currentCoordinatesOf,
+    MapCoordinates,
+} from 'digital-fuesim-manv-shared';
 import { Feature } from 'ol';
 import { Polygon } from 'ol/geom';
 import type {
@@ -20,14 +23,20 @@ export class PolygonGeometryHelper
         element: ResizableElement
     ): Coordinates<Polygon> => [
         [
-            [element.position.x, element.position.y],
-            [element.position.x + element.size.width, element.position.y],
+            [currentCoordinatesOf(element).x, currentCoordinatesOf(element).y],
             [
-                element.position.x + element.size.width,
-                element.position.y - element.size.height,
+                currentCoordinatesOf(element).x + element.size.width,
+                currentCoordinatesOf(element).y,
             ],
-            [element.position.x, element.position.y - element.size.height],
-            [element.position.x, element.position.y],
+            [
+                currentCoordinatesOf(element).x + element.size.width,
+                currentCoordinatesOf(element).y - element.size.height,
+            ],
+            [
+                currentCoordinatesOf(element).x,
+                currentCoordinatesOf(element).y - element.size.height,
+            ],
+            [currentCoordinatesOf(element).x, currentCoordinatesOf(element).y],
         ],
     ];
 
@@ -51,7 +60,7 @@ export class PolygonGeometryHelper
     getFeaturePosition = (feature: Feature<Polygon>): Positions<Polygon> =>
         this.getFeatureCoordinates(feature).map((coordinates) =>
             coordinates.map((coordinate) =>
-                Position.create(coordinate[0]!, coordinate[1]!)
+                MapCoordinates.create(coordinate[0]!, coordinate[1]!)
             )
         );
 }
