@@ -6,17 +6,14 @@ import {
 } from 'digital-fuesim-manv-shared';
 import { Collection, View } from 'ol';
 import type { Interaction } from 'ol/interaction';
-import TileLayer from 'ol/layer/Tile';
 import type VectorLayer from 'ol/layer/Vector';
 import OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
-import XYZ from 'ol/source/XYZ';
 import { Subject, takeUntil } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectSimulatedRegion,
-    selectTileMapProperties,
     selectViewports,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectRestrictedViewport } from 'src/app/state/application/selectors/shared.selectors';
@@ -40,6 +37,7 @@ import {
 import type { FeatureManager } from '../feature-manager';
 import type { PopupManager } from '../popup-manager';
 import { OlMapInteractionsManager } from './ol-map-interactions-manager';
+import { SatelliteLayerManager } from './satellite-layer-manager';
 
 /**
  * This class should run outside the Angular zone for performance reasons.
@@ -68,7 +66,8 @@ export class OlMapManager {
     private featureManagers?: FeatureManager<any>[];
 
     private static readonly defaultZoom = 20;
-    mapInteractionsManager: OlMapInteractionsManager;
+    private readonly mapInteractionsManager: OlMapInteractionsManager;
+
     constructor(
         private readonly store: Store<AppState>,
         private readonly exerciseService: ExerciseService,
@@ -77,24 +76,6 @@ export class OlMapManager {
         private readonly transferLinesService: TransferLinesService,
         private readonly popupManager: PopupManager
     ) {
-        // Layers
-        const satelliteLayer = new TileLayer({
-            preload: Number.POSITIVE_INFINITY,
-        });
-        this.store
-            .select(selectTileMapProperties)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((tileMapProperties) => {
-                satelliteLayer.setSource(
-                    new XYZ({
-                        url: tileMapProperties.tileUrl,
-                        maxZoom: tileMapProperties.maxZoom,
-                        // We want to keep the tiles cached if we are zooming in and out fast
-                        cacheSize: 1000,
-                    })
-                );
-            });
-
         this.olMap = new OlMap({
             interactions: new Collection<Interaction>(),
             // We use Angular buttons instead
@@ -114,9 +95,6 @@ export class OlMapManager {
             }),
         });
 
-        this.olMap.getLayers().clear();
-        this.olMap.addLayer(satelliteLayer);
-
         this.initializeFeatureManagers();
 
         this.mapInteractionsManager = new OlMapInteractionsManager(
@@ -126,6 +104,14 @@ export class OlMapManager {
             popupManager,
             this.olMap
         );
+
+        const satelliteLayerManager = new SatelliteLayerManager(
+            store,
+            this.destroy$
+        );
+
+        this.olMap.getLayers().clear();
+        this.olMap.addLayer(satelliteLayerManager.satelliteLayer);
 
         this.featureManagers!.forEach((featureManager) => {
             this.layerFeatureManagerDictionary.set(
@@ -140,7 +126,9 @@ export class OlMapManager {
                 this.mapInteractionsManager
             );
         });
+
         this.registerViewportRestriction();
+
         popupManager.registerPopupTriggers(
             this.olMap,
             openLayersContainer,
@@ -184,12 +172,6 @@ export class OlMapManager {
                 const minZoom = Math.min(matchingZoom, view.getMaxZoom());
                 view.setMinZoom(minZoom);
             });
-    }
-
-    public getOlViewportElement(): HTMLElement {
-        return this.olMap
-            .getTargetElement()
-            .querySelectorAll('.ol-viewport')[0] as HTMLElement;
     }
 
     /**

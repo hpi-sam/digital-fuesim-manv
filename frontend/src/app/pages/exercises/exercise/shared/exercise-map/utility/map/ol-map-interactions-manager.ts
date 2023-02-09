@@ -111,8 +111,9 @@ export class OlMapInteractionsManager {
                     );
                 });
                 this.popupManager.setPopupsEnabled(!showPausedOverlay);
-                this.mapManager.getOlViewportElement().style.filter =
-                    showPausedOverlay ? 'brightness(50%)' : '';
+                this.getOlViewportElement().style.filter = showPausedOverlay
+                    ? 'brightness(50%)'
+                    : '';
             });
     }
 
@@ -144,5 +145,11 @@ export class OlMapInteractionsManager {
                 }
             );
         });
+    }
+
+    public getOlViewportElement(): HTMLElement {
+        return this.olMap
+            .getTargetElement()
+            .querySelectorAll('.ol-viewport')[0] as HTMLElement;
     }
 }
