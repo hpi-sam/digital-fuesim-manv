@@ -28,6 +28,9 @@ import {
     healthPointsDefaults,
     HealthPoints,
     getCreate,
+    isAlive,
+    isOnMap,
+    isInSimulatedRegion,
 } from './utils';
 import { Position } from './utils/position/position';
 import { PersonalInformation } from './utils/personal-information';
@@ -193,5 +196,12 @@ export class Patient {
 
     static isTreatedByPersonnel(patient: Patient) {
         return !isEmpty(patient.assignedPersonnelIds);
+    }
+
+    static canBeTreated(patient: Patient) {
+        return (
+            isAlive(patient.health) &&
+            (isOnMap(patient) || isInSimulatedRegion(patient))
+        );
     }
 }
