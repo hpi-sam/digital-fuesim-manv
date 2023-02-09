@@ -4,8 +4,7 @@ import {
     upperLeftCornerOf,
     lowerRightCornerOf,
 } from 'digital-fuesim-manv-shared';
-import type { Feature } from 'ol';
-import { Collection, Overlay, View } from 'ol';
+import { Collection, View } from 'ol';
 import type { Interaction } from 'ol/interaction';
 import TileLayer from 'ol/layer/Tile';
 import type VectorLayer from 'ol/layer/Vector';
@@ -39,7 +38,7 @@ import {
     ViewportFeatureManager,
 } from '../../feature-managers/viewport-feature-manager';
 import type { FeatureManager } from '../feature-manager';
-import type { OpenPopupOptions } from '../popup-manager';
+import type { PopupManager } from '../popup-manager';
 import { OlMapInteractionsManager } from './ol-map-interactions-manager';
 
 /**
@@ -53,11 +52,6 @@ export class OlMapManager {
      * If this subject emits options, the specified popup should be toggled.
      * If it emits undefined, the currently open popup should be closed.
      */
-    public readonly changePopup$ = new Subject<
-        OpenPopupOptions<any> | undefined
-    >();
-
-    public readonly popupOverlay: Overlay;
     /**
      * key: the layer that is passed to the featureManager, that is saved in the value
      * ```ts
@@ -79,9 +73,9 @@ export class OlMapManager {
         private readonly store: Store<AppState>,
         private readonly exerciseService: ExerciseService,
         private readonly openLayersContainer: HTMLDivElement,
-        private readonly popoverContainer: HTMLDivElement,
         private readonly ngZone: NgZone,
-        private readonly transferLinesService: TransferLinesService
+        private readonly transferLinesService: TransferLinesService,
+        private readonly popupManager: PopupManager
     ) {
         // Layers
         const satelliteLayer = new TileLayer({
@@ -100,9 +94,6 @@ export class OlMapManager {
                     })
                 );
             });
-        this.popupOverlay = new Overlay({
-            element: this.popoverContainer,
-        });
 
         this.olMap = new OlMap({
             interactions: new Collection<Interaction>(),
@@ -112,7 +103,7 @@ export class OlMapManager {
             // Note: The order of this array determines the order of the objects on the map.
             // The most bottom objects must be at the top of the array.
             layers: [],
-            overlays: [this.popupOverlay],
+            overlays: [this.popupManager.popupOverlay],
             view: new View({
                 center: [startingPosition.x, startingPosition.y],
                 zoom: OlMapManager.defaultZoom,
@@ -131,7 +122,9 @@ export class OlMapManager {
         this.mapInteractionsManager = new OlMapInteractionsManager(
             this.olMap.getInteractions(),
             store,
-            this
+            this,
+            popupManager,
+            this.olMap
         );
 
         this.featureManagers!.forEach((featureManager) => {
@@ -141,25 +134,18 @@ export class OlMapManager {
             );
             this.olMap.addLayer(featureManager.layer);
             featureManager.register(
-                this.changePopup$,
+                this.popupManager.changePopup$,
                 this.destroy$,
                 ngZone,
                 this.mapInteractionsManager
             );
         });
-
-        this.registerPopupTriggers();
-
         this.registerViewportRestriction();
-    }
-
-    private popupsEnabled = true;
-    public setPopupsEnabled(enabled: boolean) {
-        this.popupsEnabled = enabled;
-        if (!enabled) {
-            // Close all open popups
-            this.changePopup$.next(undefined);
-        }
+        popupManager.registerPopupTriggers(
+            this.olMap,
+            openLayersContainer,
+            this.layerFeatureManagerDictionary
+        );
     }
 
     private registerViewportRestriction() {
@@ -198,38 +184,6 @@ export class OlMapManager {
                 const minZoom = Math.min(matchingZoom, view.getMaxZoom());
                 view.setMinZoom(minZoom);
             });
-    }
-
-    private registerPopupTriggers() {
-        this.olMap.on('singleclick', (event) => {
-            if (!this.popupsEnabled) {
-                return;
-            }
-            this.olMap.forEachFeatureAtPixel(
-                event.pixel,
-                (feature, layer) => {
-                    // Skip layer when unset
-                    if (layer === null) {
-                        return false;
-                    }
-                    this.layerFeatureManagerDictionary
-                        .get(layer as VectorLayer<VectorSource>)!
-                        .onFeatureClicked(event, feature as Feature);
-                    // we only want the top one -> a truthy return breaks this loop
-                    return true;
-                },
-                { hitTolerance: 10 }
-            );
-            if (!this.olMap!.hasFeatureAtPixel(event.pixel)) {
-                this.changePopup$.next(undefined);
-            }
-        });
-
-        this.openLayersContainer.addEventListener('keydown', (event) => {
-            if ((event as KeyboardEvent).key === 'Escape') {
-                this.changePopup$.next(undefined);
-            }
-        });
     }
 
     public getOlViewportElement(): HTMLElement {

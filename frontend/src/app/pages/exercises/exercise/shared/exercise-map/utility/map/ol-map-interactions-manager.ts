@@ -7,10 +7,12 @@ import { combineLatest, takeUntil } from 'rxjs';
 import { selectExerciseStatus } from 'src/app/state/application/selectors/exercise.selectors';
 import type { Feature } from 'ol';
 import { Collection } from 'ol';
+import type OlMap from 'ol/Map';
 import type { AppState } from 'src/app/state/app.state';
 import type { Store } from '@ngrx/store';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { TranslateInteraction } from '../translate-interaction';
+import type { PopupManager } from '../popup-manager';
 import type { OlMapManager } from './ol-map-manager';
 
 export class OlMapInteractionsManager {
@@ -23,7 +25,9 @@ export class OlMapInteractionsManager {
     constructor(
         private readonly mapInteractions: Collection<Interaction>,
         private readonly store: Store<AppState>,
-        private readonly mapManager: OlMapManager
+        private readonly mapManager: OlMapManager,
+        private readonly popupManager: PopupManager,
+        private readonly olMap: OlMap
     ) {
         this.featureLayers = [];
         this.customInteractions = [];
@@ -106,7 +110,7 @@ export class OlMapInteractionsManager {
                         !showPausedOverlay && currentRole !== 'timeTravel'
                     );
                 });
-                this.mapManager.setPopupsEnabled(!showPausedOverlay);
+                this.popupManager.setPopupsEnabled(!showPausedOverlay);
                 this.mapManager.getOlViewportElement().style.filter =
                     showPausedOverlay ? 'brightness(50%)' : '';
             });
@@ -114,11 +118,9 @@ export class OlMapInteractionsManager {
 
     private registerDropHandler() {
         this.translateInteraction.on('translateend', (event) => {
-            const pixel = this.mapManager.olMap.getPixelFromCoordinate(
-                event.coordinate
-            );
+            const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
             const droppedFeature: Feature = event.features.getArray()[0]!;
-            this.mapManager.olMap.forEachFeatureAtPixel(
+            this.olMap.forEachFeatureAtPixel(
                 pixel,
                 (droppedOnFeature, layer) => {
                     // Skip layer when unset
