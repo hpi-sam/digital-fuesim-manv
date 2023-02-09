@@ -21,7 +21,8 @@ export class Viewport {
     public readonly type = 'viewport';
 
     /**
-     * top-left position
+     * Position of the viewport.
+     * For positive {@link size}s, this refers to the upper left corner of the viewport, but during resizing, corners may be swapped.
      *
      * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
      */
@@ -29,6 +30,11 @@ export class Viewport {
     @IsPosition()
     public readonly position: Position;
 
+    /**
+     * Size of the viewport.
+     * The width of a viewport grows to the left, the height grows downwards.
+     * Negative sizes, referring to the opposite direction, are possible.
+     */
     @ValidateNested()
     @Type(() => Size)
     public readonly size: Size;
