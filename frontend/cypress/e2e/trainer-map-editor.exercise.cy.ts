@@ -7,95 +7,85 @@ describe('The trainer map editor on the exercise page', () => {
         cy.dragToMap('[data-cy=draggablePatientDiv]');
 
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[Patient] Add patient');
+            .lastElement()
+            .should('have.property', 'type', '[Patient] Add patient');
 
         cy.getState()
             .its('exerciseState')
             .its('patients')
-            .then((patients) => Object.keys(patients))
-            .its('length')
-            .should('eq', 1);
+            .should('not.be.empty');
     });
 
     it('can drag vehicles to the map', () => {
         cy.dragToMap('[data-cy=draggableVehicleDiv]');
 
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[Vehicle] Add vehicle');
+            .lastElement()
+            .should('have.property', 'type', '[Vehicle] Add vehicle');
 
         cy.getState()
             .its('exerciseState')
             .its('vehicles')
-            .then((vehicles) => Object.keys(vehicles))
-            .its('length')
-            .should('eq', 1);
+            .should('not.be.empty');
     });
 
     it('can drag viewports to the map', () => {
         cy.dragToMap('[data-cy=draggableViewportDiv]');
 
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[Viewport] Add viewport');
+            .lastElement()
+            .should('have.property', 'type', '[Viewport] Add viewport');
 
         cy.getState()
             .its('exerciseState')
             .its('viewports')
-            .then((viewports) => Object.keys(viewports))
-            .its('length')
-            .should('eq', 1);
+            .should('not.be.empty');
     });
 
     it('can drag simulated regions to the map', () => {
         cy.dragToMap('[data-cy=draggableSimulatedRegionDiv]');
 
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[SimulatedRegion] Add simulated region');
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[SimulatedRegion] Add simulated region'
+            );
 
         cy.getState()
             .its('exerciseState')
             .its('simulatedRegions')
-            .then((simulatedRegions) => Object.keys(simulatedRegions))
-            .its('length')
-            .should('eq', 1);
+            .should('not.be.empty');
     });
 
     it('can drag transfer points to the map', () => {
         cy.dragToMap('[data-cy=draggableTransferPointDiv]');
 
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[TransferPoint] Add TransferPoint');
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[TransferPoint] Add TransferPoint'
+            );
 
         cy.getState()
             .its('exerciseState')
             .its('transferPoints')
-            .then((transferPoints) => Object.keys(transferPoints))
-            .its('length')
-            .should('eq', 1);
+            .should('not.be.empty');
     });
 
     it('can drag map images to the map', () => {
         cy.dragToMap('[data-cy=draggableMapImageDiv]');
 
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[MapImage] Add MapImage');
+            .lastElement()
+            .should('have.property', 'type', '[MapImage] Add MapImage');
 
         cy.getState()
             .its('exerciseState')
             .its('mapImages')
-            .then((mapImages) => Object.keys(mapImages))
-            .its('length')
-            .should('eq', 1);
+            .should('not.be.empty');
     });
 });

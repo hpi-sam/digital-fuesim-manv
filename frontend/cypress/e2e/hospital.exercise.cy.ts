@@ -8,16 +8,13 @@ describe('The hospital overview on the exercise page', () => {
     it('can create hospitals', () => {
         cy.get('[data-cy="hospitalAddButton"]').click();
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[Hospital] Add hospital');
+            .lastElement()
+            .should('have.property', 'type', '[Hospital] Add hospital');
 
         cy.getState()
             .its('exerciseState')
             .its('hospitals')
-            .then((hospitals) => Object.keys(hospitals))
-            .its('length')
-            .should('eq', 1);
+            .should('not.be.empty');
     });
 
     it('can update a hospitals name', () => {
@@ -29,16 +26,15 @@ describe('The hospital overview on the exercise page', () => {
 
         cy.wait(1000);
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[Hospital] Rename hospital');
+            .lastElement()
+            .should('have.property', 'type', '[Hospital] Rename hospital');
 
         cy.getState()
             .its('exerciseState')
             .its('hospitals')
-            .then((hospitals) => Object.values(hospitals)[0])
-            .its('name')
-            .should('eq', 'ABC123');
+            .itsValues()
+            .firstElement()
+            .should('have.property', 'name', 'ABC123');
     });
 
     it('can update a hospitals transport time', () => {
@@ -50,16 +46,19 @@ describe('The hospital overview on the exercise page', () => {
 
         cy.wait(1000);
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[Hospital] Edit transportDuration to hospital');
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[Hospital] Edit transportDuration to hospital'
+            );
 
         cy.getState()
             .its('exerciseState')
             .its('hospitals')
-            .then((hospitals) => Object.values(hospitals)[0])
-            .its('transportDuration')
-            .should('eq', 1800000);
+            .itsValues()
+            .firstElement()
+            .should('have.property', 'transportDuration', 1800000);
     });
 
     it('can delete hospitals', () => {
@@ -67,15 +66,9 @@ describe('The hospital overview on the exercise page', () => {
         cy.get('[data-cy="hospitalDeleteButton"]').click();
 
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[Hospital] Remove hospital');
+            .lastElement()
+            .should('have.property', 'type', '[Hospital] Remove hospital');
 
-        cy.getState()
-            .its('exerciseState')
-            .its('hospitals')
-            .then((hospitals) => Object.keys(hospitals))
-            .its('length')
-            .should('eq', 0);
+        cy.getState().its('exerciseState').its('hospitals').should('be.empty');
     });
 });

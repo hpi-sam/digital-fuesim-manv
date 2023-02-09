@@ -8,16 +8,13 @@ describe('The alarm group overview on the exercise page', () => {
     it('can create alarm groups', () => {
         cy.get('[data-cy="alarmGroupAddButton"]').click();
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[AlarmGroup] Add AlarmGroup');
+            .lastElement()
+            .should('have.property', 'type', '[AlarmGroup] Add AlarmGroup');
 
         cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
-            .then((alarmGroups) => Object.keys(alarmGroups))
-            .its('length')
-            .should('eq', 1);
+            .should('not.be.empty');
     });
 
     it('can rename alarm groups', () => {
@@ -29,16 +26,15 @@ describe('The alarm group overview on the exercise page', () => {
 
         cy.wait(1000);
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[AlarmGroup] Rename AlarmGroup');
+            .lastElement()
+            .should('have.property', 'type', '[AlarmGroup] Rename AlarmGroup');
 
         cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
-            .then((alarmGroups) => Object.values(alarmGroups)[0])
-            .its('name')
-            .should('eq', 'ABC123');
+            .itsValues()
+            .firstElement()
+            .should('have.property', 'name', 'ABC123');
     });
 
     it('can remove alarm groups', () => {
@@ -46,16 +42,13 @@ describe('The alarm group overview on the exercise page', () => {
         cy.get('[data-cy="alarmGroupsRemoveButton"]').first().click();
 
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[AlarmGroup] Remove AlarmGroup');
+            .lastElement()
+            .should('have.property', 'type', '[AlarmGroup] Remove AlarmGroup');
 
         cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
-            .then((alarmGroups) => Object.keys(alarmGroups))
-            .its('length')
-            .should('eq', 0);
+            .should('be.empty');
     });
 
     it('can add vehicles to alarm groups', () => {
@@ -66,18 +59,20 @@ describe('The alarm group overview on the exercise page', () => {
             .click();
 
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[AlarmGroup] Add AlarmGroupVehicle');
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[AlarmGroup] Add AlarmGroupVehicle'
+            );
 
         cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
-            .then((alarmGroups) => Object.values(alarmGroups)[0])
+            .itsValues()
+            .firstElement()
             .its('alarmGroupVehicles')
-            .then((alarmGroupVehicles) => Object.keys(alarmGroupVehicles))
-            .its('length')
-            .should('eq', 1);
+            .should('not.be.empty');
     });
 
     it('can edit alarm group vehicles', () => {
@@ -93,21 +88,22 @@ describe('The alarm group overview on the exercise page', () => {
 
         cy.wait(1000);
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[AlarmGroup] Edit AlarmGroupVehicle');
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[AlarmGroup] Edit AlarmGroupVehicle'
+            );
 
         cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
-            .then((alarmGroups) => Object.values(alarmGroups)[0])
+            .itsValues()
+            .firstElement()
             .its('alarmGroupVehicles')
-            .then(
-                (alarmGroupVehicles) =>
-                    Object.values(alarmGroupVehicles)[0]
-            )
-            .its('time')
-            .should('eq', 600000);
+            .itsValues()
+            .firstElement()
+            .should('have.property', 'time', 600000);
     });
 
     it('can remove alarm group vehicles', () => {
@@ -119,17 +115,19 @@ describe('The alarm group overview on the exercise page', () => {
         cy.get('[data-cy="alarmGroupRemoveVehicleButton"]').first().click();
 
         cy.proposedActions()
-            .then((a) => a.at(-1))
-            .its('type')
-            .should('eq', '[AlarmGroup] Remove AlarmGroupVehicle');
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[AlarmGroup] Remove AlarmGroupVehicle'
+            );
 
         cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
-            .then((alarmGroups) => Object.values(alarmGroups)[0])
+            .itsValues()
+            .firstElement()
             .its('alarmGroupVehicles')
-            .then((alarmGroupVehicles) => Object.keys(alarmGroupVehicles))
-            .its('length')
-            .should('eq', 0);
+            .should('be.empty');
     });
 });

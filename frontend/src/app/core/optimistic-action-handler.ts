@@ -42,7 +42,9 @@ export class OptimisticActionHandler<
         /**
          * Sends the action to the server and resolves with the servers response
          */
-        private readonly sendAction: (action: Immutable<Action>) => Promise<ServerResponse>
+        private readonly sendAction: (
+            action: Immutable<Action>
+        ) => Promise<ServerResponse>
     ) {
         setupCypressTestingValues((values) => {
             values.proposedActions = this.proposedActions;
@@ -165,7 +167,10 @@ export class OptimisticActionHandler<
      * This is a workaround until https://www.typescriptlang.org/tsconfig#exactOptionalPropertyTypes is activated in our codebase
      * If we send an action where an optional property is deleted, it is not equal to the action with this property set to undefined.
      */
-    private actionsAreEqual(action1: Immutable<Action>, action2: Immutable<Action>) {
+    private actionsAreEqual(
+        action1: Immutable<Action>,
+        action2: Immutable<Action>
+    ) {
         return isEqual(
             // This removes all undefined values from the action
             JSON.parse(JSON.stringify(action1)),

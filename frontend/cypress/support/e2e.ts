@@ -25,6 +25,10 @@ import {
     joinExerciseAsTrainer,
     joinExerciseAsParticipant,
     getState,
+    firstElement,
+    lastElement,
+    itsKeys,
+    itsValues,
 } from './commands';
 
 declare global {
@@ -41,15 +45,31 @@ declare global {
             createExercise(): Chainable;
             joinExerciseAsTrainer(): Chainable;
             joinExerciseAsParticipant(): Chainable;
+            firstElement(): Chainable;
+            lastElement(): Chainable;
+            itsKeys(): Chainable;
+            itsValues(): Chainable;
         }
     }
 }
 
-Cypress.Commands.add('dragToMap', dragToMap);
-Cypress.Commands.add('store', store);
-Cypress.Commands.add('getState', getState);
-Cypress.Commands.add('performedActions', performedActions);
-Cypress.Commands.add('proposedActions', proposedActions);
-Cypress.Commands.add('createExercise', createExercise);
-Cypress.Commands.add('joinExerciseAsTrainer', joinExerciseAsTrainer);
-Cypress.Commands.add('joinExerciseAsParticipant', joinExerciseAsParticipant);
+Cypress.Commands.addAll(
+    { prevSubject: true },
+    {
+        firstElement,
+        lastElement,
+        itsKeys,
+        itsValues,
+    }
+);
+
+Cypress.Commands.addAll({
+    dragToMap,
+    store,
+    getState,
+    performedActions,
+    proposedActions,
+    createExercise,
+    joinExerciseAsParticipant,
+    joinExerciseAsTrainer,
+});

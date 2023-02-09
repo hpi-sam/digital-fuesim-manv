@@ -42,6 +42,8 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+import type { JsonObject } from 'digital-fuesim-manv-shared';
+
 export function dragToMap(
     elementSelector: string,
     offset?: { x: number; y: number }
@@ -64,45 +66,59 @@ export function dragToMap(
 }
 
 export function store() {
-    return cy.window().its('cypressTestingValues').its('store');
+    return cy.window().its('cypressTestingValues', { log: false }).its('store');
 }
 
 export function getState() {
-    return cy.wrap(new Promise((resolve) => {
-        cy.store()
-            .invoke('select', 'application')
-            .invoke('subscribe', (state: any) => resolve(state));
-    }));
+    return cy.wrap(
+        new Promise((resolve) => {
+            cy.store()
+                .invoke({ log: false }, 'select', 'application')
+                .invoke({ log: false }, 'subscribe', (state: any) =>
+                    resolve(state)
+                )
+                .log('get state');
+        }),
+        { log: false }
+    );
 }
 
 export function performedActions() {
-    return cy.window().its('cypressTestingValues').its('performedActions');
+    return cy
+        .window()
+        .its('cypressTestingValues', { log: false })
+        .its('performedActions');
 }
 
 export function proposedActions() {
-    return cy.window().its('cypressTestingValues').its('proposedActions');
+    return cy
+        .window()
+        .its('cypressTestingValues', { log: false })
+        .its('proposedActions');
 }
 
 export function createExercise() {
     cy.visit('/');
     cy.window()
-        .its('cypressTestingValues')
+        .its('cypressTestingValues', { log: false })
         .its('backendBaseUrl')
         .as('backendBaseUrl');
 
-    cy.get('@backendBaseUrl').then((backendBaseUrl) =>
+    cy.get('@backendBaseUrl', { log: false }).then((backendBaseUrl) =>
         cy
             .request('POST', `${backendBaseUrl}/api/exercise`)
             .its('body')
             .as('createBody')
     );
-    cy.get('@createBody').its('trainerId').as('trainerId');
-    cy.get('@createBody').its('participantId').as('participantId');
+    cy.get('@createBody', { log: false }).its('trainerId').as('trainerId');
+    cy.get('@createBody', { log: false })
+        .its('participantId')
+        .as('participantId');
     return cy;
 }
 
 export function joinExerciseAsTrainer() {
-    cy.get('@trainerId').then((trainerId) =>
+    cy.get('@trainerId', { log: false }).then((trainerId) =>
         cy.visit(`exercises/${trainerId}`)
     );
     cy.get('[data-cy=joinExerciseModalButton]').click();
@@ -110,9 +126,25 @@ export function joinExerciseAsTrainer() {
 }
 
 export function joinExerciseAsParticipant() {
-    cy.get('@participantId').then((participantId) =>
+    cy.get('@participantId', { log: false }).then((participantId) =>
         cy.visit(`exercises/${participantId}`)
     );
     cy.get('[data-cy=joinExerciseModalButton]').click();
     return cy;
+}
+
+export function firstElement(subject: Array<unknown>) {
+    return cy.log('first element').wrap(subject.at(0), { log: false });
+}
+
+export function lastElement(subject: Array<unknown>) {
+    return cy.log('last element').wrap(subject.at(-1), { log: false });
+}
+
+export function itsKeys(subject: JsonObject) {
+    return cy.log('its keys').wrap(Object.keys(subject), { log: false });
+}
+
+export function itsValues(subject: JsonObject) {
+    return cy.log('its values').wrap(Object.values(subject), { log: false });
 }
