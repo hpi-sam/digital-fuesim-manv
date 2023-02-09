@@ -63,7 +63,7 @@ export class OlMapManager {
         FeatureManager<any>
     >();
 
-    private featureManagers?: FeatureManager<any>[];
+    private featureManagers: FeatureManager<any>[];
 
     private static readonly defaultZoom = 20;
     private readonly mapInteractionsManager: OlMapInteractionsManager;
@@ -94,7 +94,7 @@ export class OlMapManager {
                 constrainRotation: 1,
             }),
         });
-
+        this.featureManagers = [];
         this.initializeFeatureManagers();
 
         this.mapInteractionsManager = new OlMapInteractionsManager(
@@ -113,7 +113,7 @@ export class OlMapManager {
         this.olMap.getLayers().clear();
         this.olMap.addLayer(satelliteLayerManager.satelliteLayer);
 
-        this.featureManagers!.forEach((featureManager) => {
+        this.featureManagers.forEach((featureManager) => {
             this.layerFeatureManagerDictionary.set(
                 featureManager.layer,
                 featureManager
