@@ -28,6 +28,7 @@ import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { deletePatient } from './patient';
+import { completelyLoadVehicle as completelyLoadVehicleHelper } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 import { removeElementPosition } from './utils/spatial-elements';
 
@@ -125,6 +126,13 @@ export class LoadVehicleAction implements Action {
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementToBeLoadedId!: UUID;
+}
+
+export class CompletelyLoadVehicleAction implements Action {
+    @IsValue('[Vehicle] Completely load vehicle' as const)
+    public readonly type = '[Vehicle] Completely load vehicle';
+    @IsUUID(4, uuidValidationOptions)
+    public readonly vehicleId!: UUID;
 }
 
 export namespace VehicleActionReducers {
@@ -365,43 +373,24 @@ export namespace VehicleActionReducers {
                         VehiclePosition.create(vehicleId),
                         draftState
                     );
-                    // Load in all materials
-                    Object.keys(vehicle.materialIds).forEach((materialId) => {
-                        changePosition(
-                            getElement(draftState, 'material', materialId),
-                            VehiclePosition.create(vehicleId),
-                            draftState
-                        );
-                    });
 
-                    // Load in all personnel
-                    Object.keys(vehicle.personnelIds)
-                        .filter(
-                            // Skip personnel currently in transfer
-                            (personnelId) =>
-                                isNotInTransfer(
-                                    getElement(
-                                        draftState,
-                                        'personnel',
-                                        personnelId
-                                    )
-                                )
-                        )
-                        .forEach((personnelId) => {
-                            changePosition(
-                                getElement(
-                                    draftState,
-                                    'personnel',
-                                    personnelId
-                                ),
-                                VehiclePosition.create(vehicleId),
-                                draftState
-                            );
-                        });
+                    completelyLoadVehicleHelper(draftState, vehicle);
                 }
             }
             return draftState;
         },
         rights: 'participant',
     };
+
+    export const completelyLoadVehicle: ActionReducer<CompletelyLoadVehicleAction> =
+        {
+            action: CompletelyLoadVehicleAction,
+            reducer: (draftState, { vehicleId }) => {
+                const vehicle = getElement(draftState, 'vehicle', vehicleId);
+                completelyLoadVehicleHelper(draftState, vehicle);
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
 }

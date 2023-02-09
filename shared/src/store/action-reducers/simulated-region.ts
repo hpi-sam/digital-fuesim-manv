@@ -2,10 +2,12 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { SimulatedRegion } from '../../models';
 import {
+    isNotInVehicle,
     MapCoordinates,
     MapPosition,
     SimulatedRegionPosition,
     Size,
+    VehiclePosition,
 } from '../../models/utils';
 import {
     changePosition,
@@ -14,6 +16,8 @@ import {
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
+import { ReducerError } from '../reducer-error';
+import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 
 export class AddSimulatedRegionAction implements Action {
@@ -170,13 +174,23 @@ export namespace SimulatedRegionActionReducers {
                 draftState,
                 { simulatedRegionId, elementToBeAddedId, elementToBeAddedType }
             ) => {
-                // Test for existence of the simulate
+                // Test for existence of the simulated region
                 getElement(draftState, 'simulatedRegion', simulatedRegionId);
+
                 const element = getElement(
                     draftState,
                     elementToBeAddedType,
                     elementToBeAddedId
                 );
+
+                if (
+                    element.type === 'vehicle' &&
+                    !isCompletelyLoaded(draftState, element)
+                ) {
+                    throw new ReducerError(
+                        'Das Fahrzeug kann nur in die simulierte Region verschoben werden, wenn Personal und Material eingestiegen sind.'
+                    );
+                }
 
                 changePosition(
                     element,

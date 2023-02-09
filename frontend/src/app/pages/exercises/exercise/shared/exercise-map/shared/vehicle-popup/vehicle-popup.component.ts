@@ -28,7 +28,9 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public vehicle$?: Observable<Vehicle>;
-    public vehicleIsCompletelyUnloaded$?: Observable<boolean>;
+    public vehicleLoadState$?: Observable<
+        'completelyLoaded' | 'completelyUnloaded' | 'partiallyLoaded'
+    >;
     public readonly currentRole$ = this.store.select(selectCurrentRole);
 
     constructor(
@@ -38,7 +40,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
 
     async ngOnInit() {
         this.vehicle$ = this.store.select(createSelectVehicle(this.vehicleId));
-        this.vehicleIsCompletelyUnloaded$ = this.vehicle$.pipe(
+        this.vehicleLoadState$ = this.vehicle$.pipe(
             switchMap((_vehicle) => {
                 const materialsAreInVehicle$ = Object.keys(
                     _vehicle.materialIds
@@ -67,9 +69,17 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                     ...patientsAreInVehicle$,
                 ]);
             }),
-            map((areInVehicle) =>
-                areInVehicle.every((isInAVehicle) => !isInAVehicle)
-            )
+            map((areInVehicle) => {
+                if (areInVehicle.every((isInAVehicle) => isInAVehicle)) {
+                    return 'completelyLoaded';
+                } else if (
+                    areInVehicle.every((isInAVehicle) => !isInAVehicle)
+                ) {
+                    return 'completelyUnloaded';
+                }
+
+                return 'partiallyLoaded';
+            })
         );
     }
 
@@ -84,6 +94,14 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
     public unloadVehicle() {
         this.exerciseService.proposeAction({
             type: '[Vehicle] Unload vehicle',
+            vehicleId: this.vehicleId,
+        });
+        this.closePopup.emit();
+    }
+
+    public loadVehicle() {
+        this.exerciseService.proposeAction({
+            type: '[Vehicle] Completely load vehicle',
             vehicleId: this.vehicleId,
         });
         this.closePopup.emit();
