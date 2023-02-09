@@ -6,7 +6,10 @@ import type {
     MergeIntersection,
     UUID,
 } from 'digital-fuesim-manv-shared';
-import { currentCoordinatesOf } from 'digital-fuesim-manv-shared';
+import {
+    upperLeftCornerOf,
+    lowerRightCornerOf,
+} from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Overlay, View } from 'ol';
 import type { Polygon } from 'ol/geom';
@@ -26,6 +29,7 @@ import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectExerciseStatus,
+    selectSimulatedRegion,
     selectTileMapProperties,
     selectTransferLines,
     selectViewports,
@@ -342,7 +346,7 @@ export class OlMapManager {
     }
 
     private registerViewportRestriction() {
-        this.tryToFitViewToViewports(false);
+        this.tryToFitViewForOverview(false);
         this.store
             .select(selectRestrictedViewport)
             .pipe(takeUntil(this.destroy$))
@@ -357,11 +361,13 @@ export class OlMapManager {
                 }
                 const center = view.getCenter()!;
                 const previousZoom = view.getZoom()!;
+                const targetUpperLeftCorner = upperLeftCornerOf(viewport);
+                const targetLowerRightCorner = lowerRightCornerOf(viewport);
                 const targetExtent = [
-                    currentCoordinatesOf(viewport).x,
-                    currentCoordinatesOf(viewport).y - viewport.size.height,
-                    currentCoordinatesOf(viewport).x + viewport.size.width,
-                    currentCoordinatesOf(viewport).y,
+                    targetUpperLeftCorner.x,
+                    targetLowerRightCorner.y,
+                    targetLowerRightCorner.x,
+                    targetUpperLeftCorner.y,
                 ];
                 view.fit(targetExtent);
                 const matchingZoom = view.getZoom()!;
@@ -497,9 +503,9 @@ export class OlMapManager {
     }
 
     /**
-     * Sets the map's view to see all viewports.
+     * Sets the map's view to see all viewports and simulated regions.
      */
-    public tryToFitViewToViewports(animate = true) {
+    public tryToFitViewForOverview(animate = true) {
         if (
             selectStateSnapshot(selectRestrictedViewport, this.store) !==
             undefined
@@ -507,31 +513,28 @@ export class OlMapManager {
             // We are restricted to a viewport -> you can't fit the view
             return;
         }
-        const viewports = Object.values(
-            selectStateSnapshot(selectViewports, this.store)
-        );
+        const elements = [
+            ...Object.values(selectStateSnapshot(selectViewports, this.store)),
+            ...Object.values(
+                selectStateSnapshot(selectSimulatedRegion, this.store)
+            ),
+        ];
         const view = this.olMap.getView();
-        if (viewports.length === 0) {
+        if (elements.length === 0) {
             view.setCenter([startingPosition.x, startingPosition.y]);
             return;
         }
         const minX = Math.min(
-            ...viewports.map((viewport) => currentCoordinatesOf(viewport).x)
+            ...elements.map((element) => upperLeftCornerOf(element).x)
         );
         const minY = Math.min(
-            ...viewports.map(
-                (viewport) =>
-                    currentCoordinatesOf(viewport).y - viewport.size.height
-            )
+            ...elements.map((element) => lowerRightCornerOf(element).y)
         );
         const maxX = Math.max(
-            ...viewports.map(
-                (viewport) =>
-                    currentCoordinatesOf(viewport).x + viewport.size.width
-            )
+            ...elements.map((element) => lowerRightCornerOf(element).x)
         );
         const maxY = Math.max(
-            ...viewports.map((viewport) => currentCoordinatesOf(viewport).y)
+            ...elements.map((element) => upperLeftCornerOf(element).y)
         );
         const padding = 25;
         view.fit([minX, minY, maxX, maxY], {

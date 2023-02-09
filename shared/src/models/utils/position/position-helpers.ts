@@ -1,11 +1,12 @@
 import type { UUID } from '../../../utils';
 import type { Transfer } from '../transfer';
-import type { MapCoordinates } from './map-coordinates';
+import { MapCoordinates } from './map-coordinates';
 import type { MapPosition } from './map-position';
 import type { Position } from './position';
 import type { SimulatedRegionPosition } from './simulated-region-position';
 import type { TransferPosition } from './transfer-position';
 import type { VehiclePosition } from './vehicle-position';
+import type { WithExtent } from './with-extent';
 import type { WithPosition } from './with-position';
 
 export function isOnMap(withPosition: WithPosition): boolean {
@@ -130,4 +131,32 @@ export function simulatedRegionIdOfPosition(position: Position): UUID {
     throw new TypeError(
         `Expected position to be in simulatedRegion. Was of type ${position.type}.`
     );
+}
+
+export function upperLeftCornerOf(element: WithExtent): MapCoordinates {
+    const corner = { ...currentCoordinatesOf(element) };
+
+    if (element.size.width < 0) {
+        corner.x += element.size.width;
+    }
+
+    if (element.size.height < 0) {
+        corner.y -= element.size.height;
+    }
+
+    return MapCoordinates.create(corner.x, corner.y);
+}
+
+export function lowerRightCornerOf(element: WithExtent): MapCoordinates {
+    const corner = { ...currentCoordinatesOf(element) };
+
+    if (element.size.width > 0) {
+        corner.x += element.size.width;
+    }
+
+    if (element.size.height > 0) {
+        corner.y -= element.size.height;
+    }
+
+    return MapCoordinates.create(corner.x, corner.y);
 }
