@@ -11,9 +11,9 @@ import type OlMap from 'ol/Map';
 import type { AppState } from 'src/app/state/app.state';
 import type { Store } from '@ngrx/store';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import { TranslateInteraction } from '../translate-interaction';
-import type { PopupManager } from '../popup-manager';
 import type { OlMapManager } from './ol-map-manager';
+import { TranslateInteraction } from './translate-interaction';
+import type { PopupManager } from './popup-manager';
 
 export class OlMapInteractionsManager {
     private readonly featureLayers: VectorLayer<VectorSource>[];

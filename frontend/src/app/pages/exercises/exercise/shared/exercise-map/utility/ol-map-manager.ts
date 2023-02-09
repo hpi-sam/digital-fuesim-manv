@@ -18,24 +18,24 @@ import {
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectRestrictedViewport } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import type { TransferLinesService } from '../../../core/transfer-lines.service';
-import { startingPosition } from '../../../starting-position';
-import { CateringLinesFeatureManager } from '../../feature-managers/catering-lines-feature-manager';
-import { DeleteFeatureManager } from '../../feature-managers/delete-feature-manager';
-import { MapImageFeatureManager } from '../../feature-managers/map-images-feature-manager';
-import { MaterialFeatureManager } from '../../feature-managers/material-feature-manager';
-import { PatientFeatureManager } from '../../feature-managers/patient-feature-manager';
-import { PersonnelFeatureManager } from '../../feature-managers/personnel-feature-manager';
-import { SimulatedRegionFeatureManager } from '../../feature-managers/simulated-region-feature-manager';
-import { TransferLinesFeatureManager } from '../../feature-managers/transfer-lines-feature-manager';
-import { TransferPointFeatureManager } from '../../feature-managers/transfer-point-feature-manager';
-import { VehicleFeatureManager } from '../../feature-managers/vehicle-feature-manager';
+import type { TransferLinesService } from '../../core/transfer-lines.service';
+import { startingPosition } from '../../starting-position';
+import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
+import { DeleteFeatureManager } from '../feature-managers/delete-feature-manager';
+import { MapImageFeatureManager } from '../feature-managers/map-images-feature-manager';
+import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
+import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
+import { PersonnelFeatureManager } from '../feature-managers/personnel-feature-manager';
+import { SimulatedRegionFeatureManager } from '../feature-managers/simulated-region-feature-manager';
+import { TransferLinesFeatureManager } from '../feature-managers/transfer-lines-feature-manager';
+import { TransferPointFeatureManager } from '../feature-managers/transfer-point-feature-manager';
+import { VehicleFeatureManager } from '../feature-managers/vehicle-feature-manager';
 import {
     isInViewport,
     ViewportFeatureManager,
-} from '../../feature-managers/viewport-feature-manager';
-import type { FeatureManager } from '../feature-manager';
-import type { PopupManager } from '../popup-manager';
+} from '../feature-managers/viewport-feature-manager';
+import type { FeatureManager } from './feature-manager';
+import type { PopupManager } from './popup-manager';
 import { OlMapInteractionsManager } from './ol-map-interactions-manager';
 import { SatelliteLayerManager } from './satellite-layer-manager';
 

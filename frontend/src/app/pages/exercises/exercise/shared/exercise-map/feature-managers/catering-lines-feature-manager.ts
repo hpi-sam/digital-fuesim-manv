@@ -14,7 +14,7 @@ import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { AppState } from 'src/app/state/app.state';
 import { selectVisibleCateringLines } from 'src/app/state/application/selectors/shared.selectors';
 import type { FeatureManager } from '../utility/feature-manager';
-import type { OlMapInteractionsManager } from '../utility/map/ol-map-interactions-manager';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { LineStyleHelper } from '../utility/style-helper/line-style-helper';
 import { ElementManager } from './element-manager';

@@ -19,7 +19,7 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
-import type { OlMapInteractionsManager } from '../utility/map/ol-map-interactions-manager';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';

@@ -9,7 +9,7 @@ import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectVisiblePersonnel } from 'src/app/state/application/selectors/shared.selectors';
 import { PersonnelPopupComponent } from '../shared/personnel-popup/personnel-popup.component';
-import type { OlMapInteractionsManager } from '../utility/map/ol-map-interactions-manager';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import type { OpenPopupOptions } from '../utility/popup-manager';

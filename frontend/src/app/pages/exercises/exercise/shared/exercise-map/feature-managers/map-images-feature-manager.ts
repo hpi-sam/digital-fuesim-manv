@@ -13,7 +13,7 @@ import {
 } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popup.component';
-import type { OlMapInteractionsManager } from '../utility/map/ol-map-interactions-manager';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import type { OpenPopupOptions } from '../utility/popup-manager';

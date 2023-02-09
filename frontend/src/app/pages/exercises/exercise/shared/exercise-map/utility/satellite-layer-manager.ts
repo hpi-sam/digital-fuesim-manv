@@ -1,4 +1,4 @@
-import { Store } from '@ngrx/store';
+import type { Store } from '@ngrx/store';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { takeUntil } from 'rxjs';
