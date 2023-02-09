@@ -44,7 +44,7 @@ This project is currently developed as a [bachelor project](https://hpi.de/en/st
 
 ### Gotchas
 
-If you want the best developer experience, make sure to always install dependencies with `npm install --install-links=false`. The default option changed from previously `false` to `true` with version 9.
+If you want the best developer experience, make sure to always install dependencies with `npm install`. The default option changed from previously `false` to `true` with version 9.
 
 ## Starting for development
 
