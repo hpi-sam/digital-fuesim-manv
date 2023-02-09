@@ -36,7 +36,7 @@ describe('The hospital overview on the exercise page', () => {
         cy.getState()
             .its('exerciseState')
             .its('hospitals')
-            .then((hospitals) => hospitals[Object.keys(hospitals)[0]!])
+            .then((hospitals) => Object.values(hospitals)[0])
             .its('name')
             .should('eq', 'ABC123');
     });
@@ -57,7 +57,7 @@ describe('The hospital overview on the exercise page', () => {
         cy.getState()
             .its('exerciseState')
             .its('hospitals')
-            .then((hospitals) => hospitals[Object.keys(hospitals)[0]!])
+            .then((hospitals) => Object.values(hospitals)[0])
             .its('transportDuration')
             .should('eq', 1800000);
     });

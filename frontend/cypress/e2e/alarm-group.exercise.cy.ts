@@ -36,7 +36,7 @@ describe('The alarm group overview on the exercise page', () => {
         cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
-            .then((alarmGroups) => alarmGroups[Object.keys(alarmGroups)[0]!])
+            .then((alarmGroups) => Object.values(alarmGroups)[0])
             .its('name')
             .should('eq', 'ABC123');
     });
@@ -73,7 +73,7 @@ describe('The alarm group overview on the exercise page', () => {
         cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
-            .then((alarmGroups) => alarmGroups[Object.keys(alarmGroups)[0]!])
+            .then((alarmGroups) => Object.values(alarmGroups)[0])
             .its('alarmGroupVehicles')
             .then((alarmGroupVehicles) => Object.keys(alarmGroupVehicles))
             .its('length')
@@ -100,11 +100,11 @@ describe('The alarm group overview on the exercise page', () => {
         cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
-            .then((alarmGroups) => alarmGroups[Object.keys(alarmGroups)[0]!])
+            .then((alarmGroups) => Object.values(alarmGroups)[0])
             .its('alarmGroupVehicles')
             .then(
                 (alarmGroupVehicles) =>
-                    alarmGroupVehicles[Object.keys(alarmGroupVehicles)[0]!]
+                    Object.values(alarmGroupVehicles)[0]
             )
             .its('time')
             .should('eq', 600000);
@@ -126,7 +126,7 @@ describe('The alarm group overview on the exercise page', () => {
         cy.getState()
             .its('exerciseState')
             .its('alarmGroups')
-            .then((alarmGroups) => alarmGroups[Object.keys(alarmGroups)[0]!])
+            .then((alarmGroups) => Object.values(alarmGroups)[0])
             .its('alarmGroupVehicles')
             .then((alarmGroupVehicles) => Object.keys(alarmGroupVehicles))
             .its('length')
