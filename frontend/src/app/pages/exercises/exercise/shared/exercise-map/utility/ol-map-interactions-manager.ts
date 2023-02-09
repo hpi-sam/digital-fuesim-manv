@@ -12,7 +12,7 @@ import type OlMap from 'ol/Map';
 import type { AppState } from 'src/app/state/app.state';
 import type { Store } from '@ngrx/store';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import type { OlMapManager } from './ol-map-manager';
+import type { ExerciseStatus, Role } from 'digital-fuesim-manv-shared';
 import { TranslateInteraction } from './translate-interaction';
 import type { PopupManager } from './popup-manager';
 import type { FeatureManager } from './feature-manager';
@@ -22,7 +22,9 @@ export class OlMapInteractionsManager {
     private readonly customInteractions: Interaction[];
     private translateInteraction: TranslateInteraction;
     private alwaysInteractions: Interaction[];
-    interactions: Collection<Interaction>;
+    private interactions: Collection<Interaction>;
+    private lastStatus: ExerciseStatus | undefined;
+    private lastRole: Role | 'timeTravel' | undefined;
 
     constructor(
         private readonly mapInteractions: Collection<Interaction>,
@@ -41,7 +43,7 @@ export class OlMapInteractionsManager {
         this.translateInteraction = new TranslateInteraction();
         this.alwaysInteractions = [this.translateInteraction];
         this.updateInteractions();
-        this.registerCustomInteractionHandlers();
+        this.registerPauseAlwaysInteractionHandler();
     }
 
     public addFeatureLayer(layer: VectorLayer<VectorSource>) {
@@ -58,6 +60,7 @@ export class OlMapInteractionsManager {
         this.updateInteractions();
         this.registerDropHandler();
         this.applyInteractions();
+        this.adjustRights(this.lastStatus, this.lastRole);
     }
 
     private updateTranslateInteraction() {
@@ -89,7 +92,7 @@ export class OlMapInteractionsManager {
         }).extend(
             selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
                 ? [...this.alwaysInteractions, ...this.customInteractions]
-                : this.alwaysInteractions
+                : [...this.alwaysInteractions]
         );
     }
 
@@ -101,25 +104,34 @@ export class OlMapInteractionsManager {
     }
 
     // Register handlers that disable or enable certain interactions
-    registerCustomInteractionHandlers() {
+    registerPauseAlwaysInteractionHandler() {
         combineLatest([
             this.store.select(selectExerciseStatus),
             this.store.select(selectCurrentRole),
         ])
             .pipe(takeUntil(this.destroy$))
             .subscribe(([status, currentRole]) => {
-                const showPausedOverlay =
-                    status !== 'running' && currentRole === 'participant';
-                this.customInteractions.forEach((interaction) => {
-                    interaction.setActive(
-                        !showPausedOverlay && currentRole !== 'timeTravel'
-                    );
-                });
-                this.popupManager.setPopupsEnabled(!showPausedOverlay);
-                this.getOlViewportElement().style.filter = showPausedOverlay
-                    ? 'brightness(50%)'
-                    : '';
+                this.adjustRights(status, currentRole);
             });
+    }
+
+    private adjustRights(
+        status: ExerciseStatus | undefined,
+        currentRole: Role | 'timeTravel' | undefined
+    ) {
+        this.lastRole = currentRole;
+        this.lastStatus = status;
+        const showPausedOverlay =
+            status !== 'running' && currentRole === 'participant';
+        this.alwaysInteractions.forEach((interaction) => {
+            interaction.setActive(
+                !showPausedOverlay && currentRole !== 'timeTravel'
+            );
+        });
+        this.popupManager.setPopupsEnabled(!showPausedOverlay);
+        this.getOlViewportElement().style.filter = showPausedOverlay
+            ? 'brightness(50%)'
+            : '';
     }
 
     private registerDropHandler() {
