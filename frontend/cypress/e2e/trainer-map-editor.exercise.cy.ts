@@ -4,7 +4,7 @@ describe('The trainer map editor on the exercise page', () => {
     });
 
     it('can drag patients to the map', () => {
-        cy.dragToMap('[data-cy=getPatientDiv]');
+        cy.dragToMap('[data-cy=draggablePatientDiv]');
 
         cy.proposedActions()
             .then((a) => a.at(-1))
@@ -20,7 +20,7 @@ describe('The trainer map editor on the exercise page', () => {
     });
 
     it('can drag vehicles to the map', () => {
-        cy.dragToMap('[data-cy=getVehicleDiv]');
+        cy.dragToMap('[data-cy=draggableVehicleDiv]');
 
         cy.proposedActions()
             .then((a) => a.at(-1))
@@ -36,7 +36,7 @@ describe('The trainer map editor on the exercise page', () => {
     });
 
     it('can drag viewports to the map', () => {
-        cy.dragToMap('[data-cy=getViewportDiv]');
+        cy.dragToMap('[data-cy=draggableViewportDiv]');
 
         cy.proposedActions()
             .then((a) => a.at(-1))
@@ -52,7 +52,7 @@ describe('The trainer map editor on the exercise page', () => {
     });
 
     it('can drag simulated regions to the map', () => {
-        cy.dragToMap('[data-cy=getSimulatedRegionDiv]');
+        cy.dragToMap('[data-cy=draggableSimulatedRegionDiv]');
 
         cy.proposedActions()
             .then((a) => a.at(-1))
@@ -68,7 +68,7 @@ describe('The trainer map editor on the exercise page', () => {
     });
 
     it('can drag transfer points to the map', () => {
-        cy.dragToMap('[data-cy=getTransferPointDiv]');
+        cy.dragToMap('[data-cy=draggableTransferPointDiv]');
 
         cy.proposedActions()
             .then((a) => a.at(-1))
@@ -84,7 +84,7 @@ describe('The trainer map editor on the exercise page', () => {
     });
 
     it('can drag map images to the map', () => {
-        cy.dragToMap('[data-cy=getMapImageDiv]');
+        cy.dragToMap('[data-cy=draggableMapImageDiv]');
 
         cy.proposedActions()
             .then((a) => a.at(-1))
