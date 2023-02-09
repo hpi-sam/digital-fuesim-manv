@@ -15,6 +15,7 @@ import {
     TransferPosition,
 } from '../../models/utils';
 import { changePosition } from '../../models/utils/position/position-helpers-mutable';
+import { simulateAllRegions } from '../../simulation/utils/simulated-region';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable } from '../../utils';
@@ -135,7 +136,7 @@ export namespace ExerciseActionReducers {
             refreshTransfer(draftState, 'vehicle', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);
 
-            simulateRegions(draftState, tickInterval);
+            simulateAllRegions(draftState, tickInterval);
             return draftState;
         },
         rights: 'server',
@@ -172,14 +173,5 @@ function refreshTransfer(
             return;
         }
         letElementArrive(draftState, type, element.id);
-    });
-}
-
-function simulateRegions(
-    draftState: Mutable<ExerciseState>,
-    tickInterval: number
-) {
-    Object.values(draftState.simulatedRegions).forEach((simulatedRegion) => {
-        // TODO: simulation loop
     });
 }

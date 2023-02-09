@@ -3,7 +3,12 @@ import { IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
 import { IsUUIDSet, IsValue } from '../utils/validators';
 import { IsPosition } from '../utils/validators/is-position';
-import { getCreate } from './utils';
+import {
+    currentVehicleIdOf,
+    getCreate,
+    isInVehicle,
+    WithPosition,
+} from './utils';
 import { ImageProperties } from './utils/image-properties';
 import { Position } from './utils/position/position';
 
@@ -63,4 +68,11 @@ export class Vehicle {
     }
 
     static readonly create = getCreate(this);
+
+    static isInVehicle(vehicle: Vehicle, withPosition: WithPosition): boolean {
+        return (
+            isInVehicle(withPosition) &&
+            currentVehicleIdOf(withPosition) === vehicle.id
+        );
+    }
 }

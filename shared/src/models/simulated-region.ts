@@ -3,6 +3,9 @@ import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { IsPosition } from '../utils/validators/is-position';
 import { IsValue } from '../utils/validators';
+import type { ExerciseSimulationEvent } from '../simulation/events';
+import type { ExerciseSimulationActivityState } from '../simulation/activities';
+import type { ExerciseSimulationBehaviorState } from '../simulation/behaviors';
 import {
     getCreate,
     isInSimulatedRegion,
@@ -46,6 +49,17 @@ export class SimulatedRegion {
         this.size = size;
         this.name = name;
     }
+
+    // TODO: validate
+    public readonly inEvents: readonly ExerciseSimulationEvent[] = [];
+
+    // TODO: validate
+    public readonly behaviors: readonly ExerciseSimulationBehaviorState[] = [];
+
+    // TODO: validate
+    public readonly activities: {
+        readonly [stateId: UUID]: ExerciseSimulationActivityState;
+    } = {};
 
     static readonly create = getCreate(this);
 
