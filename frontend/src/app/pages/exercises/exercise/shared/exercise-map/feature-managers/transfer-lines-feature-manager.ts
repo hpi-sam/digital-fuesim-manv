@@ -16,6 +16,7 @@ import type { AppState } from 'src/app/state/app.state';
 import { selectTransferLines } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import type OlMap from 'ol/Map';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
@@ -29,7 +30,8 @@ export class TransferLinesFeatureManager
     public readonly layer: VectorLayer<VectorSource<LineString>>;
     constructor(
         private readonly store: Store<AppState>,
-        private readonly transferLinesService: TransferLinesService
+        private readonly transferLinesService: TransferLinesService,
+        private readonly olMap: OlMap
     ) {
         super();
         this.layer = this.createElementLayer<LineString>();
@@ -50,6 +52,7 @@ export class TransferLinesFeatureManager
         ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
+        this.olMap.addLayer(this.layer);
         mapInteractionsManager.addFeatureLayer(this.layer);
         this.togglePopup$?.subscribe(changePopup$);
         if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {

@@ -3,6 +3,7 @@ import type VectorSource from 'ol/source/Vector';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import type { Interaction } from 'ol/interaction';
 import { defaults as defaultInteractions } from 'ol/interaction';
+import type { Subject } from 'rxjs';
 import { combineLatest, takeUntil } from 'rxjs';
 import { selectExerciseStatus } from 'src/app/state/application/selectors/exercise.selectors';
 import type { Feature } from 'ol';
@@ -14,6 +15,7 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { OlMapManager } from './ol-map-manager';
 import { TranslateInteraction } from './translate-interaction';
 import type { PopupManager } from './popup-manager';
+import type { FeatureManager } from './feature-manager';
 
 export class OlMapInteractionsManager {
     private readonly featureLayers: VectorLayer<VectorSource>[];
@@ -25,9 +27,13 @@ export class OlMapInteractionsManager {
     constructor(
         private readonly mapInteractions: Collection<Interaction>,
         private readonly store: Store<AppState>,
-        private readonly mapManager: OlMapManager,
         private readonly popupManager: PopupManager,
-        private readonly olMap: OlMap
+        private readonly olMap: OlMap,
+        private readonly layerFeatureManagerDictionary: Map<
+            VectorLayer<VectorSource>,
+            FeatureManager<any>
+        >,
+        private readonly destroy$: Subject<void>
     ) {
         this.featureLayers = [];
         this.customInteractions = [];
@@ -59,10 +65,9 @@ export class OlMapInteractionsManager {
             layers: this.featureLayers,
             hitTolerance: 10,
             filter: (feature, layer) => {
-                const featureManager =
-                    this.mapManager.layerFeatureManagerDictionary.get(
-                        layer as VectorLayer<VectorSource>
-                    );
+                const featureManager = this.layerFeatureManagerDictionary.get(
+                    layer as VectorLayer<VectorSource>
+                );
                 return featureManager === undefined
                     ? false
                     : featureManager.isFeatureTranslatable(feature);
@@ -101,7 +106,7 @@ export class OlMapInteractionsManager {
             this.store.select(selectExerciseStatus),
             this.store.select(selectCurrentRole),
         ])
-            .pipe(takeUntil(this.mapManager.destroy$))
+            .pipe(takeUntil(this.destroy$))
             .subscribe(([status, currentRole]) => {
                 const showPausedOverlay =
                     status !== 'running' && currentRole === 'participant';
@@ -135,7 +140,7 @@ export class OlMapInteractionsManager {
                     }
 
                     // We stop propagating the event as soon as the onFeatureDropped function returns true
-                    return this.mapManager.layerFeatureManagerDictionary
+                    return this.layerFeatureManagerDictionary
                         .get(layer as VectorLayer<VectorSource>)!
                         .onFeatureDrop(
                             event,

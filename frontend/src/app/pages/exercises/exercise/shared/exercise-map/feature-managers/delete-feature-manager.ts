@@ -48,6 +48,7 @@ export class DeleteFeatureManager implements FeatureManager<Point> {
         ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
+        this.olMap.addLayer(this.layer);
         mapInteractionsManager.addFeatureLayer(this.layer);
         if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
             this.makeVisible();

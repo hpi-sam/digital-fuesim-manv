@@ -43,13 +43,12 @@ import { SatelliteLayerManager } from './satellite-layer-manager';
  * This class should run outside the Angular zone for performance reasons.
  */
 export class OlMapManager {
-    public readonly destroy$ = new Subject<void>();
+    private readonly _olMap: OlMap;
+    private featureManagers: FeatureManager<any>[];
+    private readonly mapInteractionsManager: OlMapInteractionsManager;
+    private static readonly defaultZoom = 20;
+    private readonly destroy$ = new Subject<void>();
 
-    public readonly olMap: OlMap;
-    /**
-     * If this subject emits options, the specified popup should be toggled.
-     * If it emits undefined, the currently open popup should be closed.
-     */
     /**
      * key: the layer that is passed to the featureManager, that is saved in the value
      * ```ts
@@ -58,15 +57,10 @@ export class OlMapManager {
      * featureManager.layer === layer
      * ```
      */
-    public readonly layerFeatureManagerDictionary = new Map<
+    private readonly layerFeatureManagerDictionary = new Map<
         VectorLayer<VectorSource>,
         FeatureManager<any>
     >();
-
-    private featureManagers: FeatureManager<any>[];
-
-    private static readonly defaultZoom = 20;
-    private readonly mapInteractionsManager: OlMapInteractionsManager;
 
     constructor(
         private readonly store: Store<AppState>,
@@ -76,7 +70,7 @@ export class OlMapManager {
         private readonly transferLinesService: TransferLinesService,
         private readonly popupManager: PopupManager
     ) {
-        this.olMap = new OlMap({
+        this._olMap = new OlMap({
             interactions: new Collection<Interaction>(),
             // We use Angular buttons instead
             controls: [],
@@ -94,15 +88,17 @@ export class OlMapManager {
                 constrainRotation: 1,
             }),
         });
+
         this.featureManagers = [];
         this.initializeFeatureManagers();
 
         this.mapInteractionsManager = new OlMapInteractionsManager(
             this.olMap.getInteractions(),
             store,
-            this,
             popupManager,
-            this.olMap
+            this.olMap,
+            this.layerFeatureManagerDictionary,
+            this.destroy$
         );
 
         const satelliteLayerManager = new SatelliteLayerManager(
@@ -113,19 +109,8 @@ export class OlMapManager {
         this.olMap.getLayers().clear();
         this.olMap.addLayer(satelliteLayerManager.satelliteLayer);
 
-        this.featureManagers.forEach((featureManager) => {
-            this.layerFeatureManagerDictionary.set(
-                featureManager.layer,
-                featureManager
-            );
-            this.olMap.addLayer(featureManager.layer);
-            featureManager.register(
-                this.popupManager.changePopup$,
-                this.destroy$,
-                ngZone,
-                this.mapInteractionsManager
-            );
-        });
+        // the mapInteractionsManager needs to be set and the satelliteLayer needs to be added before this is possible
+        this.registerFeatureManagers();
 
         this.registerViewportRestriction();
 
@@ -134,6 +119,10 @@ export class OlMapManager {
             openLayersContainer,
             this.layerFeatureManagerDictionary
         );
+    }
+
+    public get olMap(): OlMap {
+        return this._olMap;
     }
 
     private registerViewportRestriction() {
@@ -230,10 +219,28 @@ export class OlMapManager {
         this.olMap.setTarget(undefined);
     }
 
+    // This lets featureManagers register themselves and adds them to the layerFeatureManagerDictionary
+
+    private registerFeatureManagers() {
+        this.featureManagers.forEach((featureManager) => {
+            this.layerFeatureManagerDictionary.set(
+                featureManager.layer,
+                featureManager
+            );
+            featureManager.register(
+                this.popupManager.changePopup$,
+                this.destroy$,
+                this.ngZone,
+                this.mapInteractionsManager
+            );
+        });
+    }
+
     private initializeFeatureManagers() {
         const transferLinesFeatureManager = new TransferLinesFeatureManager(
             this.store,
-            this.transferLinesService
+            this.transferLinesService,
+            this.olMap
         );
         const transferPointFeatureManager = new TransferPointFeatureManager(
             this.olMap,
@@ -266,7 +273,8 @@ export class OlMapManager {
             this.store
         );
         const cateringLinesFeatureManager = new CateringLinesFeatureManager(
-            this.store
+            this.store,
+            this.olMap
         );
 
         const viewportFeatureManager = new ViewportFeatureManager(

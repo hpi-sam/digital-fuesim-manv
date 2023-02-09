@@ -19,6 +19,10 @@ import type { FeatureManager } from './feature-manager';
  * that should appear on the {@link popupOverlay}.
  */
 export class PopupManager {
+    /**
+     * If this subject emits options, the specified popup should be toggled.
+     * If it emits undefined, the currently open popup should be closed.
+     */
     public readonly changePopup$ = new Subject<
         OpenPopupOptions<any> | undefined
     >();

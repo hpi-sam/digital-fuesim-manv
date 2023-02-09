@@ -143,6 +143,7 @@ export abstract class MoveableFeatureManager<
         ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
+        this.olMap.addLayer(this.layer);
         mapInteractionsManager.addFeatureLayer(this.layer);
         this.togglePopup$?.subscribe(changePopup$);
         // Propagate the changes on an element to the featureManager
