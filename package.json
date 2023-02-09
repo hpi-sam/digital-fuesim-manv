@@ -14,7 +14,7 @@
         "prune": "npm prune && cd shared && npm prune && cd ../frontend && npm prune && cd ../backend && npm prune",
         "prune:deployment": "npm prune --production && cd shared && npm prune --production && cd ../backend && npm prune --production",
         "deployment": "npm run setup:ci && npm run build:deployment && npm run prune:deployment",
-        "setup:ci": "npm ci && cd shared && npm ci && npm run build && cd ../frontend && npm ci && cd ../backend && npm ci",
+        "setup:ci": "npm ci --install-links=false && cd shared && npm ci --install-links=false && npm run build && cd ../frontend && npm ci --install-links=false && cd ../backend && npm ci --install-links=false",
         "prettier": "cat .gitignore .prettierignore >> .prettierignore-ci && prettier --ignore-path .prettierignore-ci --loglevel warn --write \"**/*\" --ignore-unknown",
         "prettier:windows": "type .gitignore .prettierignore >> .prettierignore-ci && prettier --ignore-path .prettierignore-ci --loglevel warn --write \"**/*\" --ignore-unknown",
         "prettier:check": "cat .gitignore .prettierignore >> .prettierignore-ci && prettier --ignore-path .prettierignore-ci --loglevel warn --check \"**/*\" --ignore-unknown",
