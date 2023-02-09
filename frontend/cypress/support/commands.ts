@@ -48,7 +48,6 @@ export function dragToMap(
     elementSelector: string,
     offset?: { x: number; y: number }
 ) {
-    cy.log(`dragging ${elementSelector} to the map`);
     const mapSelector = '[data-cy=openLayersContainer]';
 
     cy.get(elementSelector).first().trigger('mousedown');
