@@ -1,5 +1,5 @@
-import type { Position } from '../models/utils';
 import { Viewport } from '../models';
+import type { MapCoordinates } from '../models/utils';
 import type { ExerciseAction } from './action-reducers';
 import { validateExerciseAction } from '.';
 
@@ -78,9 +78,12 @@ describe('validateExerciseAction', () => {
                         width: 1,
                     },
                     position: {
-                        // this is of type string instead of number
-                        x: '0' as unknown as number,
-                        y: 0,
+                        type: 'coordinates',
+                        coordinates: {
+                            // this is of type string instead of number
+                            x: '0' as unknown as number,
+                            y: 0,
+                        },
                     },
                 },
             })
@@ -120,10 +123,13 @@ describe('validateExerciseAction', () => {
                         width: 1,
                     },
                     position: {
-                        x: 0,
-                        y: 0,
-                        z: 0,
-                    } as unknown as Position,
+                        type: 'coordinates',
+                        coordinates: {
+                            x: 0,
+                            y: 0,
+                            z: 0,
+                        } as unknown as MapCoordinates,
+                    },
                 },
             })
         ).not.toEqual([]);

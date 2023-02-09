@@ -25,7 +25,7 @@
                 (currentRole$ | async) !== 'participant' &&
                 (restrictedToViewport$ | async) === undefined
             "
-            (click)="olMapManager?.tryToFitViewToViewports()"
+            (click)="olMapManager?.tryToFitViewForOverview()"
             class="btn btn-sm btn-light"
             title="Alle Ansichten anzeigen"
         >

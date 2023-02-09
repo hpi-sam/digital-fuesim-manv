@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { currentTransferOf } from 'digital-fuesim-manv-shared';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectExerciseStatus,
@@ -19,6 +20,8 @@ export class TransferOverviewTableComponent {
     public readonly personnelInTransfer$ = this.store.select(
         selectPersonnelInTransfer
     );
+
+    public currentTransferOf = currentTransferOf;
 
     public readonly exerciseStatus$ = this.store.select(selectExerciseStatus);
 

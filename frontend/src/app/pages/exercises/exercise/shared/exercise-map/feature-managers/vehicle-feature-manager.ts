@@ -7,7 +7,6 @@ import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import type { WithPosition } from '../../utility/types/with-position';
 import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
@@ -15,9 +14,7 @@ import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class VehicleFeatureManager extends MoveableFeatureManager<
-    WithPosition<Vehicle>
-> {
+export class VehicleFeatureManager extends MoveableFeatureManager<Vehicle> {
     private readonly imageStyleHelper = new ImageStyleHelper(
         (feature) => (this.getElementFromFeature(feature) as Vehicle).image
     );

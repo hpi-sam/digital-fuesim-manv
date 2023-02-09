@@ -1,5 +1,5 @@
 import { IsNumber } from 'class-validator';
-import { getCreate } from './get-create';
+import { getCreate } from '../get-create';
 
 export class MapCoordinates {
     @IsNumber()

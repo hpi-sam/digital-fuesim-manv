@@ -7,7 +7,14 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { TransferPoint } from '../../models';
-import { Position } from '../../models/utils';
+import {
+    currentCoordinatesOf,
+    isInTransfer,
+    MapCoordinates,
+    MapPosition,
+    currentTransferOf,
+} from '../../models/utils';
+import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -34,8 +41,8 @@ export class MoveTransferPointAction implements Action {
     public readonly transferPointId!: UUID;
 
     @ValidateNested()
-    @Type(() => Position)
-    public readonly targetPosition!: Position;
+    @Type(() => MapCoordinates)
+    public readonly targetPosition!: MapCoordinates;
 }
 
 export class RenameTransferPointAction implements Action {
@@ -122,12 +129,12 @@ export namespace TransferPointActionReducers {
     export const moveTransferPoint: ActionReducer<MoveTransferPointAction> = {
         action: MoveTransferPointAction,
         reducer: (draftState, { transferPointId, targetPosition }) => {
-            const transferPoint = getElement(
-                draftState,
+            changePositionWithId(
+                transferPointId,
+                MapPosition.create(targetPosition),
                 'transferPoint',
-                transferPointId
+                draftState
             );
-            transferPoint.position = cloneDeepMutable(targetPosition);
             return draftState;
         },
         rights: 'trainer',
@@ -184,8 +191,8 @@ export namespace TransferPointActionReducers {
                 const _duration =
                     duration ??
                     estimateDuration(
-                        transferPoint1.position,
-                        transferPoint2.position
+                        currentCoordinatesOf(transferPoint1),
+                        currentCoordinatesOf(transferPoint2)
                     );
                 transferPoint1.reachableTransferPoints[transferPointId2] = {
                     duration: _duration,
@@ -240,8 +247,9 @@ export namespace TransferPointActionReducers {
                         vehicleId
                     );
                     if (
-                        vehicle.transfer?.targetTransferPointId ===
-                        transferPointId
+                        isInTransfer(vehicle) &&
+                        currentTransferOf(vehicle).targetTransferPointId ===
+                            transferPointId
                     ) {
                         letElementArrive(draftState, vehicle.type, vehicleId);
                     }
@@ -253,8 +261,9 @@ export namespace TransferPointActionReducers {
                         personnelId
                     );
                     if (
-                        personnel.transfer?.targetTransferPointId ===
-                        transferPointId
+                        isInTransfer(personnel) &&
+                        currentTransferOf(personnel).targetTransferPointId ===
+                            transferPointId
                     ) {
                         letElementArrive(
                             draftState,
@@ -326,7 +335,10 @@ export namespace TransferPointActionReducers {
  * @returns an estimated duration in ms to drive between the the two given positions
  * The resulting value is a multiple of 0.1 minutes.
  */
-function estimateDuration(startPosition: Position, targetPosition: Position) {
+function estimateDuration(
+    startPosition: MapCoordinates,
+    targetPosition: MapCoordinates
+) {
     // TODO: tweak these values more
     // How long in ms it takes to start + stop moving
     const overheadSummand = 10 * 1000;

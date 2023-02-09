@@ -18,6 +18,10 @@ services:
             - .env
         volumes:
             - dfm-data:/${DFM_PERSISTENT_DATA_PATH}
+            # To overwrite the contents of the about pages, mount a directory into the container
+            # The directory can contain imprint.html, privacy.html and license.html
+            # Example
+            # - ./about:/usr/local/app/frontend/dist/digital-fuesim-manv/assets/about
     db:
         image: postgres:14
         container_name: dfm_postgres

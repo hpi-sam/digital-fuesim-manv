@@ -11,7 +11,6 @@ import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectConfiguration } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import type { WithPosition } from '../../utility/types/with-position';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
@@ -19,9 +18,7 @@ import { CircleStyleHelper } from '../utility/style-helper/circle-style-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class PatientFeatureManager extends MoveableFeatureManager<
-    WithPosition<Patient>
-> {
+export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
     private readonly imageStyleHelper = new ImageStyleHelper((feature) => {
