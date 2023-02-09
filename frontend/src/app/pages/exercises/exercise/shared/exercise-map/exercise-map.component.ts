@@ -16,7 +16,7 @@ import {
 } from 'src/app/state/application/selectors/shared.selectors';
 import { DragElementService } from '../core/drag-element.service';
 import { TransferLinesService } from '../core/transfer-lines.service';
-import { OlMapManager } from './utility/map/ol-map-manager';
+import { OlMapManager } from './utility/ol-map-manager';
 import { PopupManager } from './utility/popup-manager';
 
 @Component({
