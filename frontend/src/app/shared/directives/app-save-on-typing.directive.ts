@@ -1,8 +1,8 @@
 import type { OnDestroy } from '@angular/core';
 import { Directive, EventEmitter, Output } from '@angular/core';
 import { NgModel } from '@angular/forms';
-import { of, Subject } from 'rxjs';
-import { debounceTime, filter, mergeMap, takeUntil, tap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { debounceTime, filter, takeUntil, tap } from 'rxjs/operators';
 import { isBeingTestedByCypress } from '../functions/cypress';
 
 /**
@@ -43,11 +43,7 @@ export class AppSaveOnTypingDirective implements OnDestroy {
                 }),
                 // Keeping a key (like backspace) pressed for a more than a certain threshold will result in many key presses
                 // The debounceTime should be above that threshold to not register the initial keypress as the first update
-                mergeMap((value) =>
-                    isBeingTestedByCypress()
-                        ? of(value)
-                        : of(value).pipe(debounceTime(600))
-                ),
+                isBeingTestedByCypress() ? tap() : debounceTime(600),
                 filter(() => ngModel.valid === true),
                 takeUntil(this.destroy$)
             )
