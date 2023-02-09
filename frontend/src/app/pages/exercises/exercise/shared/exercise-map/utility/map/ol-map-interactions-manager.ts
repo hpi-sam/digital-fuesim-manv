@@ -5,66 +5,84 @@ import type { Interaction } from 'ol/interaction';
 import { defaults as defaultInteractions } from 'ol/interaction';
 import { combineLatest, takeUntil } from 'rxjs';
 import { selectExerciseStatus } from 'src/app/state/application/selectors/exercise.selectors';
-import type { Collection } from 'ol';
+import type { Feature } from 'ol';
+import { Collection } from 'ol';
 import type { AppState } from 'src/app/state/app.state';
 import type { Store } from '@ngrx/store';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { TranslateInteraction } from '../translate-interaction';
-import { ResizeRectangleInteraction } from '../resize-rectangle-interaction';
-import type { ViewportFeatureManager } from '../../feature-managers/viewport-feature-manager';
-import type { SimulatedRegionFeatureManager } from '../../feature-managers/simulated-region-feature-manager';
 import type { OlMapManager } from './ol-map-manager';
 
 export class OlMapInteractionsManager {
+    private readonly featureLayers: VectorLayer<VectorSource>[];
+    private readonly customInteractions: Interaction[];
+    private translateInteraction: TranslateInteraction;
+    private alwaysInteractions: Interaction[];
+    interactions: Collection<Interaction>;
+
     constructor(
         private readonly mapInteractions: Collection<Interaction>,
-        private readonly featureLayers: any,
         private readonly store: Store<AppState>,
-        private readonly mapManager: OlMapManager,
-        private readonly viewportFeatureManager: ViewportFeatureManager,
-        private readonly simulatedRegionFeatureManager: SimulatedRegionFeatureManager
-    ) {}
+        private readonly mapManager: OlMapManager
+    ) {
+        this.featureLayers = [];
+        this.customInteractions = [];
+        this.interactions = new Collection<Interaction>();
+        this.translateInteraction = new TranslateInteraction();
+        this.alwaysInteractions = [this.translateInteraction];
+        this.updateInteractions();
+        this.registerCustomInteractionHandlers();
+    }
 
-    // Create Interactions
+    public addFeatureLayer(layer: VectorLayer<VectorSource>) {
+        this.featureLayers.push(layer);
+        this.updateRegisterAndApplyAll();
+    }
 
-    translateInteraction = new TranslateInteraction({
-        layers: this.featureLayers,
-        hitTolerance: 10,
-        filter: (feature, layer) => {
-            const featureManager =
-                this.mapManager.layerFeatureManagerDictionary.get(
-                    layer as VectorLayer<VectorSource>
-                );
-            return featureManager === undefined
-                ? false
-                : featureManager.isFeatureTranslatable(feature);
-        },
-    });
+    public addCustomInteraction(interaction: Interaction) {
+        this.customInteractions.push(interaction);
+        this.updateRegisterAndApplyAll();
+    }
 
-    resizeViewportInteraction = new ResizeRectangleInteraction(
-        this.viewportFeatureManager.layer.getSource()!
-    );
+    private updateRegisterAndApplyAll() {
+        this.updateInteractions();
+        this.registerDropHandler();
+        this.applyInteractions();
+    }
 
-    resizeSimulatedRegionInteraction = new ResizeRectangleInteraction(
-        this.simulatedRegionFeatureManager.layer.getSource()!
-    );
+    private updateTranslateInteraction() {
+        this.translateInteraction = new TranslateInteraction({
+            layers: this.featureLayers,
+            hitTolerance: 10,
+            filter: (feature, layer) => {
+                const featureManager =
+                    this.mapManager.layerFeatureManagerDictionary.get(
+                        layer as VectorLayer<VectorSource>
+                    );
+                return featureManager === undefined
+                    ? false
+                    : featureManager.isFeatureTranslatable(feature);
+            },
+        });
+    }
 
-    alwaysInteractions = [this.translateInteraction];
+    private updateAlwaysInteractions() {
+        this.alwaysInteractions = [this.translateInteraction];
+    }
 
-    customInteractions =
-        selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
-            ? [
-                  ...this.alwaysInteractions,
-                  this.resizeViewportInteraction,
-                  this.resizeSimulatedRegionInteraction,
-              ]
-            : this.alwaysInteractions;
-
-    interactions = defaultInteractions({
-        pinchRotate: false,
-        altShiftDragRotate: false,
-        keyboard: true,
-    }).extend(this.customInteractions);
+    private updateInteractions() {
+        this.updateTranslateInteraction();
+        this.updateAlwaysInteractions();
+        this.interactions = defaultInteractions({
+            pinchRotate: false,
+            altShiftDragRotate: false,
+            keyboard: true,
+        }).extend(
+            selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
+                ? [...this.alwaysInteractions, ...this.customInteractions]
+                : this.alwaysInteractions
+        );
+    }
 
     public applyInteractions() {
         this.mapInteractions.clear();
@@ -72,8 +90,9 @@ export class OlMapInteractionsManager {
         // eslint-disable-next-line rxjs/no-ignored-observable
         this.mapInteractions.extend(this.interactions.getArray());
     }
+
     // Register handlers that disable or enable certain interactions
-    registerHandlers() {
+    registerCustomInteractionHandlers() {
         combineLatest([
             this.store.select(selectExerciseStatus),
             this.store.select(selectCurrentRole),
@@ -91,6 +110,37 @@ export class OlMapInteractionsManager {
                 this.mapManager.getOlViewportElement().style.filter =
                     showPausedOverlay ? 'brightness(50%)' : '';
             });
-        this.mapManager.registerDropHandler(this.translateInteraction);
+    }
+
+    private registerDropHandler() {
+        this.translateInteraction.on('translateend', (event) => {
+            const pixel = this.mapManager.olMap.getPixelFromCoordinate(
+                event.coordinate
+            );
+            const droppedFeature: Feature = event.features.getArray()[0]!;
+            this.mapManager.olMap.forEachFeatureAtPixel(
+                pixel,
+                (droppedOnFeature, layer) => {
+                    // Skip layer when unset
+                    if (layer === null) {
+                        return;
+                    }
+
+                    // Do not drop a feature on itself
+                    if (droppedFeature === droppedOnFeature) {
+                        return;
+                    }
+
+                    // We stop propagating the event as soon as the onFeatureDropped function returns true
+                    return this.mapManager.layerFeatureManagerDictionary
+                        .get(layer as VectorLayer<VectorSource>)!
+                        .onFeatureDrop(
+                            event,
+                            droppedFeature,
+                            droppedOnFeature as Feature
+                        );
+                }
+            );
+        });
     }
 }

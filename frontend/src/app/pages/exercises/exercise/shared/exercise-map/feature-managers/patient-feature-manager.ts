@@ -12,6 +12,7 @@ import { selectConfiguration } from 'src/app/state/application/selectors/exercis
 import { selectVisiblePatients } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
+import type { OlMapInteractionsManager } from '../utility/map/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import type { OpenPopupOptions } from '../utility/popup-manager';
@@ -23,13 +24,15 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
     public register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone
+        ngZone: NgZone,
+        mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisiblePatients),
             changePopup$,
             destroy$,
-            ngZone
+            ngZone,
+            mapInteractionsManager
         );
     }
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);

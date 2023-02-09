@@ -18,6 +18,7 @@ import { selectCurrentRole } from 'src/app/state/application/selectors/shared.se
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import type { FeatureManager } from '../utility/feature-manager';
+import type { OlMapInteractionsManager } from '../utility/map/ol-map-interactions-manager';
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ElementManager } from './element-manager';
 
@@ -46,8 +47,11 @@ export class TransferLinesFeatureManager
     register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone
+        ngZone: NgZone,
+        mapInteractionsManager: OlMapInteractionsManager
     ) {
+        mapInteractionsManager.addFeatureLayer(this.layer);
+        this.togglePopup$?.subscribe(changePopup$);
         if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
             this.store
                 .select(selectTransferLines)

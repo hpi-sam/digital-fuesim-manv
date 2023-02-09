@@ -19,6 +19,7 @@ import type {
 } from '../utility/geometry-helper';
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { TranslateInteraction } from '../utility/translate-interaction';
+import type { OlMapInteractionsManager } from '../utility/map/ol-map-interactions-manager';
 import { ElementManager } from './element-manager';
 
 /**
@@ -131,15 +132,18 @@ export abstract class MoveableFeatureManager<
     public abstract register(
         changePopup$: Subject<OpenPopupOptions<any> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone
+        ngZone: NgZone,
+        mapInteractionsManager: OlMapInteractionsManager
     ): void;
 
     protected registerFeatureElementManager(
         elementDictionary$: Observable<{ [id: UUID]: Element }>,
         changePopup$: Subject<OpenPopupOptions<any> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone
+        ngZone: NgZone,
+        mapInteractionsManager: OlMapInteractionsManager
     ) {
+        mapInteractionsManager.addFeatureLayer(this.layer);
         this.togglePopup$?.subscribe(changePopup$);
         // Propagate the changes on an element to the featureManager
         elementDictionary$

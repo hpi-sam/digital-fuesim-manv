@@ -23,6 +23,7 @@ import type { FeatureManager } from '../utility/feature-manager';
 import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
 import type { OpenPopupOptions } from '../utility/popup-manager';
+import type { OlMapInteractionsManager } from '../utility/map/ol-map-interactions-manager';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class SimulatedRegionFeatureManager
@@ -32,13 +33,18 @@ export class SimulatedRegionFeatureManager
     public register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone
+        ngZone: NgZone,
+        mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisibleSimulatedRegions),
             changePopup$,
             destroy$,
-            ngZone
+            ngZone,
+            mapInteractionsManager
+        );
+        mapInteractionsManager.addCustomInteraction(
+            new ResizeRectangleInteraction(this.layer.getSource()!)
         );
     }
     constructor(

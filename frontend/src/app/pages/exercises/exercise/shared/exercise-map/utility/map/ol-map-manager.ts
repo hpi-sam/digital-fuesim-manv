@@ -5,7 +5,8 @@ import {
     lowerRightCornerOf,
 } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
-import { Overlay, View } from 'ol';
+import { Collection, Overlay, View } from 'ol';
+import type { Interaction } from 'ol/interaction';
 import TileLayer from 'ol/layer/Tile';
 import type VectorLayer from 'ol/layer/Vector';
 import OlMap from 'ol/Map';
@@ -39,7 +40,6 @@ import {
 } from '../../feature-managers/viewport-feature-manager';
 import type { FeatureManager } from '../feature-manager';
 import type { OpenPopupOptions } from '../popup-manager';
-import type { TranslateInteraction } from '../translate-interaction';
 import { OlMapInteractionsManager } from './ol-map-interactions-manager';
 
 /**
@@ -71,15 +71,17 @@ export class OlMapManager {
         FeatureManager<any>
     >();
 
-    private static readonly defaultZoom = 20;
+    private featureManagers?: FeatureManager<any>[];
 
+    private static readonly defaultZoom = 20;
+    mapInteractionsManager: OlMapInteractionsManager;
     constructor(
         private readonly store: Store<AppState>,
         private readonly exerciseService: ExerciseService,
         private readonly openLayersContainer: HTMLDivElement,
         private readonly popoverContainer: HTMLDivElement,
         private readonly ngZone: NgZone,
-        transferLinesService: TransferLinesService
+        private readonly transferLinesService: TransferLinesService
     ) {
         // Layers
         const satelliteLayer = new TileLayer({
@@ -103,7 +105,7 @@ export class OlMapManager {
         });
 
         this.olMap = new OlMap({
-            interactions: [],
+            interactions: new Collection<Interaction>(),
             // We use Angular buttons instead
             controls: [],
             target: this.openLayersContainer,
@@ -121,118 +123,30 @@ export class OlMapManager {
             }),
         });
 
-        // FeatureManagers
+        this.olMap.getLayers().clear();
+        this.olMap.addLayer(satelliteLayer);
 
-        const transferLinesFeatureManager = new TransferLinesFeatureManager(
-            this.store,
-            transferLinesService
-        );
-        const transferPointFeatureManager = new TransferPointFeatureManager(
-            this.olMap,
-            this.store,
-            this.exerciseService
-        );
-        const patientFeatureManager = new PatientFeatureManager(
-            this.store,
-            this.olMap,
-            this.exerciseService
-        );
-        const vehicleFeatureManager = new VehicleFeatureManager(
-            this.olMap,
-            this.store,
-            this.exerciseService
-        );
-        const personnelFeatureManager = new PersonnelFeatureManager(
-            this.olMap,
-            this.store,
-            this.exerciseService
-        );
-        const materialFeatureManager = new MaterialFeatureManager(
-            this.olMap,
-            this.store,
-            this.exerciseService
-        );
-        const mapImageFeatureManager = new MapImageFeatureManager(
-            this.olMap,
-            this.exerciseService,
-            this.store
-        );
-        const cateringLinesFeatureManager = new CateringLinesFeatureManager(
-            this.store
+        this.initializeFeatureManagers();
+
+        this.mapInteractionsManager = new OlMapInteractionsManager(
+            this.olMap.getInteractions(),
+            store,
+            this
         );
 
-        const viewportFeatureManager = new ViewportFeatureManager(
-            this.olMap,
-            this.exerciseService,
-            this.store
-        );
-        const simulatedRegionFeatureManager = new SimulatedRegionFeatureManager(
-            this.olMap,
-            this.exerciseService,
-            this.store
-        );
-
-        const deleteFeatureManager = new DeleteFeatureManager(
-            this.store,
-            this.olMap,
-            this.exerciseService
-        );
-
-        // Register the Layers in the correct Order
-        // The order represents the order of the layers on the map (last element is on top)
-
-        const featureManagers = [
-            deleteFeatureManager,
-            simulatedRegionFeatureManager,
-            mapImageFeatureManager,
-            transferLinesFeatureManager,
-            transferPointFeatureManager,
-            vehicleFeatureManager,
-            cateringLinesFeatureManager,
-            patientFeatureManager,
-            personnelFeatureManager,
-            materialFeatureManager,
-            viewportFeatureManager,
-        ];
-
-        featureManagers.forEach((featureManager) => {
+        this.featureManagers!.forEach((featureManager) => {
             this.layerFeatureManagerDictionary.set(
                 featureManager.layer,
                 featureManager
             );
-            featureManager.register(this.changePopup$, this.destroy$, ngZone);
+            this.olMap.addLayer(featureManager.layer);
+            featureManager.register(
+                this.changePopup$,
+                this.destroy$,
+                ngZone,
+                this.mapInteractionsManager
+            );
         });
-
-        const featureLayers = [
-            deleteFeatureManager.layer,
-            simulatedRegionFeatureManager.layer,
-            mapImageFeatureManager.layer,
-            transferLinesFeatureManager.layer,
-            transferPointFeatureManager.layer,
-            vehicleFeatureManager.layer,
-            cateringLinesFeatureManager.layer,
-            patientFeatureManager.layer,
-            personnelFeatureManager.layer,
-            materialFeatureManager.layer,
-            viewportFeatureManager.layer,
-        ];
-
-        this.olMap.getLayers().clear();
-        this.olMap.addLayer(satelliteLayer);
-        // We just want to modify this for the Map not do anything with it after so we ignore the returned value
-        // eslint-disable-next-line rxjs/no-ignored-observable
-        this.olMap.getLayers().extend(featureLayers);
-
-        const mapInteractionsManager = new OlMapInteractionsManager(
-            this.olMap.getInteractions(),
-            featureLayers,
-            store,
-            this,
-            viewportFeatureManager,
-            simulatedRegionFeatureManager
-        );
-        mapInteractionsManager.applyInteractions();
-        mapInteractionsManager.registerHandlers();
 
         this.registerPopupTriggers();
 
@@ -318,37 +232,6 @@ export class OlMapManager {
         });
     }
 
-    public registerDropHandler(translateInteraction: TranslateInteraction) {
-        translateInteraction.on('translateend', (event) => {
-            const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
-            const droppedFeature: Feature = event.features.getArray()[0]!;
-
-            this.olMap.forEachFeatureAtPixel(
-                pixel,
-                (droppedOnFeature, layer) => {
-                    // Skip layer when unset
-                    if (layer === null) {
-                        return;
-                    }
-
-                    // Do not drop a feature on itself
-                    if (droppedFeature === droppedOnFeature) {
-                        return;
-                    }
-
-                    // We stop propagating the event as soon as the onFeatureDropped function returns true
-                    return this.layerFeatureManagerDictionary
-                        .get(layer as VectorLayer<VectorSource>)!
-                        .onFeatureDrop(
-                            event,
-                            droppedFeature,
-                            droppedOnFeature as Feature
-                        );
-                }
-            );
-        });
-    }
-
     public getOlViewportElement(): HTMLElement {
         return this.olMap
             .getTargetElement()
@@ -409,5 +292,79 @@ export class OlMapManager {
         this.destroy$.next();
         this.olMap.dispose();
         this.olMap.setTarget(undefined);
+    }
+
+    private initializeFeatureManagers() {
+        const transferLinesFeatureManager = new TransferLinesFeatureManager(
+            this.store,
+            this.transferLinesService
+        );
+        const transferPointFeatureManager = new TransferPointFeatureManager(
+            this.olMap,
+            this.store,
+            this.exerciseService
+        );
+        const patientFeatureManager = new PatientFeatureManager(
+            this.store,
+            this.olMap,
+            this.exerciseService
+        );
+        const vehicleFeatureManager = new VehicleFeatureManager(
+            this.olMap,
+            this.store,
+            this.exerciseService
+        );
+        const personnelFeatureManager = new PersonnelFeatureManager(
+            this.olMap,
+            this.store,
+            this.exerciseService
+        );
+        const materialFeatureManager = new MaterialFeatureManager(
+            this.olMap,
+            this.store,
+            this.exerciseService
+        );
+        const mapImageFeatureManager = new MapImageFeatureManager(
+            this.olMap,
+            this.exerciseService,
+            this.store
+        );
+        const cateringLinesFeatureManager = new CateringLinesFeatureManager(
+            this.store
+        );
+
+        const viewportFeatureManager = new ViewportFeatureManager(
+            this.olMap,
+            this.exerciseService,
+            this.store
+        );
+        const simulatedRegionFeatureManager = new SimulatedRegionFeatureManager(
+            this.olMap,
+            this.exerciseService,
+            this.store
+        );
+
+        const deleteFeatureManager = new DeleteFeatureManager(
+            this.store,
+            this.olMap,
+            this.exerciseService
+        );
+
+        // Register the Feature Managers in the correct Order
+        // The order represents the order of the layers on the map (last element is on top)
+
+        this.featureManagers = [
+            deleteFeatureManager,
+            simulatedRegionFeatureManager,
+            mapImageFeatureManager,
+            transferLinesFeatureManager,
+            transferPointFeatureManager,
+            vehicleFeatureManager,
+            cateringLinesFeatureManager,
+            patientFeatureManager,
+            personnelFeatureManager,
+            materialFeatureManager,
+            viewportFeatureManager,
+        ];
     }
 }

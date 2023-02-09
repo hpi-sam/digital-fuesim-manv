@@ -18,6 +18,7 @@ import { selectExerciseState } from 'src/app/state/application/selectors/exercis
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { FeatureManager } from '../utility/feature-manager';
+import type { OlMapInteractionsManager } from '../utility/map/ol-map-interactions-manager';
 import type { OpenPopupOptions } from '../utility/popup-manager';
 
 function calculateTopRightViewPoint(view: View) {
@@ -44,8 +45,10 @@ export class DeleteFeatureManager implements FeatureManager<Point> {
     register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone
+        ngZone: NgZone,
+        mapInteractionsManager: OlMapInteractionsManager
     ) {
+        mapInteractionsManager.addFeatureLayer(this.layer);
         if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
             this.makeVisible();
         }

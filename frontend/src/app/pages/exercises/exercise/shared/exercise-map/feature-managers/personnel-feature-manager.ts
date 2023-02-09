@@ -9,6 +9,7 @@ import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectVisiblePersonnel } from 'src/app/state/application/selectors/shared.selectors';
 import { PersonnelPopupComponent } from '../shared/personnel-popup/personnel-popup.component';
+import type { OlMapInteractionsManager } from '../utility/map/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
 import type { OpenPopupOptions } from '../utility/popup-manager';
@@ -20,13 +21,15 @@ export class PersonnelFeatureManager extends MoveableFeatureManager<Personnel> {
     public register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone
+        ngZone: NgZone,
+        mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisiblePersonnel),
             changePopup$,
             destroy$,
-            ngZone
+            ngZone,
+            mapInteractionsManager
         );
     }
     private readonly imageStyleHelper = new ImageStyleHelper(
