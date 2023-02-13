@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import { Allow, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { IsPosition } from '../utils/validators/is-position';
 import { IsValue } from '../utils/validators';
@@ -51,12 +51,15 @@ export class SimulatedRegion {
     }
 
     // TODO: validate
+    @Allow()
     public readonly inEvents: readonly ExerciseSimulationEvent[] = [];
 
     // TODO: validate
+    @Allow()
     public readonly behaviors: readonly ExerciseSimulationBehaviorState[] = [];
 
     // TODO: validate
+    @Allow()
     public readonly activities: {
         readonly [stateId: UUID]: ExerciseSimulationActivityState;
     } = {};

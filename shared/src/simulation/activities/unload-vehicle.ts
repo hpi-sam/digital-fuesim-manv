@@ -1,9 +1,11 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
-import { getCreate, isNotInSimulatedRegion } from '../../models/utils';
+import { SimulatedRegion } from '../../models';
+import { getCreate } from '../../models/utils';
 import { getElement } from '../../store/action-reducers/utils';
 import { uuid, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import { removeActivity, unloadVehicle } from '../utils/simulated-region';
+import { removeActivity } from '../utils/simulated-region';
+import { unloadVehicle } from '../utils/vehicle';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -43,15 +45,22 @@ export const unloadVehicleActivity: SimulationActivity<UnloadVehicleActivityStat
     {
         activityState: UnloadVehicleActivityState,
         tick(draftState, simulatedRegion, activityState) {
-            const vehicle = getElement(draftState, 'vehicle', activityState.vehicleId)
-            if (isNotInSimulatedRegion(vehicle)) {
+            const vehicle = getElement(
+                draftState,
+                'vehicle',
+                activityState.vehicleId
+            );
+            if (
+                !SimulatedRegion.isInSimulatedRegion(simulatedRegion, vehicle)
+            ) {
                 // The vehicle has left the region for some reason. Cancel unloading.
-                removeActivity(simulatedRegion, activityState.id)
+                removeActivity(simulatedRegion, activityState.id);
             } else if (
                 draftState.currentTime >=
                 activityState.startTime + activityState.duration
             ) {
-                unloadVehicle(draftState, simulatedRegion, vehicle)
+                unloadVehicle(draftState, simulatedRegion, vehicle);
+                removeActivity(simulatedRegion, activityState.id);
             }
         },
     };

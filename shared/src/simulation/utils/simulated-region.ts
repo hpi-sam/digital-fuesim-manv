@@ -1,12 +1,9 @@
-import { SimulatedRegion, Vehicle } from '../../models';
-import { SimulatedRegionPosition } from '../../models/utils';
-import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
+import type { SimulatedRegion} from '../../models';
 import type { ExerciseState } from '../../state';
-import { getElement } from '../../store/action-reducers/utils';
 import type { Mutable, UUID } from '../../utils';
 import { cloneDeepMutable } from '../../utils';
 import type { ExerciseSimulationActivityState } from '../activities';
-import { simulationActivityDirectory } from '../activities';
+import { simulationActivityDirectory as simulationActivityDictionary } from '../activities';
 import { simulationBehaviorDirectory } from '../behaviors';
 import type { ExerciseSimulationEvent } from '../events';
 import { TickEvent } from '../events/tick';
@@ -36,8 +33,8 @@ function tickActivities(
     tickInterval: number
 ) {
     Object.values(simulatedRegion.activities).forEach((activityState) => {
-        // TODO: remove '?' by adding stricter typing to the directory
-        simulationActivityDirectory[activityState.type]?.tick(
+        // TODO: remove '?' by adding stricter typing to the dictionary
+        simulationActivityDictionary[activityState.type]?.tick(
             draftState,
             simulatedRegion,
             activityState,
@@ -85,38 +82,4 @@ export function removeActivity(
 ) {
     // TODO: Maybe add a proper teardown function to SimulatedActivity
     delete simulatedRegion.activities[activityId];
-}
-
-export function unloadVehicle(
-    draftState: Mutable<ExerciseState>,
-    simulatedRegion: Mutable<SimulatedRegion>,
-    vehicle: Mutable<Vehicle>
-) {
-    if (!SimulatedRegion.isInSimulatedRegion(simulatedRegion, vehicle)) {
-        console.error(
-            `Trying to unload a vehicle with id ${vehicle.id} into simulated region with id ${simulatedRegion.id} but the vehicle is not in that region.`
-        );
-        return;
-    }
-
-    const loadedElements = [
-        { uuidSet: vehicle.materialIds, elementType: 'material' },
-        { uuidSet: vehicle.personnelIds, elementType: 'personnel' },
-        { uuidSet: vehicle.patientIds, elementType: 'patient' },
-    ] as const;
-
-    for (const { uuidSet, elementType } of loadedElements) {
-        for (const elementId of Object.keys(uuidSet)) {
-            const element = getElement(draftState, elementType, elementId);
-            if (Vehicle.isInVehicle(vehicle, element)) {
-                changePositionWithId(
-                    elementId,
-                    SimulatedRegionPosition.create(simulatedRegion.id),
-                    elementType,
-                    draftState
-                );
-            }
-        }
-    }
-    vehicle.patientIds = {};
 }

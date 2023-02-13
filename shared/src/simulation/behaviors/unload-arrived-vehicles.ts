@@ -38,14 +38,14 @@ export const unloadArrivingVehiclesBehavior: SimulationBehavior<UnloadArrivedVeh
         handleEvent(draftState, event, behaviorState, simulatedRegion) {
             if (
                 event.type === 'vehicleArrivedEvent' &&
-                event.SimulatedRegionId === simulatedRegion.id
+                event.simulatedRegionId === simulatedRegion.id
             ) {
                 addActivity(
                     simulatedRegion,
                     UnloadVehicleActivityState.create(
                         event.vehicleId,
                         event.arrivalTime,
-                        event.arrivalTime + behaviorState.unloadDelay
+                        behaviorState.unloadDelay
                     )
                 );
             }
