@@ -1,57 +1,27 @@
 import type { NgZone } from '@angular/core';
 import type { Store } from '@ngrx/store';
-import type {
-    ImmutableJsonObject,
-    MergeIntersection,
-    UUID,
-} from 'digital-fuesim-manv-shared';
 import {
     upperLeftCornerOf,
     lowerRightCornerOf,
 } from 'digital-fuesim-manv-shared';
-import type { Feature } from 'ol';
-import { Overlay, View } from 'ol';
-import type { Polygon } from 'ol/geom';
-import type Geometry from 'ol/geom/Geometry';
-import type LineString from 'ol/geom/LineString';
-import type Point from 'ol/geom/Point';
-import { defaults as defaultInteractions } from 'ol/interaction';
-import TileLayer from 'ol/layer/Tile';
-import VectorLayer from 'ol/layer/Vector';
+import { Collection, View } from 'ol';
+import type { Interaction } from 'ol/interaction';
+import type VectorLayer from 'ol/layer/Vector';
 import OlMap from 'ol/Map';
-import VectorSource from 'ol/source/Vector';
-import XYZ from 'ol/source/XYZ';
-import type { Observable } from 'rxjs';
-import { combineLatest, pairwise, startWith, Subject, takeUntil } from 'rxjs';
+import type VectorSource from 'ol/source/Vector';
+import { Subject, takeUntil } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    selectExerciseStatus,
     selectSimulatedRegion,
-    selectTileMapProperties,
-    selectTransferLines,
     selectViewports,
 } from 'src/app/state/application/selectors/exercise.selectors';
-import {
-    selectCurrentRole,
-    selectRestrictedViewport,
-    selectVisibleCateringLines,
-    selectVisibleMapImages,
-    selectVisibleMaterials,
-    selectVisiblePatients,
-    selectVisiblePersonnel,
-    selectVisibleSimulatedRegions,
-    selectVisibleTransferPoints,
-    selectVisibleVehicles,
-    selectVisibleViewports,
-} from 'src/app/state/application/selectors/shared.selectors';
+import { selectRestrictedViewport } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
 import { DeleteFeatureManager } from '../feature-managers/delete-feature-manager';
-import type { ElementManager } from '../feature-managers/element-manager';
 import { MapImageFeatureManager } from '../feature-managers/map-images-feature-manager';
 import { MaterialFeatureManager } from '../feature-managers/material-feature-manager';
 import { PatientFeatureManager } from '../feature-managers/patient-feature-manager';
@@ -65,26 +35,21 @@ import {
     ViewportFeatureManager,
 } from '../feature-managers/viewport-feature-manager';
 import type { FeatureManager } from './feature-manager';
-import type { OpenPopupOptions } from './popup-manager';
-import { ResizeRectangleInteraction } from './resize-rectangle-interaction';
-import { TranslateInteraction } from './translate-interaction';
+import type { PopupManager } from './popup-manager';
+import { OlMapInteractionsManager } from './ol-map-interactions-manager';
+import { SatelliteLayerManager } from './satellite-layer-manager';
 
 /**
  * This class should run outside the Angular zone for performance reasons.
  */
+
 export class OlMapManager {
+    private readonly _olMap: OlMap;
+    private featureManagers: FeatureManager<any>[];
+    private readonly mapInteractionsManager: OlMapInteractionsManager;
+    private static readonly defaultZoom = 20;
     private readonly destroy$ = new Subject<void>();
 
-    public readonly olMap: OlMap;
-    /**
-     * If this subject emits options, the specified popup should be toggled.
-     * If it emits undefined, the currently open popup should be closed.
-     */
-    public readonly changePopup$ = new Subject<
-        OpenPopupOptions<any> | undefined
-    >();
-
-    public readonly popupOverlay: Overlay;
     /**
      * key: the layer that is passed to the featureManager, that is saved in the value
      * ```ts
@@ -98,105 +63,23 @@ export class OlMapManager {
         FeatureManager<any>
     >();
 
-    private static readonly defaultZoom = 20;
-
     constructor(
         private readonly store: Store<AppState>,
         private readonly exerciseService: ExerciseService,
         private readonly openLayersContainer: HTMLDivElement,
-        private readonly popoverContainer: HTMLDivElement,
         private readonly ngZone: NgZone,
-        transferLinesService: TransferLinesService
+        private readonly transferLinesService: TransferLinesService,
+        private readonly popupManager: PopupManager
     ) {
-        // Layers
-        const satelliteLayer = new TileLayer({
-            preload: Number.POSITIVE_INFINITY,
-        });
-        this.store
-            .select(selectTileMapProperties)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((tileMapProperties) => {
-                satelliteLayer.setSource(
-                    new XYZ({
-                        url: tileMapProperties.tileUrl,
-                        maxZoom: tileMapProperties.maxZoom,
-                        // We want to keep the tiles cached if we are zooming in and out fast
-                        cacheSize: 1000,
-                    })
-                );
-            });
-        const transferPointLayer = this.createElementLayer(600);
-        const vehicleLayer = this.createElementLayer(1000);
-        const cateringLinesLayer = this.createElementLayer<LineString>();
-        const transferLinesLayer = this.createElementLayer<LineString>();
-        const patientLayer = this.createElementLayer();
-        const personnelLayer = this.createElementLayer();
-        const materialLayer = this.createElementLayer();
-        const viewportLayer = this.createElementLayer<Polygon>();
-        const simulatedRegionLayer = this.createElementLayer<Polygon>();
-        const mapImagesLayer = this.createElementLayer(10_000);
-        const deleteFeatureLayer = this.createElementLayer();
-        this.popupOverlay = new Overlay({
-            element: this.popoverContainer,
-        });
-
-        // The order in this array represents the order of the layers on the map (last element is on top)
-        const featureLayers = [
-            deleteFeatureLayer,
-            simulatedRegionLayer,
-            mapImagesLayer,
-            transferLinesLayer,
-            transferPointLayer,
-            vehicleLayer,
-            cateringLinesLayer,
-            patientLayer,
-            personnelLayer,
-            materialLayer,
-            viewportLayer,
-        ];
-
-        // Interactions
-        const translateInteraction = new TranslateInteraction({
-            layers: featureLayers,
-            hitTolerance: 10,
-            filter: (feature, layer) => {
-                const featureManager = this.layerFeatureManagerDictionary.get(
-                    layer as VectorLayer<VectorSource>
-                );
-                return featureManager === undefined
-                    ? false
-                    : featureManager.isFeatureTranslatable(feature);
-            },
-        });
-        const resizeViewportInteraction = new ResizeRectangleInteraction(
-            viewportLayer.getSource()!
-        );
-        const resizeSimulatedRegionInteraction = new ResizeRectangleInteraction(
-            simulatedRegionLayer.getSource()!
-        );
-        const alwaysInteractions = [translateInteraction];
-        const customInteractions =
-            selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
-                ? [
-                      ...alwaysInteractions,
-                      resizeViewportInteraction,
-                      resizeSimulatedRegionInteraction,
-                  ]
-                : alwaysInteractions;
-
-        this.olMap = new OlMap({
-            interactions: defaultInteractions({
-                pinchRotate: false,
-                altShiftDragRotate: false,
-                keyboard: true,
-            }).extend(customInteractions),
+        this._olMap = new OlMap({
+            interactions: new Collection<Interaction>(),
             // We use Angular buttons instead
             controls: [],
             target: this.openLayersContainer,
             // Note: The order of this array determines the order of the objects on the map.
             // The most bottom objects must be at the top of the array.
-            layers: [satelliteLayer, ...featureLayers],
-            overlays: [this.popupOverlay],
+            layers: [],
+            overlays: [this.popupManager.popupOverlay],
             view: new View({
                 center: [startingPosition.x, startingPosition.y],
                 zoom: OlMapManager.defaultZoom,
@@ -207,141 +90,40 @@ export class OlMapManager {
             }),
         });
 
-        // FeatureManagers
-        if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
-            this.registerFeatureElementManager(
-                new TransferLinesFeatureManager(transferLinesLayer),
-                this.store.select(selectTransferLines)
-            );
-            transferLinesService.displayTransferLines$.subscribe((display) => {
-                transferLinesLayer.setVisible(display);
-            });
+        this.featureManagers = [];
+        this.initializeFeatureManagers();
 
-            const deleteHelper = new DeleteFeatureManager(
-                this.store,
-                deleteFeatureLayer,
-                this.olMap,
-                this.exerciseService
-            );
-            this.layerFeatureManagerDictionary.set(
-                deleteFeatureLayer,
-                deleteHelper
-            );
-        }
-        this.registerFeatureElementManager(
-            new TransferPointFeatureManager(
-                this.olMap,
-                transferPointLayer,
-                this.store,
-                this.exerciseService
-            ),
-            this.store.select(selectVisibleTransferPoints)
+        this.mapInteractionsManager = new OlMapInteractionsManager(
+            this.olMap.getInteractions(),
+            store,
+            popupManager,
+            this.olMap,
+            this.layerFeatureManagerDictionary,
+            this.destroy$
         );
 
-        this.registerFeatureElementManager(
-            new PatientFeatureManager(
-                this.store,
-                this.olMap,
-                patientLayer,
-                this.exerciseService
-            ),
-            this.store.select(selectVisiblePatients)
+        const satelliteLayerManager = new SatelliteLayerManager(
+            store,
+            this.destroy$
         );
 
-        this.registerFeatureElementManager(
-            new VehicleFeatureManager(
-                this.olMap,
-                vehicleLayer,
-                this.exerciseService
-            ),
-            this.store.select(selectVisibleVehicles)
-        );
+        this.olMap.getLayers().clear();
+        this.olMap.addLayer(satelliteLayerManager.satelliteLayer);
 
-        this.registerFeatureElementManager(
-            new PersonnelFeatureManager(
-                this.olMap,
-                personnelLayer,
-                this.exerciseService
-            ),
-            this.store.select(selectVisiblePersonnel)
-        );
+        // the mapInteractionsManager needs to be set and the satelliteLayer needs to be added before this is possible
+        this.registerFeatureManagers();
 
-        this.registerFeatureElementManager(
-            new MaterialFeatureManager(
-                this.olMap,
-                materialLayer,
-                this.exerciseService
-            ),
-            this.store.select(selectVisibleMaterials)
-        );
-
-        this.registerFeatureElementManager(
-            new MapImageFeatureManager(
-                this.olMap,
-                mapImagesLayer,
-                this.exerciseService,
-                this.store
-            ),
-            this.store.select(selectVisibleMapImages)
-        );
-
-        this.registerFeatureElementManager(
-            new CateringLinesFeatureManager(cateringLinesLayer),
-            this.store.select(selectVisibleCateringLines)
-        );
-
-        this.registerFeatureElementManager(
-            new ViewportFeatureManager(
-                this.olMap,
-                viewportLayer,
-                this.exerciseService,
-                this.store
-            ),
-            this.store.select(selectVisibleViewports)
-        );
-
-        this.registerFeatureElementManager(
-            new SimulatedRegionFeatureManager(
-                this.olMap,
-                simulatedRegionLayer,
-                this.exerciseService,
-                this.store
-            ),
-            this.store.select(selectVisibleSimulatedRegions)
-        );
-
-        this.registerPopupTriggers();
-        this.registerDropHandler(translateInteraction);
         this.registerViewportRestriction();
 
-        // Register handlers that disable or enable certain interactions
-        combineLatest([
-            this.store.select(selectExerciseStatus),
-            this.store.select(selectCurrentRole),
-        ])
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(([status, currentRole]) => {
-                const showPausedOverlay =
-                    status !== 'running' && currentRole === 'participant';
-                customInteractions.forEach((interaction) => {
-                    interaction.setActive(
-                        !showPausedOverlay && currentRole !== 'timeTravel'
-                    );
-                });
-                this.setPopupsEnabled(!showPausedOverlay);
-                this.getOlViewportElement().style.filter = showPausedOverlay
-                    ? 'brightness(50%)'
-                    : '';
-            });
+        popupManager.registerPopupTriggers(
+            this.olMap,
+            openLayersContainer,
+            this.layerFeatureManagerDictionary
+        );
     }
 
-    private popupsEnabled = true;
-    private setPopupsEnabled(enabled: boolean) {
-        this.popupsEnabled = enabled;
-        if (!enabled) {
-            // Close all open popups
-            this.changePopup$.next(undefined);
-        }
+    public get olMap(): OlMap {
+        return this._olMap;
     }
 
     private registerViewportRestriction() {
@@ -380,125 +162,6 @@ export class OlMapManager {
                 const minZoom = Math.min(matchingZoom, view.getMaxZoom());
                 view.setMinZoom(minZoom);
             });
-    }
-
-    private registerFeatureElementManager<
-        Element extends ImmutableJsonObject,
-        T extends MergeIntersection<
-            ElementManager<Element, any> & FeatureManager<any>
-        >
-    >(
-        featureManager: T,
-        elementDictionary$: Observable<{ [id: UUID]: Element }>
-    ) {
-        this.layerFeatureManagerDictionary.set(
-            featureManager.layer,
-            featureManager
-        );
-        featureManager.togglePopup$?.subscribe(this.changePopup$);
-        // Propagate the changes on an element to the featureManager
-        elementDictionary$
-            .pipe(startWith({}), pairwise(), takeUntil(this.destroy$))
-            .subscribe(([oldElementDictionary, newElementDictionary]) => {
-                // run outside angular zone for better performance
-                this.ngZone.runOutsideAngular(() => {
-                    handleChanges(oldElementDictionary, newElementDictionary, {
-                        createHandler: (element) =>
-                            featureManager.onElementCreated(element),
-                        deleteHandler: (element) =>
-                            featureManager.onElementDeleted(element),
-                        changeHandler: (oldElement, newElement) =>
-                            featureManager.onElementChanged(
-                                oldElement,
-                                newElement
-                            ),
-                    });
-                });
-            });
-    }
-
-    private registerPopupTriggers() {
-        this.olMap.on('singleclick', (event) => {
-            if (!this.popupsEnabled) {
-                return;
-            }
-            this.olMap.forEachFeatureAtPixel(
-                event.pixel,
-                (feature, layer) => {
-                    // Skip layer when unset
-                    if (layer === null) {
-                        return false;
-                    }
-                    this.layerFeatureManagerDictionary
-                        .get(layer as VectorLayer<VectorSource>)!
-                        .onFeatureClicked(event, feature as Feature);
-                    // we only want the top one -> a truthy return breaks this loop
-                    return true;
-                },
-                { hitTolerance: 10 }
-            );
-            if (!this.olMap!.hasFeatureAtPixel(event.pixel)) {
-                this.changePopup$.next(undefined);
-            }
-        });
-
-        this.openLayersContainer.addEventListener('keydown', (event) => {
-            if ((event as KeyboardEvent).key === 'Escape') {
-                this.changePopup$.next(undefined);
-            }
-        });
-    }
-
-    private registerDropHandler(translateInteraction: TranslateInteraction) {
-        translateInteraction.on('translateend', (event) => {
-            const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
-            const droppedFeature: Feature = event.features.getArray()[0]!;
-
-            this.olMap.forEachFeatureAtPixel(
-                pixel,
-                (droppedOnFeature, layer) => {
-                    // Skip layer when unset
-                    if (layer === null) {
-                        return;
-                    }
-
-                    // Do not drop a feature on itself
-                    if (droppedFeature === droppedOnFeature) {
-                        return;
-                    }
-
-                    // We stop propagating the event as soon as the onFeatureDropped function returns true
-                    return this.layerFeatureManagerDictionary
-                        .get(layer as VectorLayer<VectorSource>)!
-                        .onFeatureDrop(
-                            event,
-                            droppedFeature,
-                            droppedOnFeature as Feature
-                        );
-                }
-            );
-        });
-    }
-
-    /**
-     * @param renderBuffer The size of the largest symbol, line width or label on the highest zoom level.
-     */
-    private createElementLayer<LayerGeometry extends Geometry = Point>(
-        renderBuffer = 250
-    ) {
-        return new VectorLayer({
-            // These two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
-            updateWhileAnimating: true,
-            updateWhileInteracting: true,
-            renderBuffer,
-            source: new VectorSource<LayerGeometry>(),
-        });
-    }
-
-    private getOlViewportElement(): HTMLElement {
-        return this.olMap
-            .getTargetElement()
-            .querySelectorAll('.ol-viewport')[0] as HTMLElement;
     }
 
     /**
@@ -555,5 +218,98 @@ export class OlMapManager {
         this.destroy$.next();
         this.olMap.dispose();
         this.olMap.setTarget(undefined);
+    }
+
+    // This lets featureManagers register themselves and adds them to the layerFeatureManagerDictionary
+
+    private registerFeatureManagers() {
+        this.featureManagers.forEach((featureManager) => {
+            this.layerFeatureManagerDictionary.set(
+                featureManager.layer,
+                featureManager
+            );
+            featureManager.register(
+                this.popupManager.changePopup$,
+                this.destroy$,
+                this.ngZone,
+                this.mapInteractionsManager
+            );
+        });
+    }
+
+    private initializeFeatureManagers() {
+        const transferLinesFeatureManager = new TransferLinesFeatureManager(
+            this.store,
+            this.transferLinesService,
+            this.olMap
+        );
+        const transferPointFeatureManager = new TransferPointFeatureManager(
+            this.olMap,
+            this.store,
+            this.exerciseService
+        );
+        const patientFeatureManager = new PatientFeatureManager(
+            this.store,
+            this.olMap,
+            this.exerciseService
+        );
+        const vehicleFeatureManager = new VehicleFeatureManager(
+            this.olMap,
+            this.store,
+            this.exerciseService
+        );
+        const personnelFeatureManager = new PersonnelFeatureManager(
+            this.olMap,
+            this.store,
+            this.exerciseService
+        );
+        const materialFeatureManager = new MaterialFeatureManager(
+            this.olMap,
+            this.store,
+            this.exerciseService
+        );
+        const mapImageFeatureManager = new MapImageFeatureManager(
+            this.olMap,
+            this.exerciseService,
+            this.store
+        );
+        const cateringLinesFeatureManager = new CateringLinesFeatureManager(
+            this.store,
+            this.olMap
+        );
+
+        const viewportFeatureManager = new ViewportFeatureManager(
+            this.olMap,
+            this.exerciseService,
+            this.store
+        );
+        const simulatedRegionFeatureManager = new SimulatedRegionFeatureManager(
+            this.olMap,
+            this.exerciseService,
+            this.store
+        );
+
+        const deleteFeatureManager = new DeleteFeatureManager(
+            this.store,
+            this.olMap,
+            this.exerciseService
+        );
+
+        // Register the Feature Managers in the correct Order
+        // The order represents the order of the layers on the map (last element is on top)
+
+        this.featureManagers = [
+            deleteFeatureManager,
+            simulatedRegionFeatureManager,
+            mapImageFeatureManager,
+            transferLinesFeatureManager,
+            transferPointFeatureManager,
+            vehicleFeatureManager,
+            cateringLinesFeatureManager,
+            patientFeatureManager,
+            personnelFeatureManager,
+            materialFeatureManager,
+            viewportFeatureManager,
+        ];
     }
 }

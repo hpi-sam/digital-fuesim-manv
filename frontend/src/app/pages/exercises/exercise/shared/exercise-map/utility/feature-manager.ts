@@ -1,9 +1,11 @@
+import type { NgZone } from '@angular/core';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Geometry } from 'ol/geom';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import type { Subject } from 'rxjs';
+import type { OlMapInteractionsManager } from './ol-map-interactions-manager';
 import type { OpenPopupOptions } from './popup-manager';
 
 /**
@@ -39,8 +41,15 @@ export interface FeatureManager<T extends Geometry> {
      * @returns wether the event should not propagate further (to the features behind {@link droppedOnFeature}).
      */
     onFeatureDrop: (
-        dropEvent: TranslateEvent,
         droppedFeature: Feature<any>,
-        droppedOnFeature: Feature<T>
+        droppedOnFeature: Feature<T>,
+        dropEvent?: TranslateEvent
     ) => boolean;
+
+    register: (
+        changePopup$: Subject<OpenPopupOptions<any> | undefined>,
+        destroy$: Subject<void>,
+        ngZone: NgZone,
+        mapInteractionsManager: OlMapInteractionsManager
+    ) => void;
 }
