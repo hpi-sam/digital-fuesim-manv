@@ -18,11 +18,13 @@ import type { PopupManager } from './popup-manager';
 import type { FeatureManager } from './feature-manager';
 
 export class OlMapInteractionsManager {
-    private readonly featureLayers: VectorLayer<VectorSource>[];
-    private readonly trainerInteractions: Interaction[];
-    private translateInteraction: TranslateInteraction;
-    private participantInteractions: Interaction[];
-    private interactions: Collection<Interaction>;
+    private readonly featureLayers: VectorLayer<VectorSource>[] = [];
+    private readonly trainerInteractions: Interaction[] = [];
+    private translateInteraction: TranslateInteraction =
+        new TranslateInteraction();
+    private participantInteractions: Interaction[] = [];
+    private interactions: Collection<Interaction> =
+        new Collection<Interaction>();
     private lastStatus: ExerciseStatus | undefined;
     private lastRole: Role | 'timeTravel' | undefined;
 
@@ -37,26 +39,21 @@ export class OlMapInteractionsManager {
         >,
         private readonly destroy$: Subject<void>
     ) {
-        this.featureLayers = [];
-        this.trainerInteractions = [];
-        this.interactions = new Collection<Interaction>();
-        this.translateInteraction = new TranslateInteraction();
-        this.participantInteractions = [this.translateInteraction];
         this.updateInteractions();
         this.registerInteractionEnablementHandler();
     }
 
     public addFeatureLayer(layer: VectorLayer<VectorSource>) {
         this.featureLayers.push(layer);
-        this.updateRegisterAndApplyAll();
+        this.updateRegistrationAndInteractionsAndApplyAll();
     }
 
     public addTrainerInteraction(interaction: Interaction) {
         this.trainerInteractions.push(interaction);
-        this.updateRegisterAndApplyAll();
+        this.updateRegistrationAndInteractionsAndApplyAll();
     }
 
-    private updateRegisterAndApplyAll() {
+    private updateRegistrationAndInteractionsAndApplyAll() {
         this.updateInteractions();
         this.registerDropHandler();
         this.applyInteractions();
@@ -96,7 +93,7 @@ export class OlMapInteractionsManager {
         );
     }
 
-    public applyInteractions() {
+    private applyInteractions() {
         this.mapInteractions.clear();
         // We just want to modify this for the Map not do anything with it after so we ignore the returned value
         // eslint-disable-next-line rxjs/no-ignored-observable
@@ -104,7 +101,7 @@ export class OlMapInteractionsManager {
     }
 
     // Register handlers that disable or enable certain interactions
-    registerInteractionEnablementHandler() {
+    private registerInteractionEnablementHandler() {
         combineLatest([
             this.store.select(selectExerciseStatus),
             this.store.select(selectCurrentRole),

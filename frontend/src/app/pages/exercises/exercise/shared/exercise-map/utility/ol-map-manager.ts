@@ -42,6 +42,7 @@ import { SatelliteLayerManager } from './satellite-layer-manager';
 /**
  * This class should run outside the Angular zone for performance reasons.
  */
+
 export class OlMapManager {
     private readonly _olMap: OlMap;
     private featureManagers: FeatureManager<any>[];

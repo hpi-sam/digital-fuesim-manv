@@ -27,7 +27,7 @@ function calculateTopRightViewPoint(view: View) {
 }
 
 export class DeleteFeatureManager implements FeatureManager<Point> {
-    layer: VectorLayer<VectorSource<Point>>;
+    readonly layer: VectorLayer<VectorSource<Point>>;
     constructor(
         private readonly store: Store<AppState>,
         private readonly olMap: OlMap,
