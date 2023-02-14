@@ -72,9 +72,9 @@ export class ExerciseService {
         private readonly store: Store<AppState>,
         private readonly messageService: MessageService
     ) {
-        setupCypressTestingValues((values) => {
-            values.proposedActions = this.proposedActions;
-            values.performedAcctions = this.performedActions;
+        setupCypressTestingValues({
+            proposedActions: this.proposedActions,
+            performedAcctions: this.performedActions,
         });
         this.socket.on('performAction', (action: ExerciseAction) => {
             freeze(action, true);
