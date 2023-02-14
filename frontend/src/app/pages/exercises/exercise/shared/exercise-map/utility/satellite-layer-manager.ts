@@ -6,9 +6,9 @@ import type { AppState } from 'src/app/state/app.state';
 import { selectTileMapProperties } from 'src/app/state/application/selectors/exercise.selectors';
 
 export class SatelliteLayerManager {
-    private readonly _satelliteLayer: any;
+    private readonly _satelliteLayer: TileLayer<XYZ>;
 
-    public get satelliteLayer(): any {
+    public get satelliteLayer(): TileLayer<XYZ> {
         return this._satelliteLayer;
     }
 
@@ -23,7 +23,7 @@ export class SatelliteLayerManager {
             .select(selectTileMapProperties)
             .pipe(takeUntil(this.destroy$))
             .subscribe((tileMapProperties) => {
-                this.satelliteLayer.setSource(
+                this._satelliteLayer.setSource(
                     new XYZ({
                         url: tileMapProperties.tileUrl,
                         maxZoom: tileMapProperties.maxZoom,
