@@ -36,7 +36,7 @@ function tickActivities(
         simulationActivityDictionary[activityState.type].tick(
             draftState,
             simulatedRegion,
-            activityState,
+            activityState as any,
             tickInterval
         );
     });
@@ -51,7 +51,7 @@ function handleSimulationEvents(
             simulationBehaviorDictionary[behaviorState.type].handleEvent(
                 draftState,
                 simulatedRegion,
-                behaviorState,
+                behaviorState as any,
                 event
             );
         });
