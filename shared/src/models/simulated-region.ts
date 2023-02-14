@@ -3,7 +3,8 @@ import { Allow, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { IsPosition } from '../utils/validators/is-position';
 import { IsValue } from '../utils/validators';
-import type { ExerciseSimulationEvent } from '../simulation/events';
+import type { ExerciseSimulationEvent} from '../simulation';
+import { simulationEventTypeOptions } from '../simulation';
 import type { ExerciseSimulationActivityState } from '../simulation/activities';
 import type { ExerciseSimulationBehaviorState } from '../simulation/behaviors';
 import {
@@ -50,8 +51,8 @@ export class SimulatedRegion {
         this.name = name;
     }
 
-    // TODO: validate
-    @Allow()
+    @Type(...simulationEventTypeOptions)
+    @ValidateNested()
     public readonly inEvents: readonly ExerciseSimulationEvent[] = [];
 
     // TODO: validate

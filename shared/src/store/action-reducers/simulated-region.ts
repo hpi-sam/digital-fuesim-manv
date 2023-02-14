@@ -11,9 +11,11 @@ import {
     changePosition,
     changePositionWithId,
 } from '../../models/utils/position/position-helpers-mutable';
-import { VehicleArrivedEvent } from '../../simulation';
-import { ExerciseSimulationBehaviorState } from '../../simulation/behaviors';
-import { sendSimulationEvent } from '../../simulation/utils/simulated-region';
+import {
+    ExerciseSimulationBehaviorState,
+    sendSimulationEvent,
+    VehicleArrivedEvent,
+} from '../../simulation';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
