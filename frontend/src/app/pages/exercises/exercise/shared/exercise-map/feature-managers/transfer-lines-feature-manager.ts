@@ -9,8 +9,6 @@ import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import type { Subject } from 'rxjs';
-import { pairwise, startWith, takeUntil } from 'rxjs';
-import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
 import type { AppState } from 'src/app/state/app.state';
 import { selectTransferLines } from 'src/app/state/application/selectors/exercise.selectors';
@@ -56,29 +54,15 @@ export class TransferLinesFeatureManager
         mapInteractionsManager.addFeatureLayer(this.layer);
         this.togglePopup$?.subscribe(changePopup$);
         if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
-            this.store
-                .select(selectTransferLines)
-                .pipe(startWith({}), pairwise(), takeUntil(destroy$))
-                .subscribe(([oldElementDictionary, newElementDictionary]) => {
-                    // run outside angular zone for better performance
-                    ngZone.runOutsideAngular(() => {
-                        handleChanges(
-                            oldElementDictionary,
-                            newElementDictionary,
-                            {
-                                createHandler: (element) =>
-                                    this.onElementCreated(element),
-                                deleteHandler: (element) =>
-                                    this.onElementDeleted(element),
-                                changeHandler: (oldElement, newElement) =>
-                                    this.onElementChanged(
-                                        oldElement,
-                                        newElement
-                                    ),
-                            }
-                        );
-                    });
-                });
+            this.registerChangeHandlers(
+                this.store.select(selectTransferLines),
+                destroy$,
+                ngZone,
+                (element) => this.onElementCreated(element),
+                (element) => this.onElementDeleted(element),
+                (oldElement, newElement) =>
+                    this.onElementChanged(oldElement, newElement)
+            );
             this.transferLinesService.displayTransferLines$.subscribe(
                 (display) => {
                     this.layer.setVisible(display);
@@ -131,9 +115,9 @@ export class TransferLinesFeatureManager
     ) {}
 
     onFeatureDrop(
-        dropEvent: TranslateEvent,
         droppedFeature: Feature<any>,
-        droppedOnFeature: Feature<LineString>
+        droppedOnFeature: Feature<LineString>,
+        dropEvent?: TranslateEvent
     ) {
         return false;
     }

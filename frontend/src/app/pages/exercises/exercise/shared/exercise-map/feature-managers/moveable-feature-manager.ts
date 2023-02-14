@@ -5,8 +5,7 @@ import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import type { Observable } from 'rxjs';
-import { pairwise, startWith, Subject, takeUntil } from 'rxjs';
-import { handleChanges } from 'src/app/shared/functions/handle-changes';
+import { Subject } from 'rxjs';
 import type { NgZone } from '@angular/core';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import type { FeatureManager } from '../utility/feature-manager';
@@ -122,9 +121,9 @@ export abstract class MoveableFeatureManager<
      * The standard implementation is to ignore these events.
      */
     public onFeatureDrop(
-        dropEvent: TranslateEvent,
         droppedFeature: Feature<any>,
-        droppedOnFeature: Feature<FeatureType>
+        droppedOnFeature: Feature<FeatureType>,
+        dropEvent?: TranslateEvent
     ): boolean {
         return false;
     }
@@ -146,21 +145,14 @@ export abstract class MoveableFeatureManager<
         this.olMap.addLayer(this.layer);
         mapInteractionsManager.addFeatureLayer(this.layer);
         this.togglePopup$?.subscribe(changePopup$);
-        // Propagate the changes on an element to the featureManager
-        elementDictionary$
-            .pipe(startWith({}), pairwise(), takeUntil(destroy$))
-            .subscribe(([oldElementDictionary, newElementDictionary]) => {
-                // run outside angular zone for better performance
-                ngZone.runOutsideAngular(() => {
-                    handleChanges(oldElementDictionary, newElementDictionary, {
-                        createHandler: (element) =>
-                            this.onElementCreated(element),
-                        deleteHandler: (element) =>
-                            this.onElementDeleted(element),
-                        changeHandler: (oldElement, newElement) =>
-                            this.onElementChanged(oldElement, newElement),
-                    });
-                });
-            });
+        this.registerChangeHandlers(
+            elementDictionary$,
+            destroy$,
+            ngZone,
+            (element) => this.onElementCreated(element),
+            (element) => this.onElementDeleted(element),
+            (oldElement, newElement) =>
+                this.onElementChanged(oldElement, newElement)
+        );
     }
 }

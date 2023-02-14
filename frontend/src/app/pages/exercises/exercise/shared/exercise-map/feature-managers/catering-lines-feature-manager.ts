@@ -7,9 +7,7 @@ import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import type { Subject } from 'rxjs';
-import { pairwise, startWith, takeUntil } from 'rxjs';
 import { rgbColorPalette } from 'src/app/shared/functions/colors';
-import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { AppState } from 'src/app/state/app.state';
 import { selectVisibleCateringLines } from 'src/app/state/application/selectors/shared.selectors';
@@ -53,22 +51,15 @@ export class CateringLinesFeatureManager
         mapInteractionsManager.addFeatureLayer(this.layer);
         this.togglePopup$?.subscribe(changePopup$);
         // Propagate the changes on an element to the featureManager
-        this.store
-            .select(selectVisibleCateringLines)
-            .pipe(startWith({}), pairwise(), takeUntil(destroy$))
-            .subscribe(([oldElementDictionary, newElementDictionary]) => {
-                // run outside angular zone for better performance
-                ngZone.runOutsideAngular(() => {
-                    handleChanges(oldElementDictionary, newElementDictionary, {
-                        createHandler: (element) =>
-                            this.onElementCreated(element),
-                        deleteHandler: (element) =>
-                            this.onElementDeleted(element),
-                        changeHandler: (oldElement, newElement) =>
-                            this.onElementChanged(oldElement, newElement),
-                    });
-                });
-            });
+        this.registerChangeHandlers(
+            this.store.select(selectVisibleCateringLines),
+            destroy$,
+            ngZone,
+            (element) => this.onElementCreated(element),
+            (element) => this.onElementDeleted(element),
+            (oldElement, newElement) =>
+                this.onElementChanged(oldElement, newElement)
+        );
     }
 
     public isFeatureTranslatable(feature: Feature<LineString>) {
@@ -119,9 +110,9 @@ export class CateringLinesFeatureManager
     ) {}
 
     onFeatureDrop(
-        dropEvent: TranslateEvent,
         droppedFeature: Feature<any>,
-        droppedOnFeature: Feature<LineString>
+        droppedOnFeature: Feature<LineString>,
+        dropEvent?: TranslateEvent
     ) {
         return false;
     }

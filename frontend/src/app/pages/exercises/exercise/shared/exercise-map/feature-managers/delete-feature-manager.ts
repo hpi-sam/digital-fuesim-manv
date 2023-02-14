@@ -88,9 +88,9 @@ export class DeleteFeatureManager implements FeatureManager<Point> {
     }
 
     public onFeatureDrop(
-        dropEvent: TranslateEvent,
         droppedFeature: Feature<any>,
-        droppedOnFeature: Feature<Point>
+        droppedOnFeature: Feature<Point>,
+        dropEvent?: TranslateEvent
     ) {
         const id = droppedFeature.getId() as UUID;
         const exerciseState = selectStateSnapshot(

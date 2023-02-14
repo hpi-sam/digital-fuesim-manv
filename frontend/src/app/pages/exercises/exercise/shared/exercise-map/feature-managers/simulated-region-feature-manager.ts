@@ -124,9 +124,9 @@ export class SimulatedRegionFeatureManager
     }
 
     public override onFeatureDrop(
-        dropEvent: TranslateEvent,
         droppedFeature: Feature<any>,
-        droppedOnFeature: Feature<any>
+        droppedOnFeature: Feature<any>,
+        dropEvent?: TranslateEvent
     ) {
         const droppedElement = this.getElementFromFeature(droppedFeature);
         const droppedOnSimulatedRegion = this.getElementFromFeature(

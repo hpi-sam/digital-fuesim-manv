@@ -41,9 +41,9 @@ export interface FeatureManager<T extends Geometry> {
      * @returns wether the event should not propagate further (to the features behind {@link droppedOnFeature}).
      */
     onFeatureDrop: (
-        dropEvent: TranslateEvent,
         droppedFeature: Feature<any>,
-        droppedOnFeature: Feature<T>
+        droppedOnFeature: Feature<T>,
+        dropEvent?: TranslateEvent
     ) => boolean;
 
     register: (

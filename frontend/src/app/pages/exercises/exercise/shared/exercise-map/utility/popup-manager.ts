@@ -60,7 +60,7 @@ export class PopupManager {
             if (!this.popupsEnabled) {
                 return;
             }
-            olMap.forEachFeatureAtPixel(
+            const hasBeenHandled = olMap.forEachFeatureAtPixel(
                 event.pixel,
                 (feature, layer) => {
                     // Skip layer when unset
@@ -75,7 +75,7 @@ export class PopupManager {
                 },
                 { hitTolerance: 10 }
             );
-            if (!olMap.hasFeatureAtPixel(event.pixel)) {
+            if (!hasBeenHandled) {
                 this.changePopup$.next(undefined);
             }
         });

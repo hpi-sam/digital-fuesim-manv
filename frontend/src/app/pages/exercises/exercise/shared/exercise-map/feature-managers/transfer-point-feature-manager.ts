@@ -89,9 +89,9 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
     );
 
     public override onFeatureDrop(
-        dropEvent: TranslateEvent,
         droppedFeature: Feature<any>,
-        droppedOnFeature: Feature<Point>
+        droppedOnFeature: Feature<Point>,
+        dropEvent?: TranslateEvent
     ) {
         // TODO: droppedElement isn't necessarily a transfer point -> fix getElementFromFeature typings
         const droppedElement = this.getElementFromFeature(droppedFeature);
