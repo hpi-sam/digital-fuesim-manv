@@ -16,6 +16,9 @@ import {
     sendSimulationEvent,
     simulationBehaviorTypeOptions,
     VehicleArrivedEvent,
+    PersonnelAvailableEvent,
+    NewPatientEvent,
+    MaterialAvailableEvent,
 } from '../../simulation';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
@@ -212,6 +215,21 @@ export namespace SimulatedRegionActionReducers {
                             element.id,
                             draftState.currentTime
                         )
+                    );
+                } else if (element.type === 'patient') {
+                    sendSimulationEvent(
+                        simulatedRegion,
+                        NewPatientEvent.create(element.id)
+                    );
+                } else if (element.type === 'personnel') {
+                    sendSimulationEvent(
+                        simulatedRegion,
+                        PersonnelAvailableEvent.create(element.id)
+                    );
+                } else if (element.type === 'material') {
+                    sendSimulationEvent(
+                        simulatedRegion,
+                        MaterialAvailableEvent.create(element.id)
                     );
                 }
 

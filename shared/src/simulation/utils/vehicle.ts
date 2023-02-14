@@ -4,6 +4,9 @@ import { changePositionWithId } from '../../models/utils/position/position-helpe
 import type { ExerciseState } from '../../state';
 import { getElement } from '../../store/action-reducers/utils';
 import type { Mutable } from '../../utils';
+import { MaterialAvailableEvent } from '../events/material-available';
+import { PersonnelAvailableEvent } from '../events/personnel-available';
+import { sendSimulationEvent } from './simulated-region';
 
 export function unloadVehicle(
     draftState: Mutable<ExerciseState>,
@@ -33,6 +36,18 @@ export function unloadVehicle(
                     elementType,
                     draftState
                 );
+
+                if (element.type === 'material') {
+                    sendSimulationEvent(
+                        simulatedRegion,
+                        MaterialAvailableEvent.create(element.id)
+                    );
+                } else if (element.type === 'personnel') {
+                    sendSimulationEvent(
+                        simulatedRegion,
+                        PersonnelAvailableEvent.create(element.id)
+                    );
+                }
             }
         }
     }
