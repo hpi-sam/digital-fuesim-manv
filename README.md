@@ -42,10 +42,6 @@ This project is currently developed as a [bachelor project](https://hpi.de/en/st
 8. (Optional) We have a list of recommended [vscode](https://code.visualstudio.com/) extensions. We strongly recommend you to use them if you are developing. You can see them via [the `@recommended` filter in the extensions panel](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
 9. (Optional) We have prepared default settings, tasks and debug configurations for VS Code. You can find them in `.vscode/*.example`. Crete a copy of those files removing the `.example` and adjust them to your needs. The files without `.example`-Extensions are untracked so your adjustments won't be committed automatically.
 
-### Gotchas
-
-If you want the best developer experience, make sure to always install dependencies with `npm install`. The default option changed from previously `false` to `true` with version 9.
-
 ## Starting for development
 
 ### Option 1
@@ -129,8 +125,6 @@ You can run it during the development
 
 ### End to end tests
 
-**Note: We don't really have end-to-end tests yet.**
-
 We are using [cypress](https://www.npmjs.com/package/cypress) to run the end-to-end tests. You can find the code under `/frontend/cypress` in the repository.
 
 #### Running the tests
@@ -138,16 +132,6 @@ We are using [cypress](https://www.npmjs.com/package/cypress) to run the end-to-
 To run the tests locally, it is recommended to use the vscode [task](https://code.visualstudio.com/docs/editor/tasks) `Start all & cypress`. Alternatively, you can start the frontend and backend manually and then run `npm run cy:open` in `/frontend`.
 
 If you only want to check whether the tests pass, you can run `npm run cy:run` in `/frontend` instead.
-
-#### Visual regression testing
-
-We are also making use of visual regression tests via [cypress-image-diff](https://github.com/uktrade/cypress-image-diff).
-The screenshots are stored under `/frontend/cypress-visual-screenshots`.
-
-The `baseline` folder contains the reference screenshots (the desired result).
-If a test fails a new screenshot is taken and put in the `comparison` folder.
-If the new screenshot is the new desired result, then you only have to move it in the `baseline` folder and replace the old reference screenshot with the same name.
-In the `diff` folder you can see the changes between the baseline and the comparison screenshot.
 
 ## Benchmarking
 
