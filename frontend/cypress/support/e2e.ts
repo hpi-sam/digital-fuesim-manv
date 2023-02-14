@@ -27,6 +27,8 @@ import {
     getState,
     firstElement,
     lastElement,
+    nthElement,
+    nthLastElement,
     itsKeys,
     itsValues,
 } from './commands';
@@ -47,6 +49,8 @@ declare global {
             joinExerciseAsParticipant(): Chainable;
             firstElement(): Chainable;
             lastElement(): Chainable;
+            nthElement(n: number): Chainable;
+            nthLastElement(n: number): Chainable;
             itsKeys(): Chainable;
             itsValues(): Chainable;
         }
@@ -58,6 +62,8 @@ Cypress.Commands.addAll(
     {
         firstElement,
         lastElement,
+        nthElement,
+        nthLastElement,
         itsKeys,
         itsValues,
     }

@@ -172,6 +172,81 @@ describe('A trainer on the exercise page', () => {
             .firstElement()
             .should('have.property', 'time', 600000);
 
+        cy.get('[data-cy=alarmGroupAddVehicleButton]').first().click();
+        cy.get('[data-cy=alarmGroupAddVehicleSelect] > :nth-child(2)')
+            .first()
+            .click();
+        cy.get('[data-cy=alarmGroupClosePopupButton]').click();
+        cy.dragToMap('[data-cy=draggableTransferPointDiv]');
+        cy.get('[data-cy=trainerToolbarExecutionButton]').click();
+        cy.get('[data-cy=trainerToolbarControlCenterButton]').click();
+        cy.get('[data-cy=sendAlarmGroupChooseTargetButton]').first().click();
+        cy.get('[data-cy=sendAlarmGroupChooseTargetSelect] > :nth-child(1)')
+            .first()
+            .click();
+        cy.get('[data-cy=sendAlarmGroupSendButton]').click();
+
+        cy.proposedActions()
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[Emergency Operation Center] Add Log Entry'
+            );
+
+        cy.proposedActions()
+            .nthLastElement(1)
+            .should('have.property', 'type', '[Transfer] Add to transfer');
+
+        cy.proposedActions()
+            .nthLastElement(2)
+            .should('have.property', 'type', '[Vehicle] Add vehicle');
+
+        cy.proposedActions()
+            .nthLastElement(3)
+            .should('have.property', 'type', '[Transfer] Add to transfer');
+
+        cy.proposedActions()
+            .nthLastElement(4)
+            .should('have.property', 'type', '[Vehicle] Add vehicle');
+
+        cy.get('[data-cy=closeEmergencyOperationsCenterPopupButton]').click({
+            force: true,
+        });
+        cy.get('[data-cy=trainerToolbarExecutionButton]').click();
+        cy.get('[data-cy=trainerToolbarTransferButton]').click();
+        cy.get('[data-cy=transferOverviewLetArriveInstantlyButton]')
+            .first()
+            .click();
+
+        cy.proposedActions()
+            .lastElement()
+            .should('have.property', 'type', '[Transfer] Finish transfer');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('vehicles')
+            .itsValues()
+            .firstElement()
+            .its('position')
+            .should('have.property', 'type', 'coordinates');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('vehicles')
+            .itsValues()
+            .nthElement(1)
+            .its('position')
+            .should('have.property', 'type', 'transfer');
+
+        cy.get('[data-cy=transferOverviewCloseButton]').click({ force: true });
+        cy.get('[data-cy=trainerToolbarCreationButton]').click();
+        cy.get('[data-cy=trainerToolbarAlarmGroupsButton]').click();
+
+        cy.log('remove an alarm group vehicle')
+            .get('[data-cy="alarmGroupRemoveVehicleButton"]')
+            .first()
+            .click();
         cy.log('remove an alarm group vehicle')
             .get('[data-cy="alarmGroupRemoveVehicleButton"]')
             .first()

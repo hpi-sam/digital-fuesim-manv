@@ -140,6 +140,16 @@ export function lastElement(subject: Array<unknown>) {
     return cy.log('last element').wrap(subject.at(-1), { log: false });
 }
 
+export function nthElement(subject: Array<unknown>, n: number) {
+    return cy.log(`${n}th element`).wrap(subject.at(n), { log: false });
+}
+
+export function nthLastElement(subject: Array<unknown>, n: number) {
+    return cy
+        .log(`${n}th last element`)
+        .wrap(subject.at(subject.length - (n + 1)), { log: false });
+}
+
 export function itsKeys(subject: JsonObject) {
     return cy.log('its keys').wrap(Object.keys(subject), { log: false });
 }
