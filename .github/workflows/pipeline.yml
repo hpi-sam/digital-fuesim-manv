@@ -292,12 +292,18 @@ jobs:
                   start: npm --prefix .. -- run start:all
                   working-directory: frontend
                   wait-on: 'http://127.0.0.1:4200/, http://127.0.0.1:3201/api/health'
-            - name: Archive cypress
+            - name: Archive cypress videos
               if: always()
               uses: actions/upload-artifact@v3
               with:
-                  name: cypress-output
-                  path: frontend/cypress-visual-screenshots
+                  name: cypress-videos
+                  path: frontend/cypress/videos
+            - name: Archive cypress screenshots
+              if: failure()
+              uses: actions/upload-artifact@v3
+              with:
+                  name: cypress-screenshots
+                  path: frontend/cypress/screenshots
 
     deploy-dev:
         timeout-minutes: 10
