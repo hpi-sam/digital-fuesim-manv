@@ -19,9 +19,9 @@ import type { FeatureManager } from './feature-manager';
 
 export class OlMapInteractionsManager {
     private readonly featureLayers: VectorLayer<VectorSource>[];
-    private readonly customInteractions: Interaction[];
+    private readonly trainerInteractions: Interaction[];
     private translateInteraction: TranslateInteraction;
-    private alwaysInteractions: Interaction[];
+    private participantInteractions: Interaction[];
     private interactions: Collection<Interaction>;
     private lastStatus: ExerciseStatus | undefined;
     private lastRole: Role | 'timeTravel' | undefined;
@@ -38,12 +38,12 @@ export class OlMapInteractionsManager {
         private readonly destroy$: Subject<void>
     ) {
         this.featureLayers = [];
-        this.customInteractions = [];
+        this.trainerInteractions = [];
         this.interactions = new Collection<Interaction>();
         this.translateInteraction = new TranslateInteraction();
-        this.alwaysInteractions = [this.translateInteraction];
+        this.participantInteractions = [this.translateInteraction];
         this.updateInteractions();
-        this.registerPauseAlwaysInteractionHandler();
+        this.registerInteractionEnablementHandler();
     }
 
     public addFeatureLayer(layer: VectorLayer<VectorSource>) {
@@ -51,8 +51,8 @@ export class OlMapInteractionsManager {
         this.updateRegisterAndApplyAll();
     }
 
-    public addCustomInteraction(interaction: Interaction) {
-        this.customInteractions.push(interaction);
+    public addTrainerInteraction(interaction: Interaction) {
+        this.trainerInteractions.push(interaction);
         this.updateRegisterAndApplyAll();
     }
 
@@ -60,7 +60,7 @@ export class OlMapInteractionsManager {
         this.updateInteractions();
         this.registerDropHandler();
         this.applyInteractions();
-        this.adjustRights(this.lastStatus, this.lastRole);
+        this.updateInteractionEnablement(this.lastStatus, this.lastRole);
     }
 
     private updateTranslateInteraction() {
@@ -78,21 +78,21 @@ export class OlMapInteractionsManager {
         });
     }
 
-    private updateAlwaysInteractions() {
-        this.alwaysInteractions = [this.translateInteraction];
+    private updateParticipantInteractions() {
+        this.participantInteractions = [this.translateInteraction];
     }
 
     private updateInteractions() {
         this.updateTranslateInteraction();
-        this.updateAlwaysInteractions();
+        this.updateParticipantInteractions();
         this.interactions = defaultInteractions({
             pinchRotate: false,
             altShiftDragRotate: false,
             keyboard: true,
         }).extend(
             selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
-                ? [...this.alwaysInteractions, ...this.customInteractions]
-                : [...this.alwaysInteractions]
+                ? [...this.participantInteractions, ...this.trainerInteractions]
+                : [...this.participantInteractions]
         );
     }
 
@@ -104,32 +104,33 @@ export class OlMapInteractionsManager {
     }
 
     // Register handlers that disable or enable certain interactions
-    registerPauseAlwaysInteractionHandler() {
+    registerInteractionEnablementHandler() {
         combineLatest([
             this.store.select(selectExerciseStatus),
             this.store.select(selectCurrentRole),
         ])
             .pipe(takeUntil(this.destroy$))
             .subscribe(([status, currentRole]) => {
-                this.adjustRights(status, currentRole);
+                this.updateInteractionEnablement(status, currentRole);
             });
     }
 
-    private adjustRights(
+    // this shows a paused overlay and disables interactions for participants when the exercise is paused
+    private updateInteractionEnablement(
         status: ExerciseStatus | undefined,
         currentRole: Role | 'timeTravel' | undefined
     ) {
         this.lastRole = currentRole;
         this.lastStatus = status;
-        const showPausedOverlay =
+        const isPausedAndParticipant =
             status !== 'running' && currentRole === 'participant';
-        this.alwaysInteractions.forEach((interaction) => {
-            interaction.setActive(
-                !showPausedOverlay && currentRole !== 'timeTravel'
-            );
+        const areInteractionsActive =
+            !isPausedAndParticipant && currentRole !== 'timeTravel';
+        this.participantInteractions.forEach((interaction) => {
+            interaction.setActive(areInteractionsActive);
         });
-        this.popupManager.setPopupsEnabled(!showPausedOverlay);
-        this.getOlViewportElement().style.filter = showPausedOverlay
+        this.popupManager.setPopupsEnabled(!isPausedAndParticipant);
+        this.getOlViewportElement().style.filter = isPausedAndParticipant
             ? 'brightness(50%)'
             : '';
     }

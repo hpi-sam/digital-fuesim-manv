@@ -43,7 +43,7 @@ export class SimulatedRegionFeatureManager
             ngZone,
             mapInteractionsManager
         );
-        mapInteractionsManager.addCustomInteraction(
+        mapInteractionsManager.addTrainerInteraction(
             new ResizeRectangleInteraction(this.layer.getSource()!)
         );
     }
