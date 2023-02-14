@@ -1,7 +1,7 @@
 import type { Store } from '@ngrx/store';
 import type { ExerciseAction, Immutable } from 'digital-fuesim-manv-shared';
 import { environment } from 'src/environments/environment';
-import { defaults } from 'lodash-es'
+import { defaults } from 'lodash-es';
 
 export interface CypressTestingValues {
     store: Store;
@@ -20,6 +20,6 @@ export const setupCypressTestingValues = (
     if (isBeingTestedByCypress()) {
         if (!anyWindow.cypressTestingValues)
             anyWindow.cypressTestingValues = {};
-        defaults(anyWindow.cypressTestingValues, values)
+        defaults(anyWindow.cypressTestingValues, values);
     }
 };
