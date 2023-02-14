@@ -11,10 +11,15 @@ export type ExerciseSimulationBehaviorState = InstanceType<
     ExerciseSimulationBehavior['behaviorState']
 >;
 
-// TODO: typing
-export const simulationBehaviorDirectory = Object.fromEntries(
+type ExerciseSimulationBehaviorDictionary = {
+    [Behavior in ExerciseSimulationBehavior as InstanceType<
+        Behavior['behaviorState']
+    >['type']]: Behavior;
+};
+
+export const simulationBehaviorDictionary = Object.fromEntries(
     Object.values(simulationBehaviors).map((behavior) => [
         new behavior.behaviorState().type,
         behavior,
     ])
-);
+) as ExerciseSimulationBehaviorDictionary;

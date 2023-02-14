@@ -35,7 +35,7 @@ export class UnloadArrivedVehiclesBehaviorState
 export const unloadArrivingVehiclesBehavior: SimulationBehavior<UnloadArrivedVehiclesBehaviorState> =
     {
         behaviorState: UnloadArrivedVehiclesBehaviorState,
-        handleEvent(draftState, event, behaviorState, simulatedRegion) {
+        handleEvent(draftState, simulatedRegion, behaviorState, event) {
             if (
                 event.type === 'vehicleArrivedEvent' &&
                 event.simulatedRegionId === simulatedRegion.id

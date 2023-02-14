@@ -1,6 +1,6 @@
-import type { UUID } from "../../utils";
+import type { UUID } from '../../utils';
 
-export interface SimulationEvent {
-    readonly type: `${string}Event`;
-    readonly id: UUID;
+export class SimulationEvent {
+    readonly type!: `${string}Event`;
+    readonly id!: UUID;
 }

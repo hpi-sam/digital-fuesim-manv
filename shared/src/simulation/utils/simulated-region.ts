@@ -1,10 +1,10 @@
-import type { SimulatedRegion} from '../../models';
+import type { SimulatedRegion } from '../../models';
 import type { ExerciseState } from '../../state';
 import type { Mutable, UUID } from '../../utils';
 import { cloneDeepMutable } from '../../utils';
 import type { ExerciseSimulationActivityState } from '../activities';
-import { simulationActivityDirectory as simulationActivityDictionary } from '../activities';
-import { simulationBehaviorDirectory } from '../behaviors';
+import { simulationActivityDictionary } from '../activities';
+import { simulationBehaviorDictionary } from '../behaviors';
 import type { ExerciseSimulationEvent } from '../events';
 import { TickEvent } from '../events/tick';
 
@@ -33,8 +33,7 @@ function tickActivities(
     tickInterval: number
 ) {
     Object.values(simulatedRegion.activities).forEach((activityState) => {
-        // TODO: remove '?' by adding stricter typing to the dictionary
-        simulationActivityDictionary[activityState.type]?.tick(
+        simulationActivityDictionary[activityState.type].tick(
             draftState,
             simulatedRegion,
             activityState,
@@ -49,12 +48,11 @@ function handleSimulationEvents(
 ) {
     simulatedRegion.behaviors.forEach((behaviorState) => {
         simulatedRegion.inEvents.forEach((event) => {
-            // TODO: remove '?' by adding stricter typing to the directory
-            simulationBehaviorDirectory[behaviorState.type]?.handleEvent(
+            simulationBehaviorDictionary[behaviorState.type].handleEvent(
                 draftState,
-                event,
+                simulatedRegion,
                 behaviorState,
-                simulatedRegion
+                event
             );
         });
     });
@@ -76,10 +74,17 @@ export function addActivity(
         cloneDeepMutable(activityState);
 }
 
-export function removeActivity(
+export function terminateActivity(
+    draftState: Mutable<ExerciseState>,
     simulatedRegion: Mutable<SimulatedRegion>,
     activityId: UUID
 ) {
-    // TODO: Maybe add a proper teardown function to SimulatedActivity
-    delete simulatedRegion.activities[activityId];
+    const activityType = simulatedRegion.activities[activityId]?.type;
+    if (activityType) {
+        const activity = simulationActivityDictionary[activityType];
+        if (activity.terminate) {
+            activity.terminate(draftState, simulatedRegion, activityId);
+        }
+        delete simulatedRegion.activities[activityId];
+    }
 }

@@ -3,13 +3,8 @@ import { IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
 import { IsUUIDSet, IsValue } from '../utils/validators';
 import { IsPosition } from '../utils/validators/is-position';
-import type {
-    WithPosition} from './utils';
-import {
-    currentVehicleIdOf,
-    getCreate,
-    isInVehicle
-} from './utils';
+import type { WithPosition } from './utils';
+import { currentVehicleIdOf, getCreate, isInVehicle } from './utils';
 import { ImageProperties } from './utils/image-properties';
 import { Position } from './utils/position/position';
 

@@ -4,16 +4,22 @@ export const simulationActivities = {
     unloadVehicleActivity,
 };
 
-export type ExerciseSimulationActivity = typeof unloadVehicleActivity;
+export type ExerciseSimulationActivity =
+    (typeof simulationActivities)[keyof typeof simulationActivities];
 
 export type ExerciseSimulationActivityState = InstanceType<
     ExerciseSimulationActivity['activityState']
 >;
 
-// TODO: typing
-export const simulationActivityDirectory = Object.fromEntries(
+type ExerciseSimulationActivityDictionary = {
+    [Activity in ExerciseSimulationActivity as InstanceType<
+        Activity['activityState']
+    >['type']]: Activity;
+};
+
+export const simulationActivityDictionary = Object.fromEntries(
     Object.values(simulationActivities).map((activity) => [
         new activity.activityState().type,
         activity,
     ])
-);
+) as ExerciseSimulationActivityDictionary;

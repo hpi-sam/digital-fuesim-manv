@@ -1,10 +1,9 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
 import { SimulatedRegion } from '../../models';
 import { getCreate } from '../../models/utils';
-import { getElement } from '../../store/action-reducers/utils';
 import { uuid, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import { removeActivity } from '../utils/simulated-region';
+import { terminateActivity } from '../utils/simulated-region';
 import { unloadVehicle } from '../utils/vehicle';
 import type {
     SimulationActivity,
@@ -45,22 +44,27 @@ export const unloadVehicleActivity: SimulationActivity<UnloadVehicleActivityStat
     {
         activityState: UnloadVehicleActivityState,
         tick(draftState, simulatedRegion, activityState) {
-            const vehicle = getElement(
-                draftState,
-                'vehicle',
-                activityState.vehicleId
-            );
+            const vehicle = draftState.vehicles[activityState.vehicleId];
             if (
+                !vehicle ||
                 !SimulatedRegion.isInSimulatedRegion(simulatedRegion, vehicle)
             ) {
-                // The vehicle has left the region for some reason. Cancel unloading.
-                removeActivity(simulatedRegion, activityState.id);
+                // The vehicle has left the region or was deleted for some reason. Cancel unloading.
+                terminateActivity(
+                    draftState,
+                    simulatedRegion,
+                    activityState.id
+                );
             } else if (
                 draftState.currentTime >=
                 activityState.startTime + activityState.duration
             ) {
                 unloadVehicle(draftState, simulatedRegion, vehicle);
-                removeActivity(simulatedRegion, activityState.id);
+                terminateActivity(
+                    draftState,
+                    simulatedRegion,
+                    activityState.id
+                );
             }
         },
     };

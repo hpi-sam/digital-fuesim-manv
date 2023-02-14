@@ -3,17 +3,17 @@ import type { ExerciseState } from '../../state';
 import type { Constructor, Mutable, UUID } from '../../utils';
 import type { ExerciseSimulationEvent } from '../events';
 
-export interface SimulationBehaviorState {
-    readonly type: `${string}Behavior`;
-    readonly id: UUID;
+export class SimulationBehaviorState {
+    readonly type!: `${string}Behavior`;
+    readonly id!: UUID;
 }
 
 export interface SimulationBehavior<S extends SimulationBehaviorState> {
     readonly behaviorState: Constructor<S>;
     readonly handleEvent: (
         draftState: Mutable<ExerciseState>,
-        event: Mutable<ExerciseSimulationEvent>,
+        simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<S>,
-        simulatedRegion: Mutable<SimulatedRegion>
+        event: Mutable<ExerciseSimulationEvent>
     ) => void;
 }
