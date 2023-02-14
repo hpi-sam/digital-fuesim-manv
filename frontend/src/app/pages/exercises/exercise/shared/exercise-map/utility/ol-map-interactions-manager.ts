@@ -13,6 +13,8 @@ import type { AppState } from 'src/app/state/app.state';
 import type { Store } from '@ngrx/store';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { ExerciseStatus, Role } from 'digital-fuesim-manv-shared';
+import type { TranslateEvent } from 'ol/interaction/Translate';
+import type { Pixel } from 'ol/pixel';
 import { TranslateInteraction } from './translate-interaction';
 import type { PopupManager } from './popup-manager';
 import type { FeatureManager } from './feature-manager';
@@ -45,15 +47,15 @@ export class OlMapInteractionsManager {
 
     public addFeatureLayer(layer: VectorLayer<VectorSource>) {
         this.featureLayers.push(layer);
-        this.updateRegistrationAndInteractionsAndApplyAll();
+        this.syncInteractionsAndHandler();
     }
 
     public addTrainerInteraction(interaction: Interaction) {
         this.trainerInteractions.push(interaction);
-        this.updateRegistrationAndInteractionsAndApplyAll();
+        this.syncInteractionsAndHandler();
     }
 
-    private updateRegistrationAndInteractionsAndApplyAll() {
+    private syncInteractionsAndHandler() {
         this.updateInteractions();
         this.registerDropHandler();
         this.applyInteractions();
@@ -136,29 +138,34 @@ export class OlMapInteractionsManager {
         this.translateInteraction.on('translateend', (event) => {
             const pixel = this.olMap.getPixelFromCoordinate(event.coordinate);
             const droppedFeature: Feature = event.features.getArray()[0]!;
-            this.olMap.forEachFeatureAtPixel(
-                pixel,
-                (droppedOnFeature, layer) => {
-                    // Skip layer when unset
-                    if (layer === null) {
-                        return;
-                    }
+            this.handleTranslateEnd(pixel, droppedFeature, event);
+        });
+    }
 
-                    // Do not drop a feature on itself
-                    if (droppedFeature === droppedOnFeature) {
-                        return;
-                    }
+    private handleTranslateEnd(
+        pixel: Pixel,
+        droppedFeature: Feature,
+        event: TranslateEvent
+    ) {
+        this.olMap.forEachFeatureAtPixel(pixel, (droppedOnFeature, layer) => {
+            // Skip layer when unset
+            if (layer === null) {
+                return;
+            }
 
-                    // We stop propagating the event as soon as the onFeatureDropped function returns true
-                    return this.layerFeatureManagerDictionary
-                        .get(layer as VectorLayer<VectorSource>)!
-                        .onFeatureDrop(
-                            event,
-                            droppedFeature,
-                            droppedOnFeature as Feature
-                        );
-                }
-            );
+            // Do not drop a feature on itself
+            if (droppedFeature === droppedOnFeature) {
+                return;
+            }
+
+            // We stop propagating the event as soon as the onFeatureDropped function returns true
+            return this.layerFeatureManagerDictionary
+                .get(layer as VectorLayer<VectorSource>)!
+                .onFeatureDrop(
+                    droppedFeature,
+                    droppedOnFeature as Feature,
+                    event
+                );
         });
     }
 
