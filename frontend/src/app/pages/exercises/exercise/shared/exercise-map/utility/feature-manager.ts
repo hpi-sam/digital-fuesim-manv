@@ -5,7 +5,6 @@ import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import type { Subject } from 'rxjs';
-import type OlMap from 'ol/Map';
 import type { OlMapInteractionsManager } from './ol-map-interactions-manager';
 import type { OpenPopupOptions } from './popup-manager';
 
