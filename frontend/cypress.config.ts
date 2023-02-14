@@ -5,7 +5,7 @@ export default defineConfig({
         runMode: 2,
     },
     e2e: {
-        baseUrl: 'http://localhost:4200',
+        baseUrl: 'http://127.0.0.1:4200',
         experimentalStudio: true,
     },
 });
