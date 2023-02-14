@@ -74,7 +74,7 @@ export class ExerciseService {
     ) {
         setupCypressTestingValues({
             proposedActions: this.proposedActions,
-            performedAcctions: this.performedActions,
+            performedActions: this.performedActions,
         });
         this.socket.on('performAction', (action: ExerciseAction) => {
             freeze(action, true);

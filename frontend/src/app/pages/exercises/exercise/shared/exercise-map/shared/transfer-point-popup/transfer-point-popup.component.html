@@ -5,6 +5,7 @@
             (click)="closePopup.emit()"
             type="button"
             class="btn-close float-end"
+            data-cy="transferPointPopupCloseButton"
         ></button>
     </h5>
     <div class="popover-body" style="width: 500px">
@@ -180,7 +181,9 @@
                 ngbNavItem="hospitals"
                 [disabled]="(currentRole$ | async) !== 'trainer'"
             >
-                <a ngbNavLink>Krankenhäuser</a>
+                <a ngbNavLink data-cy="transferPointPopupHospitalNav"
+                    >Krankenhäuser</a
+                >
                 <ng-template ngbNavContent>
                     <p
                         *ngIf="
@@ -256,6 +259,7 @@
                             ngbDropdownToggle
                             type="button"
                             class="btn btn-outline-primary"
+                            data-cy="transferPointPopupAddHospitalButton"
                         >
                             <span class="bi-plus me-1"></span>
                             Hinzufügen
@@ -275,6 +279,7 @@
                                 "
                                 ngbDropdownItem
                                 (click)="connectHospital(hospital.id)"
+                                data-cy="transferPointPopupAddHospitalDropdownButton"
                             >
                                 <span class="bi-plus me-1"></span>
                                 <app-hospital-name

@@ -335,14 +335,87 @@ describe('A trainer on the exercise page', () => {
             .firstElement()
             .should('have.property', 'transportDuration', 1800000);
 
-        cy.log('delete a hospital')
-            .get('[data-cy="hospitalDeleteButton"]')
-            .click();
+        // Currently broken because we can't drag and drop on the ol map
+        // cy.get('[data-cy=hospitalClosePopupButton').click();
+
+        // cy.log('tranfer patients to a hospital');
+        // cy.dragToMap('[data-cy=draggableTransferPointDiv]');
+        // cy.get('[data-cy=openLayersContainer]').click();
+        // cy.get('[data-cy=transferPointPopupHospitalNav]').click();
+        // cy.get('[data-cy=transferPointPopupAddHospitalButton]').click();
+        // cy.get('[data-cy=transferPointPopupAddHospitalDropdownButton]')
+        //     .first()
+        //     .click({ force: true });
+        // cy.get('[data-cy=transferPointPopupCloseButton]').click();
+
+        // cy.dragToMap('[data-cy=draggableVehicleDiv]');
+
+        // cy.get('[data-cy=chooseTransferTargetPopupHospitalDropdown]').click();
+
+        // cy.proposedActions();
+        // cy.getState()
+        //     .its('exerciseState')
+        //     .its('vehicles')
+        //     .itsValues()
+        //     .firstElement()
+        //     .its('position')
+        //     .should('have.property', 'type', 'transfer');
+        // cy.get('[data-cy=trainerToolbarCreationButton]')
+        //     .click();
+        // cy.get('[data-cy=trainerToolbarHospitalsButton]').click();
+
+        cy.log('delete a hospital');
+        cy.get('[data-cy="hospitalDeleteButton"]').click();
 
         cy.proposedActions()
             .lastElement()
             .should('have.property', 'type', '[Hospital] Remove hospital');
 
         cy.getState().its('exerciseState').its('hospitals').should('be.empty');
+    });
+
+    it('can start and stop an exercise', () => {
+        cy.log('start an exercise')
+            .get('[data-cy=trainerToolbarStartButton]')
+            .click();
+        cy.get('[data-cy=confirmationModalOkButton]').click();
+
+        cy.proposedActions()
+            .nthLastElement(1)
+            .should('have.property', 'type', '[Exercise] Start');
+
+        cy.proposedActions()
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[Emergency Operation Center] Add Log Entry'
+            );
+
+        cy.wait(1000);
+        cy.performedActions()
+            .lastElement()
+            .should('have.property', 'type', '[Exercise] Tick');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('currentTime')
+            .should('be.greaterThan', 0);
+
+        cy.log('pause an exercise')
+            .get('[data-cy=trainerToolbarPauseButton]')
+            .click();
+
+        cy.proposedActions()
+            .nthLastElement(1)
+            .should('have.property', 'type', '[Exercise] Pause');
+
+        cy.proposedActions()
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[Emergency Operation Center] Add Log Entry'
+            );
     });
 });

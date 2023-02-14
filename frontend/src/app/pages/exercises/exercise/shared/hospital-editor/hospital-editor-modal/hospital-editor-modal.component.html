@@ -9,7 +9,12 @@
             <i class="bi bi-plus"></i> Hinzufügen
         </button>
     </h4>
-    <button type="button" class="btn-close" (click)="close()"></button>
+    <button
+        type="button"
+        class="btn-close"
+        (click)="close()"
+        data-cy="hospitalClosePopupButton"
+    ></button>
 </div>
 <div
     *ngIf="hospitals$ | async | values as hospitals"

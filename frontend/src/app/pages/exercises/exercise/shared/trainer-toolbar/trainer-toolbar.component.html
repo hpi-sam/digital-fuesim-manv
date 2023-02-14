@@ -103,6 +103,7 @@
         *ngIf="(exerciseStatus$ | async) === 'running'"
         (click)="pauseExercise()"
         class="btn btn-primary ms-3"
+        data-cy="trainerToolbarPauseButton"
     >
         Pause
     </button>
@@ -110,6 +111,7 @@
         *ngIf="(exerciseStatus$ | async) !== 'running'"
         (click)="startExercise()"
         class="btn btn-primary ms-3"
+        data-cy="trainerToolbarStartButton"
     >
         Start
     </button>

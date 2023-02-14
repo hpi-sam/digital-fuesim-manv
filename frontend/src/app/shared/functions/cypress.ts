@@ -6,7 +6,7 @@ import { defaults } from 'lodash-es';
 export interface CypressTestingValues {
     store: Store;
     proposedActions: Immutable<ExerciseAction>[];
-    performedAcctions: Immutable<ExerciseAction>[];
+    performedActions: Immutable<ExerciseAction>[];
     backendBaseUrl: string;
 }
 

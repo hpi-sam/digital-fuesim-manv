@@ -38,6 +38,7 @@
             (click)="transferTo(reachableHospital.id, 'hospital')"
             type="button"
             class="dropdown-item"
+            data-cy="chooseTransferTargetPopupHospitalDropdown"
         >
             <app-hospital-name
                 [hospitalId]="reachableHospital.id"
