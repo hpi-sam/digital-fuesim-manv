@@ -31,10 +31,16 @@ export class UnloadVehicleActivityState implements SimulationActivityState {
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(vehicleId: UUID, startTime: number, duration: number) {
+    constructor(
+        vehicleId: UUID,
+        startTime: number,
+        duration: number,
+        id?: UUID
+    ) {
         this.vehicleId = vehicleId;
         this.startTime = startTime;
         this.duration = duration;
+        if (id) this.id = id;
     }
 
     static readonly create = getCreate(this);

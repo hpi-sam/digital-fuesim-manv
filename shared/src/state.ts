@@ -44,6 +44,7 @@ import {
     SpatialTree,
 } from './models/utils';
 import type { MaterialType } from './models/utils/material-type';
+import { seedRandomState, RandomState } from './simulation/utils';
 import type { SpatialElementPlural } from './store/action-reducers/utils/spatial-elements';
 import type { UUID } from './utils';
 import { uuid, uuidValidationOptions } from './utils';
@@ -64,6 +65,11 @@ export class ExerciseState {
     public readonly currentTime = 0;
     @IsLiteralUnion(exerciseStatusAllowedValues)
     public readonly currentStatus: ExerciseStatus = 'notStarted';
+
+    @Type(() => RandomState)
+    @ValidateNested()
+    public readonly randomState: RandomState = seedRandomState();
+
     @IsIdMap(Viewport)
     public readonly viewports: { readonly [key: UUID]: Viewport } = {};
     @IsIdMap(SimulatedRegion)
