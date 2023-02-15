@@ -7,7 +7,7 @@ import type VectorSource from 'ol/source/Vector';
 import type { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
 import type { NgZone } from '@angular/core';
-import type { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID, Element as Elem } from 'digital-fuesim-manv-shared';
 import type { FeatureManager } from '../utility/feature-manager';
 import { MovementAnimator } from '../utility/movement-animator';
 import type {
@@ -121,7 +121,7 @@ export abstract class MoveableFeatureManager<
      * The standard implementation is to ignore these events.
      */
     public onFeatureDrop(
-        droppedFeature: Feature<any>,
+        droppedElement: Elem,
         droppedOnFeature: Feature<FeatureType>,
         dropEvent?: TranslateEvent
     ): boolean {

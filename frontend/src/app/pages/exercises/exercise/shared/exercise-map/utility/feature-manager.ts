@@ -5,6 +5,7 @@ import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import type { Subject } from 'rxjs';
+import type { Element as Elem } from 'digital-fuesim-manv-shared';
 import type { OlMapInteractionsManager } from './ol-map-interactions-manager';
 import type { OpenPopupOptions } from './popup-manager';
 
@@ -41,7 +42,7 @@ export interface FeatureManager<T extends Geometry> {
      * @returns wether the event should not propagate further (to the features behind {@link droppedOnFeature}).
      */
     onFeatureDrop: (
-        droppedFeature: Feature<any>,
+        droppedElement: Elem,
         droppedOnFeature: Feature<T>,
         dropEvent?: TranslateEvent
     ) => boolean;

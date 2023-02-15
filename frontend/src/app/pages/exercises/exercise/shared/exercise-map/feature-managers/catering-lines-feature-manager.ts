@@ -12,6 +12,7 @@ import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { AppState } from 'src/app/state/app.state';
 import { selectVisibleCateringLines } from 'src/app/state/application/selectors/shared.selectors';
 import type OlMap from 'ol/Map';
+import type { Element as Elem } from 'digital-fuesim-manv-shared';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import type { OpenPopupOptions } from '../utility/popup-manager';
@@ -110,7 +111,7 @@ export class CateringLinesFeatureManager
     ) {}
 
     onFeatureDrop(
-        droppedFeature: Feature<any>,
+        droppedElement: Elem,
         droppedOnFeature: Feature<LineString>,
         dropEvent?: TranslateEvent
     ) {
