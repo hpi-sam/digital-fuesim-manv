@@ -10,11 +10,11 @@ import type {
     SimulationBehaviorState,
 } from './simulation-behavior';
 
-export class UnloadArrivedVehiclesBehaviorState
+export class UnloadArrivingVehiclesBehaviorState
     implements SimulationBehaviorState
 {
-    @IsValue('unloadVehiclesBehavior' as const)
-    readonly type = 'unloadVehiclesBehavior';
+    @IsValue('unloadArrivingVehiclesBehavior' as const)
+    readonly type = 'unloadArrivingVehiclesBehavior';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
@@ -33,9 +33,9 @@ export class UnloadArrivedVehiclesBehaviorState
     static readonly create = getCreate(this);
 }
 
-export const unloadArrivingVehiclesBehavior: SimulationBehavior<UnloadArrivedVehiclesBehaviorState> =
+export const unloadArrivingVehiclesBehavior: SimulationBehavior<UnloadArrivingVehiclesBehaviorState> =
     {
-        behaviorState: UnloadArrivedVehiclesBehaviorState,
+        behaviorState: UnloadArrivingVehiclesBehaviorState,
         handleEvent(draftState, simulatedRegion, behaviorState, event) {
             if (event.type === 'vehicleArrivedEvent') {
                 addActivity(

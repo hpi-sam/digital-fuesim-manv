@@ -1,17 +1,17 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type {
+import {
     UUID,
     Vehicle,
     Personnel,
     Material,
     Patient,
     WithPosition,
+    UnloadArrivingVehiclesBehaviorState,
 } from 'digital-fuesim-manv-shared';
 import {
     SimulatedRegion,
-    UnloadArrivedVehiclesBehaviorState,
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -93,7 +93,7 @@ export class SimulatedRegionPopupComponent implements OnInit {
         this.exerciseService.proposeAction({
             type: '[SimulatedRegion] Add Behavior',
             simulatedRegionId: this.simulatedRegionId,
-            behaviorState: UnloadArrivedVehiclesBehaviorState.create(5000),
+            behaviorState: UnloadArrivingVehiclesBehaviorState.create(5000),
         });
     }
 }

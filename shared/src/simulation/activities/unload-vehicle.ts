@@ -11,8 +11,8 @@ import type {
 } from './simulation-activity';
 
 export class UnloadVehicleActivityState implements SimulationActivityState {
-    @IsValue('unloadVehiclesActivity' as const)
-    public readonly type = 'unloadVehiclesActivity';
+    @IsValue('unloadVehicleActivity' as const)
+    public readonly type = 'unloadVehicleActivity';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();

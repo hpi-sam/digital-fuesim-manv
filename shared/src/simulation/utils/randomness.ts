@@ -1,93 +1,67 @@
 /* eslint-disable no-bitwise */
-import {
-    ArrayMaxSize,
-    ArrayMinSize,
-    IsArray,
-    IsInt,
-    Max,
-    Min,
-    ValidateIf,
-} from 'class-validator';
+import { IsInt, Min, ValidateIf } from 'class-validator';
+import hash from 'hash.js';
 import { v4 } from 'uuid';
 import { getCreate } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable, UUID } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 
-// 4 unsigned 32-bit integers
-type Sfc32state = readonly [number, number, number, number];
-
 export class RandomState {
     @IsValue('randomState' as const)
     readonly type = 'randomState';
 
-    @IsLiteralUnion({ sfc32: true })
-    readonly algo = 'sfc32';
+    @IsLiteralUnion({ 'sha256-id-ctr': true })
+    readonly algo = 'sha256-id-ctr';
 
-    @ValidateIf((o) => o.algo === 'sfc32')
-    @IsArray()
-    @ArrayMinSize(4)
-    @ArrayMaxSize(4)
-    @IsInt({ each: true })
-    @Min(0, { each: true })
-    @Max(4294967295 /* UINT32_MAX */, { each: true })
-    readonly sfc32state!: Sfc32state;
-
-    /**
-     * @deprecated Use {@link create} instead
-     */
-    constructor(state: Sfc32state) {
-        this.sfc32state = state;
-    }
+    @ValidateIf((o) => o.algo === 'sha256-id-ctr')
+    @IsInt()
+    @Min(0)
+    readonly counter: number = 0;
 
     static readonly create = getCreate(this);
 }
 
 export function seededRandomState() {
-    return RandomState.create(
-        Array.from({ length: 4 }).map(() =>
-            Math.trunc(Math.random() * 4294967295)
-        ) as unknown as Sfc32state
-    );
+    return RandomState.create();
 }
 
 export function nextBool(
     draftState: Mutable<ExerciseState>,
     probability: number = 0.5
 ): boolean {
-    return nextInt(draftState, 4294967296) / 4294967296 < probability;
+    return nextInt(draftState, 4294967295) / 4294967296 < probability;
 }
 
 export function nextUUID(draftState: Mutable<ExerciseState>): UUID {
     return v4({
-        random: Array.from({ length: 16 }).map(() => nextInt(draftState, 256)),
+        random: advance(draftState),
     });
 }
 
+// Returns 0 to UINT32_MAX
 export function nextInt(
     draftState: Mutable<ExerciseState>,
     upperBound: number
 ): number {
-    return Math.trunc(advance(draftState) % upperBound);
+    const state = advance(draftState)
+        .slice(4)
+        .map((b, i) => Math.trunc(b * 256 ** i))
+        .reduce((a, b) => a | b);
+    return Math.trunc(state % upperBound);
 }
 
-function advance(draftState: Mutable<ExerciseState>): number {
+// Returns 32 numbers from 0-255
+function advance(draftState: Mutable<ExerciseState>): number[] {
     const state = draftState.randomState;
-    let [a, b, c, d] = state.sfc32state;
 
-    // Adapted from https://github.com/bryc/code/blob/master/jshash/PRNGs.md#sfc32
-    a = Math.trunc(a);
-    b = Math.trunc(b);
-    c = Math.trunc(c);
-    d = Math.trunc(d);
-    const t = Math.trunc(Math.trunc(a + b) + d);
-    d = Math.trunc(d + 1);
-    a = b ^ (b >>> 9);
-    b = Math.trunc(c + (c << 3));
-    c = (c << 21) | (c >>> 11);
-    c = Math.trunc(c + t);
-    const result = t >>> 0;
-    state.sfc32state = [a, b, c, d];
+    const result = hash
+        .sha256()
+        .update(draftState.id)
+        .update(state.counter.toString())
+        .digest()
+        .map((b) => b & 0xff);
 
+    state.counter++;
     return result;
 }
