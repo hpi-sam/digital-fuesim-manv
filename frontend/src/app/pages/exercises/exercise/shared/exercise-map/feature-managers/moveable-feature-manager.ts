@@ -4,7 +4,10 @@ import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
+import type { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
+import type { NgZone } from '@angular/core';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { FeatureManager } from '../utility/feature-manager';
 import { MovementAnimator } from '../utility/movement-animator';
 import type {
@@ -15,6 +18,7 @@ import type {
 } from '../utility/geometry-helper';
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { TranslateInteraction } from '../utility/translate-interaction';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { ElementManager } from './element-manager';
 
 /**
@@ -30,18 +34,24 @@ export abstract class MoveableFeatureManager<
     implements FeatureManager<FeatureType>
 {
     public readonly togglePopup$ = new Subject<OpenPopupOptions<any>>();
-    protected readonly movementAnimator: MovementAnimator<FeatureType>;
+    protected movementAnimator: MovementAnimator<FeatureType>;
+    public layer: VectorLayer<VectorSource<FeatureType>>;
     constructor(
         protected readonly olMap: OlMap,
-        public readonly layer: VectorLayer<VectorSource<FeatureType>>,
         private readonly proposeMovementAction: (
             newPosition: Positions<FeatureType>,
             element: Element
         ) => void,
-        protected readonly geometryHelper: GeometryHelper<FeatureType, Element>
+        protected readonly geometryHelper: GeometryHelper<FeatureType, Element>,
+        renderBuffer?: number
     ) {
         super();
-        this.movementAnimator = new MovementAnimator<FeatureType>(
+        this.layer = super.createElementLayer<FeatureType>(renderBuffer);
+        this.movementAnimator = this.createMovementAnimator();
+    }
+
+    createMovementAnimator() {
+        return new MovementAnimator<FeatureType>(
             this.olMap,
             this.layer,
             this.geometryHelper.interpolateCoordinates,
@@ -111,10 +121,38 @@ export abstract class MoveableFeatureManager<
      * The standard implementation is to ignore these events.
      */
     public onFeatureDrop(
-        dropEvent: TranslateEvent,
         droppedFeature: Feature<any>,
-        droppedOnFeature: Feature<FeatureType>
+        droppedOnFeature: Feature<FeatureType>,
+        dropEvent?: TranslateEvent
     ): boolean {
         return false;
+    }
+
+    public abstract register(
+        changePopup$: Subject<OpenPopupOptions<any> | undefined>,
+        destroy$: Subject<void>,
+        ngZone: NgZone,
+        mapInteractionsManager: OlMapInteractionsManager
+    ): void;
+
+    protected registerFeatureElementManager(
+        elementDictionary$: Observable<{ [id: UUID]: Element }>,
+        changePopup$: Subject<OpenPopupOptions<any> | undefined>,
+        destroy$: Subject<void>,
+        ngZone: NgZone,
+        mapInteractionsManager: OlMapInteractionsManager
+    ) {
+        this.olMap.addLayer(this.layer);
+        mapInteractionsManager.addFeatureLayer(this.layer);
+        this.togglePopup$?.subscribe(changePopup$);
+        this.registerChangeHandlers(
+            elementDictionary$,
+            destroy$,
+            ngZone,
+            (element) => this.onElementCreated(element),
+            (element) => this.onElementDeleted(element),
+            (oldElement, newElement) =>
+                this.onElementChanged(oldElement, newElement)
+        );
     }
 }

@@ -1,19 +1,37 @@
+import type { Type, NgZone } from '@angular/core';
+import type { Store } from '@ngrx/store';
 import type { Material, UUID } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
-import type Point from 'ol/geom/Point';
-import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
-import type VectorSource from 'ol/source/Vector';
+import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
+import type { AppState } from 'src/app/state/app.state';
+import { selectVisibleMaterials } from 'src/app/state/application/selectors/shared.selectors';
 import { MaterialPopupComponent } from '../shared/material-popup/material-popup.component';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
+import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
+    public register(
+        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
+        destroy$: Subject<void>,
+        ngZone: NgZone,
+        mapInteractionsManager: OlMapInteractionsManager
+    ): void {
+        super.registerFeatureElementManager(
+            this.store.select(selectVisibleMaterials),
+            changePopup$,
+            destroy$,
+            ngZone,
+            mapInteractionsManager
+        );
+    }
     private readonly imageStyleHelper = new ImageStyleHelper(
         (feature) => (this.getElementFromFeature(feature) as Material).image
     );
@@ -33,12 +51,11 @@ export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
 
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<Point>>,
+        private readonly store: Store<AppState>,
         exerciseService: ExerciseService
     ) {
         super(
             olMap,
-            layer,
             (targetPosition, material) => {
                 exerciseService.proposeAction({
                     type: '[Material] Move material',

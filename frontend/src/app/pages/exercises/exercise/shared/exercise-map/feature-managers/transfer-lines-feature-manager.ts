@@ -1,3 +1,5 @@
+import type { Type, NgZone } from '@angular/core';
+import type { Store } from '@ngrx/store';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
 import LineString from 'ol/geom/LineString';
@@ -6,17 +8,32 @@ import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
+import type { Subject } from 'rxjs';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
+import type { AppState } from 'src/app/state/app.state';
+import { selectTransferLines } from 'src/app/state/application/selectors/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import type OlMap from 'ol/Map';
+import type { TransferLinesService } from '../../core/transfer-lines.service';
 import type { FeatureManager } from '../utility/feature-manager';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
+import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ElementManager } from './element-manager';
 
 export class TransferLinesFeatureManager
     extends ElementManager<TransferLine, LineString>
     implements FeatureManager<LineString>
 {
-    constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {
+    public readonly layer: VectorLayer<VectorSource<LineString>>;
+    constructor(
+        private readonly store: Store<AppState>,
+        private readonly transferLinesService: TransferLinesService,
+        private readonly olMap: OlMap
+    ) {
         super();
-        layer.setStyle(
+        this.layer = this.createElementLayer<LineString>();
+        this.layer.setStyle(
             new Style({
                 stroke: new Stroke({
                     color: '#fd7e14',
@@ -25,6 +42,33 @@ export class TransferLinesFeatureManager
                 }),
             })
         );
+    }
+    togglePopup$?: Subject<OpenPopupOptions<any, Type<any>>> | undefined;
+    register(
+        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
+        destroy$: Subject<void>,
+        ngZone: NgZone,
+        mapInteractionsManager: OlMapInteractionsManager
+    ) {
+        this.olMap.addLayer(this.layer);
+        mapInteractionsManager.addFeatureLayer(this.layer);
+        this.togglePopup$?.subscribe(changePopup$);
+        if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
+            this.registerChangeHandlers(
+                this.store.select(selectTransferLines),
+                destroy$,
+                ngZone,
+                (element) => this.onElementCreated(element),
+                (element) => this.onElementDeleted(element),
+                (oldElement, newElement) =>
+                    this.onElementChanged(oldElement, newElement)
+            );
+            this.transferLinesService.displayTransferLines$.subscribe(
+                (display) => {
+                    this.layer.setVisible(display);
+                }
+            );
+        }
     }
 
     createFeature(element: TransferLine): Feature<LineString> {
@@ -71,9 +115,9 @@ export class TransferLinesFeatureManager
     ) {}
 
     onFeatureDrop(
-        dropEvent: TranslateEvent,
         droppedFeature: Feature<any>,
-        droppedOnFeature: Feature<LineString>
+        droppedOnFeature: Feature<LineString>,
+        dropEvent?: TranslateEvent
     ) {
         return false;
     }
