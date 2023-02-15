@@ -11,9 +11,6 @@ export class VehicleArrivedEvent implements SimulationEvent {
     @IsUUID(4, uuidValidationOptions)
     readonly vehicleId!: UUID;
 
-    @IsUUID(4, uuidValidationOptions)
-    readonly simulatedRegionId!: UUID;
-
     @IsInt()
     @Min(0)
     readonly arrivalTime!: number;
@@ -21,9 +18,8 @@ export class VehicleArrivedEvent implements SimulationEvent {
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(vehicleId: UUID, simulatedRegionId: UUID, arrivalTime: number) {
+    constructor(vehicleId: UUID, arrivalTime: number) {
         this.vehicleId = vehicleId;
-        this.simulatedRegionId = simulatedRegionId;
         this.arrivalTime = arrivalTime;
     }
 

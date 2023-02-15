@@ -209,7 +209,6 @@ export namespace SimulatedRegionActionReducers {
                         simulatedRegion,
                         VehicleArrivedEvent.create(
                             element.id,
-                            simulatedRegion.id,
                             draftState.currentTime
                         )
                     );

@@ -37,10 +37,7 @@ export const unloadArrivingVehiclesBehavior: SimulationBehavior<UnloadArrivedVeh
     {
         behaviorState: UnloadArrivedVehiclesBehaviorState,
         handleEvent(draftState, simulatedRegion, behaviorState, event) {
-            if (
-                event.type === 'vehicleArrivedEvent' &&
-                event.simulatedRegionId === simulatedRegion.id
-            ) {
+            if (event.type === 'vehicleArrivedEvent') {
                 addActivity(
                     simulatedRegion,
                     UnloadVehicleActivityState.create(
