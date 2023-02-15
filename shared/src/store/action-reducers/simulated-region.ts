@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { Allow, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { SimulatedRegion } from '../../models';
 import {
     MapCoordinates,
@@ -14,6 +14,7 @@ import {
 import {
     ExerciseSimulationBehaviorState,
     sendSimulationEvent,
+    simulationBehaviorTypeOptions,
     VehicleArrivedEvent,
 } from '../../simulation';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
@@ -100,8 +101,8 @@ export class AddBehaviorToSimulatedRegionAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;
 
-    // TODO: validate
-    @Allow()
+    @Type(...simulationBehaviorTypeOptions)
+    @ValidateNested()
     public readonly behaviorState!: ExerciseSimulationBehaviorState;
 }
 
