@@ -43,7 +43,7 @@ export class RandomState {
     static readonly create = getCreate(this);
 }
 
-export function seedRandomState() {
+export function seededRandomState() {
     return RandomState.create(
         Array.from({ length: 4 }).map(() =>
             Math.trunc(Math.random() * 4294967295)
