@@ -82,8 +82,8 @@ export function terminateActivity(
     const activityType = simulatedRegion.activities[activityId]?.type;
     if (activityType) {
         const activity = simulationActivityDictionary[activityType];
-        if (activity.terminate) {
-            activity.terminate(draftState, simulatedRegion, activityId);
+        if (activity.onTerminate) {
+            activity.onTerminate(draftState, simulatedRegion, activityId);
         }
         delete simulatedRegion.activities[activityId];
     }

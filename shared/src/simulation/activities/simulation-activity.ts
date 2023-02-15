@@ -15,7 +15,7 @@ export interface SimulationActivity<S extends SimulationActivityState> {
         activityState: Mutable<S>,
         tickInterval: number
     ) => void;
-    readonly terminate?: (
+    readonly onTerminate?: (
         draftState: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         activityId: UUID
