@@ -89,7 +89,7 @@ export class SimulatedRegionPopupComponent implements OnInit {
         });
     }
 
-    public addUnloadArrivedVehicleBehavior(event: any) {
+    public addUnloadArrivedVehicleBehavior() {
         this.exerciseService.proposeAction({
             type: '[SimulatedRegion] Add Behavior',
             simulatedRegionId: this.simulatedRegionId,
