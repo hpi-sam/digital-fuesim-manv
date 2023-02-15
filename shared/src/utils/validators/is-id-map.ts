@@ -22,24 +22,45 @@ export function IsIdMap<T extends object, Each extends boolean = false>(
     getId: (value: T) => UUID = (value) => (value as { id: UUID }).id,
     validationOptions?: ValidationOptions & { each?: Each }
 ): GenericPropertyDecorator<{ readonly [key: UUID]: T }, Each> {
+    return IsMultiTypedIdMap(() => type, getId, validationOptions);
+}
+
+/**
+ * An `IdMap` is of type `{ readonly [key: UUID]: T }`
+ * This validates IdMaps that can contain multiple types.
+ *
+ * @property getConstructor A function to get the constructor for a given plain object. Return a falsy value if the constructor cannot be determined which is invalid. Usually dispatches on the `.type` property.
+ * @property getId A function to get the id that is used as the key in the object. Defaults to `.id`, this might be wrong for some types, though.
+ */
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function IsMultiTypedIdMap<
+    T extends object,
+    Each extends boolean = false
+>(
+    getConstructor: (value: T) => Constructor<T> | undefined,
+    getId: (value: T) => UUID = (value) => (value as { id: UUID }).id,
+    validationOptions?: ValidationOptions & { each?: Each }
+): GenericPropertyDecorator<{ readonly [key: UUID]: T }, Each> {
     const transform = Transform(
-        (params) => {
-            const plainChildren = params.value as { [key: UUID]: T };
-            if (Object.keys(plainChildren).some((key) => !isUUID(key, 4))) {
-                return 'invalid';
-            }
-            const instanceChildrenWithKey = Object.entries(plainChildren).map(
-                ([key, plainChild]) =>
-                    [key, plainToInstance(type, plainChild)] as const
-            );
+        ({ value }) => {
+            const plainMap = value as { [key: UUID]: T };
             if (
-                instanceChildrenWithKey.some(
-                    ([key, child]) => getId(child) !== key
+                Object.entries(plainMap).some(
+                    ([key, plain]) => !isUUID(key, 4) || key !== getId(plain)
                 )
             ) {
                 return 'invalid';
             }
-            return instanceChildrenWithKey.map(([, child]) => child);
+            const plainWithConstructor = Object.values(plainMap).map(
+                (entry) => [entry, getConstructor(entry)] as const
+            );
+            if (plainWithConstructor.some(([_, constr]) => !constr)) {
+                return 'invalid';
+            }
+            const instances = plainWithConstructor.map(([entry, constr]) =>
+                plainToInstance(constr!, entry)
+            );
+            return instances;
         },
         { toClassOnly: true }
     );

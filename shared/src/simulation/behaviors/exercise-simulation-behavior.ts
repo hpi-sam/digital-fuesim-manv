@@ -1,3 +1,5 @@
+import type { Type } from 'class-transformer';
+import { SimulationBehaviorState } from './simulation-behavior';
 import { unloadArrivingVehiclesBehavior } from './unload-arrived-vehicles';
 
 export const simulationBehaviors = {
@@ -23,3 +25,16 @@ export const simulationBehaviorDictionary = Object.fromEntries(
         behavior,
     ])
 ) as ExerciseSimulationBehaviorDictionary;
+
+export const simulationBehaviorTypeOptions: Parameters<typeof Type> = [
+    () => SimulationBehaviorState,
+    {
+        keepDiscriminatorProperty: true,
+        discriminator: {
+            property: 'type',
+            subTypes: Object.entries(simulationBehaviorDictionary).map(
+                ([name, value]) => ({ name, value: value.behaviorState })
+            ),
+        },
+    },
+];

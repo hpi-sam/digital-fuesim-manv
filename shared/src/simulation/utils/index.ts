@@ -1,2 +1,2 @@
-export * from './simulated-region'
-export * from './vehicle'
+export * from './simulated-region';
+export * from './vehicle';

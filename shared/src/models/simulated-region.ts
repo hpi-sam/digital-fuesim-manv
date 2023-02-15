@@ -1,12 +1,14 @@
 import { Type } from 'class-transformer';
-import { Allow, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { IsPosition } from '../utils/validators/is-position';
-import { IsValue } from '../utils/validators';
-import type { ExerciseSimulationEvent} from '../simulation';
+import { IsMultiTypedIdMap, IsValue } from '../utils/validators';
+import type { ExerciseSimulationEvent } from '../simulation';
 import { simulationEventTypeOptions } from '../simulation';
 import type { ExerciseSimulationActivityState } from '../simulation/activities';
+import { getSimulationActivityConstructor } from '../simulation/activities';
 import type { ExerciseSimulationBehaviorState } from '../simulation/behaviors';
+import { simulationBehaviorTypeOptions } from '../simulation/behaviors';
 import {
     getCreate,
     isInSimulatedRegion,
@@ -55,12 +57,12 @@ export class SimulatedRegion {
     @ValidateNested()
     public readonly inEvents: readonly ExerciseSimulationEvent[] = [];
 
-    // TODO: validate
-    @Allow()
+    @Type(...simulationBehaviorTypeOptions)
+    @ValidateNested()
     public readonly behaviors: readonly ExerciseSimulationBehaviorState[] = [];
 
-    // TODO: validate
-    @Allow()
+    @IsMultiTypedIdMap(getSimulationActivityConstructor)
+    @ValidateNested()
     public readonly activities: {
         readonly [stateId: UUID]: ExerciseSimulationActivityState;
     } = {};
