@@ -1,9 +1,11 @@
 import type { Type } from 'class-transformer';
+import { delayEventActivity } from './delay-event';
 import { SimulationActivityState } from './simulation-activity';
 import { unloadVehicleActivity } from './unload-vehicle';
 
 export const simulationActivities = {
     unloadVehicleActivity,
+    delayEventActivity,
 };
 
 export type ExerciseSimulationActivity =
