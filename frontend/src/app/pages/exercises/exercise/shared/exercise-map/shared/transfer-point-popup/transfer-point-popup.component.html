@@ -14,7 +14,7 @@
                 ngbNavItem="names"
                 [disabled]="(currentRole$ | async) !== 'trainer'"
             >
-                <a ngbNavLink>Namen</a>
+                <a ngbNavLink data-cy="transferPointPopupNamesNav">Namen</a>
                 <ng-template ngbNavContent>
                     <div class="form-group pb-3">
                         <label class="form-label">Interner Name</label>
@@ -30,6 +30,7 @@
                             required
                             type="text"
                             class="form-control"
+                            data-cy="transferPointPopupInternalNameInput"
                         />
                         <app-display-validation
                             [ngModelInput]="internalNameInput"
@@ -50,6 +51,7 @@
                             required
                             type="text"
                             class="form-control"
+                            data-cy="transferPointPopupExternalNameInput"
                         />
                         <app-display-validation
                             [ngModelInput]="externalNameInput"
@@ -61,7 +63,7 @@
                 ngbNavItem="transferPoints"
                 [disabled]="(currentRole$ | async) !== 'trainer'"
             >
-                <a ngbNavLink>Transferpunkte</a>
+                <a ngbNavLink data-cy="transferPointPopupOtherTransferPointsNav">Transferpunkte</a>
                 <ng-template ngbNavContent>
                     <p
                         *ngIf="
@@ -131,6 +133,7 @@
                                             reachableTransferPointConnection.key
                                         )
                                     "
+                                    data-cy="transferPointPopupRemoveOtherTransferPointButton"
                                 >
                                     <i class="bi-trash"></i>
                                 </button>
@@ -151,6 +154,7 @@
                             ngbDropdownToggle
                             type="button"
                             class="btn btn-outline-primary"
+                            data-cy="transferPointPopupAddOtherTransferPointButton"
                         >
                             <span class="bi-plus me-1"></span>
                             Hinzufügen
@@ -167,6 +171,7 @@
                                 "
                                 ngbDropdownItem
                                 (click)="connectTransferPoint(transferPoint.id)"
+                                data-cy="transferPointPopupAddOtherTransferPointDropdownButton"
                             >
                                 <span class="bi-plus me-1"></span>
                                 <app-transfer-point-name
@@ -240,6 +245,7 @@
                                     (click)="
                                         disconnectHospital(reachableHospitalId)
                                     "
+                                    data-cy="transferPointPopupRemoveHospitalButton"
                                 >
                                     <i class="bi-trash"></i>
                                 </button>
