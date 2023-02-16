@@ -2,7 +2,7 @@ import { IsInt, IsUUID, Min } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { uuid, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import { DelayEventActivityState } from '../activities/delay-event';
+import { DelayEventActivityState } from '../activities';
 import { ReassignTreatmentsActivityState } from '../activities/reassign-treatments';
 import { TreatmentsTimerEvent } from '../events/treatments-timer-event';
 import { nextUUID } from '../utils';
