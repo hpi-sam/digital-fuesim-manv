@@ -292,6 +292,7 @@ jobs:
                   start: npm --prefix .. -- run start:all
                   working-directory: frontend
                   wait-on: 'http://127.0.0.1:4200/, http://127.0.0.1:3201/api/health'
+                  command-prefix: '--' # So cypress is using our node version: https://github.com/cypress-io/github-action/issues/489#issuecomment-1021379037
             - name: Archive cypress videos
               if: always()
               uses: actions/upload-artifact@v3

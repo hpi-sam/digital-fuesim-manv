@@ -473,7 +473,6 @@ describe('A trainer on the exercise page', () => {
         cy.getState().its('exerciseState').its('hospitals').should('be.empty');
     });
 
-
     it('can manage transfer points and transfer vehicles', () => {
         cy.dragToMap('[data-cy=draggableTransferPointDiv]');
 
