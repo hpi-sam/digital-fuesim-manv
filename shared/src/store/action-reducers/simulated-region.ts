@@ -208,29 +208,34 @@ export namespace SimulatedRegionActionReducers {
                     draftState
                 );
 
-                if (element.type === 'vehicle') {
-                    sendSimulationEvent(
-                        simulatedRegion,
-                        VehicleArrivedEvent.create(
-                            element.id,
-                            draftState.currentTime
-                        )
-                    );
-                } else if (element.type === 'patient') {
-                    sendSimulationEvent(
-                        simulatedRegion,
-                        NewPatientEvent.create(element.id)
-                    );
-                } else if (element.type === 'personnel') {
-                    sendSimulationEvent(
-                        simulatedRegion,
-                        PersonnelAvailableEvent.create(element.id)
-                    );
-                } else if (element.type === 'material') {
-                    sendSimulationEvent(
-                        simulatedRegion,
-                        MaterialAvailableEvent.create(element.id)
-                    );
+                switch (element.type) {
+                    case 'vehicle':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            VehicleArrivedEvent.create(
+                                element.id,
+                                draftState.currentTime
+                            )
+                        );
+                        break;
+                    case 'patient':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            NewPatientEvent.create(element.id)
+                        );
+                        break;
+                    case 'personnel':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            PersonnelAvailableEvent.create(element.id)
+                        );
+                        break;
+                    case 'material':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            MaterialAvailableEvent.create(element.id)
+                        );
+                        break;
                 }
 
                 return draftState;
