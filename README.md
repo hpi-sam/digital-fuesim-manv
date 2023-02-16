@@ -271,6 +271,83 @@ If you need to read from the state to change it, you should do this inside the a
 <!-- markdownlint-disable -->
 <table>
     <tr>
+    <td style="text-align: center">
+            <a href="https://github.com/Greenscreen23">
+                <img
+                    src="https://avatars.githubusercontent.com/u/43916057?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Lukas Hagen</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=Greenscreen23"
+                title="Code"
+                >💻</a
+            >
+            <span title="Review">👀</span>
+            <br />
+            <small>Student 2022/23<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/Nils1729">
+                <img
+                    src="https://avatars.githubusercontent.com/u/45318774?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Nils Hanff</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=Nils1729"
+                title="Code"
+                >💻</a
+            >
+            <span title="Review">👀</span>
+            <br />
+            <small>Student 2022/23<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/benn02">
+                <img
+                    src="https://avatars.githubusercontent.com/u/82985280?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Benildur Nickel</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=benn02"
+                title="Code"
+                >💻</a
+            >
+            <span title="Review">👀</span>
+            <br />
+            <small>Student 2022/23<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/lukasrad02">
+                <img
+                    src="https://avatars.githubusercontent.com/u/49586507?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Lukas Radermacher</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=lukasrad02"
+                title="Code"
+                >💻</a
+            >
+            <span title="Review">👀</span>
+            <br />
+            <small>Student 2022/23<small>
+        </td>
+        </tr><tr>
         <td style="text-align: center">
             <a href="https://github.com/Dassderdie">
                 <img
@@ -346,6 +423,7 @@ If you need to read from the state to change it, you should do this inside the a
             <br />
             <small>Student 2021/22<small>
         </td>
+        </tr><tr>
         <td style="text-align: center">
             <a href="https://github.com/mbarkowsky">
                 <img
@@ -358,7 +436,7 @@ If you need to read from the state to change it, you should do this inside the a
             <br />
             📆
             <br />
-            <small>Supervisor 2021/22<small>
+            <small>Supervisor 2021-23<small>
         </td>
         <td style="text-align: center">
             <a href="https://github.com/christianzoellner">
@@ -372,7 +450,7 @@ If you need to read from the state to change it, you should do this inside the a
             <br />
             📆
             <br />
-            <small>Supervisor 2021/22<small>
+            <small>Supervisor 2021-23<small>
         </td>
     </tr>
 </table>

@@ -64,6 +64,9 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
                 this.popupManager!
             );
             this.dragElementService.registerMap(this.olMapManager.olMap);
+            this.dragElementService.registerLayerFeatureManagerDictionary(
+                this.olMapManager.layerFeatureManagerDictionary
+            );
         });
 
         this.popupManager!.changePopup$.pipe(
@@ -99,5 +102,6 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.dragElementService.unregisterMap();
+        this.dragElementService.unregisterLayerFeatureManagerDictionary();
     }
 }

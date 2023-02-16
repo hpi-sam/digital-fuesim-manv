@@ -134,4 +134,4 @@ export abstract class ElementManager<
 /**
  * The keys of the feature, where the type and most recent value of the respective element are saved to
  */
-const featureElementKey = 'element';
+export const featureElementKey = 'element';

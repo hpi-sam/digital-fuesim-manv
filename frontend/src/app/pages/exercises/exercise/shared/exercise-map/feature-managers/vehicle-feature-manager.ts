@@ -1,6 +1,11 @@
 import type { Type, NgZone } from '@angular/core';
 import type { Store } from '@ngrx/store';
-import type { UUID, Vehicle } from 'digital-fuesim-manv-shared';
+import type {
+    UUID,
+    Vehicle,
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    Element,
+} from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
@@ -74,11 +79,10 @@ export class VehicleFeatureManager extends MoveableFeatureManager<Vehicle> {
     }
 
     public override onFeatureDrop(
-        droppedFeature: Feature<any>,
+        droppedElement: Element,
         droppedOnFeature: Feature<Point>,
         dropEvent?: TranslateEvent
     ) {
-        const droppedElement = this.getElementFromFeature(droppedFeature);
         const droppedOnVehicle = this.getElementFromFeature(
             droppedOnFeature
         ) as Vehicle;

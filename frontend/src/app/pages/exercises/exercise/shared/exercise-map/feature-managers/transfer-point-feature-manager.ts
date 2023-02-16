@@ -1,6 +1,7 @@
 import type { NgZone } from '@angular/core';
 import type { Store } from '@ngrx/store';
-import type { UUID } from 'digital-fuesim-manv-shared';
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import type { UUID, Element } from 'digital-fuesim-manv-shared';
 import { TransferPoint, TransferStartPoint } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
@@ -89,12 +90,11 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
     );
 
     public override onFeatureDrop(
-        droppedFeature: Feature<any>,
+        droppedElement: Element,
         droppedOnFeature: Feature<Point>,
         dropEvent?: TranslateEvent
     ) {
         // TODO: droppedElement isn't necessarily a transfer point -> fix getElementFromFeature typings
-        const droppedElement = this.getElementFromFeature(droppedFeature);
         const droppedOnTransferPoint = this.getElementFromFeature(
             droppedOnFeature
         ) as TransferPoint;

@@ -1,5 +1,11 @@
 import type { Store } from '@ngrx/store';
-import type { UUID, SimulatedRegion } from 'digital-fuesim-manv-shared';
+import type {
+    UUID,
+    SimulatedRegion,
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    Element,
+} from 'digital-fuesim-manv-shared';
+
 import { MapCoordinates, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { TranslateEvent } from 'ol/interaction/Translate';
@@ -124,11 +130,10 @@ export class SimulatedRegionFeatureManager
     }
 
     public override onFeatureDrop(
-        droppedFeature: Feature<any>,
+        droppedElement: Element,
         droppedOnFeature: Feature<any>,
         dropEvent?: TranslateEvent
     ) {
-        const droppedElement = this.getElementFromFeature(droppedFeature);
         const droppedOnSimulatedRegion = this.getElementFromFeature(
             droppedOnFeature
         ) as SimulatedRegion;
@@ -145,7 +150,11 @@ export class SimulatedRegionFeatureManager
                 {
                     type: '[SimulatedRegion] Add Element',
                     simulatedRegionId: droppedOnSimulatedRegion.id,
-                    elementToBeAddedType: droppedElement.type,
+                    elementToBeAddedType: droppedElement.type as
+                        | 'material'
+                        | 'patient'
+                        | 'personnel'
+                        | 'vehicle',
                     elementToBeAddedId: droppedElement.id,
                 },
                 true
