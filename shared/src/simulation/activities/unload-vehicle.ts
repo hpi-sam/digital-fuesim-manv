@@ -3,7 +3,6 @@ import { SimulatedRegion } from '../../models';
 import { getCreate } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import { terminateActivity } from '../utils/simulated-region';
 import { unloadVehicle } from '../utils/vehicle';
 import type {
     SimulationActivity,
@@ -50,20 +49,26 @@ export class UnloadVehicleActivityState implements SimulationActivityState {
 export const unloadVehicleActivity: SimulationActivity<UnloadVehicleActivityState> =
     {
         activityState: UnloadVehicleActivityState,
-        tick(draftState, simulatedRegion, activityState, _tickInterval, terminate) {
+        tick(
+            draftState,
+            simulatedRegion,
+            activityState,
+            _tickInterval,
+            terminate
+        ) {
             const vehicle = draftState.vehicles[activityState.vehicleId];
             if (
                 !vehicle ||
                 !SimulatedRegion.isInSimulatedRegion(simulatedRegion, vehicle)
             ) {
                 // The vehicle has left the region or was deleted for some reason. Cancel unloading.
-                terminate()
+                terminate();
             } else if (
                 draftState.currentTime >=
                 activityState.startTime + activityState.duration
             ) {
                 unloadVehicle(draftState, simulatedRegion, vehicle);
-                terminate()
+                terminate();
             }
         },
     };

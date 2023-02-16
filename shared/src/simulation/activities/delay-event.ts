@@ -4,10 +4,7 @@ import { getCreate } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { ExerciseSimulationEvent, simulationEventTypeOptions } from '../events';
-import {
-    sendSimulationEvent,
-    terminateActivity,
-} from '../utils/simulated-region';
+import { sendSimulationEvent } from '../utils/simulated-region';
 import type {
     SimulationActivity,
     SimulationActivityState,

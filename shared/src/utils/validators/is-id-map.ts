@@ -38,7 +38,8 @@ export function IsMultiTypedIdMap<
     Each extends boolean = false
 >(
     getConstructor: (value: InstanceType<T>) => T | undefined,
-    getId: (value: InstanceType<T>) => UUID = (value) => (value as { id: UUID }).id,
+    getId: (value: InstanceType<T>) => UUID = (value) =>
+        (value as { id: UUID }).id,
     validationOptions?: ValidationOptions & { each?: Each }
 ): GenericPropertyDecorator<{ readonly [key: UUID]: InstanceType<T> }, Each> {
     const transform = Transform(
