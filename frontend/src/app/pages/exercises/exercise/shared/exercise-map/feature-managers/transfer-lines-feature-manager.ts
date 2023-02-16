@@ -15,6 +15,8 @@ import { selectTransferLines } from 'src/app/state/application/selectors/exercis
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type OlMap from 'ol/Map';
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import type { Element } from 'digital-fuesim-manv-shared';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
@@ -115,7 +117,7 @@ export class TransferLinesFeatureManager
     ) {}
 
     onFeatureDrop(
-        droppedFeature: Feature<any>,
+        droppedElement: Element,
         droppedOnFeature: Feature<LineString>,
         dropEvent?: TranslateEvent
     ) {
