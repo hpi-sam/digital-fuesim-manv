@@ -229,14 +229,13 @@ export function lastElement(subject: Array<unknown>) {
     return cy.log('last element').wrap(subject.at(-1), { log: false });
 }
 
-export function nthElement(subject: Array<unknown>, n: number) {
+export function atPosition(subject: Array<unknown>, n: number) {
+    if (n < 0) {
+        return cy
+            .log(`${n}th element`)
+            .wrap(subject.at(subject.length + n), { log: false });
+    }
     return cy.log(`${n}th element`).wrap(subject.at(n), { log: false });
-}
-
-export function nthLastElement(subject: Array<unknown>, n: number) {
-    return cy
-        .log(`${n}th last element`)
-        .wrap(subject.at(subject.length - (n + 1)), { log: false });
 }
 
 export function atKey(subject: JsonObject, key: string) {

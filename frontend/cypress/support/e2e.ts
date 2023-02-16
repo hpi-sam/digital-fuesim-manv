@@ -26,8 +26,7 @@ import {
     getState,
     firstElement,
     lastElement,
-    nthElement,
-    nthLastElement,
+    atPosition,
     itsKeys,
     itsValues,
     initializeParticipantSocket,
@@ -49,8 +48,7 @@ declare global {
             joinExerciseAsParticipant(): Chainable;
             firstElement(): Chainable;
             lastElement(): Chainable;
-            nthElement(n: number): Chainable;
-            nthLastElement(n: number): Chainable;
+            atPosition(n: number): Chainable;
             itsKeys(): Chainable;
             itsValues(): Chainable;
             initializeParticipantSocket(): Chainable;
@@ -65,8 +63,7 @@ Cypress.Commands.addAll<keyof Cypress.Chainable, unknown[]>(
     {
         firstElement,
         lastElement,
-        nthElement,
-        nthLastElement,
+        atPosition,
     }
 );
 

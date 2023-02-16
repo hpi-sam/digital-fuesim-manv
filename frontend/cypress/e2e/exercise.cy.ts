@@ -121,19 +121,19 @@ describe('A trainer on the exercise page', () => {
             );
 
         cy.get('@trainerSocketPerformedActions')
-            .nthLastElement(1)
+            .atPosition(-2)
             .should('have.property', 'type', '[Transfer] Add to transfer');
 
         cy.get('@trainerSocketPerformedActions')
-            .nthLastElement(2)
+            .atPosition(-3)
             .should('have.property', 'type', '[Vehicle] Add vehicle');
 
         cy.get('@trainerSocketPerformedActions')
-            .nthLastElement(3)
+            .atPosition(-4)
             .should('have.property', 'type', '[Transfer] Add to transfer');
 
         cy.get('@trainerSocketPerformedActions')
-            .nthLastElement(4)
+            .atPosition(-5)
             .should('have.property', 'type', '[Vehicle] Add vehicle');
 
         cy.get('[data-cy=closeEmergencyOperationsCenterPopupButton]').click({
@@ -161,7 +161,7 @@ describe('A trainer on the exercise page', () => {
             .its('exerciseState')
             .its('vehicles')
             .itsValues()
-            .nthElement(1)
+            .atPosition(1)
             .its('position')
             .should('have.property', 'type', 'transfer');
 
@@ -316,7 +316,7 @@ describe('A trainer on the exercise page', () => {
         cy.dragToMap('[data-cy=draggablePatientDiv]');
 
         cy.get('@trainerSocketPerformedActions')
-            .nthLastElement(1)
+            .atPosition(-2)
             .should('have.property', 'type', '[Patient] Add patient');
 
         cy.getState()
@@ -396,7 +396,7 @@ describe('A trainer on the exercise page', () => {
         cy.get('[data-cy=confirmationModalOkButton]').click();
 
         cy.get('@trainerSocketPerformedActions')
-            .nthLastElement(1)
+            .atPosition(-2)
             .should('have.property', 'type', '[Exercise] Start');
 
         cy.get('@trainerSocketPerformedActions')
@@ -426,7 +426,7 @@ describe('A trainer on the exercise page', () => {
             .click();
 
         cy.get('@trainerSocketPerformedActions')
-            .nthLastElement(1)
+            .atPosition(-2)
             .should('have.property', 'type', '[Exercise] Pause');
 
         cy.get('@trainerSocketPerformedActions')
