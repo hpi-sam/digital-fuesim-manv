@@ -35,7 +35,7 @@ export class SimulatedRegionPopupComponent implements OnInit {
 
     public renameSimulatedRegion(newName: string) {
         this.exerciseService.proposeAction({
-            type: '[SimulatedRegion] Rename simulatedRegion',
+            type: '[SimulatedRegion] Rename simulated region',
             simulatedRegionId: this.simulatedRegionId,
             newName,
         });
