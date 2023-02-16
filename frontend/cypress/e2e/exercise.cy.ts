@@ -473,175 +473,6 @@ describe('A trainer on the exercise page', () => {
         cy.getState().its('exerciseState').its('hospitals').should('be.empty');
     });
 
-    it('can start and stop an exercise', () => {
-        cy.log('start an exercise')
-            .get('[data-cy=trainerToolbarStartButton]')
-            .click();
-        cy.get('[data-cy=confirmationModalOkButton]').click();
-
-        cy.get('@trainerSocketPerformedActions')
-            .atPosition(-2)
-            .should('have.property', 'type', '[Exercise] Start');
-
-        cy.get('@trainerSocketPerformedActions')
-            .lastElement()
-            .should(
-                'have.property',
-                'type',
-                '[Emergency Operation Center] Add Log Entry'
-            );
-
-        cy.getState()
-            .its('exerciseState')
-            .should('have.property', 'currentStatus', 'running');
-
-        cy.wait(1000);
-        cy.get('@trainerSocketPerformedActions')
-            .lastElement()
-            .should('have.property', 'type', '[Exercise] Tick');
-
-        cy.getState()
-            .its('exerciseState')
-            .its('currentTime')
-            .should('be.greaterThan', 0);
-
-        cy.log('pause an exercise')
-            .get('[data-cy=trainerToolbarPauseButton]')
-            .click();
-
-        cy.get('@trainerSocketPerformedActions')
-            .atPosition(-2)
-            .should('have.property', 'type', '[Exercise] Pause');
-
-        cy.get('@trainerSocketPerformedActions')
-            .lastElement()
-            .should(
-                'have.property',
-                'type',
-                '[Emergency Operation Center] Add Log Entry'
-            );
-
-        cy.getState()
-            .its('exerciseState')
-            .should('have.property', 'currentStatus', 'paused');
-    });
-
-    it('can manage participants', () => {
-        cy.initializeParticipantSocket();
-
-        cy.get('@trainerSocketPerformedActions')
-            .lastElement()
-            .should('have.property', 'type', '[Client] Add client');
-
-        cy.getState()
-            .its('exerciseState')
-            .its('clients')
-            .itsValues()
-            .should('have.length', 3);
-
-        cy.dragToMap('[data-cy=draggableViewportDiv]');
-
-        cy.get('[data-cy=trainerToolbarExecutionButton]').click();
-        cy.get('[data-cy=trainerToolbarParticipantsButton]').click();
-
-        cy.get('[data-cy=clientPopupSetWaitingRoomCheckbox]').last().check();
-
-        cy.get('@participantSocketPerformedActions')
-            .lastElement()
-            .should('have.property', 'type', '[Client] Set waitingroom');
-
-        cy.get('@participantSocketUUID', { log: false }).then(
-            (participantSocketUUID: any) => {
-                cy.getState()
-                    .its('exerciseState')
-                    .its('clients')
-                    .atKey(participantSocketUUID)
-                    .should('have.property', 'isInWaitingRoom', false);
-            }
-        );
-
-        cy.get('[data-cy=clientPopupSetViewportButton]').last().click();
-        cy.get('[data-cy=clientPopupSetViewportDropdownButton]:visible')
-            .first()
-            .click();
-
-        cy.get('@participantSocketPerformedActions')
-            .lastElement()
-            .should('have.property', 'type', '[Client] Restrict to viewport');
-
-        cy.get('@participantSocketUUID', { log: false }).then(
-            (participantSocketUUID: any) => {
-                cy.getState()
-                    .its('exerciseState')
-                    .its('clients')
-                    .atKey(participantSocketUUID)
-                    .should('have.property', 'viewRestrictedToViewportId');
-            }
-        );
-
-        cy.get('@participantSocket', { log: false }).invoke('disconnect');
-
-        cy.wait(0);
-        cy.get('@trainerSocketPerformedActions')
-            .lastElement()
-            .should('have.property', 'type', '[Client] Remove client');
-
-        cy.getState()
-            .its('exerciseState')
-            .its('clients')
-            .itsValues()
-            .should('have.length', 2);
-    });
-
-    it('can manage an exercise settings', () => {
-        cy.get('[data-cy=trainerToolbarSettingsButton]').click();
-        cy.get('[data-cy=settingsMaxZoomInput]').clear().type('30');
-        cy.get('[data-cy=settingsSaveTileMapPropertiesButton]').click();
-
-        cy.get('@trainerSocketPerformedActions')
-            .lastElement()
-            .should(
-                'have.property',
-                'type',
-                '[Configuration] Set tileMapProperties'
-            );
-
-        cy.getState()
-            .its('exerciseState')
-            .its('configuration')
-            .its('tileMapProperties')
-            .should('have.property', 'maxZoom', 30);
-
-        cy.get('[data-cy=settingsPretriageCheckbox]').uncheck();
-
-        cy.get('@trainerSocketPerformedActions')
-            .lastElement()
-            .should(
-                'have.property',
-                'type',
-                '[Configuration] Set pretriageEnabled'
-            );
-
-        cy.getState()
-            .its('exerciseState')
-            .its('configuration')
-            .should('have.property', 'pretriageEnabled', false);
-
-        cy.get('[data-cy=settingsBluePatientsCheckbox]').check();
-
-        cy.get('@trainerSocketPerformedActions')
-            .lastElement()
-            .should(
-                'have.property',
-                'type',
-                '[Configuration] Set bluePatientsEnabled'
-            );
-
-        cy.getState()
-            .its('exerciseState')
-            .its('configuration')
-            .should('have.property', 'bluePatientsEnabled', true);
-    });
 
     it('can manage transfer points and transfer vehicles', () => {
         cy.dragToMap('[data-cy=draggableTransferPointDiv]');
@@ -847,5 +678,175 @@ describe('A trainer on the exercise page', () => {
             .firstElement()
             .its('position')
             .should('have.property', 'type', 'coordinates');
+    });
+
+    it('can start and stop an exercise', () => {
+        cy.log('start an exercise')
+            .get('[data-cy=trainerToolbarStartButton]')
+            .click();
+        cy.get('[data-cy=confirmationModalOkButton]').click();
+
+        cy.get('@trainerSocketPerformedActions')
+            .atPosition(-2)
+            .should('have.property', 'type', '[Exercise] Start');
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[Emergency Operation Center] Add Log Entry'
+            );
+
+        cy.getState()
+            .its('exerciseState')
+            .should('have.property', 'currentStatus', 'running');
+
+        cy.wait(1000);
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Exercise] Tick');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('currentTime')
+            .should('be.greaterThan', 0);
+
+        cy.log('pause an exercise')
+            .get('[data-cy=trainerToolbarPauseButton]')
+            .click();
+
+        cy.get('@trainerSocketPerformedActions')
+            .atPosition(-2)
+            .should('have.property', 'type', '[Exercise] Pause');
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[Emergency Operation Center] Add Log Entry'
+            );
+
+        cy.getState()
+            .its('exerciseState')
+            .should('have.property', 'currentStatus', 'paused');
+    });
+
+    it('can manage participants', () => {
+        cy.initializeParticipantSocket();
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Client] Add client');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('clients')
+            .itsValues()
+            .should('have.length', 3);
+
+        cy.dragToMap('[data-cy=draggableViewportDiv]');
+
+        cy.get('[data-cy=trainerToolbarExecutionButton]').click();
+        cy.get('[data-cy=trainerToolbarParticipantsButton]').click();
+
+        cy.get('[data-cy=clientPopupSetWaitingRoomCheckbox]').last().check();
+
+        cy.get('@participantSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Client] Set waitingroom');
+
+        cy.get('@participantSocketUUID', { log: false }).then(
+            (participantSocketUUID: any) => {
+                cy.getState()
+                    .its('exerciseState')
+                    .its('clients')
+                    .atKey(participantSocketUUID)
+                    .should('have.property', 'isInWaitingRoom', false);
+            }
+        );
+
+        cy.get('[data-cy=clientPopupSetViewportButton]').last().click();
+        cy.get('[data-cy=clientPopupSetViewportDropdownButton]:visible')
+            .first()
+            .click();
+
+        cy.get('@participantSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Client] Restrict to viewport');
+
+        cy.get('@participantSocketUUID', { log: false }).then(
+            (participantSocketUUID: any) => {
+                cy.getState()
+                    .its('exerciseState')
+                    .its('clients')
+                    .atKey(participantSocketUUID)
+                    .should('have.property', 'viewRestrictedToViewportId');
+            }
+        );
+
+        cy.get('@participantSocket', { log: false }).invoke('disconnect');
+
+        cy.wait(0);
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Client] Remove client');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('clients')
+            .itsValues()
+            .should('have.length', 2);
+    });
+
+    it('can manage an exercise settings', () => {
+        cy.get('[data-cy=trainerToolbarSettingsButton]').click();
+        cy.get('[data-cy=settingsMaxZoomInput]').clear().type('30');
+        cy.get('[data-cy=settingsSaveTileMapPropertiesButton]').click();
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[Configuration] Set tileMapProperties'
+            );
+
+        cy.getState()
+            .its('exerciseState')
+            .its('configuration')
+            .its('tileMapProperties')
+            .should('have.property', 'maxZoom', 30);
+
+        cy.get('[data-cy=settingsPretriageCheckbox]').uncheck();
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[Configuration] Set pretriageEnabled'
+            );
+
+        cy.getState()
+            .its('exerciseState')
+            .its('configuration')
+            .should('have.property', 'pretriageEnabled', false);
+
+        cy.get('[data-cy=settingsBluePatientsCheckbox]').check();
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[Configuration] Set bluePatientsEnabled'
+            );
+
+        cy.getState()
+            .its('exerciseState')
+            .its('configuration')
+            .should('have.property', 'bluePatientsEnabled', true);
     });
 });
