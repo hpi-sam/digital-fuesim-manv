@@ -4,7 +4,6 @@ import type {
     ClientToServerEvents,
     ExerciseAction,
     ExerciseState,
-    Immutable,
     ServerToClientEvents,
     SocketResponse,
     UUID,
