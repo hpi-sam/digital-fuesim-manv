@@ -1,28 +1,11 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
-import type {
-    UUID,
-    Vehicle,
-    Personnel,
-    Material,
-    Patient,
-    WithPosition,
-} from 'digital-fuesim-manv-shared';
-import {
-    UnloadArrivingVehiclesBehaviorState,
-    SimulatedRegion,
-} from 'digital-fuesim-manv-shared';
+import { Store } from '@ngrx/store';
+import type { UUID, SimulatedRegion } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import {
-    createSelectSimulatedRegion,
-    selectVehicles,
-    selectMaterials,
-    selectPatients,
-    selectPersonnel,
-} from 'src/app/state/application/selectors/exercise.selectors';
+import { createSelectSimulatedRegion } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 
 @Component({
@@ -37,10 +20,6 @@ export class SimulatedRegionPopupComponent implements OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public simulatedRegion$?: Observable<SimulatedRegion>;
-    public vehicles$?: Observable<Vehicle[]>;
-    public personnel$?: Observable<Personnel[]>;
-    public materials$?: Observable<Material[]>;
-    public patients$?: Observable<Patient[]>;
     public readonly currentRole$ = this.store.select(selectCurrentRole);
 
     constructor(
@@ -48,36 +27,9 @@ export class SimulatedRegionPopupComponent implements OnInit {
         private readonly exerciseService: ExerciseService
     ) {}
 
-    createSelectContainedElements<E extends WithPosition>(
-        elementsSelector: (state: AppState) => { [key: UUID]: E }
-    ) {
-        return createSelector(
-            createSelectSimulatedRegion(this.simulatedRegionId),
-            elementsSelector,
-            (simulatedRegion, elements) =>
-                Object.values(elements).filter((e) =>
-                    SimulatedRegion.isInSimulatedRegion(simulatedRegion, e)
-                )
-        );
-    }
-
     ngOnInit() {
         this.simulatedRegion$ = this.store.select(
             createSelectSimulatedRegion(this.simulatedRegionId)
-        );
-
-        // TODO: These are for debugging only and ought to be removed or refactored
-        this.vehicles$ = this.store.select(
-            this.createSelectContainedElements(selectVehicles)
-        );
-        this.materials$ = this.store.select(
-            this.createSelectContainedElements(selectMaterials)
-        );
-        this.personnel$ = this.store.select(
-            this.createSelectContainedElements(selectPersonnel)
-        );
-        this.patients$ = this.store.select(
-            this.createSelectContainedElements(selectPatients)
         );
     }
 
@@ -86,14 +38,6 @@ export class SimulatedRegionPopupComponent implements OnInit {
             type: '[SimulatedRegion] Rename simulatedRegion',
             simulatedRegionId: this.simulatedRegionId,
             newName,
-        });
-    }
-
-    public addUnloadArrivedVehicleBehavior() {
-        this.exerciseService.proposeAction({
-            type: '[SimulatedRegion] Add Behavior',
-            simulatedRegionId: this.simulatedRegionId,
-            behaviorState: UnloadArrivingVehiclesBehaviorState.create(5000),
         });
     }
 }

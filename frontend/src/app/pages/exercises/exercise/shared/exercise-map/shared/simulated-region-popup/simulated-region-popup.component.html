@@ -23,38 +23,6 @@
                     [ngModelInput]="nameInput"
                 ></app-display-validation>
             </div>
-            <button
-                type="button"
-                class="btn btn-primary mb-3"
-                (click)="addUnloadArrivedVehicleBehavior()"
-            >
-                Ankommende Fahrzeuge ausladen
-            </button>
-            <div *ngIf="vehicles$ | async as vehicles">
-                <p>
-                    <span>{{ vehicles.length }}</span> Fahrzeuge
-                </p>
-            </div>
-            <div *ngIf="materials$ | async as materials">
-                <p>
-                    <span>{{ materials.length }}</span> Materialien
-                </p>
-            </div>
-            <div *ngIf="personnel$ | async as personnel">
-                <p>
-                    <span>{{ personnel.length }}</span> Einsatzkräfte
-                </p>
-            </div>
-            <div *ngIf="patients$ | async as patients">
-                <p>
-                    <span>{{ patients.length }}</span> Patienten
-                </p>
-            </div>
-            <div class="pb-3 w-100 h-100">
-                <textarea class="w-100 h-100">{{
-                    simulatedRegion | json
-                }}</textarea>
-            </div>
         </ng-container>
     </div>
 </ng-container>
