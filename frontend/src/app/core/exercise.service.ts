@@ -61,9 +61,6 @@ export class ExerciseService {
         SocketResponse
     >;
 
-    private readonly proposedActions: Immutable<ExerciseAction>[] = [];
-    private readonly performedActions: Immutable<ExerciseAction>[] = [];
-
     constructor(
         private readonly store: Store<AppState>,
         private readonly messageService: MessageService
