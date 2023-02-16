@@ -5,7 +5,8 @@ import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import type { Subject } from 'rxjs';
-import type { Element as Elem } from 'digital-fuesim-manv-shared';
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import type { Element } from 'digital-fuesim-manv-shared';
 import type { OlMapInteractionsManager } from './ol-map-interactions-manager';
 import type { OpenPopupOptions } from './popup-manager';
 
@@ -42,7 +43,7 @@ export interface FeatureManager<T extends Geometry> {
      * @returns wether the event should not propagate further (to the features behind {@link droppedOnFeature}).
      */
     onFeatureDrop: (
-        droppedElement: Elem,
+        droppedElement: Element,
         droppedOnFeature: Feature<T>,
         dropEvent?: TranslateEvent
     ) => boolean;

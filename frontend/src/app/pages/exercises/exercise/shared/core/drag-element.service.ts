@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type {
-    Element as Elem,
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    Element,
     ImageProperties,
     MapImageTemplate,
     PatientCategory,
@@ -163,7 +164,7 @@ export class DragElementService {
         ];
         const position = { x, y };
         // create the element
-        let createdElement: Elem | null = null;
+        let createdElement: Element | null = null;
         switch (this.transferringTemplate.type) {
             case 'vehicle':
                 {
@@ -308,7 +309,10 @@ export class DragElementService {
         this.executeDropSideEffects(pixel, createdElement);
     };
 
-    private executeDropSideEffects(pixel: Pixel, createdElement: Elem | null) {
+    private executeDropSideEffects(
+        pixel: Pixel,
+        createdElement: Element | null
+    ) {
         if (
             createdElement === null ||
             !this.olMap ||
@@ -325,7 +329,7 @@ export class DragElementService {
             return this.layerFeatureManagerDictionary
                 .get(layer as VectorLayer<VectorSource>)!
                 .onFeatureDrop(
-                    createdElement as Elem,
+                    createdElement as Element,
                     droppedOnFeature as Feature
                 );
         });

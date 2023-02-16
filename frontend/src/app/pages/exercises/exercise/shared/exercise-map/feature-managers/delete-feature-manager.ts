@@ -15,7 +15,8 @@ import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import type { Element as Elem } from 'digital-fuesim-manv-shared';
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import type { Element } from 'digital-fuesim-manv-shared';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import type { OpenPopupOptions } from '../utility/popup-manager';
@@ -87,7 +88,7 @@ export class DeleteFeatureManager implements FeatureManager<Point> {
     }
 
     public onFeatureDrop(
-        droppedElement: Elem,
+        droppedElement: Element,
         droppedOnFeature: Feature<Point>,
         dropEvent?: TranslateEvent
     ) {

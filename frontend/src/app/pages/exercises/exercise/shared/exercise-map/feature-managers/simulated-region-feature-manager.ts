@@ -2,7 +2,8 @@ import type { Store } from '@ngrx/store';
 import type {
     UUID,
     SimulatedRegion,
-    Element as Elem,
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    Element,
 } from 'digital-fuesim-manv-shared';
 
 import { MapCoordinates, Size } from 'digital-fuesim-manv-shared';
@@ -129,7 +130,7 @@ export class SimulatedRegionFeatureManager
     }
 
     public override onFeatureDrop(
-        droppedElement: Elem,
+        droppedElement: Element,
         droppedOnFeature: Feature<any>,
         dropEvent?: TranslateEvent
     ) {

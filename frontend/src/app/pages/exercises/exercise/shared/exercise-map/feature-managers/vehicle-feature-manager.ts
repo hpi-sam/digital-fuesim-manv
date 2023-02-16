@@ -3,7 +3,8 @@ import type { Store } from '@ngrx/store';
 import type {
     UUID,
     Vehicle,
-    Element as Elem,
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    Element,
 } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
@@ -78,7 +79,7 @@ export class VehicleFeatureManager extends MoveableFeatureManager<Vehicle> {
     }
 
     public override onFeatureDrop(
-        droppedElement: Elem,
+        droppedElement: Element,
         droppedOnFeature: Feature<Point>,
         dropEvent?: TranslateEvent
     ) {
