@@ -63,7 +63,9 @@
                 ngbNavItem="transferPoints"
                 [disabled]="(currentRole$ | async) !== 'trainer'"
             >
-                <a ngbNavLink data-cy="transferPointPopupOtherTransferPointsNav">Transferpunkte</a>
+                <a ngbNavLink data-cy="transferPointPopupOtherTransferPointsNav"
+                    >Transferpunkte</a
+                >
                 <ng-template ngbNavContent>
                     <p
                         *ngIf="

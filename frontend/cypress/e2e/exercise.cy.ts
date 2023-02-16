@@ -638,7 +638,7 @@ describe('A trainer on the exercise page', () => {
             '[data-cy=transferPointPopupAddOtherTransferPointDropdownButton]'
         )
             .first()
-            .click();
+            .click({ force: true });
 
         cy.get('@trainerSocketPerformedActions')
             .lastElement()
@@ -657,7 +657,9 @@ describe('A trainer on the exercise page', () => {
             .should('not.be.empty');
 
         // Todo: Test transfering vehicles via transfer points
-        cy.get('[data-cy=transferPointPopupRemoveOtherTransferPointButton]').click();
+        cy.get(
+            '[data-cy=transferPointPopupRemoveOtherTransferPointButton]'
+        ).click();
 
         cy.get('@trainerSocketPerformedActions')
             .lastElement()
