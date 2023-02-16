@@ -363,6 +363,7 @@ If you need to read from the state to change it, you should do this inside the a
             <br />
             <small>Student 2022/23<small>
         </td>
+        </tr><tr>
         <td style="text-align: center">
             <a href="https://github.com/Dassderdie">
                 <img
@@ -438,6 +439,7 @@ If you need to read from the state to change it, you should do this inside the a
             <br />
             <small>Student 2021/22<small>
         </td>
+        </tr><tr>
         <td style="text-align: center">
             <a href="https://github.com/mbarkowsky">
                 <img
