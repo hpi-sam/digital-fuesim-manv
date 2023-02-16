@@ -58,7 +58,7 @@ export class OlMapManager {
      * featureManager.layer === layer
      * ```
      */
-    private readonly layerFeatureManagerDictionary = new Map<
+    public readonly layerFeatureManagerDictionary = new Map<
         VectorLayer<VectorSource>,
         FeatureManager<any>
     >();

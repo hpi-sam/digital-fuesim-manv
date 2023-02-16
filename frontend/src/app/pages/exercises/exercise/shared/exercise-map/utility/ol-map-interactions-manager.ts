@@ -15,6 +15,7 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { ExerciseStatus, Role } from 'digital-fuesim-manv-shared';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type { Pixel } from 'ol/pixel';
+import { featureElementKey } from '../feature-managers/element-manager';
 import { TranslateInteraction } from './translate-interaction';
 import type { PopupManager } from './popup-manager';
 import type { FeatureManager } from './feature-manager';
@@ -162,16 +163,20 @@ export class OlMapInteractionsManager {
             return this.layerFeatureManagerDictionary
                 .get(layer as VectorLayer<VectorSource>)!
                 .onFeatureDrop(
-                    droppedFeature,
+                    this.getElementFromFeature(droppedFeature),
                     droppedOnFeature as Feature,
                     event
                 );
         });
     }
 
-    public getOlViewportElement(): HTMLElement {
+    private getOlViewportElement(): HTMLElement {
         return this.olMap
             .getTargetElement()
             .querySelectorAll('.ol-viewport')[0] as HTMLElement;
+    }
+
+    private getElementFromFeature(feature: Feature<any>) {
+        return feature.get(featureElementKey);
     }
 }
