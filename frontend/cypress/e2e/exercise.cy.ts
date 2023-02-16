@@ -392,6 +392,10 @@ describe('A trainer on the exercise page', () => {
                 '[Emergency Operation Center] Add Log Entry'
             );
 
+        cy.getState()
+            .its('exerciseState')
+            .should('have.property', 'currentStatus', 'running');
+
         cy.wait(1000);
         cy.get('@trainerSocketPerformedActions')
             .lastElement()
@@ -417,6 +421,10 @@ describe('A trainer on the exercise page', () => {
                 'type',
                 '[Emergency Operation Center] Add Log Entry'
             );
+
+        cy.getState()
+            .its('exerciseState')
+            .should('have.property', 'currentStatus', 'paused');
     });
 
     it('can manage participants', () => {
@@ -483,5 +491,55 @@ describe('A trainer on the exercise page', () => {
             .its('clients')
             .itsValues()
             .should('have.length', 2);
+    });
+
+    it('can manage an exercise settings', () => {
+        cy.get('[data-cy=trainerToolbarSettingsButton]').click();
+        cy.get('[data-cy=settingsMaxZoomInput]').clear().type('30');
+        cy.get('[data-cy=settingsSaveTileMapPropertiesButton]').click();
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[Configuration] Set tileMapProperties'
+            );
+
+        cy.getState()
+            .its('exerciseState')
+            .its('configuration')
+            .its('tileMapProperties')
+            .should('have.property', 'maxZoom', 30);
+
+        cy.get('[data-cy=settingsPretriageCheckbox]').uncheck();
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[Configuration] Set pretriageEnabled'
+            );
+
+        cy.getState()
+            .its('exerciseState')
+            .its('configuration')
+            .should('have.property', 'pretriageEnabled', false);
+
+        cy.get('[data-cy=settingsBluePatientsCheckbox]').check();
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[Configuration] Set bluePatientsEnabled'
+            );
+
+        cy.getState()
+            .its('exerciseState')
+            .its('configuration')
+            .should('have.property', 'bluePatientsEnabled', true);
     });
 });
