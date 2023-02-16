@@ -3,21 +3,10 @@ describe('A trainer on the exercise page', () => {
         cy.createExercise().joinExerciseAsTrainer().initializeTrainerSocket();
     });
 
-    it('can interact with the map', () => {
-        cy.log('drag a vehicle to the map').dragToMap(
-            '[data-cy=draggableVehicleDiv]'
-        );
+    it('can load and unload vehicles', () => {
+        cy.dragToMap('[data-cy=draggableVehicleDiv]');
 
-        cy.get('@trainerSocketPerformedActions')
-            .lastElement()
-            .should('have.property', 'type', '[Vehicle] Add vehicle');
-
-        cy.getState()
-            .its('exerciseState')
-            .its('vehicles')
-            .should('not.be.empty');
-
-        cy.log('drag a patient to the map and load them to vehicles').dragToMap(
+        cy.log('load a patient to a vehicle').dragToMap(
             '[data-cy=draggablePatientDiv]'
         );
 
@@ -64,7 +53,9 @@ describe('A trainer on the exercise page', () => {
             .firstElement()
             .its('position')
             .should('have.property', 'type', 'coordinates');
+    });
 
+    it('can interact with the map', () => {
         cy.log('drag a viewport to the map').dragToMap(
             '[data-cy=draggableViewportDiv]'
         );
@@ -106,6 +97,61 @@ describe('A trainer on the exercise page', () => {
         cy.getState()
             .its('exerciseState')
             .its('mapImages')
+            .should('not.be.empty');
+
+        cy.log('load a patient to the map').dragToMap(
+            '[data-cy=draggablePatientDiv]'
+        );
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Patient] Add patient');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('patients')
+            .should('not.be.empty');
+
+        cy.get('[data-cy=openLayersContainer]').click();
+        cy.get('[data-cy=patientPopupRemarksTextarea]').type('Hello World!');
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Patient] Set Remarks');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('patients')
+            .itsValues()
+            .firstElement()
+            .should('have.property', 'remarks', 'Hello World!');
+
+        cy.get('[data-cy=patientPopupTriageNav]').click();
+        cy.get('[data-cy=patientPopupPretriageButton]').click();
+        cy.get('[data-cy=patientPopupPretriageButtonDropdown]').last().click();
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Patient] Set Visible Status');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('patients')
+            .itsValues()
+            .firstElement()
+            .should('have.property', 'pretriageStatus', 'green');
+
+        cy.log('drag a vehicle to the map').dragToMap(
+            '[data-cy=draggableVehicleDiv]'
+        );
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Vehicle] Add vehicle');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('vehicles')
             .should('not.be.empty');
 
         cy.log('drag a simulated region to the map').dragToMap(
