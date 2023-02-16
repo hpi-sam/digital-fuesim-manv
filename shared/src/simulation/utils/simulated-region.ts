@@ -37,7 +37,14 @@ function tickActivities(
             draftState,
             simulatedRegion,
             activityState as any,
-            tickInterval
+            tickInterval,
+            () => {
+                terminateActivity(
+                    draftState,
+                    simulatedRegion,
+                    activityState.id
+                );
+            }
         );
     });
 }

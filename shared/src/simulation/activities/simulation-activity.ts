@@ -13,7 +13,8 @@ export interface SimulationActivity<S extends SimulationActivityState> {
         draftState: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         activityState: Mutable<S>,
-        tickInterval: number
+        tickInterval: number,
+        terminate: () => void
     ) => void;
     readonly onTerminate?: (
         draftState: Mutable<ExerciseState>,

@@ -34,16 +34,16 @@ export function IsIdMap<T extends object, Each extends boolean = false>(
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function IsMultiTypedIdMap<
-    T extends object,
+    T extends Constructor,
     Each extends boolean = false
 >(
-    getConstructor: (value: T) => Constructor<T> | undefined,
-    getId: (value: T) => UUID = (value) => (value as { id: UUID }).id,
+    getConstructor: (value: InstanceType<T>) => T | undefined,
+    getId: (value: InstanceType<T>) => UUID = (value) => (value as { id: UUID }).id,
     validationOptions?: ValidationOptions & { each?: Each }
-): GenericPropertyDecorator<{ readonly [key: UUID]: T }, Each> {
+): GenericPropertyDecorator<{ readonly [key: UUID]: InstanceType<T> }, Each> {
     const transform = Transform(
         ({ value }) => {
-            const plainMap = value as { [key: UUID]: T };
+            const plainMap = value as { [key: UUID]: InstanceType<T> };
             if (
                 Object.entries(plainMap).some(
                     ([key, plain]) => !isUUID(key, 4) || key !== getId(plain)

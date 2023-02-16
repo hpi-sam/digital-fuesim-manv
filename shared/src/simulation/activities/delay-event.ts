@@ -42,10 +42,10 @@ export class DelayEventActivityState implements SimulationActivityState {
 
 export const delayEventActivity: SimulationActivity<DelayEventActivityState> = {
     activityState: DelayEventActivityState,
-    tick(draftState, simulatedRegion, activityState) {
+    tick(draftState, simulatedRegion, activityState, _tickInterval, terminate) {
         if (draftState.currentTime >= activityState.endTime) {
             sendSimulationEvent(simulatedRegion, activityState.event);
-            terminateActivity(draftState, simulatedRegion, activityState.id);
+            terminate();
         }
     },
 };

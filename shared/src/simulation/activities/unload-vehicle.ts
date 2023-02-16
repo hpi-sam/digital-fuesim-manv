@@ -50,28 +50,20 @@ export class UnloadVehicleActivityState implements SimulationActivityState {
 export const unloadVehicleActivity: SimulationActivity<UnloadVehicleActivityState> =
     {
         activityState: UnloadVehicleActivityState,
-        tick(draftState, simulatedRegion, activityState) {
+        tick(draftState, simulatedRegion, activityState, _tickInterval, terminate) {
             const vehicle = draftState.vehicles[activityState.vehicleId];
             if (
                 !vehicle ||
                 !SimulatedRegion.isInSimulatedRegion(simulatedRegion, vehicle)
             ) {
                 // The vehicle has left the region or was deleted for some reason. Cancel unloading.
-                terminateActivity(
-                    draftState,
-                    simulatedRegion,
-                    activityState.id
-                );
+                terminate()
             } else if (
                 draftState.currentTime >=
                 activityState.startTime + activityState.duration
             ) {
                 unloadVehicle(draftState, simulatedRegion, vehicle);
-                terminateActivity(
-                    draftState,
-                    simulatedRegion,
-                    activityState.id
-                );
+                terminate()
             }
         },
     };
