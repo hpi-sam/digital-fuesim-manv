@@ -1,4 +1,4 @@
-import { MapCoordinates } from 'digital-fuesim-manv-shared';
+import type { MapCoordinates } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Point } from 'ol/geom';
