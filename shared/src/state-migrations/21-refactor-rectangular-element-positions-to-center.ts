@@ -1,5 +1,5 @@
 import { cloneDeep } from 'lodash-es';
-import { UUID } from '../utils';
+import type { UUID } from '../utils';
 import type { Migration } from './migration-functions';
 
 export const refactorRectangularElementPositionsToCenter21: Migration = {
