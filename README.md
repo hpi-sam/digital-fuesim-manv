@@ -290,7 +290,7 @@ If you need to read from the state to change it, you should do this inside the a
     <td style="text-align: center">
             <a href="https://github.com/Greenscreen23">
                 <img
-                    src="https://avatars.githubusercontent.com/u/18506183?v=4"
+                    src="https://avatars.githubusercontent.com/u/43916057?v=4"
                     width="100px;"
                 />
                 <br />
@@ -309,7 +309,7 @@ If you need to read from the state to change it, you should do this inside the a
         <td style="text-align: center">
             <a href="https://github.com/Nils1729">
                 <img
-                    src="https://avatars.githubusercontent.com/u/18506183?v=4"
+                    src="https://avatars.githubusercontent.com/u/45318774?v=4"
                     width="100px;"
                 />
                 <br />
@@ -328,7 +328,7 @@ If you need to read from the state to change it, you should do this inside the a
         <td style="text-align: center">
             <a href="https://github.com/benn02">
                 <img
-                    src="https://avatars.githubusercontent.com/u/18506183?v=4"
+                    src="https://avatars.githubusercontent.com/u/82985280?v=4"
                     width="100px;"
                 />
                 <br />
@@ -347,7 +347,7 @@ If you need to read from the state to change it, you should do this inside the a
         <td style="text-align: center">
             <a href="https://github.com/lukasrad02">
                 <img
-                    src="https://avatars.githubusercontent.com/u/18506183?v=4"
+                    src="https://avatars.githubusercontent.com/u/49586507?v=4"
                     width="100px;"
                 />
                 <br />
