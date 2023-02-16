@@ -3,94 +3,6 @@ describe('A trainer on the exercise page', () => {
         cy.createExercise().joinExerciseAsTrainer().initializeTrainerSocket();
     });
 
-    // it('can drag features to the map', () => {
-    //     cy.log('drag a patient to the map').dragToMap(
-    //         '[data-cy=draggablePatientDiv]'
-    //     );
-
-    //     cy.get('@trainerSocketPerformedActions')
-    //         .lastElement()
-    //         .should('have.property', 'type', '[Patient] Add patient');
-
-    //     cy.getState()
-    //         .its('exerciseState')
-    //         .its('patients')
-    //         .should('not.be.empty');
-
-    //     cy.log('drag a vehicle to the map').dragToMap(
-    //         '[data-cy=draggableVehicleDiv]'
-    //     );
-
-    //     cy.get('@trainerSocketPerformedActions')
-    //         .lastElement()
-    //         .should('have.property', 'type', '[Vehicle] Add vehicle');
-
-    //     cy.getState()
-    //         .its('exerciseState')
-    //         .its('vehicles')
-    //         .should('not.be.empty');
-
-    //     cy.log('drag a viewport to the map').dragToMap(
-    //         '[data-cy=draggableViewportDiv]'
-    //     );
-
-    //     cy.get('@trainerSocketPerformedActions')
-    //         .lastElement()
-    //         .should('have.property', 'type', '[Viewport] Add viewport');
-
-    //     cy.getState()
-    //         .its('exerciseState')
-    //         .its('viewports')
-    //         .should('not.be.empty');
-
-    //     cy.log('drag a simulated region to the map').dragToMap(
-    //         '[data-cy=draggableSimulatedRegionDiv]'
-    //     );
-
-    //     cy.get('@trainerSocketPerformedActions')
-    //         .lastElement()
-    //         .should(
-    //             'have.property',
-    //             'type',
-    //             '[SimulatedRegion] Add simulated region'
-    //         );
-
-    //     cy.getState()
-    //         .its('exerciseState')
-    //         .its('simulatedRegions')
-    //         .should('not.be.empty');
-
-    //     cy.log('drag a transfer point to the map').dragToMap(
-    //         '[data-cy=draggableTransferPointDiv]'
-    //     );
-
-    //     cy.get('@trainerSocketPerformedActions')
-    //         .lastElement()
-    //         .should(
-    //             'have.property',
-    //             'type',
-    //             '[TransferPoint] Add TransferPoint'
-    //         );
-
-    //     cy.getState()
-    //         .its('exerciseState')
-    //         .its('transferPoints')
-    //         .should('not.be.empty');
-
-    //     cy.log('drag a map image to the map').dragToMap(
-    //         '[data-cy=draggableMapImageDiv]'
-    //     );
-
-    //     cy.get('@trainerSocketPerformedActions')
-    //         .lastElement()
-    //         .should('have.property', 'type', '[MapImage] Add MapImage');
-
-    //     cy.getState()
-    //         .its('exerciseState')
-    //         .its('mapImages')
-    //         .should('not.be.empty');
-    // });
-
     it('can manage alarm groups', () => {
         cy.get('[data-cy=trainerToolbarCreationButton]').click();
         cy.get('[data-cy=trainerToolbarAlarmGroupsButton]').click();
@@ -349,7 +261,123 @@ describe('A trainer on the exercise page', () => {
             .firstElement()
             .should('have.property', 'transportDuration', 1800000);
 
-        // Todo: Test transfering vehicles to hospitals
+        cy.get('[data-cy=hospitalClosePopupButton]').click({ force: true });
+
+        cy.dragToMap('[data-cy=draggableTransferPointDiv]');
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[TransferPoint] Add TransferPoint'
+            );
+
+        cy.getState()
+            .its('exerciseState')
+            .its('transferPoints')
+            .should('not.be.empty');
+
+        cy.get('[data-cy=openLayersContainer]').click();
+        cy.get('[data-cy=transferPointPopupHospitalNav]').click();
+        cy.get('[data-cy=transferPointPopupAddHospitalButton]').click();
+        cy.get('[data-cy=transferPointPopupAddHospitalDropdownButton]')
+            .first()
+            .click({ force: true });
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[TransferPoint] Connect hospital'
+            );
+
+        cy.getState()
+            .its('exerciseState')
+            .its('transferPoints')
+            .itsValues()
+            .firstElement()
+            .its('reachableHospitals')
+            .should('not.be.empty');
+
+        cy.get('[data-cy=transferPointPopupCloseButton]').click();
+        cy.dragToMap('[data-cy=draggableVehicleDiv]');
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Vehicle] Add vehicle');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('vehicles')
+            .should('not.be.empty');
+
+        cy.dragToMap('[data-cy=draggablePatientDiv]');
+
+        cy.get('@trainerSocketPerformedActions')
+            .nthLastElement(1)
+            .should('have.property', 'type', '[Patient] Add patient');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('patients')
+            .should('not.be.empty');
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Vehicle] Load vehicle');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('vehicles')
+            .itsValues()
+            .firstElement()
+            .its('patientIds')
+            .should('not.be.empty');
+
+        cy.get('[data-cy=chooseTransferTargetPopupHospitalDropdown]')
+            .first()
+            .click();
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[Hospital] Transport patient to hospital'
+            );
+
+        cy.getState()
+            .its('exerciseState')
+            .its('hospitals')
+            .itsValues()
+            .firstElement()
+            .its('patientIds')
+            .should('not.be.empty');
+
+        cy.wait(150); // Do not trigger a double click
+        cy.get('[data-cy=openLayersContainer]').click();
+        cy.get('[data-cy=transferPointPopupHospitalNav]').click();
+        cy.get('[data-cy=transferPointPopupRemoveHospitalButton]').click();
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should(
+                'have.property',
+                'type',
+                '[TransferPoint] Disconnect hospital'
+            );
+
+        cy.getState()
+            .its('exerciseState')
+            .its('transferPoints')
+            .itsValues()
+            .firstElement()
+            .its('reachableHospitals')
+            .should('be.empty');
+
+        cy.get('[data-cy=trainerToolbarCreationButton]').click();
+        cy.get('[data-cy=trainerToolbarHospitalsButton]').click();
 
         cy.log('delete a hospital');
         cy.get('[data-cy="hospitalDeleteButton"]').click();
