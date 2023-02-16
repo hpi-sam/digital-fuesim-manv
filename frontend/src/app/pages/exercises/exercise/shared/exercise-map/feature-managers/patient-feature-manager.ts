@@ -1,24 +1,40 @@
+import type { Type, NgZone } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { Patient } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
-import type Point from 'ol/geom/Point';
-import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
-import type VectorSource from 'ol/source/Vector';
 import { Fill, Stroke } from 'ol/style';
+import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectConfiguration } from 'src/app/state/application/selectors/exercise.selectors';
+import { selectVisiblePatients } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
+import type { OpenPopupOptions } from '../utility/popup-manager';
 import { CircleStyleHelper } from '../utility/style-helper/circle-style-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
+    public register(
+        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
+        destroy$: Subject<void>,
+        ngZone: NgZone,
+        mapInteractionsManager: OlMapInteractionsManager
+    ): void {
+        super.registerFeatureElementManager(
+            this.store.select(selectVisiblePatients),
+            changePopup$,
+            destroy$,
+            ngZone,
+            mapInteractionsManager
+        );
+    }
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
     private readonly imageStyleHelper = new ImageStyleHelper((feature) => {
@@ -65,12 +81,10 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
     constructor(
         private readonly store: Store<AppState>,
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<Point>>,
         exerciseService: ExerciseService
     ) {
         super(
             olMap,
-            layer,
             (targetPosition, patient) => {
                 exerciseService.proposeAction({
                     type: '[Patient] Move patient',
