@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { httpOrigin } from './core/api-origins';
+import { httpOrigin, websocketOrigin } from './core/api-origins';
 import { setupCypressTestingValues } from './shared/functions/cypress';
 import type { AppState } from './state/app.state';
 
@@ -14,6 +14,7 @@ export class AppComponent {
         setupCypressTestingValues({
             store: this.store,
             backendBaseUrl: httpOrigin,
+            websocketBaseUrl: websocketOrigin,
         });
     }
 }

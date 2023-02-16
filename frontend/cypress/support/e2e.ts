@@ -16,11 +16,10 @@
 
 // When a command from ./commands is ready to use, import with `import './commands'` syntax
 
+import type { JsonObject } from 'digital-fuesim-manv-shared';
 import {
     dragToMap,
     store,
-    performedActions,
-    proposedActions,
     createExercise,
     joinExerciseAsTrainer,
     joinExerciseAsParticipant,
@@ -31,6 +30,9 @@ import {
     nthLastElement,
     itsKeys,
     itsValues,
+    initializeParticipantSocket,
+    initializeTrainerSocket,
+    atKey,
 } from './commands';
 
 declare global {
@@ -42,8 +44,6 @@ declare global {
             ): Chainable;
             store(): Chainable;
             getState(): Chainable;
-            performedActions(): Chainable;
-            proposedActions(): Chainable;
             createExercise(): Chainable;
             joinExerciseAsTrainer(): Chainable;
             joinExerciseAsParticipant(): Chainable;
@@ -53,19 +53,29 @@ declare global {
             nthLastElement(n: number): Chainable;
             itsKeys(): Chainable;
             itsValues(): Chainable;
+            initializeParticipantSocket(): Chainable;
+            initializeTrainerSocket(): Chainable;
+            atKey(key: string): Chainable;
         }
     }
 }
 
-Cypress.Commands.addAll(
+Cypress.Commands.addAll<keyof Cypress.Chainable, unknown[]>(
     { prevSubject: true },
     {
         firstElement,
         lastElement,
         nthElement,
         nthLastElement,
+    }
+);
+
+Cypress.Commands.addAll<keyof Cypress.Chainable, JsonObject>(
+    { prevSubject: true },
+    {
         itsKeys,
         itsValues,
+        atKey,
     }
 );
 
@@ -73,9 +83,9 @@ Cypress.Commands.addAll({
     dragToMap,
     store,
     getState,
-    performedActions,
-    proposedActions,
     createExercise,
     joinExerciseAsParticipant,
     joinExerciseAsTrainer,
+    initializeParticipantSocket,
+    initializeTrainerSocket,
 });

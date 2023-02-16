@@ -25,6 +25,7 @@
                 <button
                     class="btn btn-outline-primary btn-sm"
                     ngbDropdownToggle
+                    data-cy="clientPopupSetViewportButton"
                 >
                     <ng-container
                         *ngIf="
@@ -40,12 +41,14 @@
                         *ngFor="let viewport of viewports$ | async | values"
                         ngbDropdownItem
                         (click)="restrictToViewport(client.id, viewport.id)"
+                        data-cy="clientPopupSetViewportDropdownButton"
                     >
                         {{ viewport.name }}
                     </button>
                     <button
                         ngbDropdownItem
                         (click)="restrictToViewport(client.id, undefined)"
+                        data-cy="clientPopupUnsetViewportDropdownButton"
                     >
                         <ng-container
                             [ngTemplateOutlet]="noViewportId"
@@ -63,6 +66,7 @@
                         (ngModelChange)="setWaitingRoom(client.id, !$event)"
                         class="form-check-input"
                         type="checkbox"
+                        data-cy="clientPopupSetWaitingRoomCheckbox"
                     />
                 </div>
             </td>

@@ -1,13 +1,11 @@
 import type { Store } from '@ngrx/store';
-import type { ExerciseAction, Immutable } from 'digital-fuesim-manv-shared';
 import { environment } from 'src/environments/environment';
 import { defaults } from 'lodash-es';
 
 export interface CypressTestingValues {
     store: Store;
-    proposedActions: Immutable<ExerciseAction>[];
-    performedActions: Immutable<ExerciseAction>[];
     backendBaseUrl: string;
+    websocketBaseUrl: string;
 }
 
 export const isBeingTestedByCypress = () =>

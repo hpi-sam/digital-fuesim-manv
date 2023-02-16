@@ -14,10 +14,6 @@ import { freeze } from 'immer';
 import { filter, pairwise, Subject, switchMap, takeUntil } from 'rxjs';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
-import {
-    isBeingTestedByCypress,
-    setupCypressTestingValues,
-} from '../shared/functions/cypress';
 import { handleChanges } from '../shared/functions/handle-changes';
 import type { AppState } from '../state/app.state';
 import {
@@ -72,14 +68,8 @@ export class ExerciseService {
         private readonly store: Store<AppState>,
         private readonly messageService: MessageService
     ) {
-        setupCypressTestingValues({
-            proposedActions: this.proposedActions,
-            performedActions: this.performedActions,
-        });
         this.socket.on('performAction', (action: ExerciseAction) => {
             freeze(action, true);
-            if (isBeingTestedByCypress()) this.performedActions.push(action);
-
             this.optimisticActionHandler?.performAction(action);
         });
         this.socket.on('disconnect', (reason) => {
@@ -211,7 +201,6 @@ export class ExerciseService {
             });
             return { success: false };
         }
-        if (isBeingTestedByCypress()) this.proposedActions.push(action);
 
         // TODO: throw if `response.success` is false
         return this.optimisticActionHandler.proposeAction(action, optimistic);

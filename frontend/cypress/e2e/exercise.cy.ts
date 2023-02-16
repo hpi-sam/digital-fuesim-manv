@@ -1,6 +1,6 @@
 describe('A trainer on the exercise page', () => {
     beforeEach(() => {
-        cy.createExercise().joinExerciseAsTrainer();
+        cy.createExercise().joinExerciseAsTrainer().initializeTrainerSocket();
     });
 
     it('can drag features to the map', () => {
@@ -8,7 +8,7 @@ describe('A trainer on the exercise page', () => {
             '[data-cy=draggablePatientDiv]'
         );
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[Patient] Add patient');
 
@@ -21,7 +21,7 @@ describe('A trainer on the exercise page', () => {
             '[data-cy=draggableVehicleDiv]'
         );
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[Vehicle] Add vehicle');
 
@@ -34,7 +34,7 @@ describe('A trainer on the exercise page', () => {
             '[data-cy=draggableViewportDiv]'
         );
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[Viewport] Add viewport');
 
@@ -47,7 +47,7 @@ describe('A trainer on the exercise page', () => {
             '[data-cy=draggableSimulatedRegionDiv]'
         );
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should(
                 'have.property',
@@ -64,7 +64,7 @@ describe('A trainer on the exercise page', () => {
             '[data-cy=draggableTransferPointDiv]'
         );
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should(
                 'have.property',
@@ -81,7 +81,7 @@ describe('A trainer on the exercise page', () => {
             '[data-cy=draggableMapImageDiv]'
         );
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[MapImage] Add MapImage');
 
@@ -98,7 +98,7 @@ describe('A trainer on the exercise page', () => {
         cy.log('add an alarm group')
             .get('[data-cy="alarmGroupAddButton"]')
             .click();
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[AlarmGroup] Add AlarmGroup');
 
@@ -113,7 +113,7 @@ describe('A trainer on the exercise page', () => {
             .clear()
             .type('ABC123');
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[AlarmGroup] Rename AlarmGroup');
 
@@ -132,7 +132,7 @@ describe('A trainer on the exercise page', () => {
             .first()
             .click();
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should(
                 'have.property',
@@ -154,7 +154,7 @@ describe('A trainer on the exercise page', () => {
             .clear()
             .type('10');
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should(
                 'have.property',
@@ -176,7 +176,7 @@ describe('A trainer on the exercise page', () => {
         cy.get('[data-cy=alarmGroupAddVehicleSelect] > :nth-child(2)')
             .first()
             .click();
-        cy.get('[data-cy=alarmGroupClosePopupButton]').click();
+        cy.get('[data-cy=alarmGroupClosePopupButton]').click({ force: true });
         cy.dragToMap('[data-cy=draggableTransferPointDiv]');
         cy.get('[data-cy=trainerToolbarExecutionButton]').click();
         cy.get('[data-cy=trainerToolbarControlCenterButton]').click();
@@ -186,7 +186,7 @@ describe('A trainer on the exercise page', () => {
             .click();
         cy.get('[data-cy=sendAlarmGroupSendButton]').click();
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should(
                 'have.property',
@@ -194,19 +194,19 @@ describe('A trainer on the exercise page', () => {
                 '[Emergency Operation Center] Add Log Entry'
             );
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .nthLastElement(1)
             .should('have.property', 'type', '[Transfer] Add to transfer');
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .nthLastElement(2)
             .should('have.property', 'type', '[Vehicle] Add vehicle');
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .nthLastElement(3)
             .should('have.property', 'type', '[Transfer] Add to transfer');
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .nthLastElement(4)
             .should('have.property', 'type', '[Vehicle] Add vehicle');
 
@@ -219,7 +219,7 @@ describe('A trainer on the exercise page', () => {
             .first()
             .click();
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[Transfer] Finish transfer');
 
@@ -252,7 +252,7 @@ describe('A trainer on the exercise page', () => {
             .first()
             .click();
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should(
                 'have.property',
@@ -273,7 +273,7 @@ describe('A trainer on the exercise page', () => {
             .first()
             .click();
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[AlarmGroup] Remove AlarmGroup');
 
@@ -288,7 +288,7 @@ describe('A trainer on the exercise page', () => {
         cy.get('[data-cy=trainerToolbarHospitalsButton]').click();
 
         cy.log('add a hospital').get('[data-cy="hospitalAddButton"]').click();
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[Hospital] Add hospital');
 
@@ -303,7 +303,7 @@ describe('A trainer on the exercise page', () => {
             .clear()
             .type('ABC123');
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[Hospital] Rename hospital');
 
@@ -320,7 +320,7 @@ describe('A trainer on the exercise page', () => {
             .clear()
             .type('30');
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should(
                 'have.property',
@@ -352,7 +352,7 @@ describe('A trainer on the exercise page', () => {
 
         // cy.get('[data-cy=chooseTransferTargetPopupHospitalDropdown]').click();
 
-        // cy.proposedActions();
+        // cy.get('@trainerSocketPerformedActions');
         // cy.getState()
         //     .its('exerciseState')
         //     .its('vehicles')
@@ -367,7 +367,7 @@ describe('A trainer on the exercise page', () => {
         cy.log('delete a hospital');
         cy.get('[data-cy="hospitalDeleteButton"]').click();
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[Hospital] Remove hospital');
 
@@ -380,11 +380,11 @@ describe('A trainer on the exercise page', () => {
             .click();
         cy.get('[data-cy=confirmationModalOkButton]').click();
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .nthLastElement(1)
             .should('have.property', 'type', '[Exercise] Start');
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should(
                 'have.property',
@@ -393,7 +393,7 @@ describe('A trainer on the exercise page', () => {
             );
 
         cy.wait(1000);
-        cy.performedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[Exercise] Tick');
 
@@ -406,16 +406,82 @@ describe('A trainer on the exercise page', () => {
             .get('[data-cy=trainerToolbarPauseButton]')
             .click();
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .nthLastElement(1)
             .should('have.property', 'type', '[Exercise] Pause');
 
-        cy.proposedActions()
+        cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should(
                 'have.property',
                 'type',
                 '[Emergency Operation Center] Add Log Entry'
             );
+    });
+
+    it('can manage participants', () => {
+        cy.initializeParticipantSocket();
+
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Client] Add client');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('clients')
+            .itsValues()
+            .should('have.length', 3);
+
+        cy.dragToMap('[data-cy=draggableViewportDiv]');
+        cy.get('[data-cy=trainerToolbarExecutionButton]').click();
+        cy.get('[data-cy=trainerToolbarParticipantsButton]').click();
+
+        cy.get('[data-cy=clientPopupSetWaitingRoomCheckbox]').last().check();
+
+        cy.get('@participantSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Client] Set waitingroom');
+
+        cy.get('@participantSocketUUID', { log: false }).then(
+            (participantSocketUUID: any) => {
+                cy.getState()
+                    .its('exerciseState')
+                    .its('clients')
+                    .atKey(participantSocketUUID)
+                    .should('have.property', 'isInWaitingRoom', false);
+            }
+        );
+
+        cy.get('[data-cy=clientPopupSetViewportButton]').last().click();
+        cy.get('[data-cy=clientPopupSetViewportDropdownButton]:visible')
+            .first()
+            .click();
+
+        cy.get('@participantSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Client] Restrict to viewport');
+
+        cy.get('@participantSocketUUID', { log: false }).then(
+            (participantSocketUUID: any) => {
+                cy.getState()
+                    .its('exerciseState')
+                    .its('clients')
+                    .atKey(participantSocketUUID)
+                    .should('have.property', 'viewRestrictedToViewportId');
+            }
+        );
+
+        cy.get('@participantSocket', { log: false }).invoke('disconnect');
+
+        cy.wait(0);
+        cy.get('@trainerSocketPerformedActions')
+            .lastElement()
+            .should('have.property', 'type', '[Client] Remove client');
+
+        cy.getState()
+            .its('exerciseState')
+            .its('clients')
+            .itsValues()
+            .should('have.length', 2);
     });
 });
