@@ -1,7 +1,7 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
 import { SimulatedRegion } from '../../models';
 import { getCreate } from '../../models/utils';
-import { uuid, UUID, uuidValidationOptions } from '../../utils';
+import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { terminateActivity } from '../utils/simulated-region';
 import { unloadVehicle } from '../utils/vehicle';
@@ -15,7 +15,7 @@ export class UnloadVehicleActivityState implements SimulationActivityState {
     public readonly type = 'unloadVehicleActivity';
 
     @IsUUID(4, uuidValidationOptions)
-    public readonly id: UUID = uuid();
+    public readonly id!: UUID;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
@@ -32,15 +32,15 @@ export class UnloadVehicleActivityState implements SimulationActivityState {
      * @deprecated Use {@link create} instead
      */
     constructor(
+        id: UUID,
         vehicleId: UUID,
         startTime: number,
-        duration: number,
-        id?: UUID
+        duration: number
     ) {
         this.vehicleId = vehicleId;
         this.startTime = startTime;
         this.duration = duration;
-        if (id) this.id = id;
+        this.id = id;
     }
 
     static readonly create = getCreate(this);

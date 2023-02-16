@@ -1,16 +1,16 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import {
+import type {
     UUID,
     Vehicle,
     Personnel,
     Material,
     Patient,
     WithPosition,
-    UnloadArrivingVehiclesBehaviorState,
 } from 'digital-fuesim-manv-shared';
 import {
+    UnloadArrivingVehiclesBehaviorState,
     SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';

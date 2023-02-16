@@ -41,10 +41,10 @@ export const unloadArrivingVehiclesBehavior: SimulationBehavior<UnloadArrivingVe
                 addActivity(
                     simulatedRegion,
                     UnloadVehicleActivityState.create(
+                        nextUUID(draftState),
                         event.vehicleId,
                         event.arrivalTime,
-                        behaviorState.unloadDelay,
-                        nextUUID(draftState)
+                        behaviorState.unloadDelay
                     )
                 );
             }
