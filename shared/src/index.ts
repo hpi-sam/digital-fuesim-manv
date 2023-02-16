@@ -19,6 +19,7 @@ export * from './export-import/file-format';
 export * from './models';
 export * from './models/utils';
 export * from './utils';
+export * from './simulation';
 export * from './state';
 export * from './store';
 export * from './socket-api';
