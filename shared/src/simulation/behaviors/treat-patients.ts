@@ -2,8 +2,10 @@ import { IsInt, IsUUID, Min } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { uuid, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import { DelayTreatmentReassignmentActivityState } from '../activities/delay-treatment-reassignment';
+import { DelayEventActivityState } from '../activities/delay-event';
 import { ReassignTreatmentsActivityState } from '../activities/reassign-treatments';
+import { TreatmentsTimerEvent } from '../events/treatments-timer-event';
+import { nextUUID } from '../utils';
 import { addActivity, terminateActivity } from '../utils/simulated-region';
 import type {
     SimulationBehavior,
@@ -16,6 +18,9 @@ export class TreatPatientsBehaviorState implements SimulationBehaviorState {
 
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly delayActivityId: UUID | null = null;
 
     /**
      * The time between automatic treatment reassignments, in milliseconds.
@@ -34,41 +39,44 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
         handleEvent(draftState, simulatedRegion, behaviorState, event) {
             switch (event.type) {
                 case 'tickEvent':
-                    if (
-                        !Object.values(simulatedRegion.activities).some(
-                            (activity) =>
-                                activity.type ===
-                                'delayTreatmentReassignmentActivity'
-                        )
-                    ) {
+                    if (behaviorState.delayActivityId === null) {
+                        const id = nextUUID(draftState);
                         addActivity(
                             simulatedRegion,
-                            DelayTreatmentReassignmentActivityState.create(
+                            DelayEventActivityState.create(
+                                id,
+                                TreatmentsTimerEvent.create(),
                                 draftState.currentTime + behaviorState.interval
                             )
                         );
+                        behaviorState.delayActivityId = id;
                     }
                     break;
                 case 'materialAvailableEvent':
                 case 'newPatientEvent':
                 case 'personnelAvailableEvent':
-                    Object.values(simulatedRegion.activities)
-                        .filter(
-                            (activity) =>
-                                activity.type ===
-                                'delayTreatmentReassignmentActivity'
-                        )
-                        .forEach((activity) => {
+                case 'treatmentsTimerEvent':
+                    if (behaviorState.delayActivityId) {
+                        if (
+                            simulatedRegion.activities[
+                                behaviorState.delayActivityId
+                            ]
+                        ) {
                             terminateActivity(
                                 draftState,
                                 simulatedRegion,
-                                activity.id
+                                behaviorState.delayActivityId
                             );
-                        });
+                        }
+
+                        behaviorState.delayActivityId = null;
+                    }
 
                     addActivity(
                         simulatedRegion,
-                        ReassignTreatmentsActivityState.create()
+                        ReassignTreatmentsActivityState.create(
+                            nextUUID(draftState)
+                        )
                     );
                     break;
                 default:

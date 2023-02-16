@@ -6,12 +6,14 @@ import { NewPatientEvent } from './new-patient';
 import { PersonnelAvailableEvent } from './personnel-available';
 import { TickEvent } from './tick';
 import { VehicleArrivedEvent } from './vehicle-arrived';
+import { TreatmentsTimerEvent } from './treatments-timer-event';
 
 export const simulationEvents = {
     MaterialAvailableEvent,
     NewPatientEvent,
     PersonnelAvailableEvent,
     TickEvent,
+    TreatmentsTimerEvent,
     VehicleArrivedEvent,
 };
 
@@ -29,6 +31,7 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     newPatientEvent: NewPatientEvent,
     personnelAvailableEvent: PersonnelAvailableEvent,
     tickEvent: TickEvent,
+    treatmentsTimerEvent: TreatmentsTimerEvent,
     vehicleArrivedEvent: VehicleArrivedEvent,
 };
 
