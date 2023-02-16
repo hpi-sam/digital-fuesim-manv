@@ -18,6 +18,7 @@
         class="btn btn-small btn-outline-secondary"
         title="Um 1 Minute verkürzen"
         (click)="addTransferTime(-60 * 1000)"
+        data-cy="transferTimeReduceByOneMinuteButton"
     >
         -1&ThinSpace;min
     </button>
@@ -26,6 +27,7 @@
         [class.text-dark]="!transfer.isPaused"
         (click)="togglePauseTransfer()"
         [title]="'Transfer ist ' + (transfer.isPaused ? 'pausiert' : 'aktiv')"
+        data-cy="transferTimeTogglePauseButton"
     >
         <i [ngClass]="transfer.isPaused ? 'bi-pause-fill' : 'bi-play-fill'"></i>
         <!-- TODO: `??` would be a bit better than `||`, but messes up the code highlighting -->

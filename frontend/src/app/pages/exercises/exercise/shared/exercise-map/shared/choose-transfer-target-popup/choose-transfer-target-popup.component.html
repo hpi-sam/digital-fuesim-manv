@@ -16,6 +16,7 @@
         (click)="transferTo(reachableTransferPoint.id, 'transferPoint')"
         type="button"
         class="dropdown-item"
+        data-cy="chooseTransferTargetPopupOtherTransferPointDropdown"
     >
         <app-transfer-point-name
             [transferPointId]="reachableTransferPoint.id"

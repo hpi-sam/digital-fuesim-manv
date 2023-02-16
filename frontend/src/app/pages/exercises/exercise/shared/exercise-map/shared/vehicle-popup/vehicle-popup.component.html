@@ -43,6 +43,7 @@
             (click)="unloadVehicle()"
             [disabled]="vehicleIsCompletelyUnloaded$ | async"
             class="btn btn-outline-primary"
+            data-cy="vehiclePopupUnloadButton"
         >
             <i class="bi-box-arrow-left"></i>
             Alle aussteigen

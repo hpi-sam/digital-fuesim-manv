@@ -216,7 +216,7 @@ jobs:
                   path: coverage
 
     cypress:
-        timeout-minutes: 5
+        timeout-minutes: 10
         runs-on: ${{ matrix.os }}
 
         needs: build
