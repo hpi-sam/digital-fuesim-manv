@@ -1,9 +1,8 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { Store } from '@ngrx/store';
-import type { UUID, Personnel } from 'digital-fuesim-manv-shared';
+import type { Personnel, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { createSelectPersonnel } from 'src/app/state/application/selectors/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
@@ -19,10 +18,10 @@ export class PersonnelPopupComponent implements PopupComponent, OnInit {
 
     public personnel$?: Observable<Personnel>;
 
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(private readonly storeService: StoreService) {}
 
     ngOnInit(): void {
-        this.personnel$ = this.store.select(
+        this.personnel$ = this.storeService.select$(
             createSelectPersonnel(this.personnelId)
         );
     }

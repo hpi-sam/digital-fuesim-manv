@@ -1,10 +1,9 @@
 import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { Store } from '@ngrx/store';
 import type { Viewport } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { createSelectViewport } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
@@ -14,12 +13,12 @@ import { createSelectViewport } from 'src/app/state/application/selectors/exerci
 })
 export class ViewportNameComponent implements OnChanges {
     @Input() viewportId!: UUID;
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(private readonly storeService: StoreService) {}
 
     public viewport$?: Observable<Viewport>;
 
     ngOnChanges() {
-        this.viewport$ = this.store.select(
+        this.viewport$ = this.storeService.select$(
             createSelectViewport(this.viewportId)
         );
     }

@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import type { Sort } from '@angular/material/sort';
-import { Store } from '@ngrx/store';
 import { statusNames } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map, startWith, Subject } from 'rxjs';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     selectHospitalPatients,
     selectHospitals,
@@ -16,14 +15,14 @@ import {
     styleUrls: ['./hospital-patients-table.component.scss'],
 })
 export class HospitalPatientsTableComponent {
-    constructor(public readonly store: Store<AppState>) {}
+    constructor(private readonly storeService: StoreService) {}
 
     public readonly sortEvent$ = new Subject<Sort>();
 
     private readonly unsortedRows$: Observable<HospitalPatientsRow[]> =
         combineLatest([
-            this.store.select(selectHospitalPatients),
-            this.store.select(selectHospitals),
+            this.storeService.select$(selectHospitalPatients),
+            this.storeService.select$(selectHospitals),
         ]).pipe(
             map(([hospitalPatients, hospitals]) =>
                 Object.values(hospitalPatients).map((hospitalPatient) => {

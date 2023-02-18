@@ -1,27 +1,25 @@
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
+import type {
+    Client,
+    ExerciseState,
+    Patient,
+    Personnel,
+    Vehicle,
+} from 'digital-fuesim-manv-shared';
 import {
-    isNotInVehicle,
     currentCoordinatesOf,
+    isNotInTransfer,
+    isNotInVehicle,
     isOnMap,
     loopTroughTime,
     uuid,
     Viewport,
-    isNotInTransfer,
-} from 'digital-fuesim-manv-shared';
-import type {
-    Personnel,
-    Client,
-    ExerciseState,
-    Patient,
-    Vehicle,
 } from 'digital-fuesim-manv-shared';
 import { countBy } from 'lodash-es';
 import { ReplaySubject } from 'rxjs';
 import { ApiService } from 'src/app/core/api.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { selectCurrentTime } from 'src/app/state/application/selectors/exercise.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { AreaStatistics } from './area-statistics';
 import type { StatisticsEntry } from './statistics-entry';
 
@@ -31,7 +29,7 @@ import type { StatisticsEntry } from './statistics-entry';
 export class StatisticsService {
     constructor(
         private readonly apiService: ApiService,
-        private readonly store: Store<AppState>
+        private readonly storeService: StoreService
     ) {}
 
     public updatingStatistics = false;
@@ -48,10 +46,7 @@ export class StatisticsService {
     public async updateStatistics(): Promise<readonly StatisticsEntry[]> {
         this.updatingStatistics = true;
         // The statistics during timeTravel are only up onto the respective point.
-        const maximumExerciseTime = selectStateSnapshot(
-            selectCurrentTime,
-            this.store
-        );
+        const maximumExerciseTime = this.storeService.select(selectCurrentTime);
         const { initialState, actionsWrappers } =
             await this.apiService.exerciseHistory();
 

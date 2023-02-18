@@ -1,10 +1,9 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { Store } from '@ngrx/store';
 import type { UUID, Viewport } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { createSelectViewport } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 
@@ -20,15 +19,15 @@ export class ViewportPopupComponent implements OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public viewport$?: Observable<Viewport>;
-    public readonly currentRole$ = this.store.select(selectCurrentRole);
+    public readonly currentRole$ = this.storeService.select$(selectCurrentRole);
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly exerciseService: ExerciseService
     ) {}
 
     ngOnInit() {
-        this.viewport$ = this.store.select(
+        this.viewport$ = this.storeService.select$(
             createSelectViewport(this.viewportId)
         );
     }

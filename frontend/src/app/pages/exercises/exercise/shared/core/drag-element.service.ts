@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
 import type {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     Element,
@@ -11,12 +10,12 @@ import type {
 import {
     createVehicleParameters,
     MapImage,
+    MapPosition,
     normalZoom,
     PatientTemplate,
+    SimulatedRegion,
     TransferPoint,
     Viewport,
-    SimulatedRegion,
-    MapPosition,
 } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import type VectorLayer from 'ol/layer/Vector';
@@ -24,12 +23,11 @@ import type OlMap from 'ol/Map';
 import type { Pixel } from 'ol/pixel';
 import type VectorSource from 'ol/source/Vector';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     selectMaterialTemplates,
     selectPersonnelTemplates,
 } from 'src/app/state/application/selectors/exercise.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { FeatureManager } from '../exercise-map/utility/feature-manager';
 
 @Injectable({
@@ -47,7 +45,7 @@ export class DragElementService {
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly storeService: StoreService
     ) {}
 
     public registerMap(olMap: OlMap) {
@@ -170,14 +168,8 @@ export class DragElementService {
                 {
                     const params = createVehicleParameters(
                         this.transferringTemplate.template,
-                        selectStateSnapshot(
-                            selectMaterialTemplates,
-                            this.store
-                        ),
-                        selectStateSnapshot(
-                            selectPersonnelTemplates,
-                            this.store
-                        ),
+                        this.storeService.select(selectMaterialTemplates),
+                        this.storeService.select(selectPersonnelTemplates),
                         position
                     );
                     this.exerciseService.proposeAction(

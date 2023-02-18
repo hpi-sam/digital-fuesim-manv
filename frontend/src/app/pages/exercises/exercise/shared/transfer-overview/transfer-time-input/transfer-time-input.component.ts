@@ -1,8 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { Transfer, UUID } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { selectCurrentTime } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
@@ -17,10 +16,10 @@ export class TransferTimeInputComponent {
 
     @Input() transfer!: Transfer;
 
-    public readonly currentTime$ = this.store.select(selectCurrentTime);
+    public readonly currentTime$ = this.storeService.select$(selectCurrentTime);
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly exerciseService: ExerciseService
     ) {}
 

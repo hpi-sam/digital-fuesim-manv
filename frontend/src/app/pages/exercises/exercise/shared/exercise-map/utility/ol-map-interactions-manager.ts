@@ -1,24 +1,22 @@
-import type VectorLayer from 'ol/layer/Vector';
-import type VectorSource from 'ol/source/Vector';
-import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
-import type { Interaction } from 'ol/interaction';
-import { defaults as defaultInteractions } from 'ol/interaction';
-import type { Subject } from 'rxjs';
-import { combineLatest, takeUntil } from 'rxjs';
-import { selectExerciseStatus } from 'src/app/state/application/selectors/exercise.selectors';
+import type { ExerciseStatus, Role } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Collection } from 'ol';
-import type OlMap from 'ol/Map';
-import type { AppState } from 'src/app/state/app.state';
-import type { Store } from '@ngrx/store';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import type { ExerciseStatus, Role } from 'digital-fuesim-manv-shared';
+import type { Interaction } from 'ol/interaction';
+import { defaults as defaultInteractions } from 'ol/interaction';
 import type { TranslateEvent } from 'ol/interaction/Translate';
+import type VectorLayer from 'ol/layer/Vector';
+import type OlMap from 'ol/Map';
 import type { Pixel } from 'ol/pixel';
+import type VectorSource from 'ol/source/Vector';
+import type { Subject } from 'rxjs';
+import { combineLatest, takeUntil } from 'rxjs';
+import type { StoreService } from 'src/app/core/store.service';
+import { selectExerciseStatus } from 'src/app/state/application/selectors/exercise.selectors';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import { featureElementKey } from '../feature-managers/element-manager';
-import { TranslateInteraction } from './translate-interaction';
-import type { PopupManager } from './popup-manager';
 import type { FeatureManager } from './feature-manager';
+import type { PopupManager } from './popup-manager';
+import { TranslateInteraction } from './translate-interaction';
 
 export class OlMapInteractionsManager {
     private readonly featureLayers: VectorLayer<VectorSource>[] = [];
@@ -33,7 +31,7 @@ export class OlMapInteractionsManager {
 
     constructor(
         private readonly mapInteractions: Collection<Interaction>,
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly popupManager: PopupManager,
         private readonly olMap: OlMap,
         private readonly layerFeatureManagerDictionary: Map<
@@ -90,7 +88,7 @@ export class OlMapInteractionsManager {
             altShiftDragRotate: false,
             keyboard: true,
         }).extend(
-            selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
+            this.storeService.select(selectCurrentRole) === 'trainer'
                 ? [...this.participantInteractions, ...this.trainerInteractions]
                 : [...this.participantInteractions]
         );
@@ -106,8 +104,8 @@ export class OlMapInteractionsManager {
     // Register handlers that disable or enable certain interactions
     private registerInteractionEnablementHandler() {
         combineLatest([
-            this.store.select(selectExerciseStatus),
-            this.store.select(selectCurrentRole),
+            this.storeService.select$(selectExerciseStatus),
+            this.storeService.select$(selectCurrentRole),
         ])
             .pipe(takeUntil(this.destroy$))
             .subscribe(([status, currentRole]) => {

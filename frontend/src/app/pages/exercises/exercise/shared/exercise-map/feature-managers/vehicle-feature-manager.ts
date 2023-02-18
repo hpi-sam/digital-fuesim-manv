@@ -1,10 +1,9 @@
-import type { Type, NgZone } from '@angular/core';
-import type { Store } from '@ngrx/store';
+import type { NgZone, Type } from '@angular/core';
 import type {
-    UUID,
-    Vehicle,
     // eslint-disable-next-line @typescript-eslint/no-shadow
     Element,
+    UUID,
+    Vehicle,
 } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
@@ -13,7 +12,7 @@ import type { TranslateEvent } from 'ol/interaction/Translate';
 import type OlMap from 'ol/Map';
 import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import type { StoreService } from 'src/app/core/store.service';
 import { selectVisibleVehicles } from 'src/app/state/application/selectors/shared.selectors';
 import { VehiclePopupComponent } from '../shared/vehicle-popup/vehicle-popup.component';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
@@ -32,7 +31,7 @@ export class VehicleFeatureManager extends MoveableFeatureManager<Vehicle> {
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
-            this.store.select(selectVisibleVehicles),
+            this.storeService.select$(selectVisibleVehicles),
             changePopup$,
             destroy$,
             ngZone,
@@ -57,7 +56,7 @@ export class VehicleFeatureManager extends MoveableFeatureManager<Vehicle> {
 
     constructor(
         olMap: OlMap,
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly exerciseService: ExerciseService
     ) {
         super(

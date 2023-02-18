@@ -1,17 +1,16 @@
 import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
 import type { AlarmGroup, UUID } from 'digital-fuesim-manv-shared';
 import {
-    MapCoordinates,
     AlarmGroupStartPoint,
     createVehicleParameters,
+    MapCoordinates,
     TransferPoint,
 } from 'digital-fuesim-manv-shared';
 import { Subject, takeUntil } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import { MessageService } from 'src/app/core/messages/message.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     createSelectTransferPoint,
     createSelectVehicleTemplate,
@@ -21,7 +20,6 @@ import {
     selectTransferPoints,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 // We want to remember this
 let targetTransferPointId: UUID | undefined;
@@ -34,9 +32,10 @@ let targetTransferPointId: UUID | undefined;
 export class SendAlarmGroupInterfaceComponent implements OnDestroy {
     private readonly destroy$ = new Subject<void>();
 
-    public readonly alarmGroups$ = this.store.select(selectAlarmGroups);
+    public readonly alarmGroups$ = this.storeService.select$(selectAlarmGroups);
 
-    public readonly transferPoints$ = this.store.select(selectTransferPoints);
+    public readonly transferPoints$ =
+        this.storeService.select$(selectTransferPoints);
 
     public getTransferPointOrderByValue: (
         transferPoint: TransferPoint
@@ -44,7 +43,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly messageService: MessageService
     ) {
         // reset chosen targetTransferPoint if it gets deleted
@@ -68,19 +67,17 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
     }
 
     public sendAlarmGroup(alarmGroup: AlarmGroup) {
-        const targetTransferPoint = selectStateSnapshot(
-            createSelectTransferPoint(this.targetTransferPointId!),
-            this.store
+        const targetTransferPoint = this.storeService.select(
+            createSelectTransferPoint(this.targetTransferPointId!)
         );
         // TODO: Refactor this into one action (uuid generation is currently not possible in the reducer)
         Promise.all(
             Object.values(alarmGroup.alarmGroupVehicles).flatMap(
                 (alarmGroupVehicle) => {
-                    const vehicleTemplate = selectStateSnapshot(
+                    const vehicleTemplate = this.storeService.select(
                         createSelectVehicleTemplate(
                             alarmGroupVehicle.vehicleTemplateId
-                        ),
-                        this.store
+                        )
                     );
 
                     const vehicleParameters = createVehicleParameters(
@@ -88,14 +85,8 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                             ...vehicleTemplate,
                             name: alarmGroupVehicle.name,
                         },
-                        selectStateSnapshot(
-                            selectMaterialTemplates,
-                            this.store
-                        ),
-                        selectStateSnapshot(
-                            selectPersonnelTemplates,
-                            this.store
-                        ),
+                        this.storeService.select(selectMaterialTemplates),
+                        this.storeService.select(selectPersonnelTemplates),
                         // TODO: This position is not correct but needs to be provided.
                         // Here one should use a Position with the Transfer.
                         // But this is part of later Refactoring.
@@ -136,7 +127,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
             this.exerciseService.proposeAction({
                 type: '[Emergency Operation Center] Add Log Entry',
                 message: `Alarmgruppe ${alarmGroup.name} wurde alarmiert zu ${targetTransferPoint.externalName}!`,
-                name: selectStateSnapshot(selectOwnClient, this.store)!.name,
+                name: this.storeService.select(selectOwnClient)!.name,
             });
         });
     }

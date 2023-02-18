@@ -1,8 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { Transfer, UUID } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { selectTransferPoints } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
@@ -15,10 +14,11 @@ export class TransferTargetInputComponent {
     @Input() elementId!: UUID;
     @Input() transfer!: Transfer;
 
-    public readonly transferPoints$ = this.store.select(selectTransferPoints);
+    public readonly transferPoints$ =
+        this.storeService.select$(selectTransferPoints);
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly exerciseService: ExerciseService
     ) {}
 

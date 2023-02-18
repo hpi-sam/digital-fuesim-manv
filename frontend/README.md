@@ -91,7 +91,9 @@ In `src/app` and every descending folder the following guidelines apply:
 
 Commonly used [selectors](https://ngrx.io/guide/store/selectors) should go in [./src/app/state/application/selectors](./src/app/state/application/selectors/).
 
-You can assume that the Store has the current exercise state (either of a live exercise or an exercise in time travel) if you are in `src/app/pages/exercises/exercise`. We use [route guards](https://angular.io/guide/router-tutorial-toh#canactivate-requiring-authentication) for this.
+Do not access the ngrx-store directly, use the [StoreService](./src/app/core/store.service.ts) instead.
+
+You can assume that the store has the current exercise state (either of a live exercise or an exercise in time travel) if you are in `src/app/pages/exercises/exercise`. We use [route guards](https://angular.io/guide/router-tutorial-toh#canactivate-requiring-authentication) for this.
 
 If you want to modify the exercise state, do not do it via [reducers](https://ngrx.io/guide/store/reducers) in the store, but propose an action (optimistically) via the [ExerciseService](./src/app/core/exercise.service.ts). The action will automatically be applied to the store.
 

@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     selectClients,
     selectViewports,
@@ -14,11 +13,11 @@ import {
     styleUrls: ['./client-overview-table.component.scss'],
 })
 export class ClientOverviewTableComponent {
-    public readonly clients$ = this.store.select(selectClients);
-    public readonly viewports$ = this.store.select(selectViewports);
+    public readonly clients$ = this.storeService.select$(selectClients);
+    public readonly viewports$ = this.storeService.select$(selectViewports);
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly exerciseService: ExerciseService
     ) {}
 

@@ -1,10 +1,9 @@
 import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { Store } from '@ngrx/store';
 import type { VehicleTemplate } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { createSelectVehicleTemplate } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
@@ -18,10 +17,10 @@ export class VehicleTemplateDisplayComponent implements OnChanges {
     public vehicleTemplate$?: Observable<VehicleTemplate>;
 
     ngOnChanges() {
-        this.vehicleTemplate$ = this.store.select(
+        this.vehicleTemplate$ = this.storeService.select$(
             createSelectVehicleTemplate(this.vehicleTemplateId)
         );
     }
 
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(private readonly storeService: StoreService) {}
 }

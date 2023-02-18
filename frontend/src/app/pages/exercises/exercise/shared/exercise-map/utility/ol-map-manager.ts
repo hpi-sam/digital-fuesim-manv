@@ -1,8 +1,7 @@
 import type { NgZone } from '@angular/core';
-import type { Store } from '@ngrx/store';
 import {
-    upperLeftCornerOf,
     lowerRightCornerOf,
+    upperLeftCornerOf,
 } from 'digital-fuesim-manv-shared';
 import { Collection, View } from 'ol';
 import type { Interaction } from 'ol/interaction';
@@ -11,13 +10,12 @@ import OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import { Subject, takeUntil } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import type { StoreService } from 'src/app/core/store.service';
 import {
     selectSimulatedRegion,
     selectViewports,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectRestrictedViewport } from 'src/app/state/application/selectors/shared.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
@@ -35,8 +33,8 @@ import {
     ViewportFeatureManager,
 } from '../feature-managers/viewport-feature-manager';
 import type { FeatureManager } from './feature-manager';
-import type { PopupManager } from './popup-manager';
 import { OlMapInteractionsManager } from './ol-map-interactions-manager';
+import type { PopupManager } from './popup-manager';
 import { SatelliteLayerManager } from './satellite-layer-manager';
 
 /**
@@ -64,7 +62,7 @@ export class OlMapManager {
     >();
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly exerciseService: ExerciseService,
         private readonly openLayersContainer: HTMLDivElement,
         private readonly ngZone: NgZone,
@@ -95,7 +93,7 @@ export class OlMapManager {
 
         this.mapInteractionsManager = new OlMapInteractionsManager(
             this.olMap.getInteractions(),
-            store,
+            storeService,
             popupManager,
             this.olMap,
             this.layerFeatureManagerDictionary,
@@ -103,7 +101,7 @@ export class OlMapManager {
         );
 
         const satelliteLayerManager = new SatelliteLayerManager(
-            store,
+            storeService,
             this.destroy$
         );
 
@@ -128,8 +126,8 @@ export class OlMapManager {
 
     private registerViewportRestriction() {
         this.tryToFitViewForOverview(false);
-        this.store
-            .select(selectRestrictedViewport)
+        this.storeService
+            .select$(selectRestrictedViewport)
             .pipe(takeUntil(this.destroy$))
             .subscribe((viewport) => {
                 const view = this.olMap.getView();
@@ -168,18 +166,13 @@ export class OlMapManager {
      * Sets the map's view to see all viewports and simulated regions.
      */
     public tryToFitViewForOverview(animate = true) {
-        if (
-            selectStateSnapshot(selectRestrictedViewport, this.store) !==
-            undefined
-        ) {
+        if (this.storeService.select(selectRestrictedViewport) !== undefined) {
             // We are restricted to a viewport -> you can't fit the view
             return;
         }
         const elements = [
-            ...Object.values(selectStateSnapshot(selectViewports, this.store)),
-            ...Object.values(
-                selectStateSnapshot(selectSimulatedRegion, this.store)
-            ),
+            ...Object.values(this.storeService.select(selectViewports)),
+            ...Object.values(this.storeService.select(selectSimulatedRegion)),
         ];
         const view = this.olMap.getView();
         if (elements.length === 0) {
@@ -239,58 +232,58 @@ export class OlMapManager {
 
     private initializeFeatureManagers() {
         const transferLinesFeatureManager = new TransferLinesFeatureManager(
-            this.store,
+            this.storeService,
             this.transferLinesService,
             this.olMap
         );
         const transferPointFeatureManager = new TransferPointFeatureManager(
             this.olMap,
-            this.store,
+            this.storeService,
             this.exerciseService
         );
         const patientFeatureManager = new PatientFeatureManager(
-            this.store,
+            this.storeService,
             this.olMap,
             this.exerciseService
         );
         const vehicleFeatureManager = new VehicleFeatureManager(
             this.olMap,
-            this.store,
+            this.storeService,
             this.exerciseService
         );
         const personnelFeatureManager = new PersonnelFeatureManager(
             this.olMap,
-            this.store,
+            this.storeService,
             this.exerciseService
         );
         const materialFeatureManager = new MaterialFeatureManager(
             this.olMap,
-            this.store,
+            this.storeService,
             this.exerciseService
         );
         const mapImageFeatureManager = new MapImageFeatureManager(
             this.olMap,
             this.exerciseService,
-            this.store
+            this.storeService
         );
         const cateringLinesFeatureManager = new CateringLinesFeatureManager(
-            this.store,
+            this.storeService,
             this.olMap
         );
 
         const viewportFeatureManager = new ViewportFeatureManager(
             this.olMap,
             this.exerciseService,
-            this.store
+            this.storeService
         );
         const simulatedRegionFeatureManager = new SimulatedRegionFeatureManager(
             this.olMap,
             this.exerciseService,
-            this.store
+            this.storeService
         );
 
         const deleteFeatureManager = new DeleteFeatureManager(
-            this.store,
+            this.storeService,
             this.olMap,
             this.exerciseService
         );

@@ -1,5 +1,4 @@
-import type { Type, NgZone } from '@angular/core';
-import type { Store } from '@ngrx/store';
+import type { NgZone, Type } from '@angular/core';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { MapCoordinates, Size, Viewport } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
@@ -10,12 +9,11 @@ import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import type { StoreService } from 'src/app/core/store.service';
 import {
     selectCurrentRole,
     selectVisibleViewports,
 } from 'src/app/state/application/selectors/shared.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
@@ -46,7 +44,7 @@ export class ViewportFeatureManager
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
-            this.store.select(selectVisibleViewports),
+            this.storeService.select$(selectVisibleViewports),
             changePopup$,
             destroy$,
             ngZone,
@@ -59,7 +57,7 @@ export class ViewportFeatureManager
     constructor(
         olMap: OlMap,
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly storeService: StoreService
     ) {
         super(
             olMap,
@@ -135,7 +133,7 @@ export class ViewportFeatureManager
         feature: Feature<any>
     ): void {
         super.onFeatureClicked(event, feature);
-        if (selectStateSnapshot(selectCurrentRole, this.store) !== 'trainer') {
+        if (this.storeService.select(selectCurrentRole) !== 'trainer') {
             return;
         }
         const zoom = this.olMap.getView().getZoom()!;
@@ -159,6 +157,6 @@ export class ViewportFeatureManager
     }
 
     public override isFeatureTranslatable(feature: Feature<Polygon>): boolean {
-        return selectStateSnapshot(selectCurrentRole, this.store) === 'trainer';
+        return this.storeService.select(selectCurrentRole) === 'trainer';
     }
 }

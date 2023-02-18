@@ -1,10 +1,9 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { Store } from '@ngrx/store';
-import type { UUID, SimulatedRegion } from 'digital-fuesim-manv-shared';
+import type { SimulatedRegion, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { createSelectSimulatedRegion } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 
@@ -20,15 +19,15 @@ export class SimulatedRegionPopupComponent implements OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public simulatedRegion$?: Observable<SimulatedRegion>;
-    public readonly currentRole$ = this.store.select(selectCurrentRole);
+    public readonly currentRole$ = this.storeService.select$(selectCurrentRole);
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly exerciseService: ExerciseService
     ) {}
 
     ngOnInit() {
-        this.simulatedRegion$ = this.store.select(
+        this.simulatedRegion$ = this.storeService.select$(
             createSelectSimulatedRegion(this.simulatedRegionId)
         );
     }

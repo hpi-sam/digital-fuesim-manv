@@ -1,14 +1,12 @@
 import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Store } from '@ngrx/store';
 import { cloneDeepMutable } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     selectConfiguration,
     selectTileMapProperties,
 } from 'src/app/state/application/selectors/exercise.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 @Component({
     selector: 'app-exercise-settings-modal',
@@ -17,16 +15,16 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 })
 export class ExerciseSettingsModalComponent {
     public tileMapProperties = cloneDeepMutable(
-        selectStateSnapshot(selectTileMapProperties, this.store)
+        this.storeService.select(selectTileMapProperties)
     );
 
     public readonly tileMapUrlRegex =
         /^(?=.*\{x\})(?=.*\{-?y\})(?=.*\{z\}).*$/u;
 
-    public configuration$ = this.store.select(selectConfiguration);
+    public configuration$ = this.storeService.select$(selectConfiguration);
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         public readonly activeModal: NgbActiveModal,
         private readonly exerciseService: ExerciseService
     ) {}

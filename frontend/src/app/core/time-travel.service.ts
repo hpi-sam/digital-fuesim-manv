@@ -1,10 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
 import type { ExerciseTimeline } from 'digital-fuesim-manv-shared';
 import { freeze } from 'immer';
 import { lastValueFrom } from 'rxjs';
-import type { AppState } from '../state/app.state';
 import {
     createJumpToTimeAction,
     createStartTimeTravelAction,
@@ -14,9 +12,9 @@ import {
     selectTimeConstraints,
 } from '../state/application/selectors/application.selectors';
 import { selectCurrentTime } from '../state/application/selectors/exercise.selectors';
-import { selectStateSnapshot } from '../state/get-state-snapshot';
 import { httpOrigin } from './api-origins';
 import { MessageService } from './messages/message.service';
+import { StoreService } from './store.service';
 import { TimeJumpHelper } from './time-jump-helper';
 
 /**
@@ -35,7 +33,7 @@ export class TimeTravelService {
     private activatingTimeTravel = false;
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly httpClient: HttpClient,
         private readonly messageService: MessageService
     ) {}
@@ -45,7 +43,7 @@ export class TimeTravelService {
      */
     public async startTimeTravel() {
         this.activatingTimeTravel = true;
-        const exerciseId = selectStateSnapshot(selectExerciseId, this.store);
+        const exerciseId = this.storeService.select(selectExerciseId);
         const exerciseTimeLine = await lastValueFrom(
             this.httpClient.get<ExerciseTimeline>(
                 `${httpOrigin}/api/exercise/${exerciseId}/history`
@@ -68,8 +66,8 @@ export class TimeTravelService {
         this.timeJumpHelper = new TimeJumpHelper(exerciseTimeLine);
         // Travel to the start of the exercise
         // TODO: This should be calculated from the timeline (in the TimeJumpHelper - maybe cache states in between)
-        const endTime = selectStateSnapshot(selectCurrentTime, this.store);
-        this.store.dispatch(
+        const endTime = this.storeService.select(selectCurrentTime);
+        this.storeService.dispatch(
             createStartTimeTravelAction(exerciseTimeLine.initialState, endTime)
         );
     }
@@ -79,10 +77,7 @@ export class TimeTravelService {
      * @param exerciseTime The time to travel to, if it isn't in the timeConstraints, it will be clamped appropriately
      */
     public jumpToTime(exerciseTime: number) {
-        const timeConstraints = selectStateSnapshot(
-            selectTimeConstraints,
-            this.store
-        );
+        const timeConstraints = this.storeService.select(selectTimeConstraints);
         if (!timeConstraints || !this.timeJumpHelper) {
             throw new Error('Start the time travel before jumping to a time!');
         }
@@ -90,7 +85,7 @@ export class TimeTravelService {
             timeConstraints.start,
             Math.min(timeConstraints.end, exerciseTime)
         );
-        this.store.dispatch(
+        this.storeService.dispatch(
             createJumpToTimeAction(
                 clampedTime,
                 this.timeJumpHelper.getStateAtTime(clampedTime)

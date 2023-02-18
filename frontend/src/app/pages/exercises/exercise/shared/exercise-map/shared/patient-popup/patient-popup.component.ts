@@ -1,6 +1,6 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
+import { createSelector } from '@ngrx/store';
 import type { PatientStatus, UUID } from 'digital-fuesim-manv-shared';
 import {
     healthPointsDefaults,
@@ -10,7 +10,7 @@ import {
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     createSelectPatient,
     selectConfiguration,
@@ -32,10 +32,10 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     public patient$?: Observable<Patient>;
     public visibleStatus$?: Observable<PatientStatus>;
     public pretriageStatusIsLocked$?: Observable<boolean>;
-    public readonly currentRole$ = this.store.select(selectCurrentRole);
+    public readonly currentRole$ = this.storeService.select$(selectCurrentRole);
     public currentYear = new Date().getFullYear();
 
-    public configuration$ = this.store.select(selectConfiguration);
+    public configuration$ = this.storeService.select$(selectConfiguration);
 
     public readonly pretriageOptions$: Observable<PatientStatus[]> =
         this.configuration$.pipe(
@@ -50,13 +50,15 @@ export class PatientPopupComponent implements PopupComponent, OnInit {
     public readonly healthPointsDefaults = healthPointsDefaults;
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly exerciseService: ExerciseService
     ) {}
 
     ngOnInit(): void {
-        this.patient$ = this.store.select(createSelectPatient(this.patientId));
-        this.visibleStatus$ = this.store.select(
+        this.patient$ = this.storeService.select$(
+            createSelectPatient(this.patientId)
+        );
+        this.visibleStatus$ = this.storeService.select$(
             createSelector(
                 createSelectPatient(this.patientId),
                 selectConfiguration,

@@ -1,11 +1,11 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
+import { createSelector } from '@ngrx/store';
 import type { Hospital, UUID } from 'digital-fuesim-manv-shared';
 import { TransferPoint } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     createSelectTransferPoint,
     selectHospitals,
@@ -33,7 +33,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
 
     public transferPoint$?: Observable<TransferPoint>;
 
-    public readonly currentRole$ = this.store.select(selectCurrentRole);
+    public readonly currentRole$ = this.storeService.select$(selectCurrentRole);
     public hospital$?: Observable<Hospital>;
 
     public get activeNavId() {
@@ -43,9 +43,9 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
         activeNavId = value;
     }
 
-    public transferPoints$ = this.store.select(selectTransferPoints);
+    public transferPoints$ = this.storeService.select$(selectTransferPoints);
 
-    public hospitals$ = this.store.select(selectHospitals);
+    public hospitals$ = this.storeService.select$(selectHospitals);
 
     public getTransferPointOrderByValue: (
         transferPoint: TransferPoint
@@ -58,7 +58,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     /**
      * All transferPoints that are neither connected to this one nor this one itself
      */
-    public readonly transferPointsToBeAdded$ = this.store.select(
+    public readonly transferPointsToBeAdded$ = this.storeService.select$(
         createSelector(selectTransferPoints, (transferPoints) => {
             const currentTransferPoint = transferPoints[this.transferPointId]!;
             return Object.fromEntries(
@@ -71,7 +71,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
         })
     );
 
-    public readonly hospitalsToBeAdded$ = this.store.select(
+    public readonly hospitalsToBeAdded$ = this.storeService.select$(
         createSelector(
             selectTransferPoints,
             selectHospitals,
@@ -89,11 +89,11 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly storeService: StoreService
     ) {}
 
     ngOnInit() {
-        this.transferPoint$ = this.store.select(
+        this.transferPoint$ = this.storeService.select$(
             createSelectTransferPoint(this.transferPointId)
         );
     }

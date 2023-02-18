@@ -116,6 +116,12 @@ module.exports = {
                         message:
                             'You probably want to import this from lodash-es instead.',
                     },
+                    {
+                        name: '@ngrx/store',
+                        importNames: ['Store'],
+                        message:
+                            'You probably want to use the StoreService instead.',
+                    },
                 ],
                 patterns: [
                     {

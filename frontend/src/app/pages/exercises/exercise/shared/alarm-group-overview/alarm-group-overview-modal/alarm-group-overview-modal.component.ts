@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Store } from '@ngrx/store';
 import { AlarmGroup } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     selectAlarmGroups,
     selectVehicleTemplates,
@@ -20,12 +19,12 @@ export class AlarmGroupOverviewModalComponent {
     constructor(
         public activeModal: NgbActiveModal,
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly storeService: StoreService
     ) {}
 
-    public readonly alarmGroups$ = this.store.select(selectAlarmGroups);
+    public readonly alarmGroups$ = this.storeService.select$(selectAlarmGroups);
 
-    public readonly vehicleTemplates$ = this.store.select(
+    public readonly vehicleTemplates$ = this.storeService.select$(
         selectVehicleTemplates
     );
 

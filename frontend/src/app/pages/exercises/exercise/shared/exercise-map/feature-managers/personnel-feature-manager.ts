@@ -1,12 +1,11 @@
-import type { Type, NgZone } from '@angular/core';
-import type { Store } from '@ngrx/store';
+import type { NgZone, Type } from '@angular/core';
 import type { Personnel, UUID } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type OlMap from 'ol/Map';
 import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import type { StoreService } from 'src/app/core/store.service';
 import { selectVisiblePersonnel } from 'src/app/state/application/selectors/shared.selectors';
 import { PersonnelPopupComponent } from '../shared/personnel-popup/personnel-popup.component';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
@@ -25,7 +24,7 @@ export class PersonnelFeatureManager extends MoveableFeatureManager<Personnel> {
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
-            this.store.select(selectVisiblePersonnel),
+            this.storeService.select$(selectVisiblePersonnel),
             changePopup$,
             destroy$,
             ngZone,
@@ -51,7 +50,7 @@ export class PersonnelFeatureManager extends MoveableFeatureManager<Personnel> {
 
     constructor(
         olMap: OlMap,
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         exerciseService: ExerciseService
     ) {
         super(

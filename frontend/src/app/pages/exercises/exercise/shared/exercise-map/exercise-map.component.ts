@@ -6,10 +6,9 @@ import {
     ViewChild,
     ViewContainerRef,
 } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     selectCurrentRole,
     selectRestrictedViewport,
@@ -35,13 +34,13 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     private readonly destroy$ = new Subject<void>();
     public olMapManager?: OlMapManager;
     private popupManager?: PopupManager;
-    public readonly restrictedToViewport$ = this.store.select(
+    public readonly restrictedToViewport$ = this.storeService.select$(
         selectRestrictedViewport
     );
-    public readonly currentRole$ = this.store.select(selectCurrentRole);
+    public readonly currentRole$ = this.storeService.select$(selectCurrentRole);
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly ngZone: NgZone,
         private readonly exerciseService: ExerciseService,
         public readonly dragElementService: DragElementService,
@@ -56,7 +55,7 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         // run outside angular zone for better performance
         this.ngZone.runOutsideAngular(() => {
             this.olMapManager = new OlMapManager(
-                this.store,
+                this.storeService,
                 this.exerciseService,
                 this.openLayersContainer.nativeElement,
                 this.ngZone,

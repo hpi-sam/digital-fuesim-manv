@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { currentTransferOf } from 'digital-fuesim-manv-shared';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     selectExerciseStatus,
     selectPersonnelInTransfer,
@@ -14,16 +13,17 @@ import {
     styleUrls: ['./transfer-overview-table.component.scss'],
 })
 export class TransferOverviewTableComponent {
-    public readonly vehiclesInTransfer$ = this.store.select(
+    public readonly vehiclesInTransfer$ = this.storeService.select$(
         selectVehiclesInTransfer
     );
-    public readonly personnelInTransfer$ = this.store.select(
+    public readonly personnelInTransfer$ = this.storeService.select$(
         selectPersonnelInTransfer
     );
 
     public currentTransferOf = currentTransferOf;
 
-    public readonly exerciseStatus$ = this.store.select(selectExerciseStatus);
+    public readonly exerciseStatus$ =
+        this.storeService.select$(selectExerciseStatus);
 
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(private readonly storeService: StoreService) {}
 }

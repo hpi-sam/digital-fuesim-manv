@@ -1,9 +1,8 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { Store } from '@ngrx/store';
-import type { UUID, Material } from 'digital-fuesim-manv-shared';
+import type { Material, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { createSelectMaterial } from 'src/app/state/application/selectors/exercise.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
@@ -19,10 +18,10 @@ export class MaterialPopupComponent implements PopupComponent, OnInit {
 
     public material$?: Observable<Material>;
 
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(private readonly storeService: StoreService) {}
 
     ngOnInit(): void {
-        this.material$ = this.store.select(
+        this.material$ = this.storeService.select$(
             createSelectMaterial(this.materialId)
         );
     }

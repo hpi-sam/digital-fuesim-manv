@@ -1,17 +1,15 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Store } from '@ngrx/store';
 import { ApiService } from 'src/app/core/api.service';
 import { ApplicationService } from 'src/app/core/application.service';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import { MessageService } from 'src/app/core/messages/message.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { selectExerciseId } from 'src/app/state/application/selectors/application.selectors';
 import { selectExerciseStatus } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 import { openEmergencyOperationsCenterModal } from '../emergency-operations-center/open-emergency-operations-center-modal';
@@ -26,10 +24,10 @@ import { openTransferOverviewModal } from '../transfer-overview/open-transfer-ov
     styleUrls: ['./trainer-toolbar.component.scss'],
 })
 export class TrainerToolbarComponent {
-    public exerciseStatus$ = this.store.select(selectExerciseStatus);
+    public exerciseStatus$ = this.storeService.select$(selectExerciseStatus);
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly exerciseService: ExerciseService,
         private readonly apiService: ApiService,
         public readonly applicationService: ApplicationService,
@@ -79,10 +77,7 @@ export class TrainerToolbarComponent {
     }
 
     public async startExercise() {
-        if (
-            selectStateSnapshot(selectExerciseStatus, this.store) ===
-            'notStarted'
-        ) {
+        if (this.storeService.select(selectExerciseStatus) === 'notStarted') {
             const confirmStart = await this.confirmationModalService.confirm({
                 title: 'Übung starten',
                 description: 'Möchten Sie die Übung wirklich starten?',
@@ -104,7 +99,7 @@ export class TrainerToolbarComponent {
     private sendLogAction(message: string) {
         this.exerciseService.proposeAction({
             type: '[Emergency Operation Center] Add Log Entry',
-            name: selectStateSnapshot(selectOwnClient, this.store)!.name,
+            name: this.storeService.select(selectOwnClient)!.name,
             message,
         });
     }
@@ -120,7 +115,7 @@ export class TrainerToolbarComponent {
     }
 
     public async deleteExercise() {
-        const exerciseId = selectStateSnapshot(selectExerciseId, this.store)!;
+        const exerciseId = this.storeService.select(selectExerciseId)!;
         const deletionConfirmed = await this.confirmationModalService.confirm({
             title: 'Übung löschen',
             description:
