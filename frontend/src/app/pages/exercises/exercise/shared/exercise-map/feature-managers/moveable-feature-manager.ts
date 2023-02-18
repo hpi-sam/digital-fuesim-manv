@@ -1,4 +1,5 @@
-import type { MapBrowserEvent, Feature } from 'ol';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
@@ -6,20 +7,19 @@ import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import type { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
-import type { NgZone } from '@angular/core';
 // eslint-disable-next-line @typescript-eslint/no-shadow
-import type { UUID, Element } from 'digital-fuesim-manv-shared';
+import type { Element } from 'digital-fuesim-manv-shared';
 import type { FeatureManager } from '../utility/feature-manager';
-import { MovementAnimator } from '../utility/movement-animator';
 import type {
     GeometryHelper,
     GeometryWithCoordinates,
     PositionableElement,
     Positions,
 } from '../utility/geometry-helper';
+import { MovementAnimator } from '../utility/movement-animator';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { TranslateInteraction } from '../utility/translate-interaction';
-import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { ElementManager } from './element-manager';
 
 /**
@@ -137,7 +137,6 @@ export abstract class MoveableFeatureManager<
     public abstract register(
         changePopup$: Subject<OpenPopupOptions<any> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ): void;
 
@@ -145,7 +144,6 @@ export abstract class MoveableFeatureManager<
         elementDictionary$: Observable<{ [id: UUID]: ManagedElement }>,
         changePopup$: Subject<OpenPopupOptions<any> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
         this.olMap.addLayer(this.layer);
@@ -154,7 +152,6 @@ export abstract class MoveableFeatureManager<
         this.registerChangeHandlers(
             elementDictionary$,
             destroy$,
-            ngZone,
             (element) => this.onElementCreated(element),
             (element) => this.onElementDeleted(element),
             (oldElement, newElement) =>
