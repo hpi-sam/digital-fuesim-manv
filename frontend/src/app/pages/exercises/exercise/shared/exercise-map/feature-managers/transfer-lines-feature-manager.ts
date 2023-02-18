@@ -1,6 +1,7 @@
 import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
-import { Element } from 'digital-fuesim-manv-shared';
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import type { Element } from 'digital-fuesim-manv-shared';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
 import LineString from 'ol/geom/LineString';
