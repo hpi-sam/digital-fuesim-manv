@@ -45,6 +45,9 @@ export class ReassignTreatmentsActivityState
     @Min(0)
     public readonly countingTimePerPatient: number;
 
+    /**
+     * @deprecated Use {@link create} instead
+     */
     constructor(
         id: UUID,
         treatmentProgress: TreatmentProgress,
