@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
+import {
+    IsInt,
+    IsOptional,
+    IsUUID,
+    Min,
+    ValidateNested,
+} from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { uuid, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
@@ -89,9 +95,11 @@ export class TreatPatientsBehaviorState implements SimulationBehaviorState {
             1000 * 20 // 20 seconds
         );
 
+    @IsOptional()
     @IsUUID(4, uuidValidationOptions)
     public readonly delayActivityId: UUID | null = null;
 
+    @IsOptional()
     @IsUUID(4, uuidValidationOptions)
     public readonly treatmentActivityId: UUID | null = null;
 
