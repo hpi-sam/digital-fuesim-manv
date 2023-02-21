@@ -1,50 +1,75 @@
-import { IsInt, IsUUID, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { uuid, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import { DelayEventActivityState } from '../activities';
 import { ReassignTreatmentsActivityState } from '../activities/reassign-treatments';
 import { TreatmentsTimerEvent } from '../events/treatments-timer-event';
-import { nextUUID } from '../utils';
+import {
+    nextUUID,
+    TreatmentProgress,
+    treatmentProgressAllowedValues,
+} from '../utils';
 import { addActivity, terminateActivity } from '../utils/simulated-region';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
 } from './simulation-behavior';
 
-export type TreatmentProgress = 'counted' | 'secured' | 'triaged' | 'unknown';
-
-export const treatmentProgressAllowedValues: {
-    [Key in TreatmentProgress]: true;
-} = {
-    counted: true,
-    secured: true,
-    triaged: true,
-    unknown: true,
-};
-
-// TODO: Make configurable (like `TreatPatientsBehaviorState.interval`)
-const progressIntervalMap: { [Key in TreatmentProgress]: number } = {
+export class TreatPatientsIntervals {
     /**
-     *  The personnel just arrived and the situation in unclear
+     * How frequent reassignments should occur when the personnel just arrived and the situation in unclear
      */
-    unknown: 1000 * 30, // 30 seconds
+    @IsInt()
+    @Min(0)
+    public readonly unknown: number;
 
     /**
-     * The patients have been counted
+     * How frequent reassignments should occur when the patients have been counted
      */
-    counted: 1000 * 60 * 2, // 2 minutes
+    @IsInt()
+    @Min(0)
+    public readonly counted: number;
 
     /**
-     * All patients are triaged
+     * How frequent reassignments should occur when all patients are triaged
      */
-    triaged: 1000 * 60 * 5, // 5 minutes
+    @IsInt()
+    @Min(0)
+    public readonly triaged: number;
 
     /**
-     * There is enough personnel to fulfil each patient's treatment needs
+     * How frequent reassignments should occur when there is enough personnel to fulfil each patient's treatment needs
      */
-    secured: 1000 * 60 * 10, // 10 minutes
-};
+    @IsInt()
+    @Min(0)
+    public readonly secured: number;
+
+    /**
+     * How long counting each patient should take.
+     * Counting will be finished after {patient count} times this value.
+     */
+    @IsInt()
+    @Min(0)
+    public readonly countingTimePerPatient: number;
+
+    constructor(
+        unknown: number,
+        counted: number,
+        triaged: number,
+        secured: number,
+        countingTimePerPatient: number
+    ) {
+        this.unknown = unknown;
+        this.counted = counted;
+        this.triaged = triaged;
+        this.secured = secured;
+        this.countingTimePerPatient = countingTimePerPatient;
+    }
+
+    static readonly create = getCreate(this);
+}
 
 export class TreatPatientsBehaviorState implements SimulationBehaviorState {
     @IsValue('treatPatientsBehavior' as const)
@@ -53,24 +78,25 @@ export class TreatPatientsBehaviorState implements SimulationBehaviorState {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
 
+    @Type(() => TreatPatientsIntervals)
+    @ValidateNested()
+    public readonly intervals: TreatPatientsIntervals =
+        TreatPatientsIntervals.create(
+            1000 * 10, // 10 seconds
+            1000 * 60 * 2, // 2 minutes
+            1000 * 60 * 5, // 5 minutes
+            1000 * 60 * 10, // 10 minutes
+            1000 * 20 // 20 seconds
+        );
+
     @IsUUID(4, uuidValidationOptions)
     public readonly delayActivityId: UUID | null = null;
 
-    @IsLiteralUnion({
-        unknown: true,
-        counted: true,
-        triaged: true,
-        secured: true,
-    })
-    public readonly treatmentProgress: TreatmentProgress = 'unknown';
+    @IsUUID(4, uuidValidationOptions)
+    public readonly treatmentActivityId: UUID | null = null;
 
-    /**
-     * The time between automatic treatment reassignments, in milliseconds.
-     * Reassignments might occur more frequent than specified here since changes of patients or available material and personnel trigger an immediate reassignment.
-     */
-    @IsInt()
-    @Min(0)
-    public readonly interval!: number;
+    @IsLiteralUnion(treatmentProgressAllowedValues)
+    public readonly treatmentProgress: TreatmentProgress = 'unknown';
 
     static readonly create = getCreate(this);
 }
@@ -81,16 +107,21 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
         handleEvent(draftState, simulatedRegion, behaviorState, event) {
             switch (event.type) {
                 case 'tickEvent':
-                    if (behaviorState.delayActivityId === null) {
+                    if (
+                        behaviorState.delayActivityId === null &&
+                        (behaviorState.treatmentActivityId === null ||
+                            simulatedRegion.activities[
+                                behaviorState.treatmentActivityId
+                            ] === undefined)
+                    ) {
                         const id = nextUUID(draftState);
                         addActivity(
                             simulatedRegion,
                             DelayEventActivityState.create(
                                 id,
                                 TreatmentsTimerEvent.create(),
-                                // draftState.currentTime + behaviorState.interval
                                 draftState.currentTime +
-                                    progressIntervalMap[
+                                    behaviorState.intervals[
                                         behaviorState.treatmentProgress
                                     ]
                             )
@@ -101,7 +132,7 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                 case 'materialAvailableEvent':
                 case 'newPatientEvent':
                 case 'personnelAvailableEvent':
-                case 'treatmentsTimerEvent':
+                case 'treatmentsTimerEvent': {
                     if (behaviorState.delayActivityId) {
                         if (
                             simulatedRegion.activities[
@@ -118,14 +149,32 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                         behaviorState.delayActivityId = null;
                     }
 
+                    if (
+                        behaviorState.treatmentActivityId &&
+                        simulatedRegion.activities[
+                            behaviorState.treatmentActivityId
+                        ]
+                    ) {
+                        terminateActivity(
+                            draftState,
+                            simulatedRegion,
+                            behaviorState.treatmentActivityId
+                        );
+                        behaviorState.treatmentActivityId = null;
+                    }
+
+                    const id = nextUUID(draftState);
                     addActivity(
                         simulatedRegion,
                         ReassignTreatmentsActivityState.create(
-                            nextUUID(draftState),
-                            behaviorState.id
+                            id,
+                            behaviorState.treatmentProgress,
+                            behaviorState.intervals.countingTimePerPatient
                         )
                     );
+                    behaviorState.treatmentActivityId = id;
                     break;
+                }
                 case 'treatmentProgressChangedEvent':
                     behaviorState.treatmentProgress = event.newProgress;
                     break;

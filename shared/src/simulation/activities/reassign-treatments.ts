@@ -1,4 +1,4 @@
-import { IsUUID } from 'class-validator';
+import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
 import type { Material, Personnel } from '../../models';
 import { Patient, SimulatedRegion } from '../../models';
 import type { PatientStatus, PersonnelType } from '../../models/utils';
@@ -11,10 +11,13 @@ import {
 } from '../../store/action-reducers/utils/calculate-treatments';
 import type { Mutable } from '../../utils';
 import { UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import type { TreatPatientsBehaviorState } from '../behaviors';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
+import {
+    TreatmentProgress,
+    treatmentProgressAllowedValues,
+    sendSimulationEvent,
+} from '../utils';
 import { TreatmentProgressChangedEvent } from '../events';
-import { sendSimulationEvent } from '../utils';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -29,12 +32,26 @@ export class ReassignTreatmentsActivityState
     @IsUUID(4, uuidValidationOptions)
     public readonly id!: UUID;
 
-    @IsUUID(4, uuidValidationOptions)
-    public readonly behaviorId!: UUID;
+    @IsLiteralUnion(treatmentProgressAllowedValues)
+    public readonly treatmentProgress: TreatmentProgress = 'unknown';
 
-    constructor(id: UUID, behaviorId: UUID) {
+    @IsOptional()
+    @IsInt()
+    @Min(0)
+    public readonly countingStartedAt: number | undefined;
+
+    @IsInt()
+    @Min(0)
+    public readonly countingTimePerPatient: number;
+
+    constructor(
+        id: UUID,
+        treatmentProgress: TreatmentProgress,
+        countingTimePerPatient: number
+    ) {
         this.id = id;
-        this.behaviorId = behaviorId;
+        this.treatmentProgress = treatmentProgress;
+        this.countingTimePerPatient = countingTimePerPatient;
     }
 
     static readonly create = getCreate(this);
@@ -44,14 +61,6 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
     {
         activityState: ReassignTreatmentsActivityState,
         tick(draftState, simulatedRegion, activityState, _, terminate) {
-            const treatBehavior = simulatedRegion.behaviors.find(
-                (behavior) => behavior.id === activityState.behaviorId
-            ) as Mutable<TreatPatientsBehaviorState> | undefined;
-
-            if (!treatBehavior) {
-                return;
-            }
-
             const patients = Object.values(draftState.patients).filter(
                 (patient) =>
                     SimulatedRegion.isInSimulatedRegion(
@@ -79,23 +88,22 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
             );
 
             if (personnel.length === 0) {
+                // TODO: A region needs at least one leading personnel that does not do any kind of treatments
                 return;
             }
 
-            switch (treatBehavior.treatmentProgress) {
+            let allowTerminate = true;
+
+            switch (activityState.treatmentProgress) {
                 case 'unknown': {
-                    const finished = count(
-                        draftState,
-                        patients,
-                        personnel,
-                        materials
-                    );
+                    const finished = count(draftState, activityState, patients);
                     if (finished) {
                         sendSimulationEvent(
                             simulatedRegion,
                             TreatmentProgressChangedEvent.create('counted')
                         );
                     }
+                    allowTerminate = finished;
                     break;
                 }
                 case 'counted': {
@@ -122,7 +130,9 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 // Unknown state
             }
 
-            terminate();
+            if (allowTerminate) {
+                terminate();
+            }
         },
     };
 
@@ -173,12 +183,18 @@ function createCateringPersonnel(
  */
 function count(
     draftState: Mutable<ExerciseState>,
-    patients: Mutable<Patient>[],
-    personnel: Mutable<Personnel>[],
-    materials: Mutable<Material>[]
+    activityState: Mutable<ReassignTreatmentsActivityState>,
+    patients: Mutable<Patient>[]
 ): boolean {
-    // TODO: Find a good logic how to count patients and how long it should take
-    return true;
+    if (activityState.countingStartedAt) {
+        return (
+            draftState.currentTime >=
+            activityState.countingTimePerPatient * patients.length
+        );
+    }
+
+    activityState.countingStartedAt = draftState.currentTime;
+    return false;
 }
 
 /**
@@ -283,6 +299,7 @@ function assignTreatments(
 
     patients.forEach((patient) => {
         cateringPersonnel.some((pers) =>
+            // TODO: Maybe we need more than one personnel per patient?
             tryToCaterFor(
                 pers.personnel,
                 pers.catersFor,
