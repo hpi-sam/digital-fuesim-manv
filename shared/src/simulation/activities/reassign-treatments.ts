@@ -176,9 +176,8 @@ function createCateringPersonnel(
 /**
  * Performs the assignment logic for a stage in which the patients have to be counted.
  * @param draftState The state to operate in
+ * @param activityState The state of the current activity
  * @param patients A list of the patients to operate on
- * @param personnel A list of the personnel to operate on
- * @param materials A list of the patients to operate on
  * @returns Whether all patients have been counted
  */
 function count(
