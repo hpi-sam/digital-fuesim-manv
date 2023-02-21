@@ -12,11 +12,12 @@ import {
 import type { Mutable } from '../../utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
+// Do not import from "../utils" since it would cause circular dependencies
 import {
     TreatmentProgress,
     treatmentProgressAllowedValues,
-    sendSimulationEvent,
-} from '../utils';
+} from '../utils/treatment';
+import { sendSimulationEvent } from '../utils/simulated-region';
 import { TreatmentProgressChangedEvent } from '../events';
 import type {
     SimulationActivity,
