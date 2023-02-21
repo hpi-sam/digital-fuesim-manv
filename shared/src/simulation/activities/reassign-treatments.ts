@@ -1,7 +1,6 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
 import type { Material, Personnel } from '../../models';
 import { Patient, SimulatedRegion } from '../../models';
-import type { PatientStatus, PersonnelType } from '../../models/utils';
 import { getCreate } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { CatersFor } from '../../store/action-reducers/utils/calculate-treatments';
@@ -19,6 +18,7 @@ import {
 } from '../utils/treatment';
 import { sendSimulationEvent } from '../utils/simulated-region';
 import { TreatmentProgressChangedEvent } from '../events';
+import { patientPriorities, personnelPriorities } from '../utils/priorities';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -145,23 +145,6 @@ interface CateringPersonnel {
     priority: number;
     catersFor: CatersFor;
 }
-
-const personnelPriorities: { [Key in PersonnelType]: number } = {
-    gf: 0,
-    san: 1,
-    rettSan: 2,
-    notSan: 3,
-    notarzt: 4,
-};
-
-const patientPriorities: { [Key in PatientStatus]: number } = {
-    black: 0,
-    blue: 1,
-    green: 2,
-    yellow: 3,
-    red: 4,
-    white: 5,
-};
 
 function createCateringPersonnel(
     personnel: Mutable<Personnel[]>
