@@ -12,7 +12,7 @@ import type OlMap from 'ol/Map';
 import type { AppState } from 'src/app/state/app.state';
 import type { Store } from '@ngrx/store';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import type { ExerciseStatus, Role } from 'digital-fuesim-manv-shared';
+import type { ExerciseStatus, Role, UUID } from 'digital-fuesim-manv-shared';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type { Pixel } from 'ol/pixel';
 import { featureElementKey } from '../feature-managers/element-manager';
@@ -148,20 +148,11 @@ export class OlMapInteractionsManager {
         droppedFeature: Feature,
         event: TranslateEvent
     ) {
-        // This assumes that the context only holds the Id of the element.
-        // It works because Ids are globally unique
         if (
-            // Check if there is a context
-            this.popupManager.currentlyOpenPopupOptions?.context !==
-                undefined &&
-            // Check if the context holds the Id
-            Object.keys(
-                this.popupManager.currentlyOpenPopupOptions?.context
-            )[0]?.includes('Id') &&
-            // Check if the Id is the Id of the feature that was moved
-            Object.values(
-                this.popupManager.currentlyOpenPopupOptions?.context
-            )[0] === droppedFeature.getId()
+            droppedFeature.getId() !== undefined &&
+            this.popupManager.currentClosingIds.includes(
+                droppedFeature.getId() as UUID
+            )
         ) {
             this.popupManager.closePopup();
         }

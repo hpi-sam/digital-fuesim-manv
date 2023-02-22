@@ -80,9 +80,14 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
             return;
         }
         this.togglePopup$.next(
-            this.popupHelper.getPopupOptions(MapImagePopupComponent, feature, {
-                mapImageId: feature.getId() as UUID,
-            })
+            this.popupHelper.getPopupOptions(
+                MapImagePopupComponent,
+                feature,
+                [feature.getId() as UUID],
+                {
+                    mapImageId: feature.getId() as UUID,
+                }
+            )
         );
     }
 

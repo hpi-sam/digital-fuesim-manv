@@ -177,6 +177,7 @@ export class SimulatedRegionFeatureManager
 
         this.togglePopup$.next({
             component: SimulatedRegionPopupComponent,
+            closingUUIDs: [feature.getId() as UUID],
             context: {
                 simulatedRegionId: feature.getId() as UUID,
             },

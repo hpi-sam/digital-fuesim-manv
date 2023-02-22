@@ -107,9 +107,14 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
         super.onFeatureClicked(event, feature);
 
         this.togglePopup$.next(
-            this.popupHelper.getPopupOptions(PatientPopupComponent, feature, {
-                patientId: feature.getId() as UUID,
-            })
+            this.popupHelper.getPopupOptions(
+                PatientPopupComponent,
+                feature,
+                [feature.getId() as UUID],
+                {
+                    patientId: feature.getId() as UUID,
+                }
+            )
         );
     }
 }

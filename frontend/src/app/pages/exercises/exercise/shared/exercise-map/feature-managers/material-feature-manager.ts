@@ -78,9 +78,14 @@ export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
         super.onFeatureClicked(event, feature);
 
         this.togglePopup$.next(
-            this.popupHelper.getPopupOptions(MaterialPopupComponent, feature, {
-                materialId: feature.getId() as UUID,
-            })
+            this.popupHelper.getPopupOptions(
+                MaterialPopupComponent,
+                feature,
+                [feature.getId() as UUID],
+                {
+                    materialId: feature.getId() as UUID,
+                }
+            )
         );
     }
 }

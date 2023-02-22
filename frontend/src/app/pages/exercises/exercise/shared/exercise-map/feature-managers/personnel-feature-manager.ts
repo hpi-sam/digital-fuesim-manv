@@ -79,9 +79,14 @@ export class PersonnelFeatureManager extends MoveableFeatureManager<Personnel> {
         super.onFeatureClicked(event, feature);
 
         this.togglePopup$.next(
-            this.popupHelper.getPopupOptions(PersonnelPopupComponent, feature, {
-                personnelId: feature.getId() as UUID,
-            })
+            this.popupHelper.getPopupOptions(
+                PersonnelPopupComponent,
+                feature,
+                [feature.getId() as UUID],
+                {
+                    personnelId: feature.getId() as UUID,
+                }
+            )
         );
     }
 }
