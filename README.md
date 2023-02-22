@@ -180,7 +180,27 @@ Look at the [benchmark readme](./benchmark/README.md) for more information.
     // TODO [typescript@>=4.9]: Use satisfies https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator
     ```
 
-# Architecture
+## Releases
+
+### Versions
+
+Version numbers follow the pattern `${major}.${minor}.${patch}`. `major`, `minor` and `patch` are decimal numbers without leading zeroes, similar to [SemVer](https://semver.org/). But since we do not have a public API, we do not adhere to SemVer.  
+The major version is updated for breaking changes, i.e. old state exports of configured exercises that have never been started, cannot be imported.  
+The minor version is updated with every release on `main`. State exports of configured exercises from older minor versions that have never been started must successfully import and started exercises should be importable and behave consistently with older versions, although this is not strictly required.  
+The patch versions is incremented if and only if critical issues on `main` are being fixed during a milestone.
+
+Every time a part of the version number is updated, all numbers to the right are reset to zero.
+For each new release, pull requests both to `main` and `dev` are created from the same `release/` branch. For scheduled releases, such PRs are created by the `Create Release PR` workflow.
+
+### Workflows
+
+With every significant PR into `dev`, the change must be briefly described in [CHANGELOG.md](./CHANGELOG.md). Pay attention to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+The `Create Release PR` workflow accepts a new version number and prepares two PRs, one into `dev` and one into `main`. It also updates the version number in all relevant source files and moves the `Unreleased` section in [CHANGELOG.md](./CHANGELOG.md) to a release heading, creating a new `Unreleased` section.
+
+Upon pushing to `main` or `dev`, GitHub Actions will build and push docker containers to Docker Hub tagged `latest` and `dev`. `latest` is additionally tagged with the current version number on `main` and a GitHub release is created.
+
+## Architecture
 
 This repository is a monorepo that consists of the following packages:
 
@@ -193,31 +213,31 @@ Each package has its own `README.md` file with additional documentation. Please 
 
 One server can host multiple _exercises_. Multiple clients can join an exercise. A client can only join one exercise at a time.
 
-## State management and synchronization
+### State management and synchronization
 
 This is a real-time application.
 
 Each client is connected to the server via a [WebSocket connection](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API). This means you can send and listen for events over a two-way communication channel.
 Via [socket.io](https://socket.io/docs) it is also possible to make use of a more classic request-response API via [acknowledgments](https://socket.io/docs/v4/emitting-events/#acknowledgements).
 
-### State, actions and reducers
+#### State, actions and reducers
 
 We borrow these core concepts from [Redux](https://redux.js.org/).
 
-#### What is an immutable JSON object?
+##### What is an immutable JSON object?
 
 A JSON object is an object whose properties are only the primitives `string`, `number`, `boolean` or `null` or another JSON object or an array of any of these (only state - no `functions`).
 Any object reference can't occur more than once anywhere in a JSON object (including nested objects). This means especially that no circular references are possible.
 
 [An immutable object is an object whose state cannot be modified after it is created](https://en.wikipedia.org/wiki/Immutable_object). In the code immutability is conveyed via typescripts [readonly](https://www.typescriptlang.org/docs/handbook/2/objects.html#readonly-properties) and the helper type `Immutable<T>`.
 
-#### State
+##### State
 
 A state is an immutable JSON object. Each client as well as the server has a global state for an exercise. The single point of truth for all states of an exercise is the server. All these states should be synchronized.
 
 You can find the exercise state [here](./shared/src/state.ts).
 
-#### Action
+##### Action
 
 An action is an immutable JSON object that describes what should change in a state. The changes described by each action are [atomic](<https://en.wikipedia.org/wiki/Atomicity_(database_systems)>) - this means either all or none of the changes described by an action are applied.
 
@@ -225,7 +245,7 @@ Actions cannot be applied in parallel. The order of actions is important.
 
 It is a bad practice to encode part of the state in the action (or values derived/calculated from it). Instead, you should only read the state in the accompanying reducer.
 
-#### Reducer
+##### Reducer
 
 A reducer is a [pure function](https://en.wikipedia.org/wiki/Pure_function) (no side effects!) that takes a state and an action of a specific type and returns a new state where the changes described in the action are applied. A state can only be modified by a reducer.
 
@@ -233,7 +253,7 @@ To be able to apply certain optimizations, it is advisable (but not necessary or
 
 You can find all exercise actions and reducers [here](./shared/src/store/action-reducers). Please orient yourself on the already implemented actions, and don't forget to register them in [shared/src/store/action-reducers/action-reducers.ts](shared/src/store/action-reducers/action-reducers.ts)
 
-### Immutability
+#### Immutability
 
 It isn't necessary to copy the whole immutable object by value if it should be updated. Instead, only the objects that were modified should be shallow copied recursively. [Immer](https://immerjs.github.io/immer/) provides a simple way to do this.
 
@@ -242,7 +262,7 @@ Because the state is immutable and reducers (should) only update the properties 
 To save a state it is enough to save its reference. Therefore it is very performant as well.
 If the state would have to be changed, a new reference is created as the state is immutable.
 
-### Large values (WIP)
+#### Large values (WIP)
 
 Large values (images, large text, binary, etc.) are not directly stored in the state. Instead, the store only contains UUIDs that identify the blob. The blob can be retrieved via a separate (yet to be implemented) REST API.
 
@@ -252,7 +272,7 @@ If an action would add a new blobId to the state, the blob should have previousl
 
 A blob should only be downloaded on demand (lazy) and cached.
 
-### Synchronisation
+#### Synchronisation
 
 1. A client gets a snapshot of the state from the server via `getState`.
 2. Any time an action is applied on the server, it is sent to all clients via `performAction` and applied to them too. Due to the maintained packet ordering via a WebSocket and the fact that the synchronization of the state in the backend works synchronously, it is impossible for a client to receive actions out of order or receive actions already included in the state received by `getState`.
@@ -260,7 +280,7 @@ A blob should only be downloaded on demand (lazy) and cached.
 4. If the proposal was accepted, the action is applied on the server and sent to all clients via `performAction`.
 5. The server responds to a proposal with a response that indicates a success or rejection via an [acknowledgment](https://socket.io/docs/v4/emitting-events/#acknowledgements). A successful response is always sent after the `performAction` was broadcasted.
 
-### Optimistic updates
+#### Optimistic updates
 
 A consequence of the synchronization strategy described before is that it takes one roundtrip from the client to the server and back to get the correct state on the client that initiated the action. This can lead to a bad user experience because of high latency.
 
@@ -272,7 +292,7 @@ The state in the frontend is not guaranteed to be correct. It is only guaranteed
 
 If you need to read from the state to change it, you should do this inside the action reducer because the `currentState` passed into a reducer is always guaranteed to be correct.
 
-### Performance considerations
+#### Performance considerations
 
 -   Currently, every client maintains the whole state, and every action is sent to all clients. There is no way to only subscribe to a part of the state and only receive updates for that part.
 
