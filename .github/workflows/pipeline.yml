@@ -353,6 +353,10 @@ jobs:
                   lfs: 'true'
             - name: checkoutLFS
               uses: actions/checkout@v3
+            - name: Extract version
+              run: |
+                  versionName=`jq -jM .version package.json`
+                  echo "version_name=$versionName" >> "$GITHUB_ENV"
             - run: git lfs pull
             # Source: https://docs.docker.com/ci-cd/github-actions/
             - name: Login to docker
@@ -366,4 +370,33 @@ jobs:
                   context: .
                   file: docker/Dockerfile
                   push: true
-                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dfm:latest
+                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dfm:latest , ${{ secrets.DOCKER_HUB_USERNAME }}/dfm:${{ env.version_name }}
+
+    release-main:
+        timeout-minutes: 2
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+        needs: [test, cypress]
+        steps:
+            - uses: actions/checkout@v3
+            - name: Initialize mandatory git config
+              run: |
+                  git config user.name "GitHub Actions"
+                  git config user.email noreply@github.com
+            - name: Extract version
+              run: |
+                  versionName=`jq -jM .version package.json`
+                  echo "VERSION_NAME=$versionName" >> "$GITHUB_ENV"
+            - name: Extract release notes
+              id: extract_release_notes
+              uses: ffurrer2/extract-release-notes@v1
+            - name: Create Release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: v${{ env.VERSION_NAME }}
+                  release_name: v${{ env.VERSION_NAME }}
+                  body: ${{ steps.extract_release_notes.outputs.release_notes }}
+                  draft: false
+                  prerelease: false
