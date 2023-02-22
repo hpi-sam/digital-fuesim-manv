@@ -146,7 +146,7 @@ export class PopupManager {
 }
 
 /**
- * {@link closingUUIDs} is an array containing the UUIDs of elements that when clicked shall close the pop up
+ * {@link closingUUIDs} is an array containing the UUIDs of elements that when clicked shall close the pop-up
  */
 export interface OpenPopupOptions<
     Component extends PopupComponent,
