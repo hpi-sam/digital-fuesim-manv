@@ -148,6 +148,24 @@ export class OlMapInteractionsManager {
         droppedFeature: Feature,
         event: TranslateEvent
     ) {
+        // This assumes that the context only holds the Id of the element.
+        // It works because Ids are globally unique
+        if (
+            // Check if there is a context
+            this.popupManager.currentlyOpenPopupOptions?.context !==
+                undefined &&
+            // Check if the context holds the Id
+            Object.keys(
+                this.popupManager.currentlyOpenPopupOptions?.context
+            )[0]?.includes('Id') &&
+            // Check if the Id is the Id of the feature that was moved
+            Object.values(
+                this.popupManager.currentlyOpenPopupOptions?.context
+            )[0] === droppedFeature.getId()
+        ) {
+            this.popupManager.closePopup();
+        }
+
         this.olMap.forEachFeatureAtPixel(pixel, (droppedOnFeature, layer) => {
             // Skip layer when unset
             if (layer === null) {

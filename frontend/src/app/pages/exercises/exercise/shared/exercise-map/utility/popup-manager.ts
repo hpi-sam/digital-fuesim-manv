@@ -29,7 +29,7 @@ export class PopupManager {
 
     public readonly popupOverlay: Overlay;
     private readonly destroy$ = new Subject<void>();
-    private currentlyOpenPopupOptions?: OpenPopupOptions<any>;
+    public currentlyOpenPopupOptions?: OpenPopupOptions<any>;
     private popupsEnabled = true;
 
     constructor(
