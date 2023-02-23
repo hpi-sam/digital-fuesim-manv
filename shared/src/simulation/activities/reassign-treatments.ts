@@ -148,14 +148,28 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
         },
     };
 
+interface CateringMaterial {
+    material: Mutable<Material>;
+    catersFor: CatersFor;
+}
+
 interface CateringPersonnel {
     personnel: Mutable<Personnel>;
     priority: number;
     catersFor: CatersFor;
 }
 
+function createCateringMaterial(
+    materials: Mutable<Material>[]
+): CateringMaterial[] {
+    return materials.map((material) => ({
+        material,
+        catersFor: { red: 0, yellow: 0, green: 0 },
+    }));
+}
+
 function createCateringPersonnel(
-    personnel: Mutable<Personnel[]>
+    personnel: Mutable<Personnel>[]
 ): CateringPersonnel[] {
     return personnel.map((pers) => ({
         personnel: pers,
@@ -270,8 +284,9 @@ function assignTreatments(
     draftState: Mutable<ExerciseState>,
     patients: Mutable<Patient>[],
     cateringPersonnel: CateringPersonnel[],
-    materials: Mutable<Material>[] // TODO: What about material? What effect does it have on the patients?
+    materials: Mutable<Material>[]
 ) {
+    const cateringMaterials = createCateringMaterial(materials);
     patients.sort(
         (a, b) =>
             patientPriorities[
@@ -297,6 +312,15 @@ function assignTreatments(
             tryToCaterFor(
                 pers.personnel,
                 pers.catersFor,
+                patient,
+                draftState.configuration.pretriageEnabled,
+                draftState.configuration.bluePatientsEnabled
+            )
+        );
+        cateringMaterials.some((material) =>
+            tryToCaterFor(
+                material.material,
+                material.catersFor,
                 patient,
                 draftState.configuration.pretriageEnabled,
                 draftState.configuration.bluePatientsEnabled
