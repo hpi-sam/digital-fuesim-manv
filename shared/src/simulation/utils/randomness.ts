@@ -1,6 +1,6 @@
 /* eslint-disable no-bitwise */
 import { IsInt, Min, ValidateIf } from 'class-validator';
-import hash from 'hash.js';
+import { sha256 } from '@noble/hashes/sha256';
 import { v4 } from 'uuid';
 import { getCreate } from '../../models/utils';
 import type { ExerciseState } from '../../state';
@@ -62,16 +62,9 @@ export function nextInt(
  * @param draftState The exercise state where the pseudo random number generator state is stored
  * @returns An array of length 32 (specific to sha256) of numbers from 0-255
  */
-function advance(draftState: Mutable<ExerciseState>): number[] {
+function advance(draftState: Mutable<ExerciseState>): Uint8Array {
     const state = draftState.randomState;
-
-    const result = hash
-        .sha256()
-        .update(draftState.id)
-        .update(state.counter.toString())
-        .digest()
-        .map((b) => b & 0xff);
-
+    const result = sha256(`${draftState.id}${state.counter.toString()}`);
     state.counter++;
     return result;
 }
