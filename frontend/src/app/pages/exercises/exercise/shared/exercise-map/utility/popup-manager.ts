@@ -32,14 +32,11 @@ export class PopupManager {
     private readonly destroy$ = new Subject<void>();
     private currentlyOpenPopupOptions?: OpenPopupOptions<any>;
     private popupsEnabled = true;
-
-    private _currentClosingIds: UUID[] = [];
-
     public get currentClosingIds(): UUID[] {
-        return this._currentClosingIds;
-    }
-    public set currentClosingIds(value: UUID[]) {
-        this._currentClosingIds = value;
+        if (this.currentlyOpenPopupOptions === undefined) {
+            return [];
+        }
+        return this.currentlyOpenPopupOptions?.closingUUIDs;
     }
 
     constructor(
@@ -113,7 +110,6 @@ export class PopupManager {
             return;
         }
         this.currentlyOpenPopupOptions = options;
-        this.currentClosingIds = options.closingUUIDs;
         this.popoverContent.clear();
         const componentRef: ComponentRef<PopupComponent> =
             this.popoverContent.createComponent(options.component);
