@@ -36,7 +36,7 @@ export class PopupManager {
         if (this.currentlyOpenPopupOptions === undefined) {
             return [];
         }
-        return this.currentlyOpenPopupOptions?.closingUUIDs;
+        return this.currentlyOpenPopupOptions.closingUUIDs;
     }
 
     constructor(
