@@ -3,8 +3,8 @@ import { getCreate } from '../../models/utils';
 import { UUID, uuid, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { UnloadVehicleActivityState } from '../activities/unload-vehicle';
+import { addActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
-import { addActivity } from '../utils/simulated-region';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,

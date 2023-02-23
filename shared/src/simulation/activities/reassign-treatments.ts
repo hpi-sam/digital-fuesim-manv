@@ -1,7 +1,7 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
 import type { Material, Personnel } from '../../models';
-import { Patient, SimulatedRegion } from '../../models';
-import { getCreate } from '../../models/utils';
+import { Patient } from '../../models';
+import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { CatersFor } from '../../store/action-reducers/utils/calculate-treatments';
 import {
@@ -16,9 +16,9 @@ import {
     TreatmentProgress,
     treatmentProgressAllowedValues,
 } from '../utils/treatment';
-import { sendSimulationEvent } from '../utils/simulated-region';
 import { TreatmentProgressChangedEvent } from '../events';
 import { patientPriorities, personnelPriorities } from '../utils/priorities';
+import { sendSimulationEvent } from '../events/utils';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -67,24 +67,16 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
         tick(draftState, simulatedRegion, activityState, _, terminate) {
             const patients = Object.values(draftState.patients).filter(
                 (patient) =>
-                    SimulatedRegion.isInSimulatedRegion(
-                        simulatedRegion,
-                        patient
-                    )
+                    isInSpecificSimulatedRegion(patient, simulatedRegion.id)
             );
             const personnel = Object.values(draftState.personnel).filter(
                 (pers) =>
-                    SimulatedRegion.isInSimulatedRegion(
-                        simulatedRegion,
-                        pers
-                    ) && pers.personnelType !== 'gf'
+                    isInSpecificSimulatedRegion(pers, simulatedRegion.id) &&
+                    pers.personnelType !== 'gf'
             );
             const materials = Object.values(draftState.materials).filter(
                 (material) =>
-                    SimulatedRegion.isInSimulatedRegion(
-                        simulatedRegion,
-                        material
-                    )
+                    isInSpecificSimulatedRegion(material, simulatedRegion.id)
             );
 
             patients.forEach((patient) =>

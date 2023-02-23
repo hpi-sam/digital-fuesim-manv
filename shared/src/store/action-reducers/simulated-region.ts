@@ -13,13 +13,13 @@ import {
 } from '../../models/utils/position/position-helpers-mutable';
 import {
     ExerciseSimulationBehaviorState,
-    sendSimulationEvent,
     simulationBehaviorTypeOptions,
     VehicleArrivedEvent,
     PersonnelAvailableEvent,
     NewPatientEvent,
     MaterialAvailableEvent,
 } from '../../simulation';
+import { sendSimulationEvent } from '../../simulation/events/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';

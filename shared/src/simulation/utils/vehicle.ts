@@ -1,19 +1,23 @@
-import { SimulatedRegion, Vehicle } from '../../models';
-import { SimulatedRegionPosition } from '../../models/utils';
+import type { SimulatedRegion, Vehicle } from '../../models';
+import {
+    isInSpecificSimulatedRegion,
+    isInSpecificVehicle,
+    SimulatedRegionPosition,
+} from '../../models/utils';
 import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import { getElement } from '../../store/action-reducers/utils';
 import type { Mutable } from '../../utils';
 import { MaterialAvailableEvent } from '../events/material-available';
 import { PersonnelAvailableEvent } from '../events/personnel-available';
-import { sendSimulationEvent } from './simulated-region';
+import { sendSimulationEvent } from '../events/utils';
 
 export function unloadVehicle(
     draftState: Mutable<ExerciseState>,
     simulatedRegion: Mutable<SimulatedRegion>,
     vehicle: Mutable<Vehicle>
 ) {
-    if (!SimulatedRegion.isInSimulatedRegion(simulatedRegion, vehicle)) {
+    if (!isInSpecificSimulatedRegion(vehicle, simulatedRegion.id)) {
         console.error(
             `Trying to unload a vehicle with id ${vehicle.id} into simulated region with id ${simulatedRegion.id} but the vehicle is not in that region.`
         );
@@ -29,7 +33,7 @@ export function unloadVehicle(
     for (const { uuidSet, elementType } of loadedElements) {
         for (const elementId of Object.keys(uuidSet)) {
             const element = getElement(draftState, elementType, elementId);
-            if (Vehicle.isInVehicle(vehicle, element)) {
+            if (isInSpecificVehicle(element, vehicle.id)) {
                 changePositionWithId(
                     elementId,
                     SimulatedRegionPosition.create(simulatedRegion.id),

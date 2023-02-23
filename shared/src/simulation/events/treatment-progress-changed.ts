@@ -1,6 +1,9 @@
 import { getCreate } from '../../models/utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import { TreatmentProgress, treatmentProgressAllowedValues } from '../utils';
+import {
+    TreatmentProgress,
+    treatmentProgressAllowedValues,
+} from '../utils/treatment';
 import type { SimulationEvent } from './simulation-event';
 
 export class TreatmentProgressChangedEvent implements SimulationEvent {

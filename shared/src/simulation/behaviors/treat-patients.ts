@@ -11,13 +11,13 @@ import { uuid, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import { DelayEventActivityState } from '../activities';
 import { ReassignTreatmentsActivityState } from '../activities/reassign-treatments';
+import { addActivity, terminateActivity } from '../activities/utils';
 import { TreatmentsTimerEvent } from '../events/treatments-timer-event';
+import { nextUUID } from '../utils/randomness';
 import {
-    nextUUID,
     TreatmentProgress,
     treatmentProgressAllowedValues,
-} from '../utils';
-import { addActivity, terminateActivity } from '../utils/simulated-region';
+} from '../utils/treatment';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,

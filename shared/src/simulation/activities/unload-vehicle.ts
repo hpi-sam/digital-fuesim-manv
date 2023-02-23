@@ -1,6 +1,5 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
-import { SimulatedRegion } from '../../models';
-import { getCreate } from '../../models/utils';
+import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { unloadVehicle } from '../utils/vehicle';
@@ -59,7 +58,7 @@ export const unloadVehicleActivity: SimulationActivity<UnloadVehicleActivityStat
             const vehicle = draftState.vehicles[activityState.vehicleId];
             if (
                 !vehicle ||
-                !SimulatedRegion.isInSimulatedRegion(simulatedRegion, vehicle)
+                !isInSpecificSimulatedRegion(vehicle, simulatedRegion.id)
             ) {
                 // The vehicle has left the region or was deleted for some reason. Cancel unloading.
                 terminate();

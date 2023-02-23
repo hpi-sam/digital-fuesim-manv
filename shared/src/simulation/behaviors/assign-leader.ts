@@ -1,6 +1,5 @@
 import { IsOptional, IsUUID } from 'class-validator';
-import { SimulatedRegion } from '../../models';
-import { getCreate } from '../../models/utils';
+import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
 import { UUID, uuid, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { personnelPriorities } from '../utils/priorities';
@@ -34,10 +33,8 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
             if (event.type === 'tickEvent') {
                 const personnel = Object.values(draftState.personnel).filter(
                     (pers) =>
-                        SimulatedRegion.isInSimulatedRegion(
-                            simulatedRegion,
-                            pers
-                        ) && pers.personnelType !== 'gf'
+                        isInSpecificSimulatedRegion(pers, simulatedRegion.id) &&
+                        pers.personnelType !== 'gf'
                 );
 
                 if (personnel.length === 0) {
