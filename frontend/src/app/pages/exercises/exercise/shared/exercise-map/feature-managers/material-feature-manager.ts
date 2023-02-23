@@ -1,4 +1,4 @@
-import type { Type, NgZone } from '@angular/core';
+import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { Material, UUID } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
@@ -21,14 +21,12 @@ export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
     public register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisibleMaterials),
             changePopup$,
             destroy$,
-            ngZone,
             mapInteractionsManager
         );
     }
