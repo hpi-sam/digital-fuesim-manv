@@ -39,13 +39,30 @@
             </span>
         </div>
 
-        <button
-            (click)="unloadVehicle()"
-            [disabled]="vehicleIsCompletelyUnloaded$ | async"
-            class="btn btn-outline-primary"
-        >
-            <i class="bi-box-arrow-left"></i>
-            Alle aussteigen
-        </button>
+        <div class="btn-group">
+            <button
+                (click)="unloadVehicle()"
+                [disabled]="
+                    (vehicleLoadState$ | async) === 'completelyUnloaded'
+                "
+                class="btn btn-outline-primary"
+            >
+                <i class="bi-box-arrow-left"></i>
+                Alle aussteigen
+            </button>
+            <button
+                (click)="loadVehicle()"
+                [disabled]="(vehicleLoadState$ | async) === 'completelyLoaded'"
+                class="btn btn-outline-primary"
+            >
+                <i class="bi-box-arrow-in-right"></i>
+                Alle einsteigen
+            </button>
+        </div>
+
+        <p>
+            Personal, das sich gerade im Transfer befindet, kann nicht
+            einsteigen.
+        </p>
     </div>
 </ng-container>

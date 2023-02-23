@@ -12,7 +12,7 @@ import type OlMap from 'ol/Map';
 import type { AppState } from 'src/app/state/app.state';
 import type { Store } from '@ngrx/store';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import type { ExerciseStatus, Role } from 'digital-fuesim-manv-shared';
+import type { ExerciseStatus, Role, UUID } from 'digital-fuesim-manv-shared';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type { Pixel } from 'ol/pixel';
 import { featureElementKey } from '../feature-managers/element-manager';
@@ -148,6 +148,15 @@ export class OlMapInteractionsManager {
         droppedFeature: Feature,
         event: TranslateEvent
     ) {
+        if (
+            droppedFeature.getId() !== undefined &&
+            this.popupManager.currentClosingIds.includes(
+                droppedFeature.getId() as UUID
+            )
+        ) {
+            this.popupManager.closePopup();
+        }
+
         this.olMap.forEachFeatureAtPixel(pixel, (droppedOnFeature, layer) => {
             // Skip layer when unset
             if (layer === null) {
