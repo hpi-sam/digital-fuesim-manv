@@ -5,7 +5,6 @@ import {
     currentCoordinatesOf,
     isInTransfer,
     isInVehicle,
-    isNotInTransfer,
     isNotOnMap,
     MapCoordinates,
     MapPosition,

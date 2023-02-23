@@ -2,12 +2,10 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { SimulatedRegion } from '../../models';
 import {
-    isNotInVehicle,
     MapCoordinates,
     MapPosition,
     SimulatedRegionPosition,
     Size,
-    VehiclePosition,
 } from '../../models/utils';
 import {
     changePosition,
