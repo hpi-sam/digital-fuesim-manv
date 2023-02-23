@@ -10,7 +10,14 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import { freeze } from 'immer';
-import { filter, pairwise, Subject, switchMap, takeUntil } from 'rxjs';
+import {
+    filter,
+    pairwise,
+    Subject,
+    switchMap,
+    takeUntil,
+    withLatestFrom,
+} from 'rxjs';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import { handleChanges } from '../shared/functions/handle-changes';
@@ -24,6 +31,7 @@ import {
 import { selectExerciseStateMode } from '../state/application/selectors/application.selectors';
 import {
     selectClients,
+    selectCurrentTime,
     selectExerciseState,
 } from '../state/application/selectors/exercise.selectors';
 import {
@@ -243,10 +251,15 @@ export class ExerciseService {
                         !client.isInWaitingRoom
                 ),
                 switchMap((client) => this.store.select(selectVisibleVehicles)),
+                withLatestFrom(this.store.select(selectCurrentTime)),
                 pairwise(),
                 takeUntil(this.stopNotifications$)
             )
-            .subscribe(([oldVehicles, newVehicles]) => {
+            .subscribe(([[oldVehicles, oldTime], [newVehicles, newTime]]) => {
+                // Do not trigger the message if the vehicle was removed and added again in the same second
+                if (oldTime >= newTime) {
+                    return;
+                }
                 handleChanges(oldVehicles, newVehicles, {
                     createHandler: (newVehicle) => {
                         this.messageService.postMessage({
