@@ -141,6 +141,7 @@ export class ViewportFeatureManager
 
         this.togglePopup$.next({
             component: ViewportPopupComponent,
+            closingUUIDs: [feature.getId() as UUID],
             context: {
                 viewportId: feature.getId() as UUID,
             },
