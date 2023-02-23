@@ -1,9 +1,5 @@
-import type { Vehicle } from '../../../models';
-import {
-    isInVehicle,
-    isNotInTransfer,
-    VehiclePosition,
-} from '../../../models/utils';
+import { Vehicle } from '../../../models';
+import { isNotInTransfer, VehiclePosition } from '../../../models/utils';
 import {
     changePosition,
     changePositionWithId,
@@ -24,12 +20,18 @@ export function isCompletelyLoaded(
     vehicle: Mutable<Vehicle>
 ) {
     const materialsLoaded = Object.keys(vehicle.materialIds).map((materialId) =>
-        isInVehicle(getElement(draftState, 'material', materialId))
+        Vehicle.isInVehicle(
+            vehicle,
+            getElement(draftState, 'material', materialId)
+        )
     );
 
     const personnelLoaded = Object.keys(vehicle.personnelIds).map(
         (personnelId) =>
-            isInVehicle(getElement(draftState, 'personnel', personnelId))
+            Vehicle.isInVehicle(
+                vehicle,
+                getElement(draftState, 'personnel', personnelId)
+            )
     );
 
     return (

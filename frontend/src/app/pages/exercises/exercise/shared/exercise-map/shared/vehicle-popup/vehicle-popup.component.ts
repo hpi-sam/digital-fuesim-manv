@@ -1,8 +1,8 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { UUID, Vehicle } from 'digital-fuesim-manv-shared';
-import { isInVehicle } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import { Vehicle } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map, switchMap } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -47,21 +47,33 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                 ).map((materialId) =>
                     this.store
                         .select(createSelectMaterial(materialId))
-                        .pipe(map((material) => isInVehicle(material)))
+                        .pipe(
+                            map((material) =>
+                                Vehicle.isInVehicle(_vehicle, material)
+                            )
+                        )
                 );
                 const personnelAreInVehicle$ = Object.keys(
                     _vehicle.personnelIds
                 ).map((personnelId) =>
                     this.store
                         .select(createSelectPersonnel(personnelId))
-                        .pipe(map((personnel) => isInVehicle(personnel)))
+                        .pipe(
+                            map((personnel) =>
+                                Vehicle.isInVehicle(_vehicle, personnel)
+                            )
+                        )
                 );
                 const patientsAreInVehicle$ = Object.keys(
                     _vehicle.patientIds
                 ).map((patientId) =>
                     this.store
                         .select(createSelectPatient(patientId))
-                        .pipe(map((patient) => isInVehicle(patient)))
+                        .pipe(
+                            map((patient) =>
+                                Vehicle.isInVehicle(_vehicle, patient)
+                            )
+                        )
                 );
                 return combineLatest([
                     ...materialsAreInVehicle$,
