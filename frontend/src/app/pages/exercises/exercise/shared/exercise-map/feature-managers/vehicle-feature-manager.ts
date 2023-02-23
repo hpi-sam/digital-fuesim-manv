@@ -1,4 +1,4 @@
-import type { Type, NgZone } from '@angular/core';
+import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type {
     UUID,
@@ -28,14 +28,12 @@ export class VehicleFeatureManager extends MoveableFeatureManager<Vehicle> {
     public register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisibleVehicles),
             changePopup$,
             destroy$,
-            ngZone,
             mapInteractionsManager
         );
     }
