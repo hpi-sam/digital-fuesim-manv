@@ -1,9 +1,11 @@
 import type { Type } from 'class-transformer';
 import { SimulationBehaviorState } from './simulation-behavior';
+import { assignLeaderBehavior } from './assign-leader';
 import { treatPatientsBehavior } from './treat-patients';
 import { unloadArrivingVehiclesBehavior } from './unload-arrived-vehicles';
 
 export const simulationBehaviors = {
+    assignLeaderBehavior,
     treatPatientsBehavior,
     unloadArrivingVehiclesBehavior,
 };

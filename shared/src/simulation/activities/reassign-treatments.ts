@@ -19,6 +19,7 @@ import {
 import { TreatmentProgressChangedEvent } from '../events';
 import { patientPriorities, personnelPriorities } from '../utils/priorities';
 import { sendSimulationEvent } from '../events/utils';
+import type { AssignLeaderBehaviorState } from '../behaviors/assign-leader';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -84,9 +85,24 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
             );
 
             if (personnel.length === 0) {
-                // TODO: A region needs at least one leading personnel that does not do any kind of treatments
                 return;
             }
+
+            const leaderId = (
+                simulatedRegion.behaviors.find(
+                    (behavior) => behavior.type === 'assignLeaderBehavior'
+                ) as AssignLeaderBehaviorState
+            )?.leaderId;
+
+            if (!leaderId) {
+                return;
+            }
+
+            // The leader does not treat patients
+            personnel.splice(
+                personnel.findIndex((pers) => pers.id === leaderId),
+                1
+            );
 
             let allowTerminate = true;
 
