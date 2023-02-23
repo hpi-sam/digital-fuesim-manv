@@ -28,7 +28,7 @@ export interface CatersFor {
 /**
  * @returns whether a material or personnel could treat a patient with {@link status} if it already {@link catersFor} patients
  */
-function couldCaterFor(
+export function couldCaterFor(
     status: Exclude<PatientStatus, 'white'>,
     cateringElement: Mutable<Material | Personnel>,
     catersFor: Mutable<CatersFor>

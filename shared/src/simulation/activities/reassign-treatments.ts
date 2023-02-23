@@ -1,10 +1,12 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
 import type { Material, Personnel } from '../../models';
 import { Patient } from '../../models';
+import type { PatientStatus, PersonnelType } from '../../models/utils';
 import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { CatersFor } from '../../store/action-reducers/utils/calculate-treatments';
 import {
+    couldCaterFor,
     removeTreatmentsOfElement,
     tryToCaterFor,
 } from '../../store/action-reducers/utils/calculate-treatments';
@@ -270,7 +272,106 @@ function treat(
     );
 }
 
+function groupBy<T, K extends number | string | symbol>(
+    array: T[],
+    keySelector: (t: T) => K
+): { [Key in K]: T[] } {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const map = {} as { [Key in K]: T[] };
+
+    array.forEach((element) => {
+        const key = keySelector(element);
+
+        if (!map[key]) {
+            map[key] = [];
+        }
+
+        map[key].push(element);
+    });
+
+    return map;
+}
+
+function hasNoTreatments(cateringPersonnel: CateringPersonnel): boolean {
+    return (
+        cateringPersonnel.catersFor.red === 0 &&
+        cateringPersonnel.catersFor.yellow === 0 &&
+        cateringPersonnel.catersFor.green === 0
+    );
+}
+
+function sumOfTreatments(cateringPersonnel: CateringPersonnel): number {
+    return (
+        cateringPersonnel.catersFor.red +
+        cateringPersonnel.catersFor.yellow +
+        cateringPersonnel.catersFor.green
+    );
+}
+
+function findAssignablePersonnel(
+    groupedPersonnel: { [Key in PersonnelType]: CateringPersonnel[] },
+    minType: PersonnelType,
+    patientStatus: Exclude<PatientStatus, 'white'>,
+    maxPatients: number
+): { personnel: CateringPersonnel; isExclusive: boolean } | undefined {
+    const exclusivePersonnel = groupedPersonnel[minType].find((personnel) =>
+        hasNoTreatments(personnel)
+    );
+
+    if (exclusivePersonnel) {
+        return { personnel: exclusivePersonnel, isExclusive: true };
+    }
+
+    const availablePersonnel = groupedPersonnel[minType].find(
+        (personnel) =>
+            sumOfTreatments(personnel) < maxPatients &&
+            couldCaterFor(
+                patientStatus,
+                personnel.personnel,
+                personnel.catersFor
+            )
+    );
+
+    if (availablePersonnel) {
+        return { personnel: availablePersonnel, isExclusive: false };
+    }
+
+    switch (minType) {
+        case 'gf':
+            return findAssignablePersonnel(
+                groupedPersonnel,
+                'san',
+                patientStatus,
+                maxPatients
+            );
+        case 'san':
+            return findAssignablePersonnel(
+                groupedPersonnel,
+                'rettSan',
+                patientStatus,
+                maxPatients
+            );
+        case 'rettSan':
+            return findAssignablePersonnel(
+                groupedPersonnel,
+                'notSan',
+                patientStatus,
+                maxPatients
+            );
+        case 'notSan':
+            return findAssignablePersonnel(
+                groupedPersonnel,
+                'notarzt',
+                patientStatus,
+                maxPatients
+            );
+        case 'notarzt':
+            return undefined;
+    }
+}
+
 /**
+ * TODO: Update this comment to reflect the new behavior
  * Performs the actual assignment of personnel to patients.
  * The patients will be matched to personnel by sorting patients based on their triage and personnel based on their skills and then starting from the most injured patient and the most skilled personnel.
  * @param draftState The state to operate in
@@ -286,6 +387,111 @@ function assignTreatments(
     cateringPersonnel: CateringPersonnel[],
     materials: Mutable<Material>[]
 ) {
+    const groupedPatients = groupBy(patients, (patient) =>
+        Patient.getVisibleStatus(
+            patient,
+            draftState.configuration.pretriageEnabled,
+            draftState.configuration.bluePatientsEnabled
+        )
+    );
+
+    const groupedPersonnel = groupBy(
+        cateringPersonnel,
+        (personnel) => personnel.personnel.personnelType
+    );
+
+    groupedPatients.red.forEach((patient) => {
+        const notSanResult = findAssignablePersonnel(
+            groupedPersonnel,
+            'notSan',
+            'red',
+            2
+        );
+
+        if (notSanResult) {
+            tryToCaterFor(
+                notSanResult.personnel.personnel,
+                notSanResult.personnel.catersFor,
+                patient,
+                draftState.configuration.pretriageEnabled,
+                draftState.configuration.bluePatientsEnabled
+            );
+        }
+
+        const rettSanResult = findAssignablePersonnel(
+            groupedPersonnel,
+            'rettSan',
+            'red',
+            2
+        );
+
+        if (rettSanResult) {
+            tryToCaterFor(
+                rettSanResult.personnel.personnel,
+                rettSanResult.personnel.catersFor,
+                patient,
+                draftState.configuration.pretriageEnabled,
+                draftState.configuration.bluePatientsEnabled
+            );
+        }
+
+        if (notSanResult?.isExclusive && rettSanResult?.isExclusive) {
+            // TODO: Save that this patient is secure to check for overall security later
+        }
+    });
+
+    groupedPatients.yellow.forEach((patient) => {
+        const rettSanResult = findAssignablePersonnel(
+            groupedPersonnel,
+            'rettSan',
+            'yellow',
+            2
+        );
+
+        if (rettSanResult) {
+            tryToCaterFor(
+                rettSanResult.personnel.personnel,
+                rettSanResult.personnel.catersFor,
+                patient,
+                draftState.configuration.pretriageEnabled,
+                draftState.configuration.bluePatientsEnabled
+            );
+
+            if (rettSanResult.isExclusive) {
+                // TODO: Save that this patient is secure to check for overall security later
+            }
+        }
+    });
+
+    groupedPatients.green.forEach((patient) => {
+        // TODO: Green patients must not take treatment capacity from yellow or red patients
+        const sanResult = findAssignablePersonnel(
+            groupedPersonnel,
+            'san',
+            'green',
+            2
+        );
+
+        if (sanResult) {
+            tryToCaterFor(
+                sanResult.personnel.personnel,
+                sanResult.personnel.catersFor,
+                patient,
+                draftState.configuration.pretriageEnabled,
+                draftState.configuration.bluePatientsEnabled
+            );
+
+            if (sanResult.isExclusive) {
+                // TODO: Save that this patient is secure to check for overall security later
+            }
+        }
+    });
+
+    // TODO: Assign material...
+    // TODO: Assign paramedics 4:1-5:1
+
+    return;
+    // TODO: Remove old code
     const cateringMaterials = createCateringMaterial(materials);
     patients.sort(
         (a, b) =>
@@ -308,7 +514,6 @@ function assignTreatments(
 
     patients.forEach((patient) => {
         cateringPersonnel.some((pers) =>
-            // TODO: Maybe we need more than one personnel per patient?
             tryToCaterFor(
                 pers.personnel,
                 pers.catersFor,
