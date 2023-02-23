@@ -8,6 +8,7 @@ import { addMetaPosition16 } from './16-add-meta-position';
 import { addTypeProperty17 } from './17-add-type-property';
 import { replacePositionWithMetaPosition18 } from './18-replace-position-with-meta-position';
 import { renameStartPointTypes19 } from './19-rename-start-point-types';
+import { addSimulationProperties20 } from './20-add-simulation-properties';
 import { updateEocLog3 } from './3-update-eoc-log';
 import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
 import { removeStatistics5 } from './5-remove-statistics';
@@ -61,4 +62,5 @@ export const migrations: {
     17: addTypeProperty17,
     18: replacePositionWithMetaPosition18,
     19: renameStartPointTypes19,
+    20: addSimulationProperties20,
 };

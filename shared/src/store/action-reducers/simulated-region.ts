@@ -13,6 +13,12 @@ import {
     changePosition,
     changePositionWithId,
 } from '../../models/utils/position/position-helpers-mutable';
+import {
+    ExerciseSimulationBehaviorState,
+    sendSimulationEvent,
+    simulationBehaviorTypeOptions,
+    VehicleArrivedEvent,
+} from '../../simulation';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -90,6 +96,18 @@ export class AddElementToSimulatedRegionAction implements Action {
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementToBeAddedId!: UUID;
+}
+
+export class AddBehaviorToSimulatedRegionAction implements Action {
+    @IsValue('[SimulatedRegion] Add Behavior' as const)
+    public readonly type = '[SimulatedRegion] Add Behavior';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @Type(...simulationBehaviorTypeOptions)
+    @ValidateNested()
+    public readonly behaviorState!: ExerciseSimulationBehaviorState;
 }
 
 export namespace SimulatedRegionActionReducers {
@@ -174,9 +192,11 @@ export namespace SimulatedRegionActionReducers {
                 draftState,
                 { simulatedRegionId, elementToBeAddedId, elementToBeAddedType }
             ) => {
-                // Test for existence of the simulated region
-                getElement(draftState, 'simulatedRegion', simulatedRegionId);
-
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
                 const element = getElement(
                     draftState,
                     elementToBeAddedType,
@@ -198,6 +218,31 @@ export namespace SimulatedRegionActionReducers {
                     draftState
                 );
 
+                if (element.type === 'vehicle') {
+                    sendSimulationEvent(
+                        simulatedRegion,
+                        VehicleArrivedEvent.create(
+                            element.id,
+                            draftState.currentTime
+                        )
+                    );
+                }
+
+                return draftState;
+            },
+            rights: 'participant',
+        };
+
+    export const addBehaviorToSimulatedRegion: ActionReducer<AddBehaviorToSimulatedRegionAction> =
+        {
+            action: AddBehaviorToSimulatedRegionAction,
+            reducer: (draftState, { simulatedRegionId, behaviorState }) => {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                simulatedRegion.behaviors.push(cloneDeepMutable(behaviorState));
                 return draftState;
             },
             rights: 'participant',

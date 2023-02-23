@@ -44,6 +44,7 @@ import {
     SpatialTree,
 } from './models/utils';
 import type { MaterialType } from './models/utils/material-type';
+import { seededRandomState, RandomState } from './simulation/utils';
 import type { SpatialElementPlural } from './store/action-reducers/utils/spatial-elements';
 import type { UUID } from './utils';
 import { uuid, uuidValidationOptions } from './utils';
@@ -64,6 +65,11 @@ export class ExerciseState {
     public readonly currentTime = 0;
     @IsLiteralUnion(exerciseStatusAllowedValues)
     public readonly currentStatus: ExerciseStatus = 'notStarted';
+
+    @Type(() => RandomState)
+    @ValidateNested()
+    public readonly randomState: RandomState = seededRandomState();
+
     @IsIdMap(Viewport)
     public readonly viewports: { readonly [key: UUID]: Viewport } = {};
     @IsIdMap(SimulatedRegion)
@@ -148,5 +154,5 @@ export class ExerciseState {
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 19;
+    static readonly currentStateVersion = 20;
 }

@@ -1,21 +1,38 @@
+import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { MapImage, UUID } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
-import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
-import type VectorSource from 'ol/source/Vector';
+import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
+import {
+    selectCurrentRole,
+    selectVisibleMapImages,
+} from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popup.component';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
+import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
+    public register(
+        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
+        destroy$: Subject<void>,
+        mapInteractionsManager: OlMapInteractionsManager
+    ): void {
+        super.registerFeatureElementManager(
+            this.store.select(selectVisibleMapImages),
+            changePopup$,
+            destroy$,
+            mapInteractionsManager
+        );
+    }
     private readonly imageStyleHelper = new ImageStyleHelper(
         (feature) => (this.getElementFromFeature(feature) as MapImage).image
     );
@@ -23,13 +40,11 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
 
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<Point>>,
         exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {
         super(
             olMap,
-            layer,
             (targetPosition, mapImage) => {
                 exerciseService.proposeAction({
                     type: '[MapImage] Move MapImage',
@@ -37,7 +52,8 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
                     targetPosition,
                 });
             },
-            new PointGeometryHelper()
+            new PointGeometryHelper(),
+            10_000
         );
         this.layer.setStyle((feature, resolution) => {
             const style = this.imageStyleHelper.getStyle(
