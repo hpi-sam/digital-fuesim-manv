@@ -4,7 +4,10 @@ import {
     isNotInTransfer,
     VehiclePosition,
 } from '../../../models/utils';
-import { changePosition } from '../../../models/utils/position/position-helpers-mutable';
+import {
+    changePosition,
+    changePositionWithId,
+} from '../../../models/utils/position/position-helpers-mutable';
 import type { ExerciseState } from '../../../state';
 import type { Mutable } from '../../../utils';
 import { getElement } from './get-element';
@@ -49,9 +52,10 @@ export function completelyLoadVehicle(
     const vehiclePosition = VehiclePosition.create(vehicle.id);
 
     Object.keys(vehicle.materialIds).forEach((materialId) => {
-        changePosition(
-            getElement(draftState, 'material', materialId),
+        changePositionWithId(
+            materialId,
             vehiclePosition,
+            'material',
             draftState
         );
     });
