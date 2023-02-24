@@ -1,4 +1,4 @@
-import type { MapBrowserEvent, Feature } from 'ol';
+import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
@@ -6,19 +6,19 @@ import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
 import type { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
-import type { NgZone } from '@angular/core';
-import type { UUID } from 'digital-fuesim-manv-shared';
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import type { Element, UUID } from 'digital-fuesim-manv-shared';
 import type { FeatureManager } from '../utility/feature-manager';
-import { MovementAnimator } from '../utility/movement-animator';
 import type {
     GeometryHelper,
     GeometryWithCoordinates,
     PositionableElement,
     Positions,
 } from '../utility/geometry-helper';
+import { MovementAnimator } from '../utility/movement-animator';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { TranslateInteraction } from '../utility/translate-interaction';
-import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { ElementManager } from './element-manager';
 
 /**
@@ -27,10 +27,10 @@ import { ElementManager } from './element-manager';
  * Automatically redraws a feature (= reevaluates its style function) when an element property has changed.
  */
 export abstract class MoveableFeatureManager<
-        Element extends PositionableElement,
+        ManagedElement extends PositionableElement,
         FeatureType extends GeometryWithCoordinates = Point
     >
-    extends ElementManager<Element, FeatureType>
+    extends ElementManager<ManagedElement, FeatureType>
     implements FeatureManager<FeatureType>
 {
     public readonly togglePopup$ = new Subject<OpenPopupOptions<any>>();
@@ -40,9 +40,12 @@ export abstract class MoveableFeatureManager<
         protected readonly olMap: OlMap,
         private readonly proposeMovementAction: (
             newPosition: Positions<FeatureType>,
-            element: Element
+            element: ManagedElement
         ) => void,
-        protected readonly geometryHelper: GeometryHelper<FeatureType, Element>,
+        protected readonly geometryHelper: GeometryHelper<
+            FeatureType,
+            ManagedElement
+        >,
         renderBuffer?: number
     ) {
         super();
@@ -59,7 +62,7 @@ export abstract class MoveableFeatureManager<
         );
     }
 
-    createFeature(element: Element): Feature<FeatureType> {
+    createFeature(element: ManagedElement): Feature<FeatureType> {
         const elementFeature = this.geometryHelper.create(element);
         elementFeature.setId(element.id);
         this.layer.getSource()!.addFeature(elementFeature);
@@ -78,7 +81,7 @@ export abstract class MoveableFeatureManager<
     }
 
     deleteFeature(
-        element: Element,
+        element: ManagedElement,
         elementFeature: Feature<FeatureType>
     ): void {
         this.layer.getSource()!.removeFeature(elementFeature);
@@ -87,9 +90,9 @@ export abstract class MoveableFeatureManager<
     }
 
     changeFeature(
-        oldElement: Element,
-        newElement: Element,
-        changedProperties: ReadonlySet<keyof Element>,
+        oldElement: ManagedElement,
+        newElement: ManagedElement,
+        changedProperties: ReadonlySet<keyof ManagedElement>,
         elementFeature: Feature<FeatureType>
     ): void {
         if (changedProperties.has('position')) {
@@ -102,7 +105,9 @@ export abstract class MoveableFeatureManager<
         elementFeature.changed();
     }
 
-    getFeatureFromElement(element: Element): Feature<FeatureType> | undefined {
+    getFeatureFromElement(
+        element: ManagedElement
+    ): Feature<FeatureType> | undefined {
         return (
             (this.layer
                 .getSource()!
@@ -121,7 +126,7 @@ export abstract class MoveableFeatureManager<
      * The standard implementation is to ignore these events.
      */
     public onFeatureDrop(
-        droppedFeature: Feature<any>,
+        droppedElement: Element,
         droppedOnFeature: Feature<FeatureType>,
         dropEvent?: TranslateEvent
     ): boolean {
@@ -131,15 +136,13 @@ export abstract class MoveableFeatureManager<
     public abstract register(
         changePopup$: Subject<OpenPopupOptions<any> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ): void;
 
     protected registerFeatureElementManager(
-        elementDictionary$: Observable<{ [id: UUID]: Element }>,
+        elementDictionary$: Observable<{ [id: UUID]: ManagedElement }>,
         changePopup$: Subject<OpenPopupOptions<any> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
         this.olMap.addLayer(this.layer);
@@ -148,7 +151,6 @@ export abstract class MoveableFeatureManager<
         this.registerChangeHandlers(
             elementDictionary$,
             destroy$,
-            ngZone,
             (element) => this.onElementCreated(element),
             (element) => this.onElementDeleted(element),
             (oldElement, newElement) =>

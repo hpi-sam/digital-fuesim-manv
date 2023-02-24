@@ -1,4 +1,3 @@
-import type { NgZone } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import {
     upperLeftCornerOf,
@@ -39,10 +38,6 @@ import type { PopupManager } from './popup-manager';
 import { OlMapInteractionsManager } from './ol-map-interactions-manager';
 import { SatelliteLayerManager } from './satellite-layer-manager';
 
-/**
- * This class should run outside the Angular zone for performance reasons.
- */
-
 export class OlMapManager {
     private readonly _olMap: OlMap;
     private featureManagers: FeatureManager<any>[];
@@ -58,7 +53,7 @@ export class OlMapManager {
      * featureManager.layer === layer
      * ```
      */
-    private readonly layerFeatureManagerDictionary = new Map<
+    public readonly layerFeatureManagerDictionary = new Map<
         VectorLayer<VectorSource>,
         FeatureManager<any>
     >();
@@ -67,7 +62,6 @@ export class OlMapManager {
         private readonly store: Store<AppState>,
         private readonly exerciseService: ExerciseService,
         private readonly openLayersContainer: HTMLDivElement,
-        private readonly ngZone: NgZone,
         private readonly transferLinesService: TransferLinesService,
         private readonly popupManager: PopupManager
     ) {
@@ -231,7 +225,6 @@ export class OlMapManager {
             featureManager.register(
                 this.popupManager.changePopup$,
                 this.destroy$,
-                this.ngZone,
                 this.mapInteractionsManager
             );
         });

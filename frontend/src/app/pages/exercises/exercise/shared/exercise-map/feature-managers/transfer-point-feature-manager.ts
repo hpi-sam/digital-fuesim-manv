@@ -1,6 +1,6 @@
-import type { NgZone } from '@angular/core';
 import type { Store } from '@ngrx/store';
-import type { UUID } from 'digital-fuesim-manv-shared';
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import type { UUID, Element } from 'digital-fuesim-manv-shared';
 import { TransferPoint, TransferStartPoint } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
@@ -59,14 +59,12 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
     public register(
         changePopup$: Subject<OpenPopupOptions<any> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
         super.registerFeatureElementManager(
             this.store.select(selectVisibleTransferPoints),
             changePopup$,
             destroy$,
-            ngZone,
             mapInteractionsManager
         );
     }
@@ -89,12 +87,11 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
     );
 
     public override onFeatureDrop(
-        droppedFeature: Feature<any>,
+        droppedElement: Element,
         droppedOnFeature: Feature<Point>,
         dropEvent?: TranslateEvent
     ) {
         // TODO: droppedElement isn't necessarily a transfer point -> fix getElementFromFeature typings
-        const droppedElement = this.getElementFromFeature(droppedFeature);
         const droppedOnTransferPoint = this.getElementFromFeature(
             droppedOnFeature
         ) as TransferPoint;
@@ -115,6 +112,7 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
             this.popupHelper.getPopupOptions(
                 ChooseTransferTargetPopupComponent,
                 droppedOnFeature,
+                [droppedOnTransferPoint.id, droppedElement.id],
                 {
                     transferPointId: droppedOnTransferPoint.id,
                     droppedElementType: droppedElement.type,
@@ -165,6 +163,7 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
             this.popupHelper.getPopupOptions(
                 TransferPointPopupComponent,
                 feature,
+                [feature.getId() as UUID],
                 {
                     transferPointId: feature.getId() as UUID,
                 }

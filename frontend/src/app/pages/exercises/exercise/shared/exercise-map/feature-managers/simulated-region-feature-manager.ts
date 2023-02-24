@@ -1,13 +1,21 @@
+import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
-import type { UUID, SimulatedRegion } from 'digital-fuesim-manv-shared';
+import type {
+    UUID,
+    SimulatedRegion,
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    Element,
+} from 'digital-fuesim-manv-shared';
+
 import { MapCoordinates, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
-import type { TranslateEvent } from 'ol/interaction/Translate';
 import type { Polygon } from 'ol/geom';
+import type { TranslateEvent } from 'ol/interaction/Translate';
 import type OlMap from 'ol/Map';
 import { Fill } from 'ol/style';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
+import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
@@ -15,15 +23,13 @@ import {
     selectVisibleSimulatedRegions,
 } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import type { Type, NgZone } from '@angular/core';
-import type { Subject } from 'rxjs';
 import { SimulatedRegionPopupComponent } from '../shared/simulated-region-popup/simulated-region-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
-import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
-import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
-import type { OpenPopupOptions } from '../utility/popup-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
+import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
+import type { OpenPopupOptions } from '../utility/popup-manager';
+import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class SimulatedRegionFeatureManager
@@ -33,14 +39,12 @@ export class SimulatedRegionFeatureManager
     public register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisibleSimulatedRegions),
             changePopup$,
             destroy$,
-            ngZone,
             mapInteractionsManager
         );
         mapInteractionsManager.addTrainerInteraction(
@@ -124,11 +128,10 @@ export class SimulatedRegionFeatureManager
     }
 
     public override onFeatureDrop(
-        droppedFeature: Feature<any>,
+        droppedElement: Element,
         droppedOnFeature: Feature<any>,
         dropEvent?: TranslateEvent
     ) {
-        const droppedElement = this.getElementFromFeature(droppedFeature);
         const droppedOnSimulatedRegion = this.getElementFromFeature(
             droppedOnFeature
         ) as SimulatedRegion;
@@ -145,7 +148,11 @@ export class SimulatedRegionFeatureManager
                 {
                     type: '[SimulatedRegion] Add Element',
                     simulatedRegionId: droppedOnSimulatedRegion.id,
-                    elementToBeAddedType: droppedElement.type,
+                    elementToBeAddedType: droppedElement.type as
+                        | 'material'
+                        | 'patient'
+                        | 'personnel'
+                        | 'vehicle',
                     elementToBeAddedId: droppedElement.id,
                 },
                 true
@@ -168,6 +175,7 @@ export class SimulatedRegionFeatureManager
 
         this.togglePopup$.next({
             component: SimulatedRegionPopupComponent,
+            closingUUIDs: [feature.getId() as UUID],
             context: {
                 simulatedRegionId: feature.getId() as UUID,
             },

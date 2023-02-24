@@ -1,4 +1,3 @@
-import type { NgZone } from '@angular/core';
 import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import type { Geometry, Point } from 'ol/geom';
@@ -111,7 +110,6 @@ export abstract class ElementManager<
     protected registerChangeHandlers(
         elementDictionary$: Observable<{ [id: string]: Element }>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         createHandler?: (newElement: Element) => void,
         deleteHandler?: (deletedElement: Element) => void,
         changeHandler?: (oldElement: Element, newElement: Element) => void
@@ -119,13 +117,10 @@ export abstract class ElementManager<
         elementDictionary$
             .pipe(startWith({}), pairwise(), takeUntil(destroy$))
             .subscribe(([oldElementDictionary, newElementDictionary]) => {
-                // run outside angular zone for better performance
-                ngZone.runOutsideAngular(() => {
-                    handleChanges(oldElementDictionary, newElementDictionary, {
-                        createHandler,
-                        deleteHandler,
-                        changeHandler,
-                    });
+                handleChanges(oldElementDictionary, newElementDictionary, {
+                    createHandler,
+                    deleteHandler,
+                    changeHandler,
                 });
             });
     }
@@ -134,4 +129,4 @@ export abstract class ElementManager<
 /**
  * The keys of the feature, where the type and most recent value of the respective element are saved to
  */
-const featureElementKey = 'element';
+export const featureElementKey = 'element';
