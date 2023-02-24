@@ -136,10 +136,24 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                     break;
                 }
                 case 'triaged':
-                case 'secured':
-                    treat(draftState, patients, personnel, materials);
-                    // TODO: if state is not yet secured, check whether we've secured it now and send event
+                case 'secured': {
+                    const secured = treat(
+                        draftState,
+                        patients,
+                        personnel,
+                        materials
+                    );
+                    if (
+                        activityState.treatmentProgress === 'triaged' &&
+                        secured
+                    ) {
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            TreatmentProgressChangedEvent.create('secured')
+                        );
+                    }
                     break;
+                }
                 default:
                 // Unknown state
             }
@@ -257,14 +271,15 @@ function triage(
  * @param patients A list of the patients to operate on
  * @param personnel A list of the personnel to operate on
  * @param materials A list of the patients to operate on
+ * @returns Whether the treatment for all patients is secured.
  */
 function treat(
     draftState: Mutable<ExerciseState>,
     patients: Mutable<Patient>[],
     personnel: Mutable<Personnel>[],
     materials: Mutable<Material>[]
-) {
-    assignTreatments(
+): boolean {
+    return assignTreatments(
         draftState,
         patients,
         createCateringPersonnel(personnel),
@@ -382,13 +397,14 @@ function findAssignablePersonnel(
  *  Each personnel has a priority assigned and personnel with higher priority is considered to be more skilled.
  *  Personnel may be treating some other patients already, expressed by the catersFor property.
  * @param materials A list of the materials to operate on.
+ * @returns Whether the treatment for all patients is secured.
  */
 function assignTreatments(
     draftState: Mutable<ExerciseState>,
     patients: Mutable<Patient>[],
     cateringPersonnel: CateringPersonnel[],
     materials: Mutable<Material>[]
-) {
+): boolean {
     const groupedPatients = groupBy(patients, (patient) =>
         Patient.getVisibleStatus(
             patient,
@@ -401,6 +417,8 @@ function assignTreatments(
         cateringPersonnel,
         (personnel) => personnel.personnel.personnelType
     );
+
+    let securedPatients = 0;
 
     groupedPatients.red?.forEach((patient) => {
         const notSanResult = findAssignablePersonnel(
@@ -438,7 +456,7 @@ function assignTreatments(
         }
 
         if (notSanResult?.isExclusive && rettSanResult?.isExclusive) {
-            // TODO: Save that this patient is secure to check for overall security later
+            securedPatients++;
         }
     });
 
@@ -460,7 +478,7 @@ function assignTreatments(
             );
 
             if (rettSanResult.isExclusive) {
-                // TODO: Save that this patient is secure to check for overall security later
+                securedPatients++;
             }
         }
     });
@@ -483,16 +501,17 @@ function assignTreatments(
                 draftState.configuration.bluePatientsEnabled
             );
 
-            if (sanResult.isExclusive) {
-                // TODO: Save that this patient is secure to check for overall security later
-            }
+            // Green patients do not need individual treatment to be secured
+            securedPatients++;
         }
     });
 
     // TODO: Assign material...
     // TODO: Assign paramedics 4:1-5:1
 
-    return;
+    // TODO: Check for paramedics here, too
+    return securedPatients >= patients.length;
+
     // TODO: Remove old code
     const cateringMaterials = createCateringMaterial(materials);
     patients.sort(
