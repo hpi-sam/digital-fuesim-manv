@@ -314,7 +314,7 @@ function groupBy<T, K extends number | string | symbol>(
 }
 
 /**
- * Checks whether the `catersFor` property of the specified {@link cateringPersonnel} is set to zero for all categories.
+ * Checks whether the `catersFor` property of the specified {@link cateringPersonnel} is set to zero for all statuses.
  */
 function hasNoTreatments(cateringPersonnel: CateringPersonnel): boolean {
     return (
@@ -322,6 +322,25 @@ function hasNoTreatments(cateringPersonnel: CateringPersonnel): boolean {
         cateringPersonnel.catersFor.yellow === 0 &&
         cateringPersonnel.catersFor.green === 0
     );
+}
+
+/**
+ * Checks whether the `catersFor` property of the specified {@link cateringPersonnel} is set to zero for all statuses higher than {@link status}.
+ */
+function hasNoHigherTreatments(
+    cateringPersonnel: CateringPersonnel,
+    status: Exclude<PatientStatus, 'black' | 'blue' | 'white'>
+): boolean {
+    if (status === 'green') {
+        return (
+            cateringPersonnel.catersFor.red === 0 &&
+            cateringPersonnel.catersFor.yellow === 0
+        );
+    }
+
+    if (status === 'yellow') return cateringPersonnel.catersFor.red === 0;
+
+    return true;
 }
 
 /**
@@ -350,8 +369,9 @@ function findAssignablePersonnel(
         [Key in PersonnelType]: CateringPersonnel[] | undefined;
     },
     minType: PersonnelType,
-    patientStatus: Exclude<PatientStatus, 'white'>,
-    maxPatients: number
+    patientStatus: Exclude<PatientStatus, 'black' | 'blue' | 'white'>,
+    maxPatients: number,
+    mixWithHigherStatus = true
 ): { personnel: CateringPersonnel; isExclusive: boolean } | undefined {
     const exclusivePersonnel = groupedPersonnel[minType]?.find((personnel) =>
         hasNoTreatments(personnel)
@@ -368,7 +388,9 @@ function findAssignablePersonnel(
                 patientStatus,
                 personnel.personnel,
                 personnel.catersFor
-            )
+            ) &&
+            (mixWithHigherStatus ||
+                hasNoHigherTreatments(personnel, patientStatus))
     );
 
     if (availablePersonnel) {
@@ -506,12 +528,12 @@ function assignTreatments(
     });
 
     groupedPatients.green?.forEach((patient) => {
-        // TODO: Green patients must not take treatment capacity from yellow or red patients
         const sanResult = findAssignablePersonnel(
             groupedPersonnel,
             'san',
             'green',
-            2
+            2,
+            false
         );
 
         if (sanResult) {
