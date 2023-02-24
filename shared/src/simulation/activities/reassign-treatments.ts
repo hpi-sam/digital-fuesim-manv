@@ -275,9 +275,9 @@ function treat(
 function groupBy<T, K extends number | string | symbol>(
     array: T[],
     keySelector: (t: T) => K
-): { [Key in K]: T[] } {
+): { [Key in K]: T[] | undefined } {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const map = {} as { [Key in K]: T[] };
+    const map = {} as { [Key in K]: T[] | undefined };
 
     array.forEach((element) => {
         const key = keySelector(element);
@@ -286,7 +286,7 @@ function groupBy<T, K extends number | string | symbol>(
             map[key] = [];
         }
 
-        map[key].push(element);
+        map[key]!.push(element);
     });
 
     return map;
@@ -309,12 +309,14 @@ function sumOfTreatments(cateringPersonnel: CateringPersonnel): number {
 }
 
 function findAssignablePersonnel(
-    groupedPersonnel: { [Key in PersonnelType]: CateringPersonnel[] },
+    groupedPersonnel: {
+        [Key in PersonnelType]: CateringPersonnel[] | undefined;
+    },
     minType: PersonnelType,
     patientStatus: Exclude<PatientStatus, 'white'>,
     maxPatients: number
 ): { personnel: CateringPersonnel; isExclusive: boolean } | undefined {
-    const exclusivePersonnel = groupedPersonnel[minType].find((personnel) =>
+    const exclusivePersonnel = groupedPersonnel[minType]?.find((personnel) =>
         hasNoTreatments(personnel)
     );
 
@@ -322,7 +324,7 @@ function findAssignablePersonnel(
         return { personnel: exclusivePersonnel, isExclusive: true };
     }
 
-    const availablePersonnel = groupedPersonnel[minType].find(
+    const availablePersonnel = groupedPersonnel[minType]?.find(
         (personnel) =>
             sumOfTreatments(personnel) < maxPatients &&
             couldCaterFor(
@@ -400,7 +402,7 @@ function assignTreatments(
         (personnel) => personnel.personnel.personnelType
     );
 
-    groupedPatients.red.forEach((patient) => {
+    groupedPatients.red?.forEach((patient) => {
         const notSanResult = findAssignablePersonnel(
             groupedPersonnel,
             'notSan',
@@ -440,7 +442,7 @@ function assignTreatments(
         }
     });
 
-    groupedPatients.yellow.forEach((patient) => {
+    groupedPatients.yellow?.forEach((patient) => {
         const rettSanResult = findAssignablePersonnel(
             groupedPersonnel,
             'rettSan',
@@ -463,7 +465,7 @@ function assignTreatments(
         }
     });
 
-    groupedPatients.green.forEach((patient) => {
+    groupedPatients.green?.forEach((patient) => {
         // TODO: Green patients must not take treatment capacity from yellow or red patients
         const sanResult = findAssignablePersonnel(
             groupedPersonnel,
