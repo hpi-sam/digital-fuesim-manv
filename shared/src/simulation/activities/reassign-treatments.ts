@@ -287,6 +287,12 @@ function treat(
     );
 }
 
+/**
+ * Groups an array by a property selected from an element.
+ * @param array The array to group.
+ * @param keySelector A function returning the grouping property for a given element.
+ * @returns An object of keys mapped to arrays or undefined, if no elements belongs to this key.
+ */
 function groupBy<T, K extends number | string | symbol>(
     array: T[],
     keySelector: (t: T) => K
@@ -307,6 +313,9 @@ function groupBy<T, K extends number | string | symbol>(
     return map;
 }
 
+/**
+ * Checks whether the `catersFor` property of the specified {@link cateringPersonnel} is set to zero for all categories.
+ */
 function hasNoTreatments(cateringPersonnel: CateringPersonnel): boolean {
     return (
         cateringPersonnel.catersFor.red === 0 &&
@@ -315,6 +324,9 @@ function hasNoTreatments(cateringPersonnel: CateringPersonnel): boolean {
     );
 }
 
+/**
+ * Determines the overall amount of patients the {@link cateringPersonnel} is treating.
+ */
 function sumOfTreatments(cateringPersonnel: CateringPersonnel): number {
     return (
         cateringPersonnel.catersFor.red +
@@ -323,6 +335,16 @@ function sumOfTreatments(cateringPersonnel: CateringPersonnel): number {
     );
 }
 
+/**
+ * Selects the best personnel to treat a specific patient
+ * @param groupedPersonnel Available personnel, grouped by their personnelType
+ * @param minType The minimum required personnel type for the patient
+ * @param patientStatus The status of the patient
+ * @param maxPatients The maximum number of patients the selected personnel may be treating after assigning the new patient
+ * @param mixWithHigherStatus Whether the patient may be assigned to a personnel that is already treating patients with a more urgent status
+ * @returns An object specifying the assignable personnel and whether the personnel is treating the current patient exclusively, if an assignable personnel was found.
+ *  `undefined` otherwise.
+ */
 function findAssignablePersonnel(
     groupedPersonnel: {
         [Key in PersonnelType]: CateringPersonnel[] | undefined;
