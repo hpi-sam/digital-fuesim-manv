@@ -355,7 +355,9 @@ function sumOfTreatments(cateringPersonnel: CateringPersonnel): number {
 }
 
 /**
- * Selects the best personnel to treat a specific patient
+ * Selects the best personnel to treat a specific patient.
+ * This function tries to find a personnel of the requested type and prefers personnel that is not treating any other patient.
+ * If there is no personnel of the requested type (neither "exclusive" nor treating other patients but having some capacity left), the next higher type will be checked by the same pattern.
  * @param groupedPersonnel Available personnel, grouped by their personnelType
  * @param minType The minimum required personnel type for the patient
  * @param patientStatus The status of the patient
@@ -432,13 +434,12 @@ function findAssignablePersonnel(
 }
 
 /**
- * TODO: Update this comment to reflect the new behavior
- * Performs the actual assignment of personnel to patients.
- * The patients will be matched to personnel by sorting patients based on their triage and personnel based on their skills and then starting from the most injured patient and the most skilled personnel.
+ * Performs the actual assignment of personnel and material to patients.
+ * This function tries to reach matching in which every red patient is treated by a notSan and a rettSan exclusively, each yellow patient is treated by a rettSan exclusively and each two green patients are treated by a san.
+ * Additionally, each red and yellow patient should be treated by a paramedic (non-exclusively) and material should be assigned.
  * @param draftState The state to operate in
  * @param patients A list of the patients to operate on
  * @param cateringPersonnel A list of the personnel to operate on.
- *  Each personnel has a priority assigned and personnel with higher priority is considered to be more skilled.
  *  Personnel may be treating some other patients already, expressed by the catersFor property.
  * @param materials A list of the materials to operate on.
  * @returns Whether the treatment for all patients is secured.
