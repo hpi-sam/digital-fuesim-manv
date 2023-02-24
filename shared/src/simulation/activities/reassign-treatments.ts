@@ -19,7 +19,7 @@ import {
     treatmentProgressAllowedValues,
 } from '../utils/treatment';
 import { TreatmentProgressChangedEvent } from '../events';
-import { patientPriorities, personnelPriorities } from '../utils/priorities';
+import { personnelPriorities } from '../utils/priorities';
 import { sendSimulationEvent } from '../events/utils';
 import type { AssignLeaderBehaviorState } from '../behaviors/assign-leader';
 import type {
@@ -550,14 +550,24 @@ function assignTreatments(
         }
     });
 
-    // More material does not lead to any benefit and the material does not have any different qualification/capabilities.
-    // Therefore, we can just use this simple approach to assign the material, beginning by the most urgent patients.
     const cateringMaterials = createCateringMaterial(materials);
+
+    // A paramedic may be used to replace a lower tier personnel if there is not enough
+    // In this case, we consider the paramedic to be more occupied that by it's normal work so we don't want to use them here
+    const remainingParamedics =
+        groupedPersonnel.notarzt?.filter((paramedic) =>
+            hasNoTreatments(paramedic)
+        ) ?? [];
+
+    let patientsWithParamedic = 0;
+
     [
         ...(groupedPatients.red ?? []),
         ...(groupedPatients.yellow ?? []),
         ...(groupedPatients.green ?? []),
     ].forEach((patient) => {
+        // More material does not lead to any benefit and the material does not have any different qualification/capabilities.
+        // Therefore, we can just use this simple approach to assign the material, beginning by the most urgent patients.
         cateringMaterials.some((material) =>
             tryToCaterFor(
                 material.material,
@@ -567,10 +577,38 @@ function assignTreatments(
                 draftState.configuration.bluePatientsEnabled
             )
         );
+
+        if (
+            Patient.getVisibleStatus(
+                patient,
+                draftState.configuration.pretriageEnabled,
+                draftState.configuration.bluePatientsEnabled
+            ) !== 'green'
+        ) {
+            // Usually, paramedics are needed for some specific tasks, but they do not have to treat a patient continuously and exclusively.
+            // Therefore, we can just use this simple approach based on their normal treatment capacity
+            if (
+                remainingParamedics.some((paramedic) =>
+                    tryToCaterFor(
+                        paramedic.personnel,
+                        paramedic.catersFor,
+                        patient,
+                        draftState.configuration.pretriageEnabled,
+                        draftState.configuration.bluePatientsEnabled
+                    )
+                )
+            ) {
+                patientsWithParamedic++;
+            }
+        }
     });
 
-    // TODO: Assign paramedics 4:1-5:1
+    const redAndYellowPatientsCount =
+        (groupedPatients.red?.length ?? 0) +
+        (groupedPatients.yellow?.length ?? 0);
 
-    // TODO: Check for paramedics here, too
-    return securedPatients >= patients.length;
+    return (
+        securedPatients >= patients.length &&
+        patientsWithParamedic >= redAndYellowPatientsCount
+    );
 }
