@@ -21,7 +21,7 @@ export class UnloadArrivingVehiclesBehaviorState
 
     @IsInt()
     @Min(0)
-    public readonly unloadDelay!: number;
+    public readonly unloadDelay: number;
 
     /**
      * @deprecated Use {@link create} instead

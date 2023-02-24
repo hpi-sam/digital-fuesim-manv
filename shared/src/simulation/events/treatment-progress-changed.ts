@@ -11,7 +11,7 @@ export class TreatmentProgressChangedEvent implements SimulationEvent {
     readonly type = 'treatmentProgressChangedEvent';
 
     @IsLiteralUnion(treatmentProgressAllowedValues)
-    readonly newProgress!: TreatmentProgress;
+    readonly newProgress: TreatmentProgress;
 
     /**
      * @deprecated Use {@link create} instead

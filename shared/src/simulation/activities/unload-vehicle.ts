@@ -13,18 +13,18 @@ export class UnloadVehicleActivityState implements SimulationActivityState {
     public readonly type = 'unloadVehicleActivity';
 
     @IsUUID(4, uuidValidationOptions)
-    public readonly id!: UUID;
+    public readonly id: UUID;
 
     @IsUUID(4, uuidValidationOptions)
-    public readonly vehicleId!: UUID;
+    public readonly vehicleId: UUID;
 
     @IsInt()
     @Min(0)
-    public readonly startTime!: number;
+    public readonly startTime: number;
 
     @IsInt()
     @Min(0)
-    public readonly duration!: number;
+    public readonly duration: number;
 
     /**
      * @deprecated Use {@link create} instead

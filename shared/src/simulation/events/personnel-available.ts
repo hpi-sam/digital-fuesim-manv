@@ -12,7 +12,7 @@ export class PersonnelAvailableEvent implements SimulationEvent {
     public readonly id: UUID = uuid();
 
     @IsUUID(4, uuidValidationOptions)
-    readonly personnelId!: UUID;
+    readonly personnelId: UUID;
 
     /**
      * @deprecated Use {@link create} instead

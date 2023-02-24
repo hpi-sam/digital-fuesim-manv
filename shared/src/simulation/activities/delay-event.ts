@@ -15,15 +15,15 @@ export class DelayEventActivityState implements SimulationActivityState {
     public readonly type = 'delayEventActivity';
 
     @IsUUID(4, uuidValidationOptions)
-    public readonly id!: UUID;
+    public readonly id: UUID;
 
     @Type(...simulationEventTypeOptions)
     @ValidateNested()
-    public readonly event!: ExerciseSimulationEvent;
+    public readonly event: ExerciseSimulationEvent;
 
     @IsInt()
     @Min(0)
-    public readonly endTime!: number;
+    public readonly endTime: number;
 
     /**
      * @deprecated Use {@link create} instead

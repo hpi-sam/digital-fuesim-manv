@@ -12,7 +12,7 @@ export class MaterialAvailableEvent implements SimulationEvent {
     public readonly id: UUID = uuid();
 
     @IsUUID(4, uuidValidationOptions)
-    readonly materialId!: UUID;
+    readonly materialId: UUID;
 
     /**
      * @deprecated Use {@link create} instead

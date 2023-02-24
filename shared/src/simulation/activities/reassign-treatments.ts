@@ -34,7 +34,7 @@ export class ReassignTreatmentsActivityState
     public readonly type = 'reassignTreatmentsActivity';
 
     @IsUUID(4, uuidValidationOptions)
-    public readonly id!: UUID;
+    public readonly id: UUID;
 
     @IsLiteralUnion(treatmentProgressAllowedValues)
     public readonly treatmentProgress: TreatmentProgress = 'unknown';
