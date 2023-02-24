@@ -550,43 +550,14 @@ function assignTreatments(
         }
     });
 
-    // TODO: Assign material...
-    // TODO: Assign paramedics 4:1-5:1
-
-    // TODO: Check for paramedics here, too
-    return securedPatients >= patients.length;
-
-    // TODO: Remove old code
+    // More material does not lead to any benefit and the material does not have any different qualification/capabilities.
+    // Therefore, we can just use this simple approach to assign the material, beginning by the most urgent patients.
     const cateringMaterials = createCateringMaterial(materials);
-    patients.sort(
-        (a, b) =>
-            patientPriorities[
-                Patient.getVisibleStatus(
-                    b,
-                    draftState.configuration.pretriageEnabled,
-                    draftState.configuration.bluePatientsEnabled
-                )
-            ] -
-            patientPriorities[
-                Patient.getVisibleStatus(
-                    a,
-                    draftState.configuration.pretriageEnabled,
-                    draftState.configuration.bluePatientsEnabled
-                )
-            ]
-    );
-    cateringPersonnel.sort((a, b) => b.priority - a.priority);
-
-    patients.forEach((patient) => {
-        cateringPersonnel.some((pers) =>
-            tryToCaterFor(
-                pers.personnel,
-                pers.catersFor,
-                patient,
-                draftState.configuration.pretriageEnabled,
-                draftState.configuration.bluePatientsEnabled
-            )
-        );
+    [
+        ...(groupedPatients.red ?? []),
+        ...(groupedPatients.yellow ?? []),
+        ...(groupedPatients.green ?? []),
+    ].forEach((patient) => {
         cateringMaterials.some((material) =>
             tryToCaterFor(
                 material.material,
@@ -597,4 +568,9 @@ function assignTreatments(
             )
         );
     });
+
+    // TODO: Assign paramedics 4:1-5:1
+
+    // TODO: Check for paramedics here, too
+    return securedPatients >= patients.length;
 }
