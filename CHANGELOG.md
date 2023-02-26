@@ -32,3 +32,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Moving the map no longer closes popups but can be closed with ESC.
 -   Minor dependency updates
 -   Updated deprecated actions
+
+## [0.0.0]
+
+### Initial unstable release of Digitale FüSim MANV
+
+[Unreleased]: https://github.com/Nils1729/digital-fuesim-manv/compare/v0.0.0...HEAD
+[0.0.0]: https://github.com/Nils1729/digital-fuesim-manv/compare/37bd43bc1beb4aa9ad597b1ac763dd71b5709737...v0.0.0
