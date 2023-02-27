@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { SimulatedRegion } from '../../models';
+import { Personnel, SimulatedRegion } from '../../models';
 import {
     MapCoordinates,
     SimulatedRegionPosition,
@@ -14,6 +14,8 @@ import {
     reassignTreatmentsActivity,
     ReassignTreatmentsActivityState,
 } from './reassign-treatments';
+import { addPersonnel } from '../../../tests/utils/personnel.spec';
+import { defaultPersonnelTemplates } from '../../data/default-state/personnel-templates';
 
 const emptyState = ExerciseState.create('123456');
 
@@ -76,31 +78,109 @@ function setupStateAndApplyTreatments(
     };
 }
 
-describe('calculate treatment', () => {
-    it('does nothing when there is nothing', () => {
-        const { beforeState, newState, terminate } =
-            setupStateAndApplyTreatments(
-                ReassignTreatmentsActivityState.create(uuid(), 'unknown', 0)
-            );
-        expect(newState).toStrictEqual(beforeState);
-        expect(terminate).toBeCalled();
-    });
+describe('reassign treatment', () => {
+    describe('in unknown state', () => {
+        it('does nothing when there is nothing', () => {
+            const { beforeState, newState, terminate } =
+                setupStateAndApplyTreatments(
+                    ReassignTreatmentsActivityState.create(uuid(), 'unknown', 0)
+                );
+            expect(newState).toStrictEqual(beforeState);
+            expect(terminate).toBeCalled();
+        });
 
-    it('does nothing when there is no personnel', () => {
-        const { beforeState, newState, terminate } =
-            setupStateAndApplyTreatments(
-                ReassignTreatmentsActivityState.create(uuid(), 'unknown', 0),
-                undefined,
-                (draftState, simulatedRegion) => {
-                    addPatient(
-                        draftState,
-                        'white',
-                        'red',
-                        SimulatedRegionPosition.create(simulatedRegion.id)
-                    );
-                }
-            );
-        expect(newState).toStrictEqual(beforeState);
-        expect(terminate).toBeCalled();
+        it('does nothing when there is no personnel', () => {
+            const { beforeState, newState, terminate } =
+                setupStateAndApplyTreatments(
+                    ReassignTreatmentsActivityState.create(
+                        uuid(),
+                        'unknown',
+                        0
+                    ),
+                    undefined,
+                    (draftState, simulatedRegion) => {
+                        addPatient(
+                            draftState,
+                            'white',
+                            'red',
+                            SimulatedRegionPosition.create(simulatedRegion.id)
+                        );
+                    }
+                );
+            expect(newState).toStrictEqual(beforeState);
+            expect(terminate).toBeCalled();
+        });
+
+        it('does nothing when there is no leading personnel', () => {
+            const { beforeState, newState, terminate } =
+                setupStateAndApplyTreatments(
+                    ReassignTreatmentsActivityState.create(
+                        uuid(),
+                        'unknown',
+                        0
+                    ),
+                    undefined,
+                    (draftState, simulatedRegion) => {
+                        addPatient(
+                            draftState,
+                            'white',
+                            'red',
+                            SimulatedRegionPosition.create(simulatedRegion.id)
+                        );
+
+                        addPersonnel(
+                            draftState,
+                            Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.notSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    simulatedRegion.id
+                                )
+                            )
+                        );
+                    }
+                );
+            expect(newState).toStrictEqual(beforeState);
+            expect(terminate).toBeCalled();
+        });
+
+        it('does nothing when there is only the leading personnel', () => {
+            const leaderId = uuid();
+
+            const { beforeState, newState, terminate } =
+                setupStateAndApplyTreatments(
+                    ReassignTreatmentsActivityState.create(
+                        uuid(),
+                        'unknown',
+                        0
+                    ),
+                    leaderId,
+                    (draftState, simulatedRegion) => {
+                        addPatient(
+                            draftState,
+                            'white',
+                            'red',
+                            SimulatedRegionPosition.create(simulatedRegion.id)
+                        );
+
+                        addPersonnel(draftState, {
+                            ...Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.notSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    simulatedRegion.id
+                                )
+                            ),
+                            id: leaderId,
+                        });
+                    }
+                );
+            console.log(leaderId);
+            console.log(beforeState.personnel);
+            expect(newState).toStrictEqual(beforeState);
+            expect(terminate).toBeCalled();
+        });
     });
 });

@@ -62,7 +62,7 @@ export class ExerciseState {
      */
     @IsInt()
     @Min(0)
-    public readonly currentTime = 0;
+    public readonly currentTime: number = 0;
     @IsLiteralUnion(exerciseStatusAllowedValues)
     public readonly currentStatus: ExerciseStatus = 'notStarted';
 

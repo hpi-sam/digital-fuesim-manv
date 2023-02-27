@@ -1,18 +1,39 @@
 import { produce } from 'immer';
-import type { PatientStatus } from '../../../models/utils';
+import type { PatientStatus, Position } from '../../../models/utils';
 import { CanCaterFor } from '../../../models/utils';
 import { MapPosition } from '../../../models/utils/position/map-position';
 import { VehiclePosition } from '../../../models/utils/position/vehicle-position';
 import { ExerciseState } from '../../../state';
 import type { Mutable } from '../../../utils';
-import { cloneDeepMutable } from '../../../utils';
+import { cloneDeepMutable, uuid } from '../../../utils';
 import { addMaterial } from '../../../../tests/utils/materials.spec';
 import { addPatient } from '../../../../tests/utils/patients.spec';
 import { addPersonnel } from '../../../../tests/utils/personnel.spec';
 import { assertCatering } from '../../../../tests/utils/catering.spec';
+import { Personnel } from '../../../models';
+import { defaultPersonnelTemplates } from '../../../data/default-state/personnel-templates';
 import { updateTreatments } from './calculate-treatments';
 
 const emptyState = ExerciseState.create('123456');
+
+function createNotSan(position: Position) {
+    const template = defaultPersonnelTemplates.notSan;
+    const notSan = Personnel.generatePersonnel(
+        {
+            ...template,
+            canCaterFor: {
+                red: 1,
+                yellow: 0,
+                green: 0,
+                logicalOperator: 'and',
+            },
+        },
+        uuid(),
+        'RTW 3/83/1',
+        position
+    );
+    return notSan;
+}
 
 /**
  * Perform {@link mutateBeforeState} and then call `calculateTreatments`
@@ -46,7 +67,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only personnel in vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPersonnel(state, VehiclePosition.create(''));
+                addPersonnel(state, createNotSan(VehiclePosition.create('')));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -55,7 +76,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only personnel outside vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPersonnel(state, VehiclePosition.create(''));
+                addPersonnel(state, createNotSan(VehiclePosition.create('')));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -120,7 +141,7 @@ describe('calculate treatment', () => {
                     'green',
                     MapPosition.create({ x: 0, y: 0 })
                 );
-                addPersonnel(state, VehiclePosition.create(''));
+                addPersonnel(state, createNotSan(VehiclePosition.create('')));
             }
         );
         expect(newState).toStrictEqual(beforeState);

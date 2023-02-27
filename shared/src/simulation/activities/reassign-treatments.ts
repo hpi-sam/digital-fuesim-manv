@@ -86,11 +86,6 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 removeTreatmentsOfElement(draftState, patient)
             );
 
-            if (personnel.length === 0) {
-                terminate();
-                return;
-            }
-
             const leaderId = (
                 simulatedRegion.behaviors.find(
                     (behavior) => behavior.type === 'assignLeaderBehavior'
@@ -107,6 +102,11 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 personnel.findIndex((pers) => pers.id === leaderId),
                 1
             );
+
+            if (personnel.length === 0) {
+                terminate();
+                return;
+            }
 
             let allowTerminate = true;
 
