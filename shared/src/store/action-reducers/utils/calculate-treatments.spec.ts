@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import type { PatientStatus } from '../../../models/utils';
-import { CanCaterFor, MapCoordinates } from '../../../models/utils';
+import { CanCaterFor } from '../../../models/utils';
 import { MapPosition } from '../../../models/utils/position/map-position';
 import { VehiclePosition } from '../../../models/utils/position/vehicle-position';
 import { ExerciseState } from '../../../state';
@@ -88,7 +88,7 @@ describe('calculate treatment', () => {
                             state,
                             color,
                             color,
-                            MapCoordinates.create(0, 0)
+                            MapPosition.create({ x: 0, y: 0 })
                         );
                     }
                 );
@@ -104,7 +104,7 @@ describe('calculate treatment', () => {
                     state,
                     'black',
                     'black',
-                    MapCoordinates.create(0, 0)
+                    MapPosition.create({ x: 0, y: 0 })
                 );
             }
         );
@@ -118,7 +118,7 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    MapCoordinates.create(0, 0)
+                    MapPosition.create({ x: 0, y: 0 })
                 );
                 addPersonnel(state, VehiclePosition.create(''));
             }
@@ -133,7 +133,7 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    MapCoordinates.create(0, 0)
+                    MapPosition.create({ x: 0, y: 0 })
                 );
                 addMaterial(state, VehiclePosition.create(''));
             }
@@ -153,13 +153,13 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    MapCoordinates.create(0, 0)
+                    MapPosition.create({ x: 0, y: 0 })
                 ).id;
                 ids.redPatient = addPatient(
                     state,
                     'red',
                     'red',
-                    MapCoordinates.create(2, 2)
+                    MapPosition.create({ x: 2, y: 2 })
                 ).id;
                 ids.material = addMaterial(
                     state,
@@ -188,13 +188,13 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    MapCoordinates.create(-3, -3)
+                    MapPosition.create({ x: -3, y: -3 })
                 ).id;
                 ids.redPatient = addPatient(
                     state,
                     'red',
                     'red',
-                    MapCoordinates.create(3, 3)
+                    MapPosition.create({ x: 3, y: 3 })
                 ).id;
                 ids.material = addMaterial(
                     state,
@@ -223,13 +223,13 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    MapCoordinates.create(-10, -10)
+                    MapPosition.create({ x: -10, y: -10 })
                 ).id;
                 ids.redPatient = addPatient(
                     state,
                     'red',
                     'red',
-                    MapCoordinates.create(20, 20)
+                    MapPosition.create({ x: 20, y: 20 })
                 ).id;
                 ids.material = addMaterial(
                     state,
@@ -252,13 +252,13 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    MapCoordinates.create(-1, -1)
+                    MapPosition.create({ x: -1, y: -1 })
                 ).id;
                 ids.redPatient = addPatient(
                     state,
                     'red',
                     'red',
-                    MapCoordinates.create(2, 2)
+                    MapPosition.create({ x: 2, y: 2 })
                 ).id;
                 const material = addMaterial(
                     state,

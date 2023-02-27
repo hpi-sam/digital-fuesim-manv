@@ -1,11 +1,16 @@
 import produce from 'immer';
 import { jest } from '@jest/globals';
 import { SimulatedRegion } from '../../models';
-import { MapCoordinates, Size } from '../../models/utils';
+import {
+    MapCoordinates,
+    SimulatedRegionPosition,
+    Size,
+} from '../../models/utils';
 import { ExerciseState } from '../../state';
 import type { Mutable, UUID } from '../../utils';
 import { cloneDeepMutable, uuid } from '../../utils';
 import { AssignLeaderBehaviorState } from '../behaviors/assign-leader';
+import { addPatient } from '../../../tests/utils/patients.spec';
 import {
     reassignTreatmentsActivity,
     ReassignTreatmentsActivityState,
@@ -75,6 +80,24 @@ describe('calculate treatment', () => {
         const { beforeState, newState, terminate } =
             setupStateAndApplyTreatments(
                 ReassignTreatmentsActivityState.create(uuid(), 'unknown', 0)
+            );
+        expect(newState).toStrictEqual(beforeState);
+        expect(terminate).toBeCalled();
+    });
+
+    it('does nothing when there is no personnel', () => {
+        const { beforeState, newState, terminate } =
+            setupStateAndApplyTreatments(
+                ReassignTreatmentsActivityState.create(uuid(), 'unknown', 0),
+                undefined,
+                (draftState, simulatedRegion) => {
+                    addPatient(
+                        draftState,
+                        'white',
+                        'red',
+                        SimulatedRegionPosition.create(simulatedRegion.id)
+                    );
+                }
             );
         expect(newState).toStrictEqual(beforeState);
         expect(terminate).toBeCalled();
