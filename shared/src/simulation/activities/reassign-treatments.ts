@@ -87,6 +87,7 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
             );
 
             if (personnel.length === 0) {
+                terminate();
                 return;
             }
 
@@ -97,6 +98,7 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
             )?.leaderId;
 
             if (!leaderId) {
+                terminate();
                 return;
             }
 
