@@ -196,7 +196,7 @@ For each new release, pull requests both to `main` and `dev` are created from th
 
 With every significant PR into `dev`, the change must be briefly described in [CHANGELOG.md](./CHANGELOG.md). Pay attention to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-The `Create Release PR` workflow accepts a new version number and prepares two draft PRs, one into `dev` and one into `main`. They have to be marked as ready o run the pipeline. It also updates the version number in all relevant source files and moves the `Unreleased` section in [CHANGELOG.md](./CHANGELOG.md) to a release heading, creating a new `Unreleased` section.
+The `Create Release PR` workflow accepts a new version number, updates the version in all relevant source files and moves the `Unreleased` section in [CHANGELOG.md](./CHANGELOG.md) to a release heading, creating a new `Unreleased` section. It then prepares two draft PRs, one into `dev` and one into `main` with these changes. They have to be marked as ready to run the pipeline and need approval. Merge them without rebase (use merge commit option).
 
 Upon pushing to `main` or `dev`, GitHub Actions will build and push docker containers to Docker Hub tagged `latest` and `dev`. `latest` is additionally tagged with the current version number on `main` and a GitHub release is created.
 
