@@ -182,5 +182,61 @@ describe('reassign treatment', () => {
             expect(newState).toStrictEqual(beforeState);
             expect(terminate).toBeCalled();
         });
+
+        it('starts counting when there is personnel', () => {
+            const leaderId = uuid();
+            const time = 123;
+
+            const { beforeState, newState, terminate, newActivityState } =
+                setupStateAndApplyTreatments(
+                    ReassignTreatmentsActivityState.create(
+                        uuid(),
+                        'unknown',
+                        0
+                    ),
+                    leaderId,
+                    (draftState, simulatedRegion) => {
+                        addPatient(
+                            draftState,
+                            'white',
+                            'red',
+                            SimulatedRegionPosition.create(simulatedRegion.id)
+                        );
+
+                        addPersonnel(draftState, {
+                            ...Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.notSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    simulatedRegion.id
+                                )
+                            ),
+                            id: leaderId,
+                        });
+
+                        addPersonnel(
+                            draftState,
+                            Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.rettSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    simulatedRegion.id
+                                )
+                            )
+                        );
+
+                        draftState.currentTime = time;
+                    }
+                );
+            expect(newState).toStrictEqual(beforeState);
+            expect(terminate).not.toHaveBeenCalled();
+            expect(newActivityState.countingStartedAt).toBe(time);
+        });
+
+        // TODO: Add a test where countingStartedAt is set and expect counting to finish
     });
+
+    // TODO: Add tests for "counted", "triaged" and "secured"
 });
