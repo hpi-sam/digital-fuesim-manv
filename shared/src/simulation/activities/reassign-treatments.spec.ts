@@ -10,12 +10,12 @@ import type { Mutable, UUID } from '../../utils';
 import { cloneDeepMutable, uuid } from '../../utils';
 import { AssignLeaderBehaviorState } from '../behaviors/assign-leader';
 import { addPatient } from '../../../tests/utils/patients.spec';
+import { addPersonnel } from '../../../tests/utils/personnel.spec';
+import { defaultPersonnelTemplates } from '../../data/default-state/personnel-templates';
 import {
     reassignTreatmentsActivity,
     ReassignTreatmentsActivityState,
 } from './reassign-treatments';
-import { addPersonnel } from '../../../tests/utils/personnel.spec';
-import { defaultPersonnelTemplates } from '../../data/default-state/personnel-templates';
 
 const emptyState = ExerciseState.create('123456');
 
