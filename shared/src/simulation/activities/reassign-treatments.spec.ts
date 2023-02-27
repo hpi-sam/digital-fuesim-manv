@@ -1,5 +1,4 @@
 import produce from 'immer';
-import { jest } from '@jest/globals';
 import { SimulatedRegion } from '../../models';
 import {
     MapCoordinates,
@@ -56,7 +55,9 @@ function setupStateAndApplyTreatments(
     });
 
     const newActivityState = cloneDeepMutable(activityState);
-    const terminate = jest.fn();
+    // Unfortunately, the global jest object is not found (even though `@types/jest` is installed)
+    // and importing jest from `@jest/globals` causes issues...
+    const terminate = import.meta.jest.fn();
 
     const newState = produce(beforeState, (draftState) => {
         reassignTreatmentsActivity.tick(
