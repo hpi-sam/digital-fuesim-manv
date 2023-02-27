@@ -12,7 +12,7 @@
         "sourceMap": true,
         "moduleResolution": "node",
         "declarationMap": true,
-        "rootDir": "./src",
+        "rootDir": ".",
         "skipLibCheck": true,
         "types": ["jest"]
     },

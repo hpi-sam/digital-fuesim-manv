@@ -1,152 +1,18 @@
 import { produce } from 'immer';
-import { generateDummyPatient } from '../../../data';
-import { defaultMaterialTemplates } from '../../../data/default-state/material-templates';
-import { defaultPersonnelTemplates } from '../../../data/default-state/personnel-templates';
-import type { Patient } from '../../../models';
-import { Material, Personnel } from '../../../models';
-import type { Position, PatientStatus } from '../../../models/utils';
-import {
-    currentCoordinatesOf,
-    isPositionOnMap,
-    CanCaterFor,
-    MapCoordinates,
-} from '../../../models/utils';
+import type { PatientStatus } from '../../../models/utils';
+import { CanCaterFor, MapCoordinates } from '../../../models/utils';
 import { MapPosition } from '../../../models/utils/position/map-position';
-import { SpatialTree } from '../../../models/utils/spatial-tree';
 import { VehiclePosition } from '../../../models/utils/position/vehicle-position';
 import { ExerciseState } from '../../../state';
-import type { Mutable, UUID } from '../../../utils';
-import { cloneDeepMutable, uuid } from '../../../utils';
+import type { Mutable } from '../../../utils';
+import { cloneDeepMutable } from '../../../utils';
+import { addMaterial } from '../../../../tests/utils/materials.spec';
+import { addPatient } from '../../../../tests/utils/patients.spec';
+import { addPersonnel } from '../../../../tests/utils/personnel.spec';
+import { assertCatering } from '../../../../tests/utils/catering.spec';
 import { updateTreatments } from './calculate-treatments';
-import { getElement } from './get-element';
 
 const emptyState = ExerciseState.create('123456');
-
-interface Catering {
-    /**
-     * The id of the material or personnel catering
-     */
-    catererId: UUID;
-    catererType: 'material' | 'personnel';
-    /**
-     * All patients treated by {@link catererId}
-     */
-    patientIds: UUID[];
-}
-
-/**
- * Asserts that adding the specified {@link caterings} to the {@link beforeState} results in the {@link newState}.
- * If the {@link beforeState} has already caterings in it, these will not be removed.
- */
-function assertCatering(
-    beforeState: ExerciseState,
-    newState: ExerciseState,
-    caterings: Catering[]
-) {
-    // Add all caterings to the before state and look whether the result is the newState
-    const shouldState = produce(beforeState, (draftState) => {
-        for (const catering of caterings) {
-            // Update all the patients
-            const patients = catering.patientIds.map((patientId) =>
-                getElement(draftState, 'patient', patientId)
-            );
-            for (const patient of patients) {
-                patient[
-                    catering.catererType === 'material'
-                        ? 'assignedMaterialIds'
-                        : 'assignedPersonnelIds'
-                ][catering.catererId] = true;
-            }
-            // Update the catering element
-            const cateringElement = getElement(
-                draftState,
-                catering.catererType,
-                catering.catererId
-            );
-            for (const patientId of catering.patientIds) {
-                cateringElement.assignedPatientIds[patientId] = true;
-            }
-        }
-        return draftState;
-    });
-    expect(newState).toStrictEqual(shouldState);
-}
-
-function addPatient(
-    state: Mutable<ExerciseState>,
-    pretriageStatus: PatientStatus,
-    realStatus: PatientStatus,
-    position?: MapCoordinates
-): Mutable<Patient> {
-    const patient = cloneDeepMutable(generateDummyPatient());
-    patient.pretriageStatus = pretriageStatus;
-    patient.realStatus = realStatus;
-    if (position) {
-        patient.position = {
-            type: 'coordinates',
-            coordinates: cloneDeepMutable(position),
-        };
-        SpatialTree.addElement(
-            state.spatialTrees.patients,
-            patient.id,
-            position
-        );
-    }
-    state.patients[patient.id] = patient;
-    return patient;
-}
-
-function addPersonnel(state: Mutable<ExerciseState>, position: Position) {
-    const personnel = cloneDeepMutable(
-        Personnel.generatePersonnel(
-            defaultPersonnelTemplates.notSan,
-            uuid(),
-            'RTW 3/83/1',
-            position
-        )
-    );
-    personnel.canCaterFor = {
-        red: 1,
-        yellow: 0,
-        green: 0,
-        logicalOperator: 'and',
-    };
-    if (isPositionOnMap(position)) {
-        SpatialTree.addElement(
-            state.spatialTrees.personnel,
-            personnel.id,
-            currentCoordinatesOf(personnel)
-        );
-    }
-    state.personnel[personnel.id] = personnel;
-    return personnel;
-}
-
-function addMaterial(state: Mutable<ExerciseState>, position: Position) {
-    const material = cloneDeepMutable(
-        Material.generateMaterial(
-            defaultMaterialTemplates.standard,
-            uuid(),
-            'RTW 3/83/1',
-            position
-        )
-    );
-    material.canCaterFor = {
-        red: 1,
-        yellow: 0,
-        green: 0,
-        logicalOperator: 'and',
-    };
-    if (isPositionOnMap(position)) {
-        SpatialTree.addElement(
-            state.spatialTrees.materials,
-            material.id,
-            currentCoordinatesOf(material)
-        );
-    }
-    state.materials[material.id] = material;
-    return material;
-}
 
 /**
  * Perform {@link mutateBeforeState} and then call `calculateTreatments`

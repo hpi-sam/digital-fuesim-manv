@@ -20,4 +20,5 @@ export default {
     },
     // See here: https://github.com/nestjs/nest/issues/1305#issuecomment-488337778
     setupFiles: ['./src/index.ts'],
+    testPathIgnorePatterns: ['./tests/utils'],
 };
