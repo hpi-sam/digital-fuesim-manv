@@ -144,6 +144,8 @@ describe('A trainer on the exercise page', () => {
             '[data-cy=draggableVehicleDiv]'
         );
 
+        cy.wait(commonErrorTimeout);
+
         cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[Vehicle] Add vehicle');
@@ -689,6 +691,8 @@ describe('A trainer on the exercise page', () => {
         cy.log('pause an exercise')
             .get('[data-cy=trainerToolbarPauseButton]')
             .click();
+
+        cy.wait(commonErrorTimeout);
 
         cy.get('@trainerSocketPerformedActions')
             .atPosition(-2)
