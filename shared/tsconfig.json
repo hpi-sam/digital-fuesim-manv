@@ -12,11 +12,11 @@
         "sourceMap": true,
         "moduleResolution": "node",
         "declarationMap": true,
-        "rootDir": "./src",
+        "rootDir": ".",
         "skipLibCheck": true,
         "types": ["jest"]
     },
     "references": [],
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "tests/**/*"],
     "exclude": ["node_modules"]
 }

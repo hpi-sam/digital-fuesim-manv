@@ -14,6 +14,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Simulated regions are new elements on the map that behave similar to viewports.
     -   They have a flexible simulation framework for defining behaviors.
     -   These can contain personnel, vehicles, material and patients.
+    -   Several behaviors providing the following automatic behavior already exist (but can't be activated at the moment):
+        -   Let personnel leave their vehicle after arriving in a simulated region
+        -   Assign a leader for a simulated region
+        -   Count, triage and treat patients in a simulated region
 -   Added customizable pages for imprint and privacy notice.
 -   The frontend now displays the current software version and shows a feedback button on most pages.
 -   Added [CHANGELOG.md](./CHANGELOG.md), a [release and versioning guide](./README.md#releases) and release actions.

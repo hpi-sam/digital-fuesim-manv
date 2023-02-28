@@ -13,10 +13,13 @@ import {
 } from '../../models/utils/position/position-helpers-mutable';
 import {
     ExerciseSimulationBehaviorState,
-    sendSimulationEvent,
     simulationBehaviorTypeOptions,
     VehicleArrivedEvent,
+    PersonnelAvailableEvent,
+    NewPatientEvent,
+    MaterialAvailableEvent,
 } from '../../simulation';
+import { sendSimulationEvent } from '../../simulation/events/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -216,14 +219,34 @@ export namespace SimulatedRegionActionReducers {
                     draftState
                 );
 
-                if (element.type === 'vehicle') {
-                    sendSimulationEvent(
-                        simulatedRegion,
-                        VehicleArrivedEvent.create(
-                            element.id,
-                            draftState.currentTime
-                        )
-                    );
+                switch (element.type) {
+                    case 'vehicle':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            VehicleArrivedEvent.create(
+                                element.id,
+                                draftState.currentTime
+                            )
+                        );
+                        break;
+                    case 'patient':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            NewPatientEvent.create(element.id)
+                        );
+                        break;
+                    case 'personnel':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            PersonnelAvailableEvent.create(element.id)
+                        );
+                        break;
+                    case 'material':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            MaterialAvailableEvent.create(element.id)
+                        );
+                        break;
                 }
 
                 return draftState;
