@@ -422,28 +422,32 @@ function findAssignablePersonnel(
                 groupedPersonnel,
                 'san',
                 patientStatus,
-                maxPatients
+                maxPatients,
+                mixWithHigherStatus
             );
         case 'san':
             return findAssignablePersonnel(
                 groupedPersonnel,
                 'rettSan',
                 patientStatus,
-                maxPatients
+                maxPatients,
+                mixWithHigherStatus
             );
         case 'rettSan':
             return findAssignablePersonnel(
                 groupedPersonnel,
                 'notSan',
                 patientStatus,
-                maxPatients
+                maxPatients,
+                mixWithHigherStatus
             );
         case 'notSan':
             return findAssignablePersonnel(
                 groupedPersonnel,
                 'notarzt',
                 patientStatus,
-                maxPatients
+                maxPatients,
+                mixWithHigherStatus
             );
         case 'notarzt':
             return undefined;
