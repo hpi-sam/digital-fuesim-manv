@@ -438,7 +438,7 @@ function findAssignablePersonnel(
 /**
  * Performs the actual assignment of personnel and material to patients.
  * This function tries to reach matching in which every red patient is treated by a notSan and a rettSan exclusively, each yellow patient is treated by a rettSan exclusively and each two green patients are treated by a san.
- * Additionally, each red and yellow patient should be treated by a paramedic (non-exclusively) and material should be assigned.
+ * Additionally, each red and yellow patient should be treated by a notarzt (non-exclusively) and material should be assigned.
  * @param draftState The state to operate in
  * @param patients A list of the patients to operate on
  * @param cateringPersonnel A list of the personnel to operate on.
@@ -555,14 +555,14 @@ function assignTreatments(
 
     const cateringMaterials = createCateringMaterial(materials);
 
-    // A paramedic may be used to replace a lower tier personnel if there is not enough
-    // In this case, we consider the paramedic to be more occupied that by it's normal work so we don't want to use them here
-    const remainingParamedics =
-        groupedPersonnel.notarzt?.filter((paramedic) =>
-            hasNoTreatments(paramedic)
+    // A notarzt may be used to replace a lower tier personnel if there is not enough
+    // In this case, we consider the notarzt to be more occupied that by it's normal work so we don't want to use them here
+    const remainingNotarzts =
+        groupedPersonnel.notarzt?.filter((notarzt) =>
+            hasNoTreatments(notarzt)
         ) ?? [];
 
-    let patientsWithParamedic = 0;
+    let patientsWithNotarzt = 0;
 
     [
         ...(groupedPatients.red ?? []),
@@ -588,20 +588,20 @@ function assignTreatments(
                 draftState.configuration.bluePatientsEnabled
             ) !== 'green'
         ) {
-            // Usually, paramedics are needed for some specific tasks, but they do not have to treat a patient continuously and exclusively.
+            // Usually, notarzts are needed for some specific tasks, but they do not have to treat a patient continuously and exclusively.
             // Therefore, we can just use this simple approach based on their normal treatment capacity
             if (
-                remainingParamedics.some((paramedic) =>
+                remainingNotarzts.some((notarzt) =>
                     tryToCaterFor(
-                        paramedic.personnel,
-                        paramedic.catersFor,
+                        notarzt.personnel,
+                        notarzt.catersFor,
                         patient,
                         draftState.configuration.pretriageEnabled,
                         draftState.configuration.bluePatientsEnabled
                     )
                 )
             ) {
-                patientsWithParamedic++;
+                patientsWithNotarzt++;
             }
         }
     });
@@ -612,6 +612,6 @@ function assignTreatments(
 
     return (
         securedPatients >= patients.length &&
-        patientsWithParamedic >= redAndYellowPatientsCount
+        patientsWithNotarzt >= redAndYellowPatientsCount
     );
 }
