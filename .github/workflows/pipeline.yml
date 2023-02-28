@@ -244,6 +244,7 @@ jobs:
         strategy:
             matrix:
                 os: [ubuntu-latest]
+                browser: [firefox, chrome]
             fail-fast: false
 
         steps:
@@ -294,19 +295,20 @@ jobs:
               with:
                   start: npm --prefix .. -- run start:all
                   working-directory: frontend
+                  browser: ${{ matrix.browser }}
                   wait-on: 'http://127.0.0.1:4200/, http://127.0.0.1:3201/api/health'
                   command-prefix: '--' # So cypress is using our node version: https://github.com/cypress-io/github-action/issues/489#issuecomment-1021379037
             - name: Archive cypress videos
               if: always()
               uses: actions/upload-artifact@v3
               with:
-                  name: cypress-videos
+                  name: cypress-videos-${{ matrix.browser }}
                   path: frontend/cypress/videos
             - name: Archive cypress screenshots
               if: always()
               uses: actions/upload-artifact@v3
               with:
-                  name: cypress-screenshots
+                  name: cypress-screenshots-${{ matrix.browser }}
                   path: frontend/cypress/screenshots
 
     deploy-dev:
