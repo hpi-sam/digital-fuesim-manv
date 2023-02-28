@@ -64,7 +64,11 @@ class WordStateManager {
 }
 
 const successResponse: SocketResponse = { success: true };
-const errorResponse: SocketResponse = { success: false, message: 'error' };
+const errorResponse: SocketResponse = {
+    success: false,
+    message: 'error',
+    expected: false,
+};
 
 describe('OptimisticActionHandler', () => {
     let actionKey: number;
