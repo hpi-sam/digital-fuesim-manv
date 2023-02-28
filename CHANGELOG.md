@@ -29,7 +29,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Fixed
 
--   Moving the map no longer closes popups but can be closed with ESC.
+-   Moving the map no longer closes popups but they can be closed with ESC.
 -   Minor dependency updates
 -   Updated deprecated actions
 
