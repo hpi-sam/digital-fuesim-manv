@@ -1,6 +1,10 @@
 name: Complete pipeline
 
-on: push
+on:
+    push:
+    pull_request:
+        types:
+            - ready_for_review
 
 jobs:
     build:
@@ -353,6 +357,10 @@ jobs:
                   lfs: 'true'
             - name: checkoutLFS
               uses: actions/checkout@v3
+            - name: Extract version
+              run: |
+                  versionName=`jq -jM .version package.json`
+                  echo "version_name=$versionName" >> "$GITHUB_ENV"
             - run: git lfs pull
             # Source: https://docs.docker.com/ci-cd/github-actions/
             - name: Login to docker
@@ -366,4 +374,33 @@ jobs:
                   context: .
                   file: docker/Dockerfile
                   push: true
-                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dfm:latest
+                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dfm:latest , ${{ secrets.DOCKER_HUB_USERNAME }}/dfm:${{ env.version_name }}
+
+    release-main:
+        timeout-minutes: 2
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+        needs: [test, cypress]
+        permissions:
+            contents: write
+        steps:
+            - uses: actions/checkout@v3
+            - name: Initialize mandatory git config
+              run: |
+                  git config user.name "GitHub Actions"
+                  git config user.email noreply@github.com
+            - name: Extract version
+              run: |
+                  versionName=`jq -jM .version package.json`
+                  echo "VERSION_NAME=$versionName" >> "$GITHUB_ENV"
+            - name: Extract release notes
+              id: extract_release_notes
+              uses: ffurrer2/extract-release-notes@v1
+            - name: Create Release
+              run: >
+                  gh release create "v${{ env.VERSION_NAME }}"
+                  --title "v${{ env.VERSION_NAME }}"
+                  --notes "${{ steps.extract_release_notes.outputs.release_notes }}"
+                  --target "main"
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

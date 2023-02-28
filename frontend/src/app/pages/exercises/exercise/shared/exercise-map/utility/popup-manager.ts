@@ -11,6 +11,7 @@ import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import { Subject, takeUntil } from 'rxjs';
 import type OlMap from 'ol/Map';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Positioning } from '../../utility/types/positioning';
 import type { FeatureManager } from './feature-manager';
 
@@ -31,6 +32,12 @@ export class PopupManager {
     private readonly destroy$ = new Subject<void>();
     private currentlyOpenPopupOptions?: OpenPopupOptions<any>;
     private popupsEnabled = true;
+    public get currentClosingIds(): UUID[] {
+        if (this.currentlyOpenPopupOptions === undefined) {
+            return [];
+        }
+        return this.currentlyOpenPopupOptions.closingUUIDs;
+    }
 
     constructor(
         private readonly popoverContent: ViewContainerRef,
@@ -134,6 +141,9 @@ export class PopupManager {
     }
 }
 
+/**
+ * {@link closingUUIDs} is an array containing the UUIDs of elements that when clicked shall close the pop-up
+ */
 export interface OpenPopupOptions<
     Component extends PopupComponent,
     ComponentClass extends Type<Component> = Type<Component>
@@ -141,6 +151,7 @@ export interface OpenPopupOptions<
     position: number[];
     positioning: Positioning;
     component: ComponentClass;
+    closingUUIDs: UUID[];
     context?: Partial<Component>;
 }
 

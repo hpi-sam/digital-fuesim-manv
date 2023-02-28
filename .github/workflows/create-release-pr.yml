@@ -1,0 +1,90 @@
+name: Create Release PRs
+
+on:
+    workflow_dispatch:
+        inputs:
+            versionName:
+                description: 'Name of version  (i.e. 1.2.3)'
+                required: true
+
+jobs:
+    create-release-branch:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        outputs:
+            commit: ${{ steps.create-commit.outputs.commit }}
+        steps:
+            - name: Check out code
+              uses: actions/checkout@v3
+            - name: Create release branch
+              run: git checkout -b release/v${{ github.event.inputs.versionName }}
+            - name: Initialize git config
+              run: |
+                  git config user.name "GitHub Actions"
+                  git config user.email noreply@github.com
+            - name: Cache node modules
+              uses: actions/cache@v3
+              id: cache-node-modules
+              env:
+                  cache-name: cache-node-modules
+              with:
+                  path: |
+                      node_modules
+                      shared/node_modules
+                      frontend/node_modules
+                      backend/node_modules
+                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
+            - name: Update version in packages
+              run: bash .github/update-version.sh "${{ github.event.inputs.versionName }}"
+            - name: Update versions in package-locks
+              run: npm run setup:package-lock-only
+            - name: Update changelog
+              uses: thomaseizinger/keep-a-changelog-new-release@v1
+              with:
+                  tag: ${{ github.event.inputs.versionName }}
+            - name: Format changelog
+              run: npm run prettier
+            - name: Commit updated version and changelog
+              id: create-commit
+              run: |
+                  git commit -a --message "Debug v${{ github.event.inputs.versionName }}"
+                  echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            - name: Push new branch
+              run: git push origin release/v${{ github.event.inputs.versionName }}
+    create-pull-requests:
+        runs-on: ubuntu-latest
+        needs: create-release-branch
+        permissions:
+            pull-requests: write
+        steps:
+            - name: Check out code
+              uses: actions/checkout@v3
+              with:
+                  ref: release/v${{ github.event.inputs.versionName }}
+            - name: Create pull request into main
+              run: >
+                  gh pr create
+                  --head "release/v${{ github.event.inputs.versionName }}"
+                  --base "main"
+                  --title "Release v${{ github.event.inputs.versionName }}"
+                  --body "This PR was created in response to a running workflow.
+
+                  I have updated the version name and changelog: ${{ needs.create-release-branch.outputs.commit }}"
+                  --label release
+                  --draft
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create pull request into dev
+              run: >
+                  gh pr create
+                  --head "release/v${{ github.event.inputs.versionName }}"
+                  --base "dev"
+                  --title "Release v${{ github.event.inputs.versionName }} (dev)"
+                  --body "This PR was created in response to a running workflow.
+
+                  I have updated the version name and changelog: ${{ needs.create-release-branch.outputs.commit }}"
+                  --label release
+                  --draft
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
