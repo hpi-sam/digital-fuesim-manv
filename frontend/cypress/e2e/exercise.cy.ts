@@ -486,8 +486,7 @@ describe('A trainer on the exercise page', () => {
             .its('patientIds')
             .should('not.be.empty');
 
-        cy.wait(150); // Do not trigger a double click
-        cy.get('[data-cy=openLayersContainer]').click();
+        cy.get('[data-cy=openLayersContainer]').dblclick();
         cy.get('[data-cy=transferPointPopupHospitalNav]').click();
         cy.get('[data-cy=transferPointPopupRemoveHospitalButton]').click();
         cy.get('@trainerSocketPerformedActions')
@@ -545,8 +544,7 @@ describe('A trainer on the exercise page', () => {
         cy.get('[data-cy=transferPointPopupCloseButton]').click();
         cy.dragToMap('[data-cy=draggableTransferPointDiv]');
 
-        cy.wait(150);
-        cy.get('[data-cy=openLayersContainer]').click();
+        cy.get('[data-cy=openLayersContainer]').dblclick();
         cy.get('[data-cy=transferPointPopupOtherTransferPointsNav]').click();
         cy.get(
             '[data-cy=transferPointPopupAddOtherTransferPointButton]'
