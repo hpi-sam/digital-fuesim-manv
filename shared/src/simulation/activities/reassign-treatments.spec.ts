@@ -179,8 +179,6 @@ describe('reassign treatment', () => {
                         });
                     }
                 );
-            console.log(leaderId);
-            console.log(beforeState.personnel);
             expect(newState).toStrictEqual(beforeState);
             expect(terminate).toBeCalled();
         });
