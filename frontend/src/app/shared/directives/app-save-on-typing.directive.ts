@@ -3,6 +3,7 @@ import { Directive, EventEmitter, Output } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, filter, takeUntil, tap } from 'rxjs/operators';
+import { isBeingTestedByCypress } from '../functions/cypress';
 
 /**
  * This directive should be used when values should be autosaved while the user types into the input.
@@ -42,7 +43,7 @@ export class AppSaveOnTypingDirective implements OnDestroy {
                 }),
                 // Keeping a key (like backspace) pressed for a more than a certain threshold will result in many key presses
                 // The debounceTime should be above that threshold to not register the initial keypress as the first update
-                debounceTime(600),
+                isBeingTestedByCypress() ? tap() : debounceTime(600),
                 filter(() => ngModel.valid === true),
                 takeUntil(this.destroy$)
             )

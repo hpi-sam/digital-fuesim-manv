@@ -131,7 +131,7 @@ class TestEnvironment {
     ): Promise<void> {
         let clientSocket: ExerciseClientSocket | undefined;
         try {
-            clientSocket = io(`ws://localhost:${Config.websocketPort}`, {
+            clientSocket = io(`ws://127.0.0.1:${Config.websocketPort}`, {
                 ...socketIoTransports,
             });
             const websocketClient = new WebsocketClient(clientSocket);

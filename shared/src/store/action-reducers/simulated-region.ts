@@ -66,8 +66,8 @@ export class ResizeSimulatedRegionAction implements Action {
 }
 
 export class RenameSimulatedRegionAction implements Action {
-    @IsValue('[SimulatedRegion] Rename simulatedRegion' as const)
-    public readonly type = '[SimulatedRegion] Rename simulatedRegion';
+    @IsValue('[SimulatedRegion] Rename simulated region' as const)
+    public readonly type = '[SimulatedRegion] Rename simulated region';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;

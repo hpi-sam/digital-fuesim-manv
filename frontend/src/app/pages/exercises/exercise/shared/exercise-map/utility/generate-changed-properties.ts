@@ -1,13 +1,12 @@
-import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
+import type { Immutable, JsonObject } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
 
 /**
  * @returns a Set of all the properties that are different between the two objects
  */
-export function generateChangedProperties<Element extends ImmutableJsonObject>(
-    oldElement: Element,
-    newElement: Element
-): Set<keyof Element> {
+export function generateChangedProperties<
+    Element extends Immutable<JsonObject>
+>(oldElement: Element, newElement: Element): Set<keyof Element> {
     const properties = new Set<keyof Element>([
         // there could be optional properties that are only in one element
         ...Object.keys(oldElement),
