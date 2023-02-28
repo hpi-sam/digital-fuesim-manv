@@ -16,11 +16,12 @@ import {
     reassignTreatmentsActivity,
     ReassignTreatmentsActivityState,
 } from './reassign-treatments';
+import { TreatmentProgressChangedEvent } from '../events';
 
 const emptyState = ExerciseState.create('123456');
 
 /**
- * TODO: Update comment
+ * TODO: Update comment and rename function
  * Perform {@link mutateBeforeState} and then call `calculateTreatments`
  * @param mutateBeforeState A function that may be called on the default state before calling to `calculateTreatments`.
  * @returns The state before and after calling `calculateTreatments`
@@ -75,6 +76,7 @@ function setupStateAndApplyTreatments(
         newState,
         newActivityState,
         terminate,
+        simulatedRegion: newState.simulatedRegions[simulatedRegion.id],
     };
 }
 
@@ -231,11 +233,133 @@ describe('reassign treatment', () => {
                     }
                 );
             expect(newState).toStrictEqual(beforeState);
-            expect(terminate).not.toHaveBeenCalled();
+            expect(terminate).not.toBeCalled();
             expect(newActivityState.countingStartedAt).toBe(time);
         });
 
-        // TODO: Add a test where countingStartedAt is set and expect counting to finish
+        it('continues counting if the time is not up', () => {
+            const leaderId = uuid();
+            const startTime = 1000 * 60 * 5;
+            const countingTime = 1000 * 20;
+
+            const activityState = cloneDeepMutable(
+                ReassignTreatmentsActivityState.create(
+                    uuid(),
+                    'unknown',
+                    countingTime
+                )
+            );
+            activityState.countingStartedAt = startTime;
+
+            const { beforeState, newState, terminate, newActivityState } =
+                setupStateAndApplyTreatments(
+                    activityState,
+                    leaderId,
+                    (draftState, simulatedRegion) => {
+                        addPatient(
+                            draftState,
+                            'white',
+                            'red',
+                            SimulatedRegionPosition.create(simulatedRegion.id)
+                        );
+
+                        addPersonnel(draftState, {
+                            ...Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.notSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    simulatedRegion.id
+                                )
+                            ),
+                            id: leaderId,
+                        });
+
+                        addPersonnel(
+                            draftState,
+                            Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.rettSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    simulatedRegion.id
+                                )
+                            )
+                        );
+
+                        draftState.currentTime =
+                            startTime + Math.floor(countingTime / 2);
+                    }
+                );
+            expect(newState).toStrictEqual(beforeState);
+            expect(terminate).not.toBeCalled();
+            expect(newActivityState.countingStartedAt).toBe(startTime);
+        });
+
+        it('finishes counting and sends event if the time not up', () => {
+            const leaderId = uuid();
+            const startTime = 1000 * 60 * 5;
+            const countingTime = 1000 * 20;
+
+            const activityState = cloneDeepMutable(
+                ReassignTreatmentsActivityState.create(
+                    uuid(),
+                    'unknown',
+                    countingTime
+                )
+            );
+            activityState.countingStartedAt = startTime;
+
+            const { terminate, newActivityState, simulatedRegion } =
+                setupStateAndApplyTreatments(
+                    activityState,
+                    leaderId,
+                    (draftState, _simulatedRegion) => {
+                        addPatient(
+                            draftState,
+                            'white',
+                            'red',
+                            SimulatedRegionPosition.create(_simulatedRegion.id)
+                        );
+
+                        addPersonnel(draftState, {
+                            ...Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.notSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    _simulatedRegion.id
+                                )
+                            ),
+                            id: leaderId,
+                        });
+
+                        addPersonnel(
+                            draftState,
+                            Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.rettSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    _simulatedRegion.id
+                                )
+                            )
+                        );
+
+                        draftState.currentTime = startTime + countingTime * 2;
+                    }
+                );
+
+            expect(terminate).toBeCalled();
+            expect(newActivityState.countingStartedAt).toBe(startTime);
+
+            const event = simulatedRegion?.inEvents.find(
+                (element) => element.type === 'treatmentProgressChangedEvent'
+            ) as TreatmentProgressChangedEvent | undefined;
+
+            expect(event).toBeDefined();
+            expect(event?.newProgress).toBe('counted');
+        });
     });
 
     // TODO: Add tests for "counted", "triaged" and "secured"

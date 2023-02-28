@@ -222,7 +222,8 @@ function count(
     if (activityState.countingStartedAt) {
         return (
             draftState.currentTime >=
-            activityState.countingTimePerPatient * patients.length
+            activityState.countingStartedAt +
+                activityState.countingTimePerPatient * patients.length
         );
     }
 
