@@ -15,6 +15,7 @@ import { addPersonnel } from '../../../tests/utils/personnel.spec';
 import { defaultPersonnelTemplates } from '../../data/default-state/personnel-templates';
 import type { TreatmentProgressChangedEvent } from '../events';
 import { assertCatering } from '../../../tests/utils/catering.spec';
+import { addMaterial } from '../../../tests/utils/materials.spec';
 import {
     reassignTreatmentsActivity,
     ReassignTreatmentsActivityState,
@@ -1042,7 +1043,215 @@ describe('reassign treatment', () => {
             }
         );
 
-        // TODO: Test material and notarzt assignment, test switching to higher personnel
+        it.each([
+            ['notarzt', 'red'],
+            ['notSan', 'yellow'],
+            ['notarzt', 'yellow'],
+            ['rettSan', 'green'],
+            ['notSan', 'green'],
+            ['notarzt', 'green'],
+        ] as const)(
+            'switches to "better" personnel for %s patients if the requested personnel type is not available',
+            (higherPersonnel, patientStatus) => {
+                const leaderId = uuid();
+                let patientId: UUID = '';
+                let catererId: UUID = '';
+
+                const { beforeState, newState, terminate } =
+                    setupStateAndApplyTreatments(
+                        ReassignTreatmentsActivityState.create(
+                            uuid(),
+                            state,
+                            0
+                        ),
+                        leaderId,
+                        (draftState, _simulatedRegion) => {
+                            patientId = addPatient(
+                                draftState,
+                                patientStatus,
+                                patientStatus,
+                                SimulatedRegionPosition.create(
+                                    _simulatedRegion.id
+                                )
+                            ).id;
+
+                            addPersonnel(draftState, {
+                                ...Personnel.generatePersonnel(
+                                    defaultPersonnelTemplates.notSan,
+                                    uuid(),
+                                    '',
+                                    SimulatedRegionPosition.create(
+                                        _simulatedRegion.id
+                                    )
+                                ),
+                                id: leaderId,
+                            });
+
+                            catererId = addPersonnel(draftState, {
+                                ...Personnel.generatePersonnel(
+                                    defaultPersonnelTemplates[higherPersonnel],
+                                    uuid(),
+                                    '',
+                                    SimulatedRegionPosition.create(
+                                        _simulatedRegion.id
+                                    )
+                                ),
+                                canCaterFor: CanCaterFor.create(1, 0, 0, 'and'),
+                            }).id;
+                        }
+                    );
+
+                expect(terminate).toBeCalled();
+                assertCatering(beforeState, newState, [
+                    {
+                        catererId,
+                        catererType: 'personnel',
+                        patientIds: [patientId],
+                    },
+                ]);
+            }
+        );
+
+        it('assigns material', () => {
+            const leaderId = uuid();
+            let patientId: UUID = '';
+            let catererId: UUID = '';
+
+            const { beforeState, newState, terminate } =
+                setupStateAndApplyTreatments(
+                    ReassignTreatmentsActivityState.create(uuid(), state, 0),
+                    leaderId,
+                    (draftState, _simulatedRegion) => {
+                        patientId = addPatient(
+                            draftState,
+                            'red',
+                            'red',
+                            SimulatedRegionPosition.create(_simulatedRegion.id)
+                        ).id;
+
+                        addPersonnel(draftState, {
+                            ...Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.notSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    _simulatedRegion.id
+                                )
+                            ),
+                            id: leaderId,
+                        });
+
+                        addPersonnel(draftState, {
+                            ...Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.san,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    _simulatedRegion.id
+                                )
+                            ),
+                            canCaterFor: CanCaterFor.create(0, 0, 0, 'and'),
+                        });
+
+                        catererId = addMaterial(
+                            draftState,
+                            SimulatedRegionPosition.create(_simulatedRegion.id)
+                        ).id;
+                    }
+                );
+
+            expect(terminate).toBeCalled();
+            assertCatering(beforeState, newState, [
+                {
+                    catererId,
+                    catererType: 'material',
+                    patientIds: [patientId],
+                },
+            ]);
+        });
+
+        it.each([
+            ['red', 'yellow'],
+            ['yellow', 'green'],
+            ['red', 'green'],
+        ] as const)(
+            'prefers %s over %s patients for material assignment',
+            (higherStatus, lowerStatus) => {
+                const leaderId = uuid();
+                let higherPatientId: UUID = '';
+                let catererId: UUID = '';
+
+                const { beforeState, newState, terminate } =
+                    setupStateAndApplyTreatments(
+                        ReassignTreatmentsActivityState.create(
+                            uuid(),
+                            state,
+                            0
+                        ),
+                        leaderId,
+                        (draftState, _simulatedRegion) => {
+                            higherPatientId = addPatient(
+                                draftState,
+                                higherStatus,
+                                higherStatus,
+                                SimulatedRegionPosition.create(
+                                    _simulatedRegion.id
+                                )
+                            ).id;
+                            addPatient(
+                                draftState,
+                                lowerStatus,
+                                lowerStatus,
+                                SimulatedRegionPosition.create(
+                                    _simulatedRegion.id
+                                )
+                            );
+
+                            addPersonnel(draftState, {
+                                ...Personnel.generatePersonnel(
+                                    defaultPersonnelTemplates.notSan,
+                                    uuid(),
+                                    '',
+                                    SimulatedRegionPosition.create(
+                                        _simulatedRegion.id
+                                    )
+                                ),
+                                id: leaderId,
+                            });
+
+                            addPersonnel(draftState, {
+                                ...Personnel.generatePersonnel(
+                                    defaultPersonnelTemplates.san,
+                                    uuid(),
+                                    '',
+                                    SimulatedRegionPosition.create(
+                                        _simulatedRegion.id
+                                    )
+                                ),
+                                canCaterFor: CanCaterFor.create(0, 0, 0, 'and'),
+                            });
+
+                            catererId = addMaterial(
+                                draftState,
+                                SimulatedRegionPosition.create(
+                                    _simulatedRegion.id
+                                )
+                            ).id;
+                        }
+                    );
+
+                expect(terminate).toBeCalled();
+                assertCatering(beforeState, newState, [
+                    {
+                        catererId,
+                        catererType: 'material',
+                        patientIds: [higherPatientId],
+                    },
+                ]);
+            }
+        );
+
+        // TODO: Test notarzt assignment
     });
 
     // TODO: Test finished event for triaged
