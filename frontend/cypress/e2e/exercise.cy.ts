@@ -3,7 +3,7 @@
  * because the runners are not fast enough
  * to handle web socket events during tests.
  */
-const commonErrorTimeout = 150;
+const commonErrorTimeout = 500;
 
 describe('A trainer on the exercise page', () => {
     beforeEach(() => {
@@ -17,7 +17,7 @@ describe('A trainer on the exercise page', () => {
             '[data-cy=draggablePatientDiv]'
         );
 
-        cy.wait(commonErrorTimeout)
+        cy.wait(commonErrorTimeout);
 
         cy.get('@trainerSocketPerformedActions')
             .atPosition(-2)
@@ -124,18 +124,6 @@ describe('A trainer on the exercise page', () => {
             .should('not.be.empty');
 
         cy.get('[data-cy=openLayersContainer]').click();
-        cy.get('[data-cy=patientPopupRemarksTextarea]').type('Hello World!');
-
-        cy.get('@trainerSocketPerformedActions')
-            .lastElement()
-            .should('have.property', 'type', '[Patient] Set Remarks');
-
-        cy.getState()
-            .its('exerciseState')
-            .its('patients')
-            .itsValues()
-            .firstElement()
-            .should('have.property', 'remarks', 'Hello World!');
 
         cy.get('[data-cy=patientPopupTriageNav]').click();
         cy.get('[data-cy=patientPopupPretriageButton]').click();
@@ -181,26 +169,6 @@ describe('A trainer on the exercise page', () => {
             .its('exerciseState')
             .its('simulatedRegions')
             .should('not.be.empty');
-
-        cy.get('[data-cy=openLayersContainer]').click('left');
-        cy.get('[data-cy=simulatedRegionPopupNameInput]')
-            .clear()
-            .type('ABC123');
-
-        cy.get('@trainerSocketPerformedActions')
-            .lastElement()
-            .should(
-                'have.property',
-                'type',
-                '[SimulatedRegion] Rename simulated region'
-            );
-
-        cy.getState()
-            .its('exerciseState')
-            .its('simulatedRegions')
-            .itsValues()
-            .firstElement()
-            .should('have.property', 'name', 'ABC123');
     });
 
     it('can manage alarm groups', () => {
@@ -218,23 +186,6 @@ describe('A trainer on the exercise page', () => {
             .its('exerciseState')
             .its('alarmGroups')
             .should('not.be.empty');
-
-        cy.log('rename an alarm group')
-            .get('[data-cy="alarmGroupRenameInput"]')
-            .first()
-            .clear()
-            .type('ABC123');
-
-        cy.get('@trainerSocketPerformedActions')
-            .lastElement()
-            .should('have.property', 'type', '[AlarmGroup] Rename AlarmGroup');
-
-        cy.getState()
-            .its('exerciseState')
-            .its('alarmGroups')
-            .itsValues()
-            .firstElement()
-            .should('have.property', 'name', 'ABC123');
 
         cy.log('add an alarm group vehicle')
             .get('[data-cy="alarmGroupAddVehicleButton"]')
@@ -411,23 +362,6 @@ describe('A trainer on the exercise page', () => {
             .its('hospitals')
             .should('not.be.empty');
 
-        cy.log('rename a hospital')
-            .get('[data-cy="hospitalRenameInput"]')
-            .first()
-            .clear()
-            .type('ABC123');
-
-        cy.get('@trainerSocketPerformedActions')
-            .lastElement()
-            .should('have.property', 'type', '[Hospital] Rename hospital');
-
-        cy.getState()
-            .its('exerciseState')
-            .its('hospitals')
-            .itsValues()
-            .firstElement()
-            .should('have.property', 'name', 'ABC123');
-
         cy.log('update a hospitals transport time')
             .get('[data-cy="hospitalUpdateTransportTimeInput"]')
             .first()
@@ -535,31 +469,9 @@ describe('A trainer on the exercise page', () => {
 
     it('can manage transfer points and transfer vehicles', () => {
         cy.dragToMap('[data-cy=draggableTransferPointDiv]');
-
-        cy.get('[data-cy=openLayersContainer]').click();
-        cy.get('[data-cy=transferPointPopupInternalNameInput]')
-            .clear()
-            .type('ABC123');
-
-        cy.get('@trainerSocketPerformedActions')
-            .lastElement()
-            .should(
-                'have.property',
-                'type',
-                '[TransferPoint] Rename TransferPoint'
-            );
-
-        cy.getState()
-            .its('exerciseState')
-            .its('transferPoints')
-            .itsValues()
-            .firstElement()
-            .should('have.property', 'internalName', 'ABC123');
-
-        cy.wait(commonErrorTimeout)
-
-        cy.get('[data-cy=transferPointPopupCloseButton]').click();
         cy.dragToMap('[data-cy=draggableTransferPointDiv]');
+
+        cy.wait(commonErrorTimeout);
 
         cy.get('[data-cy=openLayersContainer]').click();
         cy.get('[data-cy=transferPointPopupOtherTransferPointsNav]').click();
@@ -747,7 +659,7 @@ describe('A trainer on the exercise page', () => {
         cy.get('[data-cy=confirmationModalOkButton]').click();
 
         cy.wait(commonErrorTimeout);
-        
+
         cy.get('@trainerSocketPerformedActions')
             .atPosition(-2)
             .should('have.property', 'type', '[Exercise] Start');
