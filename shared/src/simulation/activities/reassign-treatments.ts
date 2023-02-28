@@ -487,70 +487,70 @@ function assignTreatments(
     let securedPatients = 0;
 
     groupedPatients.red?.forEach((patient) => {
-        const notSanResult = findAssignablePersonnel(
+        const assignableNotSan = findAssignablePersonnel(
             groupedPersonnel,
             'notSan',
             'red',
             2
         );
 
-        if (notSanResult) {
+        if (assignableNotSan) {
             tryToCaterFor(
-                notSanResult.personnel.personnel,
-                notSanResult.personnel.catersFor,
+                assignableNotSan.personnel.personnel,
+                assignableNotSan.personnel.catersFor,
                 patient,
                 draftState.configuration.pretriageEnabled,
                 draftState.configuration.bluePatientsEnabled
             );
         }
 
-        const rettSanResult = findAssignablePersonnel(
+        const assignableRettSan = findAssignablePersonnel(
             groupedPersonnel,
             'rettSan',
             'red',
             2
         );
 
-        if (rettSanResult) {
+        if (assignableRettSan) {
             tryToCaterFor(
-                rettSanResult.personnel.personnel,
-                rettSanResult.personnel.catersFor,
+                assignableRettSan.personnel.personnel,
+                assignableRettSan.personnel.catersFor,
                 patient,
                 draftState.configuration.pretriageEnabled,
                 draftState.configuration.bluePatientsEnabled
             );
         }
 
-        if (notSanResult?.isExclusive && rettSanResult?.isExclusive) {
+        if (assignableNotSan?.isExclusive && assignableRettSan?.isExclusive) {
             securedPatients++;
         }
     });
 
     groupedPatients.yellow?.forEach((patient) => {
-        const rettSanResult = findAssignablePersonnel(
+        const assignableRettSan = findAssignablePersonnel(
             groupedPersonnel,
             'rettSan',
             'yellow',
             2
         );
 
-        if (rettSanResult) {
+        if (assignableRettSan) {
             tryToCaterFor(
-                rettSanResult.personnel.personnel,
-                rettSanResult.personnel.catersFor,
+                assignableRettSan.personnel.personnel,
+                assignableRettSan.personnel.catersFor,
                 patient,
                 draftState.configuration.pretriageEnabled,
                 draftState.configuration.bluePatientsEnabled
             );
 
-            if (rettSanResult.isExclusive) {
+            if (assignableRettSan.isExclusive) {
                 securedPatients++;
             }
         }
     });
 
     groupedPatients.green?.forEach((patient) => {
-        const sanResult = findAssignablePersonnel(
+        const assignableSan = findAssignablePersonnel(
             groupedPersonnel,
             'san',
             'green',
@@ -558,10 +558,10 @@ function assignTreatments(
             false
         );
 
-        if (sanResult) {
+        if (assignableSan) {
             tryToCaterFor(
-                sanResult.personnel.personnel,
-                sanResult.personnel.catersFor,
+                assignableSan.personnel.personnel,
+                assignableSan.personnel.catersFor,
                 patient,
                 draftState.configuration.pretriageEnabled,
                 draftState.configuration.bluePatientsEnabled
