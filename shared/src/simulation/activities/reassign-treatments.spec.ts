@@ -1112,6 +1112,77 @@ describe('reassign treatment', () => {
             }
         );
 
+        it('assigns notarzts', () => {
+            const leaderId = uuid();
+            let patientId: UUID = '';
+            let generalCatererId: UUID = '';
+            let notarztId: UUID = '';
+
+            const { beforeState, newState, terminate } =
+                setupStateAndApplyTreatments(
+                    ReassignTreatmentsActivityState.create(uuid(), state, 0),
+                    leaderId,
+                    (draftState, _simulatedRegion) => {
+                        patientId = addPatient(
+                            draftState,
+                            'red',
+                            'red',
+                            SimulatedRegionPosition.create(_simulatedRegion.id)
+                        ).id;
+
+                        addPersonnel(draftState, {
+                            ...Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.notSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    _simulatedRegion.id
+                                )
+                            ),
+                            id: leaderId,
+                        });
+
+                        generalCatererId = addPersonnel(draftState, {
+                            ...Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.notSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    _simulatedRegion.id
+                                )
+                            ),
+                            canCaterFor: CanCaterFor.create(1, 0, 0, 'and'),
+                        }).id;
+
+                        notarztId = addPersonnel(draftState, {
+                            ...Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.notarzt,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    _simulatedRegion.id
+                                )
+                            ),
+                            canCaterFor: CanCaterFor.create(1, 0, 0, 'and'),
+                        }).id;
+                    }
+                );
+
+            expect(terminate).toBeCalled();
+            assertCatering(beforeState, newState, [
+                {
+                    catererId: generalCatererId,
+                    catererType: 'personnel',
+                    patientIds: [patientId],
+                },
+                {
+                    catererId: notarztId,
+                    catererType: 'personnel',
+                    patientIds: [patientId],
+                },
+            ]);
+        });
+
         it('assigns material', () => {
             const leaderId = uuid();
             let patientId: UUID = '';
@@ -1250,8 +1321,6 @@ describe('reassign treatment', () => {
                 ]);
             }
         );
-
-        // TODO: Test notarzt assignment
     });
 
     // TODO: Test finished event for triaged
