@@ -311,14 +311,14 @@ function treat(
  * Groups an array by a property selected from an element.
  * @param array The array to group.
  * @param keySelector A function returning the grouping property for a given element.
- * @returns An object of keys mapped to arrays or undefined, if no elements belongs to this key.
+ * @returns An object of keys mapped to arrays.
  */
 function groupBy<T, K extends number | string | symbol>(
     array: T[],
     keySelector: (t: T) => K
-): { [Key in K]: T[] | undefined } {
+): { [Key in K]?: T[] } {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const map = {} as { [Key in K]: T[] | undefined };
+    const map = {} as { [Key in K]?: T[] };
 
     array.forEach((element) => {
         const key = keySelector(element);
@@ -388,7 +388,7 @@ function sumOfTreatments(cateringPersonnel: CateringPersonnel): number {
  */
 function findAssignablePersonnel(
     groupedPersonnel: {
-        [Key in PersonnelType]: CateringPersonnel[] | undefined;
+        [Key in PersonnelType]?: CateringPersonnel[] | undefined;
     },
     minType: PersonnelType,
     patientStatus: Exclude<PatientStatus, 'black' | 'blue' | 'white'>,
