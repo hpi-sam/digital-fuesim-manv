@@ -4,6 +4,7 @@
  * to handle web socket events during tests.
  */
 const commonErrorTimeout = 500;
+const tickDuration = 1000;
 
 describe('A trainer on the exercise page', () => {
     beforeEach(() => {
@@ -644,7 +645,7 @@ describe('A trainer on the exercise page', () => {
         cy.get('[data-cy=trainerToolbarStartButton]').click();
         cy.get('[data-cy=confirmationModalOkButton]').click();
 
-        cy.wait(1000);
+        cy.wait(tickDuration);
         cy.getState()
             .its('exerciseState')
             .its('vehicles')
@@ -678,7 +679,7 @@ describe('A trainer on the exercise page', () => {
             .its('exerciseState')
             .should('have.property', 'currentStatus', 'running');
 
-        cy.wait(1000);
+        cy.wait(tickDuration);
         cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[Exercise] Tick');
