@@ -1323,5 +1323,153 @@ describe('reassign treatment', () => {
         );
     });
 
-    // TODO: Test finished event for triaged
+    describe('in triaged state', () => {
+        it('does not send an event if not all patients are secured (treated exclusively)', () => {
+            const leaderId = uuid();
+
+            const { terminate, simulatedRegion } = setupStateAndApplyTreatments(
+                ReassignTreatmentsActivityState.create(uuid(), 'triaged', 0),
+                leaderId,
+                (draftState, _simulatedRegion) => {
+                    addPatient(
+                        draftState,
+                        'red',
+                        'red',
+                        SimulatedRegionPosition.create(_simulatedRegion.id)
+                    );
+                    addPatient(
+                        draftState,
+                        'red',
+                        'red',
+                        SimulatedRegionPosition.create(_simulatedRegion.id)
+                    );
+
+                    addPersonnel(draftState, {
+                        ...Personnel.generatePersonnel(
+                            defaultPersonnelTemplates.notSan,
+                            uuid(),
+                            '',
+                            SimulatedRegionPosition.create(_simulatedRegion.id)
+                        ),
+                        id: leaderId,
+                    });
+
+                    addPersonnel(
+                        draftState,
+                        Personnel.generatePersonnel(
+                            defaultPersonnelTemplates.notSan,
+                            uuid(),
+                            '',
+                            SimulatedRegionPosition.create(_simulatedRegion.id)
+                        )
+                    );
+                }
+            );
+
+            expect(terminate).toBeCalled();
+            expect(simulatedRegion?.inEvents).toBeEmpty();
+        });
+
+        it.each([
+            {
+                patients: [{ state: 'green', count: 1 }],
+                personnel: [{ type: 'san', count: 1 }],
+            },
+            {
+                patients: [{ state: 'yellow', count: 1 }],
+                personnel: [
+                    { type: 'rettSan', count: 1 },
+                    { type: 'notarzt', count: 1 },
+                ],
+            },
+            {
+                patients: [{ state: 'red', count: 1 }],
+                personnel: [
+                    { type: 'notSan', count: 1 },
+                    { type: 'rettSan', count: 1 },
+                    { type: 'notarzt', count: 1 },
+                ],
+            },
+            {
+                patients: [
+                    { state: 'red', count: 2 },
+                    { state: 'yellow', count: 3 },
+                    { state: 'green', count: 5 },
+                ],
+                personnel: [
+                    { type: 'notSan', count: 2 },
+                    { type: 'rettSan', count: 5 },
+                    { type: 'san', count: 3 },
+                    { type: 'notarzt', count: 2 },
+                ],
+            },
+        ] as const)(
+            'sends an event if all patients are secured (case %#)',
+            ({ patients, personnel }) => {
+                const leaderId = uuid();
+
+                const { terminate, simulatedRegion } =
+                    setupStateAndApplyTreatments(
+                        ReassignTreatmentsActivityState.create(
+                            uuid(),
+                            'triaged',
+                            0
+                        ),
+                        leaderId,
+                        (draftState, _simulatedRegion) => {
+                            patients.forEach(({ state, count }) => {
+                                for (let i = 0; i < count; i++) {
+                                    addPatient(
+                                        draftState,
+                                        state,
+                                        state,
+                                        SimulatedRegionPosition.create(
+                                            _simulatedRegion.id
+                                        )
+                                    );
+                                }
+                            });
+
+                            addPersonnel(draftState, {
+                                ...Personnel.generatePersonnel(
+                                    defaultPersonnelTemplates.notSan,
+                                    uuid(),
+                                    '',
+                                    SimulatedRegionPosition.create(
+                                        _simulatedRegion.id
+                                    )
+                                ),
+                                id: leaderId,
+                            });
+
+                            personnel.forEach(({ type, count }) => {
+                                for (let i = 0; i < count; i++) {
+                                    addPersonnel(
+                                        draftState,
+                                        Personnel.generatePersonnel(
+                                            defaultPersonnelTemplates[type],
+                                            uuid(),
+                                            '',
+                                            SimulatedRegionPosition.create(
+                                                _simulatedRegion.id
+                                            )
+                                        )
+                                    );
+                                }
+                            });
+                        }
+                    );
+
+                expect(terminate).toBeCalled();
+
+                const event = simulatedRegion?.inEvents.find(
+                    (element) =>
+                        element.type === 'treatmentProgressChangedEvent'
+                ) as TreatmentProgressChangedEvent | undefined;
+
+                expect(event).toBeDefined();
+                expect(event?.newProgress).toBe('secured');
+            }
+        );
+    });
 });
