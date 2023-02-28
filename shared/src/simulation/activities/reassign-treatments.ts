@@ -388,7 +388,7 @@ function sumOfTreatments(cateringPersonnel: CateringPersonnel): number {
  */
 function findAssignablePersonnel(
     groupedPersonnel: {
-        [Key in PersonnelType]?: CateringPersonnel[] | undefined;
+        [Key in PersonnelType]?: CateringPersonnel[];
     },
     minType: PersonnelType,
     patientStatus: Exclude<PatientStatus, 'black' | 'blue' | 'white'>,
