@@ -544,7 +544,7 @@ describe('A trainer on the exercise page', () => {
         cy.get('[data-cy=transferPointPopupCloseButton]').click();
         cy.dragToMap('[data-cy=draggableTransferPointDiv]');
 
-        cy.get('[data-cy=openLayersContainer]').dblclick();
+        cy.get('[data-cy=openLayersContainer]').click();
         cy.get('[data-cy=transferPointPopupOtherTransferPointsNav]').click();
         cy.get(
             '[data-cy=transferPointPopupAddOtherTransferPointButton]'
