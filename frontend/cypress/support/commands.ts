@@ -230,11 +230,6 @@ export function lastElement(subject: Array<unknown>) {
 }
 
 export function atPosition(subject: Array<unknown>, n: number) {
-    if (n < 0) {
-        return cy
-            .log(`${n}th element`)
-            .wrap(subject.at(subject.length + n), { log: false });
-    }
     return cy.log(`${n}th element`).wrap(subject.at(n), { log: false });
 }
 
