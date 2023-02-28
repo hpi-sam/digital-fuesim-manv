@@ -20,6 +20,8 @@ import {
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
+import { ReducerError } from '../reducer-error';
+import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 
 export class AddSimulatedRegionAction implements Action {
@@ -198,6 +200,15 @@ export namespace SimulatedRegionActionReducers {
                     elementToBeAddedType,
                     elementToBeAddedId
                 );
+
+                if (
+                    element.type === 'vehicle' &&
+                    !isCompletelyLoaded(draftState, element)
+                ) {
+                    throw new ReducerError(
+                        'Das Fahrzeug kann nur in die simulierte Region verschoben werden, wenn Personal und Material eingestiegen sind.'
+                    );
+                }
 
                 changePosition(
                     element,

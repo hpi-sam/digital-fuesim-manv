@@ -1,4 +1,4 @@
-import type { Type, NgZone } from '@angular/core';
+import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { Personnel, UUID } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
@@ -21,14 +21,12 @@ export class PersonnelFeatureManager extends MoveableFeatureManager<Personnel> {
     public register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisiblePersonnel),
             changePopup$,
             destroy$,
-            ngZone,
             mapInteractionsManager
         );
     }
@@ -79,9 +77,14 @@ export class PersonnelFeatureManager extends MoveableFeatureManager<Personnel> {
         super.onFeatureClicked(event, feature);
 
         this.togglePopup$.next(
-            this.popupHelper.getPopupOptions(PersonnelPopupComponent, feature, {
-                personnelId: feature.getId() as UUID,
-            })
+            this.popupHelper.getPopupOptions(
+                PersonnelPopupComponent,
+                feature,
+                [feature.getId() as UUID],
+                {
+                    personnelId: feature.getId() as UUID,
+                }
+            )
         );
     }
 }
