@@ -44,7 +44,7 @@ import {
     SpatialTree,
 } from './models/utils';
 import type { MaterialType } from './models/utils/material-type';
-import { seededRandomState, RandomState } from './simulation/utils';
+import { RandomState, seededRandomState } from './simulation/utils/randomness';
 import type { SpatialElementPlural } from './store/action-reducers/utils/spatial-elements';
 import type { UUID } from './utils';
 import { uuid, uuidValidationOptions } from './utils';
@@ -62,7 +62,7 @@ export class ExerciseState {
      */
     @IsInt()
     @Min(0)
-    public readonly currentTime = 0;
+    public readonly currentTime: number = 0;
     @IsLiteralUnion(exerciseStatusAllowedValues)
     public readonly currentStatus: ExerciseStatus = 'notStarted';
 

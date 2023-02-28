@@ -34,6 +34,26 @@ export function isNotInSimulatedRegion(withPosition: WithPosition): boolean {
     return !isInSimulatedRegion(withPosition);
 }
 
+export function isInSpecificVehicle(
+    withPosition: WithPosition,
+    vehicleId: UUID
+): boolean {
+    return (
+        isInVehicle(withPosition) &&
+        currentVehicleIdOf(withPosition) === vehicleId
+    );
+}
+
+export function isInSpecificSimulatedRegion(
+    withPosition: WithPosition,
+    simulatedRegionId: UUID
+): boolean {
+    return (
+        isInSimulatedRegion(withPosition) &&
+        currentSimulatedRegionIdOf(withPosition) === simulatedRegionId
+    );
+}
+
 export function currentCoordinatesOf(
     withPosition: WithPosition
 ): MapCoordinates {

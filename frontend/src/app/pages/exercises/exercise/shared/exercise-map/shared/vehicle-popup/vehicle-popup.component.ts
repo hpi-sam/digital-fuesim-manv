@@ -1,8 +1,8 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { UUID } from 'digital-fuesim-manv-shared';
-import { Vehicle } from 'digital-fuesim-manv-shared';
+import { isInSpecificVehicle } from 'digital-fuesim-manv-shared';
+import type { Vehicle, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map, switchMap } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -49,7 +49,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                         .select(createSelectMaterial(materialId))
                         .pipe(
                             map((material) =>
-                                Vehicle.isInVehicle(_vehicle, material)
+                                isInSpecificVehicle(material, _vehicle.id)
                             )
                         )
                 );
@@ -60,7 +60,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                         .select(createSelectPersonnel(personnelId))
                         .pipe(
                             map((personnel) =>
-                                Vehicle.isInVehicle(_vehicle, personnel)
+                                isInSpecificVehicle(personnel, _vehicle.id)
                             )
                         )
                 );
@@ -71,7 +71,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                         .select(createSelectPatient(patientId))
                         .pipe(
                             map((patient) =>
-                                Vehicle.isInVehicle(_vehicle, patient)
+                                isInSpecificVehicle(patient, _vehicle.id)
                             )
                         )
                 );

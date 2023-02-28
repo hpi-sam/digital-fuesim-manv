@@ -1,4 +1,4 @@
-import { seededRandomState } from '../simulation';
+import { seededRandomState } from '../simulation/utils/randomness';
 import type { UUID } from '../utils';
 import type { Migration } from './migration-functions';
 

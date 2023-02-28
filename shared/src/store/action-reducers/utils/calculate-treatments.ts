@@ -19,7 +19,7 @@ import { getElement } from './get-element';
 /**
  * How many patients of which triageStatus a personnel/material is treating
  */
-interface CatersFor {
+export interface CatersFor {
     red: number;
     yellow: number;
     green: number;
@@ -28,7 +28,7 @@ interface CatersFor {
 /**
  * @returns whether a material or personnel could treat a patient with {@link status} if it already {@link catersFor} patients
  */
-function couldCaterFor(
+export function couldCaterFor(
     status: Exclude<PatientStatus, 'white'>,
     cateringElement: Mutable<Material | Personnel>,
     catersFor: Mutable<CatersFor>
@@ -71,7 +71,7 @@ function couldCaterFor(
  * Tries to assign the {@link patient} to {@link cateringElement} (side effect).
  * @returns Whether the patient can be catered for by the {@link cateringElement}.
  */
-function tryToCaterFor(
+export function tryToCaterFor(
     cateringElement: Mutable<Material | Personnel>,
     catersFor: Mutable<CatersFor>,
     patient: Mutable<Patient>,
