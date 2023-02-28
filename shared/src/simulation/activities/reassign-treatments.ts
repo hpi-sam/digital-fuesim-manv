@@ -179,7 +179,7 @@ interface CateringPersonnel {
     catersFor: CatersFor;
 }
 
-function createCateringMaterial(
+function createCateringMaterials(
     materials: Mutable<Material>[]
 ): CateringMaterial[] {
     return materials.map((material) => ({
@@ -575,7 +575,7 @@ function assignTreatments(
         }
     });
 
-    const cateringMaterials = createCateringMaterial(materials);
+    const cateringMaterials = createCateringMaterials(materials);
 
     // A notarzt may be used to replace a lower tier personnel if there is not enough
     // In this case, we consider the notarzt to be more occupied that by it's normal work so we don't want to use them here
