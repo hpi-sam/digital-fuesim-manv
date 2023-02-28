@@ -91,16 +91,19 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 ) as AssignLeaderBehaviorState
             )?.leaderId;
 
-            if (!leaderId) {
+            let leaderIndex: number;
+            if (
+                !leaderId ||
+                (leaderIndex = personnel.findIndex(
+                    (pers) => pers.id === leaderId
+                ))
+            ) {
                 terminate();
                 return;
             }
 
             // The leader does not treat patients
-            personnel.splice(
-                personnel.findIndex((pers) => pers.id === leaderId),
-                1
-            );
+            personnel.splice(leaderIndex, 1);
 
             if (personnel.length === 0) {
                 terminate();
