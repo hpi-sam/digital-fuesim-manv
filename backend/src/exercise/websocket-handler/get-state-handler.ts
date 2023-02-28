@@ -12,8 +12,7 @@ export const registerGetStateHandler = (
             callback({
                 success: false,
                 message: 'No exercise selected',
-                expected:false,
-
+                expected: false,
             });
             return;
         }
