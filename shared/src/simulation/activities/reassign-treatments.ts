@@ -257,15 +257,22 @@ function triage(
             return;
         }
 
-        cateringPersonnel.some((pers) =>
-            tryToCaterFor(
-                pers.personnel,
-                pers.catersFor,
-                patient,
-                draftState.configuration.pretriageEnabled,
-                draftState.configuration.bluePatientsEnabled
-            )
+        const triagePersonnelIndex = cateringPersonnel.findIndex(
+            (pers) =>
+                hasNoTreatments(pers) &&
+                tryToCaterFor(
+                    pers.personnel,
+                    pers.catersFor,
+                    patient,
+                    draftState.configuration.pretriageEnabled,
+                    draftState.configuration.bluePatientsEnabled
+                )
         );
+
+        if (triagePersonnelIndex !== -1) {
+            // Personnel that is used for triage shall not be used for treatments
+            cateringPersonnel.splice(triagePersonnelIndex, 1);
+        }
     });
 
     assignTreatments(draftState, patientsToTreat, cateringPersonnel, materials);

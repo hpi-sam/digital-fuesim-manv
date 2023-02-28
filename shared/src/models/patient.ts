@@ -141,7 +141,7 @@ export class Patient {
      * The time that is needed for personnel to automatically pretriage the patient
      * in milliseconds
      */
-    private static readonly pretriageTimeThreshold: number = 2 * 60 * 1000;
+    private static readonly pretriageTimeThreshold: number = 60 * 1000; // 1 minute
 
     /**
      * @deprecated Use {@link create} instead
