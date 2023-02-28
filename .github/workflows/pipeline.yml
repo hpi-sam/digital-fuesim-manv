@@ -303,7 +303,7 @@ jobs:
                   name: cypress-videos
                   path: frontend/cypress/videos
             - name: Archive cypress screenshots
-              if: failure()
+              if: always()
               uses: actions/upload-artifact@v3
               with:
                   name: cypress-screenshots
