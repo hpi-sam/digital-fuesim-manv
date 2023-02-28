@@ -10,3 +10,5 @@ export class ReducerError {
 
     constructor(public readonly message: string) {}
 }
+
+export class ExpectedReducerError extends ReducerError {}

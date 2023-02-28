@@ -164,10 +164,17 @@ export class ExerciseService {
                     }
                 );
                 if (!response.success) {
-                    this.messageService.postError({
-                        title: 'Fehler beim Senden der Aktion',
-                        error: response.message,
-                    });
+                    if (!response.expected) {
+                        this.messageService.postError({
+                            title: 'Fehler beim Senden der Aktion',
+                            error: response.message,
+                        });
+                    } else {
+                        this.messageService.postError({
+                            title: 'Diese Aktion ist nicht gestattet!',
+                            error: response.message,
+                        });
+                    }
                 }
                 return response;
             }
