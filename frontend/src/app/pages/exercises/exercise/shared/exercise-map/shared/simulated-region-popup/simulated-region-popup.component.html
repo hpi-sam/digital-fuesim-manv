@@ -5,6 +5,7 @@
             (click)="closePopup.emit()"
             type="button"
             class="btn-close float-end"
+            data-cy="simulatedRegionPopupCloseButton"
         ></button>
     </h5>
     <div class="popover-body" style="width: 350px; height: 300px">
@@ -18,6 +19,7 @@
                     required
                     type="text"
                     class="form-control"
+                    data-cy="simulatedRegionPopupNameInput"
                 />
                 <app-display-validation
                     [ngModelInput]="nameInput"

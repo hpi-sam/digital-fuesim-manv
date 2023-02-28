@@ -28,7 +28,7 @@
     <div class="popover-body p-0">
         <nav #nav="ngbNav" ngbNav class="nav-tabs">
             <ng-container ngbNavItem>
-                <a ngbNavLink>Allgemein</a>
+                <a ngbNavLink data-cy="patientPopupGeneralNav">Allgemein</a>
                 <ng-template ngbNavContent>
                     <table
                         class="table table-sm small mb-0"
@@ -114,12 +114,13 @@
                             placeholder="Schreiben Sie Informationen über den Patienten in dieses Feld..."
                             class="form-control form-control-sm no-validation w-100"
                             style="height: 100px; resize: none"
+                            data-cy="patientPopupRemarksTextarea"
                         ></textarea>
                     </div>
                 </ng-template>
             </ng-container>
             <ng-container ngbNavItem>
-                <a ngbNavLink>{{
+                <a ngbNavLink data-cy="patientPopupTriageNav">{{
                     (configuration$ | async)?.pretriageEnabled
                         ? 'Vorsichtung'
                         : 'Erstbefund'
@@ -151,6 +152,7 @@
                                                 (pretriageStatusIsLocked$
                                                     | async) ?? false
                                             "
+                                            data-cy="patientPopupPretriageButton"
                                         >
                                             <app-patient-status-badge
                                                 *ngIf="
@@ -175,6 +177,7 @@
                                                     setPretriageCategory(option)
                                                 "
                                                 class="btn-outline-secondary"
+                                                data-cy="patientPopupPretriageButtonDropdown"
                                             >
                                                 <app-patient-status-badge
                                                     [status]="option"

@@ -122,8 +122,8 @@ export class Config {
             DFM_DB_NAME_TESTING: str({ default: undefined }),
             DFM_DB_LOG: bool({ default: false }),
             DFM_DB_LOG_TESTING: bool({ default: undefined }),
-            DFM_DB_HOST: str({ default: 'localhost' }),
-            DFM_DB_HOST_TESTING: str({ default: 'localhost' }),
+            DFM_DB_HOST: str({ default: '127.0.0.1' }),
+            DFM_DB_HOST_TESTING: str({ default: '127.0.0.1' }),
             DFM_DB_PORT: tcpPortValidator({ default: 5432 }),
             DFM_DB_PORT_TESTING: tcpPortValidator({ default: 5432 }),
         });
