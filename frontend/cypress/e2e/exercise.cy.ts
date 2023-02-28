@@ -1,3 +1,10 @@
+/**
+ * Tests on github have been super flaky,
+ * because the runners are not fast enough
+ * to handle web socket events during tests.
+ */
+const commonErrorTimeout = 150;
+
 describe('A trainer on the exercise page', () => {
     beforeEach(() => {
         cy.createExercise().joinExerciseAsTrainer().initializeTrainerSocket();
@@ -9,6 +16,8 @@ describe('A trainer on the exercise page', () => {
         cy.log('load a patient to a vehicle').dragToMap(
             '[data-cy=draggablePatientDiv]'
         );
+
+        cy.wait(commonErrorTimeout)
 
         cy.get('@trainerSocketPerformedActions')
             .atPosition(-2)
@@ -102,6 +111,8 @@ describe('A trainer on the exercise page', () => {
         cy.log('load a patient to the map').dragToMap(
             '[data-cy=draggablePatientDiv]'
         );
+
+        cy.wait(commonErrorTimeout);
 
         cy.get('@trainerSocketPerformedActions')
             .lastElement()
@@ -286,6 +297,8 @@ describe('A trainer on the exercise page', () => {
             .first()
             .click();
         cy.get('[data-cy=sendAlarmGroupSendButton]').click();
+
+        cy.wait(commonErrorTimeout);
 
         cy.get('@trainerSocketPerformedActions')
             .lastElement()
@@ -486,7 +499,9 @@ describe('A trainer on the exercise page', () => {
             .its('patientIds')
             .should('not.be.empty');
 
-        cy.get('[data-cy=openLayersContainer]').dblclick();
+        cy.wait(commonErrorTimeout);
+
+        cy.get('[data-cy=openLayersContainer]').click();
         cy.get('[data-cy=transferPointPopupHospitalNav]').click();
         cy.get('[data-cy=transferPointPopupRemoveHospitalButton]').click();
         cy.get('@trainerSocketPerformedActions')
@@ -540,6 +555,8 @@ describe('A trainer on the exercise page', () => {
             .itsValues()
             .firstElement()
             .should('have.property', 'internalName', 'ABC123');
+
+        cy.wait(commonErrorTimeout)
 
         cy.get('[data-cy=transferPointPopupCloseButton]').click();
         cy.dragToMap('[data-cy=draggableTransferPointDiv]');
@@ -729,6 +746,8 @@ describe('A trainer on the exercise page', () => {
             .click();
         cy.get('[data-cy=confirmationModalOkButton]').click();
 
+        cy.wait(commonErrorTimeout);
+        
         cy.get('@trainerSocketPerformedActions')
             .atPosition(-2)
             .should('have.property', 'type', '[Exercise] Start');
@@ -831,7 +850,7 @@ describe('A trainer on the exercise page', () => {
 
         cy.get('@participantSocket', { log: false }).invoke('disconnect');
 
-        cy.wait(0);
+        cy.wait(commonErrorTimeout);
         cy.get('@trainerSocketPerformedActions')
             .lastElement()
             .should('have.property', 'type', '[Client] Remove client');
