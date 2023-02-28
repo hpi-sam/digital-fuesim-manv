@@ -1,5 +1,6 @@
 import produce from 'immer';
 import { Personnel, SimulatedRegion } from '../../models';
+import type { PatientStatus, PersonnelType } from '../../models/utils';
 import {
     CanCaterFor,
     MapCoordinates,
@@ -1324,51 +1325,111 @@ describe('reassign treatment', () => {
     });
 
     describe('in triaged state', () => {
-        it('does not send an event if not all patients are secured (treated exclusively)', () => {
-            const leaderId = uuid();
-
-            const { terminate, simulatedRegion } = setupStateAndApplyTreatments(
-                ReassignTreatmentsActivityState.create(uuid(), 'triaged', 0),
-                leaderId,
-                (draftState, _simulatedRegion) => {
+        function setupPatientsAndPersonnel(
+            draftState: Mutable<ExerciseState>,
+            simulatedRegion: SimulatedRegion,
+            patients: readonly {
+                readonly state: PatientStatus;
+                readonly count: number;
+            }[],
+            personnel: readonly {
+                readonly type: PersonnelType;
+                readonly count: number;
+            }[]
+        ) {
+            patients.forEach(({ state, count }) => {
+                for (let i = 0; i < count; i++) {
                     addPatient(
                         draftState,
-                        'red',
-                        'red',
-                        SimulatedRegionPosition.create(_simulatedRegion.id)
+                        state,
+                        state,
+                        SimulatedRegionPosition.create(simulatedRegion.id)
                     );
-                    addPatient(
-                        draftState,
-                        'red',
-                        'red',
-                        SimulatedRegionPosition.create(_simulatedRegion.id)
-                    );
+                }
+            });
 
-                    addPersonnel(draftState, {
-                        ...Personnel.generatePersonnel(
-                            defaultPersonnelTemplates.notSan,
-                            uuid(),
-                            '',
-                            SimulatedRegionPosition.create(_simulatedRegion.id)
-                        ),
-                        id: leaderId,
-                    });
-
+            personnel.forEach(({ type, count }) => {
+                for (let i = 0; i < count; i++) {
                     addPersonnel(
                         draftState,
                         Personnel.generatePersonnel(
-                            defaultPersonnelTemplates.notSan,
+                            defaultPersonnelTemplates[type],
                             uuid(),
                             '',
-                            SimulatedRegionPosition.create(_simulatedRegion.id)
+                            SimulatedRegionPosition.create(simulatedRegion.id)
                         )
                     );
                 }
-            );
+            });
+        }
 
-            expect(terminate).toBeCalled();
-            expect(simulatedRegion?.inEvents).toBeEmpty();
-        });
+        it.each([
+            {
+                // One san is missing
+                patients: [{ state: 'green', count: 1 }],
+                personnel: [],
+            },
+            {
+                // One notarzt is missing
+                patients: [{ state: 'yellow', count: 1 }],
+                personnel: [{ type: 'rettSan', count: 1 }],
+            },
+            {
+                // notSan and rettSan are missing
+                patients: [{ state: 'red', count: 1 }],
+                personnel: [{ type: 'notarzt', count: 1 }],
+            },
+            {
+                // Some bigger scenario with many missing personnel
+                patients: [
+                    { state: 'red', count: 2 },
+                    { state: 'yellow', count: 3 },
+                    { state: 'green', count: 5 },
+                ],
+                personnel: [
+                    { type: 'rettSan', count: 3 },
+                    { type: 'notarzt', count: 1 },
+                ],
+            },
+        ] as const)(
+            'does not send an event if not all patients are secured (case %#)',
+            ({ patients, personnel }) => {
+                const leaderId = uuid();
+
+                const { terminate, simulatedRegion } =
+                    setupStateAndApplyTreatments(
+                        ReassignTreatmentsActivityState.create(
+                            uuid(),
+                            'triaged',
+                            0
+                        ),
+                        leaderId,
+                        (draftState, _simulatedRegion) => {
+                            addPersonnel(draftState, {
+                                ...Personnel.generatePersonnel(
+                                    defaultPersonnelTemplates.notSan,
+                                    uuid(),
+                                    '',
+                                    SimulatedRegionPosition.create(
+                                        _simulatedRegion.id
+                                    )
+                                ),
+                                id: leaderId,
+                            });
+
+                            setupPatientsAndPersonnel(
+                                draftState,
+                                _simulatedRegion,
+                                patients,
+                                personnel
+                            );
+                        }
+                    );
+
+                expect(terminate).toBeCalled();
+                expect(simulatedRegion?.inEvents).toBeEmpty();
+            }
+        );
 
         it.each([
             {
@@ -1417,19 +1478,6 @@ describe('reassign treatment', () => {
                         ),
                         leaderId,
                         (draftState, _simulatedRegion) => {
-                            patients.forEach(({ state, count }) => {
-                                for (let i = 0; i < count; i++) {
-                                    addPatient(
-                                        draftState,
-                                        state,
-                                        state,
-                                        SimulatedRegionPosition.create(
-                                            _simulatedRegion.id
-                                        )
-                                    );
-                                }
-                            });
-
                             addPersonnel(draftState, {
                                 ...Personnel.generatePersonnel(
                                     defaultPersonnelTemplates.notSan,
@@ -1442,21 +1490,12 @@ describe('reassign treatment', () => {
                                 id: leaderId,
                             });
 
-                            personnel.forEach(({ type, count }) => {
-                                for (let i = 0; i < count; i++) {
-                                    addPersonnel(
-                                        draftState,
-                                        Personnel.generatePersonnel(
-                                            defaultPersonnelTemplates[type],
-                                            uuid(),
-                                            '',
-                                            SimulatedRegionPosition.create(
-                                                _simulatedRegion.id
-                                            )
-                                        )
-                                    );
-                                }
-                            });
+                            setupPatientsAndPersonnel(
+                                draftState,
+                                _simulatedRegion,
+                                patients,
+                                personnel
+                            );
                         }
                     );
 
