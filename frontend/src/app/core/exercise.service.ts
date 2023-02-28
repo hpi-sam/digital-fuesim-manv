@@ -10,7 +10,14 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import { freeze } from 'immer';
-import { filter, pairwise, Subject, switchMap, takeUntil } from 'rxjs';
+import {
+    debounceTime,
+    filter,
+    pairwise,
+    Subject,
+    switchMap,
+    takeUntil,
+} from 'rxjs';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import { handleChanges } from '../shared/functions/handle-changes';
@@ -157,10 +164,17 @@ export class ExerciseService {
                     }
                 );
                 if (!response.success) {
-                    this.messageService.postError({
-                        title: 'Fehler beim Senden der Aktion',
-                        error: response.message,
-                    });
+                    if (!response.expected) {
+                        this.messageService.postError({
+                            title: 'Fehler beim Senden der Aktion',
+                            error: response.message,
+                        });
+                    } else {
+                        this.messageService.postError({
+                            title: 'Diese Aktion ist nicht gestattet!',
+                            error: response.message,
+                        });
+                    }
                 }
                 return response;
             }
@@ -242,8 +256,13 @@ export class ExerciseService {
                         client?.viewRestrictedToViewportId !== undefined &&
                         !client.isInWaitingRoom
                 ),
-                switchMap((client) => this.store.select(selectVisibleVehicles)),
-                pairwise(),
+                switchMap((client) =>
+                    this.store
+                        .select(selectVisibleVehicles)
+                        // pipe in here so no pairs of events from different viewports are built
+                        // Do not trigger the message if the vehicle was removed and added again at the same time
+                        .pipe(debounceTime(0), pairwise())
+                ),
                 takeUntil(this.stopNotifications$)
             )
             .subscribe(([oldVehicles, newVehicles]) => {

@@ -38,7 +38,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ErrorResponse'
-
     /api/exercise/{exerciseId}:
         parameters:
             - $ref: '#/components/parameters/ExerciseId'
@@ -68,7 +67,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ErrorResponse'
-
     /api/exercise/{exerciseId}/history:
         parameters:
             - $ref: '#/components/parameters/ExerciseId'
