@@ -12,11 +12,13 @@ import { AssignLeaderBehaviorState } from '../behaviors/assign-leader';
 import { addPatient } from '../../../tests/utils/patients.spec';
 import { addPersonnel } from '../../../tests/utils/personnel.spec';
 import { defaultPersonnelTemplates } from '../../data/default-state/personnel-templates';
+import type { TreatmentProgressChangedEvent } from '../events';
+import type { TreatmentProgress } from '../utils/treatment';
+import { assertCatering } from '../../../tests/utils/catering.spec';
 import {
     reassignTreatmentsActivity,
     ReassignTreatmentsActivityState,
 } from './reassign-treatments';
-import { TreatmentProgressChangedEvent } from '../events';
 
 const emptyState = ExerciseState.create('123456');
 
@@ -81,11 +83,23 @@ function setupStateAndApplyTreatments(
 }
 
 describe('reassign treatment', () => {
-    describe('in unknown state', () => {
+    const allStates: TreatmentProgress[] = [
+        'unknown',
+        'counted',
+        'triaged',
+        'secured',
+    ];
+    const treatingStates: TreatmentProgress[] = [
+        'counted',
+        'triaged',
+        'secured',
+    ];
+
+    describe.each(allStates)('in %s state', (state) => {
         it('does nothing when there is nothing', () => {
             const { beforeState, newState, terminate } =
                 setupStateAndApplyTreatments(
-                    ReassignTreatmentsActivityState.create(uuid(), 'unknown', 0)
+                    ReassignTreatmentsActivityState.create(uuid(), state, 0)
                 );
             expect(newState).toStrictEqual(beforeState);
             expect(terminate).toBeCalled();
@@ -94,11 +108,7 @@ describe('reassign treatment', () => {
         it('does nothing when there is no personnel', () => {
             const { beforeState, newState, terminate } =
                 setupStateAndApplyTreatments(
-                    ReassignTreatmentsActivityState.create(
-                        uuid(),
-                        'unknown',
-                        0
-                    ),
+                    ReassignTreatmentsActivityState.create(uuid(), state, 0),
                     undefined,
                     (draftState, simulatedRegion) => {
                         addPatient(
@@ -116,11 +126,7 @@ describe('reassign treatment', () => {
         it('does nothing when there is no leading personnel', () => {
             const { beforeState, newState, terminate } =
                 setupStateAndApplyTreatments(
-                    ReassignTreatmentsActivityState.create(
-                        uuid(),
-                        'unknown',
-                        0
-                    ),
+                    ReassignTreatmentsActivityState.create(uuid(), state, 0),
                     undefined,
                     (draftState, simulatedRegion) => {
                         addPatient(
@@ -152,11 +158,7 @@ describe('reassign treatment', () => {
 
             const { beforeState, newState, terminate } =
                 setupStateAndApplyTreatments(
-                    ReassignTreatmentsActivityState.create(
-                        uuid(),
-                        'unknown',
-                        0
-                    ),
+                    ReassignTreatmentsActivityState.create(uuid(), state, 0),
                     leaderId,
                     (draftState, simulatedRegion) => {
                         addPatient(
@@ -182,7 +184,65 @@ describe('reassign treatment', () => {
             expect(newState).toStrictEqual(beforeState);
             expect(terminate).toBeCalled();
         });
+    });
 
+    describe.each(treatingStates)('in %s state', (state) => {
+        it('ignores black (dead) patients', () => {
+            const leaderId = uuid();
+            let catererId: UUID = '';
+
+            const { beforeState, newState } = setupStateAndApplyTreatments(
+                ReassignTreatmentsActivityState.create(uuid(), state, 0),
+                leaderId,
+                (draftState, simulatedRegion) => {
+                    addPatient(
+                        draftState,
+                        'black',
+                        'black',
+                        SimulatedRegionPosition.create(simulatedRegion.id)
+                    );
+                    addPatient(
+                        draftState,
+                        'black',
+                        'black',
+                        SimulatedRegionPosition.create(simulatedRegion.id)
+                    );
+                    addPatient(
+                        draftState,
+                        'black',
+                        'black',
+                        SimulatedRegionPosition.create(simulatedRegion.id)
+                    );
+
+                    addPersonnel(draftState, {
+                        ...Personnel.generatePersonnel(
+                            defaultPersonnelTemplates.notSan,
+                            uuid(),
+                            '',
+                            SimulatedRegionPosition.create(simulatedRegion.id)
+                        ),
+                        id: leaderId,
+                    });
+
+                    catererId = addPersonnel(
+                        draftState,
+                        Personnel.generatePersonnel(
+                            defaultPersonnelTemplates.rettSan,
+                            uuid(),
+                            '',
+                            SimulatedRegionPosition.create(simulatedRegion.id)
+                        )
+                    ).id;
+                }
+            );
+
+            assertCatering(beforeState, newState, [
+                { catererId, catererType: 'personnel', patientIds: [] },
+            ]);
+        });
+    });
+
+    describe('in unknown state', () => {
         it('starts counting when there is personnel', () => {
             const leaderId = uuid();
             const time = 123;
@@ -360,5 +420,223 @@ describe('reassign treatment', () => {
         });
     });
 
-    // TODO: Add tests for "counted", "triaged" and "secured"
+    describe('in counted state', () => {
+        it('assigns personnel to white patients for triage', () => {
+            const leaderId = uuid();
+            let patientId: UUID = '';
+            let catererId: UUID = '';
+
+            const { beforeState, newState, terminate } =
+                setupStateAndApplyTreatments(
+                    ReassignTreatmentsActivityState.create(
+                        uuid(),
+                        'counted',
+                        0
+                    ),
+                    leaderId,
+                    (draftState, simulatedRegion) => {
+                        patientId = addPatient(
+                            draftState,
+                            'white',
+                            'red',
+                            SimulatedRegionPosition.create(simulatedRegion.id)
+                        ).id;
+
+                        addPersonnel(draftState, {
+                            ...Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.notSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    simulatedRegion.id
+                                )
+                            ),
+                            id: leaderId,
+                        });
+
+                        catererId = addPersonnel(
+                            draftState,
+                            Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.rettSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    simulatedRegion.id
+                                )
+                            )
+                        ).id;
+                    }
+                );
+
+            expect(terminate).toBeCalled();
+
+            assertCatering(beforeState, newState, [
+                {
+                    catererId,
+                    catererType: 'personnel',
+                    patientIds: [patientId],
+                },
+            ]);
+        });
+
+        it('prefers triage over treatment', () => {
+            const leaderId = uuid();
+            let whitePatientId: UUID = '';
+            let catererId: UUID = '';
+
+            const { beforeState, newState, terminate } =
+                setupStateAndApplyTreatments(
+                    ReassignTreatmentsActivityState.create(
+                        uuid(),
+                        'counted',
+                        0
+                    ),
+                    leaderId,
+                    (draftState, simulatedRegion) => {
+                        addPatient(
+                            draftState,
+                            'red',
+                            'red',
+                            SimulatedRegionPosition.create(simulatedRegion.id)
+                        );
+                        whitePatientId = addPatient(
+                            draftState,
+                            'white',
+                            'red',
+                            SimulatedRegionPosition.create(simulatedRegion.id)
+                        ).id;
+                        addPatient(
+                            draftState,
+                            'green',
+                            'green',
+                            SimulatedRegionPosition.create(simulatedRegion.id)
+                        );
+
+                        addPersonnel(draftState, {
+                            ...Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.notSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    simulatedRegion.id
+                                )
+                            ),
+                            id: leaderId,
+                        });
+
+                        catererId = addPersonnel(
+                            draftState,
+                            Personnel.generatePersonnel(
+                                defaultPersonnelTemplates.rettSan,
+                                uuid(),
+                                '',
+                                SimulatedRegionPosition.create(
+                                    simulatedRegion.id
+                                )
+                            )
+                        ).id;
+                    }
+                );
+
+            expect(terminate).toBeCalled();
+
+            assertCatering(beforeState, newState, [
+                {
+                    catererId,
+                    catererType: 'personnel',
+                    patientIds: [whitePatientId],
+                },
+            ]);
+        });
+
+        it('does not send an events if not all patients are triaged', () => {
+            const leaderId = uuid();
+
+            const { terminate, simulatedRegion } = setupStateAndApplyTreatments(
+                ReassignTreatmentsActivityState.create(uuid(), 'counted', 0),
+                leaderId,
+                (draftState, _simulatedRegion) => {
+                    addPatient(
+                        draftState,
+                        'white',
+                        'red',
+                        SimulatedRegionPosition.create(_simulatedRegion.id)
+                    );
+
+                    addPersonnel(draftState, {
+                        ...Personnel.generatePersonnel(
+                            defaultPersonnelTemplates.notSan,
+                            uuid(),
+                            '',
+                            SimulatedRegionPosition.create(_simulatedRegion.id)
+                        ),
+                        id: leaderId,
+                    });
+                }
+            );
+
+            expect(simulatedRegion?.inEvents).toBeEmpty();
+            expect(terminate).toBeCalled();
+        });
+
+        it('sends an event when all patients are triaged', () => {
+            const leaderId = uuid();
+
+            const { terminate, simulatedRegion } = setupStateAndApplyTreatments(
+                ReassignTreatmentsActivityState.create(uuid(), 'counted', 0),
+                leaderId,
+                (draftState, _simulatedRegion) => {
+                    addPatient(
+                        draftState,
+                        'red',
+                        'red',
+                        SimulatedRegionPosition.create(_simulatedRegion.id)
+                    );
+                    addPatient(
+                        draftState,
+                        'yellow',
+                        'yellow',
+                        SimulatedRegionPosition.create(_simulatedRegion.id)
+                    );
+                    addPatient(
+                        draftState,
+                        'green',
+                        'green',
+                        SimulatedRegionPosition.create(_simulatedRegion.id)
+                    );
+
+                    addPersonnel(draftState, {
+                        ...Personnel.generatePersonnel(
+                            defaultPersonnelTemplates.notSan,
+                            uuid(),
+                            '',
+                            SimulatedRegionPosition.create(_simulatedRegion.id)
+                        ),
+                        id: leaderId,
+                    });
+
+                    addPersonnel(
+                        draftState,
+                        Personnel.generatePersonnel(
+                            defaultPersonnelTemplates.rettSan,
+                            uuid(),
+                            '',
+                            SimulatedRegionPosition.create(_simulatedRegion.id)
+                        )
+                    );
+                }
+            );
+
+            expect(terminate).toBeCalled();
+
+            const event = simulatedRegion?.inEvents.find(
+                (element) => element.type === 'treatmentProgressChangedEvent'
+            ) as TreatmentProgressChangedEvent | undefined;
+
+            expect(event).toBeDefined();
+            expect(event?.newProgress).toBe('triaged');
+        });
+    });
+
+    // TODO: Add tests for "triaged" and "secured"
 });

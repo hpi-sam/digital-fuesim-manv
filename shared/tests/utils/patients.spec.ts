@@ -1,5 +1,5 @@
 import { generateDummyPatient } from '../../src/data';
-import type { Patient } from '../../src/models';
+import { Patient } from '../../src/models';
 import type { PatientStatus, Position } from '../../src/models/utils';
 import {
     currentCoordinatesOf,
@@ -18,6 +18,9 @@ export function addPatient(
 ): Mutable<Patient> {
     const patient = cloneDeepMutable(generateDummyPatient());
     patient.pretriageStatus = pretriageStatus;
+    if (pretriageStatus !== 'white') {
+        patient.treatmentTime = Patient.pretriageTimeThreshold;
+    }
     patient.realStatus = realStatus;
     if (position) {
         patient.position = cloneDeepMutable(position);

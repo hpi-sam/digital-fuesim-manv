@@ -17,6 +17,6 @@
         "types": ["jest"]
     },
     "references": [],
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "tests/**/*"],
     "exclude": ["node_modules"]
 }

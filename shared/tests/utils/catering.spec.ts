@@ -16,7 +16,7 @@ export interface Catering {
 }
 
 /**
- * Asserts that adding the specified {@link caterings} to the {@link beforeState} results in the {@link newState}.
+ * Asserts that adding the specified {@link caterings} to the {@link beforeState} results in the caterings specified in {@link newState}.
  * If the {@link beforeState} has already caterings in it, these will not be removed.
  */
 export function assertCatering(
@@ -50,5 +50,7 @@ export function assertCatering(
         }
         return draftState;
     });
-    expect(newState).toStrictEqual(shouldState);
+    expect(newState.materials).toStrictEqual(shouldState.materials);
+    expect(newState.patients).toStrictEqual(shouldState.patients);
+    expect(newState.personnel).toStrictEqual(shouldState.personnel);
 }
