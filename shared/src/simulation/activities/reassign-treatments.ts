@@ -19,7 +19,6 @@ import {
     treatmentProgressAllowedValues,
 } from '../utils/treatment';
 import { TreatmentProgressChangedEvent } from '../events';
-import { personnelPriorities } from '../utils/priorities';
 import { sendSimulationEvent } from '../events/utils';
 import type { AssignLeaderBehaviorState } from '../behaviors/assign-leader';
 import type {
@@ -185,6 +184,14 @@ function createCateringMaterial(
         catersFor: { red: 0, yellow: 0, green: 0 },
     }));
 }
+
+const personnelPriorities: { [Key in PersonnelType]: number } = {
+    gf: 0,
+    san: 1,
+    rettSan: 2,
+    notSan: 3,
+    notarzt: 4,
+};
 
 function createCateringPersonnel(
     personnel: Mutable<Personnel>[]
