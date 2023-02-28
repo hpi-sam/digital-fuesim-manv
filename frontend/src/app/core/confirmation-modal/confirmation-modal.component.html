@@ -35,6 +35,7 @@
             confirmationString && confirmationStringValue !== confirmationString
         "
         (click)="confirmation$.next(true); activeModal.close()"
+        data-cy="confirmationModalOkButton"
     >
         Ok
     </button>

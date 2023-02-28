@@ -22,16 +22,9 @@ export type Mutable<T> = {
 };
 
 /**
- * An immutable object is an object whose state cannot be modified.
- * This represents a union of all JSON objects (no Maps, Sets, Functions, ...) that are immutable.
- * TODO: the type doesn't work yet.
- */
-export type ImmutableJsonObject = Immutable<JsonObject>;
-
-/**
  * This represents a union of all JSON objects (no Maps, Sets, Functions, ...).
  * TODO: the type doesn't work yet.
  */
-interface JsonObject {
+export interface JsonObject {
     [x: string]: any;
 }

@@ -1,6 +1,11 @@
 <div class="modal-header">
     <h4 class="modal-title">Leitstellle</h4>
-    <button type="button" class="btn-close" (click)="close()"></button>
+    <button
+        type="button"
+        class="btn-close"
+        data-cy="closeEmergencyOperationsCenterPopupButton"
+        (click)="close()"
+    ></button>
 </div>
 <div class="modal-body" style="min-height: 60vh">
     <app-send-alarm-group-interface></app-send-alarm-group-interface>

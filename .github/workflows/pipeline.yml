@@ -22,7 +22,7 @@ jobs:
             - uses: actions/checkout@v3
             - uses: actions/setup-node@v3
               with:
-                  node-version: '16'
+                  node-version: '18'
             - name: Cache node modules
               uses: actions/cache@v3
               id: cache-node-modules
@@ -64,7 +64,7 @@ jobs:
             - uses: actions/checkout@v3
             - uses: actions/setup-node@v3
               with:
-                  node-version: '16'
+                  node-version: '18'
             - name: Cache node modules
               uses: actions/cache@v3
               id: cache-node-modules
@@ -108,7 +108,7 @@ jobs:
             - uses: actions/checkout@v3
             - uses: actions/setup-node@v3
               with:
-                  node-version: '16'
+                  node-version: '18'
             - name: Cache node modules
               uses: actions/cache@v3
               id: cache-node-modules
@@ -175,7 +175,7 @@ jobs:
             - uses: actions/checkout@v3
             - uses: actions/setup-node@v3
               with:
-                  node-version: '16'
+                  node-version: '18'
             - name: Cache node modules
               uses: actions/cache@v3
               id: cache-node-modules
@@ -197,7 +197,7 @@ jobs:
                   path: shared/dist
                   key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
             - name: Create .env
-              run: cat ./.env.example | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/" | sed -e "s/^#DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/" | sed -e "s/^DFM_DB_HOST=.*$/DFM_DB_HOST=localhost/" > ./.env
+              run: cat ./.env.example | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/" | sed -e "s/^#DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/" | sed -e "s/^DFM_DB_HOST=.*$/DFM_DB_HOST=127.0.0.1/" > ./.env
             - name: Run migrations
               run: cd backend && npm run migration:run && cd ..
             - name: Run Backend Tests
@@ -220,7 +220,7 @@ jobs:
                   path: coverage
 
     cypress:
-        timeout-minutes: 5
+        timeout-minutes: 20
         runs-on: ${{ matrix.os }}
 
         needs: build
@@ -244,19 +244,19 @@ jobs:
         strategy:
             matrix:
                 os: [ubuntu-latest]
+                browser: [firefox, chromium]
             fail-fast: false
 
-        # Don't pull LFS to reduce bandwidth usage
         steps:
             - uses: actions/checkout@v3
-            #   with:
-            #       lfs: 'true'
+              with:
+                  lfs: 'true' # we need lfs to test vehicles
             - name: checkoutLFS
               uses: actions/checkout@v3
-            # - run: git lfs pull
+            - run: git lfs pull
             - uses: actions/setup-node@v3
               with:
-                  node-version: '16'
+                  node-version: '18'
             - name: Cache node modules
               uses: actions/cache@v3
               id: cache-node-modules
@@ -287,22 +287,29 @@ jobs:
               if: steps.cache-cypress.outputs.cache-hit != 'true'
               run: npm run cy:install
             - name: Create .env
-              run: cat ./.env.example | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/" | sed -e "s/^#DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/" | sed -e "s/^DFM_DB_HOST=.*$/DFM_DB_HOST=localhost/" > ./.env
+              run: cat ./.env.example | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/" | sed -e "s/^#DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/" | sed -e "s/^DFM_DB_HOST=.*$/DFM_DB_HOST=127.0.0.1/" > ./.env
             - name: Run migrations
               run: cd backend && npm run migration:run && cd ..
             - name: Run Cypress
               uses: cypress-io/github-action@v5
               with:
                   start: npm --prefix .. -- run start:all
-                  command: npm run cy:run
                   working-directory: frontend
-                  wait-on: 'http://localhost:4200/health, http://localhost:3201/api/health'
-            - name: Archive cypress
+                  browser: ${{ matrix.browser }}
+                  wait-on: 'http://127.0.0.1:4200/, http://127.0.0.1:3201/api/health'
+                  command-prefix: '--' # So cypress is using our node version: https://github.com/cypress-io/github-action/issues/489#issuecomment-1021379037
+            # - name: Archive cypress videos
+            #   if: always()
+            #   uses: actions/upload-artifact@v3
+            #   with:
+            #       name: cypress-videos-${{ matrix.browser }}
+            #       path: frontend/cypress/videos
+            - name: Archive cypress screenshots
               if: always()
               uses: actions/upload-artifact@v3
               with:
-                  name: cypress-output
-                  path: frontend/cypress-visual-screenshots
+                  name: cypress-screenshots-${{ matrix.browser }}
+                  path: frontend/cypress/screenshots
 
     deploy-dev:
         timeout-minutes: 10

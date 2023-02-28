@@ -1,4 +1,4 @@
-import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
+import type { Immutable, JsonObject } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import type { Geometry, Point } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
@@ -15,7 +15,7 @@ import { generateChangedProperties } from '../utility/generate-changed-propertie
  * {@link Feature<FeatureType>} is the OpenLayers Feature that should be rendered to represent the {@link Element}.
  */
 export abstract class ElementManager<
-    Element extends ImmutableJsonObject,
+    Element extends Immutable<JsonObject>,
     FeatureType extends Geometry
 > {
     /**
