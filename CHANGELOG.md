@@ -26,6 +26,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   Introduced uniform abstract representation for positions.
     -   Added property for type distinction to all objects in the state.
     -   Moved lots of functionality from `OlMapManager` to feature managers.
+    -   Improved pipeline and branch protection
 
 ### Fixed
 

@@ -6,6 +6,10 @@ on:
         types:
             - ready_for_review
 
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
     build:
         timeout-minutes: 5
@@ -304,11 +308,22 @@ jobs:
                   name: cypress-output
                   path: frontend/cypress-visual-screenshots
 
+    # Dummy step to gate until all test are complete
+    tests-done:
+        needs:
+            - test
+            - cypress
+            - lint
+            - dependencies
+        runs-on: ubuntu-latest
+        steps:
+            - run: 'true'
+
     deploy-dev:
         timeout-minutes: 10
         runs-on: ubuntu-latest
 
-        needs: [test, cypress]
+        needs: tests-done
 
         if: github.ref == 'refs/heads/dev'
 
@@ -342,7 +357,7 @@ jobs:
         timeout-minutes: 10
         runs-on: ubuntu-latest
 
-        needs: [test, cypress]
+        needs: tests-done
 
         if: github.ref == 'refs/heads/main'
 
@@ -380,7 +395,7 @@ jobs:
         timeout-minutes: 2
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/main'
-        needs: [test, cypress]
+        needs: tests-done
         permissions:
             contents: write
         steps:
