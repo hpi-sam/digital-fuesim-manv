@@ -23,7 +23,7 @@ runs:
                   backend/node_modules
               key: node-modules-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}-${{ runner.os }}
         - name: Cache shared/dist
-          if: ${{ inputs.dist == 'true' }}
+          if: ${{ inputs.shared-dist == 'true' }}
           uses: actions/cache@v3
           id: cache-shared-dist
           with:
