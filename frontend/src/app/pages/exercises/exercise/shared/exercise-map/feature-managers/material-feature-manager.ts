@@ -1,28 +1,41 @@
+import type { Type } from '@angular/core';
+import type { Store } from '@ngrx/store';
 import type { Material, UUID } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
-import type Point from 'ol/geom/Point';
-import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
-import type VectorSource from 'ol/source/Vector';
+import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import type { WithPosition } from '../../utility/types/with-position';
+import type { AppState } from 'src/app/state/app.state';
+import { selectVisibleMaterials } from 'src/app/state/application/selectors/shared.selectors';
 import { MaterialPopupComponent } from '../shared/material-popup/material-popup.component';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
+import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
+import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { createPoint, ElementFeatureManager } from './element-feature-manager';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class MaterialFeatureManager extends ElementFeatureManager<
-    WithPosition<Material>
-> {
-    readonly type = 'materials';
+export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
+    public register(
+        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
+        destroy$: Subject<void>,
+        mapInteractionsManager: OlMapInteractionsManager
+    ): void {
+        super.registerFeatureElementManager(
+            this.store.select(selectVisibleMaterials),
+            changePopup$,
+            destroy$,
+            mapInteractionsManager
+        );
+    }
     private readonly imageStyleHelper = new ImageStyleHelper(
-        (feature) => this.getElementFromFeature(feature)!.value.image
+        (feature) => (this.getElementFromFeature(feature) as Material).image
     );
     private readonly nameStyleHelper = new NameStyleHelper(
         (feature) => {
-            const material = this.getElementFromFeature(feature)!.value;
+            const material = this.getElementFromFeature(feature) as Material;
             return {
                 name: material.vehicleName,
                 offsetY: material.image.height / 2 / normalZoom,
@@ -36,12 +49,11 @@ export class MaterialFeatureManager extends ElementFeatureManager<
 
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<Point>>,
+        private readonly store: Store<AppState>,
         exerciseService: ExerciseService
     ) {
         super(
             olMap,
-            layer,
             (targetPosition, material) => {
                 exerciseService.proposeAction({
                     type: '[Material] Move material',
@@ -49,15 +61,13 @@ export class MaterialFeatureManager extends ElementFeatureManager<
                     targetPosition,
                 });
             },
-            createPoint
+            new PointGeometryHelper()
         );
         this.layer.setStyle((feature, resolution) => [
             this.nameStyleHelper.getStyle(feature as Feature, resolution),
             this.imageStyleHelper.getStyle(feature as Feature, resolution),
         ]);
     }
-
-    override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 
     public override onFeatureClicked(
         event: MapBrowserEvent<any>,
@@ -66,9 +76,14 @@ export class MaterialFeatureManager extends ElementFeatureManager<
         super.onFeatureClicked(event, feature);
 
         this.togglePopup$.next(
-            this.popupHelper.getPopupOptions(MaterialPopupComponent, feature, {
-                materialId: feature.getId() as UUID,
-            })
+            this.popupHelper.getPopupOptions(
+                MaterialPopupComponent,
+                feature,
+                [feature.getId() as UUID],
+                {
+                    materialId: feature.getId() as UUID,
+                }
+            )
         );
     }
 }

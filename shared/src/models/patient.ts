@@ -1,35 +1,47 @@
 import { Type } from 'class-transformer';
 import {
-    IsBoolean,
-    IsDefined,
-    IsNumber,
-    IsOptional,
-    IsString,
     IsUUID,
-    Max,
-    MaxLength,
-    Min,
     ValidateNested,
+    IsNumber,
+    Max,
+    Min,
+    IsBoolean,
+    IsString,
+    MaxLength,
 } from 'class-validator';
 import { isEmpty } from 'lodash-es';
-import { UUID, uuid, UUIDSet, uuidValidationOptions } from '../utils';
+import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import {
-    getCreate,
-    HealthPoints,
-    healthPointsDefaults,
-    ImageProperties,
+    IsLiteralUnion,
+    IsIdMap,
+    IsUUIDSet,
+    IsValue,
+} from '../utils/validators';
+import { IsPosition } from '../utils/validators/is-position';
+import { PatientHealthState } from './patient-health-state';
+import {
+    BiometricInformation,
+    PatientStatusCode,
     PatientStatus,
-    Position,
+    patientStatusAllowedValues,
+    ImageProperties,
+    healthPointsDefaults,
+    HealthPoints,
+    getCreate,
+    isAlive,
+    isOnMap,
+    isInSimulatedRegion,
 } from './utils';
-import { BiometricInformation } from './utils/biometric-information';
-import { PatientStatusCode } from './utils/patient-status-code';
-import { PretriageInformation } from './utils/pretriage-information';
+import { Position } from './utils/position/position';
 import { PersonalInformation } from './utils/personal-information';
-import type { PatientHealthState } from '.';
+import { PretriageInformation } from './utils/pretriage-information';
 
 export class Patient {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('patient')
+    public readonly type = 'patient';
 
     @ValidateNested()
     @Type(() => PersonalInformation)
@@ -51,12 +63,10 @@ export class Patient {
     @Type(() => PatientStatusCode)
     public readonly patientStatusCode: PatientStatusCode;
 
-    // TODO
-    @IsString()
+    @IsLiteralUnion(patientStatusAllowedValues)
     public readonly pretriageStatus: PatientStatus;
 
-    // TODO
-    @IsString()
+    @IsLiteralUnion(patientStatusAllowedValues)
     public readonly realStatus: PatientStatus;
 
     @ValidateNested()
@@ -64,19 +74,11 @@ export class Patient {
     public readonly image: ImageProperties;
 
     /**
-     * Exclusive-or to {@link vehicleId}
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
      */
+    @IsPosition()
     @ValidateNested()
-    @Type(() => Position)
-    @IsOptional()
-    public readonly position?: Position;
-
-    /**
-     * Exclusive-or to {@link position}
-     */
-    @IsUUID(4, uuidValidationOptions)
-    @IsOptional()
-    public readonly vehicleId?: UUID;
+    public readonly position: Position;
 
     /**
      * The time the patient already is in the current state
@@ -84,7 +86,7 @@ export class Patient {
     @IsNumber()
     public readonly stateTime: number = 0;
 
-    @IsDefined()
+    @IsIdMap(PatientHealthState)
     public readonly healthStates: {
         readonly [stateId: UUID]: PatientHealthState;
     } = {};
@@ -103,12 +105,10 @@ export class Patient {
     @Min(healthPointsDefaults.min)
     public readonly health: HealthPoints;
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly assignedPersonnelIds: UUIDSet = {};
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly assignedMaterialIds: UUIDSet = {};
     /**
      * The speed with which the patients healthStatus changes
@@ -141,7 +141,7 @@ export class Patient {
      * The time that is needed for personnel to automatically pretriage the patient
      * in milliseconds
      */
-    private static readonly pretriageTimeThreshold: number = 2 * 60 * 1000;
+    public static readonly pretriageTimeThreshold: number = 60 * 1000; // 1 minute
 
     /**
      * @deprecated Use {@link create} instead
@@ -158,7 +158,8 @@ export class Patient {
         currentHealthStateId: UUID,
         image: ImageProperties,
         health: HealthPoints,
-        remarks: string
+        remarks: string,
+        position: Position
     ) {
         this.personalInformation = personalInformation;
         this.biometricInformation = biometricInformation;
@@ -171,6 +172,7 @@ export class Patient {
         this.image = image;
         this.health = health;
         this.remarks = remarks;
+        this.position = position;
     }
 
     static readonly create = getCreate(this);
@@ -192,11 +194,14 @@ export class Patient {
         return patient.treatmentTime >= this.pretriageTimeThreshold;
     }
 
-    static isInVehicle(patient: Patient): boolean {
-        return patient.position === undefined;
-    }
-
     static isTreatedByPersonnel(patient: Patient) {
         return !isEmpty(patient.assignedPersonnelIds);
+    }
+
+    static canBeTreated(patient: Patient) {
+        return (
+            isAlive(patient.health) &&
+            (isOnMap(patient) || isInSimulatedRegion(patient))
+        );
     }
 }

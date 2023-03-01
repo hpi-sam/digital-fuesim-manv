@@ -4,14 +4,18 @@ import type {
     Material,
     Patient,
     Personnel,
-    Position,
+    SimulatedRegion,
     TransferPoint,
     UUID,
     Vehicle,
+    WithPosition,
 } from 'digital-fuesim-manv-shared';
-import { Viewport } from 'digital-fuesim-manv-shared';
+import {
+    currentCoordinatesOf,
+    isOnMap,
+    Viewport,
+} from 'digital-fuesim-manv-shared';
 import { pickBy } from 'lodash-es';
-import type { WithPosition } from 'src/app/pages/exercises/exercise/shared/utility/types/with-position';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
 import type { AppState } from '../../app.state';
 import {
@@ -24,6 +28,7 @@ import {
     selectMaterials,
     selectPatients,
     selectPersonnel,
+    selectSimulatedRegion,
     selectTransferPoints,
     selectVehicles,
     selectViewports,
@@ -61,20 +66,16 @@ export const selectRestrictedViewport = createSelector(
  * @returns a selector that returns a UUIDMap of all elements that have a position and are in the viewport restriction
  */
 function selectVisibleElementsFactory<
-    Element extends { readonly position?: Position },
+    Element extends WithPosition,
     Elements extends { readonly [key: UUID]: Element } = {
         readonly [key: UUID]: Element;
-    },
-    ElementsWithPosition extends {
-        [Id in keyof Elements]: WithPosition<Elements[Id]>;
-    } = { [Id in keyof Elements]: WithPosition<Elements[Id]> }
+    }
 >(
     selectElements: (state: AppState) => Elements,
-    isInViewport: (
-        element: WithPosition<Element>,
-        viewport: Viewport
-    ) => boolean = (element, viewport) =>
-        Viewport.isInViewport(viewport, element.position)
+    isInViewport: (element: Element, viewport: Viewport) => boolean = (
+        element,
+        viewport
+    ) => Viewport.isInViewport(viewport, currentCoordinatesOf(element))
 ) {
     return createSelector(
         selectRestrictedViewport,
@@ -84,14 +85,11 @@ function selectVisibleElementsFactory<
                 elements,
                 (element) =>
                     // Is placed on the map
-                    element.position &&
+                    isOnMap(element) &&
                     // No viewport restriction
                     (!restrictedViewport ||
-                        isInViewport(
-                            element as WithPosition<Element>,
-                            restrictedViewport
-                        ))
-            ) as ElementsWithPosition
+                        isInViewport(element, restrictedViewport))
+            )
     );
 }
 
@@ -116,6 +114,8 @@ export const selectVisibleMapImages = selectVisibleElementsFactory<MapImage>(
 );
 export const selectVisibleTransferPoints =
     selectVisibleElementsFactory<TransferPoint>(selectTransferPoints);
+export const selectVisibleSimulatedRegions =
+    selectVisibleElementsFactory<SimulatedRegion>(selectSimulatedRegion);
 
 export const selectVisibleCateringLines = createSelector(
     selectRestrictedViewport,
@@ -125,7 +125,7 @@ export const selectVisibleCateringLines = createSelector(
     (viewport, materials, personnel, patients) =>
         // Mostly, there are fewer untreated patients than materials and personnel that are not treating
         Object.values(patients)
-            .filter((patient) => patient.position !== undefined)
+            .filter((patient) => isOnMap(patient))
             .flatMap((patient) =>
                 [
                     ...Object.keys(patient.assignedPersonnelIds).map(
@@ -136,9 +136,9 @@ export const selectVisibleCateringLines = createSelector(
                     ),
                 ].map((caterer) => ({
                     id: `${caterer.id}:${patient.id}` as const,
-                    patientPosition: patient.position!,
+                    patientPosition: currentCoordinatesOf(patient),
                     // If the catering element is treating a patient, it must have a position
-                    catererPosition: caterer.position!,
+                    catererPosition: currentCoordinatesOf(caterer),
                 }))
             )
             // To improve performance, all Lines where both ends are not in the viewport

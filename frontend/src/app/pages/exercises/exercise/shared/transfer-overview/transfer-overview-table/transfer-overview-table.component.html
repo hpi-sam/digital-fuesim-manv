@@ -1,3 +1,4 @@
+<!-- eslint-disable @angular-eslint/template/no-call-expression -->
 <table class="table table-striped">
     <thead>
         <tr>
@@ -37,21 +38,21 @@
             </td>
             <td class="align-middle">
                 <app-start-point-name
-                    [startPoint]="vehicle.transfer.startPoint"
+                    [startPoint]="currentTransferOf(vehicle).startPoint"
                 ></app-start-point-name>
             </td>
             <td class="align-middle">
                 <app-transfer-target-input
-                    [elementType]="'vehicles'"
+                    [elementType]="'vehicle'"
                     [elementId]="vehicle.id"
-                    [transfer]="vehicle.transfer"
+                    [transfer]="currentTransferOf(vehicle)"
                 ></app-transfer-target-input>
             </td>
             <td class="align-middle">
                 <app-transfer-time-input
-                    [elementType]="'vehicles'"
+                    [elementType]="'vehicle'"
                     [elementId]="vehicle.id"
-                    [transfer]="vehicle.transfer"
+                    [transfer]="currentTransferOf(vehicle)"
                 ></app-transfer-time-input>
             </td>
         </tr>
@@ -71,21 +72,21 @@
             </td>
             <td class="align-middle">
                 <app-start-point-name
-                    [startPoint]="personnel.transfer.startPoint"
+                    [startPoint]="currentTransferOf(personnel).startPoint"
                 ></app-start-point-name>
             </td>
             <td class="align-middle">
                 <app-transfer-target-input
                     [elementType]="'personnel'"
                     [elementId]="personnel.id"
-                    [transfer]="personnel.transfer"
+                    [transfer]="currentTransferOf(personnel)"
                 ></app-transfer-target-input>
             </td>
             <td class="align-middle">
                 <app-transfer-time-input
                     [elementType]="'personnel'"
                     [elementId]="personnel.id"
-                    [transfer]="personnel.transfer"
+                    [transfer]="currentTransferOf(personnel)"
                 ></app-transfer-time-input>
             </td>
         </tr>

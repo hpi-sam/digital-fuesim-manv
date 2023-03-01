@@ -1,5 +1,7 @@
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
+import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map';
+import { elementTypePluralMap } from '../../../utils/element-type-plural-map';
 import { ReducerError } from '../../reducer-error';
 
 /**
@@ -7,24 +9,16 @@ import { ReducerError } from '../../reducer-error';
  * @throws ReducerError if the element does not exist
  */
 export function getElement<
-    ElementType extends
-        | 'alarmGroups'
-        | 'clients'
-        | 'hospitals'
-        | 'mapImages'
-        | 'materials'
-        | 'patients'
-        | 'personnel'
-        | 'transferPoints'
-        | 'vehicles'
-        | 'viewports',
+    ElementType extends keyof ElementTypePluralMap,
     State extends ExerciseState | Mutable<ExerciseState>
 >(
     state: State,
     elementType: ElementType,
     elementId: UUID
-): State[ElementType][UUID] {
-    const element = state[elementType][elementId] as State[ElementType][UUID];
+): State[ElementTypePluralMap[ElementType]][UUID] {
+    const element = state[elementTypePluralMap[elementType]][
+        elementId
+    ] as State[ElementTypePluralMap[ElementType]][UUID];
     if (!element) {
         throw new ReducerError(
             `Element of type ${elementType} with id ${elementId} does not exist`

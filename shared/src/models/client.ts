@@ -6,19 +6,23 @@ import {
     MaxLength,
 } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { IsLiteralUnion, IsValue } from '../utils/validators';
 import { getCreate, Role } from './utils';
+import { roleAllowedValues } from './utils/role';
 
 export class Client {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('client' as const)
+    public readonly type = 'client';
 
     @IsString()
     // Required by database
     @MaxLength(255)
     public readonly name: string;
 
-    // TODO
-    @IsString()
+    @IsLiteralUnion(roleAllowedValues)
     public readonly role: Role;
 
     @IsUUID(4, uuidValidationOptions)

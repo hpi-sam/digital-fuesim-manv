@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { AlarmGroup, UUID } from 'digital-fuesim-manv-shared';
 import {
+    MapCoordinates,
     AlarmGroupStartPoint,
     createVehicleParameters,
     TransferPoint,
@@ -94,7 +95,15 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                         selectStateSnapshot(
                             selectPersonnelTemplates,
                             this.store
-                        )
+                        ),
+                        // TODO: This position is not correct but needs to be provided.
+                        // Here one should use a Position with the Transfer.
+                        // But this is part of later Refactoring.
+                        // We need the Transfer to be created before the Vehicle is created,
+                        // else we need to provide a Position that is immediately overwritten by the Add to Transfer Action.
+                        // This is done here
+                        // Good Thing is, it is irrelevant, because the correctPosition is set immediately after this is called.
+                        MapCoordinates.create(0, 0)
                     );
 
                     return [
@@ -106,7 +115,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                         }),
                         this.exerciseService.proposeAction({
                             type: '[Transfer] Add to transfer',
-                            elementType: 'vehicles',
+                            elementType: vehicleParameters.vehicle.type,
                             elementId: vehicleParameters.vehicle.id,
                             startPoint: AlarmGroupStartPoint.create(
                                 alarmGroup.name,

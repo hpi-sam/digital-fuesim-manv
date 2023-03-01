@@ -1,12 +1,14 @@
-import { IsIn, IsNumber, IsString, IsUUID, Min } from 'class-validator';
+import type { TypeOptions } from 'class-transformer';
+import { IsNumber, IsString, IsUUID, Min } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
+import { IsValue } from '../../utils/validators';
 import { getCreate } from './get-create';
 
 export type StartPoint = AlarmGroupStartPoint | TransferStartPoint;
 
 export class TransferStartPoint {
-    @IsIn(['transferPoint'])
-    public readonly type = 'transferPoint';
+    @IsValue('transferStartPoint' as const)
+    public readonly type = 'transferStartPoint';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly transferPointId: UUID;
@@ -22,8 +24,8 @@ export class TransferStartPoint {
 }
 
 export class AlarmGroupStartPoint {
-    @IsIn(['alarmGroup'])
-    public readonly type = 'alarmGroup';
+    @IsValue('alarmGroupStartPoint' as const)
+    public readonly type = 'alarmGroupStartPoint';
 
     @IsString()
     public readonly alarmGroupName: string;
@@ -42,3 +44,20 @@ export class AlarmGroupStartPoint {
 
     static readonly create = getCreate(this);
 }
+
+export const startPointTypeOptions: TypeOptions = {
+    keepDiscriminatorProperty: true,
+    discriminator: {
+        property: 'type',
+        subTypes: [
+            {
+                name: 'alarmGroupStartPoint',
+                value: AlarmGroupStartPoint,
+            },
+            {
+                name: 'transferStartPoint',
+                value: TransferStartPoint,
+            },
+        ],
+    },
+};

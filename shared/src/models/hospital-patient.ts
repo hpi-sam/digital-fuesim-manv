@@ -1,25 +1,26 @@
 import { Type } from 'class-transformer';
 import {
-    IsDefined,
     IsNumber,
     IsString,
     IsUUID,
-    Max,
     Min,
     ValidateNested,
 } from 'class-validator';
 import type { Mutable } from '../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../utils';
+import { IsIdMap, IsLiteralUnion, IsValue } from '../utils/validators';
 import {
     getCreate,
     HealthPoints,
-    healthPointsDefaults,
     ImageProperties,
+    IsValidHealthPoint,
     PatientStatus,
+    patientStatusAllowedValues,
 } from './utils';
 import { BiometricInformation } from './utils/biometric-information';
 import { PersonalInformation } from './utils/personal-information';
-import type { Patient, PatientHealthState } from '.';
+import { PatientHealthState } from './patient-health-state';
+import type { Patient } from '.';
 
 export class HospitalPatient {
     /**
@@ -27,6 +28,9 @@ export class HospitalPatient {
      */
     @IsUUID(4, uuidValidationOptions)
     public readonly patientId: UUID;
+
+    @IsValue('hospitalPatient' as const)
+    public readonly type = 'hospitalPatient';
 
     /**
      * the vehicle that a patient was transported with
@@ -54,19 +58,17 @@ export class HospitalPatient {
     @Type(() => BiometricInformation)
     public readonly biometricInformation: BiometricInformation;
 
-    // TODO
-    @IsString()
+    @IsLiteralUnion(patientStatusAllowedValues)
     public readonly pretriageStatus: PatientStatus;
 
-    // TODO
-    @IsString()
+    @IsLiteralUnion(patientStatusAllowedValues)
     public readonly realStatus: PatientStatus;
 
     @ValidateNested()
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    @IsDefined()
+    @IsIdMap(PatientHealthState)
     public readonly healthStates: {
         readonly [stateId: UUID]: PatientHealthState;
     } = {};
@@ -80,9 +82,7 @@ export class HospitalPatient {
     /**
      * See {@link HealthPoints} for context of this property.
      */
-    @IsNumber()
-    @Max(healthPointsDefaults.max)
-    @Min(healthPointsDefaults.min)
+    @IsValidHealthPoint()
     public readonly health: HealthPoints;
 
     @IsNumber()

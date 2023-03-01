@@ -1,38 +1,64 @@
+import type { Type } from '@angular/core';
+import type { Store } from '@ngrx/store';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
 import LineString from 'ol/geom/LineString';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
+import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
+import type { Subject } from 'rxjs';
 import { rgbColorPalette } from 'src/app/shared/functions/colors';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
+import type { AppState } from 'src/app/state/app.state';
+import { selectVisibleCateringLines } from 'src/app/state/application/selectors/shared.selectors';
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import type { Element } from 'digital-fuesim-manv-shared';
 import type { FeatureManager } from '../utility/feature-manager';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
+import type { OpenPopupOptions } from '../utility/popup-manager';
 import { LineStyleHelper } from '../utility/style-helper/line-style-helper';
 import { ElementManager } from './element-manager';
 
 export class CateringLinesFeatureManager
-    extends ElementManager<
-        CateringLine,
-        LineString,
-        Feature<LineString>,
-        ReadonlySet<keyof CateringLine>
-    >
-    implements FeatureManager<Feature<LineString>>
+    extends ElementManager<CateringLine, LineString>
+    implements FeatureManager<LineString>
 {
-    readonly type = 'cateringLines';
-    readonly unsupportedChangeProperties = new Set(['id'] as const);
-
     private readonly lineStyleHelper = new LineStyleHelper(
         (feature) => ({
             color: rgbColorPalette.cyan,
         }),
         0.05
     );
+    public readonly layer: VectorLayer<VectorSource<LineString>>;
 
-    constructor(public readonly layer: VectorLayer<VectorSource<LineString>>) {
+    constructor(
+        private readonly store: Store<AppState>,
+        private readonly olMap: OlMap
+    ) {
         super();
-        layer.setStyle((feature, currentZoom) =>
+        this.layer = super.createElementLayer<LineString>();
+        this.layer.setStyle((feature, currentZoom) =>
             this.lineStyleHelper.getStyle(feature as Feature, currentZoom)
+        );
+    }
+    togglePopup$?: Subject<OpenPopupOptions<any, Type<any>>> | undefined;
+    register(
+        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
+        destroy$: Subject<void>,
+        mapInteractionsManager: OlMapInteractionsManager
+    ) {
+        this.olMap.addLayer(this.layer);
+        mapInteractionsManager.addFeatureLayer(this.layer);
+        this.togglePopup$?.subscribe(changePopup$);
+        // Propagate the changes on an element to the featureManager
+        this.registerChangeHandlers(
+            this.store.select(selectVisibleCateringLines),
+            destroy$,
+            (element) => this.onElementCreated(element),
+            (element) => this.onElementDeleted(element),
+            (oldElement, newElement) =>
+                this.onElementChanged(oldElement, newElement)
         );
     }
 
@@ -84,9 +110,9 @@ export class CateringLinesFeatureManager
     ) {}
 
     onFeatureDrop(
-        dropEvent: TranslateEvent,
-        droppedFeature: Feature<any>,
-        droppedOnFeature: Feature<LineString>
+        droppedElement: Element,
+        droppedOnFeature: Feature<LineString>,
+        dropEvent?: TranslateEvent
     ) {
         return false;
     }

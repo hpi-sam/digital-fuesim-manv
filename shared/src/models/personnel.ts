@@ -1,42 +1,43 @@
 import { Type } from 'class-transformer';
 import {
-    IsDefined,
-    IsNumber,
-    IsOptional,
-    IsString,
     IsUUID,
-    Max,
-    Min,
+    IsString,
     ValidateNested,
+    IsNumber,
+    Min,
+    Max,
 } from 'class-validator';
 import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
-import { UUID, UUIDSet, uuid, uuidValidationOptions } from '../utils';
+import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
+import { IsLiteralUnion, IsUUIDSet, IsValue } from '../utils/validators';
+import { IsPosition } from '../utils/validators/is-position';
 import type { PersonnelTemplate } from './personnel-template';
 import {
-    CanCaterFor,
-    Position,
-    ImageProperties,
     PersonnelType,
+    CanCaterFor,
+    ImageProperties,
     getCreate,
-    Transfer,
 } from './utils';
+import { Position } from './utils/position/position';
+import { personnelTypeAllowedValues } from './utils/personnel-type';
 
 export class Personnel {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
 
+    @IsValue('personnel' as const)
+    public readonly type = 'personnel';
+
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId: UUID;
 
-    // TODO
-    @IsString()
+    @IsLiteralUnion(personnelTypeAllowedValues)
     public readonly personnelType: PersonnelType;
 
     @IsString()
     public readonly vehicleName: string;
 
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly assignedPatientIds: UUIDSet;
 
     @ValidateNested()
@@ -68,20 +69,11 @@ export class Personnel {
     public readonly image: ImageProperties;
 
     /**
-     * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or in transfer.
+     * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
      */
+    @IsPosition()
     @ValidateNested()
-    @Type(() => Position)
-    @IsOptional()
-    public readonly position?: Position;
-
-    /**
-     * If undefined, the personnel is either in the vehicle with {@link this.vehicleId} or has a {@link position}.
-     */
-    @ValidateNested()
-    @Type(() => Transfer)
-    @IsOptional()
-    public readonly transfer?: Transfer;
+    public readonly position: Position;
 
     /**
      * @deprecated Use {@link create} instead
@@ -95,17 +87,17 @@ export class Personnel {
         canCaterFor: CanCaterFor,
         treatmentRange: number,
         overrideTreatmentRange: number,
-        position?: Position
+        position: Position
     ) {
         this.vehicleId = vehicleId;
         this.vehicleName = vehicleName;
         this.personnelType = personnelType;
         this.assignedPatientIds = assignedPatientIds;
-        this.position = position;
         this.image = image;
         this.canCaterFor = canCaterFor;
         this.treatmentRange = treatmentRange;
         this.overrideTreatmentRange = overrideTreatmentRange;
+        this.position = position;
     }
 
     static readonly create = getCreate(this);
@@ -113,7 +105,8 @@ export class Personnel {
     static generatePersonnel(
         personnelTemplate: PersonnelTemplate,
         vehicleId: UUID,
-        vehicleName: string
+        vehicleName: string,
+        position: Position
     ): Personnel {
         return this.create(
             vehicleId,
@@ -124,13 +117,7 @@ export class Personnel {
             personnelTemplate.canCaterFor,
             personnelTemplate.treatmentRange,
             personnelTemplate.overrideTreatmentRange,
-            undefined
-        );
-    }
-
-    static isInVehicle(personnel: Personnel): boolean {
-        return (
-            personnel.position === undefined && personnel.transfer === undefined
+            position
         );
     }
 }

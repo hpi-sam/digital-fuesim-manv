@@ -1,16 +1,31 @@
-import { IsInt, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
-import type { ExerciseState, Position } from '../..';
-import { imageSizeToPosition, TransferPoint } from '../..';
-import { StartPoint } from '../../models/utils/start-points';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional, IsUUID, ValidateNested } from 'class-validator';
+import { TransferPoint } from '../../models';
+import type { MapCoordinates } from '../../models/utils';
+import {
+    isInTransfer,
+    isNotInTransfer,
+    currentTransferOf,
+    TransferPosition,
+    currentCoordinatesOf,
+    MapPosition,
+    StartPoint,
+    startPointTypeOptions,
+} from '../../models/utils';
+import { changePosition } from '../../models/utils/position/position-helpers-mutable';
+import type { ExerciseState } from '../../state';
+import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import type { AllowedValues } from '../../utils/validators';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
-import { getElement } from './utils/get-element';
-import {
-    removeElementPosition,
-    updateElementPosition,
-} from './utils/spatial-elements';
+import { getElement } from './utils';
+
+export type TransferableElementType = 'personnel' | 'vehicle';
+const transferableElementTypeAllowedValues: AllowedValues<TransferableElementType> =
+    { personnel: true, vehicle: true };
 
 /**
  * Personnel/Vehicle in transfer will arrive immediately at new targetTransferPoint
@@ -19,45 +34,41 @@ import {
  */
 export function letElementArrive(
     draftState: Mutable<ExerciseState>,
-    elementType: 'personnel' | 'vehicles',
+    elementType: TransferableElementType,
     elementId: UUID
 ) {
     const element = getElement(draftState, elementType, elementId);
     // check that element is in transfer, this should be always the case where this function is used
-    if (!element.transfer) {
+    if (isNotInTransfer(element)) {
         throw getNotInTransferError(element.id);
     }
     const targetTransferPoint = getElement(
         draftState,
-        'transferPoints',
-        element.transfer.targetTransferPointId
+        'transferPoint',
+        currentTransferOf(element).targetTransferPointId
     );
-    const newPosition: Mutable<Position> = {
-        x: targetTransferPoint.position.x,
+    const newPosition: Mutable<MapCoordinates> = {
+        x: currentCoordinatesOf(targetTransferPoint).x,
         y:
-            targetTransferPoint.position.y +
+            currentCoordinatesOf(targetTransferPoint).y +
             // Position it in the upper half of the transferPoint
             imageSizeToPosition(TransferPoint.image.height / 3),
     };
-    if (elementType === 'personnel') {
-        updateElementPosition(draftState, 'personnel', element.id, newPosition);
-    } else {
-        element.position = newPosition;
-    }
-    delete element.transfer;
+    changePosition(element, MapPosition.create(newPosition), draftState);
 }
 
 export class AddToTransferAction implements Action {
-    @IsString()
+    @IsValue('[Transfer] Add to transfer' as const)
     public readonly type = '[Transfer] Add to transfer';
 
-    @IsString()
-    elementType!: 'personnel' | 'vehicles';
+    @IsLiteralUnion(transferableElementTypeAllowedValues)
+    elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;
 
-    @IsObject()
+    @ValidateNested()
+    @Type(() => Object, startPointTypeOptions)
     public readonly startPoint!: StartPoint;
 
     @IsUUID(4, uuidValidationOptions)
@@ -65,11 +76,11 @@ export class AddToTransferAction implements Action {
 }
 
 export class EditTransferAction implements Action {
-    @IsString()
+    @IsValue('[Transfer] Edit transfer' as const)
     public readonly type = '[Transfer] Edit transfer';
 
-    @IsString()
-    elementType!: 'personnel' | 'vehicles';
+    @IsLiteralUnion(transferableElementTypeAllowedValues)
+    elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;
@@ -89,11 +100,11 @@ export class EditTransferAction implements Action {
 }
 
 export class FinishTransferAction implements Action {
-    @IsString()
+    @IsValue('[Transfer] Finish transfer' as const)
     public readonly type = '[Transfer] Finish transfer';
 
-    @IsString()
-    elementType!: 'personnel' | 'vehicles';
+    @IsLiteralUnion(transferableElementTypeAllowedValues)
+    elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;
@@ -103,11 +114,11 @@ export class FinishTransferAction implements Action {
 }
 
 export class TogglePauseTransferAction implements Action {
-    @IsString()
+    @IsValue('[Transfer] Toggle pause transfer' as const)
     public readonly type = '[Transfer] Toggle pause transfer';
 
-    @IsString()
-    elementType!: 'personnel' | 'vehicles';
+    @IsLiteralUnion(transferableElementTypeAllowedValues)
+    elementType!: TransferableElementType;
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementId!: UUID;
@@ -121,9 +132,10 @@ export namespace TransferActionReducers {
             { elementType, elementId, startPoint, targetTransferPointId }
         ) => {
             // check if transferPoint exists
-            getElement(draftState, 'transferPoints', targetTransferPointId);
+            getElement(draftState, 'transferPoint', targetTransferPointId);
             const element = getElement(draftState, elementType, elementId);
-            if (element.transfer) {
+
+            if (isInTransfer(element)) {
                 throw new ReducerError(
                     `Element with id ${element.id} is already in transfer`
                 );
@@ -131,10 +143,10 @@ export namespace TransferActionReducers {
 
             // Get the duration
             let duration: number;
-            if (startPoint.type === 'transferPoint') {
+            if (startPoint.type === 'transferStartPoint') {
                 const transferStartPoint = getElement(
                     draftState,
-                    'transferPoints',
+                    'transferPoint',
                     startPoint.transferPointId
                 );
                 const connection =
@@ -151,20 +163,17 @@ export namespace TransferActionReducers {
                 duration = startPoint.duration;
             }
 
-            // Remove the position of the element
-            if (elementType === 'personnel') {
-                removeElementPosition(draftState, 'personnel', element.id);
-            } else {
-                element.position = undefined;
-            }
-
             // Set the element to transfer
-            element.transfer = {
-                startPoint: cloneDeepMutable(startPoint),
-                targetTransferPointId,
-                endTimeStamp: draftState.currentTime + duration,
-                isPaused: false,
-            };
+            changePosition(
+                element,
+                TransferPosition.create({
+                    startPoint: cloneDeepMutable(startPoint),
+                    targetTransferPointId,
+                    endTimeStamp: draftState.currentTime + duration,
+                    isPaused: false,
+                }),
+                draftState
+            );
 
             return draftState;
         },
@@ -178,21 +187,28 @@ export namespace TransferActionReducers {
             { elementType, elementId, targetTransferPointId, timeToAdd }
         ) => {
             const element = getElement(draftState, elementType, elementId);
-            if (!element.transfer) {
+            if (isNotInTransfer(element)) {
                 throw getNotInTransferError(element.id);
             }
+            const newTransfer = cloneDeepMutable(currentTransferOf(element));
             if (targetTransferPointId) {
                 // check if transferPoint exists
-                getElement(draftState, 'transferPoints', targetTransferPointId);
-                element.transfer.targetTransferPointId = targetTransferPointId;
+
+                getElement(draftState, 'transferPoint', targetTransferPointId);
+                newTransfer.targetTransferPointId = targetTransferPointId;
             }
             if (timeToAdd) {
                 //  The endTimeStamp shouldn't be less then the current time
-                element.transfer.endTimeStamp = Math.max(
+                newTransfer.endTimeStamp = Math.max(
                     draftState.currentTime,
-                    element.transfer.endTimeStamp + timeToAdd
+                    newTransfer.endTimeStamp + timeToAdd
                 );
             }
+            changePosition(
+                element,
+                TransferPosition.create(newTransfer),
+                draftState
+            );
             return draftState;
         },
         rights: 'trainer',
@@ -205,9 +221,9 @@ export namespace TransferActionReducers {
             { elementType, elementId, targetTransferPointId }
         ) => {
             // check if transferPoint exists
-            getElement(draftState, 'transferPoints', targetTransferPointId);
+            getElement(draftState, 'transferPoint', targetTransferPointId);
             const element = getElement(draftState, elementType, elementId);
-            if (!element.transfer) {
+            if (isNotInTransfer(element)) {
                 throw getNotInTransferError(element.id);
             }
             letElementArrive(draftState, elementType, elementId);
@@ -221,10 +237,18 @@ export namespace TransferActionReducers {
             action: TogglePauseTransferAction,
             reducer: (draftState, { elementType, elementId }) => {
                 const element = getElement(draftState, elementType, elementId);
-                if (!element.transfer) {
+                if (isNotInTransfer(element)) {
                     throw getNotInTransferError(element.id);
                 }
-                element.transfer.isPaused = !element.transfer.isPaused;
+                const newTransfer = cloneDeepMutable(
+                    currentTransferOf(element)
+                );
+                newTransfer.isPaused = !newTransfer.isPaused;
+                changePosition(
+                    element,
+                    TransferPosition.create(newTransfer),
+                    draftState
+                );
                 return draftState;
             },
             rights: 'trainer',

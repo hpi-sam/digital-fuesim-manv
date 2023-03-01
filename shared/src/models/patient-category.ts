@@ -1,10 +1,14 @@
 import { Type } from 'class-transformer';
 import { ArrayNotEmpty, IsArray, ValidateNested } from 'class-validator';
+import { IsValue } from '../utils/validators';
 import { PatientTemplate } from './patient-template';
 import { getCreate, ImageProperties } from './utils';
 import { PatientStatusCode } from './utils/patient-status-code';
 
 export class PatientCategory {
+    @IsValue('patientCategory' as const)
+    public readonly type = 'patientCategory';
+
     @ValidateNested()
     @Type(() => PatientStatusCode)
     public readonly name: PatientStatusCode;

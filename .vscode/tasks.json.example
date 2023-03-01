@@ -1,0 +1,94 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start all & cypress",
+            "dependsOn": ["Start all", "Start cypress"],
+            "problemMatcher": []
+        },
+        {
+            "label": "Start all",
+            "dependsOn": [
+                "Start database",
+                "Start frontend",
+                "Start backend",
+                "Watch shared"
+            ],
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Start all but database",
+            "dependsOn": ["Start frontend", "Start backend", "Watch shared"],
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Run CI",
+            "dependsOn": [
+                "Prettier",
+                "Lint",
+                "Test",
+                "Start all",
+                "Cypress:run"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Start database",
+            "type": "shell",
+            "command": "docker compose up db || docker-compose up db"
+        },
+        {
+            "label": "Start frontend",
+            "type": "npm",
+            "script": "start",
+            "path": "frontend/",
+            "problemMatcher": []
+        },
+        {
+            "label": "Start cypress",
+            "type": "npm",
+            "script": "cy:open",
+            "path": "frontend/",
+            "problemMatcher": []
+        },
+        {
+            "label": "Start backend",
+            "type": "npm",
+            "script": "start",
+            "path": "backend/",
+            "problemMatcher": []
+        },
+        {
+            "label": "Watch shared",
+            "type": "npm",
+            "script": "watch",
+            "path": "shared/",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Prettier",
+            "type": "npm",
+            "script": "prettier:check"
+        },
+        {
+            "label": "Test",
+            "type": "npm",
+            "script": "test"
+        },
+        {
+            "label": "Lint",
+            "type": "npm",
+            "script": "lint",
+            "problemMatcher": ["$eslint-compact"]
+        },
+        {
+            "label": "Cypress:run",
+            "type": "npm",
+            "script": "cy:run",
+            "path": "frontend/"
+        }
+    ]
+}

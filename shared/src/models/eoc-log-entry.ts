@@ -1,10 +1,14 @@
 import { IsInt, IsString, IsUUID, MaxLength } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
+import { IsValue } from '../utils/validators';
 import { getCreate } from './utils';
 
 export class EocLogEntry {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('eocLogEntry' as const)
+    public readonly type = 'eocLogEntry';
 
     /**
      * The time in the exercise

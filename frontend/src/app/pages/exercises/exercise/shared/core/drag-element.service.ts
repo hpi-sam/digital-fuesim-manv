@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    Element,
     ImageProperties,
     MapImageTemplate,
+    PatientCategory,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
 import {
@@ -12,9 +15,14 @@ import {
     PatientTemplate,
     TransferPoint,
     Viewport,
+    SimulatedRegion,
+    MapPosition,
 } from 'digital-fuesim-manv-shared';
-import type { PatientCategory } from 'digital-fuesim-manv-shared/dist/models/patient-category';
+import type { Feature } from 'ol';
+import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
+import type { Pixel } from 'ol/pixel';
+import type VectorSource from 'ol/source/Vector';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
@@ -22,6 +30,7 @@ import {
     selectPersonnelTemplates,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import type { FeatureManager } from '../exercise-map/utility/feature-manager';
 
 @Injectable({
     providedIn: 'root',
@@ -31,18 +40,35 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
  */
 export class DragElementService {
     private olMap?: OlMap;
+    layerFeatureManagerDictionary?: Map<
+        VectorLayer<VectorSource>,
+        FeatureManager<any>
+    >;
 
     constructor(
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {}
 
-    public registerMap(map: OlMap) {
-        this.olMap = map;
+    public registerMap(olMap: OlMap) {
+        this.olMap = olMap;
+    }
+
+    public registerLayerFeatureManagerDictionary(
+        layerFeatureManagerDictionary: Map<
+            VectorLayer<VectorSource>,
+            FeatureManager<any>
+        >
+    ) {
+        this.layerFeatureManagerDictionary = layerFeatureManagerDictionary;
     }
 
     public unregisterMap() {
         this.olMap = undefined;
+    }
+
+    public unregisterLayerFeatureManagerDictionary() {
+        this.layerFeatureManagerDictionary = undefined;
     }
 
     private dragElement?: HTMLImageElement;
@@ -131,31 +157,38 @@ export class DragElementService {
             return;
         }
         // Get the position of the mouse on the map
-        const [x, y] = this.olMap.getCoordinateFromPixel(
-            this.olMap.getEventPixel(event)
-        ) as [number, number];
+        const pixel = this.olMap.getEventPixel(event);
+        const [x, y] = this.olMap.getCoordinateFromPixel(pixel) as [
+            number,
+            number
+        ];
         const position = { x, y };
         // create the element
+        let createdElement: Element | null = null;
         switch (this.transferringTemplate.type) {
             case 'vehicle':
-                this.exerciseService.proposeAction(
-                    {
-                        type: '[Vehicle] Add vehicle',
-                        ...createVehicleParameters(
-                            this.transferringTemplate.template,
-                            selectStateSnapshot(
-                                selectMaterialTemplates,
-                                this.store
-                            ),
-                            selectStateSnapshot(
-                                selectPersonnelTemplates,
-                                this.store
-                            ),
-                            position
+                {
+                    const params = createVehicleParameters(
+                        this.transferringTemplate.template,
+                        selectStateSnapshot(
+                            selectMaterialTemplates,
+                            this.store
                         ),
-                    },
-                    true
-                );
+                        selectStateSnapshot(
+                            selectPersonnelTemplates,
+                            this.store
+                        ),
+                        position
+                    );
+                    this.exerciseService.proposeAction(
+                        {
+                            ...params,
+                            type: '[Vehicle] Add vehicle',
+                        },
+                        true
+                    );
+                    createdElement = params.vehicle;
+                }
                 break;
             case 'patient':
                 {
@@ -167,71 +200,140 @@ export class DragElementService {
                                         .patientTemplates.length
                             )
                         ]!,
-                        this.transferringTemplate.template.name
+                        this.transferringTemplate.template.name,
+                        MapPosition.create(position)
                     );
                     this.exerciseService.proposeAction(
                         {
                             type: '[Patient] Add patient',
-                            patient: {
-                                ...patient,
-                                position,
-                            },
+                            patient,
                         },
                         true
                     );
+                    createdElement = patient;
                 }
                 break;
-            case 'viewport': {
-                // This ratio has been determined by trial and error
-                const height = Viewport.image.height / 23.5;
-                const width = height * Viewport.image.aspectRatio;
-                this.exerciseService.proposeAction(
-                    {
-                        type: '[Viewport] Add viewport',
-                        viewport: Viewport.create(
-                            {
-                                x: position.x - width / 2,
-                                y: position.y + height / 2,
-                            },
-                            {
-                                height,
-                                width,
-                            },
-                            'Einsatzabschnitt'
-                        ),
-                    },
-                    true
-                );
+            case 'viewport':
+                {
+                    // This ratio has been determined by trial and error
+                    const height = Viewport.image.height / 23.5;
+                    const width = height * Viewport.image.aspectRatio;
+                    const viewport = Viewport.create(
+                        {
+                            x: position.x - width / 2,
+                            y: position.y + height / 2,
+                        },
+                        {
+                            height,
+                            width,
+                        },
+                        'Einsatzabschnitt'
+                    );
+                    this.exerciseService.proposeAction(
+                        {
+                            type: '[Viewport] Add viewport',
+                            viewport,
+                        },
+                        true
+                    );
+                    createdElement = viewport;
+                }
                 break;
-            }
+
             case 'mapImage':
                 {
                     const template = this.transferringTemplate.template.image;
+                    const mapImage = MapImage.create(
+                        position,
+                        template,
+                        false,
+                        0
+                    );
                     this.exerciseService.proposeAction({
                         type: '[MapImage] Add MapImage',
-                        mapImage: MapImage.create(position, template, false, 0),
+                        mapImage,
                     });
+                    createdElement = mapImage;
                 }
                 break;
             case 'transferPoint':
-                this.exerciseService.proposeAction(
-                    {
-                        type: '[TransferPoint] Add TransferPoint',
-                        transferPoint: TransferPoint.create(
-                            position,
-                            {},
-                            {},
-                            '???',
-                            '???'
-                        ),
-                    },
-                    true
-                );
+                {
+                    const transferPoint = TransferPoint.create(
+                        position,
+                        {},
+                        {},
+                        '???',
+                        '???'
+                    );
+                    this.exerciseService.proposeAction(
+                        {
+                            type: '[TransferPoint] Add TransferPoint',
+                            transferPoint,
+                        },
+                        true
+                    );
+                    createdElement = transferPoint;
+                }
                 break;
+            case 'simulatedRegion':
+                {
+                    // This ratio has been determined by trial and error
+                    const height = SimulatedRegion.image.height / 23.5;
+                    const width = height * SimulatedRegion.image.aspectRatio;
+                    const simulatedRegion = SimulatedRegion.create(
+                        {
+                            x: position.x - width / 2,
+                            y: position.y + height / 2,
+                        },
+                        {
+                            height,
+                            width,
+                        },
+                        'Einsatzabschnitt ???'
+                    );
+                    this.exerciseService.proposeAction(
+                        {
+                            type: '[SimulatedRegion] Add simulated region',
+                            simulatedRegion,
+                        },
+                        true
+                    );
+                    createdElement = simulatedRegion;
+                }
+                break;
+
             default:
                 break;
         }
+
+        this.executeDropSideEffects(pixel, createdElement);
     };
+
+    private executeDropSideEffects(
+        pixel: Pixel,
+        createdElement: Element | null
+    ) {
+        if (
+            createdElement === null ||
+            !this.olMap ||
+            !this.layerFeatureManagerDictionary
+        ) {
+            return;
+        }
+        this.olMap.forEachFeatureAtPixel(pixel, (droppedOnFeature, layer) => {
+            // Skip layer when unset
+            if (layer === null || !this.layerFeatureManagerDictionary) {
+                return;
+            }
+            // We stop propagating the event as soon as the onFeatureDropped function returns true
+            return this.layerFeatureManagerDictionary
+                .get(layer as VectorLayer<VectorSource>)!
+                .onFeatureDrop(
+                    createdElement as Element,
+                    droppedOnFeature as Feature
+                );
+        });
+    }
 
     /**
      *
@@ -259,6 +361,12 @@ type TransferTemplate =
     | {
           type: 'patient';
           template: PatientCategory;
+      }
+    | {
+          type: 'simulatedRegion';
+          template: {
+              image: ImageProperties;
+          };
       }
     | {
           type: 'transferPoint';

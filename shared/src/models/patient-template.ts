@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
-import { IsDefined, IsUUID, ValidateNested } from 'class-validator';
+import { IsUUID, ValidateNested } from 'class-validator';
 import { cloneDeepMutable, UUID, uuid, uuidValidationOptions } from '../utils';
+import { IsIdMap, IsValue } from '../utils/validators';
 import type { PatientStatusCode } from './utils';
 import {
     BiometricInformation,
@@ -14,11 +15,15 @@ import { PersonalInformation } from './utils/personal-information';
 import { Patient } from './patient';
 import type { FunctionParameters } from './patient-health-state';
 import { PretriageInformation } from './utils/pretriage-information';
-import type { PatientHealthState } from '.';
+import { PatientHealthState } from './patient-health-state';
+import type { Position } from './utils/position/position';
 
 export class PatientTemplate {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('patientTemplate' as const)
+    public readonly type = 'patientTemplate';
 
     @ValidateNested()
     @Type(() => BiometricInformation)
@@ -32,7 +37,7 @@ export class PatientTemplate {
     @Type(() => ImageProperties)
     public readonly image: ImageProperties;
 
-    @IsDefined()
+    @IsIdMap(PatientHealthState)
     public readonly healthStates: {
         readonly [stateId: UUID]: PatientHealthState;
     };
@@ -66,7 +71,8 @@ export class PatientTemplate {
 
     public static generatePatient(
         template: PatientTemplate,
-        patientStatusCode: PatientStatusCode
+        patientStatusCode: PatientStatusCode,
+        position: Position
     ): Patient {
         // Randomize function parameters
         const healthStates = Object.fromEntries(
@@ -106,7 +112,8 @@ export class PatientTemplate {
             template.startingHealthStateId,
             template.image,
             template.health,
-            ''
+            '',
+            position
         );
     }
 }

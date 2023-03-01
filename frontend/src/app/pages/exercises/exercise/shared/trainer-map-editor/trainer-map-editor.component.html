@@ -27,6 +27,7 @@
                                     template: viewportTemplate
                                 })
                             "
+                            data-cy="draggableViewportDiv"
                         >
                             <div class="preview-image-container bg-secondary">
                                 <img
@@ -52,6 +53,7 @@
                                     template: transferPointTemplate
                                 })
                             "
+                            data-cy="draggableTransferPointDiv"
                         >
                             <div class="preview-image-container">
                                 <img
@@ -83,6 +85,40 @@
                                 <label class="form-check-label"
                                     >Verbindungen Anzeigen</label
                                 >
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <h5>Simulierte Bereiche</h5>
+                    <div
+                        class="overflow-auto w-100"
+                        style="white-space: nowrap"
+                    >
+                        <div
+                            class="d-inline-block card text-center"
+                            style="width: 10rem; text-overflow: ellipsis"
+                            (mousedown)="
+                                dragElementService.onMouseDown($event, {
+                                    type: 'simulatedRegion',
+                                    template: simulatedRegionTemplate
+                                })
+                            "
+                            data-cy="draggableSimulatedRegionDiv"
+                        >
+                            <div class="preview-image-container bg-secondary">
+                                <img
+                                    [src]="simulatedRegionTemplate.image.url"
+                                    class="card-img-top"
+                                />
+                            </div>
+                            <div class="card-body">
+                                <h5
+                                    class="card-title text-truncate"
+                                    [title]="'Simulierter Bereich'"
+                                >
+                                    Simulierter Bereich
+                                </h5>
                             </div>
                         </div>
                     </div>
@@ -159,6 +195,7 @@
                                         template: patientCategory
                                     })
                                 "
+                                data-cy="draggablePatientDiv"
                             >
                                 <div
                                     class="preview-image-container small-image card-img-top"
@@ -193,6 +230,7 @@
                             (mousedown)="
                                 vehicleOnMouseDown($event, vehicleTemplate)
                             "
+                            data-cy="draggableVehicleDiv"
                         >
                             <div class="preview-image-container card-img-top">
                                 <img [src]="vehicleTemplate.image.url" />
@@ -236,6 +274,7 @@
                                     template: mapImageTemplate
                                 })
                             "
+                            data-cy="draggableMapImageDiv"
                         >
                             <div class="preview-image-container card-img-top">
                                 <img [src]="mapImageTemplate.image.url" />

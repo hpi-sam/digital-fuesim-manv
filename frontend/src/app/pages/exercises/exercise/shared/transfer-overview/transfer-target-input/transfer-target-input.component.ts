@@ -11,7 +11,7 @@ import { selectTransferPoints } from 'src/app/state/application/selectors/exerci
     styleUrls: ['./transfer-target-input.component.scss'],
 })
 export class TransferTargetInputComponent {
-    @Input() elementType!: 'personnel' | 'vehicles';
+    @Input() elementType!: 'personnel' | 'vehicle';
     @Input() elementId!: UUID;
     @Input() transfer!: Transfer;
 

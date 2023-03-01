@@ -1,36 +1,39 @@
 import type { Store } from '@ngrx/store';
-import type { UUID } from 'digital-fuesim-manv-shared';
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import type { UUID, Element } from 'digital-fuesim-manv-shared';
 import { TransferPoint, TransferStartPoint } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
 import type { TranslateEvent } from 'ol/interaction/Translate';
-import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
-import type VectorSource from 'ol/source/Vector';
+import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
+import {
+    selectCurrentRole,
+    selectVisibleTransferPoints,
+} from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
+import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
+import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { createPoint, ElementFeatureManager } from './element-feature-manager';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class TransferPointFeatureManager extends ElementFeatureManager<TransferPoint> {
-    readonly type = 'transferPoints';
+export class TransferPointFeatureManager extends MoveableFeatureManager<TransferPoint> {
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<Point>>,
         private readonly store: Store<AppState>,
         private readonly exerciseService: ExerciseService
     ) {
         super(
             olMap,
-            layer,
             (targetPosition, transferPoint) => {
                 exerciseService.proposeAction({
                     type: '[TransferPoint] Move TransferPoint',
@@ -38,9 +41,10 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                     targetPosition,
                 });
             },
-            createPoint
+            new PointGeometryHelper(),
+            600
         );
-        layer.setStyle((thisFeature, currentZoom) => [
+        this.layer.setStyle((thisFeature, currentZoom) => [
             this.imageStyleHelper.getStyle(
                 thisFeature as Feature<Point>,
                 currentZoom
@@ -52,6 +56,19 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
         ]);
     }
 
+    public register(
+        changePopup$: Subject<OpenPopupOptions<any> | undefined>,
+        destroy$: Subject<void>,
+        mapInteractionsManager: OlMapInteractionsManager
+    ) {
+        super.registerFeatureElementManager(
+            this.store.select(selectVisibleTransferPoints),
+            changePopup$,
+            destroy$,
+            mapInteractionsManager
+        );
+    }
+
     private readonly imageStyleHelper = new ImageStyleHelper(
         (feature: Feature) => ({
             url: TransferPoint.image.url,
@@ -61,7 +78,8 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
     );
     private readonly nameStyleHelper = new NameStyleHelper(
         (feature: Feature) => ({
-            name: this.getElementFromFeature(feature)!.value.internalName,
+            name: (this.getElementFromFeature(feature) as TransferPoint)
+                .internalName,
             offsetY: 0,
         }),
         0.2,
@@ -69,20 +87,20 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
     );
 
     public override onFeatureDrop(
-        dropEvent: TranslateEvent,
-        droppedFeature: Feature<any>,
-        droppedOnFeature: Feature<Point>
+        droppedElement: Element,
+        droppedOnFeature: Feature<Point>,
+        dropEvent?: TranslateEvent
     ) {
         // TODO: droppedElement isn't necessarily a transfer point -> fix getElementFromFeature typings
-        const droppedElement = this.getElementFromFeature(droppedFeature);
-        const droppedOnTransferPoint: TransferPoint =
-            this.getElementFromFeature(droppedOnFeature)!.value!;
+        const droppedOnTransferPoint = this.getElementFromFeature(
+            droppedOnFeature
+        ) as TransferPoint;
         if (!droppedElement || !droppedOnTransferPoint) {
             console.error('Could not find element for the features');
             return false;
         }
         if (
-            droppedElement.type !== 'vehicles' &&
+            droppedElement.type !== 'vehicle' &&
             droppedElement.type !== 'personnel'
         ) {
             return false;
@@ -94,6 +112,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
             this.popupHelper.getPopupOptions(
                 ChooseTransferTargetPopupComponent,
                 droppedOnFeature,
+                [droppedOnTransferPoint.id, droppedElement.id],
                 {
                     transferPointId: droppedOnTransferPoint.id,
                     droppedElementType: droppedElement.type,
@@ -106,7 +125,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                                 {
                                     type: '[Hospital] Transport patient to hospital',
                                     hospitalId: targetId,
-                                    vehicleId: droppedElement.value.id,
+                                    vehicleId: droppedElement.id,
                                 },
                                 true
                             );
@@ -116,7 +135,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
                             {
                                 type: '[Transfer] Add to transfer',
                                 elementType: droppedElement.type,
-                                elementId: droppedElement.value.id,
+                                elementId: droppedElement.id,
                                 startPoint: TransferStartPoint.create(
                                     droppedOnTransferPoint.id
                                 ),
@@ -144,6 +163,7 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
             this.popupHelper.getPopupOptions(
                 TransferPointPopupComponent,
                 feature,
+                [feature.getId() as UUID],
                 {
                     transferPointId: feature.getId() as UUID,
                 }
@@ -154,9 +174,4 @@ export class TransferPointFeatureManager extends ElementFeatureManager<TransferP
     override isFeatureTranslatable(feature: Feature<Point>): boolean {
         return selectStateSnapshot(selectCurrentRole, this.store) === 'trainer';
     }
-
-    override unsupportedChangeProperties = new Set([
-        'id',
-        'internalName',
-    ] as const);
 }

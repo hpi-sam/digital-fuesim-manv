@@ -1,9 +1,9 @@
 import {
     FunctionParameters,
+    PatientCategory,
     PatientHealthState,
     PatientTemplate,
 } from '../../models';
-import { PatientCategory } from '../../models/patient-category';
 import type { ImageProperties } from '../../models/utils';
 import { healthPointsDefaults } from '../../models/utils';
 

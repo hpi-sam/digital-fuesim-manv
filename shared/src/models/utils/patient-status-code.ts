@@ -1,9 +1,25 @@
 import { Type } from 'class-transformer';
-import { IsString, ValidateNested } from 'class-validator';
+import { ValidateNested } from 'class-validator';
+import type { AllowedValues } from '../../utils/validators';
+import { IsLiteralUnion } from '../../utils/validators';
 import { getCreate } from './get-create';
 
 type ColorCode = 'V' | 'W' | 'X' | 'Y' | 'Z';
+const colorCodeAllowedValues: AllowedValues<ColorCode> = {
+    V: true,
+    W: true,
+    X: true,
+    Y: true,
+    Z: true,
+};
 type BehaviourCode = 'A' | 'B' | 'C' | 'D' | 'E';
+const behaviourCodeAllowedValues: AllowedValues<BehaviourCode> = {
+    A: true,
+    B: true,
+    C: true,
+    D: true,
+    E: true,
+};
 
 export const colorCodeMap = {
     V: 'black',
@@ -11,13 +27,9 @@ export const colorCodeMap = {
     X: 'green',
     Y: 'yellow',
     Z: 'red',
-} as const;
+} as const satisfies { readonly [Key in ColorCode]: string };
 
-// This is only for typesafety
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _colorCodeMap: { readonly [key in ColorCode]: string } = colorCodeMap;
-
-export const behaviourCodeMap: { [key in BehaviourCode]: string } = {
+export const behaviourCodeMap: { [Key in BehaviourCode]: string } = {
     A: 'bi-arrow-right-square-fill',
     B: 'bi-heartbreak-fill',
     C: 'bi-exclamation-circle-fill',
@@ -26,10 +38,10 @@ export const behaviourCodeMap: { [key in BehaviourCode]: string } = {
 };
 
 export class PatientStatusDataField {
-    @IsString()
+    @IsLiteralUnion(colorCodeAllowedValues)
     public readonly colorCode: ColorCode;
 
-    @IsString()
+    @IsLiteralUnion(behaviourCodeAllowedValues)
     public readonly behaviourCode: BehaviourCode;
 
     /**

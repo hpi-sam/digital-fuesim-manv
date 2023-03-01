@@ -1,11 +1,20 @@
 <div class="modal-header">
     <h4 class="modal-title">
         Krankenhäuser
-        <button class="ms-3 btn btn-outline-primary" (click)="addHospital()">
+        <button
+            class="ms-3 btn btn-outline-primary"
+            (click)="addHospital()"
+            data-cy="hospitalAddButton"
+        >
             <i class="bi bi-plus"></i> Hinzufügen
         </button>
     </h4>
-    <button type="button" class="btn-close" (click)="close()"></button>
+    <button
+        type="button"
+        class="btn-close"
+        (click)="close()"
+        data-cy="hospitalClosePopupButton"
+    ></button>
 </div>
 <div
     *ngIf="hospitals$ | async | values as hospitals"
@@ -36,6 +45,7 @@
                         placeholder="Name"
                         type="text"
                         class="form-control"
+                        data-cy="hospitalRenameInput"
                     />
                 </td>
                 <td>
@@ -55,6 +65,7 @@
                         type="number"
                         style="width: 100px"
                         placeholder="Transportzeit"
+                        data-cy="hospitalUpdateTransportTimeInput"
                     />
                     <span class="ps-2 pe-2" title="Minuten">min</span>
                 </td>
@@ -62,6 +73,7 @@
                     <button
                         (click)="removeHospital(hospital.id)"
                         class="btn btn-outline-danger float-end"
+                        data-cy="hospitalDeleteButton"
                     >
                         <i class="bi bi-trash"></i> Löschen
                     </button>

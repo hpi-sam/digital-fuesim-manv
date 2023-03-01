@@ -1,5 +1,7 @@
 # Digitale FüSim MANV
 
+## If you're interested in the most recent stable release, please check out the [main](https://github.com/hpi-sam/digital-fuesim-manv/tree/main) branch.
+
 This is the codebase for a digital implementation of the "FüSim MANV" (Führungssimulation Massenanfall von Verletzen), a German simulation system for training emergency medical services leadership personnel on how to manage [Mass Casualty Incidents](https://en.wikipedia.org/wiki/Mass-casualty_incident).
 
 **You can try it out at [https://fuesim-manv.de/](https://fuesim-manv.de/)**.
@@ -16,7 +18,7 @@ The concept is as follows:
 -   After the exercise is started, _patients_ that are not adequately treated by _personnel_ and _material_ can deteriorate and die. The goal of the _participants_ is to prevent the _patients_ from dying and transport them to the _hospitals_. To do this effectively they have to communicate with each other (via real radio devices, or remote via third-party services) and make the right decisions.
 -   Afterward, the exercise can be evaluated via statistics and a "time-travel" feature.
 
-This simulation has been designed in cooperation with and with support from the [Federal Academy for Civil Protection and Civil Defence](https://www.bbk.bund.de/DE/Themen/Akademie-BABZ/akademie-babz_node.html) of the [Federal Office of Civil Protection and Disaster Assistance Germany](https://www.bbk.bund.de/DE/Home/home_node.html), who are the original copyright holders of the analog "FüSim MANV" simulation system, and the [Malteser Hilfsdienst e.V. Berlin](https://www.malteser-berlin.de/).
+This simulation has been designed in cooperation with and with support from the [Federal Academy for Civil Protection and Civil Defence](https://www.bbk.bund.de/DE/Themen/Akademie-BABZ/akademie-babz_node.html) of the [Federal Office of Civil Protection and Disaster Assistance Germany](https://www.bbk.bund.de/DE/Home/home_node.html), who are the original copyright holders of the analog "FüSim MANV" simulation system, and the [Malteser Hilfsdienst e.V. Berlin](https://www.malteser-berlin.de/) as well as the [Johanniter Akademie NRW, Campus Münster der Johanniter-Unfall-Hilfe e.V.](https://www.johanniter.de/bildungseinrichtungen/johanniter-akademie/johanniter-akademie-nordrhein-westfalen/standorte-der-akademie-in-nordrhein-westfalen/campus-muenster/)
 
 The simulation is implemented as a web application with an Angular frontend and NodeJS backend.
 
@@ -24,13 +26,12 @@ This project is currently developed as a [bachelor project](https://hpi.de/en/st
 
 ## Links for collaborators
 
--   [(internal) documentation](https://github.com/hpi-sam/BP2021HG1)
--   [(internal) project-board](https://github.com/orgs/hpi-sam/projects/4).
+-   [(internal) Test scenarios](https://github.com/hpi-sam/digital-fuesim-manv_test-scenarios)
 
 ## Installation
 
 1. Make sure to have [git lfs](https://git-lfs.github.com/) installed.
-2. Install [NodeJs](https://nodejs.org/) (at least version 16.x) (if you need different node versions on your machine we recommend [nvm](https://github.com/nvm-sh/nvm) or [nvm for windows](https://github.com/coreybutler/nvm-windows))
+2. Install [NodeJs](https://nodejs.org/) (at least version 18.x) (if you need different node versions on your machine we recommend [nvm](https://github.com/nvm-sh/nvm) or [nvm for windows](https://github.com/coreybutler/nvm-windows))
 3. [npm](https://www.npmjs.com/) should already come with NodeJs - if not install it
 4. Clone this repository
 5. Run `npm run setup` from the root folder
@@ -39,10 +40,7 @@ This project is currently developed as a [bachelor project](https://hpi.de/en/st
    You can (optionally) use a database for the persistence of exercise data. Look at the [relevant section](./backend/README.md#database) in the backend README for further information.
    Note that to not use the database you have to edit an environment variable, see the [relevant section](./backend/README.md#without-a-database).
 8. (Optional) We have a list of recommended [vscode](https://code.visualstudio.com/) extensions. We strongly recommend you to use them if you are developing. You can see them via [the `@recommended` filter in the extensions panel](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
-
-### Gotchas
-
-If you want the best developer experience, make sure to always install dependencies with `npm install --install-links=false`. The default option changed from previously `false` to `true` with version 9.
+9. (Optional) We have prepared default settings, tasks and debug configurations for VS Code. You can find them in `.vscode/*.example`. Crete a copy of those files removing the `.example` and adjust them to your needs. The files without `.example`-Extensions are untracked so your adjustments won't be committed automatically.
 
 ## Starting for development
 
@@ -50,6 +48,7 @@ If you want the best developer experience, make sure to always install dependenc
 
 If you are using [vscode](https://code.visualstudio.com/), you can run the [task](https://code.visualstudio.com/docs/editor/tasks) `Start all` to start everything in one go.
 Note that this _tries_ to start the database using `docker compose`. In case this fails please start the database in another way (see [this section in the backend README](./backend/README.md#database)).
+If you're not using a database anyway, you could use the task `Start all but database` instead.
 
 ### Option 2
 
@@ -109,10 +108,9 @@ There are already the following [debug configurations](https://code.visualstudio
 -   `Launch Frontend [Firefox]` (You have to install an extra extension)
 -   `Debug Jest Tests`
 
-In addition you can make use of the following browser extensions:
+In addition, you can make use of the following browser extensions:
 
 -   [Angular DevTools](https://chrome.google.com/webstore/detail/angular-devtools/ienfalfjdbdpebioblfackkekamfmbnh)
--   [Redux DevTools Extension](https://github.com/zalmoxisus/redux-devtools-extension/) for [NgRx](https://ngrx.io/guide/store-devtools)
 
 ## Testing
 
@@ -120,10 +118,10 @@ In addition you can make use of the following browser extensions:
 
 We are using [Jest](https://jestjs.io/) for our unit tests.
 
-You can run it during development
+You can run it during the development
 
 -   from the terminal via `npm run test:watch` in the root, `/shared`, `/backend` or `/frontend` folder
--   or via the [recommended vscode extension](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest).
+-   or via the [recommended vscode extension](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest). **(Note: this option is currently broken)**
 
 ### End to end tests
 
@@ -135,15 +133,10 @@ To run the tests locally, it is recommended to use the vscode [task](https://cod
 
 If you only want to check whether the tests pass, you can run `npm run cy:run` in `/frontend` instead.
 
-#### Visual regression testing
+## Benchmarking
 
-We are also making use of visual regression tests via [cypress-image-diff](https://github.com/uktrade/cypress-image-diff).
-The screenshots are stored under `/frontend/cypress-visual-screenshots`.
-
-The `baseline` folder contains the reference screenshots (the desired result).
-If a test fails a new screenshot is taken and put in the `comparison` folder.
-If the new screenshot is the new desired result, then you only have to move it in the `baseline` folder and replace the old reference screenshot with the same name.
-In the `diff` folder you can see the changes between the baseline and the comparison screenshot.
+You can run the benchmarks via `npm run benchmark` in the root folder.
+Look at the [benchmark readme](./benchmark/README.md) for more information.
 
 ## Styleguide
 
@@ -165,44 +158,70 @@ In the `diff` folder you can see the changes between the baseline and the compar
      */
     ```
 -   You should use the keyword `TODO` to mark things that need to be done later. Whether an issue should be created is an individual decision.
+    -   You are encouraged to add expiration conditions to your TODOs. Eslint will complain as soon as the condition is met. See [here](https://github.com/sindresorhus/eslint-plugin-unicorn/blob/main/docs/rules/expiring-todo-comments.md) for more information.
+    ```ts
+    // TODO [engine:node@>=8]: We can use async/await now.
+    // TODO [typescript@>=4.9]: Use satisfies https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator
+    ```
 
-# Architecture
+## Releases
+
+### Versions
+
+Version numbers follow the pattern `${major}.${minor}.${patch}`. `major`, `minor` and `patch` are decimal numbers without leading zeroes, similar to [SemVer](https://semver.org/). But since we do not have a public API, we do not adhere to SemVer.  
+The major version is updated for breaking changes, i.e. old state exports of configured exercises that have never been started, cannot be imported.  
+The minor version is updated with every release on `main`. State exports of configured exercises from older minor versions that have never been started must successfully import and started exercises should be importable and behave consistently with older versions, although this is not strictly required.  
+The patch versions is incremented if and only if critical issues on `main` are being fixed during a milestone.
+
+Every time a part of the version number is updated, all numbers to the right are reset to zero.
+For each new release, pull requests both to `main` and `dev` are created from the same `release/` branch. For scheduled releases, such PRs are created by the `Create Release PR` workflow.
+
+### Workflows
+
+With every significant PR into `dev`, the change must be briefly described in [CHANGELOG.md](./CHANGELOG.md). Pay attention to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+The `Create Release PR` workflow accepts a new version number, updates the version in all relevant source files and moves the `Unreleased` section in [CHANGELOG.md](./CHANGELOG.md) to a release heading, creating a new `Unreleased` section. It then prepares two draft PRs, one into `dev` and one into `main` with these changes. They have to be marked as ready to run the pipeline and need approval. Merge them without rebase (use merge commit option).
+
+Upon pushing to `main` or `dev`, GitHub Actions will build and push docker containers to Docker Hub tagged `latest` and `dev`. `latest` is additionally tagged with the current version number on `main` and a GitHub release is created.
+
+## Architecture
 
 This repository is a monorepo that consists of the following packages:
 
 -   [frontend](./frontend) the browser-based client application ([Angular](https://angular.io/))
 -   [backend](./backend) the server-side application ([NodeJs](https://nodejs.org/))
--   [shared](./shared) the shared code that is used by both frontend and backend
+-   [benchmark](./benchmark/) benchmarks and tests some parts of the application
+-   [shared](./shared) the shared code that is used by the frontend, backend and the benchmark package
 
 Each package has its own `README.md` file with additional documentation. Please check them out before you start working on the project.
 
 One server can host multiple _exercises_. Multiple clients can join an exercise. A client can only join one exercise at a time.
 
-## State management and synchronization
+### State management and synchronization
 
 This is a real-time application.
 
 Each client is connected to the server via a [WebSocket connection](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API). This means you can send and listen for events over a two-way communication channel.
 Via [socket.io](https://socket.io/docs) it is also possible to make use of a more classic request-response API via [acknowledgments](https://socket.io/docs/v4/emitting-events/#acknowledgements).
 
-### State, actions and reducers
+#### State, actions and reducers
 
 We borrow these core concepts from [Redux](https://redux.js.org/).
 
-#### What is an immutable JSON object?
+##### What is an immutable JSON object?
 
 A JSON object is an object whose properties are only the primitives `string`, `number`, `boolean` or `null` or another JSON object or an array of any of these (only state - no `functions`).
 Any object reference can't occur more than once anywhere in a JSON object (including nested objects). This means especially that no circular references are possible.
 
 [An immutable object is an object whose state cannot be modified after it is created](https://en.wikipedia.org/wiki/Immutable_object). In the code immutability is conveyed via typescripts [readonly](https://www.typescriptlang.org/docs/handbook/2/objects.html#readonly-properties) and the helper type `Immutable<T>`.
 
-#### State
+##### State
 
 A state is an immutable JSON object. Each client as well as the server has a global state for an exercise. The single point of truth for all states of an exercise is the server. All these states should be synchronized.
 
 You can find the exercise state [here](./shared/src/state.ts).
 
-#### Action
+##### Action
 
 An action is an immutable JSON object that describes what should change in a state. The changes described by each action are [atomic](<https://en.wikipedia.org/wiki/Atomicity_(database_systems)>) - this means either all or none of the changes described by an action are applied.
 
@@ -210,7 +229,7 @@ Actions cannot be applied in parallel. The order of actions is important.
 
 It is a bad practice to encode part of the state in the action (or values derived/calculated from it). Instead, you should only read the state in the accompanying reducer.
 
-#### Reducer
+##### Reducer
 
 A reducer is a [pure function](https://en.wikipedia.org/wiki/Pure_function) (no side effects!) that takes a state and an action of a specific type and returns a new state where the changes described in the action are applied. A state can only be modified by a reducer.
 
@@ -218,7 +237,7 @@ To be able to apply certain optimizations, it is advisable (but not necessary or
 
 You can find all exercise actions and reducers [here](./shared/src/store/action-reducers). Please orient yourself on the already implemented actions, and don't forget to register them in [shared/src/store/action-reducers/action-reducers.ts](shared/src/store/action-reducers/action-reducers.ts)
 
-### Immutability
+#### Immutability
 
 It isn't necessary to copy the whole immutable object by value if it should be updated. Instead, only the objects that were modified should be shallow copied recursively. [Immer](https://immerjs.github.io/immer/) provides a simple way to do this.
 
@@ -227,7 +246,7 @@ Because the state is immutable and reducers (should) only update the properties 
 To save a state it is enough to save its reference. Therefore it is very performant as well.
 If the state would have to be changed, a new reference is created as the state is immutable.
 
-### Large values (WIP)
+#### Large values (WIP)
 
 Large values (images, large text, binary, etc.) are not directly stored in the state. Instead, the store only contains UUIDs that identify the blob. The blob can be retrieved via a separate (yet to be implemented) REST API.
 
@@ -237,7 +256,7 @@ If an action would add a new blobId to the state, the blob should have previousl
 
 A blob should only be downloaded on demand (lazy) and cached.
 
-### Synchronisation
+#### Synchronisation
 
 1. A client gets a snapshot of the state from the server via `getState`.
 2. Any time an action is applied on the server, it is sent to all clients via `performAction` and applied to them too. Due to the maintained packet ordering via a WebSocket and the fact that the synchronization of the state in the backend works synchronously, it is impossible for a client to receive actions out of order or receive actions already included in the state received by `getState`.
@@ -245,22 +264,20 @@ A blob should only be downloaded on demand (lazy) and cached.
 4. If the proposal was accepted, the action is applied on the server and sent to all clients via `performAction`.
 5. The server responds to a proposal with a response that indicates a success or rejection via an [acknowledgment](https://socket.io/docs/v4/emitting-events/#acknowledgements). A successful response is always sent after the `performAction` was broadcasted.
 
-### Optimistic updates
+#### Optimistic updates
 
 A consequence of the synchronization strategy described before is that it takes one roundtrip from the client to the server and back to get the correct state on the client that initiated the action. This can lead to a bad user experience because of high latency.
 
 This is where optimistic updates come into play. We just assume optimistically that the proposed action will be applied on the server. Therefore we can apply the action on the client directly without waiting for a `performAction` from the server.
 
-If the server rejects the proposal or a race condition occurs, the client corrects its state again.
-In our case the [optimisticActionHandler](./frontend/src/app/core/optimistic-action-handler.ts) encapsulates this functionality.
+If the server rejects the proposal or a race condition occurs, the client corrects its state again. In our case, the [optimisticActionHandler](./frontend/src/app/core/optimistic-action-handler.ts) encapsulates this functionality.
 
 The state in the frontend is not guaranteed to be correct. It is only guaranteed to automatically correct itself.
 
 If you need to read from the state to change it, you should do this inside the action reducer because the `currentState` passed into a reducer is always guaranteed to be correct.
 
-### Performance considerations
+#### Performance considerations
 
--   Do _not_ save a very large JS primitve (a large string like a base64 encoded image) in a part of the state that is often modified (like the root). This primitive would be copied on each change. Instead, the primitive should be saved as part of a separate object. This makes use of the performance benefits of shallow copies.
 -   Currently, every client maintains the whole state, and every action is sent to all clients. There is no way to only subscribe to a part of the state and only receive updates for that part.
 
 ## Licenses and Attributions
@@ -274,6 +291,83 @@ If you need to read from the state to change it, you should do this inside the a
 <!-- markdownlint-disable -->
 <table>
     <tr>
+    <td style="text-align: center">
+            <a href="https://github.com/Greenscreen23">
+                <img
+                    src="https://avatars.githubusercontent.com/u/43916057?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Lukas Hagen</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=Greenscreen23"
+                title="Code"
+                >💻</a
+            >
+            <span title="Review">👀</span>
+            <br />
+            <small>Student 2022/23<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/Nils1729">
+                <img
+                    src="https://avatars.githubusercontent.com/u/45318774?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Nils Hanff</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=Nils1729"
+                title="Code"
+                >💻</a
+            >
+            <span title="Review">👀</span>
+            <br />
+            <small>Student 2022/23<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/benn02">
+                <img
+                    src="https://avatars.githubusercontent.com/u/82985280?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Benildur Nickel</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=benn02"
+                title="Code"
+                >💻</a
+            >
+            <span title="Review">👀</span>
+            <br />
+            <small>Student 2022/23<small>
+        </td>
+        <td style="text-align: center">
+            <a href="https://github.com/lukasrad02">
+                <img
+                    src="https://avatars.githubusercontent.com/u/49586507?v=4"
+                    width="100px;"
+                />
+                <br />
+                <sub><b>Lukas Radermacher</b></sub>
+            </a>
+            <br />
+            <a
+                href="https://github.com/hpi-sam/digital-fuesim-manv/commits?author=lukasrad02"
+                title="Code"
+                >💻</a
+            >
+            <span title="Review">👀</span>
+            <br />
+            <small>Student 2022/23<small>
+        </td>
+        </tr><tr>
         <td style="text-align: center">
             <a href="https://github.com/Dassderdie">
                 <img
@@ -349,6 +443,7 @@ If you need to read from the state to change it, you should do this inside the a
             <br />
             <small>Student 2021/22<small>
         </td>
+        </tr><tr>
         <td style="text-align: center">
             <a href="https://github.com/mbarkowsky">
                 <img
@@ -361,7 +456,7 @@ If you need to read from the state to change it, you should do this inside the a
             <br />
             📆
             <br />
-            <small>Supervisor 2021/22<small>
+            <small>Supervisor 2021-23<small>
         </td>
         <td style="text-align: center">
             <a href="https://github.com/christianzoellner">
@@ -375,7 +470,7 @@ If you need to read from the state to change it, you should do this inside the a
             <br />
             📆
             <br />
-            <small>Supervisor 2021/22<small>
+            <small>Supervisor 2021-23<small>
         </td>
     </tr>
 </table>

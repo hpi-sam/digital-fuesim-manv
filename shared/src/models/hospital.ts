@@ -1,10 +1,14 @@
-import { IsDefined, IsNumber, IsString, IsUUID, Min } from 'class-validator';
+import { IsNumber, IsString, IsUUID, Min } from 'class-validator';
 import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
+import { IsUUIDSet, IsValue } from '../utils/validators';
 import { getCreate } from './utils';
 
 export class Hospital {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('hospital' as const)
+    public readonly type = 'hospital';
 
     @IsString()
     public readonly name: string;
@@ -19,8 +23,7 @@ export class Hospital {
     /**
      * These Ids reference a hospitalPatients patientId
      */
-    // @IsUUID(4, uuidArrayValidationOptions) // TODO: this doesn't work on this kind of set
-    @IsDefined()
+    @IsUUIDSet()
     public readonly patientIds: UUIDSet = {};
 
     /**

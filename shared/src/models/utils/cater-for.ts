@@ -1,5 +1,13 @@
-import { IsNumber, IsString, Min } from 'class-validator';
+import { IsNumber, Min } from 'class-validator';
+import type { AllowedValues } from '../../utils/validators';
+import { IsLiteralUnion } from '../../utils/validators';
 import { getCreate } from './get-create';
+
+type LogicalOperator = 'and' | 'or';
+const logicalOperatorAllowedValues: AllowedValues<LogicalOperator> = {
+    and: true,
+    or: true,
+};
 
 export class CanCaterFor {
     /**
@@ -30,9 +38,8 @@ export class CanCaterFor {
     @Min(0)
     public readonly green: number;
 
-    // TODO: Use a better validator
-    @IsString()
-    public readonly logicalOperator: 'and' | 'or';
+    @IsLiteralUnion(logicalOperatorAllowedValues)
+    public readonly logicalOperator: LogicalOperator;
 
     /**
      * @deprecated Use {@link create} instead
@@ -41,7 +48,7 @@ export class CanCaterFor {
         red: number,
         yellow: number,
         green: number,
-        logicalOperator: 'and' | 'or'
+        logicalOperator: LogicalOperator
     ) {
         this.red = red;
         this.yellow = yellow;

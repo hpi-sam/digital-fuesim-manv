@@ -7,9 +7,9 @@ import RBush from 'rbush';
 // or look out for a newer version here: https://github.com/mourner/rbush-knn#changelog
 // @ts-expect-error doesn't have a type
 import knn from 'rbush-knn';
-import type { Mutable, UUID } from '../../utils';
-import { ImmutableJsonObject } from '../../utils';
-import type { Position, Size } from '.';
+import type { Mutable, UUID, JsonObject } from '../../utils';
+import { Immutable } from '../../utils';
+import type { MapCoordinates, Size } from '.';
 import { getCreate } from '.';
 
 /**
@@ -27,7 +27,7 @@ export class SpatialTree {
      * This must only be mutated by the static functions of this class
      */
     @IsObject()
-    public readonly spatialTreeAsJSON: ImmutableJsonObject = new PointRBush(
+    public readonly spatialTreeAsJSON: Immutable<JsonObject> = new PointRBush(
         SpatialTree.rBushNodeSize
     ).toJSON();
 
@@ -40,7 +40,7 @@ export class SpatialTree {
     constructor() {}
 
     /**
-     * @param spatialTree inlcuding a {@link PointRBush} saved in {@link spatialTreeAsJSON} as an {@link ImmutableJsonObject}
+     * @param spatialTree inlcuding a {@link PointRBush} saved in {@link spatialTreeAsJSON} as an {@link Immutable<JsonObject>}
      * @returns a new {@link PointRBush} with all the methods to search, add etc. elements in it
      */
     private static getPointRBush(spatialTree: SpatialTree) {
@@ -51,7 +51,7 @@ export class SpatialTree {
     }
 
     /**
-     * Writes the {@link PointRBush} as an {@link ImmutableJsonObject} into {@link spatialTree}
+     * Writes the {@link PointRBush} as an {@link Immutable<JsonObject>} into {@link spatialTree}
      */
     private static savePointRBush(
         spatialTree: Mutable<SpatialTree>,
@@ -64,7 +64,7 @@ export class SpatialTree {
     public static addElement(
         spatialTree: Mutable<SpatialTree>,
         elementId: UUID,
-        position: Position
+        position: MapCoordinates
     ) {
         const pointRBush = this.getPointRBush(spatialTree);
         pointRBush.insert({
@@ -77,7 +77,7 @@ export class SpatialTree {
     public static removeElement(
         spatialTree: Mutable<SpatialTree>,
         elementId: UUID,
-        position: Mutable<Position> | Position
+        position: MapCoordinates | Mutable<MapCoordinates>
     ) {
         const pointRBush = this.getPointRBush(spatialTree);
         pointRBush.remove(
@@ -93,8 +93,8 @@ export class SpatialTree {
     public static moveElement(
         spatialTree: Mutable<SpatialTree>,
         elementId: UUID,
-        startPosition: Mutable<Position> | Position,
-        targetPosition: Position
+        startPosition: MapCoordinates | Mutable<MapCoordinates>,
+        targetPosition: MapCoordinates
     ) {
         // TODO: use the move function from RBush, when available: https://github.com/mourner/rbush/issues/28
         this.removeElement(spatialTree, elementId, startPosition);
@@ -109,7 +109,7 @@ export class SpatialTree {
      */
     public static findAllElementsInCircle(
         spatialTree: Mutable<SpatialTree>,
-        circlePosition: Position,
+        circlePosition: MapCoordinates,
         radius: number
     ): UUID[] {
         // knn does not work great with `0`|`undefined` as it interprets either as `infinity`
@@ -136,7 +136,7 @@ export class SpatialTree {
      */
     public static findAllElementsInRectangle(
         spatialTree: Mutable<SpatialTree>,
-        topLeftPosition: Position,
+        topLeftPosition: MapCoordinates,
         size: Size
     ) {
         return this.getPointRBush(spatialTree).search({
@@ -154,12 +154,12 @@ export class SpatialTree {
  * @param id of the element
  */
 interface PointRBushElement {
-    position: Position;
+    position: MapCoordinates;
     id: UUID;
 }
 
 /**
- * An RBush that works with our {@link Position} format (elements being points)
+ * An RBush that works with our {@link MapCoordinates} format (elements being points)
  * @see https://github.com/mourner/rbush#data-format
  */
 class PointRBush extends RBush<PointRBushElement> {

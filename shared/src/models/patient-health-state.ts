@@ -7,6 +7,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
+import { IsValue } from '../utils/validators';
 import { getCreate, HealthPoints, IsValidHealthPoint } from './utils';
 
 /**
@@ -108,6 +109,9 @@ export class ConditionParameters {
 export class PatientHealthState {
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
+
+    @IsValue('patientHealthState' as const)
+    public readonly type = 'patientHealthState';
 
     @Type(() => FunctionParameters)
     @ValidateNested()

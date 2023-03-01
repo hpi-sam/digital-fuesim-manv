@@ -16,12 +16,13 @@
         (click)="transferTo(reachableTransferPoint.id, 'transferPoint')"
         type="button"
         class="dropdown-item"
+        data-cy="chooseTransferTargetPopupOtherTransferPointDropdown"
     >
         <app-transfer-point-name
             [transferPointId]="reachableTransferPoint.id"
         ></app-transfer-point-name>
     </button>
-    <ng-container *ngIf="droppedElementType === 'vehicles'">
+    <ng-container *ngIf="droppedElementType === 'vehicle'">
         <div
             *ngIf="
                 (reachableTransferPoints$ | async)?.length &&
@@ -38,6 +39,7 @@
             (click)="transferTo(reachableHospital.id, 'hospital')"
             type="button"
             class="dropdown-item"
+            data-cy="chooseTransferTargetPopupHospitalDropdown"
         >
             <app-hospital-name
                 [hospitalId]="reachableHospital.id"

@@ -2,10 +2,10 @@ import { createSelector } from '@ngrx/store';
 import type {
     ExerciseState,
     Personnel,
-    Transfer,
     UUID,
     Vehicle,
 } from 'digital-fuesim-manv-shared';
+import { isInTransfer, currentCoordinatesOf } from 'digital-fuesim-manv-shared';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
 import type { AppState } from '../../app.state';
 
@@ -24,6 +24,7 @@ function selectPropertyFactory<Key extends keyof ExerciseState>(key: Key) {
 
 // UUIDMap properties
 export const selectViewports = selectPropertyFactory('viewports');
+export const selectSimulatedRegion = selectPropertyFactory('simulatedRegions');
 export const selectMapImages = selectPropertyFactory('mapImages');
 export const selectPatients = selectPropertyFactory('patients');
 export const selectVehicles = selectPropertyFactory('vehicles');
@@ -79,6 +80,9 @@ export const createSelectHospital =
     createSelectElementFromMapFactory(selectHospitals);
 export const createSelectViewport =
     createSelectElementFromMapFactory(selectViewports);
+export const createSelectSimulatedRegion = createSelectElementFromMapFactory(
+    selectSimulatedRegion
+);
 export const createSelectClient =
     createSelectElementFromMapFactory(selectClients);
 
@@ -115,8 +119,10 @@ export const selectTransferLines = createSelector(
                 Object.entries(transferPoint.reachableTransferPoints).map(
                     ([connectedId, { duration }]) => ({
                         id: `${transferPoint.id}:${connectedId}` as const,
-                        startPosition: transferPoint.position,
-                        endPosition: transferPoints[connectedId]!.position,
+                        startPosition: currentCoordinatesOf(transferPoint),
+                        endPosition: currentCoordinatesOf(
+                            transferPoints[connectedId]!
+                        ),
                         duration,
                     })
                 )
@@ -155,15 +161,15 @@ export function createSelectReachableHospitals(transferPointId: UUID) {
 export const selectVehiclesInTransfer = createSelector(
     selectVehicles,
     (vehicles) =>
-        Object.values(vehicles).filter(
-            (vehicle) => vehicle.transfer !== undefined
-        ) as (Vehicle & { transfer: Transfer })[]
+        Object.values(vehicles).filter((vehicle) =>
+            isInTransfer(vehicle)
+        ) as Vehicle[]
 );
 
 export const selectPersonnelInTransfer = createSelector(
     selectPersonnel,
     (personnel) =>
-        Object.values(personnel).filter(
-            (_personnel) => _personnel.transfer !== undefined
-        ) as (Personnel & { transfer: Transfer })[]
+        Object.values(personnel).filter((_personnel) =>
+            isInTransfer(_personnel)
+        ) as Personnel[]
 );

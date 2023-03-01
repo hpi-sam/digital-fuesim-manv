@@ -77,7 +77,7 @@ We call Angular components, pipes, directives, services, and modules "Angular el
 
 In [src/app/state](./src/app/state) are all actions, reducers, selectors and state that are used by [NGRX](https://ngrx.io/).
 
-In `src/app` and every descending folder the following guidelines apply:
+In `src/app` and every descending folder, the following guidelines apply:
 
 -   `/core`:
     -   Singleton-services and route guards that can be used by all other Angular elements that are direct or indirect children of the `core`'s parent-folder
@@ -98,6 +98,7 @@ If you want to modify the exercise state, do not do it via [reducers](https://ng
 If you want to switch between time travel, live exercise and no exercise (e.g. on the landing page), use the [ApplicationService](./src/app/core/application.service.ts).
 
 By default, we don't use `ChangeDetectionStrategy.OnPush` because it complicates the code and increases the skill level needed to work with the code while providing a mostly negligible performance benefit.
+For the same reason, there are also no optimizations made regarding how often the change detection is triggered by zones. E.g. OpenLayers runs inside the zone and therefore triggers the change detection on every `pointermove`- and `requestAnimationFrame`-event ([which are also patched by zone.js](frontend\src\polyfills.ts)). Read the angular documentation [regarding change detection](https://angular.io/guide/change-detection) for more information.
 
 ### Exercise map
 
@@ -110,7 +111,7 @@ The [ExerciseMapComponent](src/app/pages/exercises/exercise/shared/exercise-map/
 
 The [OlMapManager](src/app/pages/exercises/exercise/shared/exercise-map/utility/ol-map-manager.ts) manages all the OpenLayers stuff and renders the map on the canvas.
 The map consists of different layers. Each layer only displays one kind of element. How an element in this layer should be rendered and what interactions are possible is defined in the [specific ElementFeatureManagers](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers).
-They all inherit from [ElementFeatureManager](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers/element-feature-manager.ts) and make mostly use of `Helper` classes to add additional functionality via composition.
+The feature managers for features that should be moveable by the user extend [MoveableFeatureManager](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers/moveable-feature-manager.ts), which is the central point for all movement logic.
 They have a custom API that allows reacting to changes in an element ([ElementManager](src/app/pages/exercises/exercise/shared/exercise-map/feature-managers/element-manager.ts)) and an API that allows for interaction with other elements via the OlMapManager ([FeatureManager](src/app/pages/exercises/exercise/shared/exercise-map/utility/feature-manager.ts)).
 
 ## Action proposals

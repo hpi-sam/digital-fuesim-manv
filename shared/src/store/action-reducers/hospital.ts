@@ -9,12 +9,15 @@ import {
 import { Hospital } from '../../models';
 import { HospitalPatient } from '../../models/hospital-patient';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
+import { ExpectedReducerError } from '../reducer-error';
+import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 import { deleteVehicle } from './vehicle';
 
 export class AddHospitalAction implements Action {
-    @IsString()
+    @IsValue('[Hospital] Add hospital' as const)
     public readonly type = '[Hospital] Add hospital';
     @ValidateNested()
     @Type(() => Hospital)
@@ -22,7 +25,7 @@ export class AddHospitalAction implements Action {
 }
 
 export class EditTransportDurationToHospitalAction implements Action {
-    @IsString()
+    @IsValue('[Hospital] Edit transportDuration to hospital' as const)
     public readonly type = '[Hospital] Edit transportDuration to hospital';
     @IsUUID(4, uuidValidationOptions)
     public readonly hospitalId!: UUID;
@@ -33,7 +36,7 @@ export class EditTransportDurationToHospitalAction implements Action {
 }
 
 export class RenameHospitalAction implements Action {
-    @IsString()
+    @IsValue('[Hospital] Rename hospital' as const)
     public readonly type = '[Hospital] Rename hospital';
     @IsUUID(4, uuidValidationOptions)
     public readonly hospitalId!: UUID;
@@ -43,14 +46,14 @@ export class RenameHospitalAction implements Action {
 }
 
 export class RemoveHospitalAction implements Action {
-    @IsString()
+    @IsValue('[Hospital] Remove hospital' as const)
     public readonly type = '[Hospital] Remove hospital';
     @IsUUID(4, uuidValidationOptions)
     public readonly hospitalId!: UUID;
 }
 
 export class TransportPatientToHospitalAction implements Action {
-    @IsString()
+    @IsValue('[Hospital] Transport patient to hospital' as const)
     public readonly type = '[Hospital] Transport patient to hospital';
     @IsUUID(4, uuidValidationOptions)
     public readonly hospitalId!: UUID;
@@ -73,11 +76,7 @@ export namespace HospitalActionReducers {
         {
             action: EditTransportDurationToHospitalAction,
             reducer: (draftState, { hospitalId, transportDuration }) => {
-                const hospital = getElement(
-                    draftState,
-                    'hospitals',
-                    hospitalId
-                );
+                const hospital = getElement(draftState, 'hospital', hospitalId);
                 hospital.transportDuration = transportDuration;
                 return draftState;
             },
@@ -87,7 +86,7 @@ export namespace HospitalActionReducers {
     export const renameHospital: ActionReducer<RenameHospitalAction> = {
         action: RenameHospitalAction,
         reducer: (draftState, { hospitalId, name }) => {
-            const hospital = getElement(draftState, 'hospitals', hospitalId);
+            const hospital = getElement(draftState, 'hospital', hospitalId);
             hospital.name = name;
             return draftState;
         },
@@ -97,7 +96,7 @@ export namespace HospitalActionReducers {
     export const removeHospital: ActionReducer<RemoveHospitalAction> = {
         action: RemoveHospitalAction,
         reducer: (draftState, { hospitalId }) => {
-            const hospital = getElement(draftState, 'hospitals', hospitalId);
+            const hospital = getElement(draftState, 'hospital', hospitalId);
             // TODO: maybe make a hospital undeletable (if at least one patient is in it)
             for (const patientId of Object.keys(hospital.patientIds)) {
                 delete draftState.hospitalPatients[patientId];
@@ -117,17 +116,19 @@ export namespace HospitalActionReducers {
         {
             action: TransportPatientToHospitalAction,
             reducer: (draftState, { hospitalId, vehicleId }) => {
-                const hospital = getElement(
-                    draftState,
-                    'hospitals',
-                    hospitalId
-                );
-                const vehicle = getElement(draftState, 'vehicles', vehicleId);
-                // TODO: Block vehicles whose material and personnel are unloaded
+                const hospital = getElement(draftState, 'hospital', hospitalId);
+                const vehicle = getElement(draftState, 'vehicle', vehicleId);
+
+                if (!isCompletelyLoaded(draftState, vehicle)) {
+                    throw new ExpectedReducerError(
+                        'Das Fahrzeug kann nur ein Krankenhaus anfahren, wenn Personal und Material eingestiegen sind.'
+                    );
+                }
+
                 for (const patientId of Object.keys(vehicle.patientIds)) {
                     const patient = getElement(
                         draftState,
-                        'patients',
+                        'patient',
                         patientId
                     );
                     draftState.hospitalPatients[patientId] =

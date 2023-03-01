@@ -1,27 +1,29 @@
+import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { Size, Viewport } from 'digital-fuesim-manv-shared';
+import { MapCoordinates, Size, Viewport } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
-import type LineString from 'ol/geom/LineString';
-import type VectorLayer from 'ol/layer/Vector';
+import type { Polygon } from 'ol/geom';
 import type OlMap from 'ol/Map';
-import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
+import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
+import {
+    selectCurrentRole,
+    selectVisibleViewports,
+} from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ViewportPopupComponent } from '../shared/viewport-popup/viewport-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
-import { ModifyHelper } from '../utility/modify-helper';
-import {
-    createLineString,
-    ElementFeatureManager,
-    getCoordinateArray,
-} from './element-feature-manager';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
+import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
+import type { OpenPopupOptions } from '../utility/popup-manager';
+import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export function isInViewport(
     coordinate: Coordinate,
@@ -34,78 +36,76 @@ export function isInViewport(
 }
 
 export class ViewportFeatureManager
-    extends ElementFeatureManager<Viewport, LineString>
-    implements FeatureManager<Feature<LineString>>
+    extends MoveableFeatureManager<Viewport, Polygon>
+    implements FeatureManager<Polygon>
 {
-    readonly type = 'viewports';
-
-    override unsupportedChangeProperties = new Set(['id'] as const);
-
+    public register(
+        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
+        destroy$: Subject<void>,
+        mapInteractionsManager: OlMapInteractionsManager
+    ): void {
+        super.registerFeatureElementManager(
+            this.store.select(selectVisibleViewports),
+            changePopup$,
+            destroy$,
+            mapInteractionsManager
+        );
+        mapInteractionsManager.addTrainerInteraction(
+            new ResizeRectangleInteraction(this.layer.getSource()!)
+        );
+    }
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<LineString>>,
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>
     ) {
         super(
             olMap,
-            layer,
             (targetPositions, viewport) => {
                 exerciseService.proposeAction({
                     type: '[Viewport] Move viewport',
                     viewportId: viewport.id,
-                    targetPosition: targetPositions[0]!,
+                    targetPosition: targetPositions[0]![0]!,
                 });
             },
-            createLineString
+            new PolygonGeometryHelper()
         );
         this.layer.setStyle(this.style);
     }
-    private readonly modifyHelper = new ModifyHelper();
 
     private readonly style = new Style({
-        geometry(thisFeature) {
-            const modifyGeometry = thisFeature.get('modifyGeometry');
-            return modifyGeometry
-                ? modifyGeometry.geometry
-                : thisFeature.getGeometry();
-        },
+        fill: undefined,
         stroke: new Stroke({
             color: '#fafaff',
             width: 2,
         }),
     });
 
-    override createFeature(element: Viewport): Feature<LineString> {
+    override createFeature(element: Viewport): Feature<Polygon> {
         const feature = super.createFeature(element);
-        this.modifyHelper.onModifyEnd(feature, (newPositions) => {
-            // Skip when not all coordinates are properly set.
-            if (
-                !newPositions.every(
-                    (position) =>
-                        Number.isFinite(position.x) &&
-                        Number.isFinite(position.y)
-                )
-            ) {
-                const viewport = this.getElementFromFeature(feature)!.value;
-                this.recreateFeature(viewport);
-                return;
+        ResizeRectangleInteraction.onResize(
+            feature,
+            ({ topLeftCoordinate, scale }) => {
+                const currentElement = this.getElementFromFeature(
+                    feature
+                ) as Viewport;
+                this.exerciseService.proposeAction(
+                    {
+                        type: '[Viewport] Resize viewport',
+                        viewportId: element.id,
+                        targetPosition: MapCoordinates.create(
+                            topLeftCoordinate[0]!,
+                            topLeftCoordinate[1]!
+                        ),
+                        newSize: Size.create(
+                            currentElement.size.width * scale.x,
+                            currentElement.size.height * scale.y
+                        ),
+                    },
+                    true
+                );
             }
-            const lineString = newPositions;
-
-            // We expect the viewport LineString to have 4 points.
-            const topLeft = lineString[0]!;
-            const bottomRight = lineString[2]!;
-            this.exerciseService.proposeAction({
-                type: '[Viewport] Resize viewport',
-                viewportId: element.id,
-                targetPosition: topLeft,
-                newSize: Size.create(
-                    bottomRight.x - topLeft.x,
-                    topLeft.y - bottomRight.y
-                ),
-            });
-        });
+        );
         return feature;
     }
 
@@ -113,19 +113,15 @@ export class ViewportFeatureManager
         oldElement: Viewport,
         newElement: Viewport,
         changedProperties: ReadonlySet<keyof Viewport>,
-        elementFeature: Feature<LineString>
+        elementFeature: Feature<Polygon>
     ): void {
         if (
             changedProperties.has('position') ||
             changedProperties.has('size')
         ) {
-            const newFeature = this.getFeatureFromElement(newElement);
-            if (!newFeature) {
-                throw new TypeError('newFeature undefined');
-            }
             this.movementAnimator.animateFeatureMovement(
                 elementFeature,
-                getCoordinateArray(newElement)
+                this.geometryHelper.getElementCoordinates(newElement)
             );
         }
         // If the style has updated, we need to redraw the feature
@@ -145,6 +141,7 @@ export class ViewportFeatureManager
 
         this.togglePopup$.next({
             component: ViewportPopupComponent,
+            closingUUIDs: [feature.getId() as UUID],
             context: {
                 viewportId: feature.getId() as UUID,
             },
@@ -158,5 +155,9 @@ export class ViewportFeatureManager
                 this.olMap.getView().getCenter()!
             ),
         });
+    }
+
+    public override isFeatureTranslatable(feature: Feature<Polygon>): boolean {
+        return selectStateSnapshot(selectCurrentRole, this.store) === 'trainer';
     }
 }

@@ -5,22 +5,94 @@ import type {
     ViewContainerRef,
 } from '@angular/core';
 import { isEqual } from 'lodash-es';
-import type { Overlay } from 'ol';
+import type { Feature } from 'ol';
+import { Overlay } from 'ol';
+import type VectorLayer from 'ol/layer/Vector';
+import type VectorSource from 'ol/source/Vector';
 import { Subject, takeUntil } from 'rxjs';
+import type OlMap from 'ol/Map';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Positioning } from '../../utility/types/positioning';
+import type { FeatureManager } from './feature-manager';
 
 /**
  * A class that manages the creation and destruction of a single popup with freely customizable content
  * that should appear on the {@link popupOverlay}.
  */
 export class PopupManager {
+    /**
+     * If this subject emits options, the specified popup should be toggled.
+     * If it emits undefined, the currently open popup should be closed.
+     */
+    public readonly changePopup$ = new Subject<
+        OpenPopupOptions<any> | undefined
+    >();
+
+    public readonly popupOverlay: Overlay;
     private readonly destroy$ = new Subject<void>();
     private currentlyOpenPopupOptions?: OpenPopupOptions<any>;
+    private popupsEnabled = true;
+    public get currentClosingIds(): UUID[] {
+        if (this.currentlyOpenPopupOptions === undefined) {
+            return [];
+        }
+        return this.currentlyOpenPopupOptions.closingUUIDs;
+    }
 
     constructor(
-        private readonly popupOverlay: Overlay,
-        private readonly popoverContent: ViewContainerRef
-    ) {}
+        private readonly popoverContent: ViewContainerRef,
+        private readonly popoverContainer: HTMLDivElement
+    ) {
+        this.popupOverlay = new Overlay({
+            element: this.popoverContainer,
+        });
+    }
+    public setPopupsEnabled(enabled: boolean) {
+        this.popupsEnabled = enabled;
+        if (!enabled) {
+            // Close all open popups
+            this.changePopup$.next(undefined);
+        }
+    }
+
+    public registerPopupTriggers(
+        olMap: OlMap,
+        openLayersContainer: HTMLDivElement,
+        layerFeatureManagerDictionary: Map<
+            VectorLayer<VectorSource>,
+            FeatureManager<any>
+        >
+    ) {
+        olMap.on('singleclick', (event) => {
+            if (!this.popupsEnabled) {
+                return;
+            }
+            const hasBeenHandled = olMap.forEachFeatureAtPixel(
+                event.pixel,
+                (feature, layer) => {
+                    // Skip layer when unset
+                    if (layer === null) {
+                        return false;
+                    }
+                    layerFeatureManagerDictionary
+                        .get(layer as VectorLayer<VectorSource>)!
+                        .onFeatureClicked(event, feature as Feature);
+                    // we only want the top one -> a truthy return breaks this loop
+                    return true;
+                },
+                { hitTolerance: 10 }
+            );
+            if (!hasBeenHandled) {
+                this.changePopup$.next(undefined);
+            }
+        });
+
+        openLayersContainer.addEventListener('keydown', (event) => {
+            if ((event as KeyboardEvent).key === 'Escape') {
+                this.changePopup$.next(undefined);
+            }
+        });
+    }
 
     /**
      * Toggles the popup with the given options.
@@ -69,6 +141,9 @@ export class PopupManager {
     }
 }
 
+/**
+ * {@link closingUUIDs} is an array containing the UUIDs of elements that when clicked shall close the pop-up
+ */
 export interface OpenPopupOptions<
     Component extends PopupComponent,
     ComponentClass extends Type<Component> = Type<Component>
@@ -76,6 +151,7 @@ export interface OpenPopupOptions<
     position: number[];
     positioning: Positioning;
     component: ComponentClass;
+    closingUUIDs: UUID[];
     context?: Partial<Component>;
 }
 

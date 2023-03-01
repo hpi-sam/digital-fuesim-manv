@@ -1,37 +1,29 @@
-import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
+import type { Immutable, JsonObject } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
-import type { LineString, Point } from 'ol/geom';
+import type { Geometry, Point } from 'ol/geom';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import type { Observable, Subject } from 'rxjs';
+import { pairwise, startWith, takeUntil } from 'rxjs';
+import { handleChanges } from 'src/app/shared/functions/handle-changes';
 import { generateChangedProperties } from '../utility/generate-changed-properties';
 
 /**
  * Provides an Api to update a feature based on changes to an element (patient, vehicle, etc.).
  *
  * {@link Element} is the immutable JSON object (Patient, Vehicle, etc.)
- * {@link ElementFeature} is the OpenLayers Feature that should be rendered to represent the {@link Element}.
+ * {@link Feature<FeatureType>} is the OpenLayers Feature that should be rendered to represent the {@link Element}.
  */
 export abstract class ElementManager<
-    Element extends ImmutableJsonObject,
-    FeatureType extends LineString | Point,
-    ElementFeature extends Feature<FeatureType>,
-    UnsupportedChangeProperties extends ReadonlySet<keyof Element>,
-    SupportedChangeProperties extends Exclude<
-        ReadonlySet<keyof Element>,
-        UnsupportedChangeProperties
-    > = Exclude<ReadonlySet<keyof Element>, UnsupportedChangeProperties>
+    Element extends Immutable<JsonObject>,
+    FeatureType extends Geometry
 > {
-    /**
-     * When an element gets (dragged &) dropped, this identifies the type of the dropped element.
-     * @example `patients`
-     */
-    abstract readonly type: string;
-
     /**
      * This should be called if a new element is added.
      */
     public onElementCreated(element: Element) {
         const feature = this.createFeature(element);
-        feature.set(featureKeys.type, this.type);
-        feature.set(featureKeys.value, element);
+        feature.set(featureElementKey, element);
     }
 
     /**
@@ -48,10 +40,6 @@ export abstract class ElementManager<
 
     /**
      * This should be called if an element is changed.
-     *
-     * The best way to reflect the changes on the feature is mostly to update the already created feature directly. This is done in {@link changeFeature}.
-     * But, because this requires extra code for each changed property, it is not feasible to do for all properties.
-     * If any property in {@link unsupportedChangeProperties} has changed, we deleted the old feature and create a new one instead.
      */
     public onElementChanged(oldElement: Element, newElement: Element): void {
         const elementFeature = this.getFeatureFromElement(oldElement);
@@ -64,12 +52,7 @@ export abstract class ElementManager<
             oldElement,
             newElement
         );
-        if (!this.areAllPropertiesSupported(changedProperties)) {
-            this.onElementDeleted(oldElement);
-            this.onElementCreated(newElement);
-            return;
-        }
-        elementFeature.set(featureKeys.value, newElement);
+        elementFeature.set(featureElementKey, newElement);
         this.changeFeature(
             oldElement,
             newElement,
@@ -78,68 +61,72 @@ export abstract class ElementManager<
         );
     }
 
-    public recreateFeature(element: Element) {
-        this.onElementDeleted(element);
-        this.onElementCreated(element);
-    }
-
     /**
      * Adds a new feature representing the {@link element} to the map.
      */
-    abstract createFeature(element: Element): ElementFeature;
+    abstract createFeature(element: Element): Feature<FeatureType>;
 
     /**
      * Delete the {@link elementFeature} representing the {@link element} from the map.
      */
     abstract deleteFeature(
         element: Element,
-        elementFeature: ElementFeature
+        elementFeature: Feature<FeatureType>
     ): void;
 
     /**
-     * The properties of {@link Element} for which custom changes cannot be handled in {@link changeFeature}.
-     */
-    abstract readonly unsupportedChangeProperties: UnsupportedChangeProperties;
-    /**
-     * This method must only be called if no properties in {@link unsupportedChangeProperties} are different between the two elements
      * @param changedProperties The properties that have changed between the {@link oldElement} and the {@link newElement}
      * @param elementFeature The openLayers feature that should be updated to reflect the changes
      */
     abstract changeFeature(
         oldElement: Element,
         newElement: Element,
-        changedProperties: SupportedChangeProperties,
-        elementFeature: ElementFeature
+        changedProperties: ReadonlySet<keyof Element>,
+        elementFeature: Feature<FeatureType>
     ): void;
 
     abstract getFeatureFromElement(
         element: Element
-    ): ElementFeature | undefined;
+    ): Feature<FeatureType> | undefined;
 
     public getElementFromFeature(feature: Feature<any>) {
-        return {
-            type: feature.get(featureKeys.type),
-            value: feature.get(featureKeys.value),
-        };
+        return feature.get(featureElementKey);
+    }
+    /**
+     * @param renderBuffer The size of the largest symbol, line width or label on the highest zoom level.
+     */
+    protected createElementLayer<LayerGeometry extends Geometry = Point>(
+        renderBuffer = 250
+    ) {
+        return new VectorLayer({
+            // These two settings prevent clipping during animation/interaction but cause a performance hit -> disable if needed
+            updateWhileAnimating: true,
+            updateWhileInteracting: true,
+            renderBuffer,
+            source: new VectorSource<LayerGeometry>(),
+        });
     }
 
-    private areAllPropertiesSupported(
-        changedProperties: ReadonlySet<keyof Element>
-    ): changedProperties is SupportedChangeProperties {
-        for (const changedProperty of changedProperties) {
-            if (this.unsupportedChangeProperties.has(changedProperty)) {
-                return false;
-            }
-        }
-        return true;
+    protected registerChangeHandlers(
+        elementDictionary$: Observable<{ [id: string]: Element }>,
+        destroy$: Subject<void>,
+        createHandler?: (newElement: Element) => void,
+        deleteHandler?: (deletedElement: Element) => void,
+        changeHandler?: (oldElement: Element, newElement: Element) => void
+    ) {
+        elementDictionary$
+            .pipe(startWith({}), pairwise(), takeUntil(destroy$))
+            .subscribe(([oldElementDictionary, newElementDictionary]) => {
+                handleChanges(oldElementDictionary, newElementDictionary, {
+                    createHandler,
+                    deleteHandler,
+                    changeHandler,
+                });
+            });
     }
 }
 
 /**
  * The keys of the feature, where the type and most recent value of the respective element are saved to
  */
-const featureKeys = {
-    value: 'elementValue',
-    // TODO: In the future the type should be saved in the element itself
-    type: 'elementType',
-};
+export const featureElementKey = 'element';

@@ -1,6 +1,7 @@
 import type { ExerciseAction } from 'digital-fuesim-manv-shared';
 import {
     ReducerError,
+    ExpectedReducerError,
     validateExerciseAction,
     validatePermissions,
 } from 'digital-fuesim-manv-shared';
@@ -28,6 +29,7 @@ export const registerProposeActionHandler = (
                 callback({
                     success: false,
                     message: `Invalid payload: ${errors}`,
+                    expected: false,
                 });
                 return;
             }
@@ -37,6 +39,7 @@ export const registerProposeActionHandler = (
                 callback({
                     success: false,
                     message: 'No exercise selected',
+                    expected: false,
                 });
                 return;
             }
@@ -44,6 +47,7 @@ export const registerProposeActionHandler = (
                 callback({
                     success: false,
                     message: 'No client selected',
+                    expected: false,
                 });
                 return;
             }
@@ -58,6 +62,7 @@ export const registerProposeActionHandler = (
                 callback({
                     success: false,
                     message: 'No sufficient rights',
+                    expected: false,
                 });
                 return;
             }
@@ -66,10 +71,19 @@ export const registerProposeActionHandler = (
                 exerciseWrapper.applyAction(action, clientWrapper.client.id);
             } catch (error: any) {
                 if (error instanceof ReducerError) {
-                    callback({
-                        success: false,
-                        message: error.message,
-                    });
+                    if (error instanceof ExpectedReducerError) {
+                        callback({
+                            success: false,
+                            message: error.message,
+                            expected: true,
+                        });
+                    } else {
+                        callback({
+                            success: false,
+                            message: error.message,
+                            expected: false,
+                        });
+                    }
                     return;
                 }
                 throw error;

@@ -1,5 +1,9 @@
 <div class="pt-2">
-    <button (click)="openExerciseSettings()" class="btn btn-outline-primary">
+    <button
+        (click)="openExerciseSettings()"
+        class="btn btn-outline-primary"
+        data-cy="trainerToolbarSettingsButton"
+    >
         <i class="bi bi-gear-fill"></i>
         Einstellungen
     </button>
@@ -9,6 +13,7 @@
             type="button"
             class="btn btn-outline-primary ms-3"
             ngbDropdownToggle
+            data-cy="trainerToolbarCreationButton"
         >
             Erstellung
         </button>
@@ -17,6 +22,7 @@
                 ngbDropdownItem
                 (click)="openAlarmGroupOverview()"
                 class="btn btn-primary"
+                data-cy="trainerToolbarAlarmGroupsButton"
             >
                 Alarmierungsgruppen
             </button>
@@ -24,6 +30,7 @@
                 ngbDropdownItem
                 (click)="openHospitalEditor()"
                 class="btn btn-primary"
+                data-cy="trainerToolbarHospitalsButton"
             >
                 Krankenhäuser
             </button>
@@ -35,6 +42,7 @@
             type="button"
             class="btn btn-outline-primary ms-3"
             ngbDropdownToggle
+            data-cy="trainerToolbarExecutionButton"
         >
             Durchführung
         </button>
@@ -43,6 +51,7 @@
                 ngbDropdownItem
                 (click)="openClientOverview()"
                 class="btn btn-primary"
+                data-cy="trainerToolbarParticipantsButton"
             >
                 Teilnehmerübersicht
             </button>
@@ -50,6 +59,7 @@
                 ngbDropdownItem
                 (click)="openTransferOverview()"
                 class="btn btn-primary"
+                data-cy="trainerToolbarTransferButton"
             >
                 Transferübersicht
             </button>
@@ -57,6 +67,7 @@
                 ngbDropdownItem
                 (click)="openEmergencyOperationsCenter()"
                 class="btn btn-primary"
+                data-cy="trainerToolbarControlCenterButton"
             >
                 Leitstelle
             </button>
@@ -68,6 +79,7 @@
             type="button"
             class="btn btn-outline-primary ms-3"
             ngbDropdownToggle
+            data-cy="trainerToolbarEvaluationButton"
         >
             Auswertung
         </button>
@@ -76,6 +88,7 @@
                 ngbDropdownItem
                 (click)="openExerciseStatisticsModal()"
                 class="btn btn-primary"
+                data-cy="trainerToolbarStatisticsButton"
             >
                 Statistiken
             </button>
@@ -83,6 +96,7 @@
                 ngbDropdownItem
                 (click)="applicationService.startTimeTravel()"
                 class="btn btn-primary"
+                data-cy="trainerToolbarRecordingButton"
             >
                 Aufzeichnung
             </button>
@@ -93,6 +107,7 @@
         *ngIf="(exerciseStatus$ | async) === 'running'"
         (click)="pauseExercise()"
         class="btn btn-primary ms-3"
+        data-cy="trainerToolbarPauseButton"
     >
         Pause
     </button>
@@ -100,6 +115,7 @@
         *ngIf="(exerciseStatus$ | async) !== 'running'"
         (click)="startExercise()"
         class="btn btn-primary ms-3"
+        data-cy="trainerToolbarStartButton"
     >
         Start
     </button>

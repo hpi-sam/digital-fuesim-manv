@@ -1,16 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
+import {
+    isNotInVehicle,
+    currentCoordinatesOf,
+    isOnMap,
+    loopTroughTime,
+    uuid,
+    Viewport,
+    isNotInTransfer,
+} from 'digital-fuesim-manv-shared';
 import type {
+    Personnel,
     Client,
     ExerciseState,
     Patient,
     Vehicle,
-} from 'digital-fuesim-manv-shared';
-import {
-    loopTroughTime,
-    Personnel,
-    uuid,
-    Viewport,
 } from 'digital-fuesim-manv-shared';
 import { countBy } from 'lodash-es';
 import { ReplaySubject } from 'rxjs';
@@ -108,18 +112,27 @@ export class StatisticsService {
                     ),
                     Object.values(draftState.patients).filter(
                         (patient) =>
-                            patient.position &&
-                            Viewport.isInViewport(viewport, patient.position)
+                            isOnMap(patient) &&
+                            Viewport.isInViewport(
+                                viewport,
+                                currentCoordinatesOf(patient)
+                            )
                     ),
                     Object.values(draftState.vehicles).filter(
                         (vehicle) =>
-                            vehicle.position &&
-                            Viewport.isInViewport(viewport, vehicle.position)
+                            isOnMap(vehicle) &&
+                            Viewport.isInViewport(
+                                viewport,
+                                currentCoordinatesOf(vehicle)
+                            )
                     ),
                     Object.values(draftState.personnel).filter(
                         (personnel) =>
-                            personnel.position &&
-                            Viewport.isInViewport(viewport, personnel.position)
+                            isOnMap(personnel) &&
+                            Viewport.isInViewport(
+                                viewport,
+                                currentCoordinatesOf(personnel)
+                            )
                     )
                 ),
             ])
@@ -148,8 +161,8 @@ export class StatisticsService {
             personnel: countBy(
                 personnel.filter(
                     (_personnel) =>
-                        !Personnel.isInVehicle(_personnel) &&
-                        _personnel.transfer === undefined
+                        isNotInVehicle(_personnel) &&
+                        isNotInTransfer(_personnel)
                 ),
                 (_personnel) => _personnel.personnelType
             ),

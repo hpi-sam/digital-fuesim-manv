@@ -1,14 +1,18 @@
 import type { Feature, MapBrowserEvent } from 'ol';
+import type { Geometry } from 'ol/geom';
 import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import type { Subject } from 'rxjs';
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import type { Element } from 'digital-fuesim-manv-shared';
+import type { OlMapInteractionsManager } from './ol-map-interactions-manager';
 import type { OpenPopupOptions } from './popup-manager';
 
 /**
  * The Api to interact with a feature
  */
-export interface FeatureManager<ElementFeature extends Feature<any>> {
+export interface FeatureManager<T extends Geometry> {
     readonly layer: VectorLayer<VectorSource>;
 
     /**
@@ -23,13 +27,13 @@ export interface FeatureManager<ElementFeature extends Feature<any>> {
      */
     onFeatureClicked: (
         event: MapBrowserEvent<any>,
-        feature: ElementFeature
+        feature: Feature<T>
     ) => void;
 
     /**
      * @returns whether the feature can be moved by the user
      */
-    isFeatureTranslatable: (feature: ElementFeature) => boolean;
+    isFeatureTranslatable: (feature: Feature<T>) => boolean;
 
     /**
      * @param dropEvent The drop event that triggered the call
@@ -38,8 +42,14 @@ export interface FeatureManager<ElementFeature extends Feature<any>> {
      * @returns wether the event should not propagate further (to the features behind {@link droppedOnFeature}).
      */
     onFeatureDrop: (
-        dropEvent: TranslateEvent,
-        droppedFeature: Feature<any>,
-        droppedOnFeature: ElementFeature
+        droppedElement: Element,
+        droppedOnFeature: Feature<T>,
+        dropEvent?: TranslateEvent
     ) => boolean;
+
+    register: (
+        changePopup$: Subject<OpenPopupOptions<any> | undefined>,
+        destroy$: Subject<void>,
+        mapInteractionsManager: OlMapInteractionsManager
+    ) => void;
 }

@@ -1,141 +1,38 @@
 import { produce } from 'immer';
-import { generateDummyPatient } from '../../../data';
-import { defaultMaterialTemplates } from '../../../data/default-state/material-templates';
-import { defaultPersonnelTemplates } from '../../../data/default-state/personnel-templates';
-import type { Patient } from '../../../models';
-import { Material, Personnel } from '../../../models';
-import type { PatientStatus } from '../../../models/utils';
-import { CanCaterFor, Position } from '../../../models/utils';
-import { SpatialTree } from '../../../models/utils/spatial-tree';
+import type { PatientStatus, Position } from '../../../models/utils';
+import { CanCaterFor } from '../../../models/utils';
+import { MapPosition } from '../../../models/utils/position/map-position';
+import { VehiclePosition } from '../../../models/utils/position/vehicle-position';
 import { ExerciseState } from '../../../state';
-import type { Mutable, UUID } from '../../../utils';
+import type { Mutable } from '../../../utils';
 import { cloneDeepMutable, uuid } from '../../../utils';
+import { addMaterial } from '../../../../tests/utils/materials.spec';
+import { addPatient } from '../../../../tests/utils/patients.spec';
+import { addPersonnel } from '../../../../tests/utils/personnel.spec';
+import { assertCatering } from '../../../../tests/utils/catering.spec';
+import { Personnel } from '../../../models';
+import { defaultPersonnelTemplates } from '../../../data/default-state/personnel-templates';
 import { updateTreatments } from './calculate-treatments';
-import { getElement } from './get-element';
 
 const emptyState = ExerciseState.create('123456');
 
-interface Catering {
-    /**
-     * The id of the material or personnel catering
-     */
-    catererId: UUID;
-    catererType: 'materials' | 'personnel';
-    /**
-     * All patients treated by {@link catererId}
-     */
-    patientIds: UUID[];
-}
-
-/**
- * Asserts that adding the specified {@link caterings} to the {@link beforeState} results in the {@link newState}.
- * If the {@link beforeState} has already caterings in it, these will not be removed.
- */
-function assertCatering(
-    beforeState: ExerciseState,
-    newState: ExerciseState,
-    caterings: Catering[]
-) {
-    // Add all caterings to the before state and look whether the result is the newState
-    const shouldState = produce(beforeState, (draftState) => {
-        for (const catering of caterings) {
-            // Update all the patients
-            const patients = catering.patientIds.map((patientId) =>
-                getElement(draftState, 'patients', patientId)
-            );
-            for (const patient of patients) {
-                patient[
-                    catering.catererType === 'materials'
-                        ? 'assignedMaterialIds'
-                        : 'assignedPersonnelIds'
-                ][catering.catererId] = true;
-            }
-            // Update the catering element
-            const cateringElement = getElement(
-                draftState,
-                catering.catererType,
-                catering.catererId
-            );
-            for (const patientId of catering.patientIds) {
-                cateringElement.assignedPatientIds[patientId] = true;
-            }
-        }
-        return draftState;
-    });
-    expect(newState).toStrictEqual(shouldState);
-}
-
-function addPatient(
-    state: Mutable<ExerciseState>,
-    pretriageStatus: PatientStatus,
-    realStatus: PatientStatus,
-    position?: Position
-): Mutable<Patient> {
-    const patient = cloneDeepMutable(generateDummyPatient());
-    patient.pretriageStatus = pretriageStatus;
-    patient.realStatus = realStatus;
-    if (position) {
-        patient.position = cloneDeepMutable(position);
-        SpatialTree.addElement(
-            state.spatialTrees.patients,
-            patient.id,
-            patient.position
-        );
-    }
-    state.patients[patient.id] = patient;
-    return patient;
-}
-
-function addPersonnel(state: Mutable<ExerciseState>, position?: Position) {
-    const personnel = cloneDeepMutable(
-        Personnel.generatePersonnel(
-            defaultPersonnelTemplates.notSan,
-            uuid(),
-            'RTW 3/83/1'
-        )
+function createNotSan(position: Position) {
+    const template = defaultPersonnelTemplates.notSan;
+    const notSan = Personnel.generatePersonnel(
+        {
+            ...template,
+            canCaterFor: {
+                red: 1,
+                yellow: 0,
+                green: 0,
+                logicalOperator: 'and',
+            },
+        },
+        uuid(),
+        'RTW 3/83/1',
+        position
     );
-    personnel.canCaterFor = {
-        red: 1,
-        yellow: 0,
-        green: 0,
-        logicalOperator: 'and',
-    };
-    if (position) {
-        personnel.position = cloneDeepMutable(position);
-        SpatialTree.addElement(
-            state.spatialTrees.personnel,
-            personnel.id,
-            personnel.position
-        );
-    }
-    state.personnel[personnel.id] = personnel;
-    return personnel;
-}
-
-function addMaterial(state: Mutable<ExerciseState>, position?: Position) {
-    const material = cloneDeepMutable(
-        Material.generateMaterial(
-            defaultMaterialTemplates.standard,
-            uuid(),
-            'RTW 3/83/1'
-        )
-    );
-    material.canCaterFor = {
-        red: 1,
-        yellow: 0,
-        green: 0,
-        logicalOperator: 'and',
-    };
-    if (position) {
-        material.position = cloneDeepMutable(position);
-        SpatialTree.addElement(
-            state.spatialTrees.materials,
-            material.id,
-            material.position
-        );
-    }
-    state.materials[material.id] = material;
-    return material;
+    return notSan;
 }
 
 /**
@@ -170,7 +67,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only personnel in vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPersonnel(state);
+                addPersonnel(state, createNotSan(VehiclePosition.create('')));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -179,7 +76,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only personnel outside vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPersonnel(state, Position.create(0, 0));
+                addPersonnel(state, createNotSan(VehiclePosition.create('')));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -188,7 +85,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only material in vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addMaterial(state);
+                addMaterial(state, MapPosition.create({ x: 0, y: 0 }));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -197,7 +94,7 @@ describe('calculate treatment', () => {
     it('does nothing when there is only material outside vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addMaterial(state, Position.create(0, 0));
+                addMaterial(state, MapPosition.create({ x: 0, y: 0 }));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -208,7 +105,12 @@ describe('calculate treatment', () => {
             (state) => {
                 (['green', 'yellow', 'red'] as PatientStatus[]).forEach(
                     (color) => {
-                        addPatient(state, color, color, Position.create(0, 0));
+                        addPatient(
+                            state,
+                            color,
+                            color,
+                            MapPosition.create({ x: 0, y: 0 })
+                        );
                     }
                 );
             }
@@ -219,7 +121,12 @@ describe('calculate treatment', () => {
     it('does nothing when there are only dead patients', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPatient(state, 'black', 'black', Position.create(0, 0));
+                addPatient(
+                    state,
+                    'black',
+                    'black',
+                    MapPosition.create({ x: 0, y: 0 })
+                );
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -228,8 +135,13 @@ describe('calculate treatment', () => {
     it('does nothing when all personnel is in a vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPatient(state, 'green', 'green', Position.create(0, 0));
-                addPersonnel(state);
+                addPatient(
+                    state,
+                    'green',
+                    'green',
+                    MapPosition.create({ x: 0, y: 0 })
+                );
+                addPersonnel(state, createNotSan(VehiclePosition.create('')));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -238,8 +150,13 @@ describe('calculate treatment', () => {
     it('does nothing when all material is in a vehicle', () => {
         const { beforeState, newState } = setupStateAndApplyTreatments(
             (state) => {
-                addPatient(state, 'green', 'green', Position.create(0, 0));
-                addMaterial(state);
+                addPatient(
+                    state,
+                    'green',
+                    'green',
+                    MapPosition.create({ x: 0, y: 0 })
+                );
+                addMaterial(state, VehiclePosition.create(''));
             }
         );
         expect(newState).toStrictEqual(beforeState);
@@ -257,21 +174,24 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    Position.create(0, 0)
+                    MapPosition.create({ x: 0, y: 0 })
                 ).id;
                 ids.redPatient = addPatient(
                     state,
                     'red',
                     'red',
-                    Position.create(2, 2)
+                    MapPosition.create({ x: 2, y: 2 })
                 ).id;
-                ids.material = addMaterial(state, Position.create(0, 0)).id;
+                ids.material = addMaterial(
+                    state,
+                    MapPosition.create({ x: 0, y: 0 })
+                ).id;
             }
         );
         assertCatering(beforeState, newState, [
             {
                 catererId: ids.material,
-                catererType: 'materials',
+                catererType: 'material',
                 patientIds: [ids.greenPatient],
             },
         ]);
@@ -289,22 +209,24 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    Position.create(-3, -3)
+                    MapPosition.create({ x: -3, y: -3 })
                 ).id;
                 ids.redPatient = addPatient(
                     state,
                     'red',
                     'red',
-                    Position.create(3, 3)
+                    MapPosition.create({ x: 3, y: 3 })
                 ).id;
-                ids.material = addMaterial(state, Position.create(0, 0)).id;
+                ids.material = addMaterial(
+                    state,
+                    MapPosition.create({ x: 0, y: 0 })
+                ).id;
             }
         );
-        console.log(ids);
         assertCatering(beforeState, newState, [
             {
                 catererId: ids.material,
-                catererType: 'materials',
+                catererType: 'material',
                 patientIds: [ids.redPatient],
             },
         ]);
@@ -322,15 +244,18 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    Position.create(-10, -10)
+                    MapPosition.create({ x: -10, y: -10 })
                 ).id;
                 ids.redPatient = addPatient(
                     state,
                     'red',
                     'red',
-                    Position.create(20, 20)
+                    MapPosition.create({ x: 20, y: 20 })
                 ).id;
-                ids.material = addMaterial(state, Position.create(0, 0)).id;
+                ids.material = addMaterial(
+                    state,
+                    MapPosition.create({ x: 0, y: 0 })
+                ).id;
             }
         );
         assertCatering(beforeState, newState, []);
@@ -348,15 +273,18 @@ describe('calculate treatment', () => {
                     state,
                     'green',
                     'green',
-                    Position.create(-1, -1)
+                    MapPosition.create({ x: -1, y: -1 })
                 ).id;
                 ids.redPatient = addPatient(
                     state,
                     'red',
                     'red',
-                    Position.create(2, 2)
+                    MapPosition.create({ x: 2, y: 2 })
                 ).id;
-                const material = addMaterial(state, Position.create(0, 0));
+                const material = addMaterial(
+                    state,
+                    MapPosition.create({ x: 0, y: 0 })
+                );
                 material.canCaterFor = cloneDeepMutable(
                     CanCaterFor.create(1, 0, 1, 'and')
                 );
@@ -366,7 +294,7 @@ describe('calculate treatment', () => {
         assertCatering(beforeState, newState, [
             {
                 catererId: ids.material,
-                catererType: 'materials',
+                catererType: 'material',
                 patientIds: [ids.redPatient, ids.greenPatient],
             },
         ]);

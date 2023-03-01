@@ -1,6 +1,6 @@
 {
     "name": "digital-fuesim-manv",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "type": "module",
     "scripts": {
         "build": "cd shared && npm run build && cd .. && concurrently \"cd frontend && npm run build\" \"cd backend && npm run build\"",
@@ -8,8 +8,10 @@
         "start:all": "(cd frontend && npm run start) & (cd backend && npm run start)",
         "cy:ci": "cd frontend && npm run cy:run",
         "cy:install": "cd frontend && npm run cy:install",
-        "install:all": "npm i --install-links=false && concurrently \"cd shared && npm i --install-links=false\" \"cd frontend && npm i --install-links=false\" \"cd backend && npm i --install-links=false\"",
-        "setup": "npm i --install-links=false && cd shared && npm i --install-links=false && npm run build && cd .. && concurrently \"cd frontend && npm i --install-links=false\" \"cd backend && npm i --install-links=false\"",
+        "benchmark": "cd benchmark && npm run benchmark",
+        "install:all": "npm i && concurrently \"cd shared && npm i \" \"cd frontend && npm i \" \"cd backend && npm i \" \"cd benchmark && npm i \"",
+        "setup": "npm i && cd shared && npm i && npm run build && cd .. && concurrently \"cd frontend && npm i \" \"cd backend && npm i \" \"cd benchmark && npm i \"",
+        "setup:package-lock-only": "npm i --package-lock-only && cd shared && npm i --package-lock-only && cd ../frontend && npm i --package-lock-only && cd ../backend && npm i --package-lock-only && cd ../benchmark && npm i --package-lock-only",
         "prune": "npm prune && cd shared && npm prune && cd ../frontend && npm prune && cd ../backend && npm prune",
         "prune:deployment": "npm prune --production && cd shared && npm prune --production && cd ../backend && npm prune --production",
         "deployment": "npm run setup:ci && npm run build:deployment && npm run prune:deployment",
@@ -26,12 +28,12 @@
     },
     "private": true,
     "engines": {
-        "node": ">=16",
+        "node": ">=18",
         "npm": ">=8"
     },
     "devDependencies": {
         "concurrently": "^7.6.0",
         "nyc": "^15.1.0",
-        "prettier": "^2.8.1"
+        "prettier": "^2.8.3"
     }
 }

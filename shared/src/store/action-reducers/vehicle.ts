@@ -1,7 +1,19 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material, Personnel, Vehicle } from '../../models';
-import { Position } from '../../models/utils';
+import {
+    currentCoordinatesOf,
+    isInTransfer,
+    isInVehicle,
+    isNotOnMap,
+    MapCoordinates,
+    MapPosition,
+    VehiclePosition,
+} from '../../models/utils';
+import {
+    changePosition,
+    changePositionWithId,
+} from '../../models/utils/position/position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
@@ -11,24 +23,22 @@ import {
     UUID,
     uuidValidationOptions,
 } from '../../utils';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { deletePatient } from './patient';
+import { completelyLoadVehicle as completelyLoadVehicleHelper } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
-import {
-    addElementPosition,
-    removeElementPosition,
-    updateElementPosition,
-} from './utils/spatial-elements';
+import { removeElementPosition } from './utils/spatial-elements';
 
 export function deleteVehicle(
     draftState: Mutable<ExerciseState>,
     vehicleId: UUID
 ) {
-    const vehicle = getElement(draftState, 'vehicles', vehicleId);
+    const vehicle = getElement(draftState, 'vehicle', vehicleId);
     // Delete related material and personnel
     Object.keys(vehicle.materialIds).forEach((materialId) => {
-        removeElementPosition(draftState, 'materials', materialId);
+        removeElementPosition(draftState, 'material', materialId);
         delete draftState.materials[materialId];
     });
     Object.keys(vehicle.personnelIds).forEach((personnelId) => {
@@ -43,7 +53,7 @@ export function deleteVehicle(
 }
 
 export class AddVehicleAction implements Action {
-    @IsString()
+    @IsValue('[Vehicle] Add vehicle' as const)
     public readonly type = '[Vehicle] Add vehicle';
     @ValidateNested()
     @Type(() => Vehicle)
@@ -61,7 +71,7 @@ export class AddVehicleAction implements Action {
 }
 
 export class RenameVehicleAction implements Action {
-    @IsString()
+    @IsValue('[Vehicle] Rename vehicle' as const)
     public readonly type = '[Vehicle] Rename vehicle';
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
@@ -71,46 +81,57 @@ export class RenameVehicleAction implements Action {
 }
 
 export class MoveVehicleAction implements Action {
-    @IsString()
+    @IsValue('[Vehicle] Move vehicle' as const)
     public readonly type = '[Vehicle] Move vehicle';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
 
     @ValidateNested()
-    @Type(() => Position)
-    public readonly targetPosition!: Position;
+    @Type(() => MapCoordinates)
+    public readonly targetPosition!: MapCoordinates;
 }
 
 export class RemoveVehicleAction implements Action {
-    @IsString()
+    @IsValue('[Vehicle] Remove vehicle' as const)
     public readonly type = '[Vehicle] Remove vehicle';
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
 }
 
 export class UnloadVehicleAction implements Action {
-    @IsString()
+    @IsValue('[Vehicle] Unload vehicle' as const)
     public readonly type = '[Vehicle] Unload vehicle';
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
 }
 
 export class LoadVehicleAction implements Action {
-    @IsString()
+    @IsValue('[Vehicle] Load vehicle' as const)
     public readonly type = '[Vehicle] Load vehicle';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
 
-    @IsString()
+    @IsLiteralUnion({
+        material: true,
+        patient: true,
+        personnel: true,
+    })
     public readonly elementToBeLoadedType!:
-        | 'materials'
-        | 'patients'
+        | 'material'
+        | 'patient'
         | 'personnel';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly elementToBeLoadedId!: UUID;
+}
+
+export class CompletelyLoadVehicleAction implements Action {
+    @IsValue('[Vehicle] Completely load vehicle' as const)
+    public readonly type = '[Vehicle] Completely load vehicle';
+    @IsUUID(4, uuidValidationOptions)
+    public readonly vehicleId!: UUID;
 }
 
 export namespace VehicleActionReducers {
@@ -145,12 +166,20 @@ export namespace VehicleActionReducers {
             }
             draftState.vehicles[vehicle.id] = cloneDeepMutable(vehicle);
             for (const material of cloneDeepMutable(materials)) {
+                changePosition(
+                    material,
+                    VehiclePosition.create(vehicle.id),
+                    draftState
+                );
                 draftState.materials[material.id] = material;
-                addElementPosition(draftState, 'materials', material.id);
             }
             for (const person of cloneDeepMutable(personnel)) {
+                changePosition(
+                    person,
+                    VehiclePosition.create(vehicle.id),
+                    draftState
+                );
                 draftState.personnel[person.id] = person;
-                addElementPosition(draftState, 'personnel', person.id);
             }
             return draftState;
         },
@@ -160,8 +189,12 @@ export namespace VehicleActionReducers {
     export const moveVehicle: ActionReducer<MoveVehicleAction> = {
         action: MoveVehicleAction,
         reducer: (draftState, { vehicleId, targetPosition }) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
-            vehicle.position = cloneDeepMutable(targetPosition);
+            changePositionWithId(
+                vehicleId,
+                MapPosition.create(targetPosition),
+                'vehicle',
+                draftState
+            );
             return draftState;
         },
         rights: 'participant',
@@ -170,7 +203,7 @@ export namespace VehicleActionReducers {
     export const renameVehicle: ActionReducer<RenameVehicleAction> = {
         action: RenameVehicleAction,
         reducer: (draftState, { vehicleId, name }) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
+            const vehicle = getElement(draftState, 'vehicle', vehicleId);
             vehicle.name = name;
             for (const personnelId of Object.keys(vehicle.personnelIds)) {
                 draftState.personnel[personnelId]!.vehicleName = name;
@@ -195,13 +228,13 @@ export namespace VehicleActionReducers {
     export const unloadVehicle: ActionReducer<UnloadVehicleAction> = {
         action: UnloadVehicleAction,
         reducer: (draftState, { vehicleId }) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
-            const unloadPosition = vehicle.position;
-            if (!unloadPosition) {
+            const vehicle = getElement(draftState, 'vehicle', vehicleId);
+            if (isNotOnMap(vehicle)) {
                 throw new ReducerError(
-                    `Vehicle with id ${vehicleId} is currently in transfer`
+                    `Vehicle with id ${vehicleId} is currently not on the map`
                 );
             }
+            const unloadPosition = currentCoordinatesOf(vehicle);
             const materialIds = Object.keys(vehicle.materialIds);
             const personnelIds = Object.keys(vehicle.personnelIds);
             const patientIds = Object.keys(vehicle.patientIds);
@@ -221,10 +254,14 @@ export namespace VehicleActionReducers {
 
             for (const patientId of patientIds) {
                 x += space;
-                updateElementPosition(draftState, 'patients', patientId, {
-                    x,
-                    y: unloadPosition.y,
-                });
+                changePositionWithId(
+                    patientId,
+                    MapPosition.create(
+                        MapCoordinates.create(x, unloadPosition.y)
+                    ),
+                    'patient',
+                    draftState
+                );
                 delete vehicle.patientIds[patientId];
             }
 
@@ -235,31 +272,29 @@ export namespace VehicleActionReducers {
                     'personnel',
                     personnelId
                 );
-                if (Personnel.isInVehicle(personnel)) {
-                    updateElementPosition(
-                        draftState,
-                        'personnel',
+                if (isInVehicle(personnel)) {
+                    changePositionWithId(
                         personnelId,
-                        {
-                            x,
-                            y: unloadPosition.y,
-                        }
+                        MapPosition.create(
+                            MapCoordinates.create(x, unloadPosition.y)
+                        ),
+                        'personnel',
+                        draftState
                     );
                 }
             }
 
             for (const materialId of materialIds) {
                 x += space;
-                const material = getElement(
-                    draftState,
-                    'materials',
-                    materialId
-                );
-                if (Material.isInVehicle(material)) {
-                    updateElementPosition(draftState, 'materials', materialId, {
-                        x,
-                        y: unloadPosition.y,
-                    });
+                const material = getElement(draftState, 'material', materialId);
+                if (isInVehicle(material)) {
+                    changePosition(
+                        material,
+                        MapPosition.create(
+                            MapCoordinates.create(x, unloadPosition.y)
+                        ),
+                        draftState
+                    );
                 }
             }
 
@@ -274,12 +309,12 @@ export namespace VehicleActionReducers {
             draftState,
             { vehicleId, elementToBeLoadedId, elementToBeLoadedType }
         ) => {
-            const vehicle = getElement(draftState, 'vehicles', vehicleId);
+            const vehicle = getElement(draftState, 'vehicle', vehicleId);
             switch (elementToBeLoadedType) {
-                case 'materials': {
+                case 'material': {
                     const material = getElement(
                         draftState,
-                        'materials',
+                        'material',
                         elementToBeLoadedId
                     );
                     if (!vehicle.materialIds[elementToBeLoadedId]) {
@@ -287,7 +322,11 @@ export namespace VehicleActionReducers {
                             `Material with id ${material.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
-                    removeElementPosition(draftState, 'materials', material.id);
+                    changePosition(
+                        material,
+                        VehiclePosition.create(vehicleId),
+                        draftState
+                    );
                     break;
                 }
                 case 'personnel': {
@@ -296,7 +335,7 @@ export namespace VehicleActionReducers {
                         'personnel',
                         elementToBeLoadedId
                     );
-                    if (personnel.transfer !== undefined) {
+                    if (isInTransfer(personnel)) {
                         throw new ReducerError(
                             `Personnel with id ${elementToBeLoadedId} is currently in transfer`
                         );
@@ -306,17 +345,17 @@ export namespace VehicleActionReducers {
                             `Personnel with id ${personnel.id} is not assignable to the vehicle with id ${vehicle.id}`
                         );
                     }
-                    removeElementPosition(
-                        draftState,
-                        'personnel',
-                        personnel.id
+                    changePosition(
+                        personnel,
+                        VehiclePosition.create(vehicleId),
+                        draftState
                     );
                     break;
                 }
-                case 'patients': {
+                case 'patient': {
                     const patient = getElement(
                         draftState,
-                        'patients',
+                        'patient',
                         elementToBeLoadedId
                     );
                     if (
@@ -328,37 +367,29 @@ export namespace VehicleActionReducers {
                         );
                     }
                     vehicle.patientIds[elementToBeLoadedId] = true;
+                    changePosition(
+                        patient,
+                        VehiclePosition.create(vehicleId),
+                        draftState
+                    );
 
-                    removeElementPosition(draftState, 'patients', patient.id);
-
-                    // Load in all materials
-                    Object.keys(vehicle.materialIds).forEach((materialId) => {
-                        removeElementPosition(
-                            draftState,
-                            'materials',
-                            materialId
-                        );
-                    });
-
-                    // Load in all personnel
-                    Object.keys(vehicle.personnelIds)
-                        .filter(
-                            // Skip personnel currently in transfer
-                            (personnelId) =>
-                                getElement(draftState, 'personnel', personnelId)
-                                    .transfer === undefined
-                        )
-                        .forEach((personnelId) => {
-                            removeElementPosition(
-                                draftState,
-                                'personnel',
-                                personnelId
-                            );
-                        });
+                    completelyLoadVehicleHelper(draftState, vehicle);
                 }
             }
             return draftState;
         },
         rights: 'participant',
     };
+
+    export const completelyLoadVehicle: ActionReducer<CompletelyLoadVehicleAction> =
+        {
+            action: CompletelyLoadVehicleAction,
+            reducer: (draftState, { vehicleId }) => {
+                const vehicle = getElement(draftState, 'vehicle', vehicleId);
+                completelyLoadVehicleHelper(draftState, vehicle);
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
 }

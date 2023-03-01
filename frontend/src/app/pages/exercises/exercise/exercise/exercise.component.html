@@ -3,7 +3,7 @@
     class="p-2 d-flex flex-column"
     style="height: 100vh"
 >
-    <div class="container">
+    <div class="px-2">
         <h2>
             Übung:
             <span class="font-monospace fw-bold user-select-all">{{
@@ -36,34 +36,70 @@
                 <i class="bi-box-arrow-left"></i>
                 Übung wieder beitreten
             </button>
-            <div ngbDropdown class="d-inline-block float-end">
-                <button
-                    type="button"
-                    class="btn btn-outline-primary"
-                    ngbDropdownToggle
-                >
-                    <i class="bi-cloud-download me-2"> </i>
-                    Exportieren
-                </button>
-                <!-- "position: absolute" is only set with a delay by "ngbDropdownMenu", therefore the map canvas has the wrong height when it is initialized -->
-                <div ngbDropdownMenu class="position-absolute">
+            <div class="d-inline-block float-end">
+                <div ngbDropdown class="d-inline-block">
                     <button
-                        ngbDropdownItem
-                        (click)="exportExerciseWithHistory()"
+                        type="button"
+                        class="btn btn-outline-primary"
+                        ngbDropdownToggle
                     >
-                        <i class="bi-clock-history me-2"> </i>
-                        Kompletten Verlauf
-                    </button>
-                    <button ngbDropdownItem (click)="exportExerciseState()">
                         <i class="bi-cloud-download me-2"> </i>
-                        Aktuellen Zustand
-                        <span
-                            *ngIf="timeConstraints$ | async as timeConstraints"
-                            class="text-muted"
-                        >
-                            um {{ timeConstraints.current | formatDuration }}
-                        </span>
+                        Exportieren
                     </button>
+                    <!-- "position: absolute" is only set with a delay by "ngbDropdownMenu", therefore the map canvas has the wrong height when it is initialized -->
+                    <div ngbDropdownMenu class="position-absolute">
+                        <button
+                            ngbDropdownItem
+                            (click)="exportExerciseWithHistory()"
+                        >
+                            <i class="bi-clock-history me-2"> </i>
+                            Kompletten Verlauf
+                        </button>
+                        <button ngbDropdownItem (click)="exportExerciseState()">
+                            <i class="bi-cloud-download me-2"> </i>
+                            Aktuellen Zustand
+                            <span
+                                *ngIf="
+                                    timeConstraints$ | async as timeConstraints
+                                "
+                                class="text-muted"
+                            >
+                                um
+                                {{ timeConstraints.current | formatDuration }}
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <a
+                    class="btn btn-outline-primary ms-3"
+                    href="mailto:BP2022HG1-feedback@hpi.de?subject=Feedback zur Digitalen FüSim MANV Version {{
+                        version
+                    }}"
+                >
+                    Feedback
+                </a>
+                <div class="btn-group ms-3" role="group">
+                    <a
+                        class="btn btn-outline-secondary"
+                        href="/about/imprint"
+                        target="_blank"
+                    >
+                        Impressum
+                    </a>
+                    <a
+                        class="btn btn-outline-secondary"
+                        href="/about/privacy"
+                        target="_blank"
+                    >
+                        Datenschutz
+                    </a>
+                    <a
+                        class="btn btn-outline-secondary"
+                        href="/about/license"
+                        target="_blank"
+                    >
+                        Lizenz
+                    </a>
                 </div>
             </div>
         </h2>

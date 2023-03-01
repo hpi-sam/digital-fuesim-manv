@@ -16,6 +16,7 @@
                 ngbDropdownToggle
                 type="button"
                 class="btn btn-outline-primary btn-sm ms-3"
+                data-cy="sendAlarmGroupChooseTargetButton"
                 [disabled]="transferPoints.length === 0"
             >
                 <app-transfer-point-name
@@ -37,6 +38,7 @@
                     (click)="targetTransferPointId = transferPoint.id"
                     type="button"
                     class="btn btn-primary"
+                    data-cy="sendAlarmGroupChooseTargetSelect"
                 >
                     <app-transfer-point-name
                         [transferPointId]="transferPoint.id"
@@ -59,6 +61,7 @@
             [disabled]="!targetTransferPointId"
             (click)="sendAlarmGroup(alarmGroup)"
             class="btn btn-primary m-2"
+            data-cy="sendAlarmGroupSendButton"
         >
             {{ alarmGroup.name }}
         </button>

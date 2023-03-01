@@ -1,18 +1,13 @@
 import { Type } from 'class-transformer';
-import {
-    IsString,
-    ValidateNested,
-    IsUUID,
-    IsOptional,
-    IsBoolean,
-} from 'class-validator';
+import { IsBoolean, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { Client } from '../../models';
-import { uuidValidationOptions, UUID, cloneDeepMutable } from '../../utils';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils/get-element';
 
 export class AddClientAction implements Action {
-    @IsString()
+    @IsValue('[Client] Add client' as const)
     public readonly type = '[Client] Add client';
     @ValidateNested()
     @Type(() => Client)
@@ -20,14 +15,14 @@ export class AddClientAction implements Action {
 }
 
 export class RemoveClientAction implements Action {
-    @IsString()
+    @IsValue('[Client] Remove client' as const)
     public readonly type = '[Client] Remove client';
     @IsUUID(4, uuidValidationOptions)
     public readonly clientId!: UUID;
 }
 
 export class RestrictViewToViewportAction implements Action {
-    @IsString()
+    @IsValue('[Client] Restrict to viewport' as const)
     public readonly type = '[Client] Restrict to viewport';
     @IsUUID(4, uuidValidationOptions)
     public readonly clientId!: UUID;
@@ -37,7 +32,7 @@ export class RestrictViewToViewportAction implements Action {
 }
 
 export class SetWaitingRoomAction implements Action {
-    @IsString()
+    @IsValue('[Client] Set waitingroom' as const)
     public readonly type = '[Client] Set waitingroom';
     @IsUUID(4, uuidValidationOptions)
     public readonly clientId!: UUID;
@@ -58,7 +53,7 @@ export namespace ClientActionReducers {
     export const removeClient: ActionReducer<RemoveClientAction> = {
         action: RemoveClientAction,
         reducer: (draftState, { clientId }) => {
-            getElement(draftState, 'clients', clientId);
+            getElement(draftState, 'client', clientId);
             delete draftState.clients[clientId];
             return draftState;
         },
@@ -69,12 +64,12 @@ export namespace ClientActionReducers {
         {
             action: RestrictViewToViewportAction,
             reducer: (draftState, { clientId, viewportId }) => {
-                const client = getElement(draftState, 'clients', clientId);
+                const client = getElement(draftState, 'client', clientId);
                 if (viewportId === undefined) {
                     client.viewRestrictedToViewportId = viewportId;
                     return draftState;
                 }
-                getElement(draftState, 'viewports', viewportId);
+                getElement(draftState, 'viewport', viewportId);
                 client.viewRestrictedToViewportId = viewportId;
                 return draftState;
             },
@@ -84,7 +79,7 @@ export namespace ClientActionReducers {
     export const setWaitingRoom: ActionReducer<SetWaitingRoomAction> = {
         action: SetWaitingRoomAction,
         reducer: (draftState, { clientId, shouldBeInWaitingRoom }) => {
-            const client = getElement(draftState, 'clients', clientId);
+            const client = getElement(draftState, 'client', clientId);
             client.isInWaitingRoom = shouldBeInWaitingRoom;
             return draftState;
         },

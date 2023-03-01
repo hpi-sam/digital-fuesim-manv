@@ -10,7 +10,14 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
 import { freeze } from 'immer';
-import { filter, pairwise, Subject, switchMap, takeUntil } from 'rxjs';
+import {
+    debounceTime,
+    filter,
+    pairwise,
+    Subject,
+    switchMap,
+    takeUntil,
+} from 'rxjs';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import { handleChanges } from '../shared/functions/handle-changes';
@@ -54,28 +61,11 @@ export class ExerciseService {
         ...socketIoTransports,
     });
 
-    private readonly optimisticActionHandler = new OptimisticActionHandler<
+    private optimisticActionHandler?: OptimisticActionHandler<
         ExerciseAction,
         ExerciseState,
         SocketResponse
-    >(
-        (exercise) =>
-            this.store.dispatch(createSetExerciseStateAction(exercise)),
-        () => selectStateSnapshot(selectExerciseState, this.store),
-        (action) => this.store.dispatch(createApplyServerActionAction(action)),
-        async (action) => {
-            const response = await new Promise<SocketResponse>((resolve) => {
-                this.socket.emit('proposeAction', action, resolve);
-            });
-            if (!response.success) {
-                this.messageService.postError({
-                    title: 'Fehler beim Senden der Aktion',
-                    error: response.message,
-                });
-            }
-            return response;
-        }
-    );
+    >;
 
     constructor(
         private readonly store: Store<AppState>,
@@ -83,7 +73,7 @@ export class ExerciseService {
     ) {
         this.socket.on('performAction', (action: ExerciseAction) => {
             freeze(action, true);
-            this.optimisticActionHandler.performAction(action);
+            this.optimisticActionHandler?.performAction(action);
         });
         this.socket.on('disconnect', (reason) => {
             if (reason === 'io client disconnect') {
@@ -156,7 +146,39 @@ export class ExerciseService {
                 clientName
             )
         );
-        // Only start them after the correct state is in the store
+        // Only do this after the correct state is in the store
+        this.optimisticActionHandler = new OptimisticActionHandler<
+            ExerciseAction,
+            ExerciseState,
+            SocketResponse
+        >(
+            (exercise) =>
+                this.store.dispatch(createSetExerciseStateAction(exercise)),
+            () => selectStateSnapshot(selectExerciseState, this.store),
+            (action) =>
+                this.store.dispatch(createApplyServerActionAction(action)),
+            async (action) => {
+                const response = await new Promise<SocketResponse>(
+                    (resolve) => {
+                        this.socket.emit('proposeAction', action, resolve);
+                    }
+                );
+                if (!response.success) {
+                    if (!response.expected) {
+                        this.messageService.postError({
+                            title: 'Fehler beim Senden der Aktion',
+                            error: response.message,
+                        });
+                    } else {
+                        this.messageService.postError({
+                            title: 'Diese Aktion ist nicht gestattet!',
+                            error: response.message,
+                        });
+                    }
+                }
+                return response;
+            }
+        );
         this.startNotifications();
         return true;
     }
@@ -167,6 +189,7 @@ export class ExerciseService {
     public leaveExercise() {
         this.socket.disconnect();
         this.stopNotifications();
+        this.optimisticActionHandler = undefined;
         this.store.dispatch(createLeaveExerciseAction());
     }
 
@@ -178,7 +201,8 @@ export class ExerciseService {
     public async proposeAction(action: ExerciseAction, optimistic = false) {
         if (
             selectStateSnapshot(selectExerciseStateMode, this.store) !==
-            'exercise'
+                'exercise' ||
+            this.optimisticActionHandler === undefined
         ) {
             // Especially during timeTravel, buttons that propose actions are only deactivated via best effort
             this.messageService.postError({
@@ -187,6 +211,7 @@ export class ExerciseService {
             });
             return { success: false };
         }
+
         // TODO: throw if `response.success` is false
         return this.optimisticActionHandler.proposeAction(action, optimistic);
     }
@@ -232,8 +257,13 @@ export class ExerciseService {
                         client?.viewRestrictedToViewportId !== undefined &&
                         !client.isInWaitingRoom
                 ),
-                switchMap((client) => this.store.select(selectVisibleVehicles)),
-                pairwise(),
+                switchMap((client) =>
+                    this.store
+                        .select(selectVisibleVehicles)
+                        // pipe in here so no pairs of events from different viewports are built
+                        // Do not trigger the message if the vehicle was removed and added again at the same time
+                        .pipe(debounceTime(0), pairwise())
+                ),
                 takeUntil(this.stopNotifications$)
             )
             .subscribe(([oldVehicles, newVehicles]) => {
