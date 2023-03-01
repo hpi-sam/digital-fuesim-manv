@@ -27,28 +27,11 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   node-version: '18'
-            - name: Cache node modules
-              uses: actions/cache@v3
-              id: cache-node-modules
-              env:
-                  cache-name: cache-node-modules
-              with:
-                  path: |
-                      node_modules
-                      shared/node_modules
-                      frontend/node_modules
-                      backend/node_modules
-                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
-            - name: Cache shared/dist
-              uses: actions/cache@v3
-              id: cache-shared-dist
-              env:
-                  cache-name: cache-shared-dist
-              with:
-                  path: shared/dist
-                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
+            - name: Cache node modules and shared/dist
+              id: cache-build
+              uses: ./.github/actions/cache-build
             - name: Setup project
-              if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              if: ${{ steps.cache-build.outputs.node-modules-cache-hit != 'true' }}
               run: npm run setup:ci
             - name: Build shared
               run: cd shared && npm run build && cd ..
@@ -69,26 +52,8 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   node-version: '18'
-            - name: Cache node modules
-              uses: actions/cache@v3
-              id: cache-node-modules
-              env:
-                  cache-name: cache-node-modules
-              with:
-                  path: |
-                      node_modules
-                      shared/node_modules
-                      frontend/node_modules
-                      backend/node_modules
-                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
-            - name: Cache shared/dist
-              uses: actions/cache@v3
-              id: cache-shared-dist
-              env:
-                  cache-name: cache-shared-dist
-              with:
-                  path: shared/dist
-                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
+            - name: Cache node modules and shared/dist
+              uses: ./.github/actions/cache-build
             - name: Run ESLint
               run: npm run lint
             - name: Run Prettier
@@ -113,26 +78,8 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   node-version: '18'
-            - name: Cache node modules
-              uses: actions/cache@v3
-              id: cache-node-modules
-              env:
-                  cache-name: cache-node-modules
-              with:
-                  path: |
-                      node_modules
-                      shared/node_modules
-                      frontend/node_modules
-                      backend/node_modules
-                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
-            - name: Cache shared/dist
-              uses: actions/cache@v3
-              id: cache-shared-dist
-              env:
-                  cache-name: cache-shared-dist
-              with:
-                  path: shared/dist
-                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
+            - name: Cache node modules and shared/dist
+              uses: ./.github/actions/cache-build
             - name: Audit root
               if: always()
               run: npm audit
@@ -180,28 +127,15 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   node-version: '18'
-            - name: Cache node modules
-              uses: actions/cache@v3
-              id: cache-node-modules
-              env:
-                  cache-name: cache-node-modules
-              with:
-                  path: |
-                      node_modules
-                      shared/node_modules
-                      frontend/node_modules
-                      backend/node_modules
-                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
-            - name: Cache shared/dist
-              uses: actions/cache@v3
-              id: cache-shared-dist
-              env:
-                  cache-name: cache-shared-dist
-              with:
-                  path: shared/dist
-                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
+            - name: Cache node modules and shared/dist
+              uses: ./.github/actions/cache-build
             - name: Create .env
-              run: cat ./.env.example | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/" | sed -e "s/^#DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/" | sed -e "s/^DFM_DB_HOST=.*$/DFM_DB_HOST=127.0.0.1/" > ./.env
+              run: >
+                  cat ./.env.example
+                  | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/"
+                  | sed -e "s/^#DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/"
+                  | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/"
+                  | sed -e "s/^DFM_DB_HOST=.*$/DFM_DB_HOST=127.0.0.1/" > ./.env
             - name: Run migrations
               run: cd backend && npm run migration:run && cd ..
             - name: Run Backend Tests
@@ -254,44 +188,28 @@ jobs:
         steps:
             - uses: actions/checkout@v3
               with:
-                  lfs: 'true' # we need lfs to test vehicles
-            - name: checkoutLFS
-              uses: actions/checkout@v3
-            - run: git lfs pull
+                  lfs: 'true'
             - uses: actions/setup-node@v3
               with:
                   node-version: '18'
-            - name: Cache node modules
-              uses: actions/cache@v3
-              id: cache-node-modules
-              env:
-                  cache-name: cache-node-modules
-              with:
-                  path: |
-                      node_modules
-                      shared/node_modules
-                      frontend/node_modules
-                      backend/node_modules
-                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
-            - name: Cache shared/dist
-              uses: actions/cache@v3
-              id: cache-shared-dist
-              env:
-                  cache-name: cache-shared-dist
-              with:
-                  path: shared/dist
-                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('shared/src/**') }}
+            - name: Cache node modules and shared/dist
+              uses: ./.github/actions/cache-build
             - name: Cache Cypress binary
               uses: actions/cache@v3
               id: cache-cypress
               with:
                   path: ~/.cache/Cypress
-                  key: cypress-${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
+                  key: cypress-${{ hashFiles('package-lock.json', '**/package-lock.json') }}-${{ runner.os }}
             - name: Install Cypress
               if: steps.cache-cypress.outputs.cache-hit != 'true'
               run: npm run cy:install
             - name: Create .env
-              run: cat ./.env.example | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/" | sed -e "s/^#DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/" | sed -e "s/^DFM_DB_HOST=.*$/DFM_DB_HOST=127.0.0.1/" > ./.env
+              run: >
+                  cat ./.env.example
+                  | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/"
+                  | sed -e "s/^#DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/"
+                  | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/"
+                  | sed -e "s/^DFM_DB_HOST=.*$/DFM_DB_HOST=127.0.0.1/" > ./.env
             - name: Run migrations
               run: cd backend && npm run migration:run && cd ..
             - name: Run Cypress
@@ -396,7 +314,9 @@ jobs:
                   context: .
                   file: docker/Dockerfile
                   push: true
-                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dfm:latest , ${{ secrets.DOCKER_HUB_USERNAME }}/dfm:${{ env.version_name }}
+                  tags: >
+                      ${{ secrets.DOCKER_HUB_USERNAME }}/dfm:latest ,
+                      ${{ secrets.DOCKER_HUB_USERNAME }}/dfm:${{ env.version_name }}
 
     release-main:
         timeout-minutes: 2

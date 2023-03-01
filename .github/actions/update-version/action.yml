@@ -1,0 +1,15 @@
+name: Update package version
+description: Updates the package versions in all package.json and package-lock.json files
+inputs:
+    version:
+        description: The new version, e.g. 1.2.3
+        required: true
+runs:
+    using: composite
+    steps:
+        - name: Update version in packages
+          run: $GITHUB_ACTION_PATH/update-version.sh "${{ inputs.version }}"
+          shell: bash
+        - name: Update versions in package-locks
+          run: npm run setup:package-lock-only
+          shell: bash
