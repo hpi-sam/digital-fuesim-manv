@@ -26,7 +26,7 @@ jobs:
             - name: Cache node modules
               uses: ./.github/actions/cache-node-modules
               with:
-                shared-dist: 'false'
+                  shared-dist: 'false'
             - name: Update version in packages
               uses: ./.github/actions/update-version
               with:

@@ -31,7 +31,7 @@ jobs:
               id: cache-node-modules
               uses: ./.github/actions/cache-node-modules
             - name: Setup project
-              if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
               run: npm run setup:ci
             - name: Build shared
               run: cd shared && npm run build && cd ..
