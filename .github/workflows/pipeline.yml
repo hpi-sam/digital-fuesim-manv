@@ -199,7 +199,7 @@ jobs:
               id: cache-cypress
               with:
                   path: ~/.cache/Cypress
-                  key: cypress-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
+                  key: cypress-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}-${{ runner.os }}
             - name: Install Cypress
               if: steps.cache-cypress.outputs.cache-hit != 'true'
               run: npm run cy:install
