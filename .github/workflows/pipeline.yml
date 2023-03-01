@@ -28,10 +28,10 @@ jobs:
               with:
                   node-version: '18'
             - name: Cache node modules and shared/dist
-              id: cache-node-modules
-              uses: ./.github/actions/cache-node-modules
+              id: cache-build
+              uses: ./.github/actions/cache-build
             - name: Setup project
-              if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+              if: ${{ steps.cache-build.outputs.node-modules-cache-hit != 'true' }}
               run: npm run setup:ci
             - name: Build shared
               run: cd shared && npm run build && cd ..
@@ -53,7 +53,7 @@ jobs:
               with:
                   node-version: '18'
             - name: Cache node modules and shared/dist
-              uses: ./.github/actions/cache-node-modules
+              uses: ./.github/actions/cache-build
             - name: Run ESLint
               run: npm run lint
             - name: Run Prettier
@@ -79,7 +79,7 @@ jobs:
               with:
                   node-version: '18'
             - name: Cache node modules and shared/dist
-              uses: ./.github/actions/cache-node-modules
+              uses: ./.github/actions/cache-build
             - name: Audit root
               if: always()
               run: npm audit
@@ -128,7 +128,7 @@ jobs:
               with:
                   node-version: '18'
             - name: Cache node modules and shared/dist
-              uses: ./.github/actions/cache-node-modules
+              uses: ./.github/actions/cache-build
             - name: Create .env
               run: >
                   cat ./.env.example
@@ -193,13 +193,13 @@ jobs:
               with:
                   node-version: '18'
             - name: Cache node modules and shared/dist
-              uses: ./.github/actions/cache-node-modules
+              uses: ./.github/actions/cache-build
             - name: Cache Cypress binary
               uses: actions/cache@v3
               id: cache-cypress
               with:
                   path: ~/.cache/Cypress
-                  key: cypress-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}-${{ runner.os }}
+                  key: cypress-${{ hashFiles('package-lock.json', '**/package-lock.json') }}-${{ runner.os }}
             - name: Install Cypress
               if: steps.cache-cypress.outputs.cache-hit != 'true'
               run: npm run cy:install
