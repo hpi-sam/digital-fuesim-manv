@@ -24,7 +24,7 @@ function selectPropertyFactory<Key extends keyof ExerciseState>(key: Key) {
 
 // UUIDMap properties
 export const selectViewports = selectPropertyFactory('viewports');
-export const selectSimulatedRegion = selectPropertyFactory('simulatedRegions');
+export const selectSimulatedRegions = selectPropertyFactory('simulatedRegions');
 export const selectMapImages = selectPropertyFactory('mapImages');
 export const selectPatients = selectPropertyFactory('patients');
 export const selectVehicles = selectPropertyFactory('vehicles');
@@ -81,7 +81,7 @@ export const createSelectHospital =
 export const createSelectViewport =
     createSelectElementFromMapFactory(selectViewports);
 export const createSelectSimulatedRegion = createSelectElementFromMapFactory(
-    selectSimulatedRegion
+    selectSimulatedRegions
 );
 export const createSelectClient =
     createSelectElementFromMapFactory(selectClients);
