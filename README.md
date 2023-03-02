@@ -278,8 +278,23 @@ If you need to read from the state to change it, you should do this inside the a
 
 ## Licenses and Attributions
 
--   Read [LICENSE-README.md](LICENSE-README.md) for information about the used license
--   License information about used images can be found [here](frontend/src/assets/image-sources.md). All images are licensed under their original license, for further information what is meant with an image, look at [LICENSE-README.md](LICENSE-README.md).
+Digital Fuesim MANV
+Copyright (C) 2023 See [README.md#contributors](README.md#contributors) for authors/contributors (bottom of this document).
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the [GNU Affero General Public License](LICENSE.md) as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+[GNU Affero General Public License](LICENSE.md) for more details.
+
+You should have received a copy of the [GNU Affero General Public License](LICENSE.md)
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Some files are excluded to the mentioned license, read [LICENSE-README.md](LICENSE-README.md) for further information to which files these applies.
 
 ## Contributors
 
