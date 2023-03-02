@@ -28,7 +28,7 @@ import {
     selectMaterials,
     selectPatients,
     selectPersonnel,
-    selectSimulatedRegion,
+    selectSimulatedRegions,
     selectTransferPoints,
     selectVehicles,
     selectViewports,
@@ -115,7 +115,7 @@ export const selectVisibleMapImages = selectVisibleElementsFactory<MapImage>(
 export const selectVisibleTransferPoints =
     selectVisibleElementsFactory<TransferPoint>(selectTransferPoints);
 export const selectVisibleSimulatedRegions =
-    selectVisibleElementsFactory<SimulatedRegion>(selectSimulatedRegion);
+    selectVisibleElementsFactory<SimulatedRegion>(selectSimulatedRegions);
 
 export const selectVisibleCateringLines = createSelector(
     selectRestrictedViewport,

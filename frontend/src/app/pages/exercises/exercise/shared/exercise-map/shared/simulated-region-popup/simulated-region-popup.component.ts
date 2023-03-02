@@ -3,7 +3,6 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID, SimulatedRegion } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { createSelectSimulatedRegion } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
@@ -22,22 +21,11 @@ export class SimulatedRegionPopupComponent implements OnInit {
     public simulatedRegion$?: Observable<SimulatedRegion>;
     public readonly currentRole$ = this.store.select(selectCurrentRole);
 
-    constructor(
-        private readonly store: Store<AppState>,
-        private readonly exerciseService: ExerciseService
-    ) {}
+    constructor(private readonly store: Store<AppState>) {}
 
     ngOnInit() {
         this.simulatedRegion$ = this.store.select(
             createSelectSimulatedRegion(this.simulatedRegionId)
         );
-    }
-
-    public renameSimulatedRegion(newName: string) {
-        this.exerciseService.proposeAction({
-            type: '[SimulatedRegion] Rename simulated region',
-            simulatedRegionId: this.simulatedRegionId,
-            newName,
-        });
     }
 }
