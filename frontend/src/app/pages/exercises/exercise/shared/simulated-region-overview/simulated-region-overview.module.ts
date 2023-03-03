@@ -4,16 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { SimulatedRegionOverviewGeneralComponent } from './overview/simulated-region-overview.component';
-import { BehaviorTabComponent } from './tabs/behavior-tab/behavior-tab.component';
-import { GeneralTabComponent } from './tabs/general-tab/general-tab.component';
-import { TransferTabComponent } from './tabs/transfer-tab/transfer-tab.component';
+import { SimulatedRegionOverviewBehaviorTabComponent } from './tabs/behavior-tab/simulated-region-overview-behavior-tab.component';
+import { SimulatedRegionOverviewGeneralTabComponent } from './tabs/general-tab/simulated-region-overview-general-tab.component';
+import { SimulatedRegionOverviewTransferTabComponent } from './tabs/transfer-tab/simulated-region-overview-transfer-tab.component';
 
 @NgModule({
     declarations: [
         SimulatedRegionOverviewGeneralComponent,
-        BehaviorTabComponent,
-        GeneralTabComponent,
-        TransferTabComponent,
+        SimulatedRegionOverviewBehaviorTabComponent,
+        SimulatedRegionOverviewGeneralTabComponent,
+        SimulatedRegionOverviewTransferTabComponent,
     ],
     imports: [CommonModule, FormsModule, SharedModule, NgbNavModule],
     exports: [SimulatedRegionOverviewGeneralComponent],
