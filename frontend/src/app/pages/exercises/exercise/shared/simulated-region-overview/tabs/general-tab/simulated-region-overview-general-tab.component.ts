@@ -13,6 +13,13 @@ export class SimulatedRegionOverviewGeneralTabComponent {
     constructor(private readonly exerciseService: ExerciseService) {}
 
     public async renameSimulatedRegion(newName: string) {
+        if (this.simulatedRegion.transferPointId) {
+            this.exerciseService.proposeAction({
+                type: '[TransferPoint] Rename TransferPoint',
+                transferPointId: this.simulatedRegion.transferPointId,
+                externalName: `[Simuliert] ${newName}`,
+            });
+        }
         this.exerciseService.proposeAction({
             type: '[SimulatedRegion] Rename simulated region',
             simulatedRegionId: this.simulatedRegion.id,

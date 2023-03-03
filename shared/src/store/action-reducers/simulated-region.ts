@@ -23,7 +23,7 @@ import { sendSimulationEvent } from '../../simulation/events/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ExpectedReducerError } from '../reducer-error';
+import { ExpectedReducerError, ReducerError } from '../reducer-error';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 
@@ -126,7 +126,16 @@ export namespace SimulatedRegionActionReducers {
         {
             action: RemoveSimulatedRegionAction,
             reducer: (draftState, { simulatedRegionId }) => {
-                getElement(draftState, 'simulatedRegion', simulatedRegionId);
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                if (simulatedRegion.transferPointId) {
+                    throw new ReducerError(
+                        `Simulated region with id ${simulatedRegionId} cannot be deleted because there is transfer point attached to it`
+                    );
+                }
                 delete draftState.simulatedRegions[simulatedRegionId];
                 return draftState;
             },

@@ -16,6 +16,7 @@ import {
     TransferPoint,
     Viewport,
     SimulatedRegion,
+    SimulatedRegionPosition,
     MapPosition,
 } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
@@ -259,7 +260,7 @@ export class DragElementService {
             case 'transferPoint':
                 {
                     const transferPoint = TransferPoint.create(
-                        position,
+                        MapPosition.create(position),
                         {},
                         {},
                         '???',
@@ -280,6 +281,7 @@ export class DragElementService {
                     // This ratio has been determined by trial and error
                     const height = SimulatedRegion.image.height / 23.5;
                     const width = height * SimulatedRegion.image.aspectRatio;
+                    const name = 'Einsatzabschnitt ???';
                     const simulatedRegion = SimulatedRegion.create(
                         {
                             x: position.x - width / 2,
@@ -289,12 +291,26 @@ export class DragElementService {
                             height,
                             width,
                         },
-                        'Einsatzabschnitt ???'
+                        name
                     );
                     this.exerciseService.proposeAction(
                         {
                             type: '[SimulatedRegion] Add simulated region',
                             simulatedRegion,
+                        },
+                        true
+                    );
+                    const transferPoint = TransferPoint.create(
+                        SimulatedRegionPosition.create(simulatedRegion.id),
+                        {},
+                        {},
+                        '',
+                        `[Simuliert] ${name}`
+                    );
+                    this.exerciseService.proposeAction(
+                        {
+                            type: '[TransferPoint] Add TransferPoint',
+                            transferPoint,
                         },
                         true
                     );

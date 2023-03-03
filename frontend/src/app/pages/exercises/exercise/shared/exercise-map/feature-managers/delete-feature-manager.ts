@@ -11,12 +11,14 @@ import VectorSource from 'ol/source/Vector';
 import Icon from 'ol/style/Icon';
 import Style from 'ol/style/Style';
 import type { Subject } from 'rxjs';
+import { first } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 // eslint-disable-next-line @typescript-eslint/no-shadow
 import type { Element } from 'digital-fuesim-manv-shared';
+import { createSelectSimulatedRegion } from 'src/app/state/application/selectors/exercise.selectors';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import type { OpenPopupOptions } from '../utility/popup-manager';
@@ -129,10 +131,22 @@ export class DeleteFeatureManager implements FeatureManager<Point> {
                 return true;
             }
             case 'simulatedRegion': {
-                this.exerciseService.proposeAction({
-                    type: '[SimulatedRegion] Remove simulated region',
-                    simulatedRegionId: id,
-                });
+                this.store
+                    .select(createSelectSimulatedRegion(id))
+                    .pipe(first())
+                    .subscribe((simulatedRegion) => {
+                        if (simulatedRegion.transferPointId) {
+                            this.exerciseService.proposeAction({
+                                type: '[TransferPoint] Remove TransferPoint',
+                                transferPointId:
+                                    simulatedRegion.transferPointId,
+                            });
+                        }
+                        this.exerciseService.proposeAction({
+                            type: '[SimulatedRegion] Remove simulated region',
+                            simulatedRegionId: id,
+                        });
+                    });
                 return true;
             }
             default: {

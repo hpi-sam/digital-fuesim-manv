@@ -1,17 +1,17 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { TransferPoint } from '../../models';
-import type { MapCoordinates } from '../../models/utils';
 import {
+    isPositionOnMap,
+    offsetMapPositionBy,
     isInTransfer,
     isNotInTransfer,
     currentTransferOf,
     TransferPosition,
-    currentCoordinatesOf,
-    MapPosition,
     StartPoint,
     startPointTypeOptions,
 } from '../../models/utils';
+import type { MapPosition } from '../../models/utils';
 import { changePosition } from '../../models/utils/position/position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
@@ -47,14 +47,14 @@ export function letElementArrive(
         'transferPoint',
         currentTransferOf(element).targetTransferPointId
     );
-    const newPosition: Mutable<MapCoordinates> = {
-        x: currentCoordinatesOf(targetTransferPoint).x,
-        y:
-            currentCoordinatesOf(targetTransferPoint).y +
-            // Position it in the upper half of the transferPoint
-            imageSizeToPosition(TransferPoint.image.height / 3),
-    };
-    changePosition(element, MapPosition.create(newPosition), draftState);
+    const newPosition = targetTransferPoint.position;
+    if (isPositionOnMap(newPosition)) {
+        offsetMapPositionBy(newPosition as Mutable<MapPosition>, {
+            x: 0,
+            y: imageSizeToPosition(TransferPoint.image.height / 3),
+        });
+    }
+    changePosition(element, newPosition, draftState);
 }
 
 export class AddToTransferAction implements Action {

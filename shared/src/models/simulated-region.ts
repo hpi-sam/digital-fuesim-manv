@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsString, IsUUID, ValidateIf, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { IsPosition } from '../utils/validators/is-position';
 import { IsMultiTypedIdMap, IsValue } from '../utils/validators';
@@ -44,6 +44,12 @@ export class SimulatedRegion {
         this.size = size;
         this.name = name;
     }
+
+    @ValidateIf(
+        (simulatedRegion, transferPointId) => transferPointId !== undefined
+    )
+    @IsUUID()
+    public readonly transferPointId: UUID | undefined;
 
     @Type(...simulationEventTypeOptions)
     @ValidateNested()
