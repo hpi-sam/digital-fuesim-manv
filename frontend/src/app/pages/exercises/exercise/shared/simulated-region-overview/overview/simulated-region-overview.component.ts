@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { SimulatedRegion } from 'digital-fuesim-manv-shared';
-import { ExerciseService } from 'src/app/core/exercise.service';
 
 type NavIds = 'behaviors' | 'general' | 'transfer';
 /**
@@ -21,15 +20,5 @@ export class SimulatedRegionOverviewGeneralComponent {
     }
     public set activeNavId(value: NavIds) {
         activeNavId = value;
-    }
-
-    constructor(private readonly exerciseService: ExerciseService) {}
-
-    public async renameSimulatedRegion(newName: string) {
-        this.exerciseService.proposeAction({
-            type: '[SimulatedRegion] Rename simulated region',
-            simulatedRegionId: this.simulatedRegion.id,
-            newName,
-        });
     }
 }
