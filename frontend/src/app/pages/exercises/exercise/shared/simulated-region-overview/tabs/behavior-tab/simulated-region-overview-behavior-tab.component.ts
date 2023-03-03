@@ -37,6 +37,12 @@ export class SimulatedRegionOverviewBehaviorTabComponent implements OnChanges {
 
     public ngOnChanges() {
         this.calculateBehaviorsToBeAdded();
+        if (
+            this.selectedBehavior !== undefined &&
+            !this.simulatedRegion.behaviors.includes(this.selectedBehavior)
+        ) {
+            this.selectedBehavior = undefined;
+        }
     }
 
     public onBehaviorSelect(behavior: ExerciseSimulationBehaviorState): void {
