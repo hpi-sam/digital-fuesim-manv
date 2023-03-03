@@ -111,6 +111,18 @@ export class AddBehaviorToSimulatedRegionAction implements Action {
     public readonly behaviorState!: ExerciseSimulationBehaviorState;
 }
 
+export class RemoveBehaviorFromSimulatedRegionAction implements Action {
+    @IsValue('[SimulatedRegion] Remove Behavior' as const)
+    public readonly type = '[SimulatedRegion] Remove Behavior';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @Type(...simulationBehaviorTypeOptions)
+    @ValidateNested()
+    public readonly behaviorState!: ExerciseSimulationBehaviorState;
+}
+
 export namespace SimulatedRegionActionReducers {
     export const addSimulatedRegion: ActionReducer<AddSimulatedRegionAction> = {
         action: AddSimulatedRegionAction,
@@ -264,6 +276,26 @@ export namespace SimulatedRegionActionReducers {
                     simulatedRegionId
                 );
                 simulatedRegion.behaviors.push(cloneDeepMutable(behaviorState));
+                return draftState;
+            },
+            rights: 'participant',
+        };
+
+    export const removeBehaviorToSimulatedRegion: ActionReducer<RemoveBehaviorFromSimulatedRegionAction> =
+        {
+            action: RemoveBehaviorFromSimulatedRegionAction,
+            reducer: (draftState, { simulatedRegionId, behaviorState }) => {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                simulatedRegion.behaviors.splice(
+                    simulatedRegion.behaviors.indexOf(
+                        cloneDeepMutable(behaviorState)
+                    ),
+                    1
+                );
                 return draftState;
             },
             rights: 'participant',

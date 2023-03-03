@@ -21,7 +21,9 @@
                 >Verhaltensweisen</a
             >
             <ng-template ngbNavContent
-                ><app-simulated-region-overview-behavior-tab />
+                ><app-simulated-region-overview-behavior-tab
+                    [simulatedRegion]="simulatedRegion"
+                />
             </ng-template>
         </ng-container>
     </nav>
