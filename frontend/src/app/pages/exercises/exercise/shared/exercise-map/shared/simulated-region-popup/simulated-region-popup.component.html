@@ -8,7 +8,7 @@
             data-cy="simulatedRegionPopupCloseButton"
         ></button>
     </h5>
-    <div class="popover-body" style="width: 350px; height: 300px">
+    <div class="popover-body" style="width: 500px; height: 300px">
         <ng-container *ngIf="(currentRole$ | async) === 'trainer'">
             <app-simulated-region-overview-general
                 [simulatedRegion]="simulatedRegion"
