@@ -4,10 +4,10 @@ import { ExerciseService } from 'src/app/core/exercise.service';
 
 @Component({
     selector: 'app-general-tab',
-    templateUrl: './general-tab.component.html',
-    styleUrls: ['./general-tab.component.scss'],
+    templateUrl: './simulated-region-overview-general-tab.component.html',
+    styleUrls: ['./simulated-region-overview-general-tab.component.scss'],
 })
-export class GeneralTabComponent {
+export class SimulatedRegionOverviewGeneralTabComponent {
     @Input() simulatedRegion!: SimulatedRegion;
 
     constructor(private readonly exerciseService: ExerciseService) {}
