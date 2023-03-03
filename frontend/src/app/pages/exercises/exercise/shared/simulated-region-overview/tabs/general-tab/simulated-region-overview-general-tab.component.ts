@@ -3,7 +3,7 @@ import { SimulatedRegion } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
 
 @Component({
-    selector: 'app-general-tab',
+    selector: 'app-simulated-region-overview-general-tab',
     templateUrl: './simulated-region-overview-general-tab.component.html',
     styleUrls: ['./simulated-region-overview-general-tab.component.scss'],
 })

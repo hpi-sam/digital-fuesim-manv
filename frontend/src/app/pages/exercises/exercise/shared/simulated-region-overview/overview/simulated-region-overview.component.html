@@ -3,20 +3,26 @@
         <ng-container ngbNavItem="general">
             <a ngbNavLink data-cy="transferPointPopupNamesNav">Übersicht</a>
             <ng-template ngbNavContent>
-                <app-general-tab [simulatedRegion]="simulatedRegion" />
+                <app-simulated-region-overview-general-tab
+                    [simulatedRegion]="simulatedRegion"
+                />
             </ng-template>
         </ng-container>
         <ng-container ngbNavItem="transfer">
             <a ngbNavLink data-cy="transferPointPopupOtherTransferPointsNav"
                 >Transfer</a
             >
-            <ng-template ngbNavContent><app-transfer-tab /> </ng-template>
+            <ng-template ngbNavContent
+                ><app-simulated-region-overview-transfer-tab />
+            </ng-template>
         </ng-container>
         <ng-container ngbNavItem="behaviors">
             <a ngbNavLink data-cy="transferPointPopupHospitalNav"
                 >Verhaltensweisen</a
             >
-            <ng-template ngbNavContent><app-behavior-tab /> </ng-template>
+            <ng-template ngbNavContent
+                ><app-simulated-region-overview-behavior-tab />
+            </ng-template>
         </ng-container>
     </nav>
     <div [ngbNavOutlet]="nav" class="mt-2"></div>
