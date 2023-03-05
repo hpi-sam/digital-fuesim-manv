@@ -14,7 +14,7 @@ import type { ImageProperties, MapCoordinates } from './utils';
 
 export class SimulatedRegion {
     @IsUUID(4, uuidValidationOptions)
-    public readonly id: UUID;
+    public readonly id: UUID = uuid();
 
     @IsValue('simulatedRegion' as const)
     public readonly type = 'simulatedRegion';
@@ -43,10 +43,8 @@ export class SimulatedRegion {
         position: MapCoordinates,
         size: Size,
         name: string,
-        transferPointId: UUID,
-        id: UUID = uuid()
+        transferPointId: UUID
     ) {
-        this.id = id;
         this.position = MapPosition.create(position);
         this.size = size;
         this.name = name;

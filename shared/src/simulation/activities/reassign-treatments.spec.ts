@@ -38,21 +38,22 @@ function setupStateAndApplyTreatments(
         simulatedRegion: SimulatedRegion
     ) => void
 ) {
-    const simulatedRegionId = uuid();
+    const simulatedRegion = cloneDeepMutable(
+        SimulatedRegion.create(
+            MapCoordinates.create(0, 0),
+            Size.create(10, 10),
+            'test region',
+            ''
+        )
+    );
     const transferPoint = TransferPoint.create(
-        SimulatedRegionPosition.create(simulatedRegionId),
+        SimulatedRegionPosition.create(simulatedRegion.id),
         {},
         {},
         '',
         `[Simuliert] test region`
     );
-    const simulatedRegion = SimulatedRegion.create(
-        MapCoordinates.create(0, 0),
-        Size.create(10, 10),
-        'test region',
-        transferPoint.id,
-        simulatedRegionId
-    );
+    simulatedRegion.transferPointId = transferPoint.id;
     const leaderBehaviorState = AssignLeaderBehaviorState.create();
     const beforeState = produce(emptyState, (draftState) => {
         draftState.simulatedRegions[simulatedRegion.id] =
