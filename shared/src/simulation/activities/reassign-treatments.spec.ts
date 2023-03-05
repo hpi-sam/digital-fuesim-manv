@@ -45,7 +45,7 @@ function setupStateAndApplyTreatments(
         {},
         '',
         `[Simuliert] test region`
-    )
+    );
     const simulatedRegion = SimulatedRegion.create(
         MapCoordinates.create(0, 0),
         Size.create(10, 10),
