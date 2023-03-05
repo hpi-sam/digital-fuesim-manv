@@ -470,8 +470,8 @@ describe('A trainer on the exercise page', () => {
         cy.getState().its('exerciseState').its('hospitals').should('be.empty');
     });
 
-    it('can manage transfer points and transfer vehicles', () => {
-        cy.dragToMap('[data-cy=draggableTransferPointDiv]');
+    it('can manage transfer points (within simulated regions) and transfer vehicles', () => {
+        cy.dragToMap('[data-cy=draggableSimulatedRegionDiv]');
         cy.dragToMap('[data-cy=draggableTransferPointDiv]');
 
         cy.wait(commonErrorTimeout);
@@ -652,7 +652,7 @@ describe('A trainer on the exercise page', () => {
             .itsValues()
             .firstElement()
             .its('position')
-            .should('have.property', 'type', 'coordinates');
+            .should('have.property', 'type', 'simulatedRegion');
     });
 
     it('can start and stop an exercise', () => {

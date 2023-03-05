@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsUUID, ValidateIf, ValidateNested } from 'class-validator';
+import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { IsPosition } from '../utils/validators/is-position';
 import { IsMultiTypedIdMap, IsValue } from '../utils/validators';
@@ -14,7 +14,7 @@ import type { ImageProperties, MapCoordinates } from './utils';
 
 export class SimulatedRegion {
     @IsUUID(4, uuidValidationOptions)
-    public readonly id: UUID = uuid();
+    public readonly id: UUID;
 
     @IsValue('simulatedRegion' as const)
     public readonly type = 'simulatedRegion';
@@ -39,17 +39,22 @@ export class SimulatedRegion {
      * @param position top-left position
      * @deprecated Use {@link create} instead
      */
-    constructor(position: MapCoordinates, size: Size, name: string) {
+    constructor(
+        position: MapCoordinates,
+        size: Size,
+        name: string,
+        transferPointId: UUID,
+        id: UUID = uuid()
+    ) {
+        this.id = id;
         this.position = MapPosition.create(position);
         this.size = size;
         this.name = name;
+        this.transferPointId = transferPointId;
     }
 
-    @ValidateIf(
-        (simulatedRegion, transferPointId) => transferPointId !== undefined
-    )
     @IsUUID()
-    public readonly transferPointId: UUID | undefined;
+    public readonly transferPointId: UUID;
 
     @Type(...simulationEventTypeOptions)
     @ValidateNested()

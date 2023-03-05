@@ -128,13 +128,6 @@ export namespace TransferPointActionReducers {
         reducer: (draftState, { transferPoint }) => {
             draftState.transferPoints[transferPoint.id] =
                 cloneDeepMutable(transferPoint);
-            const stateTransferPoint =
-                draftState.transferPoints[transferPoint.id]!;
-            if (isInSimulatedRegion(stateTransferPoint)) {
-                draftState.simulatedRegions[
-                    currentSimulatedRegionIdOf(stateTransferPoint)
-                ]!.transferPointId = transferPoint.id;
-            }
             return draftState;
         },
         rights: 'trainer',
@@ -251,11 +244,7 @@ export namespace TransferPointActionReducers {
             action: RemoveTransferPointAction,
             reducer: (draftState, { transferPointId }) => {
                 // check if transferPoint exists
-                const stateTransferPoint = getElement(
-                    draftState,
-                    'transferPoint',
-                    transferPointId
-                );
+                getElement(draftState, 'transferPoint', transferPointId);
                 // TODO: make it dynamic (if at any time something else is able to transfer this part needs to be changed accordingly)
                 // Let all vehicles and personnel arrive that are on transfer to this transferPoint before deleting it
                 for (const vehicleId of Object.keys(draftState.vehicles)) {
@@ -306,11 +295,6 @@ export namespace TransferPointActionReducers {
                             transferPointId
                         ];
                     }
-                }
-                if (isInSimulatedRegion(stateTransferPoint)) {
-                    draftState.simulatedRegions[
-                        currentSimulatedRegionIdOf(stateTransferPoint)
-                    ]!.transferPointId = undefined;
                 }
                 delete draftState.transferPoints[transferPointId];
                 return draftState;

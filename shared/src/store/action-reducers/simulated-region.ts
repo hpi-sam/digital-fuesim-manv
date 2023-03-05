@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { SimulatedRegion } from '../../models';
+import { SimulatedRegion, TransferPoint } from '../../models';
 import {
     MapCoordinates,
     MapPosition,
@@ -23,7 +23,8 @@ import { sendSimulationEvent } from '../../simulation/events/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ExpectedReducerError, ReducerError } from '../reducer-error';
+import { ExpectedReducerError } from '../reducer-error';
+import { TransferPointActionReducers } from './transfer-point';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 
@@ -33,6 +34,9 @@ export class AddSimulatedRegionAction implements Action {
     @ValidateNested()
     @Type(() => SimulatedRegion)
     public simulatedRegion!: SimulatedRegion;
+    @ValidateNested()
+    @Type(() => TransferPoint)
+    public transferPoint!: TransferPoint;
 }
 
 export class RemoveSimulatedRegionAction implements Action {
@@ -114,7 +118,11 @@ export class AddBehaviorToSimulatedRegionAction implements Action {
 export namespace SimulatedRegionActionReducers {
     export const addSimulatedRegion: ActionReducer<AddSimulatedRegionAction> = {
         action: AddSimulatedRegionAction,
-        reducer: (draftState, { simulatedRegion }) => {
+        reducer: (draftState, { simulatedRegion, transferPoint }) => {
+            TransferPointActionReducers.addTransferPoint.reducer(draftState, {
+                type: '[TransferPoint] Add TransferPoint',
+                transferPoint,
+            });
             draftState.simulatedRegions[simulatedRegion.id] =
                 cloneDeepMutable(simulatedRegion);
             return draftState;
@@ -131,11 +139,13 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                if (simulatedRegion.transferPointId) {
-                    throw new ReducerError(
-                        `Simulated region with id ${simulatedRegionId} cannot be deleted because there is transfer point attached to it`
-                    );
-                }
+                TransferPointActionReducers.removeTransferPoint.reducer(
+                    draftState,
+                    {
+                        type: '[TransferPoint] Remove TransferPoint',
+                        transferPointId: simulatedRegion.transferPointId,
+                    }
+                );
                 delete draftState.simulatedRegions[simulatedRegionId];
                 return draftState;
             },
@@ -188,6 +198,14 @@ export namespace SimulatedRegionActionReducers {
                     draftState,
                     'simulatedRegion',
                     simulatedRegionId
+                );
+                TransferPointActionReducers.renameTransferPoint.reducer(
+                    draftState,
+                    {
+                        type: '[TransferPoint] Rename TransferPoint',
+                        transferPointId: simulatedRegion.transferPointId,
+                        externalName: `[Simuliert] ${newName}`,
+                    }
                 );
                 simulatedRegion.name = newName;
                 return draftState;

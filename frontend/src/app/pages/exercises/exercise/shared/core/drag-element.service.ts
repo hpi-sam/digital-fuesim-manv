@@ -10,6 +10,7 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import {
     createVehicleParameters,
+    uuid,
     MapImage,
     normalZoom,
     PatientTemplate,
@@ -281,7 +282,14 @@ export class DragElementService {
                     // This ratio has been determined by trial and error
                     const height = SimulatedRegion.image.height / 23.5;
                     const width = height * SimulatedRegion.image.aspectRatio;
-                    const name = 'Einsatzabschnitt ???';
+                    const simulatedRegionId = uuid();
+                    const transferPoint = TransferPoint.create(
+                        SimulatedRegionPosition.create(simulatedRegionId),
+                        {},
+                        {},
+                        '',
+                        `[Simuliert] ${name}`
+                    );
                     const simulatedRegion = SimulatedRegion.create(
                         {
                             x: position.x - width / 2,
@@ -291,25 +299,14 @@ export class DragElementService {
                             height,
                             width,
                         },
-                        name
+                        'Einsatzabschnitt ???',
+                        transferPoint.id,
+                        simulatedRegionId
                     );
                     this.exerciseService.proposeAction(
                         {
                             type: '[SimulatedRegion] Add simulated region',
                             simulatedRegion,
-                        },
-                        true
-                    );
-                    const transferPoint = TransferPoint.create(
-                        SimulatedRegionPosition.create(simulatedRegion.id),
-                        {},
-                        {},
-                        '',
-                        `[Simuliert] ${name}`
-                    );
-                    this.exerciseService.proposeAction(
-                        {
-                            type: '[TransferPoint] Add TransferPoint',
                             transferPoint,
                         },
                         true
