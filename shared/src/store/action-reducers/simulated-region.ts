@@ -23,7 +23,7 @@ import { sendSimulationEvent } from '../../simulation/events/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ExpectedReducerError } from '../reducer-error';
+import { ExpectedReducerError, ReducerError } from '../reducer-error';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 
@@ -116,11 +116,10 @@ export class RemoveBehaviorFromSimulatedRegionAction implements Action {
     public readonly type = '[SimulatedRegion] Remove Behavior';
 
     @IsUUID(4, uuidValidationOptions)
-    public readonly simulatedRegionId!: UUID;
+    public readonly behaviorId!: UUID;
 
-    @Type(...simulationBehaviorTypeOptions)
-    @ValidateNested()
-    public readonly behaviorState!: ExerciseSimulationBehaviorState;
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
 }
 
 export namespace SimulatedRegionActionReducers {
@@ -281,21 +280,24 @@ export namespace SimulatedRegionActionReducers {
             rights: 'participant',
         };
 
-    export const removeBehaviorToSimulatedRegion: ActionReducer<RemoveBehaviorFromSimulatedRegionAction> =
+    export const removeBehaviorFromSimulatedRegion: ActionReducer<RemoveBehaviorFromSimulatedRegionAction> =
         {
             action: RemoveBehaviorFromSimulatedRegionAction,
-            reducer: (draftState, { simulatedRegionId, behaviorState }) => {
+            reducer: (draftState, { simulatedRegionId, behaviorId }) => {
                 const simulatedRegion = getElement(
                     draftState,
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                simulatedRegion.behaviors.splice(
-                    simulatedRegion.behaviors.indexOf(
-                        cloneDeepMutable(behaviorState)
-                    ),
-                    1
+                const index = simulatedRegion.behaviors.findIndex(
+                    (behavior) => behavior.id === behaviorId
                 );
+                if (index === -1) {
+                    throw new ReducerError(
+                        `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}. Therefor it could not be removed`
+                    );
+                }
+                simulatedRegion.behaviors.splice(index, 1);
                 return draftState;
             },
             rights: 'participant',

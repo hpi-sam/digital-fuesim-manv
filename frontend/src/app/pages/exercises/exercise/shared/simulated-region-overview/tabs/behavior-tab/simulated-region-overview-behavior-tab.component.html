@@ -23,15 +23,15 @@
         </div>
         <div class="col-sm" style="max-width: 70%">
             <div [ngSwitch]="selectedBehavior?.type">
-                <ng-container *ngSwitchCase="'assignLeaderBehavior'"
-                    ><app-simulated-region-overview-behavior-assign-leader></app-simulated-region-overview-behavior-assign-leader
-                ></ng-container>
-                <ng-container *ngSwitchCase="'treatPatientsBehavior'"
-                    ><app-simulated-region-overview-behavior-treat-patients></app-simulated-region-overview-behavior-treat-patients
-                ></ng-container>
-                <ng-container *ngSwitchCase="'unloadArrivingVehiclesBehavior'"
-                    ><app-simulated-region-overview-behavior-unload-arriving-vehicles></app-simulated-region-overview-behavior-unload-arriving-vehicles
-                ></ng-container>
+                <app-simulated-region-overview-behavior-assign-leader
+                    *ngSwitchCase="'assignLeaderBehavior'"
+                ></app-simulated-region-overview-behavior-assign-leader
+                ><app-simulated-region-overview-behavior-treat-patients
+                    *ngSwitchCase="'treatPatientsBehavior'"
+                ></app-simulated-region-overview-behavior-treat-patients
+                ><app-simulated-region-overview-behavior-unload-arriving-vehicles
+                    *ngSwitchCase="'unloadArrivingVehiclesBehavior'"
+                ></app-simulated-region-overview-behavior-unload-arriving-vehicles>
                 <p *ngSwitchDefault class="text-muted font-bold">
                     Es ist noch keine Verhaltensweise ausgewählt.
                 </p>
@@ -72,7 +72,7 @@
                 <button
                     type="button"
                     class="btn btn-outline-danger"
-                    (click)="removeBehavior()"
+                    (click)="removeSelectedBehavior()"
                 >
                     <span class="bi-trash me-1"></span>
                     Entfernen

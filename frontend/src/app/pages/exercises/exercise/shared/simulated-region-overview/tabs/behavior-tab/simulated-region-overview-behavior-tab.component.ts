@@ -14,7 +14,7 @@ import { ExerciseService } from 'src/app/core/exercise.service';
 })
 export class SimulatedRegionOverviewBehaviorTabComponent implements OnChanges {
     @Input() simulatedRegion!: SimulatedRegion;
-    public behaviorsToBeAdded!: ExerciseSimulationBehaviorState[];
+    public behaviorsToBeAdded: ExerciseSimulationBehaviorState[] = [];
     public selectedBehavior?: ExerciseSimulationBehaviorState;
     constructor(private readonly exerciseService: ExerciseService) {}
 
@@ -26,18 +26,19 @@ export class SimulatedRegionOverviewBehaviorTabComponent implements OnChanges {
         });
     }
 
-    public removeBehavior() {
+    public removeSelectedBehavior() {
         this.exerciseService.proposeAction({
             type: '[SimulatedRegion] Remove Behavior',
             simulatedRegionId: this.simulatedRegion.id,
-            behaviorState: this.selectedBehavior!,
+            behaviorId: this.selectedBehavior!.id,
         });
         this.selectedBehavior = undefined;
     }
 
     public ngOnChanges() {
-        this.calculateBehaviorsToBeAdded();
+        this.updateBehaviorsToBeAdded();
         if (
+            // if the selected behavior has been removed by a different client
             this.selectedBehavior !== undefined &&
             !this.simulatedRegion.behaviors.includes(this.selectedBehavior)
         ) {
@@ -49,15 +50,15 @@ export class SimulatedRegionOverviewBehaviorTabComponent implements OnChanges {
         this.selectedBehavior = behavior;
     }
 
-    public calculateBehaviorsToBeAdded() {
+    private updateBehaviorsToBeAdded() {
         this.behaviorsToBeAdded = Object.values(simulationBehaviors)
+            .map((behavior) => new behavior.behaviorState())
             .filter(
-                (behavior) =>
+                (behaviorState) =>
                     !this.simulatedRegion.behaviors.some(
-                        (behavior2) =>
-                            behavior2.type === new behavior.behaviorState().type
+                        (regionBehaviorState) =>
+                            regionBehaviorState.type === behaviorState.type
                     )
-            )
-            .map((behavior) => new behavior.behaviorState());
+            );
     }
 }
