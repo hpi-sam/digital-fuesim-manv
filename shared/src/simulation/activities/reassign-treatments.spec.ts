@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { Personnel, SimulatedRegion } from '../../models';
+import { Personnel, SimulatedRegion, TransferPoint } from '../../models';
 import type { PatientStatus, PersonnelType } from '../../models/utils';
 import {
     CanCaterFor,
@@ -38,10 +38,20 @@ function setupStateAndApplyTreatments(
         simulatedRegion: SimulatedRegion
     ) => void
 ) {
+    const simulatedRegionId = uuid();
+    const transferPoint = TransferPoint.create(
+        SimulatedRegionPosition.create(simulatedRegionId),
+        {},
+        {},
+        '',
+        `[Simuliert] test region`
+    )
     const simulatedRegion = SimulatedRegion.create(
         MapCoordinates.create(0, 0),
         Size.create(10, 10),
-        'test region'
+        'test region',
+        transferPoint.id,
+        simulatedRegionId
     );
     const leaderBehaviorState = AssignLeaderBehaviorState.create();
     const beforeState = produce(emptyState, (draftState) => {
