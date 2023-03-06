@@ -294,7 +294,7 @@ export namespace SimulatedRegionActionReducers {
                 );
                 if (index === -1) {
                     throw new ReducerError(
-                        `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}. Therefor it could not be removed`
+                        `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}. Therefore it could not be removed.`
                     );
                 }
                 simulatedRegion.behaviors.splice(index, 1);
