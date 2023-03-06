@@ -3,7 +3,7 @@
         class="row align-items-start flex-shrink-1 flex-grow-1"
         style="min-height: 0"
     >
-        <div class="col-sm overflow-auto mh-100" style="max-width: 30%">
+        <div class="col-sm overflow-auto mh-100 mw-25">
             <p
                 *ngIf="simulatedRegion.behaviors.length === 0"
                 class="text-muted font-bold"
@@ -24,7 +24,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm overflow-auto mh-100" style="max-width: 70%">
+        <div class="col-sm overflow-auto mh-100 mw-75">
             <div [ngSwitch]="selectedBehavior?.type">
                 <app-simulated-region-overview-behavior-assign-leader
                     *ngSwitchCase="'assignLeaderBehavior'"
