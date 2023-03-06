@@ -1,4 +1,4 @@
-import type { Mutable, UUID } from '../../../utils';
+import type { UUID } from '../../../utils';
 import type { Transfer } from '../transfer';
 import { MapCoordinates } from './map-coordinates';
 import type { MapPosition } from './map-position';
@@ -90,14 +90,6 @@ export function currentSimulatedRegionIdOf(withPosition: WithPosition): UUID {
     throw new TypeError(
         `Expected position of object to be in simulatedRegion. Was of type ${withPosition.position.type}.`
     );
-}
-
-export function offsetMapPositionBy(
-    position: Mutable<MapPosition>,
-    offset: MapCoordinates
-) {
-    position.coordinates.x += offset.x;
-    position.coordinates.y += offset.y;
 }
 
 export function isPositionOnMap(position: Position): boolean {

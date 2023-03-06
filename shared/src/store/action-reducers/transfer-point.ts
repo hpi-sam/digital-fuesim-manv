@@ -198,8 +198,8 @@ export namespace TransferPointActionReducers {
                 const _duration =
                     duration ??
                     estimateDuration(
-                        coordinatesOfAnyPosition(transferPoint1, draftState),
-                        coordinatesOfAnyPosition(transferPoint2, draftState)
+                        nestedCoordinatesOf(transferPoint1, draftState),
+                        nestedCoordinatesOf(transferPoint2, draftState)
                     );
                 transferPoint1.reachableTransferPoints[transferPointId2] = {
                     duration: _duration,
@@ -366,7 +366,7 @@ function estimateDuration(
     return Math.round(estimateTime / multipleOf) * multipleOf;
 }
 
-function coordinatesOfAnyPosition(
+function nestedCoordinatesOf(
     withPosition: WithPosition,
     draftState: ExerciseState
 ): MapCoordinates {
@@ -374,14 +374,19 @@ function coordinatesOfAnyPosition(
         return currentCoordinatesOf(withPosition);
     }
     if (isInVehicle(withPosition)) {
-        const vehicle = draftState.vehicles[currentVehicleIdOf(withPosition)]!;
-        return coordinatesOfAnyPosition(vehicle, draftState);
+        const vehicle = getElement(
+            draftState,
+            'vehicle',
+            currentVehicleIdOf(withPosition)
+        );
+        return nestedCoordinatesOf(vehicle, draftState);
     }
     if (isInSimulatedRegion(withPosition)) {
-        const simulatedRegion =
-            draftState.simulatedRegions[
-                currentSimulatedRegionIdOf(withPosition)
-            ]!;
+        const simulatedRegion = getElement(
+            draftState,
+            'simulatedRegion',
+            currentSimulatedRegionIdOf(withPosition)
+        );
         return currentCoordinatesOf(simulatedRegion);
     }
     throw new ReducerError(

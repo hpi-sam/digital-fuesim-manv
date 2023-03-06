@@ -3,7 +3,6 @@ import { IsInt, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { TransferPoint } from '../../models';
 import {
     isPositionOnMap,
-    offsetMapPositionBy,
     isInTransfer,
     isNotInTransfer,
     currentTransferOf,
@@ -12,7 +11,10 @@ import {
     startPointTypeOptions,
 } from '../../models/utils';
 import type { MapPosition } from '../../models/utils';
-import { changePosition } from '../../models/utils/position/position-helpers-mutable';
+import {
+    changePosition,
+    offsetMapPositionBy,
+} from '../../models/utils/position/position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';

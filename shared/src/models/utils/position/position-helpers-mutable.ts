@@ -11,6 +11,8 @@ import {
 } from '../../../store/action-reducers/utils/spatial-elements';
 import type { Mutable, UUID } from '../../../utils';
 import { cloneDeepMutable } from '../../../utils';
+import type { MapCoordinates } from './map-coordinates';
+import type { MapPosition } from './map-position';
 import type { Position } from './position';
 import {
     coordinatesOfPosition,
@@ -100,4 +102,12 @@ function updateSpatialElementTree(
             coordinatesOfPosition(to)
         );
     }
+}
+
+export function offsetMapPositionBy(
+    position: Mutable<MapPosition>,
+    offset: MapCoordinates
+) {
+    position.coordinates.x += offset.x;
+    position.coordinates.y += offset.y;
 }
