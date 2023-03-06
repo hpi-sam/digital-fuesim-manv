@@ -1,1 +1,178 @@
-<p>simulated-region-overview-behavior-treat-patients works!</p>
+<div class="container">
+    <div class="row">
+        Wie häufig soll die Zuteilung in den jeweiligen Zuständen neuberechnet
+        werden
+    </div>
+    <div class="row">
+        <div class="col-sm">Unbekannt</div>
+        <div class="col-sm">
+            <div
+                title="Wie häufig neuberechnet werden soll, wenn das Personal grade angekommen ist."
+                class="input-group input-group-sm float-start"
+                style="width: 100px"
+            >
+                <!-- The input is in seconds -->
+                <input
+                    #timeInput="ngModel"
+                    [ngModel]="
+                        treatPatientsBehaviorState.intervals.unknown / 1000
+                    "
+                    (appSaveOnTyping)="
+                        updateTreatPatientsBehaviorState(
+                            $event * 1000,
+                            -1,
+                            -1,
+                            -1,
+                            -1
+                        )
+                    "
+                    min="0"
+                    required
+                    step="1"
+                    type="number"
+                    class="form-control form-control-sm d-inline-block no-validation"
+                    data-cy="alarmGroupVehicleDelayInput"
+                />
+                <span class="input-group-text">Sec</span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Gezählt</div>
+        <div class="col-sm">
+            <div
+                title="Wie häufig neuberechnet werden soll, wenn das Zählen der Patienten abgeschlossen ist."
+                class="input-group input-group-sm float-start"
+                style="width: 100px"
+            >
+                <!-- The input is in seconds -->
+                <input
+                    #timeInput="ngModel"
+                    [ngModel]="
+                        treatPatientsBehaviorState.intervals.counted / 1000
+                    "
+                    (appSaveOnTyping)="
+                        updateTreatPatientsBehaviorState(
+                            -1,
+                            $event * 1000,
+                            -1,
+                            -1,
+                            -1
+                        )
+                    "
+                    min="0"
+                    required
+                    step="1"
+                    type="number"
+                    class="form-control form-control-sm d-inline-block no-validation"
+                    data-cy="alarmGroupVehicleDelayInput"
+                />
+                <span class="input-group-text">Sec</span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Vorgesichtet</div>
+        <div class="col-sm">
+            <div
+                title="Wie häufig neuberechnet werden soll, nachdem das Personal vorgesichtet."
+                class="input-group input-group-sm float-start"
+                style="width: 100px"
+            >
+                <!-- The input is in seconds -->
+                <input
+                    #timeInput="ngModel"
+                    [ngModel]="
+                        treatPatientsBehaviorState.intervals.triaged / 1000
+                    "
+                    (appSaveOnTyping)="
+                        updateTreatPatientsBehaviorState(
+                            -1,
+                            -1,
+                            $event * 1000,
+                            -1,
+                            -1
+                        )
+                    "
+                    min="0"
+                    required
+                    step="1"
+                    type="number"
+                    class="form-control form-control-sm d-inline-block no-validation"
+                    data-cy="alarmGroupVehicleDelayInput"
+                />
+                <span class="input-group-text">Sec</span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Erstversorgung sichergestellt</div>
+        <div class="col-sm">
+            <div
+                title="Wie häufig neuberechnet werden soll, nachdem die Erstversorgung sichergesetellt ist."
+                class="input-group input-group-sm float-start"
+                style="width: 100px"
+            >
+                <!-- The input is in seconds -->
+                <input
+                    #timeInput="ngModel"
+                    [ngModel]="
+                        treatPatientsBehaviorState.intervals.secured / 1000
+                    "
+                    (appSaveOnTyping)="
+                        updateTreatPatientsBehaviorState(
+                            -1,
+                            -1,
+                            -1,
+                            $event * 1000,
+                            -1
+                        )
+                    "
+                    min="0"
+                    required
+                    step="1"
+                    type="number"
+                    class="form-control form-control-sm d-inline-block no-validation"
+                    data-cy="alarmGroupVehicleDelayInput"
+                />
+                <span class="input-group-text">Sec</span>
+            </div>
+        </div>
+    </div>
+    <div class="row">Weiteres</div>
+    <div class="row">
+        <div class="col-sm">Zähldauer pro Patient</div>
+        <div class="col-sm">
+            <div
+                title="Wie lange es dauert, einen Patienten zu zählen."
+                class="input-group input-group-sm float-start"
+                style="width: 100px"
+            >
+                <!-- The input is in seconds -->
+                <input
+                    #timeInput="ngModel"
+                    [ngModel]="
+                        treatPatientsBehaviorState.intervals
+                            .countingTimePerPatient / 1000
+                    "
+                    (appSaveOnTyping)="
+                        updateTreatPatientsBehaviorState(
+                            -1,
+                            -1,
+                            -1,
+                            -1,
+                            $event * 1000
+                        )
+                    "
+                    min="0"
+                    required
+                    step="1"
+                    type="number"
+                    class="form-control form-control-sm d-inline-block no-validation"
+                    data-cy="alarmGroupVehicleDelayInput"
+                />
+                <span class="input-group-text">Sec</span>
+            </div>
+        </div>
+    </div>
+</div>
