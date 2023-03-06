@@ -1,9 +1,10 @@
 import type { StateExport } from '../export-import/file-format';
 import { ExerciseState } from '../state';
 import type { ExerciseAction } from '../store';
-import { applyAllActions } from '../store';
+import { applyAction } from '../store';
 import type { Mutable } from '../utils';
 import { cloneDeepMutable } from '../utils';
+import type { Migration } from './migration-functions';
 import { migrations } from './migration-functions';
 
 export function migrateStateExport(
@@ -49,28 +50,57 @@ export function applyMigrations(
     }
 ): number {
     const targetVersion = ExerciseState.currentStateVersion;
+
+    const migrationsToApply: Migration[] = [];
     for (let i = currentStateVersion + 1; i <= targetVersion; i++) {
-        const stateMigration = migrations[i]!.state;
-        if (stateMigration !== null) {
-            if (propertiesToMigrate.history)
-                stateMigration(propertiesToMigrate.history.initialState);
-            else stateMigration(propertiesToMigrate.currentState);
-        }
-        if (!propertiesToMigrate.history) continue;
-        const actionMigration = migrations[i]!.actions;
-        if (actionMigration !== null) {
-            actionMigration(
-                propertiesToMigrate.history.initialState,
-                propertiesToMigrate.history.actions
-            );
-        }
+        migrationsToApply.push(migrations[i]!);
     }
-    if (propertiesToMigrate.history)
-        propertiesToMigrate.currentState = applyAllActions(
-            propertiesToMigrate.history.initialState as ExerciseState,
-            propertiesToMigrate.history.actions.filter(
-                (action) => action !== null
-            ) as ExerciseAction[]
-        );
+
+    const history = propertiesToMigrate.history;
+    if (history) {
+        const intermediaryState = history.initialState;
+        migrateState(migrationsToApply, intermediaryState);
+        history.actions.forEach((action, index) => {
+            if (action !== null) {
+                const deleteAction = !migrateAction(
+                    migrationsToApply,
+                    intermediaryState,
+                    action
+                );
+                if (!deleteAction) {
+                    applyAction(
+                        intermediaryState as Mutable<ExerciseState>,
+                        action as ExerciseAction
+                    );
+                } else {
+                    history.actions[index] = null;
+                }
+            }
+        });
+    } else {
+        migrateState(migrationsToApply, propertiesToMigrate.currentState);
+    }
     return targetVersion;
+}
+
+function migrateState(migrationsToApply: Migration[], currentState: object) {
+    migrationsToApply.forEach((migration) => {
+        if (migration.state) migration.state(currentState);
+    });
+}
+
+/**
+ * @returns true if all went well and false if the action should be deleted
+ */
+function migrateAction(
+    migrationsToApply: Migration[],
+    intermediaryState: object,
+    action: object
+): boolean {
+    return migrationsToApply.every((migration) => {
+        if (migration.action) {
+            return migration.action(intermediaryState, action);
+        }
+        return true;
+    });
 }

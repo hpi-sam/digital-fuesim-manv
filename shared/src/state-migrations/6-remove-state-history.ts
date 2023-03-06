@@ -2,16 +2,15 @@ import type { Action } from '../store';
 import type { Migration } from './migration-functions';
 
 export const removeStateHistory6: Migration = {
-    actions: (_initialState, actions) => {
-        actions.forEach((action) => {
-            const actionType = (action as Action | null)?.type;
-            if (
-                actionType === '[Exercise] Pause' ||
-                actionType === '[Exercise] Start'
-            ) {
-                delete (action as { timestamp?: number }).timestamp;
-            }
-        });
+    action: (_intermediaryState, action) => {
+        const actionType = (action as Action | null)?.type;
+        if (
+            actionType === '[Exercise] Pause' ||
+            actionType === '[Exercise] Start'
+        ) {
+            delete (action as { timestamp?: number }).timestamp;
+        }
+        return true;
     },
     state: (state) => {
         interface StatusHistoryEntry {
