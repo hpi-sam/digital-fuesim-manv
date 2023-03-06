@@ -11,6 +11,7 @@ import { SimulatedRegionOverviewBehaviorTreatPatientsComponent } from './tabs/be
 import { SimulatedRegionOverviewBehaviorAssignLeaderComponent } from './tabs/behavior-tab/behaviors/assign-leader/simulated-region-overview-behavior-assign-leader.component';
 import { BehaviorToGermanNamePipe } from './tabs/behavior-tab/utils/behavior-to-german-name.pipe';
 import { SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent } from './tabs/behavior-tab/behaviors/unload-arriving-vehicles/simulated-region-overview-behavior-unload-arriving-vehicles.component';
+import { TreatmentProgressToGermanNamePipe } from './tabs/behavior-tab/utils/treatment-progress-to-german-name.pipe';
 
 @NgModule({
     declarations: [
@@ -22,6 +23,7 @@ import { SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent } from '
         SimulatedRegionOverviewBehaviorAssignLeaderComponent,
         SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent,
         BehaviorToGermanNamePipe,
+        TreatmentProgressToGermanNamePipe,
     ],
     imports: [
         CommonModule,

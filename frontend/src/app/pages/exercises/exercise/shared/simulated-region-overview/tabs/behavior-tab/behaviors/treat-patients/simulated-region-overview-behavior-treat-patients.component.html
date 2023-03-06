@@ -1,7 +1,9 @@
 <div class="container">
+    <div class="row"><h4>Einstellungen</h4></div>
     <div class="row">
-        Wie häufig soll die Zuteilung in den jeweiligen Zuständen neuberechnet
-        werden
+        <h6 class="mt-2">
+            Häufigkeit der Neuberechnung in den jeweiligen Zuständen
+        </h6>
     </div>
     <div class="row">
         <div class="col-sm">Unbekannt</div>
@@ -139,7 +141,7 @@
             </div>
         </div>
     </div>
-    <div class="row">Weiteres</div>
+    <div class="row"><h6 class="mt-2">Weiteres</h6></div>
     <div class="row">
         <div class="col-sm">Zähldauer pro Patient</div>
         <div class="col-sm">
@@ -175,4 +177,16 @@
             </div>
         </div>
     </div>
+    <div class="row"><h4>Informationen</h4></div>
+    <div class="row">
+        <h6 class="mt-2">Allgemein</h6>
+        <div class="col-sm">Derzeitige Phase</div>
+        <div class="col-sm">
+            {{
+                treatPatientsBehaviorState.treatmentProgress
+                    | treatmentProgressToGermanName
+            }}
+        </div>
+    </div>
+    <div class="row"><h6 class="mt-2">Derzeitige Zuordnung</h6></div>
 </div>
