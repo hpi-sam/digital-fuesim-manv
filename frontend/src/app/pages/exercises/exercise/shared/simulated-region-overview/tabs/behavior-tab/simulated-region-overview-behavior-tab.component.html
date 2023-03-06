@@ -3,7 +3,7 @@
         class="row align-items-start flex-shrink-1 flex-grow-1"
         style="min-height: 0"
     >
-        <div class="col-sm overflow-auto mh-100 mw-25">
+        <div class="col-sm overflow-auto mh-100" style="max-width: 30%">
             <p
                 *ngIf="simulatedRegion.behaviors.length === 0"
                 class="text-muted font-bold"
@@ -14,17 +14,16 @@
                 <div class="list-group">
                     <button
                         *ngFor="let behavior of simulatedRegion.behaviors"
-                        class="list-group-item-action d-flex align-items-center flex-nowrap p-0"
                         [class.active]="behavior === selectedBehavior"
                         (click)="onBehaviorSelect(behavior)"
-                        class="list-group-item list-group-item-action"
+                        class="list-group-item list-group-item-action d-flex align-items-center flex-nowrap"
                     >
                         {{ behavior | behaviorToGermanName }}
                     </button>
                 </div>
             </div>
         </div>
-        <div class="col-sm overflow-auto mh-100 mw-75">
+        <div class="col-sm overflow-auto mh-100" style="max-width: 70%">
             <div [ngSwitch]="selectedBehavior?.type">
                 <app-simulated-region-overview-behavior-assign-leader
                     *ngSwitchCase="'assignLeaderBehavior'"
