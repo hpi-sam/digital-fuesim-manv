@@ -17,62 +17,90 @@
 
     <table class="table">
         <tbody>
-            <tr>
-                <th scope="rowgroup" class="w-75">Patienten</th>
+            <tr
+                (click)="patientsCollapsed = !patientsCollapsed"
+                style="cursor: pointer"
+            >
+                <th scope="rowgroup" class="w-75">
+                    <i
+                        *ngIf="patientsCollapsed; else patientsExpanded"
+                        class="bi bi-caret-right-fill"
+                    ></i>
+                    <ng-template #patientsExpanded
+                        ><i class="bi bi-caret-down-fill"></i
+                    ></ng-template>
+                    Patienten
+                </th>
                 <th class="w-25">{{ (patients.all$ | async)?.length }}</th>
             </tr>
-            <tr>
-                <th class="ps-4" scope="row">
+            <tr #collapse="ngbCollapse" [(ngbCollapse)]="patientsCollapsed">
+                <td class="ps-4">
                     <span
                         class="badge rounded-pill"
                         style="background-color: red"
                         >SK I</span
                     >
-                </th>
+                </td>
                 <td>{{ (patients.red$ | async)?.length }}</td>
             </tr>
-            <tr>
-                <th class="ps-4" scope="row">
+            <tr #collapse="ngbCollapse" [(ngbCollapse)]="patientsCollapsed">
+                <td class="ps-4">
                     <span
                         class="badge rounded-pill text-dark"
                         style="background-color: yellow"
                         >SK II</span
                     >
-                </th>
+                </td>
                 <td>{{ (patients.yellow$ | async)?.length }}</td>
             </tr>
-            <tr>
-                <th class="ps-4" scope="row">
+            <tr #collapse="ngbCollapse" [(ngbCollapse)]="patientsCollapsed">
+                <td class="ps-4">
                     <span
                         class="badge rounded-pill"
                         style="background-color: green"
                         >SK III</span
                     >
-                </th>
+                </td>
                 <td>
                     {{ (patients.green$ | async)?.length }}
                 </td>
             </tr>
-            <tr>
-                <th class="ps-4" scope="row">
+            <tr #collapse="ngbCollapse" [(ngbCollapse)]="patientsCollapsed">
+                <td class="ps-4">
                     <span
                         class="badge rounded-pill"
                         style="background-color: black"
                         >ex</span
                     >
-                </th>
+                </td>
                 <td>{{ (patients.black$ | async)?.length }}</td>
             </tr>
         </tbody>
         <tbody>
-            <tr>
-                <th scope="rowgroup" class="w-75">Fahrzeuge</th>
+            <tr
+                (click)="vehiclesCollapsed = !vehiclesCollapsed"
+                style="cursor: pointer"
+            >
+                <th scope="rowgroup" class="w-75">
+                    <i
+                        *ngIf="vehiclesCollapsed; else vehiclesExpanded"
+                        class="bi bi-caret-right-fill"
+                    ></i>
+                    <ng-template #vehiclesExpanded
+                        ><i class="bi bi-caret-down-fill"></i
+                    ></ng-template>
+                    Fahrzeuge
+                </th>
                 <th class="w-25">
                     {{ ((vehicles$ | async) ?? {})['all']?.length }}
                 </th>
             </tr>
-            <tr *ngFor="let template of vehicleTemplates$ | async">
-                <th class="ps-4" scope="row">{{ template.vehicleType }}</th>
+            <tr
+                *ngFor="let template of vehicleTemplates$ | async"
+                #collapse="ngbCollapse"
+                [(ngbCollapse)]="vehiclesCollapsed"
+            >
+                <td class="ps-4">{{ template.vehicleType }}</td>
                 <td>
                     {{
                         ((vehicles$ | async) ?? {})[template.vehicleType]
@@ -82,28 +110,40 @@
             </tr>
         </tbody>
         <tbody>
-            <tr>
-                <th scope="rowgroup" class="w-75">Personal</th>
+            <tr
+                (click)="personnelCollapsed = !personnelCollapsed"
+                style="cursor: pointer"
+            >
+                <th scope="rowgroup" class="w-75">
+                    <i
+                        *ngIf="personnelCollapsed; else personnelExpanded"
+                        class="bi bi-caret-right-fill"
+                    ></i>
+                    <ng-template #personnelExpanded
+                        ><i class="bi bi-caret-down-fill"></i
+                    ></ng-template>
+                    Personal
+                </th>
                 <th class="w-25">{{ (personnel.all$ | async)?.length }}</th>
             </tr>
-            <tr>
-                <th class="ps-4" scope="row">Notarzt</th>
+            <tr #collapse="ngbCollapse" [(ngbCollapse)]="personnelCollapsed">
+                <td class="ps-4">Notarzt</td>
                 <td>{{ (personnel.notarzt$ | async)?.length }}</td>
             </tr>
-            <tr>
-                <th class="ps-4" scope="row">Notfallsanitäter</th>
+            <tr #collapse="ngbCollapse" [(ngbCollapse)]="personnelCollapsed">
+                <td class="ps-4">Notfallsanitäter</td>
                 <td>{{ (personnel.notSan$ | async)?.length }}</td>
             </tr>
-            <tr>
-                <th class="ps-4" scope="row">Rettungssanitäter</th>
+            <tr #collapse="ngbCollapse" [(ngbCollapse)]="personnelCollapsed">
+                <td class="ps-4">Rettungssanitäter</td>
                 <td>{{ (personnel.rettSan$ | async)?.length }}</td>
             </tr>
-            <tr>
-                <th class="ps-4" scope="row">Sanitäter</th>
+            <tr #collapse="ngbCollapse" [(ngbCollapse)]="personnelCollapsed">
+                <td class="ps-4">Sanitäter</td>
                 <td>{{ (personnel.san$ | async)?.length }}</td>
             </tr>
-            <tr>
-                <th class="ps-4" scope="row">Gruppenführer</th>
+            <tr #collapse="ngbCollapse" [(ngbCollapse)]="personnelCollapsed">
+                <td class="ps-4">Gruppenführer</td>
                 <td>{{ (personnel.gf$ | async)?.length }}</td>
             </tr>
         </tbody>

@@ -64,6 +64,10 @@ export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
 
     material$?: Observable<Material[]>;
 
+    public patientsCollapsed = true;
+    public vehiclesCollapsed = true;
+    public personnelCollapsed = true;
+
     constructor(
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>
