@@ -2,7 +2,9 @@ import type { PipeTransform } from '@angular/core';
 import { Pipe } from '@angular/core';
 import type { ExerciseSimulationBehaviorState } from 'digital-fuesim-manv-shared';
 
-const behaviorToGermanNameDictionary = {
+const behaviorToGermanNameDictionary: {
+    [Key in ExerciseSimulationBehaviorState['type']]: string;
+} = {
     assignLeaderBehavior: 'Führung zuweisen',
     treatPatientsBehavior: 'Patienten behandeln',
     unloadArrivingVehiclesBehavior: 'Fahrzeuge entladen',
