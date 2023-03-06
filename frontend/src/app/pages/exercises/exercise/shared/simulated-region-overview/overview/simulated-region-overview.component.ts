@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { SimulatedRegion } from 'digital-fuesim-manv-shared';
 
 type NavIds = 'behaviors' | 'general' | 'transfer';
@@ -11,6 +11,7 @@ let activeNavId: NavIds = 'general';
     selector: 'app-simulated-region-overview-general',
     templateUrl: './simulated-region-overview.component.html',
     styleUrls: ['./simulated-region-overview.component.scss'],
+    encapsulation: ViewEncapsulation.None,
 })
 export class SimulatedRegionOverviewGeneralComponent {
     @Input() simulatedRegion!: SimulatedRegion;
