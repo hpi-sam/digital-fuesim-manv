@@ -1,13 +1,16 @@
-<div class="container">
-    <div class="row align-items-start">
-        <div class="col-sm" style="max-width: 30%">
+<div class="container d-flex flex-column h-100" style="min-height: 0">
+    <div
+        class="row align-items-start flex-shrink-1 flex-grow-1"
+        style="min-height: 0"
+    >
+        <div class="col-sm overflow-auto mh-100" style="max-width: 30%">
             <p
                 *ngIf="simulatedRegion.behaviors.length === 0"
                 class="text-muted font-bold"
             >
                 Es sind noch keine Verhaltensweisen vorhanden.
             </p>
-            <div class="mb-3 overflow-auto">
+            <div class="mb-3">
                 <div class="list-group">
                     <button
                         *ngFor="let behavior of simulatedRegion.behaviors"
@@ -21,7 +24,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm" style="max-width: 70%">
+        <div class="col-sm overflow-auto mh-100" style="max-width: 70%">
             <div [ngSwitch]="selectedBehavior?.type">
                 <app-simulated-region-overview-behavior-assign-leader
                     *ngSwitchCase="'assignLeaderBehavior'"
@@ -38,14 +41,14 @@
             </div>
         </div>
     </div>
-    <div class="row align-items-end justify-content-between">
-        <div class="col-sm">
+    <div class="row align-items-end justify-content-between flex-shrink-1 mt-3">
+        <div class="col-sm mh-100">
             <div
                 *ngIf="behaviorsToBeAdded.length !== 0"
                 ngbDropdown
                 placement="bottom-start"
                 autoClose="outside"
-                class="d-inline-block"
+                class="d-inline-block overflow-visible"
             >
                 <button
                     ngbDropdownToggle
