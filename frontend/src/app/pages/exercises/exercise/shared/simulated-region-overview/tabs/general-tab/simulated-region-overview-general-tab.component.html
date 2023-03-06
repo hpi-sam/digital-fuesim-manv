@@ -1,13 +1,117 @@
-<div class="form-group pb-3">
-    <label class="form-label">Name</label>
-    <input
-        #nameInput="ngModel"
-        [ngModel]="simulatedRegion.name"
-        (appSaveOnTyping)="renameSimulatedRegion($event)"
-        required
-        type="text"
-        class="form-control"
-        data-cy="simulatedRegionPopupNameInput"
-    />
-    <app-display-validation [ngModelInput]="nameInput" />
+<div class="h-100 mh-100 overflow-auto">
+    <div class="form-group pb-3">
+        <label class="form-label">Name</label>
+        <input
+            #nameInput="ngModel"
+            [ngModel]="simulatedRegion.name"
+            (appSaveOnTyping)="renameSimulatedRegion($event)"
+            required
+            type="text"
+            class="form-control"
+            data-cy="simulatedRegionPopupNameInput"
+        />
+        <app-display-validation [ngModelInput]="nameInput" />
+    </div>
+
+    <h6>Aktuelle Daten</h6>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th scope="rowgroup" class="w-75">Patienten</th>
+                <th class="w-25">{{ (patients.all$ | async)?.length }}</th>
+            </tr>
+            <tr>
+                <th class="ps-4" scope="row">
+                    <span
+                        class="badge rounded-pill"
+                        style="background-color: red"
+                        >SK I</span
+                    >
+                </th>
+                <td>{{ (patients.red$ | async)?.length }}</td>
+            </tr>
+            <tr>
+                <th class="ps-4" scope="row">
+                    <span
+                        class="badge rounded-pill text-dark"
+                        style="background-color: yellow"
+                        >SK II</span
+                    >
+                </th>
+                <td>{{ (patients.yellow$ | async)?.length }}</td>
+            </tr>
+            <tr>
+                <th class="ps-4" scope="row">
+                    <span
+                        class="badge rounded-pill"
+                        style="background-color: green"
+                        >SK III</span
+                    >
+                </th>
+                <td>
+                    {{ (patients.green$ | async)?.length }}
+                </td>
+            </tr>
+            <tr>
+                <th class="ps-4" scope="row">
+                    <span
+                        class="badge rounded-pill"
+                        style="background-color: black"
+                        >ex</span
+                    >
+                </th>
+                <td>{{ (patients.black$ | async)?.length }}</td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <th scope="rowgroup" class="w-75">Fahrzeuge</th>
+                <th class="w-25">
+                    {{ ((vehicles$ | async) ?? {})['all']?.length }}
+                </th>
+            </tr>
+            <tr *ngFor="let template of vehicleTemplates$ | async">
+                <th class="ps-4" scope="row">{{ template.vehicleType }}</th>
+                <td>
+                    {{
+                        ((vehicles$ | async) ?? {})[template.vehicleType]
+                            ?.length
+                    }}
+                </td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <th scope="rowgroup" class="w-75">Personal</th>
+                <th class="w-25">{{ (personnel.all$ | async)?.length }}</th>
+            </tr>
+            <tr>
+                <th class="ps-4" scope="row">Notarzt</th>
+                <td>{{ (personnel.notarzt$ | async)?.length }}</td>
+            </tr>
+            <tr>
+                <th class="ps-4" scope="row">Notfallsanitäter</th>
+                <td>{{ (personnel.notSan$ | async)?.length }}</td>
+            </tr>
+            <tr>
+                <th class="ps-4" scope="row">Rettungssanitäter</th>
+                <td>{{ (personnel.rettSan$ | async)?.length }}</td>
+            </tr>
+            <tr>
+                <th class="ps-4" scope="row">Sanitäter</th>
+                <td>{{ (personnel.san$ | async)?.length }}</td>
+            </tr>
+            <tr>
+                <th class="ps-4" scope="row">Gruppenführer</th>
+                <td>{{ (personnel.gf$ | async)?.length }}</td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <th scope="rowgroup" class="w-75">Material</th>
+                <th class="w-25">{{ (material$ | async)?.length }}</th>
+            </tr>
+        </tbody>
+    </table>
 </div>
