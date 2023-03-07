@@ -7,6 +7,7 @@ import {
     NgbDropdownModule,
     NgbNavModule,
     NgbProgressbarModule,
+    NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
 import { SimulatedRegionOverviewGeneralComponent } from './overview/simulated-region-overview.component';
 import { SimulatedRegionOverviewBehaviorTabComponent } from './tabs/behavior-tab/simulated-region-overview-behavior-tab.component';
@@ -42,6 +43,7 @@ import { WithDollarPipe } from './tabs/general-tab/utils/with-dollar';
         NgbCollapseModule,
         NgbDropdownModule,
         NgbProgressbarModule,
+        NgbTooltipModule,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
 })

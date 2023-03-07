@@ -2,15 +2,17 @@ import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { Patient, UUIDSet } from 'digital-fuesim-manv-shared';
-import { isInSpecificSimulatedRegion } from 'digital-fuesim-manv-shared';
-// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 import {
     TreatPatientsBehaviorState,
     SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
+import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectPatients } from 'src/app/state/application/selectors/exercise.selectors';
+import {
+    createSelectElementsInSimulatedRegion,
+    selectPatients,
+} from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
     selector: 'app-simulated-region-overview-behavior-treat-patients',
@@ -25,7 +27,8 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
 {
     @Input() simulatedRegion!: SimulatedRegion;
     @Input() treatPatientsBehaviorState!: TreatPatientsBehaviorState;
-    public patients!: Patient[];
+    public patients!: Observable<Patient[]>;
+    public settingsCollapsed = true;
 
     constructor(
         private readonly exerciseService: ExerciseService,
@@ -33,12 +36,12 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
     ) {}
 
     ngOnInit(): void {
-        // eslint-disable-next-line rxjs-angular/prefer-takeuntil
-        this.store.select(selectPatients).subscribe((patients) => {
-            this.patients = Object.values(patients).filter((patient) =>
-                isInSpecificSimulatedRegion(patient, this.simulatedRegion.id)
-            );
-        });
+        this.patients = this.store.select(
+            createSelectElementsInSimulatedRegion(
+                selectPatients,
+                this.simulatedRegion.id
+            )
+        );
     }
 
     public help(s: UUIDSet) {

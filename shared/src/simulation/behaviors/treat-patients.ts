@@ -88,11 +88,11 @@ export class TreatPatientsBehaviorState implements SimulationBehaviorState {
     @ValidateNested()
     public readonly intervals: TreatPatientsIntervals =
         TreatPatientsIntervals.create(
-            1000 * 10, // 10 seconds
-            1000 * 60, // 1 minute, as this is how long it takes to triage one patient
-            1000 * 60 * 5, // 5 minutes
-            1000 * 60 * 10, // 10 minutes
-            1000 * 20 // 20 seconds
+            10000, //1000 * 10, // 10 seconds
+            10000, //1000 * 60, // 1 minute, as this is how long it takes to triage one patient
+            10000, //1000 * 60 * 5, // 5 minutes
+            10000, //1000 * 60 * 10, // 10 minutes
+            1000 //1000 * 20 // 20 seconds
         );
 
     @IsOptional()

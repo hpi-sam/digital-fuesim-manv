@@ -96,7 +96,7 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 !leaderId ||
                 (leaderIndex = personnel.findIndex(
                     (pers) => pers.id === leaderId
-                ))
+                )) === -1
             ) {
                 terminate();
                 return;

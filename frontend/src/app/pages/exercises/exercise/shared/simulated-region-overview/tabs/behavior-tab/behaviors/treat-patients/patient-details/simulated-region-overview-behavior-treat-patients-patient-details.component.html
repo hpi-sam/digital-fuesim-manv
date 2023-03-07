@@ -1,28 +1,39 @@
-<div class="col-sm">{{ patient.personalInformation.name }}</div>
-<div class="col-sm">
+<div class="col-sm d-inline-flex justify-content-center">
+    {{ patient.personalInformation.name }}
+</div>
+<div class="col-sm d-inline-flex justify-content-center">
     <app-patient-status-badge
         [status]="patient.realStatus"
     ></app-patient-status-badge>
 </div>
-<div class="col-sm">
+<div class="col-sm d-inline-flex justify-content-center">
     <app-patient-status-badge
         [status]="(visibleStatus$ | async)!"
     ></app-patient-status-badge>
 </div>
-<div class="col-sm">
-    <div *ngFor="let person of caterings$ | async">
-        <div class="container d-grid">
+<div class="col-sm d-inline-flex" style="flex-wrap: wrap">
+    <div *ngFor="let person of caterings$ | async" class="d-flex flex-grow-1">
+        <div class="container d-grid m-1 flex-grow-1">
             <ngb-progressbar
                 type="info"
                 [value]="(1 / person.len) * 100"
                 style="grid-column: 1; grid-row: 1"
-                class="h-100 w-100"
+                class="h-100 w-100 flex-grow-1"
             >
             </ngb-progressbar>
             <span
+                [ngbTooltip]="
+                    'Dieser ' +
+                    (person.personnel.personnelType | personnelName) +
+                    ' schenkt diesem Patienten ' +
+                    (1 / person.len) * 100 +
+                    '% seiner Aufmerksamkeit.'
+                "
+                [openDelay]="300"
+                [closeDelay]="100"
                 style="grid-column: 1; grid-row: 1"
-                class="p-1 m-1 h-100 w-100"
-                >{{ person.personnel.personnelType }}</span
+                class="h-100 w-100 m-1"
+                >{{ person.personnel.personnelType | personnelName }}</span
             >
         </div>
     </div>
