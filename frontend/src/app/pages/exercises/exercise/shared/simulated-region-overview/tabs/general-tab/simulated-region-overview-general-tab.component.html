@@ -33,47 +33,19 @@
                 </th>
                 <th class="w-25">{{ (patients.all$ | async)?.length }}</th>
             </tr>
-            <tr #collapse="ngbCollapse" [(ngbCollapse)]="patientsCollapsed">
+            <tr
+                *ngFor="let patientCategory of patientCategories"
+                #collapse="ngbCollapse"
+                [(ngbCollapse)]="patientsCollapsed"
+            >
                 <td class="ps-4">
-                    <span
-                        class="badge rounded-pill"
-                        style="background-color: red"
-                        >SK I</span
-                    >
-                </td>
-                <td>{{ (patients.red$ | async)?.length }}</td>
-            </tr>
-            <tr #collapse="ngbCollapse" [(ngbCollapse)]="patientsCollapsed">
-                <td class="ps-4">
-                    <span
-                        class="badge rounded-pill text-dark"
-                        style="background-color: yellow"
-                        >SK II</span
-                    >
-                </td>
-                <td>{{ (patients.yellow$ | async)?.length }}</td>
-            </tr>
-            <tr #collapse="ngbCollapse" [(ngbCollapse)]="patientsCollapsed">
-                <td class="ps-4">
-                    <span
-                        class="badge rounded-pill"
-                        style="background-color: green"
-                        >SK III</span
-                    >
+                    <app-patient-status-badge [status]="patientCategory" />
                 </td>
                 <td>
-                    {{ (patients.green$ | async)?.length }}
+                    {{
+                        (patients[patientCategory | withDollar] | async)?.length
+                    }}
                 </td>
-            </tr>
-            <tr #collapse="ngbCollapse" [(ngbCollapse)]="patientsCollapsed">
-                <td class="ps-4">
-                    <span
-                        class="badge rounded-pill"
-                        style="background-color: black"
-                        >ex</span
-                    >
-                </td>
-                <td>{{ (patients.black$ | async)?.length }}</td>
             </tr>
         </tbody>
         <tbody>

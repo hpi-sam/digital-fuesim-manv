@@ -24,7 +24,7 @@ import {
 } from 'src/app/state/application/selectors/exercise.selectors';
 
 const patientCategories = ['red', 'yellow', 'green', 'black'] as const;
-type PatientCategories = (typeof patientCategories)[number];
+export type PatientCategory = (typeof patientCategories)[number];
 
 const personnelCategories = [
     'gf',
@@ -33,7 +33,7 @@ const personnelCategories = [
     'rettSan',
     'san',
 ] as const;
-type PersonnelCategories = (typeof personnelCategories)[number];
+type PersonnelCategory = (typeof personnelCategories)[number];
 
 @Component({
     selector: 'app-simulated-region-overview-general-tab',
@@ -47,14 +47,16 @@ export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
         selectVehicleTemplates
     );
 
+    public readonly patientCategories = patientCategories;
+
     patients: {
-        [Key in `${PatientCategories | 'all'}$`]?: Observable<Patient[]>;
+        [Key in `${PatientCategory | 'all'}$`]?: Observable<Patient[]>;
     } = {};
 
     vehicles$?: Observable<{ [Key in string]?: Vehicle[] }>;
 
     personnel: {
-        [Key in `${PersonnelCategories | 'all'}$`]?: Observable<Personnel[]>;
+        [Key in `${PersonnelCategory | 'all'}$`]?: Observable<Personnel[]>;
     } = {};
 
     material$?: Observable<Material[]>;
