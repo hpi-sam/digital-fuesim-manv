@@ -1,7 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { SimulatedRegion } from '../../models';
+import { SimulatedRegion, TransferPoint } from '../../models';
 import {
+    isInSpecificSimulatedRegion,
     MapCoordinates,
     MapPosition,
     SimulatedRegionPosition,
@@ -24,8 +25,9 @@ import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
+import { TransferPointActionReducers } from './transfer-point';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
-import { getElement } from './utils/get-element';
+import { getElement, getElementByPredicate } from './utils/get-element';
 
 export class AddSimulatedRegionAction implements Action {
     @IsValue('[SimulatedRegion] Add simulated region' as const)
@@ -33,6 +35,9 @@ export class AddSimulatedRegionAction implements Action {
     @ValidateNested()
     @Type(() => SimulatedRegion)
     public simulatedRegion!: SimulatedRegion;
+    @ValidateNested()
+    @Type(() => TransferPoint)
+    public transferPoint!: TransferPoint;
 }
 
 export class RemoveSimulatedRegionAction implements Action {
@@ -125,7 +130,11 @@ export class RemoveBehaviorFromSimulatedRegionAction implements Action {
 export namespace SimulatedRegionActionReducers {
     export const addSimulatedRegion: ActionReducer<AddSimulatedRegionAction> = {
         action: AddSimulatedRegionAction,
-        reducer: (draftState, { simulatedRegion }) => {
+        reducer: (draftState, { simulatedRegion, transferPoint }) => {
+            TransferPointActionReducers.addTransferPoint.reducer(draftState, {
+                type: '[TransferPoint] Add TransferPoint',
+                transferPoint,
+            });
             draftState.simulatedRegions[simulatedRegion.id] =
                 cloneDeepMutable(simulatedRegion);
             return draftState;
@@ -137,7 +146,24 @@ export namespace SimulatedRegionActionReducers {
         {
             action: RemoveSimulatedRegionAction,
             reducer: (draftState, { simulatedRegionId }) => {
-                getElement(draftState, 'simulatedRegion', simulatedRegionId);
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const transferPoint = getElementByPredicate(
+                    draftState,
+                    'transferPoint',
+                    (element) =>
+                        isInSpecificSimulatedRegion(element, simulatedRegion.id)
+                );
+                TransferPointActionReducers.removeTransferPoint.reducer(
+                    draftState,
+                    {
+                        type: '[TransferPoint] Remove TransferPoint',
+                        transferPointId: transferPoint.id,
+                    }
+                );
                 delete draftState.simulatedRegions[simulatedRegionId];
                 return draftState;
             },
@@ -190,6 +216,20 @@ export namespace SimulatedRegionActionReducers {
                     draftState,
                     'simulatedRegion',
                     simulatedRegionId
+                );
+                const transferPoint = getElementByPredicate(
+                    draftState,
+                    'transferPoint',
+                    (element) =>
+                        isInSpecificSimulatedRegion(element, simulatedRegion.id)
+                );
+                TransferPointActionReducers.renameTransferPoint.reducer(
+                    draftState,
+                    {
+                        type: '[TransferPoint] Rename TransferPoint',
+                        transferPointId: transferPoint.id,
+                        externalName: `[Simuliert] ${newName}`,
+                    }
                 );
                 simulatedRegion.name = newName;
                 return draftState;
