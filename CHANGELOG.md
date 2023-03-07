@@ -15,6 +15,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   The _Behaviors_ tab allows adding and removing behaviors from simulated regions, inspect their current state and customize their settings
         -   For the assign leader behavior, the type of the currently assigned leader is shown
 -   Simulated Regions now act as transfer points, meaning that they can be start and destination of a transfer
+    -   Connection lines will be shown for transfer connections from/to simulated regions, too
 
 ### Fixed
 
