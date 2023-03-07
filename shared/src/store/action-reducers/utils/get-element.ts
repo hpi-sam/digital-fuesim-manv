@@ -39,7 +39,7 @@ export function getElementByPredicate<
 ): State[ElementTypePluralMap[ElementType]][UUID] {
     const element = Object.values(
         state[elementTypePluralMap[elementType]]
-    ).find(predicate)
+    ).find(predicate);
     if (!element) {
         throw new ReducerError(
             `Element of type ${elementType} matching the given predicate does not exist`
