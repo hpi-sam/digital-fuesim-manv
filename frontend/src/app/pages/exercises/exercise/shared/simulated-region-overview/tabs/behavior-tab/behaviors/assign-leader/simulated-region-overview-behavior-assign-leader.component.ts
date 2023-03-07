@@ -2,10 +2,7 @@ import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { Personnel } from 'digital-fuesim-manv-shared';
-import {
-    AssignLeaderBehaviorState,
-    SimulatedRegion,
-} from 'digital-fuesim-manv-shared';
+import { AssignLeaderBehaviorState } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
 import { createSelectPersonnel } from 'src/app/state/application/selectors/exercise.selectors';
@@ -21,9 +18,6 @@ import { createSelectPersonnel } from 'src/app/state/application/selectors/exerc
 export class SimulatedRegionOverviewBehaviorAssignLeaderComponent
     implements OnChanges
 {
-    @Input()
-    simulatedRegion!: SimulatedRegion;
-
     @Input()
     assignLeaderBehaviorState!: AssignLeaderBehaviorState;
 
