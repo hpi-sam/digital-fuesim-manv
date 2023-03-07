@@ -11,3 +11,8 @@ docker/docker-entrypoint.sh eol=lf
 *.mov filter=lfs diff=lfs merge=lfs -text
 *.pdf filter=lfs diff=lfs merge=lfs -text
 
+# Exclude necessary files for cypress
+frontend/src/assets/gwSan-vehicle.png filter= diff= merge= -text
+frontend/src/assets/ktw-vehicle.png filter= diff= merge= -text
+frontend/src/assets/nef-vehicle.png filter= diff= merge= -text
+frontend/src/assets/rtw-vehicle.png filter= diff= merge= -text
