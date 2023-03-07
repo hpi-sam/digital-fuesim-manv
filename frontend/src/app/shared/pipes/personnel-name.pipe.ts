@@ -7,7 +7,9 @@ import { personnelTypeNames } from 'digital-fuesim-manv-shared';
     name: 'personnelName',
 })
 export class PersonnelNamePipe implements PipeTransform {
-    transform(personnelType: PersonnelType): string {
+    transform(personnelType: PersonnelType | undefined): string {
+        if (!personnelType) return '';
+
         return personnelTypeNames[personnelType];
     }
 }

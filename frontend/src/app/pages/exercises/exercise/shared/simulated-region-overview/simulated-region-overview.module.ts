@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
 import {
+    NgbCollapseModule,
     NgbDropdownModule,
     NgbNavModule,
     NgbProgressbarModule,
@@ -17,6 +18,7 @@ import { BehaviorToGermanNamePipe } from './tabs/behavior-tab/utils/behavior-to-
 import { SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent } from './tabs/behavior-tab/behaviors/unload-arriving-vehicles/simulated-region-overview-behavior-unload-arriving-vehicles.component';
 import { TreatmentProgressToGermanNamePipe } from './tabs/behavior-tab/utils/treatment-progress-to-german-name.pipe';
 import { SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent } from './tabs/behavior-tab/behaviors/treat-patients/patient-details/simulated-region-overview-behavior-treat-patients-patient-details.component';
+import { WithDollarPipe } from './tabs/general-tab/utils/with-dollar';
 
 @NgModule({
     declarations: [
@@ -30,12 +32,14 @@ import { SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent } f
         BehaviorToGermanNamePipe,
         TreatmentProgressToGermanNamePipe,
         SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent,
+        WithDollarPipe,
     ],
     imports: [
         CommonModule,
         FormsModule,
         SharedModule,
         NgbNavModule,
+        NgbCollapseModule,
         NgbDropdownModule,
         NgbProgressbarModule,
     ],

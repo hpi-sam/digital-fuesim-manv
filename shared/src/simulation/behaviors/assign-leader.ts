@@ -35,10 +35,6 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
     {
         behaviorState: AssignLeaderBehaviorState,
         handleEvent(draftState, simulatedRegion, behaviorState, event) {
-            if (behaviorState.leaderId) {
-                return;
-            }
-
             if (event.type === 'personnelAvailableEvent') {
                 // If a gf (group leader of GW San) enters the region, we want to assign them as leader, since a gf can't treat patients
                 // A gf has the highest priority, so they would be chosen by the logic for the tick event anyways
@@ -66,7 +62,7 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
                 if (newPersonnel.personnelType === 'gf') {
                     behaviorState.leaderId = event.personnelId;
                 }
-            } else if (event.type === 'tickEvent') {
+            } else if (event.type === 'tickEvent' && !behaviorState.leaderId) {
                 const personnel = Object.values(draftState.personnel).filter(
                     (pers) =>
                         isInSpecificSimulatedRegion(pers, simulatedRegion.id) &&

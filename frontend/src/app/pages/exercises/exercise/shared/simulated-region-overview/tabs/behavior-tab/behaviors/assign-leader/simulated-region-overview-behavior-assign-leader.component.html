@@ -1,1 +1,9 @@
-<p>simulated-region-overview-behavior-assign-leader works!</p>
+<h6>Aktuell zugewiesene Führungskraft</h6>
+
+<p *ngIf="currentLeader; else noLeader">
+    {{ (currentLeader | async)?.personnelType | personnelName }}
+</p>
+
+<ng-template #noLeader>
+    <p>Keine Führungskraft zugewiesen.</p>
+</ng-template>
