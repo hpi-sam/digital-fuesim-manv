@@ -27,6 +27,8 @@
             <div [ngSwitch]="selectedBehavior?.type">
                 <app-simulated-region-overview-behavior-assign-leader
                     *ngSwitchCase="'assignLeaderBehavior'"
+                    [simulatedRegion]="simulatedRegion"
+                    [assignLeaderBehaviorState]="$any(selectedBehavior)"
                 ></app-simulated-region-overview-behavior-assign-leader
                 ><app-simulated-region-overview-behavior-treat-patients
                     *ngSwitchCase="'treatPatientsBehavior'"
