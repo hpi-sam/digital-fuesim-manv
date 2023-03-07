@@ -110,9 +110,9 @@ export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
                             categorizedVehicles[vehicle.vehicleType] = [];
                         }
 
-                        categorizedVehicles[vehicle.vehicleType]?.push(vehicle);
+                        categorizedVehicles[vehicle.vehicleType]!.push(vehicle);
 
-                        categorizedVehicles['all']?.push(vehicle);
+                        categorizedVehicles['all']!.push(vehicle);
                     });
 
                     return categorizedVehicles;
