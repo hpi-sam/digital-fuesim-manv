@@ -1,6 +1,5 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import type { MemoizedSelector } from '@ngrx/store';
 import { createSelector, Store } from '@ngrx/store';
 import type {
     Material,
@@ -8,24 +7,20 @@ import type {
     PatientStatus,
     Personnel,
     PersonnelType,
-    UUID,
     Vehicle,
-    WithPosition,
 } from 'digital-fuesim-manv-shared';
-import {
-    isInSpecificSimulatedRegion,
-    SimulatedRegion,
-} from 'digital-fuesim-manv-shared';
+import { SimulatedRegion } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    createSelectSimulatedRegion,
+    createSelectElementsInSimulatedRegion,
     selectMaterials,
     selectPatients,
     selectPersonnel,
     selectVehicleTemplates,
     selectVehicles,
+    createSelectByPredicate,
 } from 'src/app/state/application/selectors/exercise.selectors';
 
 const patientCategories = ['red', 'yellow', 'green', 'black'] as const;
@@ -74,15 +69,20 @@ export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        const containedPatientsSelector =
-            this.createSelectContainedElements(selectPatients);
+        const containedPatientsSelector = createSelectElementsInSimulatedRegion(
+            selectPatients,
+            this.simulatedRegion.id
+        );
         const containedPersonnelSelector =
-            this.createSelectContainedElements(selectPersonnel);
+            createSelectElementsInSimulatedRegion(
+                selectPersonnel,
+                this.simulatedRegion.id
+            );
 
         this.patients.all$ = this.store.select(containedPatientsSelector);
         patientCategories.forEach((category) => {
             this.patients[`${category}$`] = this.store.select(
-                this.createSelectByPredicate(
+                createSelectByPredicate(
                     containedPatientsSelector,
                     this.createPatientStatusPredicate(category)
                 )
@@ -92,7 +92,10 @@ export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
         this.vehicles$ = this.store.select(
             createSelector(
                 selectVehicleTemplates,
-                this.createSelectContainedElements(selectVehicles),
+                createSelectElementsInSimulatedRegion(
+                    selectVehicles,
+                    this.simulatedRegion.id
+                ),
                 (vehicleTemplates, vehicles) => {
                     const categorizedVehicles: { [Key in string]?: Vehicle[] } =
                         {};
@@ -123,7 +126,7 @@ export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
         this.personnel.all$ = this.store.select(containedPersonnelSelector);
         personnelCategories.forEach((category) => {
             this.personnel[`${category}$`] = this.store.select(
-                this.createSelectByPredicate(
+                createSelectByPredicate(
                     containedPersonnelSelector,
                     this.createPersonnelTypePredicate(category)
                 )
@@ -131,29 +134,10 @@ export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
         });
 
         this.material$ = this.store.select(
-            this.createSelectContainedElements(selectMaterials)
-        );
-    }
-
-    createSelectContainedElements<E extends WithPosition>(
-        elementsSelector: (state: AppState) => { [key: UUID]: E }
-    ) {
-        return createSelector(
-            createSelectSimulatedRegion(this.simulatedRegion.id),
-            elementsSelector,
-            (simulatedRegion, elements) =>
-                Object.values(elements).filter((e) =>
-                    isInSpecificSimulatedRegion(e, simulatedRegion.id)
-                )
-        );
-    }
-
-    createSelectByPredicate<E extends WithPosition>(
-        selector: MemoizedSelector<AppState, E[]>,
-        predicate: (e: E) => boolean
-    ) {
-        return createSelector(selector, (elements) =>
-            elements.filter((element) => predicate(element))
+            createSelectElementsInSimulatedRegion(
+                selectMaterials,
+                this.simulatedRegion.id
+            )
         );
     }
 
