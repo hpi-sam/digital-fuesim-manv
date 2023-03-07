@@ -8,9 +8,9 @@ import type {
     WithPosition,
 } from 'digital-fuesim-manv-shared';
 import {
-    currentCoordinatesOf,
     isInSpecificSimulatedRegion,
     isInTransfer,
+    nestedCoordinatesOf,
 } from 'digital-fuesim-manv-shared';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
 import type { AppState } from '../../app.state';
@@ -118,16 +118,21 @@ export const selectTileMapProperties = createSelector(
 );
 
 export const selectTransferLines = createSelector(
+    selectExerciseState,
     selectTransferPoints,
-    (transferPoints) =>
+    (state, transferPoints) =>
         Object.values(transferPoints)
             .flatMap((transferPoint) =>
                 Object.entries(transferPoint.reachableTransferPoints).map(
                     ([connectedId, { duration }]) => ({
                         id: `${transferPoint.id}:${connectedId}` as const,
-                        startPosition: currentCoordinatesOf(transferPoint),
-                        endPosition: currentCoordinatesOf(
-                            transferPoints[connectedId]!
+                        startPosition: nestedCoordinatesOf(
+                            transferPoint,
+                            state
+                        ),
+                        endPosition: nestedCoordinatesOf(
+                            transferPoints[connectedId]!,
+                            state
                         ),
                         duration,
                     })
