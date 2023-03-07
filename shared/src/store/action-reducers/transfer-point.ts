@@ -7,14 +7,21 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { TransferPoint } from '../../models';
+import type { WithPosition } from '../../models/utils';
 import {
     currentCoordinatesOf,
     isInTransfer,
     MapCoordinates,
     MapPosition,
     currentTransferOf,
+    isInSimulatedRegion,
+    currentSimulatedRegionIdOf,
+    isOnMap,
+    isInVehicle,
+    currentVehicleIdOf,
 } from '../../models/utils';
 import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
+import type { ExerciseState } from '../../state';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -191,8 +198,8 @@ export namespace TransferPointActionReducers {
                 const _duration =
                     duration ??
                     estimateDuration(
-                        currentCoordinatesOf(transferPoint1),
-                        currentCoordinatesOf(transferPoint2)
+                        nestedCoordinatesOf(transferPoint1, draftState),
+                        nestedCoordinatesOf(transferPoint2, draftState)
                     );
                 transferPoint1.reachableTransferPoints[transferPointId2] = {
                     duration: _duration,
@@ -357,4 +364,32 @@ function estimateDuration(
             1000;
     const multipleOf = 1000 * 60 * 0.1;
     return Math.round(estimateTime / multipleOf) * multipleOf;
+}
+
+function nestedCoordinatesOf(
+    withPosition: WithPosition,
+    draftState: ExerciseState
+): MapCoordinates {
+    if (isOnMap(withPosition)) {
+        return currentCoordinatesOf(withPosition);
+    }
+    if (isInVehicle(withPosition)) {
+        const vehicle = getElement(
+            draftState,
+            'vehicle',
+            currentVehicleIdOf(withPosition)
+        );
+        return nestedCoordinatesOf(vehicle, draftState);
+    }
+    if (isInSimulatedRegion(withPosition)) {
+        const simulatedRegion = getElement(
+            draftState,
+            'simulatedRegion',
+            currentSimulatedRegionIdOf(withPosition)
+        );
+        return currentCoordinatesOf(simulatedRegion);
+    }
+    throw new ReducerError(
+        `Expected element to have (nested) map position, but position was of type ${withPosition.position.type}`
+    );
 }
