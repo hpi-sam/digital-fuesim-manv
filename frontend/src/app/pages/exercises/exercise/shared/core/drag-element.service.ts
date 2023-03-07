@@ -301,7 +301,7 @@ export class DragElementService {
                         {},
                         {},
                         '',
-                        `[Simuliert] ${name}`
+                        '[Simuliert] Einsatzabschnitt ???'
                     );
                     simulatedRegion.transferPointId = transferPoint.id;
                     this.exerciseService.proposeAction(
