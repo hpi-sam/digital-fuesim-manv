@@ -42,7 +42,9 @@ export class SimulatedRegionOverviewBehaviorTabComponent implements OnChanges {
             this.selectedBehavior !== undefined &&
             !this.simulatedRegion.behaviors.includes(this.selectedBehavior)
         ) {
-            this.selectedBehavior = undefined;
+            this.selectedBehavior = this.simulatedRegion.behaviors.find(
+                (behavior) => behavior.id === this.selectedBehavior?.id
+            );
         }
     }
 
