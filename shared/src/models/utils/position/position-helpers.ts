@@ -1,3 +1,4 @@
+import { ExerciseState } from '../../../state';
 import type { UUID } from '../../../utils';
 import type { Transfer } from '../transfer';
 import { MapCoordinates } from './map-coordinates';
@@ -179,4 +180,36 @@ export function lowerRightCornerOf(element: WithExtent): MapCoordinates {
     }
 
     return MapCoordinates.create(corner.x, corner.y);
+}
+
+export function nestedCoordinatesOf(
+    withPosition: WithPosition,
+    state: ExerciseState
+): MapCoordinates {
+    if (isOnMap(withPosition)) {
+        return currentCoordinatesOf(withPosition);
+    }
+    if (isInVehicle(withPosition)) {
+        const vehicleId = currentVehicleIdOf(withPosition);
+        const vehicle = state.vehicles[vehicleId];
+        if (!vehicle) {
+            throw new Error(
+                `The vehicle with the id ${vehicleId} could not be found`
+            );
+        }
+        return nestedCoordinatesOf(vehicle, state);
+    }
+    if (isInSimulatedRegion(withPosition)) {
+        const simulatedRegionId = currentSimulatedRegionIdOf(withPosition);
+        const simulatedRegion = state.simulatedRegions[simulatedRegionId];
+        if (!simulatedRegion) {
+            throw new Error(
+                `The simulated region with the id ${simulatedRegionId} could not be found`
+            );
+        }
+        return currentCoordinatesOf(simulatedRegion);
+    }
+    throw new Error(
+        `Expected element to have (nested) map position, but position was of type ${withPosition.position.type}`
+    );
 }
