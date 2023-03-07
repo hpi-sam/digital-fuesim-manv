@@ -293,9 +293,9 @@ export class OlMapManager {
 
         this.featureManagers = [
             deleteFeatureManager,
+            transferLinesFeatureManager,
             simulatedRegionFeatureManager,
             mapImageFeatureManager,
-            transferLinesFeatureManager,
             transferPointFeatureManager,
             vehicleFeatureManager,
             cateringLinesFeatureManager,
