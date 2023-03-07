@@ -18,77 +18,81 @@ export async function migrateInDatabase(
             exerciseId
         );
     }
-    const initialState = JSON.parse(exercise.initialStateString);
-    const currentState = JSON.parse(exercise.currentStateString);
-    const actions = (
+    const loadedInitialState = JSON.parse(exercise.initialStateString);
+    const loadedCurrentState = JSON.parse(exercise.currentStateString);
+    const loadedActions = (
         await entityManager.find(ActionWrapperEntity, {
             where: { exercise: { id: exerciseId } },
             select: { actionString: true },
             order: { index: 'ASC' },
         })
     ).map((action) => JSON.parse(action.actionString));
-    const newVersion = applyMigrations(exercise.stateVersion, {
-        currentState,
+    const {
+        newVersion,
+        migratedProperties: {
+            currentState,
+            history: { initialState, actions },
+        },
+    } = applyMigrations(exercise.stateVersion, {
+        currentState: loadedCurrentState,
         history: {
-            initialState,
-            actions,
+            initialState: loadedInitialState,
+            actions: loadedActions,
         },
     });
     exercise.stateVersion = newVersion;
     // Save exercise wrapper
     const patch: Partial<ExerciseWrapperEntity> = {
         stateVersion: exercise.stateVersion,
+        initialStateString: JSON.stringify(initialState),
+        currentStateString: JSON.stringify(currentState),
     };
-    patch.initialStateString = JSON.stringify(initialState);
-    patch.currentStateString = JSON.stringify(currentState);
     await entityManager.update(
         ExerciseWrapperEntity,
         { id: exerciseId },
         patch
     );
     // Save actions
-    if (actions !== undefined) {
-        let patchedActionsIndex = 0;
-        const indicesToRemove: number[] = [];
-        const actionsToUpdate: {
-            previousIndex: number;
-            newIndex: number;
-            actionString: string;
-        }[] = [];
-        actions.forEach((action, i) => {
-            if (action === null) {
-                indicesToRemove.push(i);
-                return;
-            }
-            actionsToUpdate.push({
-                previousIndex: i,
-                newIndex: patchedActionsIndex++,
-                actionString: JSON.stringify(action),
-            });
+    let patchedActionsIndex = 0;
+    const indicesToRemove: number[] = [];
+    const actionsToUpdate: {
+        previousIndex: number;
+        newIndex: number;
+        actionString: string;
+    }[] = [];
+    actions.forEach((action, i) => {
+        if (action === null) {
+            indicesToRemove.push(i);
+            return;
+        }
+        actionsToUpdate.push({
+            previousIndex: i,
+            newIndex: patchedActionsIndex++,
+            actionString: JSON.stringify(action),
         });
-        if (indicesToRemove.length > 0) {
-            await entityManager
-                .createQueryBuilder()
-                .delete()
-                .from(ActionWrapperEntity)
-                // eslint-disable-next-line unicorn/string-content
-                .where('index IN (:...ids)', { ids: indicesToRemove })
-                .execute();
-        }
-        if (actionsToUpdate.length > 0) {
-            await Promise.all(
-                actionsToUpdate.map(
-                    async ({ previousIndex, newIndex, actionString }) =>
-                        entityManager.update(
-                            ActionWrapperEntity,
-                            {
-                                index: previousIndex,
-                                exercise: { id: exerciseId },
-                            },
-                            { actionString, index: newIndex }
-                        )
-                )
-            );
-        }
+    });
+    if (indicesToRemove.length > 0) {
+        await entityManager
+            .createQueryBuilder()
+            .delete()
+            .from(ActionWrapperEntity)
+            // eslint-disable-next-line unicorn/string-content
+            .where('index IN (:...ids)', { ids: indicesToRemove })
+            .execute();
+    }
+    if (actionsToUpdate.length > 0) {
+        await Promise.all(
+            actionsToUpdate.map(
+                async ({ previousIndex, newIndex, actionString }) =>
+                    entityManager.update(
+                        ActionWrapperEntity,
+                        {
+                            index: previousIndex,
+                            exercise: { id: exerciseId },
+                        },
+                        { actionString, index: newIndex }
+                    )
+            )
+        );
     }
 }
