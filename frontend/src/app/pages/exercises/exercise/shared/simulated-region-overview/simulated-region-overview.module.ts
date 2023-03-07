@@ -16,6 +16,7 @@ import { SimulatedRegionOverviewBehaviorAssignLeaderComponent } from './tabs/beh
 import { BehaviorToGermanNamePipe } from './tabs/behavior-tab/utils/behavior-to-german-name.pipe';
 import { SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent } from './tabs/behavior-tab/behaviors/unload-arriving-vehicles/simulated-region-overview-behavior-unload-arriving-vehicles.component';
 import { WithDollarPipe } from './tabs/general-tab/utils/with-dollar';
+import { SimulatedRegionsModalComponent } from './simulated-regions-modal/simulated-regions-modal.component';
 
 @NgModule({
     declarations: [
@@ -28,6 +29,7 @@ import { WithDollarPipe } from './tabs/general-tab/utils/with-dollar';
         SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent,
         BehaviorToGermanNamePipe,
         WithDollarPipe,
+        SimulatedRegionsModalComponent,
     ],
     imports: [
         CommonModule,

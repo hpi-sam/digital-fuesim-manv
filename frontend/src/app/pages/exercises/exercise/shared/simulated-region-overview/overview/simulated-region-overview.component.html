@@ -5,6 +5,7 @@
                 <a ngbNavLink data-cy="transferPointPopupNamesNav">Übersicht</a>
                 <ng-template ngbNavContent>
                     <app-simulated-region-overview-general-tab
+                        class="mh-100 d-block h-100"
                         [simulatedRegion]="simulatedRegion"
                     />
                 </ng-template>
@@ -14,7 +15,9 @@
                     >Transfer</a
                 >
                 <ng-template ngbNavContent
-                    ><app-simulated-region-overview-transfer-tab />
+                    ><app-simulated-region-overview-transfer-tab
+                        class="mh-100 d-block h-100"
+                    />
                 </ng-template>
             </ng-container>
             <ng-container ngbNavItem="behaviors">
