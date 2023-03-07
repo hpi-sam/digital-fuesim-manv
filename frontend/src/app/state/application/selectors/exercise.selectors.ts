@@ -1,11 +1,17 @@
+import type { MemoizedSelector } from '@ngrx/store';
 import { createSelector } from '@ngrx/store';
 import type {
     ExerciseState,
     Personnel,
     UUID,
     Vehicle,
+    WithPosition,
 } from 'digital-fuesim-manv-shared';
-import { isInTransfer, currentCoordinatesOf } from 'digital-fuesim-manv-shared';
+import {
+    isInSpecificSimulatedRegion,
+    isInTransfer,
+    nestedCoordinatesOf,
+} from 'digital-fuesim-manv-shared';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
 import type { AppState } from '../../app.state';
 
@@ -112,16 +118,21 @@ export const selectTileMapProperties = createSelector(
 );
 
 export const selectTransferLines = createSelector(
+    selectExerciseState,
     selectTransferPoints,
-    (transferPoints) =>
+    (state, transferPoints) =>
         Object.values(transferPoints)
             .flatMap((transferPoint) =>
                 Object.entries(transferPoint.reachableTransferPoints).map(
                     ([connectedId, { duration }]) => ({
                         id: `${transferPoint.id}:${connectedId}` as const,
-                        startPosition: currentCoordinatesOf(transferPoint),
-                        endPosition: currentCoordinatesOf(
-                            transferPoints[connectedId]!
+                        startPosition: nestedCoordinatesOf(
+                            transferPoint,
+                            state
+                        ),
+                        endPosition: nestedCoordinatesOf(
+                            transferPoints[connectedId]!,
+                            state
                         ),
                         duration,
                     })
@@ -173,3 +184,26 @@ export const selectPersonnelInTransfer = createSelector(
             isInTransfer(_personnel)
         ) as Personnel[]
 );
+
+export function createSelectElementsInSimulatedRegion<E extends WithPosition>(
+    elementsSelector: (state: AppState) => { [key: UUID]: E },
+    simulatedRegionId: UUID
+) {
+    return createSelector(
+        createSelectSimulatedRegion(simulatedRegionId),
+        elementsSelector,
+        (simulatedRegion, elements) =>
+            Object.values(elements).filter((e) =>
+                isInSpecificSimulatedRegion(e, simulatedRegion.id)
+            )
+    );
+}
+
+export function createSelectByPredicate<E extends WithPosition>(
+    selector: MemoizedSelector<AppState, E[]>,
+    predicate: (e: E) => boolean
+) {
+    return createSelector(selector, (elements) =>
+        elements.filter((element) => predicate(element))
+    );
+}

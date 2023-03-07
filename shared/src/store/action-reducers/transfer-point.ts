@@ -8,11 +8,11 @@ import {
 } from 'class-validator';
 import { TransferPoint } from '../../models';
 import {
-    currentCoordinatesOf,
+    currentTransferOf,
     isInTransfer,
     MapCoordinates,
     MapPosition,
-    currentTransferOf,
+    nestedCoordinatesOf,
 } from '../../models/utils';
 import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
@@ -191,8 +191,8 @@ export namespace TransferPointActionReducers {
                 const _duration =
                     duration ??
                     estimateDuration(
-                        currentCoordinatesOf(transferPoint1),
-                        currentCoordinatesOf(transferPoint2)
+                        nestedCoordinatesOf(transferPoint1, draftState),
+                        nestedCoordinatesOf(transferPoint2, draftState)
                     );
                 transferPoint1.reachableTransferPoints[transferPointId2] = {
                     duration: _duration,

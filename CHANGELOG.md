@@ -7,6 +7,20 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Added
+
+-   The popup of a simulated region now has got three tabs: _Overview_, _Transfers_ and _Behaviors_
+    -   The _Overview_ tab allows setting the name of the simulated region and shows the current number of patients, vehicles, personnel and material
+    -   The _Transfers_ tab allows setting up transfer connections from/to other simulated regions and/or transfer points
+    -   The _Behaviors_ tab allows adding and removing behaviors from simulated regions, inspect their current state and customize their settings
+        -   For the assign leader behavior, the type of the currently assigned leader is shown
+-   Simulated Regions now act as transfer points, meaning that they can be start and destination of a transfer
+    -   Connection lines will be shown for transfer connections from/to simulated regions, too
+
+### Fixed
+
+-   Making a _Gruppenführer_ leader of a simulated region if the region already had a leader did not work. Now, if there already is a leader, better personnel (i.e. the old leader was not a _Gruppenführer_ but the new one is) will be chosen as new leader
+
 ## [0.1.0] - 2023-03-01
 
 ### Added

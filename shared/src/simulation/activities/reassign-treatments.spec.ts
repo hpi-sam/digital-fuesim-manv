@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { Personnel, SimulatedRegion } from '../../models';
+import { Personnel, SimulatedRegion, TransferPoint } from '../../models';
 import type { PatientStatus, PersonnelType } from '../../models/utils';
 import {
     CanCaterFor,
@@ -43,6 +43,13 @@ function setupStateAndApplyTreatments(
         Size.create(10, 10),
         'test region'
     );
+    const transferPoint = TransferPoint.create(
+        SimulatedRegionPosition.create(simulatedRegion.id),
+        {},
+        {},
+        '',
+        `[Simuliert] test region`
+    );
     const leaderBehaviorState = AssignLeaderBehaviorState.create();
     const beforeState = produce(emptyState, (draftState) => {
         draftState.simulatedRegions[simulatedRegion.id] =
@@ -50,6 +57,8 @@ function setupStateAndApplyTreatments(
         draftState.simulatedRegions[simulatedRegion.id]?.behaviors.push(
             cloneDeepMutable(leaderBehaviorState)
         );
+        draftState.transferPoints[transferPoint.id] =
+            cloneDeepMutable(transferPoint);
 
         if (leaderId) {
             (

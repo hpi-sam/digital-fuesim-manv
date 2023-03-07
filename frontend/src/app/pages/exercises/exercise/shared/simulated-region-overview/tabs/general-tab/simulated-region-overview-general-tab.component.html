@@ -1,13 +1,122 @@
-<div class="form-group pb-3">
-    <label class="form-label">Name</label>
-    <input
-        #nameInput="ngModel"
-        [ngModel]="simulatedRegion.name"
-        (appSaveOnTyping)="renameSimulatedRegion($event)"
-        required
-        type="text"
-        class="form-control"
-        data-cy="simulatedRegionPopupNameInput"
-    />
-    <app-display-validation [ngModelInput]="nameInput" />
+<div class="h-100 mh-100 overflow-auto">
+    <div class="form-group pb-3">
+        <label class="form-label">Name</label>
+        <input
+            #nameInput="ngModel"
+            [ngModel]="simulatedRegion.name"
+            (appSaveOnTyping)="renameSimulatedRegion($event)"
+            required
+            type="text"
+            class="form-control"
+            data-cy="simulatedRegionPopupNameInput"
+        />
+        <app-display-validation [ngModelInput]="nameInput" />
+    </div>
+
+    <h6>Aktuelle Daten</h6>
+
+    <table class="table">
+        <tbody>
+            <tr
+                (click)="patientsCollapsed = !patientsCollapsed"
+                style="cursor: pointer"
+            >
+                <th scope="rowgroup" class="w-75">
+                    <i
+                        *ngIf="patientsCollapsed; else patientsExpanded"
+                        class="bi bi-caret-right-fill"
+                    ></i>
+                    <ng-template #patientsExpanded
+                        ><i class="bi bi-caret-down-fill"></i
+                    ></ng-template>
+                    Patienten
+                </th>
+                <th class="w-25">{{ (patients.all$ | async)?.length }}</th>
+            </tr>
+            <tr
+                *ngFor="let patientCategory of patientCategories"
+                #collapse="ngbCollapse"
+                [(ngbCollapse)]="patientsCollapsed"
+            >
+                <td class="ps-4">
+                    <app-patient-status-badge [status]="patientCategory" />
+                </td>
+                <td>
+                    {{
+                        (patients[patientCategory | withDollar] | async)?.length
+                    }}
+                </td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr
+                (click)="vehiclesCollapsed = !vehiclesCollapsed"
+                style="cursor: pointer"
+            >
+                <th scope="rowgroup" class="w-75">
+                    <i
+                        *ngIf="vehiclesCollapsed; else vehiclesExpanded"
+                        class="bi bi-caret-right-fill"
+                    ></i>
+                    <ng-template #vehiclesExpanded
+                        ><i class="bi bi-caret-down-fill"></i
+                    ></ng-template>
+                    Fahrzeuge
+                </th>
+                <th class="w-25">
+                    {{ ((vehicles$ | async) ?? {})['all']?.length }}
+                </th>
+            </tr>
+            <tr
+                *ngFor="let template of vehicleTemplates$ | async"
+                #collapse="ngbCollapse"
+                [(ngbCollapse)]="vehiclesCollapsed"
+            >
+                <td class="ps-4">{{ template.vehicleType }}</td>
+                <td>
+                    {{
+                        ((vehicles$ | async) ?? {})[template.vehicleType]
+                            ?.length
+                    }}
+                </td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr
+                (click)="personnelCollapsed = !personnelCollapsed"
+                style="cursor: pointer"
+            >
+                <th scope="rowgroup" class="w-75">
+                    <i
+                        *ngIf="personnelCollapsed; else personnelExpanded"
+                        class="bi bi-caret-right-fill"
+                    ></i>
+                    <ng-template #personnelExpanded
+                        ><i class="bi bi-caret-down-fill"></i
+                    ></ng-template>
+                    Personal
+                </th>
+                <th class="w-25">{{ (personnel.all$ | async)?.length }}</th>
+            </tr>
+            <tr
+                *ngFor="let personnelCategory of personnelCategories"
+                #collapse="ngbCollapse"
+                [(ngbCollapse)]="personnelCollapsed"
+            >
+                <td class="ps-4">{{ personnelCategory | personnelName }}</td>
+                <td>
+                    {{
+                        (personnel[personnelCategory | withDollar] | async)
+                            ?.length
+                    }}
+                </td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <th scope="rowgroup" class="w-75">Material</th>
+                <th class="w-25">{{ (material$ | async)?.length }}</th>
+            </tr>
+        </tbody>
+    </table>
 </div>
