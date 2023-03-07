@@ -1,4 +1,4 @@
-import type { UUID } from 'digital-fuesim-manv-shared';
+import type { ExerciseState, Mutable, UUID } from 'digital-fuesim-manv-shared';
 import { applyMigrations } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import { RestoreError } from '../utils/restore-error';
@@ -29,10 +29,7 @@ export async function migrateInDatabase(
     ).map((action) => JSON.parse(action.actionString));
     const {
         newVersion,
-        migratedProperties: {
-            currentState,
-            history: { initialState, actions },
-        },
+        migratedProperties: { currentState, history },
     } = applyMigrations(exercise.stateVersion, {
         currentState: loadedCurrentState,
         history: {
@@ -40,6 +37,10 @@ export async function migrateInDatabase(
             actions: loadedActions,
         },
     });
+    const initialState: Mutable<ExerciseState> =
+        history?.initialState ?? currentState;
+    const actions = history?.actions ?? [];
+
     exercise.stateVersion = newVersion;
     // Save exercise wrapper
     const patch: Partial<ExerciseWrapperEntity> = {

@@ -1,8 +1,8 @@
 import type { StateExport } from '../export-import/file-format';
 import { ExerciseState } from '../state';
 import type { ExerciseAction } from '../store';
-import { applyAction } from '../store';
-import type { Mutable } from '../utils';
+import { ReducerError, applyAction } from '../store';
+import type { Mutable, UUID } from '../utils';
 import { cloneDeepMutable } from '../utils';
 import type { Migration } from './migration-functions';
 import { migrations } from './migration-functions';
@@ -23,14 +23,22 @@ export function migrateStateExport(
               }
             : undefined,
     });
+
     stateExport.dataVersion = newVersion;
     stateExport.currentState = currentState;
-    if (stateExport.history && history) {
-        stateExport.history.actionHistory =
-            // Remove actions that are marked to be removed by the migrations
-            history.actions.filter(
-                (action): action is Mutable<ExerciseAction> => action !== null
-            );
+    if (stateExport.history) {
+        if (history) {
+            stateExport.history = {
+                actionHistory: history.actions.filter(
+                    // Remove actions that are marked to be removed by the migrations
+                    (action): action is Mutable<ExerciseAction> =>
+                        action !== null
+                ),
+                initialState: history.initialState,
+            };
+        } else {
+            stateExport.history = undefined;
+        }
     }
     return stateExport;
 }
@@ -54,10 +62,12 @@ export function applyMigrations<
         currentState: Mutable<ExerciseState>;
         history: H extends undefined
             ? undefined
-            : {
-                  initialState: Mutable<ExerciseState>;
-                  actions: (Mutable<ExerciseAction> | null)[];
-              };
+            :
+                  | {
+                        initialState: Mutable<ExerciseState>;
+                        actions: (Mutable<ExerciseAction> | null)[];
+                    }
+                  | undefined;
     };
 } {
     const newVersion = ExerciseState.currentStateVersion;
@@ -73,28 +83,54 @@ export function applyMigrations<
         const intermediaryState = cloneDeepMutable(
             history.initialState
         ) as Mutable<ExerciseState>;
-        history.actions.forEach((action, index) => {
-            if (action !== null) {
-                const deleteAction = !migrateAction(
-                    migrationsToApply,
-                    intermediaryState,
-                    action
-                );
-                if (!deleteAction) {
-                    applyAction(intermediaryState, action as ExerciseAction);
-                } else {
-                    history.actions[index] = null;
+        try {
+            history.actions.forEach((action, index) => {
+                if (action !== null) {
+                    const deleteAction = !migrateAction(
+                        migrationsToApply,
+                        intermediaryState,
+                        action
+                    );
+                    if (!deleteAction) {
+                        try {
+                            applyAction(
+                                intermediaryState,
+                                action as ExerciseAction
+                            );
+                        } catch (e: unknown) {
+                            if (e instanceof ReducerError) {
+                                const json = JSON.stringify(action);
+                                console.warn(
+                                    `Error while applying action ${json}: ${e.message}`
+                                );
+                            }
+                            throw e;
+                        }
+                    } else {
+                        history.actions[index] = null;
+                    }
                 }
+            });
+            return {
+                newVersion,
+                migratedProperties: {
+                    currentState: intermediaryState,
+                    // history has been migrated in place
+                    history: history as any,
+                },
+            };
+        } catch (e: unknown) {
+            if (e instanceof ReducerError) {
+                const exerciseId = (history.initialState as { id: UUID }).id;
+                console.warn(
+                    `Discarding history of exercise ${exerciseId} due to error in applying actions: ${e.message}`,
+                    e.stack
+                );
+                // Fall back to migrating currentState instead of recreating it from history
+            } else {
+                throw e;
             }
-        });
-        return {
-            newVersion,
-            migratedProperties: {
-                currentState: intermediaryState,
-                // history has been migrated in place
-                history: history as any,
-            },
-        };
+        }
     }
     migrateState(migrationsToApply, propertiesToMigrate.currentState);
     const currentState =
