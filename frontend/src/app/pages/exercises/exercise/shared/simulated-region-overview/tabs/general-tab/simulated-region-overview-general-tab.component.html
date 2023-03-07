@@ -98,25 +98,18 @@
                 </th>
                 <th class="w-25">{{ (personnel.all$ | async)?.length }}</th>
             </tr>
-            <tr #collapse="ngbCollapse" [(ngbCollapse)]="personnelCollapsed">
-                <td class="ps-4">Notarzt</td>
-                <td>{{ (personnel.notarzt$ | async)?.length }}</td>
-            </tr>
-            <tr #collapse="ngbCollapse" [(ngbCollapse)]="personnelCollapsed">
-                <td class="ps-4">Notfallsanitäter</td>
-                <td>{{ (personnel.notSan$ | async)?.length }}</td>
-            </tr>
-            <tr #collapse="ngbCollapse" [(ngbCollapse)]="personnelCollapsed">
-                <td class="ps-4">Rettungssanitäter</td>
-                <td>{{ (personnel.rettSan$ | async)?.length }}</td>
-            </tr>
-            <tr #collapse="ngbCollapse" [(ngbCollapse)]="personnelCollapsed">
-                <td class="ps-4">Sanitäter</td>
-                <td>{{ (personnel.san$ | async)?.length }}</td>
-            </tr>
-            <tr #collapse="ngbCollapse" [(ngbCollapse)]="personnelCollapsed">
-                <td class="ps-4">Gruppenführer</td>
-                <td>{{ (personnel.gf$ | async)?.length }}</td>
+            <tr
+                *ngFor="let personnelCategory of personnelCategories"
+                #collapse="ngbCollapse"
+                [(ngbCollapse)]="personnelCollapsed"
+            >
+                <td class="ps-4">{{ personnelCategory | personnelName }}</td>
+                <td>
+                    {{
+                        (personnel[personnelCategory | withDollar] | async)
+                            ?.length
+                    }}
+                </td>
             </tr>
         </tbody>
         <tbody>

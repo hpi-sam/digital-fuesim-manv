@@ -27,13 +27,13 @@ const patientCategories = ['red', 'yellow', 'green', 'black'] as const;
 export type PatientCategory = (typeof patientCategories)[number];
 
 const personnelCategories = [
-    'gf',
     'notarzt',
     'notSan',
     'rettSan',
     'san',
+    'gf',
 ] as const;
-type PersonnelCategory = (typeof personnelCategories)[number];
+export type PersonnelCategory = (typeof personnelCategories)[number];
 
 @Component({
     selector: 'app-simulated-region-overview-general-tab',
@@ -48,6 +48,7 @@ export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
     );
 
     public readonly patientCategories = patientCategories;
+    public readonly personnelCategories = personnelCategories;
 
     patients: {
         [Key in `${PatientCategory | 'all'}$`]?: Observable<Patient[]>;
