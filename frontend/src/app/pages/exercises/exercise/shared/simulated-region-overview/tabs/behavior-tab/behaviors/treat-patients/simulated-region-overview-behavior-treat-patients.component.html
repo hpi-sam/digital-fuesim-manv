@@ -1,4 +1,4 @@
-<div class="container">
+<div class="table">
     <div class="row"><h4>Einstellungen</h4></div>
     <div class="row">
         <h6 class="mt-2">
@@ -189,4 +189,10 @@
         </div>
     </div>
     <div class="row"><h6 class="mt-2">Derzeitige Zuordnung</h6></div>
+    <div *ngFor="let patient of patients">
+        <app-simulated-region-overview-behavior-treat-patients-patient-details
+            [patient]="patient"
+            class="row"
+        ></app-simulated-region-overview-behavior-treat-patients-patient-details>
+    </div>
 </div>
