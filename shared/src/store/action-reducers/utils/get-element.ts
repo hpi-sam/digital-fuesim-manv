@@ -26,3 +26,24 @@ export function getElement<
     }
     return element;
 }
+
+export function getElementByPredicate<
+    ElementType extends keyof ElementTypePluralMap,
+    State extends Mutable<ExerciseState>
+>(
+    state: State,
+    elementType: ElementType,
+    predicate: (
+        element: State[ElementTypePluralMap[ElementType]][UUID]
+    ) => boolean
+): State[ElementTypePluralMap[ElementType]][UUID] {
+    const element = Object.values(
+        state[elementTypePluralMap[elementType]]
+    ).find(predicate)
+    if (!element) {
+        throw new ReducerError(
+            `Element of type ${elementType} matching the given predicate does not exist`
+        );
+    }
+    return element;
+}

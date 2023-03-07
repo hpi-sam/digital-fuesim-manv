@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { SimulatedRegion, TransferPoint } from '../../models';
 import {
+    isInSpecificSimulatedRegion,
     MapCoordinates,
     MapPosition,
     SimulatedRegionPosition,
@@ -26,7 +27,7 @@ import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
 import { TransferPointActionReducers } from './transfer-point';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
-import { getElement } from './utils/get-element';
+import { getElement, getElementByPredicate } from './utils/get-element';
 
 export class AddSimulatedRegionAction implements Action {
     @IsValue('[SimulatedRegion] Add simulated region' as const)
@@ -150,11 +151,17 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                const transferPoint = getElementByPredicate(
+                    draftState,
+                    'transferPoint',
+                    (element) =>
+                        isInSpecificSimulatedRegion(element, simulatedRegion.id)
+                );
                 TransferPointActionReducers.removeTransferPoint.reducer(
                     draftState,
                     {
                         type: '[TransferPoint] Remove TransferPoint',
-                        transferPointId: simulatedRegion.transferPointId,
+                        transferPointId: transferPoint.id,
                     }
                 );
                 delete draftState.simulatedRegions[simulatedRegionId];
@@ -210,11 +217,17 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                const transferPoint = getElementByPredicate(
+                    draftState,
+                    'transferPoint',
+                    (element) =>
+                        isInSpecificSimulatedRegion(element, simulatedRegion.id)
+                );
                 TransferPointActionReducers.renameTransferPoint.reducer(
                     draftState,
                     {
                         type: '[TransferPoint] Rename TransferPoint',
-                        transferPointId: simulatedRegion.transferPointId,
+                        transferPointId: transferPoint.id,
                         externalName: `[Simuliert] ${newName}`,
                     }
                 );

@@ -39,20 +39,11 @@ export class SimulatedRegion {
      * @param position top-left position
      * @deprecated Use {@link create} instead
      */
-    constructor(
-        position: MapCoordinates,
-        size: Size,
-        name: string,
-        transferPointId: UUID
-    ) {
+    constructor(position: MapCoordinates, size: Size, name: string) {
         this.position = MapPosition.create(position);
         this.size = size;
         this.name = name;
-        this.transferPointId = transferPointId;
     }
-
-    @IsUUID()
-    public readonly transferPointId: UUID;
 
     @Type(...simulationEventTypeOptions)
     @ValidateNested()

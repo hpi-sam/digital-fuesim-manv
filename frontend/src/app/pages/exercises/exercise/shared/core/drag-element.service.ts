@@ -10,7 +10,6 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import {
     createVehicleParameters,
-    cloneDeepMutable,
     MapImage,
     normalZoom,
     PatientTemplate,
@@ -282,19 +281,16 @@ export class DragElementService {
                     // This ratio has been determined by trial and error
                     const height = SimulatedRegion.image.height / 23.5;
                     const width = height * SimulatedRegion.image.aspectRatio;
-                    const simulatedRegion = cloneDeepMutable(
-                        SimulatedRegion.create(
-                            {
-                                x: position.x - width / 2,
-                                y: position.y + height / 2,
-                            },
-                            {
-                                height,
-                                width,
-                            },
-                            'Einsatzabschnitt ???',
-                            ''
-                        )
+                    const simulatedRegion = SimulatedRegion.create(
+                        {
+                            x: position.x - width / 2,
+                            y: position.y + height / 2,
+                        },
+                        {
+                            height,
+                            width,
+                        },
+                        'Einsatzabschnitt ???'
                     );
                     const transferPoint = TransferPoint.create(
                         SimulatedRegionPosition.create(simulatedRegion.id),
@@ -303,7 +299,6 @@ export class DragElementService {
                         '',
                         '[Simuliert] Einsatzabschnitt ???'
                     );
-                    simulatedRegion.transferPointId = transferPoint.id;
                     this.exerciseService.proposeAction(
                         {
                             type: '[SimulatedRegion] Add simulated region',
