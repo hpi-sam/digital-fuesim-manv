@@ -7,21 +7,14 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { TransferPoint } from '../../models';
-import { nestedCoordinatesOf, WithPosition } from '../../models/utils';
 import {
-    currentCoordinatesOf,
+    currentTransferOf,
     isInTransfer,
     MapCoordinates,
     MapPosition,
-    currentTransferOf,
-    isInSimulatedRegion,
-    currentSimulatedRegionIdOf,
-    isOnMap,
-    isInVehicle,
-    currentVehicleIdOf,
+    nestedCoordinatesOf,
 } from '../../models/utils';
 import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
-import type { ExerciseState } from '../../state';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';

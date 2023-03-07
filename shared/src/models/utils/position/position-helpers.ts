@@ -1,4 +1,4 @@
-import { ExerciseState } from '../../../state';
+import type { ExerciseState } from '../../../state';
 import type { UUID } from '../../../utils';
 import type { Transfer } from '../transfer';
 import { MapCoordinates } from './map-coordinates';
