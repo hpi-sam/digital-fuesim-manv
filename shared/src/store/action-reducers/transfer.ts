@@ -9,6 +9,8 @@ import {
     TransferPosition,
     StartPoint,
     startPointTypeOptions,
+    isPositionInSimulatedRegion,
+    simulatedRegionIdOfPosition,
 } from '../../models/utils';
 import type { MapPosition } from '../../models/utils';
 import {
@@ -23,6 +25,8 @@ import type { AllowedValues } from '../../utils/validators';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
+import { PersonnelAvailableEvent, VehicleArrivedEvent } from '../../simulation';
+import { sendSimulationEvent } from '../../simulation/events/utils';
 import { getElement } from './utils';
 
 export type TransferableElementType = 'personnel' | 'vehicle';
@@ -55,6 +59,25 @@ export function letElementArrive(
             x: 0,
             y: imageSizeToPosition(TransferPoint.image.height / 3),
         });
+    }
+    if (isPositionInSimulatedRegion(newPosition)) {
+        const simulatedRegion = getElement(
+            draftState,
+            'simulatedRegion',
+            simulatedRegionIdOfPosition(newPosition)
+        );
+        if (elementType === 'personnel') {
+            sendSimulationEvent(
+                simulatedRegion,
+                PersonnelAvailableEvent.create(elementId)
+            );
+        }
+        if (elementType === 'vehicle') {
+            sendSimulationEvent(
+                simulatedRegion,
+                VehicleArrivedEvent.create(elementId, draftState.currentTime)
+            );
+        }
     }
     changePosition(element, newPosition, draftState);
 }
