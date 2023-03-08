@@ -1,31 +1,12 @@
 import '@angular/localize/init';
-import {
-    Component,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    SimpleChanges,
-} from '@angular/core';
+import type { OnDestroy, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import {
-    getElement,
-    Patient,
-    PatientStatus,
-    PatientStatusCode,
-    Personnel,
-    PersonnelType,
-    UUID,
-} from 'digital-fuesim-manv-shared';
-import {
-    distinct,
-    distinctUntilChanged,
-    filter,
-    Observable,
-    Subject,
-    takeUntil,
-} from 'rxjs';
-import { AppState } from 'src/app/state/app.state';
+import type { PatientStatus, PersonnelType } from 'digital-fuesim-manv-shared';
+import { Patient, UUID } from 'digital-fuesim-manv-shared';
+import type { Observable } from 'rxjs';
+import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import type { AppState } from 'src/app/state/app.state';
 import {
     createSelectPatient,
     selectConfiguration,
@@ -62,25 +43,22 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
     ngOnInit(): void {
         this.caterings$ = this.store
             .select(
-                createSelector(selectPersonnel, (personnel) => {
-                    return Object.values(personnel)
+                createSelector(selectPersonnel, (personnel) =>
+                    Object.values(personnel)
                         .filter(
                             (person) =>
                                 person.assignedPatientIds[this.patientId]
                         )
-                        .map((person) => {
-                            return {
-                                personnelType: person.personnelType,
-                                len: Object.values(person.assignedPatientIds)
-                                    .length,
-                            };
-                        });
-                })
+                        .map((person) => ({
+                            personnelType: person.personnelType,
+                            len: Object.values(person.assignedPatientIds)
+                                .length,
+                        }))
+                )
             )
             .pipe(
-                takeUntil(this.destroy$),
-                distinctUntilChanged((a, b) => {
-                    return (
+                distinctUntilChanged(
+                    (a, b) =>
                         Array.isArray(a) &&
                         Array.isArray(b) &&
                         a.length === b.length &&
@@ -89,8 +67,8 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
                                 val.len === b[index]?.len &&
                                 val.personnelType === b[index]?.personnelType
                         )
-                    );
-                })
+                ),
+                takeUntil(this.destroy$)
             );
 
         const patientSelector = createSelectPatient(this.patientId);
