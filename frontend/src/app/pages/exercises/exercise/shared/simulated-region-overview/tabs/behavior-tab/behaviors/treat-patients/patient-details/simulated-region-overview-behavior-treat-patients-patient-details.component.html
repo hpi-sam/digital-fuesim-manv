@@ -1,9 +1,11 @@
 <div class="col-sm d-inline-flex justify-content-center">
-    {{ patient.personalInformation.name }}
+    <span class="text-center">
+        {{ (patient$ | async)!.personalInformation.name }}
+    </span>
 </div>
 <div class="col-sm d-inline-flex justify-content-center">
     <app-patient-status-badge
-        [status]="patient.realStatus"
+        [status]="(patient$ | async)!.realStatus"
     ></app-patient-status-badge>
 </div>
 <div class="col-sm d-inline-flex justify-content-center">
@@ -11,7 +13,11 @@
         [status]="(visibleStatus$ | async)!"
     ></app-patient-status-badge>
 </div>
-<div class="col-sm d-inline-flex" style="flex-wrap: wrap">
+<div
+    class="col-sm d-inline-flex"
+    style="flex-wrap: wrap"
+    *ngIf="cateringsActive"
+>
     <div *ngFor="let person of caterings$ | async" class="d-flex flex-grow-1">
         <div class="container d-grid m-1 flex-grow-1">
             <ngb-progressbar
@@ -24,7 +30,7 @@
             <span
                 [ngbTooltip]="
                     'Dieser ' +
-                    (person.personnel.personnelType | personnelName) +
+                    (person.personnelType | personnelName) +
                     ' schenkt diesem Patienten ' +
                     (1 / person.len) * 100 +
                     '% seiner Aufmerksamkeit.'
@@ -33,7 +39,7 @@
                 [closeDelay]="100"
                 style="grid-column: 1; grid-row: 1"
                 class="h-100 w-100 m-1"
-                >{{ person.personnel.personnelType | personnelName }}</span
+                >{{ person.personnelType | personnelName }}</span
             >
         </div>
     </div>

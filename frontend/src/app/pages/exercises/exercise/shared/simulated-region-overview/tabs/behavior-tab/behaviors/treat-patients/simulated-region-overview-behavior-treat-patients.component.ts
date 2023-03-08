@@ -1,7 +1,7 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { Store } from '@ngrx/store';
-import type { Patient, UUIDSet } from 'digital-fuesim-manv-shared';
+import { createSelector, Store } from '@ngrx/store';
+import type { UUID, UUIDSet } from 'digital-fuesim-manv-shared';
 import {
     TreatPatientsBehaviorState,
     SimulatedRegion,
@@ -27,7 +27,7 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
 {
     @Input() simulatedRegion!: SimulatedRegion;
     @Input() treatPatientsBehaviorState!: TreatPatientsBehaviorState;
-    public patients!: Observable<Patient[]>;
+    public patientIds$!: Observable<UUID[]>;
     public settingsCollapsed = true;
 
     constructor(
@@ -36,10 +36,13 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
     ) {}
 
     ngOnInit(): void {
-        this.patients = this.store.select(
-            createSelectElementsInSimulatedRegion(
-                selectPatients,
-                this.simulatedRegion.id
+        this.patientIds$ = this.store.select(
+            createSelector(
+                createSelectElementsInSimulatedRegion(
+                    selectPatients,
+                    this.simulatedRegion.id
+                ),
+                (patients) => patients.map((patient) => patient.id)
             )
         );
     }
