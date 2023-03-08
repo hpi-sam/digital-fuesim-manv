@@ -1,9 +1,10 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { createSelector, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import type { SimulatedRegion, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
+import { map } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
 import { selectSimulatedRegions } from 'src/app/state/application/selectors/exercise.selectors';
 
@@ -31,15 +32,17 @@ export class SimulatedRegionsModalComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.simulatedRegionIds = this.store.select(
-            createSelector(selectSimulatedRegions, (simulatedRegions) =>
-                Object.values(simulatedRegions).map((simulatedRegion) => ({
-                    name: simulatedRegion.name,
-                    id: simulatedRegion.id,
-                    simulatedRegion,
-                }))
-            )
-        );
+        this.simulatedRegionIds = this.store
+            .select(selectSimulatedRegions)
+            .pipe(
+                map((simulatedRegions) =>
+                    Object.values(simulatedRegions).map((simulatedRegion) => ({
+                        name: simulatedRegion.name,
+                        id: simulatedRegion.id,
+                        simulatedRegion,
+                    }))
+                )
+            );
     }
 
     public close() {
