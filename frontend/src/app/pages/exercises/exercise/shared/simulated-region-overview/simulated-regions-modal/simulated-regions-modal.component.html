@@ -19,14 +19,16 @@
             class="nav-tabs"
         >
             <ng-container
-                *ngFor="let simulatedRegion of simulatedRegionIds | async"
-                [ngbNavItem]="simulatedRegion.id"
+                *ngFor="let id of simulatedRegionIds$ | async"
+                [ngbNavItem]="id"
             >
-                <a ngbNavLink>{{ simulatedRegion.name }}</a>
+                <a ngbNavLink
+                    ><app-simulated-region-name [simulatedRegionId]="id"
+                /></a>
                 <ng-template ngbNavContent>
                     <app-simulated-region-overview-general
                         class="mh-100 d-block h-100"
-                        [simulatedRegion]="simulatedRegion.simulatedRegion"
+                        [simulatedRegionId]="id"
                     />
                 </ng-template>
             </ng-container>

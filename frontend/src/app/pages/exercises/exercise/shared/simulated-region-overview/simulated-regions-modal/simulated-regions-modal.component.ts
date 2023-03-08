@@ -2,9 +2,9 @@ import type { OnInit } from '@angular/core';
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import type { SimulatedRegion, UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import { map } from 'rxjs';
+import { distinctUntilChanged, map } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
 import { selectSimulatedRegions } from 'src/app/state/application/selectors/exercise.selectors';
 
@@ -15,13 +15,7 @@ import { selectSimulatedRegions } from 'src/app/state/application/selectors/exer
     encapsulation: ViewEncapsulation.None,
 })
 export class SimulatedRegionsModalComponent implements OnInit {
-    simulatedRegionIds!: Observable<
-        {
-            name: string;
-            id: UUID;
-            simulatedRegion: SimulatedRegion;
-        }[]
-    >;
+    simulatedRegionIds$!: Observable<UUID[]>;
 
     @Input()
     currentSimulatedRegionId!: string;
@@ -32,16 +26,17 @@ export class SimulatedRegionsModalComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.simulatedRegionIds = this.store
+        this.simulatedRegionIds$ = this.store
             .select(selectSimulatedRegions)
             .pipe(
-                map((simulatedRegions) =>
-                    Object.values(simulatedRegions).map((simulatedRegion) => ({
-                        name: simulatedRegion.name,
-                        id: simulatedRegion.id,
-                        simulatedRegion,
-                    }))
-                )
+                map((simulatedRegions) => Object.keys(simulatedRegions)),
+                distinctUntilChanged((previous, current) => {
+                    if (previous.length !== current.length) return false;
+
+                    return previous.every(
+                        (element, index) => element === current[index]
+                    );
+                })
             );
     }
 

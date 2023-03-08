@@ -6,7 +6,7 @@
                 <ng-template ngbNavContent>
                     <app-simulated-region-overview-general-tab
                         class="mh-100 d-block h-100"
-                        [simulatedRegion]="simulatedRegion"
+                        [simulatedRegion]="(simulatedRegion$ | async)!"
                     />
                 </ng-template>
             </ng-container>
@@ -27,7 +27,7 @@
                 <ng-template ngbNavContent
                     ><app-simulated-region-overview-behavior-tab
                         class="mh-100 d-block h-100"
-                        [simulatedRegion]="simulatedRegion"
+                        [simulatedRegion]="(simulatedRegion$ | async)!"
                     />
                 </ng-template>
             </ng-container>
