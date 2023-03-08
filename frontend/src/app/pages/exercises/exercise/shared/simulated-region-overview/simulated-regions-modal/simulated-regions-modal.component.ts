@@ -1,5 +1,5 @@
-import { OnInit, ViewEncapsulation } from '@angular/core';
-import { Component, Input } from '@angular/core';
+import type { OnInit } from '@angular/core';
+import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { createSelector, Store } from '@ngrx/store';
 import type { SimulatedRegion, UUID } from 'digital-fuesim-manv-shared';
