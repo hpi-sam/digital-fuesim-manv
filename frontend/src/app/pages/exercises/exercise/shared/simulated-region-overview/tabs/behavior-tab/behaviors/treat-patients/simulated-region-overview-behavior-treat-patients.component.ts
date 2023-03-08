@@ -14,6 +14,8 @@ import {
     selectPatients,
 } from 'src/app/state/application/selectors/exercise.selectors';
 
+let globalLastSettingsCollapsed = true;
+let globalLastInformationCollapsed = true;
 @Component({
     selector: 'app-simulated-region-overview-behavior-treat-patients',
     templateUrl:
@@ -28,7 +30,23 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
     @Input() simulatedRegion!: SimulatedRegion;
     @Input() treatPatientsBehaviorState!: TreatPatientsBehaviorState;
     public patientIds$!: Observable<UUID[]>;
-    public settingsCollapsed = true;
+    private _settingsCollapsed!: boolean;
+    private _informationCollapsed!: boolean;
+
+    public get settingsCollapsed(): boolean {
+        return this._settingsCollapsed;
+    }
+    public set settingsCollapsed(value: boolean) {
+        this._settingsCollapsed = value;
+        globalLastSettingsCollapsed = value;
+    }
+    public get informationCollapsed(): boolean {
+        return this._informationCollapsed;
+    }
+    public set informationCollapsed(value: boolean) {
+        this._informationCollapsed = value;
+        globalLastInformationCollapsed = value;
+    }
 
     constructor(
         private readonly exerciseService: ExerciseService,
@@ -36,6 +54,8 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
     ) {}
 
     ngOnInit(): void {
+        this.settingsCollapsed = globalLastSettingsCollapsed;
+        this.informationCollapsed = globalLastInformationCollapsed;
         this.patientIds$ = this.store.select(
             createSelector(
                 createSelectElementsInSimulatedRegion(
@@ -59,7 +79,7 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
         countingTimePerPatient: number
     ) {
         this.exerciseService.proposeAction({
-            type: '[Simulation] Update TreatPatientsIntervals',
+            type: '[TreatPatientsBehavior] Update TreatPatientsIntervals',
             simulatedRegionId: this.simulatedRegion.id,
             behaviorStateId: this.treatPatientsBehaviorState.id,
             unknown,

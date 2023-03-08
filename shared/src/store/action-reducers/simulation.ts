@@ -7,8 +7,9 @@ import type { Action, ActionReducer } from '../action-reducer';
 import { getElement } from './utils';
 
 export class UpdateTreatPatientsIntervalsAction implements Action {
-    @IsValue('[Simulation] Update TreatPatientsIntervals' as const)
-    public readonly type = '[Simulation] Update TreatPatientsIntervals';
+    @IsValue('[TreatPatientsBehavior] Update TreatPatientsIntervals' as const)
+    public readonly type =
+        '[TreatPatientsBehavior] Update TreatPatientsIntervals';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;

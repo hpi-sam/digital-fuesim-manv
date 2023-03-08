@@ -1,19 +1,122 @@
 <div class="table">
     <div
+        class="row align-items-center"
+        (click)="informationCollapsed = !informationCollapsed"
+        style="cursor: pointer"
+    >
+        <div class="col-sm">
+            <h4 style="padding-left: 0; padding-right: 0">
+                <i
+                    *ngIf="informationCollapsed; else informationExpanded"
+                    class="bi bi-caret-right-fill"
+                ></i>
+                <ng-template #informationExpanded
+                    ><i class="bi bi-caret-down-fill"></i></ng-template
+                >Informationen
+            </h4>
+        </div>
+        <div class="col-sm justify-content-center" *ngIf="informationCollapsed">
+            <span class="badge rounded-pill text-bg-info">
+                {{
+                    treatPatientsBehaviorState.treatmentProgress
+                        | treatmentProgressToGermanName
+                }}
+            </span>
+        </div>
+    </div>
+    <div
         class="row"
+        #collapse="ngbCollapse"
+        [(ngbCollapse)]="informationCollapsed"
+    >
+        <h5 class="mt-2">Allgemein</h5>
+    </div>
+    <div
+        class="row align-items-center"
+        #collapse="ngbCollapse"
+        [(ngbCollapse)]="informationCollapsed"
+    >
+        <div class="col-sm">Derzeitige Phase</div>
+        <div class="col-sm">
+            <span class="badge rounded-pill text-bg-info">
+                {{
+                    treatPatientsBehaviorState.treatmentProgress
+                        | treatmentProgressToGermanName
+                }}
+            </span>
+        </div>
+    </div>
+
+    <div
+        class="row"
+        *ngIf="((patientIds$ | async) ?? []).length > 0"
+        #collapse="ngbCollapse"
+        [(ngbCollapse)]="informationCollapsed"
+    >
+        <h5 class="mt-2">Derzeitige Zuordnung</h5>
+    </div>
+
+    <div
+        class="row align-items-center"
+        *ngIf="((patientIds$ | async) ?? []).length > 0"
+        #collapse="ngbCollapse"
+        [(ngbCollapse)]="informationCollapsed"
+    >
+        <div class="col-sm justify-content-center">
+            <h6 class="text-center">Name</h6>
+        </div>
+        <div class="col-sm justify-content-center">
+            <h6 class="text-center">Realer Status</h6>
+        </div>
+        <div class="col-sm justify-content-center">
+            <h6 class="text-center">Sichtbarer Status</h6>
+        </div>
+        <div
+            *ngIf="treatPatientsBehaviorState.treatmentProgress !== 'unknown'"
+            class="col-sm justify-content-center"
+        >
+            <h6 class="text-center">Zugeteiltes Personal</h6>
+        </div>
+    </div>
+    <div
+        *ngFor="let patientId of patientIds$ | async"
+        class="row"
+        #collapse="ngbCollapse"
+        [(ngbCollapse)]="informationCollapsed"
+    >
+        <div>
+            <app-simulated-region-overview-behavior-treat-patients-patient-details
+                [patientId]="patientId"
+                [cateringsActive]="
+                    treatPatientsBehaviorState.treatmentProgress !== 'unknown'
+                "
+                class="row align-items-center"
+                style="
+                    padding-left: 0;
+                    padding-right: 0;
+                    overflow-x: auto;
+                    flex-wrap: nowrap;
+                "
+            ></app-simulated-region-overview-behavior-treat-patients-patient-details>
+        </div>
+    </div>
+
+    <div
+        class="row align-items-center"
         (click)="settingsCollapsed = !settingsCollapsed"
         style="cursor: pointer"
     >
-        <h4>
-            <i
-                *ngIf="settingsCollapsed; else settingsExpanded"
-                class="bi bi-caret-right-fill"
-            ></i>
-            <ng-template #settingsExpanded
-                ><i class="bi bi-caret-down-fill"></i
-            ></ng-template>
-            Einstellungen
-        </h4>
+        <div class="col-sm">
+            <h4 style="padding-left: 0; padding-right: 0">
+                <i
+                    *ngIf="settingsCollapsed; else settingsExpanded"
+                    class="bi bi-caret-right-fill"
+                ></i>
+                <ng-template #settingsExpanded
+                    ><i class="bi bi-caret-down-fill"></i></ng-template
+                >Einstellungen
+            </h4>
+        </div>
     </div>
     <div
         class="row"
@@ -222,61 +325,6 @@
                 />
                 <span class="input-group-text">Sec</span>
             </div>
-        </div>
-    </div>
-    <div class="row"><h4>Informationen</h4></div>
-    <div class="row">
-        <h5 class="mt-2">Allgemein</h5>
-    </div>
-    <div class="row align-items-center">
-        <div class="col-sm">Derzeitige Phase</div>
-        <div class="col-sm">
-            {{
-                treatPatientsBehaviorState.treatmentProgress
-                    | treatmentProgressToGermanName
-            }}
-        </div>
-    </div>
-
-    <div class="row" *ngIf="((patientIds$ | async) ?? []).length > 0">
-        <h5 class="mt-2">Derzeitige Zuordnung</h5>
-    </div>
-
-    <div
-        class="row align-items-center"
-        *ngIf="((patientIds$ | async) ?? []).length > 0"
-    >
-        <div class="col-sm justify-content-center">
-            <h6 class="text-center">Name</h6>
-        </div>
-        <div class="col-sm justify-content-center">
-            <h6 class="text-center">Realer Status</h6>
-        </div>
-        <div class="col-sm justify-content-center">
-            <h6 class="text-center">Sichtbarer Status</h6>
-        </div>
-        <div
-            *ngIf="treatPatientsBehaviorState.treatmentProgress !== 'unknown'"
-            class="col-sm justify-content-center"
-        >
-            <h6 class="text-center">Zugeteiltes Personal</h6>
-        </div>
-    </div>
-    <div *ngFor="let patientId of patientIds$ | async" class="row">
-        <div>
-            <app-simulated-region-overview-behavior-treat-patients-patient-details
-                [patientId]="patientId"
-                [cateringsActive]="
-                    treatPatientsBehaviorState.treatmentProgress !== 'unknown'
-                "
-                class="row align-items-center"
-                style="
-                    padding-left: 0;
-                    padding-right: 0;
-                    overflow-x: auto;
-                    flex-wrap: nowrap;
-                "
-            ></app-simulated-region-overview-behavior-treat-patients-patient-details>
         </div>
     </div>
 </div>
