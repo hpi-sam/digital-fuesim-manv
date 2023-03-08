@@ -1,1 +1,51 @@
-<p>simulated-region-overview-behavior-unload-arriving-vehicles works!</p>
+<div class="h-100 mh-100 overflow-auto">
+    <h6>Aus eintreffenden Fahrzeugen aussteigen</h6>
+    <div
+        title="Zeit bis zur Ankunft"
+        class="input-group input-group-sm mb-3 ms-3"
+        style="width: 100px"
+    >
+        <label class="form-label">Aussteigedauer</label>
+        <input
+            #timeInput="ngModel"
+            [ngModel]="((unloadDuration$ | async) ?? 0) / 60 / 1000"
+            (appSaveOnTyping)="updateUnloadTime($event * 1000 * 60)"
+            min="0"
+            required
+            step="0.1"
+            type="number"
+            class="form-control form-control-sm d-inline-block no-validation"
+            placeholder="Dauer"
+            data-cy="unloadVehicleBehaviorPopupDurationInput"
+        />
+        <span class="input-group-text">Min</span>
+    </div>
+
+    <h6>Gerade aussteigend</h6>
+    <table
+        class="table table-striped"
+        *ngIf="(vehiclesStatus$ | async)?.length ?? 0; else noUnloadVehicles"
+    >
+        <thead>
+            <tr>
+                <th scope="col" class="text-center">Name</th>
+                <th scope="col" class="text-center">Verbleibende Zeit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let vehicleStatus of vehiclesStatus$ | async">
+                <td class="align-middle text-center">
+                    {{ vehicleStatus.vehicleName }}
+                </td>
+                <td class="align-middle text-center">
+                    {{ vehicleStatus.timeLeft | formatDuration }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <ng-template #noUnloadVehicles>
+        <span class="text-muted">
+            Im Moment steigt niemand aus eintreffenden Fahrzeugen aus
+        </span>
+    </ng-template>
+</div>

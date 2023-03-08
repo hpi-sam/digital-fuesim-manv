@@ -1,9 +1,13 @@
 import { IsNumber, IsUUID, Min } from 'class-validator';
-import type { TreatPatientsBehaviorState } from '../../simulation';
+import type {
+    TreatPatientsBehaviorState,
+    UnloadArrivingVehiclesBehaviorState,
+} from '../../simulation';
 import type { Mutable } from '../../utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
+import { ReducerError } from '../reducer-error';
 import { getElement } from './utils';
 
 export class UpdateTreatPatientsIntervalsAction implements Action {
@@ -35,6 +39,24 @@ export class UpdateTreatPatientsIntervalsAction implements Action {
     @IsNumber()
     @Min(-1)
     public readonly countingTimePerPatient!: number;
+}
+
+export class UnloadArrivingVehiclesBehaviorUpdateUnloadDelayAction
+    implements Action
+{
+    @IsValue('[UnloadArrivingVehiclesBehavior] Update UnloadDelay' as const)
+    public readonly type =
+        '[UnloadArrivingVehiclesBehavior] Update UnloadDelay';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsNumber()
+    @Min(0)
+    public readonly unloadDelay!: number;
 }
 
 export namespace SimulationActionReducers {
@@ -80,6 +102,32 @@ export namespace SimulationActionReducers {
                 if (countingTimePerPatient >= 0) {
                     treatPatientsBehaviorState.intervals.countingTimePerPatient =
                         countingTimePerPatient;
+                }
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+    export const unloadArrivingVehiclesBehaviorUpdateUnloadDelay: ActionReducer<UnloadArrivingVehiclesBehaviorUpdateUnloadDelayAction> =
+        {
+            action: UnloadArrivingVehiclesBehaviorUpdateUnloadDelayAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, unloadDelay }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const behaviorState = simulatedRegion.behaviors.find(
+                    (behavior) => behavior.id === behaviorId
+                ) as Mutable<UnloadArrivingVehiclesBehaviorState>;
+                if (behaviorState) {
+                    behaviorState.unloadDelay = unloadDelay;
+                } else {
+                    throw new ReducerError(
+                        `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}.`
+                    );
                 }
                 return draftState;
             },
