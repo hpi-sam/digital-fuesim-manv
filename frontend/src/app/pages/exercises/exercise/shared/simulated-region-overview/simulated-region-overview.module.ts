@@ -20,6 +20,7 @@ import { SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent } from '
 import { TreatmentProgressToGermanNamePipe } from './tabs/behavior-tab/utils/treatment-progress-to-german-name.pipe';
 import { SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent } from './tabs/behavior-tab/behaviors/treat-patients/patient-details/simulated-region-overview-behavior-treat-patients-patient-details.component';
 import { WithDollarPipe } from './tabs/general-tab/utils/with-dollar';
+import { PersonnelTypeToGermanAbbreviationPipe } from './tabs/behavior-tab/utils/personnel-type-to-german-abbreviation.pipe';
 
 @NgModule({
     declarations: [
@@ -34,6 +35,7 @@ import { WithDollarPipe } from './tabs/general-tab/utils/with-dollar';
         TreatmentProgressToGermanNamePipe,
         SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent,
         WithDollarPipe,
+        PersonnelTypeToGermanAbbreviationPipe,
     ],
     imports: [
         CommonModule,

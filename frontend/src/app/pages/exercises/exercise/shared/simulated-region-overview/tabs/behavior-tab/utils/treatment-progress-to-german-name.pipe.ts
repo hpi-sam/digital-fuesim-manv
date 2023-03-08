@@ -4,10 +4,10 @@ import type { TreatmentProgress } from 'digital-fuesim-manv-shared';
 const treatmentProgressToGermanNameDictionary: {
     [Key in TreatmentProgress]: string;
 } = {
-    counted: 'Gezählt',
+    counted: 'Vorsichten',
     secured: 'Erstversorgung sichergestellt',
-    triaged: 'Vorgesichtet',
-    unknown: 'Unbekannt',
+    triaged: 'Behandeln, Personal fehlt',
+    unknown: 'Erkunden',
 };
 
 @Pipe({

@@ -1,8 +1,14 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type { UUID, UUIDSet } from 'digital-fuesim-manv-shared';
+import type {
+    PatientStatus,
+    UUID,
+    UUIDSet,
+    ExerciseConfiguration,
+} from 'digital-fuesim-manv-shared';
 import {
+    Patient,
     TreatPatientsBehaviorState,
     SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
@@ -11,6 +17,7 @@ import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     createSelectElementsInSimulatedRegion,
+    selectConfiguration,
     selectPatients,
 } from 'src/app/state/application/selectors/exercise.selectors';
 
@@ -62,7 +69,17 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
                     selectPatients,
                     this.simulatedRegion.id
                 ),
-                (patients) => patients.map((patient) => patient.id)
+                selectConfiguration,
+                (patients, configuration) =>
+                    patients
+                        .sort((patientA, patientB) =>
+                            this.comparePatientsByTriageCategory(
+                                patientA,
+                                patientB,
+                                configuration
+                            )
+                        )
+                        .map((patient) => patient.id)
             )
         );
     }
@@ -88,5 +105,50 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
             secured,
             countingTimePerPatient,
         });
+    }
+
+    private comparePatientsByTriageCategory(
+        patientA: Patient,
+        patientB: Patient,
+        configuration: ExerciseConfiguration
+    ): number {
+        let statusA!: PatientStatus;
+        let statusB!: PatientStatus;
+
+        if (patientA === undefined) {
+            statusA = 'white';
+        } else {
+            statusA = Patient.getVisibleStatus(
+                patientA,
+                configuration.pretriageEnabled,
+                configuration.bluePatientsEnabled
+            );
+        }
+        if (patientB === undefined) {
+            statusB = 'white';
+        } else {
+            statusB = Patient.getVisibleStatus(
+                patientB,
+                configuration.pretriageEnabled,
+                configuration.bluePatientsEnabled
+            );
+        }
+
+        const patientCategoryOrderDictionary: {
+            [Key in PatientStatus]: number;
+        } = {
+            black: 5,
+            blue: 4,
+            green: 3,
+            red: 1,
+            white: 0,
+            yellow: 2,
+        };
+        const valueA = patientCategoryOrderDictionary[statusA];
+        const valueB = patientCategoryOrderDictionary[statusB];
+        return valueA !== valueB
+            ? valueA - valueB
+            : patientCategoryOrderDictionary[patientA.realStatus] -
+                  patientCategoryOrderDictionary[patientB.realStatus];
     }
 }

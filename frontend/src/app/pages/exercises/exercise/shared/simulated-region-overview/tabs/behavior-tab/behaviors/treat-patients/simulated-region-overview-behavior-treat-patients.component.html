@@ -16,7 +16,20 @@
             </h4>
         </div>
         <div class="col-sm justify-content-center" *ngIf="informationCollapsed">
-            <span class="badge rounded-pill text-bg-info">
+            <span
+                class="badge rounded-pill"
+                [class.text-bg-info]="
+                    treatPatientsBehaviorState.treatmentProgress ===
+                        'unknown' ||
+                    treatPatientsBehaviorState.treatmentProgress === 'counted'
+                "
+                [class.text-bg-warning]="
+                    treatPatientsBehaviorState.treatmentProgress === 'triaged'
+                "
+                [class.text-bg-success]="
+                    treatPatientsBehaviorState.treatmentProgress === 'secured'
+                "
+            >
                 {{
                     treatPatientsBehaviorState.treatmentProgress
                         | treatmentProgressToGermanName
@@ -38,7 +51,20 @@
     >
         <div class="col-sm">Derzeitige Phase</div>
         <div class="col-sm">
-            <span class="badge rounded-pill text-bg-info">
+            <span
+                class="badge rounded-pill"
+                [class.text-bg-info]="
+                    treatPatientsBehaviorState.treatmentProgress ===
+                        'unknown' ||
+                    treatPatientsBehaviorState.treatmentProgress === 'counted'
+                "
+                [class.text-bg-warning]="
+                    treatPatientsBehaviorState.treatmentProgress === 'triaged'
+                "
+                [class.text-bg-success]="
+                    treatPatientsBehaviorState.treatmentProgress === 'secured'
+                "
+            >
                 {{
                     treatPatientsBehaviorState.treatmentProgress
                         | treatmentProgressToGermanName
@@ -63,13 +89,10 @@
         [(ngbCollapse)]="informationCollapsed"
     >
         <div class="col-sm justify-content-center">
-            <h6 class="text-center">Name</h6>
+            <h6 class="text-center">Sichtungs<wbr />kategorie</h6>
         </div>
         <div class="col-sm justify-content-center">
-            <h6 class="text-center">Realer Status</h6>
-        </div>
-        <div class="col-sm justify-content-center">
-            <h6 class="text-center">Sichtbarer Status</h6>
+            <h6 class="text-center">Verlauf</h6>
         </div>
         <div
             *ngIf="treatPatientsBehaviorState.treatmentProgress !== 'unknown'"
@@ -124,7 +147,8 @@
         [(ngbCollapse)]="settingsCollapsed"
     >
         <h5 class="mt-2">
-            Häufigkeit der Neuzuteilung in den jeweiligen Zuständen
+            Häufigkeit der Zuteilungsberechnung durch die Simulation in den
+            jeweiligen Zuständen
         </h5>
     </div>
     <div
@@ -132,10 +156,10 @@
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >
-        <div class="col-sm">Unbekannt</div>
+        <div class="col-sm">Erkunden</div>
         <div class="col-sm">
             <div
-                title="Wie häufig neu zugeteilt werden soll, wenn das Personal grade angekommen ist."
+                title="Wie häufig neu berechnet werden soll, wenn das Personal grade angekommen ist und gezählt wird."
                 class="input-group input-group-sm float-start"
                 style="max-width: 250px"
             >
@@ -170,10 +194,10 @@
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >
-        <div class="col-sm">Gezählt</div>
+        <div class="col-sm">Vorsichten</div>
         <div class="col-sm">
             <div
-                title="Wie häufig neu zugeteilt werden soll, wenn das Zählen der Patienten abgeschlossen ist."
+                title="Wie häufig neu berechnet werden soll, wenn das Zählen der Patienten abgeschlossen ist und vorgesichtet wird."
                 class="input-group input-group-sm float-start"
                 style="max-width: 250px"
             >
@@ -208,10 +232,10 @@
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >
-        <div class="col-sm">Vorgesichtet</div>
+        <div class="col-sm">Behandeln, Personal fehlt</div>
         <div class="col-sm">
             <div
-                title="Wie häufig neu zugeteilt werden soll, nachdem das Personal vorgesichtet."
+                title="Wie häufig neu berechnet werden soll, nachdem das Personal vorgesichtet hat aber die Erstversorgung noch nicht sichergestellt ist."
                 class="input-group input-group-sm float-start"
                 style="max-width: 250px"
             >
@@ -249,7 +273,7 @@
         <div class="col-sm">Erstversorgung sichergestellt</div>
         <div class="col-sm">
             <div
-                title="Wie häufig neu zugeteilt werden soll, nachdem die Erstversorgung sichergesetellt ist."
+                title="Wie häufig neu berechnet werden soll, nachdem die Erstversorgung sichergesetellt ist."
                 class="input-group input-group-sm float-start"
                 style="max-width: 250px"
             >

@@ -1,25 +1,39 @@
 <div class="col-sm d-inline-flex justify-content-center">
-    <span class="text-center">
-        {{ (patient$ | async)!.personalInformation.name }}
-    </span>
-</div>
-<div class="col-sm d-inline-flex justify-content-center">
-    <app-patient-status-badge
-        [status]="(patient$ | async)!.realStatus"
-    ></app-patient-status-badge>
-</div>
-<div class="col-sm d-inline-flex justify-content-center">
     <app-patient-status-badge
         [status]="(visibleStatus$ | async)!"
     ></app-patient-status-badge>
 </div>
+<div class="col-sm d-inline-flex justify-content-center">
+    <app-patient-status-display
+        [patientStatus]="(patient$ | async)!.patientStatusCode"
+    ></app-patient-status-display>
+</div>
 <div
-    class="col-sm d-inline-flex"
+    class="col-sm d-inline-flex justify-content-start"
     style="flex-wrap: wrap"
     *ngIf="cateringsActive"
 >
-    <div *ngFor="let person of caterings$ | async" class="d-flex flex-grow-1">
-        <div class="container d-grid m-1 flex-grow-1">
+    <div
+        *ngFor="let person of caterings$ | async"
+        class="d-flex flex-grow-1 m-1 d-inline-flex"
+        style="
+            width: 50px;
+            min-width: 50px;
+            max-width: 50px;
+            padding-left: 0px;
+            padding-right: 0px;
+        "
+    >
+        <div
+            class="container d-grid flex-grow-1"
+            style="
+                width: 50px;
+                min-width: 50px;
+                max-width: 50px;
+                padding-left: 0;
+                padding-right: 0;
+            "
+        >
             <ngb-progressbar
                 type="info"
                 [value]="(1 / person.len) * 100"
@@ -38,8 +52,10 @@
                 [openDelay]="300"
                 [closeDelay]="100"
                 style="grid-column: 1; grid-row: 1"
-                class="h-100 w-100 m-1"
-                >{{ person.personnelType | personnelName }}</span
+                class="h-100 w-100 flex-grow-1 text-center"
+                >{{
+                    person.personnelType | personnelTypeToGermanAbbreviation
+                }}</span
             >
         </div>
     </div>
