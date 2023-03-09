@@ -1,4 +1,3 @@
-import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
 import { TransferPoint, UUID } from 'digital-fuesim-manv-shared';
@@ -6,7 +5,6 @@ import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    createSelectTransferPoint,
     selectTransferPoints,
 } from 'src/app/state/application/selectors/exercise.selectors';
 
@@ -15,10 +13,8 @@ import {
     templateUrl: './other-transfer-point-tab.component.html',
     styleUrls: ['./other-transfer-point-tab.component.scss'],
 })
-export class OtherTransferPointTabComponent implements OnInit {
-    @Input() public transferPointId!: UUID;
-
-    public transferPoint$?: Observable<TransferPoint>;
+export class OtherTransferPointTabComponent {
+    @Input() public transferPoint!: TransferPoint;
 
     public transferPoints$: Observable<{ [key: UUID]: TransferPoint }> =
         this.store.select(selectTransferPoints);
@@ -28,11 +24,11 @@ export class OtherTransferPointTabComponent implements OnInit {
      */
     public readonly transferPointsToBeAdded$ = this.store.select(
         createSelector(selectTransferPoints, (transferPoints) => {
-            const currentTransferPoint = transferPoints[this.transferPointId]!;
+            const currentTransferPoint = transferPoints[this.transferPoint.id]!;
             return Object.fromEntries(
                 Object.entries(transferPoints).filter(
                     ([key]) =>
-                        key !== this.transferPointId &&
+                        key !== this.transferPoint.id &&
                         !currentTransferPoint.reachableTransferPoints[key]
                 )
             );
@@ -44,16 +40,10 @@ export class OtherTransferPointTabComponent implements OnInit {
         private readonly exerciseService: ExerciseService
     ) {}
 
-    ngOnInit() {
-        this.transferPoint$ = this.store.select(
-            createSelectTransferPoint(this.transferPointId)
-        );
-    }
-
     public connectTransferPoint(transferPointId: UUID, duration?: number) {
         this.exerciseService.proposeAction({
             type: '[TransferPoint] Connect TransferPoints',
-            transferPointId1: this.transferPointId,
+            transferPointId1: this.transferPoint.id,
             transferPointId2: transferPointId,
             duration,
         });
@@ -62,7 +52,7 @@ export class OtherTransferPointTabComponent implements OnInit {
     public disconnectTransferPoint(transferPointId: UUID) {
         this.exerciseService.proposeAction({
             type: '[TransferPoint] Disconnect TransferPoints',
-            transferPointId1: this.transferPointId,
+            transferPointId1: this.transferPoint.id,
             transferPointId2: transferPointId,
         });
     }
