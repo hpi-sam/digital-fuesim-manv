@@ -2,10 +2,10 @@ import type { UUID } from '../utils';
 import type { Migration } from './migration-functions';
 
 export const impossibleMigration: Migration = {
-    actions: (initialState, actions) => {
+    action: (intermediaryState, actions) => {
         throw new RestoreError(
             'The migration is not possible',
-            (initialState as { id?: UUID }).id ?? 'unknown'
+            (intermediaryState as { id?: UUID }).id ?? 'unknown'
         );
     },
     state: (state) => {

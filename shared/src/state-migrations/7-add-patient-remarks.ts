@@ -3,13 +3,11 @@ import type { UUID } from '../utils';
 import type { Migration } from './migration-functions';
 
 export const addPatientRemarks7: Migration = {
-    actions: (_initialState, actions) => {
-        actions.forEach((action) => {
-            if ((action as Action | null)?.type === '[Patient] Add patient') {
-                (action as { patient: { remarks: string } }).patient.remarks =
-                    '';
-            }
-        });
+    action: (_intermediaryState, action) => {
+        if ((action as Action | null)?.type === '[Patient] Add patient') {
+            (action as { patient: { remarks: string } }).patient.remarks = '';
+        }
+        return true;
     },
     state: (state) => {
         const typedState = state as {

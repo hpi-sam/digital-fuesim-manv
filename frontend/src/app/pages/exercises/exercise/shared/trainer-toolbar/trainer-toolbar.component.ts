@@ -18,6 +18,7 @@ import { openEmergencyOperationsCenterModal } from '../emergency-operations-cent
 import { openExerciseSettingsModal } from '../exercise-settings/open-exercise-settings-modal';
 import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercise-statistics-modal';
 import { openHospitalEditorModal } from '../hospital-editor/hospital-editor-modal';
+import { openSimulatedRegionsModal } from '../simulated-region-overview/open-simulated-regions-modal';
 import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
 
 @Component({
@@ -65,6 +66,10 @@ export class TrainerToolbarComponent {
 
     public openExerciseStatisticsModal() {
         openExerciseStatisticsModal(this.modalService);
+    }
+
+    public openSimulatedRegions() {
+        openSimulatedRegionsModal(this.modalService);
     }
 
     public async pauseExercise() {
