@@ -34,7 +34,8 @@ import { getElement, getElementByPredicate } from './utils/get-element';
 /**
  * This function assumes that every SimulatedRegion holds **ONLY** material,vehicles,patients and personnel
  * (in any amount) and **ONE** TransferPoint.
- *  If one were to add more things to a SimulatedRegion one would have to change this function accordingly.
+ * It only deletes material,vehicles and personnel if they are **ALL** in the SimulatedRegion to be deleted
+ * If one were to add more things to a SimulatedRegion one would have to change this function accordingly.
  * @param draftState: The Draft State from which the SimulatedRegion should be deleted.
  * @param simulatedRegionId: The Id of the SimulatedRegion that should be deleted.
  */
@@ -46,14 +47,24 @@ export function deleteSimulatedRegion(
     // Delete related material,vehicles,patients and personnel
 
     Object.values(draftState.materials)
-        .filter((material) =>
-            isInSpecificSimulatedRegion(material, simulatedRegionId)
+        .filter(
+            (material) =>
+                isInSpecificSimulatedRegion(material, simulatedRegionId) &&
+                isInSpecificSimulatedRegion(
+                    getElement(draftState, 'vehicle', material.vehicleId),
+                    simulatedRegionId
+                )
         )
         .forEach((material) => delete draftState.materials[material.id]);
 
     Object.values(draftState.personnel)
-        .filter((personnel) =>
-            isInSpecificSimulatedRegion(personnel, simulatedRegionId)
+        .filter(
+            (personnel) =>
+                isInSpecificSimulatedRegion(personnel, simulatedRegionId) &&
+                isInSpecificSimulatedRegion(
+                    getElement(draftState, 'vehicle', personnel.vehicleId),
+                    simulatedRegionId
+                )
         )
         .forEach((personnel) => delete draftState.personnel[personnel.id]);
 
@@ -64,8 +75,21 @@ export function deleteSimulatedRegion(
         .forEach((patients) => delete draftState.patients[patients.id]);
 
     Object.values(draftState.vehicles)
-        .filter((vehicle) =>
-            isInSpecificSimulatedRegion(vehicle, simulatedRegionId)
+        .filter(
+            (vehicle) =>
+                isInSpecificSimulatedRegion(vehicle, simulatedRegionId) &&
+                Object.keys(vehicle.materialIds).every((materialId) =>
+                    isInSpecificSimulatedRegion(
+                        getElement(draftState, 'material', materialId),
+                        simulatedRegionId
+                    )
+                ) &&
+                Object.keys(vehicle.personnelIds).every((personnelId) =>
+                    isInSpecificSimulatedRegion(
+                        getElement(draftState, 'personnel', personnelId),
+                        simulatedRegionId
+                    )
+                )
         )
         .forEach((vehicle) => delete draftState.vehicles[vehicle.id]);
 
