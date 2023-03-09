@@ -1,11 +1,12 @@
 <div class="h-100 mh-100 overflow-auto">
     <h6>Aus eintreffenden Fahrzeugen aussteigen</h6>
     <div class="form-group mb-3">
-        <label class="form-label">Aussteigedauer</label>
-        <div
-            title="Zeit bis zur Ankunft"
-            class="input-group input-group-sm"
+        <label
+            class="form-label"
+            title="Zeit nach dem Eintreffen eines Fahreugs bevor die Rettungsmittel zur Verfügung stehen"
+            >Aussteigedauer</label
         >
+        <div class="input-group input-group-sm">
             <input
                 #timeInput="ngModel"
                 [ngModel]="((unloadDuration$ | async) ?? 0) / 60 / 1000"
