@@ -1,24 +1,7 @@
 <ng-container *ngIf="patient$ | async as patient">
     <h5 class="popover-header">
         {{ patient.personalInformation.name }}
-        <span
-            *ngIf="
-                (currentRole$ | async) === 'participant'
-                    ? (visibleStatus$ | async)
-                    : patient.realStatus as displayedStatus
-            "
-            [ngStyle]="{ 'background-color': displayedStatus }"
-            [class.text-dark]="
-                displayedStatus === 'yellow' || displayedStatus === 'white'
-            "
-            class="badge rounded-pill font-monospace"
-        >
-            {{
-                (currentRole$ | async) !== 'participant'
-                    ? (patient.health / healthPointsDefaults.max | percent)
-                    : statusNames[displayedStatus]
-            }}
-        </span>
+        <app-patient-health-point-display [patientId]="patientId" />
         <button
             (click)="closePopup.emit()"
             type="button"

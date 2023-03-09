@@ -26,6 +26,7 @@ import { JoinIdDirective } from './validation/join-id-validator.directive';
 import { PersonnelNamePipe } from './pipes/personnel-name.pipe';
 import { CaterCapacityCountPipe } from './pipes/cater-capacity-count.pipe';
 import { FooterComponent } from './components/footer/footer.component';
+import { PatientHealthPointDisplayComponent } from './components/patient-health-point-display/patient-health-point-display.component';
 
 @NgModule({
     declarations: [
@@ -54,6 +55,7 @@ import { FooterComponent } from './components/footer/footer.component';
         CaterCapacityCountPipe,
         FileInputDirective,
         FooterComponent,
+        PatientHealthPointDisplayComponent,
     ],
     imports: [CommonModule, RouterModule],
     exports: [
@@ -81,6 +83,7 @@ import { FooterComponent } from './components/footer/footer.component';
         PatientStatusBadgeComponent,
         FileInputDirective,
         FooterComponent,
+        PatientHealthPointDisplayComponent,
     ],
 })
 export class SharedModule {}
