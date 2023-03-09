@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgbDropdownModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import {
+    NgbDropdownModule,
+    NgbNavModule,
+    NgbTooltipModule,
+} from '@ng-bootstrap/ng-bootstrap';
 import { MessagesModule } from 'src/app/feature/messages/messages.module';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { SimulatedRegionOverviewModule } from '../simulated-region-overview/simulated-region-overview.module';
@@ -37,6 +41,7 @@ import { SimulatedRegionPopupComponent } from './shared/simulated-region-popup/s
         SharedModule,
         NgbDropdownModule,
         NgbNavModule,
+        NgbTooltipModule,
         MessagesModule,
         SimulatedRegionOverviewModule,
     ],
