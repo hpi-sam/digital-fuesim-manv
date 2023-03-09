@@ -21,6 +21,8 @@ import {
     MaterialAvailableEvent,
 } from '../../simulation';
 import { sendSimulationEvent } from '../../simulation/events/utils';
+import type { ExerciseState } from '../../state';
+import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -28,6 +30,65 @@ import { ExpectedReducerError, ReducerError } from '../reducer-error';
 import { TransferPointActionReducers } from './transfer-point';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement, getElementByPredicate } from './utils/get-element';
+
+/**
+ * This function assumes that every SimulatedRegion holds **ONLY** material,vehicles,patients and personnel
+ * (in any amount) and **ONE** TransferPoint.
+ *  If one were to add more things to a SimulatedRegion one would have to change this function accordingly.
+ * @param draftState: The Draft State from which the SimulatedRegion should be deleted.
+ * @param simulatedRegionId: The Id of the SimulatedRegion that should be deleted.
+ */
+
+export function deleteSimulatedRegion(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegionId: UUID
+) {
+    // Delete related material,vehicles,patients and personnel
+
+    Object.values(draftState.materials)
+        .filter((material) =>
+            isInSpecificSimulatedRegion(material, simulatedRegionId)
+        )
+        .forEach((material) => delete draftState.materials[material.id]);
+
+    Object.values(draftState.personnel)
+        .filter((personnel) =>
+            isInSpecificSimulatedRegion(personnel, simulatedRegionId)
+        )
+        .forEach((personnel) => delete draftState.personnel[personnel.id]);
+
+    Object.values(draftState.patients)
+        .filter((patients) =>
+            isInSpecificSimulatedRegion(patients, simulatedRegionId)
+        )
+        .forEach((patients) => delete draftState.patients[patients.id]);
+
+    Object.values(draftState.vehicles)
+        .filter((vehicle) =>
+            isInSpecificSimulatedRegion(vehicle, simulatedRegionId)
+        )
+        .forEach((vehicle) => delete draftState.vehicles[vehicle.id]);
+
+    // Delete the TransferPoint
+
+    const simulatedRegion = getElement(
+        draftState,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+
+    const transferPoint = getElementByPredicate(
+        draftState,
+        'transferPoint',
+        (element) => isInSpecificSimulatedRegion(element, simulatedRegion.id)
+    );
+
+    delete draftState.transferPoints[transferPoint.id];
+
+    // Delete the SimulatedRegion
+
+    delete draftState.simulatedRegions[simulatedRegionId];
+}
 
 export class AddSimulatedRegionAction implements Action {
     @IsValue('[SimulatedRegion] Add simulated region' as const)
@@ -146,25 +207,7 @@ export namespace SimulatedRegionActionReducers {
         {
             action: RemoveSimulatedRegionAction,
             reducer: (draftState, { simulatedRegionId }) => {
-                const simulatedRegion = getElement(
-                    draftState,
-                    'simulatedRegion',
-                    simulatedRegionId
-                );
-                const transferPoint = getElementByPredicate(
-                    draftState,
-                    'transferPoint',
-                    (element) =>
-                        isInSpecificSimulatedRegion(element, simulatedRegion.id)
-                );
-                TransferPointActionReducers.removeTransferPoint.reducer(
-                    draftState,
-                    {
-                        type: '[TransferPoint] Remove TransferPoint',
-                        transferPointId: transferPoint.id,
-                    }
-                );
-                delete draftState.simulatedRegions[simulatedRegionId];
+                deleteSimulatedRegion(draftState, simulatedRegionId);
                 return draftState;
             },
             rights: 'trainer',
