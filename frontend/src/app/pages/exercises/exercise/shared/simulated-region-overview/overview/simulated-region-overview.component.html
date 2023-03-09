@@ -17,8 +17,8 @@
                 <ng-template ngbNavContent
                     ><app-other-transfer-point-tab
                         class="mh-100 d-block h-100"
-                        *ngIf="transferPoint$ | async as transferPoint"
-                        [transferPoint]="transferPoint"
+                        *ngIf="transferPointId$ | async as transferPointId"
+                        [transferPointId]="transferPointId"
                     />
                 </ng-template>
             </ng-container>
@@ -29,8 +29,8 @@
                 <ng-template ngbNavContent
                     ><app-transfer-hospitals-tab
                         class="mh-100 d-block h-100"
-                        *ngIf="transferPoint$ | async as transferPoint"
-                        [transferPoint]="transferPoint"
+                        *ngIf="transferPointId$ | async as transferPointId"
+                        [transferPointId]="transferPointId"
                     />
                 </ng-template>
             </ng-container>
