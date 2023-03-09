@@ -14,6 +14,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   The _Transfers_ tab allows setting up transfer connections from/to other simulated regions and/or transfer points
     -   The _Behaviors_ tab allows adding and removing behaviors from simulated regions, inspect their current state and customize their settings
         -   For the assign leader behavior, the type of the currently assigned leader is shown
+        -   For the treat patients behavior, the current treatment phase is shown. Additionally the matching from patients to personnel is shown, including information on how many patients are treated by the same personnel at a time and the visible status and progression of the patients. There are also settings for how often the matching is recalculated and how long it takes to count patients.
         -   For the unload arrived vehicles behavior, the unload duration can be set and all currently unloading vehicles are listed with their remaining time
 -   To manage exercises with a large amount of simulated regions easily, a large modal has been added that can be used to manage all simulated regions
     -   Every simulated region popup shows a button to view the current simulated region in this modal
