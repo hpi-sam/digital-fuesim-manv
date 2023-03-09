@@ -1,4 +1,3 @@
-import '@angular/localize/init';
 import type { OnDestroy, OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
@@ -29,7 +28,7 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
     @Input() cateringsActive!: boolean;
 
     public caterings$!: Observable<
-        { personnelType: PersonnelType; len: number }[]
+        { personnelType: PersonnelType; assignedPatientCount: number }[]
     >;
     public visibleStatus$?: Observable<PatientStatus>;
     public patient$!: Observable<Patient>;
@@ -41,19 +40,23 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
     }
 
     ngOnInit(): void {
+        const patientSelector = createSelectPatient(this.patientId);
+
         this.caterings$ = this.store
             .select(
-                createSelector(selectPersonnel, (personnel) =>
-                    Object.values(personnel)
-                        .filter(
-                            (person) =>
-                                person.assignedPatientIds[this.patientId]
-                        )
-                        .map((person) => ({
-                            personnelType: person.personnelType,
-                            len: Object.values(person.assignedPatientIds)
-                                .length,
-                        }))
+                createSelector(
+                    selectPersonnel,
+                    patientSelector,
+                    (personnel, patient) =>
+                        Object.keys(patient.assignedPersonnelIds)
+                            .map((personnelId) => personnel[personnelId])
+                            .filter((person) => person !== undefined)
+                            .map((person) => ({
+                                personnelType: person!.personnelType,
+                                assignedPatientCount: Object.values(
+                                    person!.assignedPatientIds
+                                ).length,
+                            }))
                 )
             )
             .pipe(
@@ -64,14 +67,13 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
                         a.length === b.length &&
                         a.every(
                             (val, index) =>
-                                val.len === b[index]?.len &&
+                                val.assignedPatientCount ===
+                                    b[index]?.assignedPatientCount &&
                                 val.personnelType === b[index]?.personnelType
                         )
                 ),
                 takeUntil(this.destroy$)
             );
-
-        const patientSelector = createSelectPatient(this.patientId);
 
         this.patient$ = this.store.select(patientSelector);
 

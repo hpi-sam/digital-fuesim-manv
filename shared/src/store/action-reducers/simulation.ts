@@ -1,4 +1,4 @@
-import { IsNumber, IsUUID, Min } from 'class-validator';
+import { IsNumber, IsOptional, IsUUID, Min } from 'class-validator';
 import type { TreatPatientsBehaviorState } from '../../simulation';
 import type { Mutable } from '../../utils';
 import { UUID, uuidValidationOptions } from '../../utils';
@@ -17,25 +17,30 @@ export class UpdateTreatPatientsIntervalsAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly behaviorStateId!: UUID;
 
+    @IsOptional()
     @IsNumber()
-    @Min(-1)
-    public readonly unknown!: number;
+    @Min(0)
+    public readonly unknown?: number;
 
+    @IsOptional()
     @IsNumber()
-    @Min(-1)
-    public readonly counted!: number;
+    @Min(0)
+    public readonly counted?: number;
 
+    @IsOptional()
     @IsNumber()
-    @Min(-1)
-    public readonly triaged!: number;
+    @Min(0)
+    public readonly triaged?: number;
 
+    @IsOptional()
     @IsNumber()
-    @Min(-1)
-    public readonly secured!: number;
+    @Min(0)
+    public readonly secured?: number;
 
+    @IsOptional()
     @IsNumber()
-    @Min(-1)
-    public readonly countingTimePerPatient!: number;
+    @Min(0)
+    public readonly countingTimePerPatient?: number;
 }
 
 export namespace SimulationActionReducers {
@@ -43,7 +48,7 @@ export namespace SimulationActionReducers {
         {
             action: UpdateTreatPatientsIntervalsAction,
             /*
-             *   unknown, counted, triaged, secured, countingTimePerPatient stay the same when -1
+             *   unknown, counted, triaged, secured, countingTimePerPatient stay the same when 0
              */
             reducer: (
                 draftState,
@@ -66,19 +71,19 @@ export namespace SimulationActionReducers {
                 const treatPatientsBehaviorState = behaviorStates.find(
                     (behaviorState) => behaviorState.id === behaviorStateId
                 ) as Mutable<TreatPatientsBehaviorState>;
-                if (unknown >= 0) {
+                if (unknown) {
                     treatPatientsBehaviorState.intervals.unknown = unknown;
                 }
-                if (counted >= 0) {
+                if (counted) {
                     treatPatientsBehaviorState.intervals.counted = counted;
                 }
-                if (triaged >= 0) {
+                if (triaged) {
                     treatPatientsBehaviorState.intervals.triaged = triaged;
                 }
-                if (secured >= 0) {
+                if (secured) {
                     treatPatientsBehaviorState.intervals.secured = secured;
                 }
-                if (countingTimePerPatient >= 0) {
+                if (countingTimePerPatient) {
                     treatPatientsBehaviorState.intervals.countingTimePerPatient =
                         countingTimePerPatient;
                 }

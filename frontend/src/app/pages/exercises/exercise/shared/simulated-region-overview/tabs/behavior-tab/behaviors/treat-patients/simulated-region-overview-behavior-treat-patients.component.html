@@ -5,7 +5,7 @@
         style="cursor: pointer"
     >
         <div class="col-sm">
-            <h4 style="padding-left: 0; padding-right: 0">
+            <h4 class="ps-0 pe-0">
                 <i
                     *ngIf="informationCollapsed; else informationExpanded"
                     class="bi bi-caret-right-fill"
@@ -113,13 +113,8 @@
                 [cateringsActive]="
                     treatPatientsBehaviorState.treatmentProgress !== 'unknown'
                 "
-                class="row align-items-center"
-                style="
-                    padding-left: 0;
-                    padding-right: 0;
-                    overflow-x: auto;
-                    flex-wrap: nowrap;
-                "
+                class="row align-items-center ps-0 pe-0"
+                style="overflow-x: auto; flex-wrap: nowrap"
             ></app-simulated-region-overview-behavior-treat-patients-patient-details>
         </div>
     </div>
@@ -172,10 +167,10 @@
                     (appSaveOnTyping)="
                         updateTreatPatientsBehaviorState(
                             $event * 1000,
-                            -1,
-                            -1,
-                            -1,
-                            -1
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined
                         )
                     "
                     min="0"
@@ -209,11 +204,11 @@
                     "
                     (appSaveOnTyping)="
                         updateTreatPatientsBehaviorState(
-                            -1,
+                            undefined,
                             $event * 1000,
-                            -1,
-                            -1,
-                            -1
+                            undefined,
+                            undefined,
+                            undefined
                         )
                     "
                     min="0"
@@ -247,11 +242,11 @@
                     "
                     (appSaveOnTyping)="
                         updateTreatPatientsBehaviorState(
-                            -1,
-                            -1,
+                            undefined,
+                            undefined,
                             $event * 1000,
-                            -1,
-                            -1
+                            undefined,
+                            undefined
                         )
                     "
                     min="0"
@@ -285,11 +280,11 @@
                     "
                     (appSaveOnTyping)="
                         updateTreatPatientsBehaviorState(
-                            -1,
-                            -1,
-                            -1,
+                            undefined,
+                            undefined,
+                            undefined,
                             $event * 1000,
-                            -1
+                            undefined
                         )
                     "
                     min="0"
@@ -333,10 +328,10 @@
                     "
                     (appSaveOnTyping)="
                         updateTreatPatientsBehaviorState(
-                            -1,
-                            -1,
-                            -1,
-                            -1,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
                             $event * 1000
                         )
                     "

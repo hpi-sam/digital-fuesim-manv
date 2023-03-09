@@ -4,7 +4,6 @@ import { createSelector, Store } from '@ngrx/store';
 import type {
     PatientStatus,
     UUID,
-    UUIDSet,
     ExerciseConfiguration,
 } from 'digital-fuesim-manv-shared';
 import {
@@ -84,16 +83,12 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
         );
     }
 
-    public help(s: UUIDSet) {
-        return Object.keys(s);
-    }
-
     public updateTreatPatientsBehaviorState(
-        unknown: number,
-        counted: number,
-        triaged: number,
-        secured: number,
-        countingTimePerPatient: number
+        unknown?: number,
+        counted?: number,
+        triaged?: number,
+        secured?: number,
+        countingTimePerPatient?: number
     ) {
         this.exerciseService.proposeAction({
             type: '[TreatPatientsBehavior] Update TreatPatientsIntervals',
