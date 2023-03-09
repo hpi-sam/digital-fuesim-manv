@@ -1,24 +1,26 @@
 <div class="h-100 mh-100 overflow-auto">
     <h6>Aus eintreffenden Fahrzeugen aussteigen</h6>
-    <div
-        title="Zeit bis zur Ankunft"
-        class="input-group input-group-sm mb-3 ms-3"
-        style="width: 100px"
-    >
+    <div class="form-group mb-3">
         <label class="form-label">Aussteigedauer</label>
-        <input
-            #timeInput="ngModel"
-            [ngModel]="((unloadDuration$ | async) ?? 0) / 60 / 1000"
-            (appSaveOnTyping)="updateUnloadTime($event * 1000 * 60)"
-            min="0"
-            required
-            step="0.1"
-            type="number"
-            class="form-control form-control-sm d-inline-block no-validation"
-            placeholder="Dauer"
-            data-cy="unloadVehicleBehaviorPopupDurationInput"
-        />
-        <span class="input-group-text">Min</span>
+        <div
+            title="Zeit bis zur Ankunft"
+            class="input-group input-group-sm"
+        >
+            <input
+                #timeInput="ngModel"
+                [ngModel]="((unloadDuration$ | async) ?? 0) / 60 / 1000"
+                (appSaveOnTyping)="updateUnloadTime($event * 1000 * 60)"
+                min="0"
+                required
+                step="0.1"
+                type="number"
+                class="form-control form-control-sm d-inline-block no-validation"
+                placeholder="Dauer"
+                data-cy="unloadVehicleBehaviorPopupDurationInput"
+            />
+            <span class="input-group-text">Min</span>
+        </div>
+        <app-display-validation [ngModelInput]="timeInput" />
     </div>
 
     <h6>Gerade aussteigend</h6>
