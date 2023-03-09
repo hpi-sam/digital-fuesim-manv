@@ -1,5 +1,10 @@
 import type { OnInit } from '@angular/core';
-import { Component, EventEmitter, Output } from '@angular/core';
+import {
+    ViewEncapsulation,
+    Component,
+    EventEmitter,
+    Output,
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID, TransferPoint } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
@@ -19,6 +24,7 @@ let activeNavId: NavIds = 'names';
     selector: 'app-transfer-point-popup',
     templateUrl: './transfer-point-popup.component.html',
     styleUrls: ['./transfer-point-popup.component.scss'],
+    encapsulation: ViewEncapsulation.None,
 })
 export class TransferPointPopupComponent implements PopupComponent, OnInit {
     // These properties are only set after OnInit

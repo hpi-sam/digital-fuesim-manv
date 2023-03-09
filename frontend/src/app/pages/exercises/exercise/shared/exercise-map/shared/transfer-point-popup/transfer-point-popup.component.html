@@ -8,7 +8,10 @@
             data-cy="transferPointPopupCloseButton"
         ></button>
     </h5>
-    <div class="popover-body" style="width: 500px">
+    <div
+        class="popover-body d-flex flex-column"
+        style="width: 500px; height: 300px"
+    >
         <nav #nav="ngbNav" ngbNav [(activeId)]="activeNavId" class="nav-tabs">
             <ng-container
                 ngbNavItem="names"
@@ -86,6 +89,10 @@
                 </ng-template>
             </ng-container>
         </nav>
-        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+        <div
+            [ngbNavOutlet]="nav"
+            class="mt-2 flex-grow-1 flex-shrink-1 transfer-point-overview-nav-outlet"
+            style="min-height: 0"
+        ></div>
     </div>
 </ng-container>

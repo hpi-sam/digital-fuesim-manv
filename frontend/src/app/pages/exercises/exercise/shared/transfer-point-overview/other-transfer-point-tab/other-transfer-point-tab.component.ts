@@ -1,12 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import { TransferPoint, UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import { TransferPoint } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import {
-    selectTransferPoints,
-} from 'src/app/state/application/selectors/exercise.selectors';
+import { selectTransferPoints } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
     selector: 'app-other-transfer-point-tab',

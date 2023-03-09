@@ -1,5 +1,14 @@
+import type { OnInit } from '@angular/core';
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { SimulatedRegion } from 'digital-fuesim-manv-shared';
+import { createSelector, Store } from '@ngrx/store';
+import type { TransferPoint } from 'digital-fuesim-manv-shared';
+import {
+    isInSpecificSimulatedRegion,
+    SimulatedRegion,
+} from 'digital-fuesim-manv-shared';
+import type { Observable } from 'rxjs';
+import type { AppState } from 'src/app/state/app.state';
+import { selectTransferPoints } from 'src/app/state/application/selectors/exercise.selectors';
 
 type NavIds = 'behaviors' | 'general' | 'transfer';
 /**
@@ -13,8 +22,27 @@ let activeNavId: NavIds = 'general';
     styleUrls: ['./simulated-region-overview.component.scss'],
     encapsulation: ViewEncapsulation.None,
 })
-export class SimulatedRegionOverviewGeneralComponent {
+export class SimulatedRegionOverviewGeneralComponent implements OnInit {
     @Input() simulatedRegion!: SimulatedRegion;
+
+    public transferPoint$?: Observable<TransferPoint>;
+
+    constructor(private readonly store: Store<AppState>) {}
+
+    ngOnInit() {
+        this.transferPoint$ = this.store.select(
+            createSelector(
+                selectTransferPoints,
+                (transferPoints) =>
+                    Object.values(transferPoints).find((transferPoint) =>
+                        isInSpecificSimulatedRegion(
+                            transferPoint,
+                            this.simulatedRegion.id
+                        )
+                    )!
+            )
+        );
+    }
 
     public get activeNavId() {
         return activeNavId;

@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type { Hospital, TransferPoint } from 'digital-fuesim-manv-shared';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { Hospital, UUID } from 'digital-fuesim-manv-shared';
+import { TransferPoint } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';

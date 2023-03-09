@@ -1,10 +1,11 @@
+<div class="container d-flex flex-column h-100">
     <p
         *ngIf="(transferPoint.reachableHospitals | values).length === 0"
         class="text-muted font-bold"
     >
         Es sind noch keine Krankenhäuser verbunden.
     </p>
-    <div class="mb-3 overflow-auto" style="height: 250px">
+    <div class="mb-3 overflow-auto flex-grow-1 flex-shrink-1">
         <ul *ngIf="hospitals$ | async as hospitals" class="list-group">
             <li
                 *ngFor="
@@ -80,3 +81,4 @@
             </button>
         </div>
     </div>
+</div>
