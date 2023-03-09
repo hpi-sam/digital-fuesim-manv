@@ -18,6 +18,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Simulated Regions now act as transfer points, meaning that they can be start and destination of a transfer
     -   Connection lines will be shown for transfer connections from/to simulated regions, too
 
+### Changed
+
+-   Images are now stored in git and not git lfs anymore
+
 ### Fixed
 
 -   Making a _Gruppenführer_ leader of a simulated region if the region already had a leader did not work. Now, if there already is a leader, better personnel (i.e. the old leader was not a _Gruppenführer_ but the new one is) will be chosen as new leader
