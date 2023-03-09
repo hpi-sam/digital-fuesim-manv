@@ -1,0 +1,58 @@
+<div class="container d-flex flex-row h-100" style="min-height: 0; gap: 4px">
+    <div
+        class="col mh-100 overflow-auto border-end border-secondary pe-1"
+        style="max-width: 30%"
+    >
+        <table
+            *ngIf="(patients$ | async)?.length; else noPatients"
+            class="table table-striped"
+        >
+            <thead>
+                <tr>
+                    <th scope="col">SK</th>
+                    <th scope="col">Gesichtet</th>
+                    <th scope="col">Verlauf</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    *ngFor="let patient of patients$ | async"
+                    (click)="selectedPatientId = patient.id"
+                    [class.table-primary]="selectedPatientId === patient.id"
+                    style="cursor: pointer"
+                >
+                    <td>
+                        <app-patient-status-badge
+                            [status]="patient.realStatus"
+                        />
+                    </td>
+                    <td>
+                        <app-patient-status-badge
+                            [status]="patient.visibleStatus"
+                        />
+                    </td>
+                    <td>
+                        <app-patient-status-display
+                            [patientStatus]="patient.patientStatusCode"
+                        />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <ng-template #noPatients>
+            <p class="text-muted">
+                Es befinden sich keine Patienten im simulierten Bereich.
+            </p>
+        </ng-template>
+    </div>
+    <div class="col overflow-auto" style="max-width: 70%">
+        <p *ngIf="selectedPatientId; else noSelectedPatient">
+            {{ selectedPatientId }}
+        </p>
+        <ng-template #noSelectedPatient>
+            <p class="text-muted">
+                Bitte wählen Sie einen Patienten links aus der Liste.
+            </p>
+        </ng-template>
+    </div>
+</div>
