@@ -2,12 +2,3 @@
 * text=auto
 # docker-entrypoint.sh needs LF (see https://github.com/hpi-sam/digital-fuesim-manv/issues/479)
 docker/docker-entrypoint.sh eol=lf
-
-# Git lfs
-*.jpg filter=lfs diff=lfs merge=lfs -text
-*.png filter=lfs diff=lfs merge=lfs -text
-*.jpeg filter=lfs diff=lfs merge=lfs -text
-*.mp4 filter=lfs diff=lfs merge=lfs -text
-*.mov filter=lfs diff=lfs merge=lfs -text
-*.pdf filter=lfs diff=lfs merge=lfs -text
-
