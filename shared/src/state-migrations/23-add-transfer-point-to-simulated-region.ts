@@ -4,7 +4,7 @@ import type { Migration } from './migration-functions';
 export const addTransferPointToSimulatedRegion23: Migration = {
     action: (intermediaryState, action) => {
         const actionType = (action as { type: string } | null)?.type;
-        if (actionType === '[SimulatedRegion] Add Simulated Region') {
+        if (actionType === '[SimulatedRegion] Add simulated region') {
             const typedAction = action as {
                 simulatedRegion: { name: string; id: string };
                 transferPoint?: {
