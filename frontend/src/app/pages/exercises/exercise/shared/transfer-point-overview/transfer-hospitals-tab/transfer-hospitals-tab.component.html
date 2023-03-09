@@ -1,4 +1,7 @@
-<div class="container d-flex flex-column h-100">
+<div
+    *ngIf="transferPoint$ | async as transferPoint"
+    class="container d-flex flex-column h-100"
+>
     <p
         *ngIf="(transferPoint.reachableHospitals | values).length === 0"
         class="text-muted font-bold"
