@@ -1,6 +1,10 @@
 import type { MemoizedSelector } from '@ngrx/store';
 import { createSelector } from '@ngrx/store';
 import type {
+    ExerciseSimulationActivityState,
+    ExerciseSimulationActivityType,
+    ExerciseSimulationBehaviorState,
+    ExerciseSimulationBehaviorType,
     ExerciseState,
     Personnel,
     UUID,
@@ -205,5 +209,52 @@ export function createSelectByPredicate<E extends WithPosition>(
 ) {
     return createSelector(selector, (elements) =>
         elements.filter((element) => predicate(element))
+    );
+}
+
+export function createSelectBehaviorState<
+    B extends ExerciseSimulationBehaviorState
+>(simulatedRegionId: UUID, behaviorId: UUID) {
+    return createSelector(
+        createSelectSimulatedRegion(simulatedRegionId),
+        (simulatedRegion) =>
+            simulatedRegion?.behaviors.find(
+                (behavior) => behavior.id === behaviorId
+            ) as B | undefined
+    );
+}
+
+export function createSelectActivityState<
+    B extends ExerciseSimulationActivityState
+>(simulatedRegionId: UUID, activityId: UUID) {
+    return createSelector(
+        createSelectSimulatedRegion(simulatedRegionId),
+        (simulatedRegion) => simulatedRegion.activities[activityId] as B
+    );
+}
+
+export function createSelectBehaviorStatesByType<
+    T extends ExerciseSimulationBehaviorType
+>(simulatedRegionId: UUID, behaviorType: T) {
+    return createSelector(
+        createSelectSimulatedRegion(simulatedRegionId),
+        (simulatedRegion) =>
+            simulatedRegion?.behaviors.filter(
+                (behavior): behavior is ExerciseSimulationBehaviorState<T> =>
+                    behavior.type === behaviorType
+            )
+    );
+}
+
+export function createSelectActivityStatesByType<
+    T extends ExerciseSimulationActivityType
+>(simulatedRegionId: UUID, activityType: T) {
+    return createSelector(
+        createSelectSimulatedRegion(simulatedRegionId),
+        (simulatedRegion) =>
+            Object.values(simulatedRegion?.activities).filter(
+                (activity): activity is ExerciseSimulationActivityState<T> =>
+                    activity.type === activityType
+            )
     );
 }

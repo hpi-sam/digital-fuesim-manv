@@ -34,6 +34,8 @@
                 ></app-simulated-region-overview-behavior-treat-patients
                 ><app-simulated-region-overview-behavior-unload-arriving-vehicles
                     *ngSwitchCase="'unloadArrivingVehiclesBehavior'"
+                    [simulatedRegionId]="simulatedRegion.id"
+                    [behaviorId]="selectedBehavior!.id"
                 ></app-simulated-region-overview-behavior-unload-arriving-vehicles>
                 <p *ngSwitchDefault class="text-muted font-bold">
                     Es ist noch keine Verhaltensweise ausgewählt.
