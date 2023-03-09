@@ -3,28 +3,27 @@ import { cloneDeepMutable, StrictObject } from '../utils';
 import type { Migration } from './migration-functions';
 
 export const treatmentSystemImprovements8: Migration = {
-    actions: (_initialState, actions: any[]) => {
-        for (const action of actions) {
-            switch (action?.type) {
-                case '[Vehicle] Add vehicle':
-                    for (const material of action.materials) {
-                        migrateMaterial(material);
-                    }
-                    for (const personnel of action.personnel) {
-                        migratePersonnel(personnel);
-                    }
-                    break;
-                case '[Patient] Add patient':
-                    migratePatient(action.patient);
-                    break;
-                case '[Vehicle] Load vehicle':
-                    if (action.elementToBeLoadedType === 'material') {
-                        action.elementToBeLoadedType = 'materials';
-                    } else if (action.elementToBeLoadedType === 'patient') {
-                        action.elementToBeLoadedType = 'patients';
-                    }
-            }
+    action: (_intermediaryState, action: any) => {
+        switch (action?.type) {
+            case '[Vehicle] Add vehicle':
+                for (const material of action.materials) {
+                    migrateMaterial(material);
+                }
+                for (const personnel of action.personnel) {
+                    migratePersonnel(personnel);
+                }
+                break;
+            case '[Patient] Add patient':
+                migratePatient(action.patient);
+                break;
+            case '[Vehicle] Load vehicle':
+                if (action.elementToBeLoadedType === 'material') {
+                    action.elementToBeLoadedType = 'materials';
+                } else if (action.elementToBeLoadedType === 'patient') {
+                    action.elementToBeLoadedType = 'patients';
+                }
         }
+        return true;
     },
     state: (state: any) => {
         // Spatial tree

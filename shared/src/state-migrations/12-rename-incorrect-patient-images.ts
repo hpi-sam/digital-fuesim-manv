@@ -2,18 +2,17 @@ import { StrictObject } from '../utils';
 import type { Migration } from './migration-functions';
 
 export const renameIncorrectPatientImages12: Migration = {
-    actions: (_initialState, actions) => {
-        actions.forEach((action) => {
-            if (
-                (action as { type: string } | null)?.type ===
-                '[Patient] Add patient'
-            ) {
-                migrateImageProperties(
-                    (action as { patient: { image: { url: string } } }).patient
-                        .image
-                );
-            }
-        });
+    action: (_intermediaryState, action) => {
+        if (
+            (action as { type: string } | null)?.type ===
+            '[Patient] Add patient'
+        ) {
+            migrateImageProperties(
+                (action as { patient: { image: { url: string } } }).patient
+                    .image
+            );
+        }
+        return true;
     },
     state: (state) => {
         (

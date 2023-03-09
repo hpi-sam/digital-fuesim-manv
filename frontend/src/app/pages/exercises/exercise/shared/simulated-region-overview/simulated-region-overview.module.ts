@@ -21,9 +21,12 @@ import { TreatmentProgressToGermanNamePipe } from './tabs/behavior-tab/utils/tre
 import { SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent } from './tabs/behavior-tab/behaviors/treat-patients/patient-details/simulated-region-overview-behavior-treat-patients-patient-details.component';
 import { WithDollarPipe } from './tabs/general-tab/utils/with-dollar';
 import { PersonnelTypeToGermanAbbreviationPipe } from './tabs/behavior-tab/utils/personnel-type-to-german-abbreviation.pipe';
+import { SimulatedRegionsModalComponent } from './simulated-regions-modal/simulated-regions-modal.component';
+import { SimulatedRegionNameComponent } from './simulated-region-name/simulated-region-name.component';
 
 @NgModule({
     declarations: [
+        SimulatedRegionNameComponent,
         SimulatedRegionOverviewGeneralComponent,
         SimulatedRegionOverviewBehaviorTabComponent,
         SimulatedRegionOverviewGeneralTabComponent,
@@ -36,6 +39,7 @@ import { PersonnelTypeToGermanAbbreviationPipe } from './tabs/behavior-tab/utils
         SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent,
         WithDollarPipe,
         PersonnelTypeToGermanAbbreviationPipe,
+        SimulatedRegionsModalComponent,
     ],
     imports: [
         CommonModule,

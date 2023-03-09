@@ -2,158 +2,157 @@ import type { UUID } from '../utils';
 import type { Migration } from './migration-functions';
 
 export const addTypeProperty17: Migration = {
-    actions: (_initialState, actions) => {
-        actions.forEach((action) => {
-            const actionType = (action as { type: string } | null)?.type;
+    action: (_intermediaryState, action) => {
+        const actionType = (action as { type: string } | null)?.type;
 
-            if (actionType === '[AlarmGroup] Add AlarmGroup') {
-                const typedAction = action as {
-                    alarmGroup: {
-                        type: 'alarmGroup';
+        if (actionType === '[AlarmGroup] Add AlarmGroup') {
+            const typedAction = action as {
+                alarmGroup: {
+                    type: 'alarmGroup';
+                };
+            };
+
+            typedAction.alarmGroup.type = 'alarmGroup';
+        }
+
+        if (actionType === '[Client] Add client') {
+            const typedAction = action as {
+                client: {
+                    type: 'client';
+                };
+            };
+
+            typedAction.client.type = 'client';
+        }
+
+        if (actionType === '[Hospital] Add hospital') {
+            const typedAction = action as {
+                hospital: {
+                    type: 'hospital';
+                };
+            };
+
+            typedAction.hospital.type = 'hospital';
+        }
+
+        if (actionType === '[MapImageTemplate] Add mapImageTemplate') {
+            const typedAction = action as {
+                mapImageTemplate: {
+                    type: 'mapImageTemplate';
+                };
+            };
+
+            typedAction.mapImageTemplate.type = 'mapImageTemplate';
+        }
+
+        if (actionType === '[MapImage] Add MapImage') {
+            const typedAction = action as {
+                mapImage: {
+                    type: 'mapImage';
+                };
+            };
+
+            typedAction.mapImage.type = 'mapImage';
+        }
+
+        if (actionType === '[Patient] Add patient') {
+            const typedAction = action as {
+                patient: {
+                    type: 'patient';
+                    healthStates: {
+                        [key: UUID]: { type: 'patientHealthState' };
                     };
                 };
+            };
 
-                typedAction.alarmGroup.type = 'alarmGroup';
-            }
-
-            if (actionType === '[Client] Add client') {
-                const typedAction = action as {
-                    client: {
-                        type: 'client';
-                    };
-                };
-
-                typedAction.client.type = 'client';
-            }
-
-            if (actionType === '[Hospital] Add hospital') {
-                const typedAction = action as {
-                    hospital: {
-                        type: 'hospital';
-                    };
-                };
-
-                typedAction.hospital.type = 'hospital';
-            }
-
-            if (actionType === '[MapImageTemplate] Add mapImageTemplate') {
-                const typedAction = action as {
-                    mapImageTemplate: {
-                        type: 'mapImageTemplate';
-                    };
-                };
-
-                typedAction.mapImageTemplate.type = 'mapImageTemplate';
-            }
-
-            if (actionType === '[MapImage] Add MapImage') {
-                const typedAction = action as {
-                    mapImage: {
-                        type: 'mapImage';
-                    };
-                };
-
-                typedAction.mapImage.type = 'mapImage';
-            }
-
-            if (actionType === '[Patient] Add patient') {
-                const typedAction = action as {
-                    patient: {
-                        type: 'patient';
-                        healthStates: {
-                            [key: UUID]: { type: 'patientHealthState' };
-                        };
-                    };
-                };
-
-                typedAction.patient.type = 'patient';
-                Object.values(typedAction.patient.healthStates).forEach(
-                    (healthState) => {
-                        healthState.type = 'patientHealthState';
-                    }
-                );
-            }
-
-            if (actionType === '[SimulatedRegion] Add simulated region') {
-                const typedAction = action as {
-                    simulatedRegion: {
-                        type: 'simulatedRegion';
-                    };
-                };
-
-                typedAction.simulatedRegion.type = 'simulatedRegion';
-            }
-
-            if (
-                actionType === '[Transfer] Add to transfer' ||
-                actionType === '[Transfer] Edit transfer' ||
-                actionType === '[Transfer] Finish transfer' ||
-                actionType === '[Transfer] Toggle pause transfer'
-            ) {
-                const typedAction = action as {
-                    elementType: 'personnel' | 'vehicle' | 'vehicles';
-                };
-
-                if (typedAction.elementType === 'vehicles') {
-                    typedAction.elementType = 'vehicle';
+            typedAction.patient.type = 'patient';
+            Object.values(typedAction.patient.healthStates).forEach(
+                (healthState) => {
+                    healthState.type = 'patientHealthState';
                 }
-            }
+            );
+        }
 
-            if (actionType === '[TransferPoint] Add TransferPoint') {
-                const typedAction = action as {
-                    transferPoint: {
-                        type: 'transferPoint';
-                    };
+        if (actionType === '[SimulatedRegion] Add simulated region') {
+            const typedAction = action as {
+                simulatedRegion: {
+                    type: 'simulatedRegion';
                 };
+            };
 
-                typedAction.transferPoint.type = 'transferPoint';
+            typedAction.simulatedRegion.type = 'simulatedRegion';
+        }
+
+        if (
+            actionType === '[Transfer] Add to transfer' ||
+            actionType === '[Transfer] Edit transfer' ||
+            actionType === '[Transfer] Finish transfer' ||
+            actionType === '[Transfer] Toggle pause transfer'
+        ) {
+            const typedAction = action as {
+                elementType: 'personnel' | 'vehicle' | 'vehicles';
+            };
+
+            if (typedAction.elementType === 'vehicles') {
+                typedAction.elementType = 'vehicle';
             }
+        }
 
-            if (actionType === '[Vehicle] Add vehicle') {
-                const typedAction = action as {
-                    vehicle: {
-                        type: 'vehicle';
-                    };
-                    materials: { type: 'material' }[];
-                    personnel: { type: 'personnel' }[];
+        if (actionType === '[TransferPoint] Add TransferPoint') {
+            const typedAction = action as {
+                transferPoint: {
+                    type: 'transferPoint';
                 };
+            };
 
-                typedAction.vehicle.type = 'vehicle';
-                typedAction.materials.forEach((material) => {
-                    material.type = 'material';
-                });
-                typedAction.personnel.forEach((personnel) => {
-                    personnel.type = 'personnel';
-                });
-            }
+            typedAction.transferPoint.type = 'transferPoint';
+        }
 
-            if (actionType === '[Vehicle] Load vehicle') {
-                const typedAction = action as {
-                    elementToBeLoadedType:
-                        | 'material'
-                        | 'materials'
-                        | 'patient'
-                        | 'patients'
-                        | 'personnel';
+        if (actionType === '[Vehicle] Add vehicle') {
+            const typedAction = action as {
+                vehicle: {
+                    type: 'vehicle';
                 };
+                materials: { type: 'material' }[];
+                personnel: { type: 'personnel' }[];
+            };
 
-                if (typedAction.elementToBeLoadedType === 'materials') {
-                    typedAction.elementToBeLoadedType = 'material';
-                } else if (typedAction.elementToBeLoadedType === 'patients') {
-                    typedAction.elementToBeLoadedType = 'patient';
-                }
+            typedAction.vehicle.type = 'vehicle';
+            typedAction.materials.forEach((material) => {
+                material.type = 'material';
+            });
+            typedAction.personnel.forEach((personnel) => {
+                personnel.type = 'personnel';
+            });
+        }
+
+        if (actionType === '[Vehicle] Load vehicle') {
+            const typedAction = action as {
+                elementToBeLoadedType:
+                    | 'material'
+                    | 'materials'
+                    | 'patient'
+                    | 'patients'
+                    | 'personnel';
+            };
+
+            if (typedAction.elementToBeLoadedType === 'materials') {
+                typedAction.elementToBeLoadedType = 'material';
+            } else if (typedAction.elementToBeLoadedType === 'patients') {
+                typedAction.elementToBeLoadedType = 'patient';
             }
+        }
 
-            if (actionType === '[Viewport] Add viewport') {
-                const typedAction = action as {
-                    viewport: {
-                        type: 'viewport';
-                    };
+        if (actionType === '[Viewport] Add viewport') {
+            const typedAction = action as {
+                viewport: {
+                    type: 'viewport';
                 };
+            };
 
-                typedAction.viewport.type = 'viewport';
-            }
-        });
+            typedAction.viewport.type = 'viewport';
+        }
+        return true;
     },
     state: (state) => {
         const typedState = state as {
