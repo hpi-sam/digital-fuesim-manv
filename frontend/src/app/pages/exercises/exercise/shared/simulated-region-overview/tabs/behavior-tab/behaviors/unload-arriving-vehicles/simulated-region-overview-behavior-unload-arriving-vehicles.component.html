@@ -24,7 +24,7 @@
     <h6>Gerade aussteigend</h6>
     <table
         class="table table-striped"
-        *ngIf="(vehiclesStatus$ | async)?.length ?? 0; else noUnloadVehicles"
+        *ngIf="(vehiclesStatus$ | async)?.length; else noUnloadVehicles"
     >
         <thead>
             <tr>
