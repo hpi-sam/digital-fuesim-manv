@@ -1,17 +1,16 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type {
-    UnloadArrivingVehiclesBehaviorState,
-    UnloadVehicleActivityState,
-} from 'digital-fuesim-manv-shared';
+import type { UnloadArrivingVehiclesBehaviorState } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
+import { map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    createSelectSimulatedRegion,
-    selectExerciseState,
+    createSelectActivityStatesByType,
+    createSelectBehaviorState,
+    selectCurrentTime,
     selectVehicles,
 } from 'src/app/state/application/selectors/exercise.selectors';
 
@@ -41,34 +40,20 @@ export class SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent
     ) {}
 
     ngOnInit(): void {
-        const simulatedRegionSelector = createSelectSimulatedRegion(
-            this.simulatedRegionId
-        );
-        const behaviorStateSelector = createSelector(
-            simulatedRegionSelector,
-            (simulatedRegion) =>
-                simulatedRegion?.behaviors.find(
-                    (behavior) => behavior.id === this.behaviorId
-                ) as UnloadArrivingVehiclesBehaviorState | undefined
-        );
-        this.unloadDuration$ = this.store.select(
-            createSelector(
-                behaviorStateSelector,
-                (behavior) => behavior?.unloadDelay ?? 0
-            )
-        );
-
-        const activityStateSelector = createSelector(
-            simulatedRegionSelector,
-            (simulatedRegion) =>
-                Object.values(simulatedRegion.activities).filter(
-                    (activity): activity is UnloadVehicleActivityState =>
-                        activity.type === 'unloadVehicleActivity'
+        this.unloadDuration$ = this.store
+            .select(
+                createSelectBehaviorState<UnloadArrivingVehiclesBehaviorState>(
+                    this.simulatedRegionId,
+                    this.behaviorId
                 )
-        );
+            )
+            .pipe(map((state) => state?.unloadDelay ?? 0));
 
         const unloadingSelector = createSelector(
-            activityStateSelector,
+            createSelectActivityStatesByType(
+                this.simulatedRegionId,
+                'unloadVehicleActivity'
+            ),
             selectVehicles,
             (activities, vehicles) =>
                 activities.map((activity) => ({
@@ -77,14 +62,9 @@ export class SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent
                 }))
         );
 
-        const currentTimeSelector = createSelector(
-            selectExerciseState,
-            (state) => state.currentTime
-        );
-
         this.vehiclesStatus$ = this.store.select(
             createSelector(
-                currentTimeSelector,
+                selectCurrentTime,
                 unloadingSelector,
                 (now, unloads) =>
                     unloads.map(
