@@ -187,8 +187,6 @@ jobs:
 
         steps:
             - uses: actions/checkout@v3
-              # with:
-              #     lfs: 'true'
             - uses: actions/setup-node@v3
               with:
                   node-version: '18'
@@ -259,11 +257,6 @@ jobs:
 
         steps:
             - uses: actions/checkout@v3
-              with:
-                  lfs: 'true'
-            - name: checkoutLFS
-              uses: actions/checkout@v3
-            - run: git lfs pull
             # Source: https://docs.docker.com/ci-cd/github-actions/
             - name: Login to docker
               uses: docker/login-action@v2
@@ -293,15 +286,10 @@ jobs:
 
         steps:
             - uses: actions/checkout@v3
-              with:
-                  lfs: 'true'
-            - name: checkoutLFS
-              uses: actions/checkout@v3
             - name: Extract version
               run: |
                   versionName=`jq -jM .version package.json`
                   echo "version_name=$versionName" >> "$GITHUB_ENV"
-            - run: git lfs pull
             # Source: https://docs.docker.com/ci-cd/github-actions/
             - name: Login to docker
               uses: docker/login-action@v2
