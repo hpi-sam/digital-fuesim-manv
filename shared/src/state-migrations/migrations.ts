@@ -121,12 +121,12 @@ export function applyMigrations<
             };
         } catch (e: unknown) {
             if (e instanceof ReducerError) {
+                // Fall back to migrating currentState instead of recreating it from history
                 const exerciseId = (history.initialState as { id: UUID }).id;
                 console.warn(
                     `Discarding history of exercise ${exerciseId} due to error in applying actions: ${e.message}`,
                     e.stack
                 );
-                // Fall back to migrating currentState instead of recreating it from history
             } else {
                 throw e;
             }
