@@ -14,7 +14,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   The _Transfers_ tab allows setting up transfer connections from/to other simulated regions and/or transfer points
     -   The _Behaviors_ tab allows adding and removing behaviors from simulated regions, inspect their current state and customize their settings
         -   For the assign leader behavior, the type of the currently assigned leader is shown
-        -   For the treat patients behavior, the current treatment phase is shown. Additionally the matching from patients to personnel is shown, including information on how many patients are treated by the same personnel at a time and the visible and real status of the patients. There are also settings for how often the matching is recalculated and how long it takes to count patients.
+        -   For the treat patients behavior, the current treatment phase is shown. Additionally the matching from patients to personnel is shown, including information on how many patients are treated by the same personnel at a time and the visible status and progression of the patients. There are also settings for how often the matching is recalculated and how long it takes to count patients.
+-   To manage exercises with a large amount of simulated regions easily, a large modal has been added that can be used to manage all simulated regions
 -   Simulated Regions now act as transfer points, meaning that they can be start and destination of a transfer
     -   Connection lines will be shown for transfer connections from/to simulated regions, too
 
@@ -25,6 +26,9 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Fixed
 
 -   Making a _Gruppenführer_ leader of a simulated region if the region already had a leader did not work. Now, if there already is a leader, better personnel (i.e. the old leader was not a _Gruppenführer_ but the new one is) will be chosen as new leader
+-   Errors in migrating exercises lo longer crash the backend
+-   If the history of an exercise cannot be restored, it is now dropped and the current state is used
+-   Actions that affect vehicles that are not fully loaded will now be removed in migrations, enabling the restoration of most of the history
 
 ## [0.1.0] - 2023-03-01
 

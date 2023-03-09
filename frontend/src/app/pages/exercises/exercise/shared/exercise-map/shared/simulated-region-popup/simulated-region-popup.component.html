@@ -11,7 +11,7 @@
     <div class="popover-body" style="width: 600px; height: 400px">
         <ng-container *ngIf="(currentRole$ | async) === 'trainer'">
             <app-simulated-region-overview-general
-                [simulatedRegion]="simulatedRegion"
+                [simulatedRegionId]="simulatedRegion.id"
             />
         </ng-container>
     </div>

@@ -1,16 +1,20 @@
 import type { StateExport } from '../export-import/file-format';
 import { ExerciseState } from '../state';
 import type { ExerciseAction } from '../store';
-import { applyAllActions } from '../store';
-import type { Mutable } from '../utils';
+import { ReducerError, applyAction } from '../store';
+import type { Mutable, UUID } from '../utils';
 import { cloneDeepMutable } from '../utils';
+import type { Migration } from './migration-functions';
 import { migrations } from './migration-functions';
 
 export function migrateStateExport(
     stateExportToMigrate: StateExport
 ): Mutable<StateExport> {
     const stateExport = cloneDeepMutable(stateExportToMigrate);
-    const propertiesToMigrate = {
+    const {
+        newVersion,
+        migratedProperties: { currentState, history },
+    } = applyMigrations(stateExport.dataVersion, {
         currentState: stateExport.currentState,
         history: stateExport.history
             ? {
@@ -18,59 +22,146 @@ export function migrateStateExport(
                   actions: stateExport.history.actionHistory,
               }
             : undefined,
-    };
-    const newVersion = applyMigrations(
-        stateExport.dataVersion,
-        propertiesToMigrate
-    );
+    });
+
     stateExport.dataVersion = newVersion;
-    stateExport.currentState = propertiesToMigrate.currentState;
+    stateExport.currentState = currentState;
     if (stateExport.history) {
-        stateExport.history.actionHistory =
-            // Remove actions that are marked to be removed by the migrations
-            propertiesToMigrate.history!.actions.filter(
-                (action) => action !== null
-            );
+        if (history) {
+            stateExport.history = {
+                actionHistory: history.actions.filter(
+                    // Remove actions that are marked to be removed by the migrations
+                    (action): action is Mutable<ExerciseAction> =>
+                        action !== null
+                ),
+                initialState: history.initialState,
+            };
+        } else {
+            stateExport.history = undefined;
+        }
     }
     return stateExport;
 }
 
 /**
  * Migrates {@link propertiesToMigrate} to the newest version ({@link ExerciseState.currentStateVersion})
- * by mutating them.
- *
+ * Might mutate the input.
  * @returns The new state version
  */
-export function applyMigrations(
+export function applyMigrations<
+    H extends { initialState: object; actions: (object | null)[] } | undefined
+>(
     currentStateVersion: number,
     propertiesToMigrate: {
         currentState: object;
-        history?: { initialState: object; actions: (object | null)[] };
+        history: H;
     }
-): number {
-    const targetVersion = ExerciseState.currentStateVersion;
-    for (let i = currentStateVersion + 1; i <= targetVersion; i++) {
-        const stateMigration = migrations[i]!.state;
-        if (stateMigration !== null) {
-            if (propertiesToMigrate.history)
-                stateMigration(propertiesToMigrate.history.initialState);
-            else stateMigration(propertiesToMigrate.currentState);
-        }
-        if (!propertiesToMigrate.history) continue;
-        const actionMigration = migrations[i]!.actions;
-        if (actionMigration !== null) {
-            actionMigration(
-                propertiesToMigrate.history.initialState,
-                propertiesToMigrate.history.actions
-            );
+): {
+    newVersion: number;
+    migratedProperties: {
+        currentState: Mutable<ExerciseState>;
+        history: H extends undefined
+            ? undefined
+            :
+                  | {
+                        initialState: Mutable<ExerciseState>;
+                        actions: (Mutable<ExerciseAction> | null)[];
+                    }
+                  | undefined;
+    };
+} {
+    const newVersion = ExerciseState.currentStateVersion;
+
+    const migrationsToApply: Migration[] = [];
+    for (let i = currentStateVersion + 1; i <= newVersion; i++) {
+        migrationsToApply.push(migrations[i]!);
+    }
+
+    const history = propertiesToMigrate.history;
+    if (history) {
+        migrateState(migrationsToApply, history.initialState);
+        const intermediaryState = cloneDeepMutable(
+            history.initialState
+        ) as Mutable<ExerciseState>;
+        try {
+            history.actions.forEach((action, index) => {
+                if (action !== null) {
+                    const deleteAction = !migrateAction(
+                        migrationsToApply,
+                        intermediaryState,
+                        action
+                    );
+                    if (!deleteAction) {
+                        try {
+                            applyAction(
+                                intermediaryState,
+                                action as ExerciseAction
+                            );
+                        } catch (e: unknown) {
+                            if (e instanceof ReducerError) {
+                                const json = JSON.stringify(action);
+                                console.warn(
+                                    `Error while applying action ${json}: ${e.message}`
+                                );
+                            }
+                            throw e;
+                        }
+                    } else {
+                        history.actions[index] = null;
+                    }
+                }
+            });
+            return {
+                newVersion,
+                migratedProperties: {
+                    currentState: intermediaryState,
+                    // history has been migrated in place
+                    history: history as any,
+                },
+            };
+        } catch (e: unknown) {
+            if (e instanceof ReducerError) {
+                // Fall back to migrating currentState instead of recreating it from history
+                const exerciseId = (history.initialState as { id: UUID }).id;
+                console.warn(
+                    `Discarding history of exercise ${exerciseId} due to error in applying actions: ${e.message}`,
+                    e.stack
+                );
+            } else {
+                throw e;
+            }
         }
     }
-    if (propertiesToMigrate.history)
-        propertiesToMigrate.currentState = applyAllActions(
-            propertiesToMigrate.history.initialState as ExerciseState,
-            propertiesToMigrate.history.actions.filter(
-                (action) => action !== null
-            ) as ExerciseAction[]
-        );
-    return targetVersion;
+    migrateState(migrationsToApply, propertiesToMigrate.currentState);
+    const currentState =
+        propertiesToMigrate.currentState as Mutable<ExerciseState>;
+    return {
+        newVersion,
+        migratedProperties: {
+            currentState,
+            history: undefined as any,
+        },
+    };
+}
+
+function migrateState(migrationsToApply: Migration[], currentState: object) {
+    migrationsToApply.forEach((migration) => {
+        if (migration.state) migration.state(currentState);
+    });
+}
+
+/**
+ * @returns true if all went well and false if the action should be deleted
+ */
+function migrateAction(
+    migrationsToApply: Migration[],
+    intermediaryState: object,
+    action: object
+): boolean {
+    return migrationsToApply.every((migration) => {
+        if (migration.action) {
+            return migration.action(intermediaryState, action);
+        }
+        return true;
+    });
 }

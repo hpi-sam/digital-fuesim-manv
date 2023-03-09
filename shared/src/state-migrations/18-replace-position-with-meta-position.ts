@@ -2,215 +2,214 @@ import type { UUID } from '../utils';
 import type { Migration } from './migration-functions';
 
 export const replacePositionWithMetaPosition18: Migration = {
-    actions: (_initialState, actions) => {
-        actions.forEach((action) => {
-            if (
-                (action as { type: string } | null)?.type ===
-                '[Patient] Add patient'
-            ) {
-                const typedAction = action as {
-                    patient: {
-                        metaPosition?:
-                            | any
-                            | { type: 'coordinates'; position: any }
-                            | { type: any };
-                        position: any;
-                    };
+    action: (_intermediaryState, action) => {
+        if (
+            (action as { type: string } | null)?.type ===
+            '[Patient] Add patient'
+        ) {
+            const typedAction = action as {
+                patient: {
+                    metaPosition?:
+                        | any
+                        | { type: 'coordinates'; position: any }
+                        | { type: any };
+                    position: any;
                 };
-                if (typedAction.patient.metaPosition?.type === 'coordinates') {
-                    typedAction.patient.metaPosition.coordinates =
-                        typedAction.patient.metaPosition.position;
-                    delete typedAction.patient.metaPosition.position;
-                }
-                typedAction.patient.position = typedAction.patient.metaPosition;
-                delete typedAction.patient.metaPosition;
+            };
+            if (typedAction.patient.metaPosition?.type === 'coordinates') {
+                typedAction.patient.metaPosition.coordinates =
+                    typedAction.patient.metaPosition.position;
+                delete typedAction.patient.metaPosition.position;
             }
-            if (
-                (action as { type: string } | null)?.type ===
-                '[Vehicle] Add vehicle'
-            ) {
-                const typedAction = action as {
-                    vehicle: {
-                        metaPosition?:
-                            | any
-                            | { type: 'coordinates'; position: any }
-                            | { type: any };
-                        position: any;
-                    };
-                    materials: {
-                        metaPosition?:
-                            | any
-                            | { type: 'coordinates'; position: any }
-                            | { type: any };
-                        position: any;
-                    }[];
-                    personnel: {
-                        transfer?: any;
-                        metaPosition?:
-                            | any
-                            | { type: 'coordinates'; position: any }
-                            | { type: any };
-                        position: any;
-                    }[];
+            typedAction.patient.position = typedAction.patient.metaPosition;
+            delete typedAction.patient.metaPosition;
+        }
+        if (
+            (action as { type: string } | null)?.type ===
+            '[Vehicle] Add vehicle'
+        ) {
+            const typedAction = action as {
+                vehicle: {
+                    metaPosition?:
+                        | any
+                        | { type: 'coordinates'; position: any }
+                        | { type: any };
+                    position: any;
                 };
-                for (const material of typedAction.materials) {
-                    if (material.metaPosition?.type === 'coordinates') {
-                        material.metaPosition.coordinates =
-                            material.metaPosition.position;
-                        delete material.metaPosition.position;
-                    }
-                    material.position = material.metaPosition;
-                    delete material.metaPosition;
+                materials: {
+                    metaPosition?:
+                        | any
+                        | { type: 'coordinates'; position: any }
+                        | { type: any };
+                    position: any;
+                }[];
+                personnel: {
+                    transfer?: any;
+                    metaPosition?:
+                        | any
+                        | { type: 'coordinates'; position: any }
+                        | { type: any };
+                    position: any;
+                }[];
+            };
+            for (const material of typedAction.materials) {
+                if (material.metaPosition?.type === 'coordinates') {
+                    material.metaPosition.coordinates =
+                        material.metaPosition.position;
+                    delete material.metaPosition.position;
                 }
+                material.position = material.metaPosition;
+                delete material.metaPosition;
+            }
 
-                for (const personnel of typedAction.personnel) {
-                    delete personnel.transfer;
-                    if (personnel.metaPosition?.type === 'coordinates') {
-                        personnel.metaPosition.coordinates =
-                            personnel.metaPosition.position;
-                        delete personnel.metaPosition.position;
-                    }
-                    personnel.position = personnel.metaPosition;
-                    delete personnel.metaPosition;
+            for (const personnel of typedAction.personnel) {
+                delete personnel.transfer;
+                if (personnel.metaPosition?.type === 'coordinates') {
+                    personnel.metaPosition.coordinates =
+                        personnel.metaPosition.position;
+                    delete personnel.metaPosition.position;
                 }
+                personnel.position = personnel.metaPosition;
+                delete personnel.metaPosition;
+            }
 
-                if (typedAction.vehicle.metaPosition?.type === 'coordinates') {
-                    typedAction.vehicle.metaPosition.coordinates =
-                        typedAction.vehicle.metaPosition.position;
-                    delete typedAction.vehicle.metaPosition.position;
-                }
-                typedAction.vehicle.position = typedAction.vehicle.metaPosition;
-                delete typedAction.vehicle.metaPosition;
+            if (typedAction.vehicle.metaPosition?.type === 'coordinates') {
+                typedAction.vehicle.metaPosition.coordinates =
+                    typedAction.vehicle.metaPosition.position;
+                delete typedAction.vehicle.metaPosition.position;
             }
-            if (
-                (action as { type: string } | null)?.type ===
-                '[Viewport] Add viewport'
-            ) {
-                const typedAction = action as {
-                    viewport: {
-                        position:
-                            | {
-                                  type: 'coordinates';
-                                  coordinates: { x: number; y: number };
-                              }
-                            | { x: number; y: number };
-                    };
+            typedAction.vehicle.position = typedAction.vehicle.metaPosition;
+            delete typedAction.vehicle.metaPosition;
+        }
+        if (
+            (action as { type: string } | null)?.type ===
+            '[Viewport] Add viewport'
+        ) {
+            const typedAction = action as {
+                viewport: {
+                    position:
+                        | {
+                              type: 'coordinates';
+                              coordinates: { x: number; y: number };
+                          }
+                        | { x: number; y: number };
                 };
-                typedAction.viewport.position = {
-                    type: 'coordinates',
-                    coordinates: {
-                        x: (
-                            typedAction.viewport.position as {
-                                x: number;
-                                y: number;
-                            }
-                        ).x,
-                        y: (
-                            typedAction.viewport.position as {
-                                x: number;
-                                y: number;
-                            }
-                        ).y,
-                    },
+            };
+            typedAction.viewport.position = {
+                type: 'coordinates',
+                coordinates: {
+                    x: (
+                        typedAction.viewport.position as {
+                            x: number;
+                            y: number;
+                        }
+                    ).x,
+                    y: (
+                        typedAction.viewport.position as {
+                            x: number;
+                            y: number;
+                        }
+                    ).y,
+                },
+            };
+        }
+        if (
+            (action as { type: string } | null)?.type ===
+            '[SimulatedRegion] Add simulated region'
+        ) {
+            const typedAction = action as {
+                simulatedRegion: {
+                    position:
+                        | {
+                              type: 'coordinates';
+                              coordinates: { x: number; y: number };
+                          }
+                        | { x: number; y: number };
                 };
-            }
-            if (
-                (action as { type: string } | null)?.type ===
-                '[SimulatedRegion] Add simulated region'
-            ) {
-                const typedAction = action as {
-                    simulatedRegion: {
-                        position:
-                            | {
-                                  type: 'coordinates';
-                                  coordinates: { x: number; y: number };
-                              }
-                            | { x: number; y: number };
-                    };
+            };
+            typedAction.simulatedRegion.position = {
+                type: 'coordinates',
+                coordinates: {
+                    x: (
+                        typedAction.simulatedRegion.position as {
+                            x: number;
+                            y: number;
+                        }
+                    ).x,
+                    y: (
+                        typedAction.simulatedRegion.position as {
+                            x: number;
+                            y: number;
+                        }
+                    ).y,
+                },
+            };
+        }
+        if (
+            (action as { type: string } | null)?.type ===
+            '[MapImage] Add MapImage'
+        ) {
+            const typedAction = action as {
+                mapImage: {
+                    position:
+                        | {
+                              type: 'coordinates';
+                              coordinates: { x: number; y: number };
+                          }
+                        | { x: number; y: number };
                 };
-                typedAction.simulatedRegion.position = {
-                    type: 'coordinates',
-                    coordinates: {
-                        x: (
-                            typedAction.simulatedRegion.position as {
-                                x: number;
-                                y: number;
-                            }
-                        ).x,
-                        y: (
-                            typedAction.simulatedRegion.position as {
-                                x: number;
-                                y: number;
-                            }
-                        ).y,
-                    },
+            };
+            typedAction.mapImage.position = {
+                type: 'coordinates',
+                coordinates: {
+                    x: (
+                        typedAction.mapImage.position as {
+                            x: number;
+                            y: number;
+                        }
+                    ).x,
+                    y: (
+                        typedAction.mapImage.position as {
+                            x: number;
+                            y: number;
+                        }
+                    ).y,
+                },
+            };
+        }
+        if (
+            (action as { type: string } | null)?.type ===
+            '[TransferPoint] Add TransferPoint'
+        ) {
+            const typedAction = action as {
+                transferPoint: {
+                    position:
+                        | {
+                              type: 'coordinates';
+                              coordinates: { x: number; y: number };
+                          }
+                        | { x: number; y: number };
                 };
-            }
-            if (
-                (action as { type: string } | null)?.type ===
-                '[MapImage] Add MapImage'
-            ) {
-                const typedAction = action as {
-                    mapImage: {
-                        position:
-                            | {
-                                  type: 'coordinates';
-                                  coordinates: { x: number; y: number };
-                              }
-                            | { x: number; y: number };
-                    };
-                };
-                typedAction.mapImage.position = {
-                    type: 'coordinates',
-                    coordinates: {
-                        x: (
-                            typedAction.mapImage.position as {
-                                x: number;
-                                y: number;
-                            }
-                        ).x,
-                        y: (
-                            typedAction.mapImage.position as {
-                                x: number;
-                                y: number;
-                            }
-                        ).y,
-                    },
-                };
-            }
-            if (
-                (action as { type: string } | null)?.type ===
-                '[TransferPoint] Add TransferPoint'
-            ) {
-                const typedAction = action as {
-                    transferPoint: {
-                        position:
-                            | {
-                                  type: 'coordinates';
-                                  coordinates: { x: number; y: number };
-                              }
-                            | { x: number; y: number };
-                    };
-                };
-                typedAction.transferPoint.position = {
-                    type: 'coordinates',
-                    coordinates: {
-                        x: (
-                            typedAction.transferPoint.position as {
-                                x: number;
-                                y: number;
-                            }
-                        ).x,
-                        y: (
-                            typedAction.transferPoint.position as {
-                                x: number;
-                                y: number;
-                            }
-                        ).y,
-                    },
-                };
-            }
-        });
+            };
+            typedAction.transferPoint.position = {
+                type: 'coordinates',
+                coordinates: {
+                    x: (
+                        typedAction.transferPoint.position as {
+                            x: number;
+                            y: number;
+                        }
+                    ).x,
+                    y: (
+                        typedAction.transferPoint.position as {
+                            x: number;
+                            y: number;
+                        }
+                    ).y,
+                },
+            };
+        }
+        return true;
     },
     state: (state) => {
         const typedState = state as {
