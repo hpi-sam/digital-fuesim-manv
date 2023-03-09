@@ -1,10 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgbDropdownModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import {
+    NgbDropdownModule,
+    NgbNavModule,
+    NgbTooltipModule,
+} from '@ng-bootstrap/ng-bootstrap';
 import { MessagesModule } from 'src/app/feature/messages/messages.module';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { SimulatedRegionOverviewModule } from '../simulated-region-overview/simulated-region-overview.module';
+import { TransferPointOverviewModule } from '../transfer-point-overview/transfer-point-overview.module';
 import { ExerciseMapComponent } from './exercise-map.component';
 import { ChooseTransferTargetPopupComponent } from './shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { MapImagePopupComponent } from './shared/map-image-popup/map-image-popup.component';
@@ -31,15 +36,17 @@ import { SimulatedRegionPopupComponent } from './shared/simulated-region-popup/s
         CaterCapacityComponent,
         SimulatedRegionPopupComponent,
     ],
+    exports: [ExerciseMapComponent],
     imports: [
         CommonModule,
         FormsModule,
         SharedModule,
         NgbDropdownModule,
         NgbNavModule,
+        NgbTooltipModule,
         MessagesModule,
         SimulatedRegionOverviewModule,
+        TransferPointOverviewModule,
     ],
-    exports: [ExerciseMapComponent],
 })
 export class ExerciseMapModule {}
