@@ -50,7 +50,7 @@
         [(ngbCollapse)]="informationCollapsed"
     >
         <div class="col-sm">Derzeitige Phase</div>
-        <div class="col-sm">
+        <div class="col-sm" *ngIf="!informationCollapsed">
             <span
                 class="badge rounded-pill"
                 [class.text-bg-info]="
