@@ -20,7 +20,7 @@ import {
 export class TransferHospitalsTabComponent implements OnInit {
     @Input() public transferPointId!: UUID;
 
-    public transferPoint$?: Observable<TransferPoint>;
+    public transferPoint$!: Observable<TransferPoint>;
 
     public hospitals$: Observable<{ [key: UUID]: Hospital }> =
         this.store.select(selectHospitals);

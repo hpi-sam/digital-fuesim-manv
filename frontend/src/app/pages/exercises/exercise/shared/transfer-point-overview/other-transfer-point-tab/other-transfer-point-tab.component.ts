@@ -18,7 +18,7 @@ import {
 export class OtherTransferPointTabComponent implements OnInit {
     @Input() public transferPointId!: UUID;
 
-    public transferPoint$?: Observable<TransferPoint>;
+    public transferPoint$!: Observable<TransferPoint>;
 
     public transferPoints$: Observable<{ [key: UUID]: TransferPoint }> =
         this.store.select(selectTransferPoints);
