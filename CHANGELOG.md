@@ -16,6 +16,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
         -   For the assign leader behavior, the type of the currently assigned leader is shown
         -   For the treat patients behavior, the current treatment phase is shown. Additionally the matching from patients to personnel is shown, including information on how many patients are treated by the same personnel at a time and the visible status and progression of the patients. There are also settings for how often the matching is recalculated and how long it takes to count patients.
 -   To manage exercises with a large amount of simulated regions easily, a large modal has been added that can be used to manage all simulated regions
+    -   Every simulated region popup shows a button to view the current simulated region in this modal
 -   Simulated Regions now act as transfer points, meaning that they can be start and destination of a transfer
     -   Connection lines will be shown for transfer connections from/to simulated regions, too
 

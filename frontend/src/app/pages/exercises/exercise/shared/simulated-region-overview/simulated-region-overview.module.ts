@@ -9,10 +9,10 @@ import {
     NgbProgressbarModule,
     NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
+import { TransferPointOverviewModule } from '../transfer-point-overview/transfer-point-overview.module';
 import { SimulatedRegionOverviewGeneralComponent } from './overview/simulated-region-overview.component';
 import { SimulatedRegionOverviewBehaviorTabComponent } from './tabs/behavior-tab/simulated-region-overview-behavior-tab.component';
 import { SimulatedRegionOverviewGeneralTabComponent } from './tabs/general-tab/simulated-region-overview-general-tab.component';
-import { SimulatedRegionOverviewTransferTabComponent } from './tabs/transfer-tab/simulated-region-overview-transfer-tab.component';
 import { SimulatedRegionOverviewBehaviorTreatPatientsComponent } from './tabs/behavior-tab/behaviors/treat-patients/simulated-region-overview-behavior-treat-patients.component';
 import { SimulatedRegionOverviewBehaviorAssignLeaderComponent } from './tabs/behavior-tab/behaviors/assign-leader/simulated-region-overview-behavior-assign-leader.component';
 import { BehaviorToGermanNamePipe } from './tabs/behavior-tab/utils/behavior-to-german-name.pipe';
@@ -30,7 +30,6 @@ import { SimulatedRegionNameComponent } from './simulated-region-name/simulated-
         SimulatedRegionOverviewGeneralComponent,
         SimulatedRegionOverviewBehaviorTabComponent,
         SimulatedRegionOverviewGeneralTabComponent,
-        SimulatedRegionOverviewTransferTabComponent,
         SimulatedRegionOverviewBehaviorTreatPatientsComponent,
         SimulatedRegionOverviewBehaviorAssignLeaderComponent,
         SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent,
@@ -50,6 +49,7 @@ import { SimulatedRegionNameComponent } from './simulated-region-name/simulated-
         NgbDropdownModule,
         NgbProgressbarModule,
         NgbTooltipModule,
+        TransferPointOverviewModule,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
 })

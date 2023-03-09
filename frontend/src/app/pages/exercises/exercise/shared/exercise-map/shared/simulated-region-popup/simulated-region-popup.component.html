@@ -7,6 +7,15 @@
             class="btn-close float-end"
             data-cy="simulatedRegionPopupCloseButton"
         ></button>
+        <a
+            (click)="openInModal()"
+            role="button"
+            class="link-secondary float-end me-2"
+            placement="bottom"
+            ngbTooltip="In der Übersicht aller simulierter Regionen öffnen"
+        >
+            <i class="bi bi-box-arrow-up-right"></i>
+        </a>
     </h5>
     <div class="popover-body" style="width: 600px; height: 400px">
         <ng-container *ngIf="(currentRole$ | async) === 'trainer'">

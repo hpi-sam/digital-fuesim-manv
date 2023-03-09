@@ -1,0 +1,108 @@
+<div
+    *ngIf="transferPoint$ | async as transferPoint"
+    class="container d-flex flex-column h-100"
+>
+    <p
+        *ngIf="(transferPoint.reachableTransferPoints | values).length === 0"
+        class="text-muted font-bold"
+    >
+        Es sind noch keine Transferpunkte verbunden.
+    </p>
+    <div class="mb-3 overflow-auto flex-grow-1 flex-shrink-1">
+        <ul
+            *ngIf="transferPoints$ | async as transferPoints"
+            class="list-group"
+        >
+            <li
+                *ngFor="
+                    let reachableTransferPointConnection of transferPoint.reachableTransferPoints
+                        | keyvalue;
+                    trackBy: 'key'
+                        | appTrackByProperty
+                            : (transferPoint.reachableTransferPoints | keyvalue)
+                "
+                class="list-group-item d-flex align-items-center flex-nowrap p-0"
+            >
+                <div
+                    class="flex-grow-1 ps-2 pe-2 text-truncate"
+                    style="max-width: 300px"
+                >
+                    <app-transfer-point-name
+                        [transferPointId]="reachableTransferPointConnection.key"
+                    ></app-transfer-point-name>
+                </div>
+                <input
+                    required
+                    [min]="0"
+                    [max]="24 * 60"
+                    [ngModel]="
+                        reachableTransferPointConnection.value.duration /
+                        1000 /
+                        60
+                    "
+                    (appSaveOnTyping)="
+                        connectTransferPoint(
+                            reachableTransferPointConnection.key,
+                            $event * 1000 * 60
+                        )
+                    "
+                    style="width: 125px"
+                    class="form-control form-control-sm"
+                    type="number"
+                    step="0.1"
+                    placeholder="Dauer"
+                    data-cy="transferPointPopupDurationInput"
+                />
+                <span class="ps-2 pe-2" title="Minuten">min</span>
+                <button
+                    class="btn btn-link text-danger text-decoration-none"
+                    title="Verbindung löschen"
+                    (click)="
+                        disconnectTransferPoint(
+                            reachableTransferPointConnection.key
+                        )
+                    "
+                    data-cy="transferPointPopupRemoveOtherTransferPointButton"
+                >
+                    <i class="bi-trash"></i>
+                </button>
+            </li>
+        </ul>
+    </div>
+    <div
+        *ngIf="(transferPointsToBeAdded$ | async | values)?.length !== 0"
+        ngbDropdown
+        placement="bottom-start"
+        autoClose="outside"
+        class="d-inline-block"
+    >
+        <button
+            ngbDropdownToggle
+            type="button"
+            class="btn btn-outline-primary"
+            data-cy="transferPointPopupAddOtherTransferPointButton"
+        >
+            <span class="bi-plus me-1"></span>
+            Hinzufügen
+        </button>
+        <div ngbDropdownMenu>
+            <button
+                *ngFor="
+                    let transferPoint of transferPointsToBeAdded$
+                        | async
+                        | values
+                        | orderBy : getTransferPointOrderByValue;
+                    trackBy: 'id' | appTrackByProperty
+                "
+                ngbDropdownItem
+                (click)="connectTransferPoint(transferPoint.id)"
+                data-cy="transferPointPopupAddOtherTransferPointDropdownButton"
+            >
+                <span class="bi-plus me-1"></span>
+                <app-transfer-point-name
+                    [transferPointId]="transferPoint.id"
+                ></app-transfer-point-name>
+            </button>
+        </div>
+    </div>
+</div>
