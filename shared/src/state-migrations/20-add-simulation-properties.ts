@@ -3,24 +3,23 @@ import type { UUID } from '../utils';
 import type { Migration } from './migration-functions';
 
 export const addSimulationProperties20: Migration = {
-    actions: (_initialState, actions) => {
-        actions.forEach((action) => {
-            if (
-                (action as { type: string } | null)?.type ===
-                '[SimulatedRegion] Add simulated region'
-            ) {
-                const typedAction = action as {
-                    simulatedRegion: {
-                        inEvents: any[];
-                        behaviors: any[];
-                        activities: object;
-                    };
+    action: (_intermediaryState, action) => {
+        if (
+            (action as { type: string } | null)?.type ===
+            '[SimulatedRegion] Add simulated region'
+        ) {
+            const typedAction = action as {
+                simulatedRegion: {
+                    inEvents: any[];
+                    behaviors: any[];
+                    activities: object;
                 };
-                typedAction.simulatedRegion.inEvents = [];
-                typedAction.simulatedRegion.behaviors = [];
-                typedAction.simulatedRegion.activities = {};
-            }
-        });
+            };
+            typedAction.simulatedRegion.inEvents = [];
+            typedAction.simulatedRegion.behaviors = [];
+            typedAction.simulatedRegion.activities = {};
+        }
+        return true;
     },
     state: (state: any) => {
         state.randomState = seededRandomState();

@@ -2,28 +2,27 @@ import type { UUID } from '../utils';
 import type { Migration } from './migration-functions';
 
 export const renameStartPointTypes19: Migration = {
-    actions: (_initialState, actions) => {
-        actions.forEach((action) => {
-            if (
-                (action as { type: string } | null)?.type ===
-                '[Transfer] Add to transfer'
-            ) {
-                const typedAction = action as {
-                    startPoint: {
-                        type:
-                            | 'alarmGroup'
-                            | 'alarmGroupStartPoint'
-                            | 'transferPoint'
-                            | 'transferStartPoint';
-                    };
+    action: (_intermediaryState, action) => {
+        if (
+            (action as { type: string } | null)?.type ===
+            '[Transfer] Add to transfer'
+        ) {
+            const typedAction = action as {
+                startPoint: {
+                    type:
+                        | 'alarmGroup'
+                        | 'alarmGroupStartPoint'
+                        | 'transferPoint'
+                        | 'transferStartPoint';
                 };
-                if (typedAction.startPoint.type === 'alarmGroup') {
-                    typedAction.startPoint.type = 'alarmGroupStartPoint';
-                } else if (typedAction.startPoint.type === 'transferPoint') {
-                    typedAction.startPoint.type = 'transferStartPoint';
-                }
+            };
+            if (typedAction.startPoint.type === 'alarmGroup') {
+                typedAction.startPoint.type = 'alarmGroupStartPoint';
+            } else if (typedAction.startPoint.type === 'transferPoint') {
+                typedAction.startPoint.type = 'transferStartPoint';
             }
-        });
+        }
+        return true;
     },
     state: (state) => {
         const typedState = state as {

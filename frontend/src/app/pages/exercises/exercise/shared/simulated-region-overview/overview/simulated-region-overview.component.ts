@@ -1,14 +1,17 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type { TransferPoint } from 'digital-fuesim-manv-shared';
-import {
-    isInSpecificSimulatedRegion,
+import type {
+    TransferPoint,
     SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
+import { UUID, isInSpecificSimulatedRegion } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
-import { selectTransferPoints } from 'src/app/state/application/selectors/exercise.selectors';
+import {
+    selectTransferPoints,
+    createSelectSimulatedRegion,
+} from 'src/app/state/application/selectors/exercise.selectors';
 
 type NavIds = 'behaviors' | 'general' | 'transfer';
 /**
@@ -23,13 +26,25 @@ let activeNavId: NavIds = 'general';
     encapsulation: ViewEncapsulation.None,
 })
 export class SimulatedRegionOverviewGeneralComponent implements OnInit {
-    @Input() simulatedRegion!: SimulatedRegion;
+    @Input() simulatedRegionId!: UUID;
+
+    simulatedRegion$!: Observable<SimulatedRegion>;
 
     public transferPoint$?: Observable<TransferPoint>;
 
+    public get activeNavId() {
+        return activeNavId;
+    }
+    public set activeNavId(value: NavIds) {
+        activeNavId = value;
+    }
+
     constructor(private readonly store: Store<AppState>) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
+        this.simulatedRegion$ = this.store.select(
+            createSelectSimulatedRegion(this.simulatedRegionId)
+        );
         this.transferPoint$ = this.store.select(
             createSelector(
                 selectTransferPoints,
@@ -37,17 +52,10 @@ export class SimulatedRegionOverviewGeneralComponent implements OnInit {
                     Object.values(transferPoints).find((transferPoint) =>
                         isInSpecificSimulatedRegion(
                             transferPoint,
-                            this.simulatedRegion.id
+                            this.simulatedRegionId
                         )
                     )!
             )
         );
-    }
-
-    public get activeNavId() {
-        return activeNavId;
-    }
-    public set activeNavId(value: NavIds) {
-        activeNavId = value;
     }
 }

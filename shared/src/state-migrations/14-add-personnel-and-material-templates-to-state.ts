@@ -2,7 +2,7 @@ import { cloneDeepMutable } from '../utils';
 import type { Migration } from './migration-functions';
 
 export const addPersonnelAndMaterialToState14: Migration = {
-    actions: null,
+    action: null,
     state: (state: any) => {
         state.materialTemplates = cloneDeepMutable(defaultMaterialTemplates);
         state.personnelTemplates = cloneDeepMutable(defaultPersonnelTemplates);
