@@ -1,4 +1,4 @@
-import type { OnInit } from '@angular/core';
+import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
 import type { PatientStatus } from 'digital-fuesim-manv-shared';
@@ -18,7 +18,7 @@ import { selectCurrentRole } from 'src/app/state/application/selectors/shared.se
     templateUrl: './patients-details.component.html',
     styleUrls: ['./patients-details.component.scss'],
 })
-export class PatientsDetailsComponent implements OnInit {
+export class PatientsDetailsComponent implements OnChanges {
     @Input() patientId!: UUID;
 
     readonly currentRole$ = this.store.select(selectCurrentRole);
@@ -40,7 +40,7 @@ export class PatientsDetailsComponent implements OnInit {
         private readonly exerciseService: ExerciseService
     ) {}
 
-    ngOnInit(): void {
+    ngOnChanges(): void {
         this.patient$ = this.store.select(createSelectPatient(this.patientId));
         this.visibleStatus$ = this.store.select(
             createSelector(

@@ -46,9 +46,10 @@
         </ng-template>
     </div>
     <div class="col overflow-auto" style="max-width: 70%">
-        <p *ngIf="selectedPatientId; else noSelectedPatient">
-            {{ selectedPatientId }}
-        </p>
+        <app-patients-details
+            *ngIf="selectedPatientId; else noSelectedPatient"
+            [patientId]="selectedPatientId"
+        />
         <ng-template #noSelectedPatient>
             <p class="text-muted">
                 Bitte wählen Sie einen Patienten links aus der Liste.

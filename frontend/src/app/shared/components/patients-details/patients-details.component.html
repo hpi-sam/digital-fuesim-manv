@@ -2,7 +2,7 @@
     <ng-container ngbNavItem *ngIf="patient$ | async as patient">
         <a ngbNavLink data-cy="patientPopupGeneralNav">Allgemein</a>
         <ng-template ngbNavContent>
-            <table class="table table-sm small mb-0" style="max-width: 300px">
+            <table class="table table-sm small mb-0">
                 <tbody>
                     <tr>
                         <th scope="col">Alter</th>
@@ -83,7 +83,7 @@
                 : 'Erstbefund'
         }}</a>
         <ng-template ngbNavContent>
-            <table class="table table-sm small mb-0" style="max-width: 300px">
+            <table class="table table-sm small mb-0">
                 <tbody>
                     <tr *ngIf="(configuration$ | async)?.pretriageEnabled">
                         <th>Vorsichtung</th>
