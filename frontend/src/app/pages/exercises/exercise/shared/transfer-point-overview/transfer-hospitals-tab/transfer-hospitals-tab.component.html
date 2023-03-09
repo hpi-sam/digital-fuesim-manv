@@ -1,0 +1,84 @@
+<div *ngIf="transferPoint$ | async as transferPoint">
+    <p
+        *ngIf="(transferPoint.reachableHospitals | values).length === 0"
+        class="text-muted font-bold"
+    >
+        Es sind noch keine Krankenhäuser verbunden.
+    </p>
+    <div class="mb-3 overflow-auto" style="height: 250px">
+        <ul *ngIf="hospitals$ | async as hospitals" class="list-group">
+            <li
+                *ngFor="
+                    let reachableHospitalId of transferPoint.reachableHospitals
+                        | keys;
+                    trackBy: '$value'
+                        | appTrackByProperty
+                            : (transferPoint.reachableHospitals | keys)
+                "
+                class="list-group-item d-flex align-items-center flex-nowrap p-0"
+            >
+                <div
+                    [title]="hospitals[reachableHospitalId]!.name"
+                    class="flex-grow-1 ps-2 pe-2 text-truncate"
+                    style="max-width: 300px"
+                >
+                    <app-hospital-name
+                        [hospitalId]="reachableHospitalId"
+                    ></app-hospital-name>
+                </div>
+                <span class="font-monospace text-end" style="width: 125px">{{
+                    hospitals[reachableHospitalId]!.transportDuration /
+                        1000 /
+                        60
+                }}</span>
+                <span class="ps-2 pe-2" title="Minuten">min</span>
+                <button
+                    class="btn btn-link text-danger text-decoration-none"
+                    title="Verbindung löschen"
+                    (click)="disconnectHospital(reachableHospitalId)"
+                    data-cy="transferPointPopupRemoveHospitalButton"
+                >
+                    <i class="bi-trash"></i>
+                </button>
+            </li>
+        </ul>
+    </div>
+    <div
+        *ngIf="(hospitalsToBeAdded$ | async | values)?.length !== 0"
+        ngbDropdown
+        placement="bottom-start"
+        autoClose="outside"
+        class="d-inline-block"
+    >
+        <button
+            ngbDropdownToggle
+            type="button"
+            class="btn btn-outline-primary"
+            data-cy="transferPointPopupAddHospitalButton"
+        >
+            <span class="bi-plus me-1"></span>
+            Hinzufügen
+        </button>
+        <div ngbDropdownMenu>
+            <button
+                *ngFor="
+                    let hospital of hospitalsToBeAdded$
+                        | async
+                        | values
+                        | orderBy : getHospitalOrderByValue;
+                    trackBy: 'id'
+                        | appTrackByProperty
+                            : (hospitalsToBeAdded$ | async | values)
+                "
+                ngbDropdownItem
+                (click)="connectHospital(hospital.id)"
+                data-cy="transferPointPopupAddHospitalDropdownButton"
+            >
+                <span class="bi-plus me-1"></span>
+                <app-hospital-name
+                    [hospitalId]="hospital.id"
+                ></app-hospital-name>
+            </button>
+        </div>
+    </div>
+</div>

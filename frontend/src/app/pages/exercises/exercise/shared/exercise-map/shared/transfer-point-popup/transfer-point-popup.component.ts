@@ -1,16 +1,11 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
-import type { Hospital, UUID } from 'digital-fuesim-manv-shared';
-import { TransferPoint } from 'digital-fuesim-manv-shared';
+import { Store } from '@ngrx/store';
+import type { UUID, TransferPoint } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import {
-    createSelectTransferPoint,
-    selectHospitals,
-    selectTransferPoints,
-} from 'src/app/state/application/selectors/exercise.selectors';
+import { createSelectTransferPoint } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
 
@@ -34,7 +29,6 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     public transferPoint$?: Observable<TransferPoint>;
 
     public readonly currentRole$ = this.store.select(selectCurrentRole);
-    public hospital$?: Observable<Hospital>;
 
     public get activeNavId() {
         return activeNavId;
@@ -42,50 +36,6 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
     public set activeNavId(value: NavIds) {
         activeNavId = value;
     }
-
-    public transferPoints$ = this.store.select(selectTransferPoints);
-
-    public hospitals$ = this.store.select(selectHospitals);
-
-    public getTransferPointOrderByValue: (
-        transferPoint: TransferPoint
-    ) => string = (transferPoint) => TransferPoint.getFullName(transferPoint);
-
-    public getHospitalOrderByValue: (hospital: Hospital) => string = (
-        hospital
-    ) => hospital.name;
-
-    /**
-     * All transferPoints that are neither connected to this one nor this one itself
-     */
-    public readonly transferPointsToBeAdded$ = this.store.select(
-        createSelector(selectTransferPoints, (transferPoints) => {
-            const currentTransferPoint = transferPoints[this.transferPointId]!;
-            return Object.fromEntries(
-                Object.entries(transferPoints).filter(
-                    ([key]) =>
-                        key !== this.transferPointId &&
-                        !currentTransferPoint.reachableTransferPoints[key]
-                )
-            );
-        })
-    );
-
-    public readonly hospitalsToBeAdded$ = this.store.select(
-        createSelector(
-            selectTransferPoints,
-            selectHospitals,
-            (transferPoints, hospitals) => {
-                const currentTransferPoint =
-                    transferPoints[this.transferPointId]!;
-                return Object.fromEntries(
-                    Object.entries(hospitals).filter(
-                        ([key]) => !currentTransferPoint.reachableHospitals[key]
-                    )
-                );
-            }
-        )
-    );
 
     constructor(
         private readonly exerciseService: ExerciseService,
@@ -110,39 +60,6 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
             transferPointId: this.transferPointId,
             internalName,
             externalName,
-        });
-    }
-
-    public connectTransferPoint(transferPointId: UUID, duration?: number) {
-        this.exerciseService.proposeAction({
-            type: '[TransferPoint] Connect TransferPoints',
-            transferPointId1: this.transferPointId,
-            transferPointId2: transferPointId,
-            duration,
-        });
-    }
-
-    public disconnectTransferPoint(transferPointId: UUID) {
-        this.exerciseService.proposeAction({
-            type: '[TransferPoint] Disconnect TransferPoints',
-            transferPointId1: this.transferPointId,
-            transferPointId2: transferPointId,
-        });
-    }
-
-    public connectHospital(hospitalId: UUID) {
-        this.exerciseService.proposeAction({
-            type: '[TransferPoint] Connect hospital',
-            transferPointId: this.transferPointId,
-            hospitalId,
-        });
-    }
-
-    public disconnectHospital(hospitalId: UUID) {
-        this.exerciseService.proposeAction({
-            type: '[TransferPoint] Disconnect hospital',
-            transferPointId: this.transferPointId,
-            hospitalId,
         });
     }
 }
