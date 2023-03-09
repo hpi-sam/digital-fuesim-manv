@@ -71,19 +71,19 @@ export namespace SimulationActionReducers {
                 const treatPatientsBehaviorState = behaviorStates.find(
                     (behaviorState) => behaviorState.id === behaviorStateId
                 ) as Mutable<TreatPatientsBehaviorState>;
-                if (unknown) {
+                if (unknown !== undefined) {
                     treatPatientsBehaviorState.intervals.unknown = unknown;
                 }
-                if (counted) {
+                if (counted !== undefined) {
                     treatPatientsBehaviorState.intervals.counted = counted;
                 }
-                if (triaged) {
+                if (triaged !== undefined) {
                     treatPatientsBehaviorState.intervals.triaged = triaged;
                 }
-                if (secured) {
+                if (secured !== undefined) {
                     treatPatientsBehaviorState.intervals.secured = secured;
                 }
-                if (countingTimePerPatient) {
+                if (countingTimePerPatient !== undefined) {
                     treatPatientsBehaviorState.intervals.countingTimePerPatient =
                         countingTimePerPatient;
                 }
