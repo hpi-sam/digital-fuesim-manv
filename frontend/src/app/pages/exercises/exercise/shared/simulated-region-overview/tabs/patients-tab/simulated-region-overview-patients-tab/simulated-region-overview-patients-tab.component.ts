@@ -10,6 +10,7 @@ import {
     selectConfiguration,
     selectPatients,
 } from 'src/app/state/application/selectors/exercise.selectors';
+import { comparePatientsByVisibleStatus } from '../../compare-patients';
 
 @Component({
     selector: 'app-simulated-region-overview-patients-tab',
@@ -34,14 +35,22 @@ export class SimulatedRegionOverviewPatientsTabComponent implements OnInit {
                 ),
                 selectConfiguration,
                 (patients, configuration) =>
-                    patients.map((patient) => ({
-                        visibleStatus: Patient.getVisibleStatus(
-                            patient,
-                            configuration.pretriageEnabled,
-                            configuration.bluePatientsEnabled
-                        ),
-                        ...patient,
-                    }))
+                    patients
+                        .sort((patientA, patientB) =>
+                            comparePatientsByVisibleStatus(
+                                patientA,
+                                patientB,
+                                configuration
+                            )
+                        )
+                        .map((patient) => ({
+                            visibleStatus: Patient.getVisibleStatus(
+                                patient,
+                                configuration.pretriageEnabled,
+                                configuration.bluePatientsEnabled
+                            ),
+                            ...patient,
+                        }))
             )
         );
     }

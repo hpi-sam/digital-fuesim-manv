@@ -1,13 +1,8 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type {
-    PatientStatus,
-    UUID,
-    ExerciseConfiguration,
-} from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import {
-    Patient,
     TreatPatientsBehaviorState,
     SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
@@ -19,6 +14,7 @@ import {
     selectConfiguration,
     selectPatients,
 } from 'src/app/state/application/selectors/exercise.selectors';
+import { comparePatientsByVisibleStatus } from '../../../compare-patients';
 
 let globalLastSettingsCollapsed = true;
 let globalLastInformationCollapsed = true;
@@ -72,7 +68,7 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
                 (patients, configuration) =>
                     patients
                         .sort((patientA, patientB) =>
-                            this.comparePatientsByTriageCategory(
+                            comparePatientsByVisibleStatus(
                                 patientA,
                                 patientB,
                                 configuration
@@ -100,50 +96,5 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
             secured,
             countingTimePerPatient,
         });
-    }
-
-    private comparePatientsByTriageCategory(
-        patientA: Patient,
-        patientB: Patient,
-        configuration: ExerciseConfiguration
-    ): number {
-        let statusA!: PatientStatus;
-        let statusB!: PatientStatus;
-
-        if (patientA === undefined) {
-            statusA = 'white';
-        } else {
-            statusA = Patient.getVisibleStatus(
-                patientA,
-                configuration.pretriageEnabled,
-                configuration.bluePatientsEnabled
-            );
-        }
-        if (patientB === undefined) {
-            statusB = 'white';
-        } else {
-            statusB = Patient.getVisibleStatus(
-                patientB,
-                configuration.pretriageEnabled,
-                configuration.bluePatientsEnabled
-            );
-        }
-
-        const patientCategoryOrderDictionary: {
-            [Key in PatientStatus]: number;
-        } = {
-            black: 5,
-            blue: 4,
-            green: 3,
-            red: 1,
-            white: 0,
-            yellow: 2,
-        };
-        const valueA = patientCategoryOrderDictionary[statusA];
-        const valueB = patientCategoryOrderDictionary[statusB];
-        return valueA !== valueB
-            ? valueA - valueB
-            : patientCategoryOrderDictionary[patientA.realStatus] -
-                  patientCategoryOrderDictionary[patientB.realStatus];
     }
 }
