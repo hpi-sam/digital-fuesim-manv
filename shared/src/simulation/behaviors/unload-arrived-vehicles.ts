@@ -26,7 +26,7 @@ export class UnloadArrivingVehiclesBehaviorState
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(unloadDelay: number) {
+    constructor(unloadDelay: number = 2 * 60 * 1000) {
         this.unloadDelay = unloadDelay;
     }
 

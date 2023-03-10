@@ -6,8 +6,8 @@ import {
     IsValue,
 } from '../utils/validators';
 import { IsPosition } from '../utils/validators/is-position';
-import type { ImageProperties, MapCoordinates } from './utils';
-import { MapPosition, Position, getCreate } from './utils';
+import type { ImageProperties } from './utils';
+import { Position, getCreate } from './utils';
 
 export class TransferPoint {
     @IsUUID(4, uuidValidationOptions)
@@ -39,13 +39,13 @@ export class TransferPoint {
      * @deprecated Use {@link create} instead
      */
     constructor(
-        position: MapCoordinates,
+        position: Position,
         reachableTransferPoints: ReachableTransferPoints,
         reachableHospitals: UUIDSet,
         internalName: string,
         externalName: string
     ) {
-        this.position = MapPosition.create(position);
+        this.position = position;
         this.reachableTransferPoints = reachableTransferPoints;
         this.reachableHospitals = reachableHospitals;
         this.internalName = internalName;
