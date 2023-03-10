@@ -1,11 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-    IsInt,
-    IsOptional,
-    IsUUID,
-    Min,
-    ValidateNested,
-} from 'class-validator';
+import { IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { uuid, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
@@ -14,6 +8,7 @@ import { ReassignTreatmentsActivityState } from '../activities/reassign-treatmen
 import { addActivity, terminateActivity } from '../activities/utils';
 import { TreatmentsTimerEvent } from '../events/treatments-timer-event';
 import { nextUUID } from '../utils/randomness';
+import { TreatPatientsIntervals } from '../utils/treat-patients-intervals';
 import {
     TreatmentProgress,
     treatmentProgressAllowedValues,
@@ -22,60 +17,6 @@ import type {
     SimulationBehavior,
     SimulationBehaviorState,
 } from './simulation-behavior';
-
-export class TreatPatientsIntervals {
-    /**
-     * How frequent reassignments should occur when the personnel just arrived and the situation in unclear
-     */
-    @IsInt()
-    @Min(0)
-    public readonly unknown: number;
-
-    /**
-     * How frequent reassignments should occur when the patients have been counted
-     */
-    @IsInt()
-    @Min(0)
-    public readonly counted: number;
-
-    /**
-     * How frequent reassignments should occur when all patients are triaged
-     */
-    @IsInt()
-    @Min(0)
-    public readonly triaged: number;
-
-    /**
-     * How frequent reassignments should occur when there is enough personnel to fulfil each patient's treatment needs
-     */
-    @IsInt()
-    @Min(0)
-    public readonly secured: number;
-
-    /**
-     * How long counting each patient should take.
-     * Counting will be finished after {patient count} times this value.
-     */
-    @IsInt()
-    @Min(0)
-    public readonly countingTimePerPatient: number;
-
-    constructor(
-        unknown: number,
-        counted: number,
-        triaged: number,
-        secured: number,
-        countingTimePerPatient: number
-    ) {
-        this.unknown = unknown;
-        this.counted = counted;
-        this.triaged = triaged;
-        this.secured = secured;
-        this.countingTimePerPatient = countingTimePerPatient;
-    }
-
-    static readonly create = getCreate(this);
-}
 
 export class TreatPatientsBehaviorState implements SimulationBehaviorState {
     @IsValue('treatPatientsBehavior' as const)
