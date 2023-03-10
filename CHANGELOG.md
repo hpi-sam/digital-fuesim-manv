@@ -9,7 +9,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Added
 
--   The popup of a simulated region now has got five tabs: _Overview_, _Patients, _Transfers_, _Hospitals_ and _Behaviors_
+-   The popup of a simulated region now has got five tabs: _Overview_, _Patients, \_Transfers_, _Hospitals_ and _Behaviors_
     -   The _Overview_ tab allows setting the name of the simulated region and shows the current number of patients, vehicles, personnel and material
     -   The _Transfers_ tab allows setting up transfer connections from/to other simulated regions and/or transfer points
     -   The _Hospitals_ tab allows setting up transfer connections to hospitals
