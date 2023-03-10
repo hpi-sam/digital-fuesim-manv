@@ -44,15 +44,33 @@ export function deleteSimulatedRegion(
     draftState: Mutable<ExerciseState>,
     simulatedRegionId: UUID
 ) {
-    // Delete related material,vehicles,patients and personnel
+    // Find related vehicles
+
+    const relatedVehicles = Object.values(draftState.vehicles).filter(
+        (vehicle) =>
+            isInSpecificSimulatedRegion(vehicle, simulatedRegionId) &&
+            Object.keys(vehicle.materialIds).every((materialId) =>
+                isInSpecificSimulatedRegion(
+                    getElement(draftState, 'material', materialId),
+                    simulatedRegionId
+                )
+            ) &&
+            Object.keys(vehicle.personnelIds).every((personnelId) =>
+                isInSpecificSimulatedRegion(
+                    getElement(draftState, 'personnel', personnelId),
+                    simulatedRegionId
+                )
+            )
+    );
+
+    // Find and delete related materials and personnel
 
     Object.values(draftState.materials)
         .filter(
             (material) =>
                 isInSpecificSimulatedRegion(material, simulatedRegionId) &&
-                isInSpecificSimulatedRegion(
-                    getElement(draftState, 'vehicle', material.vehicleId),
-                    simulatedRegionId
+                relatedVehicles.includes(
+                    getElement(draftState, 'vehicle', material.vehicleId)
                 )
         )
         .forEach((material) => delete draftState.materials[material.id]);
@@ -61,37 +79,25 @@ export function deleteSimulatedRegion(
         .filter(
             (personnel) =>
                 isInSpecificSimulatedRegion(personnel, simulatedRegionId) &&
-                isInSpecificSimulatedRegion(
-                    getElement(draftState, 'vehicle', personnel.vehicleId),
-                    simulatedRegionId
+                relatedVehicles.includes(
+                    getElement(draftState, 'vehicle', personnel.vehicleId)
                 )
         )
         .forEach((personnel) => delete draftState.personnel[personnel.id]);
+
+    // Delete related vehicles
+
+    relatedVehicles.forEach(
+        (vehicle) => delete draftState.vehicles[vehicle.id]
+    );
+
+    // Find and delete related patients
 
     Object.values(draftState.patients)
         .filter((patients) =>
             isInSpecificSimulatedRegion(patients, simulatedRegionId)
         )
         .forEach((patients) => delete draftState.patients[patients.id]);
-
-    Object.values(draftState.vehicles)
-        .filter(
-            (vehicle) =>
-                isInSpecificSimulatedRegion(vehicle, simulatedRegionId) &&
-                Object.keys(vehicle.materialIds).every((materialId) =>
-                    isInSpecificSimulatedRegion(
-                        getElement(draftState, 'material', materialId),
-                        simulatedRegionId
-                    )
-                ) &&
-                Object.keys(vehicle.personnelIds).every((personnelId) =>
-                    isInSpecificSimulatedRegion(
-                        getElement(draftState, 'personnel', personnelId),
-                        simulatedRegionId
-                    )
-                )
-        )
-        .forEach((vehicle) => delete draftState.vehicles[vehicle.id]);
 
     // Delete the TransferPoint
 
