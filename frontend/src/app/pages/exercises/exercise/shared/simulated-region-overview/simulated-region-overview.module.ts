@@ -24,6 +24,7 @@ import { PersonnelTypeToGermanAbbreviationPipe } from './tabs/behavior-tab/utils
 import { SimulatedRegionsModalComponent } from './simulated-regions-modal/simulated-regions-modal.component';
 import { SimulatedRegionNameComponent } from './simulated-region-name/simulated-region-name.component';
 import { SimulatedRegionOverviewPatientsTabComponent } from './tabs/patients-tab/simulated-region-overview-patients-tab/simulated-region-overview-patients-tab.component';
+import { SelectPatientService } from './select-patient.service';
 
 @NgModule({
     declarations: [
@@ -54,5 +55,6 @@ import { SimulatedRegionOverviewPatientsTabComponent } from './tabs/patients-tab
         TransferPointOverviewModule,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
+    providers: [SelectPatientService],
 })
 export class SimulatedRegionOverviewModule {}

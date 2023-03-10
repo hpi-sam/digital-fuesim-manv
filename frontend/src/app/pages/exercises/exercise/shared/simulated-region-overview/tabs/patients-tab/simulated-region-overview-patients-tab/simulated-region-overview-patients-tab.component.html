@@ -5,7 +5,7 @@
     >
         <table
             *ngIf="(patients$ | async)?.length; else noPatients"
-            class="table table-striped"
+            class="table table-striped table-hover"
         >
             <thead>
                 <tr>
@@ -17,7 +17,7 @@
             <tbody>
                 <tr
                     *ngFor="let patient of patients$ | async"
-                    (click)="selectedPatientId = patient.id"
+                    (click)="selectPatientService.selectPatient(patient.id)"
                     [class.table-primary]="selectedPatientId === patient.id"
                     style="cursor: pointer"
                 >

@@ -14,6 +14,7 @@ import {
     selectConfiguration,
     selectPatients,
 } from 'src/app/state/application/selectors/exercise.selectors';
+import { SelectPatientService } from '../../../../select-patient.service';
 import { comparePatientsByVisibleStatus } from '../../../compare-patients';
 
 let globalLastSettingsCollapsed = true;
@@ -52,7 +53,8 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly store: Store<AppState>,
+        readonly selectPatientService: SelectPatientService
     ) {}
 
     ngOnInit(): void {
