@@ -9,8 +9,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Added
 
--   The popup of a simulated region now has got three tabs: _Overview_, _Transfers_ and _Behaviors_
+-   The popup of a simulated region now has got three tabs: _Overview_, _Patients_, _Transfers_, and _Behaviors_
     -   The _Overview_ tab allows setting the name of the simulated region and shows the current number of patients, vehicles, personnel and material
+    -   The _Patients_ tab lists all patients in the simulated region and allows inspecting their detailed information.
+        When clicking on a patient somewhere else in the popup (e.g. in the treat patients behavior details), the patient will be shown in this tab.
     -   The _Transfers_ tab allows setting up transfer connections from/to other simulated regions and/or transfer points
     -   The _Behaviors_ tab allows adding and removing behaviors from simulated regions, inspect their current state and customize their settings
         -   For the assign leader behavior, the type of the currently assigned leader is shown
