@@ -2,33 +2,28 @@ import { uuid } from '../utils';
 import type { Migration } from './migration-functions';
 
 export const addTransferPointToSimulatedRegion23: Migration = {
-    action: (intermediaryState, action) => {
+    action: (_intermediaryState, action) => {
         const actionType = (action as { type: string } | null)?.type;
+
         if (actionType === '[SimulatedRegion] Add simulated region') {
             const typedAction = action as {
                 simulatedRegion: { name: string; id: string };
                 transferPoint?: {
                     id: string;
-
                     type: 'transferPoint';
-
                     position:
                         | {
                               type: 'simulatedRegion';
                               simulatedRegionId: string;
                           }
                         | { type: Exclude<'simulatedRegion', unknown> };
-
                     reachableTransferPoints: {
                         [connectTransferPointId: string]: {
                             duration: number;
                         };
                     };
-
                     reachableHospitals: { [key: string]: true };
-
                     internalName: string;
-
                     externalName: string;
                 };
             };
@@ -36,23 +31,18 @@ export const addTransferPointToSimulatedRegion23: Migration = {
             const transferPointId = uuid();
             typedAction.transferPoint = {
                 id: transferPointId,
-
                 type: 'transferPoint',
-
                 position: {
                     type: 'simulatedRegion',
                     simulatedRegionId: typedAction.simulatedRegion.id,
                 },
-
                 reachableTransferPoints: {},
-
                 reachableHospitals: {},
-
                 internalName: '',
-
                 externalName: `[Simuliert] ${typedAction.simulatedRegion.name}`,
             };
         }
+
         return true;
     },
     state: (state) => {
@@ -60,53 +50,41 @@ export const addTransferPointToSimulatedRegion23: Migration = {
             simulatedRegions: {
                 [simulatedRegionId: string]: { name: string };
             };
-
             transferPoints: {
                 [transferPointId: string]: {
                     id: string;
-
                     type: 'transferPoint';
-
                     position:
                         | {
                               type: 'simulatedRegion';
                               simulatedRegionId: string;
                           }
                         | { type: Exclude<'simulatedRegion', unknown> };
-
                     reachableTransferPoints: {
                         [connectTransferPointId: string]: {
                             duration: number;
                         };
                     };
-
                     reachableHospitals: { [key: string]: true };
-
                     internalName: string;
-
                     externalName: string;
                 };
             };
         };
+
         Object.keys(typedState.simulatedRegions).forEach(
             (simulatedRegionId) => {
                 const transferPointId = uuid();
                 typedState.transferPoints[transferPointId] = {
                     id: transferPointId,
-
                     type: 'transferPoint',
-
                     position: {
                         type: 'simulatedRegion',
                         simulatedRegionId,
                     },
-
                     reachableTransferPoints: {},
-
                     reachableHospitals: {},
-
                     internalName: '',
-
                     externalName: `[Simuliert] ${
                         typedState.simulatedRegions[simulatedRegionId]!.name
                     }`,
