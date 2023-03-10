@@ -48,6 +48,22 @@ export function deleteSimulatedRegion(
     draftState: Mutable<ExerciseState>,
     simulatedRegionId: UUID
 ) {
+    // Delete the TransferPoint
+
+    const simulatedRegion = getElement(
+        draftState,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+
+    const transferPointId = getElementByPredicate(
+        draftState,
+        'transferPoint',
+        (element) => isInSpecificSimulatedRegion(element, simulatedRegion.id)
+    ).id;
+
+    deleteTransferPoint(draftState, transferPointId);
+
     // Find related vehicles
 
     const relatedVehicles = Object.values(draftState.vehicles).filter(
@@ -97,22 +113,6 @@ export function deleteSimulatedRegion(
             isInSpecificSimulatedRegion(patients, simulatedRegionId)
         )
         .forEach((patients) => delete draftState.patients[patients.id]);
-
-    // Delete the TransferPoint
-
-    const simulatedRegion = getElement(
-        draftState,
-        'simulatedRegion',
-        simulatedRegionId
-    );
-
-    const transferPointId = getElementByPredicate(
-        draftState,
-        'transferPoint',
-        (element) => isInSpecificSimulatedRegion(element, simulatedRegion.id)
-    ).id;
-
-    deleteTransferPoint(draftState, transferPointId);
 
     // Delete the SimulatedRegion
 
