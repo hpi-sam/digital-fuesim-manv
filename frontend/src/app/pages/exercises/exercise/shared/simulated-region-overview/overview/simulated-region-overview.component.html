@@ -10,6 +10,16 @@
                     />
                 </ng-template>
             </ng-container>
+            <ng-container ngbNavItem="patients">
+                <a ngbNavLink data-cy="transferPointPopupNamesNav">Patienten</a>
+                <ng-template ngbNavContent>
+                    <app-simulated-region-overview-patients-tab
+                        class="mh-100 d-block h-100"
+                        [simulatedRegion]="(simulatedRegion$ | async)!"
+                        [selectedPatientId]="selectedPatientId"
+                    />
+                </ng-template>
+            </ng-container>
             <ng-container ngbNavItem="transferPoint">
                 <a ngbNavLink data-cy="transferPointPopupOtherTransferPointsNav"
                     >Transfer</a
