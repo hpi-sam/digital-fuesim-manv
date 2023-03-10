@@ -6,12 +6,6 @@ import { Subject } from 'rxjs';
 export class SelectPatientService {
     public readonly patientSelected = new Subject<UUID>();
 
-    // private _selectedPatientId?: UUID;
-
-    // get selectedPatientId(): UUID {
-    //     return this.selectedPatientId;
-    // }
-
     public selectPatient(id: UUID) {
         this.patientSelected.next(id);
     }
