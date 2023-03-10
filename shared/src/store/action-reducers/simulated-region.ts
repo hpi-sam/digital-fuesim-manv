@@ -84,7 +84,7 @@ export function deleteSimulatedRegion(
                 );
                 return (
                     isInSpecificSimulatedRegion(personnel, simulatedRegionId) ||
-                    isInSpecificVehicle(personnel, simulatedRegionId)
+                    isInSpecificVehicle(personnel, vehicle.id)
                 );
             })
     );
