@@ -80,6 +80,9 @@
         [(ngbCollapse)]="informationCollapsed"
     >
         <h5 class="mt-2">Derzeitige Zuordnung</h5>
+        <p class="text-muted">
+            Klicken Sie auf einen Patienten, um die Details zu sehen.
+        </p>
     </div>
 
     <div
@@ -113,8 +116,9 @@
                 [cateringsActive]="
                     treatPatientsBehaviorState.treatmentProgress !== 'unknown'
                 "
+                (click)="selectPatientService.selectPatient(patientId)"
                 class="row align-items-center ps-0 pe-0"
-                style="overflow-x: auto; flex-wrap: nowrap"
+                style="overflow-x: auto; flex-wrap: nowrap; cursor: pointer"
             ></app-simulated-region-overview-behavior-treat-patients-patient-details>
         </div>
     </div>
