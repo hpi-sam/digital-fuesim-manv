@@ -1,8 +1,11 @@
 import { IsNumber, IsOptional, IsUUID, Min } from 'class-validator';
+import { cloneDeep } from 'lodash-es';
 import type {
     TreatPatientsBehaviorState,
     UnloadArrivingVehiclesBehaviorState,
 } from '../../simulation';
+import { TreatPatientIntervalsChangedEvent } from '../../simulation/events/treat-patient-intervals-changed';
+import { sendSimulationEvent } from '../../simulation/events/utils';
 import type { Mutable } from '../../utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
@@ -90,25 +93,36 @@ export namespace SimulationActionReducers {
                     simulatedRegionId
                 );
                 const behaviorStates = simulatedRegion.behaviors;
-                const treatPatientsBehaviorState = behaviorStates.find(
-                    (behaviorState) => behaviorState.id === behaviorStateId
-                ) as Mutable<TreatPatientsBehaviorState>;
+                const treatPatientsIntervals = cloneDeep(
+                    (
+                        behaviorStates.find(
+                            (behaviorState) =>
+                                behaviorState.id === behaviorStateId
+                        ) as Mutable<TreatPatientsBehaviorState>
+                    ).intervals
+                );
                 if (unknown !== undefined) {
-                    treatPatientsBehaviorState.intervals.unknown = unknown;
+                    treatPatientsIntervals.unknown = unknown;
                 }
                 if (counted !== undefined) {
-                    treatPatientsBehaviorState.intervals.counted = counted;
+                    treatPatientsIntervals.counted = counted;
                 }
                 if (triaged !== undefined) {
-                    treatPatientsBehaviorState.intervals.triaged = triaged;
+                    treatPatientsIntervals.triaged = triaged;
                 }
                 if (secured !== undefined) {
-                    treatPatientsBehaviorState.intervals.secured = secured;
+                    treatPatientsIntervals.secured = secured;
                 }
                 if (countingTimePerPatient !== undefined) {
-                    treatPatientsBehaviorState.intervals.countingTimePerPatient =
+                    treatPatientsIntervals.countingTimePerPatient =
                         countingTimePerPatient;
                 }
+                sendSimulationEvent(
+                    simulatedRegion,
+                    TreatPatientIntervalsChangedEvent.create(
+                        treatPatientsIntervals
+                    )
+                );
                 return draftState;
             },
             rights: 'trainer',

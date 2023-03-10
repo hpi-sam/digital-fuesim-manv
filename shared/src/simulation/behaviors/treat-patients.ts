@@ -186,6 +186,40 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                 case 'treatmentProgressChangedEvent':
                     behaviorState.treatmentProgress = event.newProgress;
                     break;
+                case 'treatPatientIntervalsChangedEvent':
+                    {
+                        if (
+                            event.newTreatPatientsIntervals[
+                                behaviorState.treatmentProgress
+                            ] !==
+                                behaviorState.intervals[
+                                    behaviorState.treatmentProgress
+                                ] &&
+                            behaviorState.delayActivityId !== null
+                        ) {
+                            const id = nextUUID(draftState);
+                            terminateActivity(
+                                draftState,
+                                simulatedRegion,
+                                behaviorState.delayActivityId
+                            );
+                            addActivity(
+                                simulatedRegion,
+                                DelayEventActivityState.create(
+                                    id,
+                                    TreatmentsTimerEvent.create(),
+                                    draftState.currentTime +
+                                        behaviorState.intervals[
+                                            behaviorState.treatmentProgress
+                                        ]
+                                )
+                            );
+                            behaviorState.delayActivityId = id;
+                        }
+                        behaviorState.intervals =
+                            event.newTreatPatientsIntervals;
+                    }
+                    break;
                 default:
                 // Ignore event
             }
