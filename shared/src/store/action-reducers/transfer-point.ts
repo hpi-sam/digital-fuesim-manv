@@ -15,6 +15,8 @@ import {
     nestedCoordinatesOf,
 } from '../../models/utils';
 import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
+import type { ExerciseState } from '../../state';
+import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -22,6 +24,49 @@ import { ReducerError } from '../reducer-error';
 import { letElementArrive } from './transfer';
 import { calculateDistance } from './utils/calculate-distance';
 import { getElement } from './utils/get-element';
+
+export function deleteTransferPoint(
+    draftState: Mutable<ExerciseState>,
+    transferPointId: UUID
+) {
+    // check if transferPoint exists
+    getElement(draftState, 'transferPoint', transferPointId);
+    // TODO: make it dynamic (if at any time something else is able to transfer this part needs to be changed accordingly)
+    // Let all vehicles and personnel arrive that are on transfer to this transferPoint before deleting it
+    for (const vehicleId of Object.keys(draftState.vehicles)) {
+        const vehicle = getElement(draftState, 'vehicle', vehicleId);
+        if (
+            isInTransfer(vehicle) &&
+            currentTransferOf(vehicle).targetTransferPointId === transferPointId
+        ) {
+            letElementArrive(draftState, vehicle.type, vehicleId);
+        }
+    }
+    for (const personnelId of Object.keys(draftState.personnel)) {
+        const personnel = getElement(draftState, 'personnel', personnelId);
+        if (
+            isInTransfer(personnel) &&
+            currentTransferOf(personnel).targetTransferPointId ===
+                transferPointId
+        ) {
+            letElementArrive(draftState, personnel.type, personnelId);
+        }
+    }
+    // TODO: If we can assume that the transfer points are always connected to each other,
+    // we could just iterate over draftState.transferPoints[transferPointId].reachableTransferPoints
+    for (const transferPoint of Object.values(draftState.transferPoints)) {
+        for (const connectedTransferPointId of Object.keys(
+            transferPoint.reachableTransferPoints
+        )) {
+            const connectedTransferPoint =
+                draftState.transferPoints[connectedTransferPointId]!;
+            delete connectedTransferPoint.reachableTransferPoints[
+                transferPointId
+            ];
+        }
+    }
+    delete draftState.transferPoints[transferPointId];
+}
 
 // TODO check: type "TransferPoint" the T is big, in other files, the second word starts with a small letter
 
@@ -236,60 +281,7 @@ export namespace TransferPointActionReducers {
         {
             action: RemoveTransferPointAction,
             reducer: (draftState, { transferPointId }) => {
-                // check if transferPoint exists
-                getElement(draftState, 'transferPoint', transferPointId);
-                // TODO: make it dynamic (if at any time something else is able to transfer this part needs to be changed accordingly)
-                // Let all vehicles and personnel arrive that are on transfer to this transferPoint before deleting it
-                for (const vehicleId of Object.keys(draftState.vehicles)) {
-                    const vehicle = getElement(
-                        draftState,
-                        'vehicle',
-                        vehicleId
-                    );
-                    if (
-                        isInTransfer(vehicle) &&
-                        currentTransferOf(vehicle).targetTransferPointId ===
-                            transferPointId
-                    ) {
-                        letElementArrive(draftState, vehicle.type, vehicleId);
-                    }
-                }
-                for (const personnelId of Object.keys(draftState.personnel)) {
-                    const personnel = getElement(
-                        draftState,
-                        'personnel',
-                        personnelId
-                    );
-                    if (
-                        isInTransfer(personnel) &&
-                        currentTransferOf(personnel).targetTransferPointId ===
-                            transferPointId
-                    ) {
-                        letElementArrive(
-                            draftState,
-                            personnel.type,
-                            personnelId
-                        );
-                    }
-                }
-                // TODO: If we can assume that the transfer points are always connected to each other,
-                // we could just iterate over draftState.transferPoints[transferPointId].reachableTransferPoints
-                for (const transferPoint of Object.values(
-                    draftState.transferPoints
-                )) {
-                    for (const connectedTransferPointId of Object.keys(
-                        transferPoint.reachableTransferPoints
-                    )) {
-                        const connectedTransferPoint =
-                            draftState.transferPoints[
-                                connectedTransferPointId
-                            ]!;
-                        delete connectedTransferPoint.reachableTransferPoints[
-                            transferPointId
-                        ];
-                    }
-                }
-                delete draftState.transferPoints[transferPointId];
+                deleteTransferPoint(draftState, transferPointId);
                 return draftState;
             },
             rights: 'trainer',

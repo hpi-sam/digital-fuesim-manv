@@ -3,6 +3,7 @@ import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { SimulatedRegion, TransferPoint } from '../../models';
 import {
     isInSpecificSimulatedRegion,
+    isInSpecificVehicle,
     MapCoordinates,
     MapPosition,
     SimulatedRegionPosition,
@@ -27,7 +28,10 @@ import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
-import { TransferPointActionReducers } from './transfer-point';
+import {
+    deleteTransferPoint,
+    TransferPointActionReducers,
+} from './transfer-point';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement, getElementByPredicate } from './utils/get-element';
 
@@ -49,41 +53,36 @@ export function deleteSimulatedRegion(
     const relatedVehicles = Object.values(draftState.vehicles).filter(
         (vehicle) =>
             isInSpecificSimulatedRegion(vehicle, simulatedRegionId) &&
-            Object.keys(vehicle.materialIds).every((materialId) =>
-                isInSpecificSimulatedRegion(
-                    getElement(draftState, 'material', materialId),
-                    simulatedRegionId
-                )
-            ) &&
-            Object.keys(vehicle.personnelIds).every((personnelId) =>
-                isInSpecificSimulatedRegion(
-                    getElement(draftState, 'personnel', personnelId),
-                    simulatedRegionId
-                )
-            )
+            Object.keys(vehicle.materialIds).every((materialId) => {
+                const material = getElement(draftState, 'material', materialId);
+                return (
+                    isInSpecificSimulatedRegion(material, simulatedRegionId) ||
+                    isInSpecificVehicle(material, vehicle.id)
+                );
+            }) &&
+            Object.keys(vehicle.personnelIds).every((personnelId) => {
+                const personnel = getElement(
+                    draftState,
+                    'personnel',
+                    personnelId
+                );
+                return (
+                    isInSpecificSimulatedRegion(personnel, simulatedRegionId) ||
+                    isInSpecificVehicle(personnel, simulatedRegionId)
+                );
+            })
     );
 
     // Find and delete related materials and personnel
 
-    Object.values(draftState.materials)
-        .filter(
-            (material) =>
-                isInSpecificSimulatedRegion(material, simulatedRegionId) &&
-                relatedVehicles.includes(
-                    getElement(draftState, 'vehicle', material.vehicleId)
-                )
-        )
-        .forEach((material) => delete draftState.materials[material.id]);
-
-    Object.values(draftState.personnel)
-        .filter(
-            (personnel) =>
-                isInSpecificSimulatedRegion(personnel, simulatedRegionId) &&
-                relatedVehicles.includes(
-                    getElement(draftState, 'vehicle', personnel.vehicleId)
-                )
-        )
-        .forEach((personnel) => delete draftState.personnel[personnel.id]);
+    relatedVehicles.forEach((vehicle) => {
+        Object.keys(vehicle.materialIds).forEach(
+            (vehicleId) => delete draftState.materials[vehicleId]
+        );
+        Object.keys(vehicle.personnelIds).forEach(
+            (personnelId) => delete draftState.personnel[personnelId]
+        );
+    });
 
     // Delete related vehicles
 
@@ -107,13 +106,13 @@ export function deleteSimulatedRegion(
         simulatedRegionId
     );
 
-    const transferPoint = getElementByPredicate(
+    const transferPointId = getElementByPredicate(
         draftState,
         'transferPoint',
         (element) => isInSpecificSimulatedRegion(element, simulatedRegion.id)
-    );
+    ).id;
 
-    delete draftState.transferPoints[transferPoint.id];
+    deleteTransferPoint(draftState, transferPointId);
 
     // Delete the SimulatedRegion
 
