@@ -7,6 +7,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [0.2.0] - 2023-03-10
+
 ### Added
 
 -   The popup of a simulated region now has five tabs: _Overview_, _Patients, \_Transfers_, _Hospitals_ and _Behaviors_
@@ -74,6 +76,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/0.2.0...HEAD
+[0.2.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.0.0...0.1.0
 [0.0.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/37bd43bc1beb4aa9ad597b1ac763dd71b5709737...v0.0.0
