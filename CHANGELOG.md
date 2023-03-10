@@ -7,6 +7,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Changed
+
+-   New intervals for the treat patients behavior are now applied instantly when changed by a trainer
+
 ## [0.2.0] - 2023-03-10
 
 ### Added

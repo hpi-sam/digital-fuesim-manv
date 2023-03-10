@@ -8,6 +8,7 @@ import { TickEvent } from './tick';
 import { VehicleArrivedEvent } from './vehicle-arrived';
 import { TreatmentsTimerEvent } from './treatments-timer-event';
 import { TreatmentProgressChangedEvent } from './treatment-progress-changed';
+import { TreatPatientIntervalsChangedEvent } from './treat-patient-intervals-changed';
 
 export const simulationEvents = {
     MaterialAvailableEvent,
@@ -17,6 +18,7 @@ export const simulationEvents = {
     TreatmentProgressChangedEvent,
     TreatmentsTimerEvent,
     VehicleArrivedEvent,
+    TreatPatientIntervalsChangedEvent,
 };
 
 export type ExerciseSimulationEvent = InstanceType<
@@ -36,6 +38,7 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     treatmentProgressChangedEvent: TreatmentProgressChangedEvent,
     treatmentsTimerEvent: TreatmentsTimerEvent,
     vehicleArrivedEvent: VehicleArrivedEvent,
+    treatPatientIntervalsChangedEvent: TreatPatientIntervalsChangedEvent,
 };
 
 export const simulationEventTypeOptions: Parameters<typeof Type> = [
