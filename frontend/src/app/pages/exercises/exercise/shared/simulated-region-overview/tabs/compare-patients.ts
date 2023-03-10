@@ -7,12 +7,12 @@ import { Patient } from 'digital-fuesim-manv-shared';
 const patientCategoryOrderDictionary: {
     [Key in PatientStatus]: number;
 } = {
-    black: 5,
-    blue: 4,
-    green: 3,
-    red: 1,
     white: 0,
+    red: 1,
     yellow: 2,
+    green: 3,
+    blue: 4,
+    black: 5,
 };
 
 /**
