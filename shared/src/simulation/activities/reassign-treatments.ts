@@ -71,10 +71,8 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 (patient) =>
                     isInSpecificSimulatedRegion(patient, simulatedRegion.id)
             );
-            const personnel = Object.values(draftState.personnel).filter(
-                (pers) =>
-                    isInSpecificSimulatedRegion(pers, simulatedRegion.id) &&
-                    pers.personnelType !== 'gf'
+            let personnel = Object.values(draftState.personnel).filter((pers) =>
+                isInSpecificSimulatedRegion(pers, simulatedRegion.id)
             );
             const materials = Object.values(draftState.materials).filter(
                 (material) =>
@@ -102,8 +100,9 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 return;
             }
 
-            // The leader does not treat patients
+            // The leader and other gfs do not treat patients
             personnel.splice(leaderIndex, 1);
+            personnel = personnel.filter((pers) => pers.personnelType !== 'gf');
 
             if (personnel.length === 0) {
                 terminate();

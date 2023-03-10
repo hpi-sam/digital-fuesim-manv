@@ -28,6 +28,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Fixed
 
 -   Making a _Gruppenführer_ leader of a simulated region if the region already had a leader did not work. Now, if there already is a leader, better personnel (i.e. the old leader was not a _Gruppenführer_ but the new one is) will be chosen as new leader
+-   When a _Gruppenführer_ is leader of a simulated region, the treat patients behavior no longer stops working
 -   Errors in migrating exercises lo longer crash the backend
 -   If the history of an exercise cannot be restored, it is now dropped and the current state is used
 -   Actions that affect vehicles that are not fully loaded will now be removed in migrations, enabling the restoration of most of the history
