@@ -23,7 +23,6 @@ export class SimulatedRegionOverviewPatientsTabComponent implements OnInit {
     @Input() selectedPatientId?: UUID;
 
     patients$!: Observable<(Patient & { visibleStatus: PatientStatus })[]>;
-    selectedPatientVisibleStatus$?: Observable<PatientStatus>;
 
     constructor(
         private readonly store: Store<AppState>,
