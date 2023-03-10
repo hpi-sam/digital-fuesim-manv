@@ -10,13 +10,27 @@
                     />
                 </ng-template>
             </ng-container>
-            <ng-container ngbNavItem="transfer">
+            <ng-container ngbNavItem="transferPoint">
                 <a ngbNavLink data-cy="transferPointPopupOtherTransferPointsNav"
                     >Transfer</a
                 >
                 <ng-template ngbNavContent
-                    ><app-simulated-region-overview-transfer-tab
+                    ><app-other-transfer-point-tab
                         class="mh-100 d-block h-100"
+                        *ngIf="transferPointId$ | async as transferPointId"
+                        [transferPointId]="transferPointId"
+                    />
+                </ng-template>
+            </ng-container>
+            <ng-container ngbNavItem="hospitalTransfer">
+                <a ngbNavLink data-cy="transferPointPopupOtherTransferPointsNav"
+                    >Krankenhäuser</a
+                >
+                <ng-template ngbNavContent
+                    ><app-transfer-hospitals-tab
+                        class="mh-100 d-block h-100"
+                        *ngIf="transferPointId$ | async as transferPointId"
+                        [transferPointId]="transferPointId"
                     />
                 </ng-template>
             </ng-container>

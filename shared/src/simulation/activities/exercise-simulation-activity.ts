@@ -13,15 +13,19 @@ export const simulationActivities = {
 export type ExerciseSimulationActivity =
     (typeof simulationActivities)[keyof typeof simulationActivities];
 
-export type ExerciseSimulationActivityState = InstanceType<
-    ExerciseSimulationActivity['activityState']
->;
-
 type ExerciseSimulationActivityDictionary = {
     [Activity in ExerciseSimulationActivity as InstanceType<
         Activity['activityState']
     >['type']]: Activity;
 };
+
+export type ExerciseSimulationActivityType = InstanceType<
+    ExerciseSimulationActivity['activityState']
+>['type'];
+
+export type ExerciseSimulationActivityState<
+    T extends ExerciseSimulationActivityType = ExerciseSimulationActivityType
+> = InstanceType<ExerciseSimulationActivityDictionary[T]['activityState']>;
 
 export const simulationActivityDictionary = Object.fromEntries(
     Object.values(simulationActivities).map((activity) => [
