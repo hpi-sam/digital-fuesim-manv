@@ -29,7 +29,6 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Changed
 
 -   Images are now stored in git and not git lfs anymore
--   Patients, vehicles, personnel and material inside a simulated region are now deleted, when the simulated region is deleted. For vehicles, personnel, and material, they will only be deleted if all that belong together are in the same simulated region.
 
 ### Fixed
 
