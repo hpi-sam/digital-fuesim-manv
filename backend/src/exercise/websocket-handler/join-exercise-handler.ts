@@ -18,6 +18,7 @@ export const registerJoinExerciseHandler = (
                 callback({
                     success: false,
                     message: 'The client has already joined an exercise',
+                    expected: false,
                 });
                 return;
             }
@@ -31,6 +32,7 @@ export const registerJoinExerciseHandler = (
                     callback({
                         success: false,
                         message: `Invalid payload: ${e.errors}`,
+                        expected: false,
                     });
                     return;
                 }
@@ -40,6 +42,7 @@ export const registerJoinExerciseHandler = (
                 callback({
                     success: false,
                     message: 'The exercise does not exist',
+                    expected: false,
                 });
                 return;
             }

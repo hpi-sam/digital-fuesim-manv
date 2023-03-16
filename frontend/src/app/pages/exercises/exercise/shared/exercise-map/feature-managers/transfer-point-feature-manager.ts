@@ -1,20 +1,25 @@
 import type { Store } from '@ngrx/store';
-import type { UUID } from 'digital-fuesim-manv-shared';
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import type { UUID, Element } from 'digital-fuesim-manv-shared';
 import { TransferPoint, TransferStartPoint } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
 import type { TranslateEvent } from 'ol/interaction/Translate';
-import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
-import type VectorSource from 'ol/source/Vector';
+import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
+import {
+    selectCurrentRole,
+    selectVisibleTransferPoints,
+} from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
+import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { MoveableFeatureManager } from './moveable-feature-manager';
@@ -24,13 +29,11 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
 
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<Point>>,
         private readonly store: Store<AppState>,
         private readonly exerciseService: ExerciseService
     ) {
         super(
             olMap,
-            layer,
             (targetPosition, transferPoint) => {
                 exerciseService.proposeAction({
                     type: '[TransferPoint] Move TransferPoint',
@@ -38,9 +41,10 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
                     targetPosition,
                 });
             },
-            new PointGeometryHelper()
+            new PointGeometryHelper(),
+            600
         );
-        layer.setStyle((thisFeature, currentZoom) => [
+        this.layer.setStyle((thisFeature, currentZoom) => [
             this.imageStyleHelper.getStyle(
                 thisFeature as Feature<Point>,
                 currentZoom
@@ -50,6 +54,19 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
                 currentZoom
             ),
         ]);
+    }
+
+    public register(
+        changePopup$: Subject<OpenPopupOptions<any> | undefined>,
+        destroy$: Subject<void>,
+        mapInteractionsManager: OlMapInteractionsManager
+    ) {
+        super.registerFeatureElementManager(
+            this.store.select(selectVisibleTransferPoints),
+            changePopup$,
+            destroy$,
+            mapInteractionsManager
+        );
     }
 
     private readonly imageStyleHelper = new ImageStyleHelper(
@@ -70,12 +87,11 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
     );
 
     public override onFeatureDrop(
-        dropEvent: TranslateEvent,
-        droppedFeature: Feature<any>,
-        droppedOnFeature: Feature<Point>
+        droppedElement: Element,
+        droppedOnFeature: Feature<Point>,
+        dropEvent?: TranslateEvent
     ) {
         // TODO: droppedElement isn't necessarily a transfer point -> fix getElementFromFeature typings
-        const droppedElement = this.getElementFromFeature(droppedFeature);
         const droppedOnTransferPoint = this.getElementFromFeature(
             droppedOnFeature
         ) as TransferPoint;
@@ -96,6 +112,7 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
             this.popupHelper.getPopupOptions(
                 ChooseTransferTargetPopupComponent,
                 droppedOnFeature,
+                [droppedOnTransferPoint.id, droppedElement.id],
                 {
                     transferPointId: droppedOnTransferPoint.id,
                     droppedElementType: droppedElement.type,
@@ -146,6 +163,7 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
             this.popupHelper.getPopupOptions(
                 TransferPointPopupComponent,
                 feature,
+                [feature.getId() as UUID],
                 {
                     transferPointId: feature.getId() as UUID,
                 }

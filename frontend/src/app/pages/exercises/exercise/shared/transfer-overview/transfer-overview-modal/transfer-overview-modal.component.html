@@ -1,6 +1,11 @@
 <div class="modal-header">
     <h4 class="modal-title">Transferübersicht</h4>
-    <button type="button" class="btn-close" (click)="close()"></button>
+    <button
+        type="button"
+        class="btn-close"
+        (click)="close()"
+        data-cy="transferOverviewCloseButton"
+    ></button>
 </div>
 <div class="modal-body" style="min-height: 500px">
     <app-transfer-overview-table></app-transfer-overview-table>

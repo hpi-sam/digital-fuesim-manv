@@ -1,11 +1,21 @@
+import type { MemoizedSelector } from '@ngrx/store';
 import { createSelector } from '@ngrx/store';
 import type {
+    ExerciseSimulationActivityState,
+    ExerciseSimulationActivityType,
+    ExerciseSimulationBehaviorState,
+    ExerciseSimulationBehaviorType,
     ExerciseState,
     Personnel,
     UUID,
     Vehicle,
+    WithPosition,
 } from 'digital-fuesim-manv-shared';
-import { isInTransfer, currentCoordinatesOf } from 'digital-fuesim-manv-shared';
+import {
+    isInSpecificSimulatedRegion,
+    isInTransfer,
+    nestedCoordinatesOf,
+} from 'digital-fuesim-manv-shared';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
 import type { AppState } from '../../app.state';
 
@@ -24,7 +34,7 @@ function selectPropertyFactory<Key extends keyof ExerciseState>(key: Key) {
 
 // UUIDMap properties
 export const selectViewports = selectPropertyFactory('viewports');
-export const selectSimulatedRegion = selectPropertyFactory('simulatedRegions');
+export const selectSimulatedRegions = selectPropertyFactory('simulatedRegions');
 export const selectMapImages = selectPropertyFactory('mapImages');
 export const selectPatients = selectPropertyFactory('patients');
 export const selectVehicles = selectPropertyFactory('vehicles');
@@ -81,7 +91,7 @@ export const createSelectHospital =
 export const createSelectViewport =
     createSelectElementFromMapFactory(selectViewports);
 export const createSelectSimulatedRegion = createSelectElementFromMapFactory(
-    selectSimulatedRegion
+    selectSimulatedRegions
 );
 export const createSelectClient =
     createSelectElementFromMapFactory(selectClients);
@@ -112,16 +122,21 @@ export const selectTileMapProperties = createSelector(
 );
 
 export const selectTransferLines = createSelector(
+    selectExerciseState,
     selectTransferPoints,
-    (transferPoints) =>
+    (state, transferPoints) =>
         Object.values(transferPoints)
             .flatMap((transferPoint) =>
                 Object.entries(transferPoint.reachableTransferPoints).map(
                     ([connectedId, { duration }]) => ({
                         id: `${transferPoint.id}:${connectedId}` as const,
-                        startPosition: currentCoordinatesOf(transferPoint),
-                        endPosition: currentCoordinatesOf(
-                            transferPoints[connectedId]!
+                        startPosition: nestedCoordinatesOf(
+                            transferPoint,
+                            state
+                        ),
+                        endPosition: nestedCoordinatesOf(
+                            transferPoints[connectedId]!,
+                            state
                         ),
                         duration,
                     })
@@ -173,3 +188,73 @@ export const selectPersonnelInTransfer = createSelector(
             isInTransfer(_personnel)
         ) as Personnel[]
 );
+
+export function createSelectElementsInSimulatedRegion<E extends WithPosition>(
+    elementsSelector: (state: AppState) => { [key: UUID]: E },
+    simulatedRegionId: UUID
+) {
+    return createSelector(
+        createSelectSimulatedRegion(simulatedRegionId),
+        elementsSelector,
+        (simulatedRegion, elements) =>
+            Object.values(elements).filter((e) =>
+                isInSpecificSimulatedRegion(e, simulatedRegion.id)
+            )
+    );
+}
+
+export function createSelectByPredicate<E extends WithPosition>(
+    selector: MemoizedSelector<AppState, E[]>,
+    predicate: (e: E) => boolean
+) {
+    return createSelector(selector, (elements) =>
+        elements.filter((element) => predicate(element))
+    );
+}
+
+export function createSelectBehaviorState<
+    B extends ExerciseSimulationBehaviorState
+>(simulatedRegionId: UUID, behaviorId: UUID) {
+    return createSelector(
+        createSelectSimulatedRegion(simulatedRegionId),
+        (simulatedRegion) =>
+            simulatedRegion?.behaviors.find(
+                (behavior) => behavior.id === behaviorId
+            ) as B | undefined
+    );
+}
+
+export function createSelectActivityState<
+    B extends ExerciseSimulationActivityState
+>(simulatedRegionId: UUID, activityId: UUID) {
+    return createSelector(
+        createSelectSimulatedRegion(simulatedRegionId),
+        (simulatedRegion) => simulatedRegion.activities[activityId] as B
+    );
+}
+
+export function createSelectBehaviorStatesByType<
+    T extends ExerciseSimulationBehaviorType
+>(simulatedRegionId: UUID, behaviorType: T) {
+    return createSelector(
+        createSelectSimulatedRegion(simulatedRegionId),
+        (simulatedRegion) =>
+            simulatedRegion?.behaviors.filter(
+                (behavior): behavior is ExerciseSimulationBehaviorState<T> =>
+                    behavior.type === behaviorType
+            )
+    );
+}
+
+export function createSelectActivityStatesByType<
+    T extends ExerciseSimulationActivityType
+>(simulatedRegionId: UUID, activityType: T) {
+    return createSelector(
+        createSelectSimulatedRegion(simulatedRegionId),
+        (simulatedRegion) =>
+            Object.values(simulatedRegion?.activities).filter(
+                (activity): activity is ExerciseSimulationActivityState<T> =>
+                    activity.type === activityType
+            )
+    );
+}

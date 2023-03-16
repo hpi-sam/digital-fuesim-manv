@@ -15,6 +15,7 @@ import {
     TransferPosition,
 } from '../../models/utils';
 import { changePosition } from '../../models/utils/position/position-helpers-mutable';
+import { simulateAllRegions } from '../../simulation/utils/simulation';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable } from '../../utils';
@@ -134,6 +135,8 @@ export namespace ExerciseActionReducers {
             // Refresh transfers
             refreshTransfer(draftState, 'vehicle', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);
+
+            simulateAllRegions(draftState, tickInterval);
             return draftState;
         },
         rights: 'server',
