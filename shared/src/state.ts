@@ -36,6 +36,8 @@ import {
 import { ExerciseConfiguration } from './models/exercise-configuration';
 import type { MaterialTemplate } from './models/material-template';
 import type { PersonnelTemplate } from './models/personnel-template';
+import type { ExerciseRadiogram } from './models/radiogram/exercise-radiogram';
+import { getRadiogramConstructor } from './models/radiogram/exercise-radiogram';
 import type { PersonnelType } from './models/utils';
 import {
     ExerciseStatus,
@@ -48,7 +50,7 @@ import { RandomState, seededRandomState } from './simulation/utils/randomness';
 import type { SpatialElementPlural } from './store/action-reducers/utils/spatial-elements';
 import type { UUID } from './utils';
 import { uuid, uuidValidationOptions } from './utils';
-import { IsIdMap, IsLiteralUnion } from './utils/validators';
+import { IsIdMap, IsLiteralUnion, IsMultiTypedIdMap } from './utils/validators';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -99,6 +101,10 @@ export class ExerciseState {
     public readonly alarmGroups: { readonly [key: UUID]: AlarmGroup } = {};
     @IsIdMap(Client)
     public readonly clients: { readonly [key: UUID]: Client } = {};
+    @IsMultiTypedIdMap(getRadiogramConstructor)
+    @ValidateNested()
+    public readonly radiograms: { readonly [key: UUID]: ExerciseRadiogram } =
+        {};
     @IsArray()
     @ValidateNested()
     @Type(() => PatientCategory)
@@ -154,5 +160,5 @@ export class ExerciseState {
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 23;
+    static readonly currentStateVersion = 24;
 }
