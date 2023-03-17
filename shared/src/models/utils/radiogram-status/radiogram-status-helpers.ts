@@ -47,7 +47,7 @@ export function participantIdOfRadiogramStatus(
     radiogramStatus: RadiogramStatus
 ) {
     if (isAcceptedRadiogramStatus(radiogramStatus)) {
-        return radiogramStatus.participantId;
+        return radiogramStatus.clientId;
     }
     throw new TypeError(
         `Expected radiogram status to be accepted. Was of type ${radiogramStatus.type}.`
