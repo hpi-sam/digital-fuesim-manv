@@ -15,7 +15,14 @@ describe('migration', () => {
 
     fs.readdirSync(basePath).forEach((dir) => {
         describe(dir, () => {
-            test.each(fs.readdirSync(`${basePath}/${dir}`))(
+            const exercisePaths = fs.readdirSync(`${basePath}/${dir}`);
+            const exercisePathsToTest = exercisePaths.filter(
+                (exercisePath) =>
+                    exercisePath.split('-')[0] !== 'EXCLUDE' ||
+                    exercisePath.split('-')[1] !== 'FROM' ||
+                    exercisePath.split('-')[2] !== 'TEST'
+            );
+            test.each(exercisePathsToTest)(
                 'It imports %s correctly',
                 async (exercisePath) => {
                     const exercise = JSON.parse(
