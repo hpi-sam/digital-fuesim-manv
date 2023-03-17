@@ -3,11 +3,13 @@ import { delayEventActivity } from './delay-event';
 import { SimulationActivityState } from './simulation-activity';
 import { reassignTreatmentsActivity } from './reassign-treatments';
 import { unloadVehicleActivity } from './unload-vehicle';
+import { recurringEventActivity } from './recurring-event';
 
 export const simulationActivities = {
     reassignTreatmentsActivity,
     unloadVehicleActivity,
     delayEventActivity,
+    recurringEventActivity,
 };
 
 export type ExerciseSimulationActivity =
