@@ -138,9 +138,6 @@ jobs:
                   | sed -e "s/^DFM_DB_HOST=.*$/DFM_DB_HOST=127.0.0.1/" > ./.env
             - name: Run migrations
               run: cd backend && npm run migration:run && cd ..
-            - name: Fetch Test Scenarios
-              run: (mkdir test-scenarios || cd .) && cd test-scenarios && (git clone https://github.com/hpi-sam/digital-fuesim-manv-public-test-scenarios.git || cd .) && cd digital-fuesim-manv-public-test-scenarios && git pull && cd ../..
-              if: always()
             - name: Run Backend Tests
               run: cd backend && npm run test:ci; cd ..
               if: always()
