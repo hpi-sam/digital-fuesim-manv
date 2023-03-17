@@ -27,6 +27,4 @@ export * from './http-interfaces';
 export * from './state-helpers';
 export * from './data';
 export * from './store/action-reducers/utils';
-export * from './state-migrations';
-
-Some code that is invalid on purpose!
+export         * from './state-migrations';
