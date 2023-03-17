@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
-import { cloneDeep } from 'lodash-es';
 import { getCreate } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
