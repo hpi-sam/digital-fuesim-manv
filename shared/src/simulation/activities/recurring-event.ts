@@ -60,10 +60,7 @@ export const recurringEventActivity: SimulationActivity<RecurringEventActivitySt
             if (draftState.currentTime >= activityState.nextOccurrenceTime) {
                 activityState.nextOccurrenceTime +=
                     activityState.recurrenceIntervalTime;
-                sendSimulationEvent(
-                    simulatedRegion,
-                    activityState.event
-                );
+                sendSimulationEvent(simulatedRegion, activityState.event);
                 terminate();
             }
         },
