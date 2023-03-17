@@ -11,6 +11,16 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 -   There are now radiograms, which can be used by the simulation to send messages to the trainees
 
+## [0.2.1] - 2023-03-11
+
+### Changed
+
+-   Revert previous change: Patients, vehicles, personnel and material inside a simulated region are now deleted, when the simulated region is deleted. For vehicles, personnel, and material, they will only be deleted if all that belong together are in the same simulated region.
+
+### Fixed
+
+-   Exercises in which simulated regions are deleted no longer crash on import due missing patients in the tick action.
+
 ## [0.2.0] - 2023-03-10
 
 ### Added
@@ -80,7 +90,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/0.2.0...HEAD
-[0.2.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/0.1.0...0.2.0
-[0.1.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.0.0...0.1.0
+[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.0.0...v0.1.0
 [0.0.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/37bd43bc1beb4aa9ad597b1ac763dd71b5709737...v0.0.0
