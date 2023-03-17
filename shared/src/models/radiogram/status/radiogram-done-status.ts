@@ -1,9 +1,10 @@
 import { IsValue } from '../../../utils/validators';
-import { getCreate } from '../get-create';
+import { getCreate } from '../../utils';
+import type { RadiogramStatus } from './radiogram-status';
 
-export class RadiogramUnreadStatus {
-    @IsValue('unread')
-    public readonly type = 'unread';
+export class RadiogramDoneStatus implements RadiogramStatus {
+    @IsValue('doneRadiogramStatus')
+    public readonly type = 'doneRadiogramStatus';
 
     /**
      * @deprecated Use {@link create} instead.

@@ -1,11 +1,12 @@
 import { IsUUID } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../../utils';
 import { IsValue } from '../../../utils/validators';
-import { getCreate } from '../get-create';
+import { getCreate } from '../../utils/get-create';
+import type { RadiogramStatus } from './radiogram-status';
 
-export class RadiogramAcceptedStatus {
-    @IsValue('accepted')
-    public readonly type = 'accepted';
+export class RadiogramAcceptedStatus implements RadiogramStatus {
+    @IsValue('acceptedRadiogramStatus')
+    public readonly type = 'acceptedRadiogramStatus';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly clientId: UUID;

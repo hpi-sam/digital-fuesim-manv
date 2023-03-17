@@ -36,7 +36,8 @@ import {
 import { ExerciseConfiguration } from './models/exercise-configuration';
 import type { MaterialTemplate } from './models/material-template';
 import type { PersonnelTemplate } from './models/personnel-template';
-import { Radiogram } from './models/radiogram';
+import type { ExerciseRadiogram } from './models/radiogram/exercise-radiogram';
+import { getRadiogramConstructor } from './models/radiogram/exercise-radiogram';
 import type { PersonnelType } from './models/utils';
 import {
     ExerciseStatus,
@@ -49,7 +50,7 @@ import { RandomState, seededRandomState } from './simulation/utils/randomness';
 import type { SpatialElementPlural } from './store/action-reducers/utils/spatial-elements';
 import type { UUID } from './utils';
 import { uuid, uuidValidationOptions } from './utils';
-import { IsIdMap, IsLiteralUnion } from './utils/validators';
+import { IsIdMap, IsLiteralUnion, IsMultiTypedIdMap } from './utils/validators';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -100,8 +101,10 @@ export class ExerciseState {
     public readonly alarmGroups: { readonly [key: UUID]: AlarmGroup } = {};
     @IsIdMap(Client)
     public readonly clients: { readonly [key: UUID]: Client } = {};
-    @IsIdMap(Radiogram)
-    public readonly radiograms: { readonly [key: UUID]: Radiogram } = {};
+    @IsMultiTypedIdMap(getRadiogramConstructor)
+    @ValidateNested()
+    public readonly radiograms: { readonly [key: UUID]: ExerciseRadiogram } =
+        {};
     @IsArray()
     @ValidateNested()
     @Type(() => PatientCategory)
