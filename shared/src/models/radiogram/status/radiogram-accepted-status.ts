@@ -14,7 +14,7 @@ export class RadiogramAcceptedStatus implements RadiogramStatus {
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(clientId: string) {
+    constructor(clientId: UUID) {
         this.clientId = clientId;
     }
 
