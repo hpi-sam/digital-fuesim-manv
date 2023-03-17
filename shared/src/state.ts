@@ -36,6 +36,7 @@ import {
 import { ExerciseConfiguration } from './models/exercise-configuration';
 import type { MaterialTemplate } from './models/material-template';
 import type { PersonnelTemplate } from './models/personnel-template';
+import { Radiogram } from './models/radiogram';
 import type { PersonnelType } from './models/utils';
 import {
     ExerciseStatus,
@@ -99,6 +100,8 @@ export class ExerciseState {
     public readonly alarmGroups: { readonly [key: UUID]: AlarmGroup } = {};
     @IsIdMap(Client)
     public readonly clients: { readonly [key: UUID]: Client } = {};
+    @IsIdMap(Radiogram)
+    public readonly radiograms: { readonly [key: UUID]: Radiogram } = {};
     @IsArray()
     @ValidateNested()
     @Type(() => PatientCategory)
@@ -154,5 +157,5 @@ export class ExerciseState {
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 23;
+    static readonly currentStateVersion = 24;
 }
