@@ -1,9 +1,6 @@
 node_modules/
 dist/
 
-# test scenarios
-
-test-scenarios/
 
 # jest
 /coverage

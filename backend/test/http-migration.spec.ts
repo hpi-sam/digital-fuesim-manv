@@ -3,8 +3,7 @@ import { UserReadableIdGenerator } from 'utils/user-readable-id-generator';
 import { exerciseMap } from 'exercise/exercise-map';
 import { createTestEnvironment } from './utils';
 
-const basePath =
-    '../test-scenarios/digital-fuesim-manv-public-test-scenarios/migration-test-scenarios';
+const basePath = '../test-scenarios/migration-test-scenarios';
 
 describe('migration', () => {
     const environment = createTestEnvironment();
