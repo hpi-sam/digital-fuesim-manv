@@ -290,6 +290,7 @@ jobs:
             - cypress
             - lint
             - dependencies
+            - migration-test
         runs-on: ubuntu-latest
         steps:
             - run: 'true'
