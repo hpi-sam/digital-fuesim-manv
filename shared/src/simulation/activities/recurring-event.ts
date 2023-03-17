@@ -24,7 +24,7 @@ export class RecurringEventActivityState implements SimulationActivityState {
 
     @IsInt()
     @Min(0)
-    public readonly startTime: number;
+    public readonly nextOccurrenceTime: number;
 
     @Min(0)
     public readonly recurrenceIntervalTime: number;
@@ -35,12 +35,12 @@ export class RecurringEventActivityState implements SimulationActivityState {
     constructor(
         id: UUID,
         event: ExerciseSimulationEvent,
-        startTime: number,
+        firstOccurrenceTime: number,
         recurrenceIntervalTime: number
     ) {
         this.id = id;
         this.event = event;
-        this.startTime = startTime;
+        this.nextOccurrenceTime = firstOccurrenceTime;
         this.recurrenceIntervalTime = recurrenceIntervalTime;
     }
 
@@ -57,11 +57,9 @@ export const recurringEventActivity: SimulationActivity<RecurringEventActivitySt
             _tickInterval,
             terminate
         ) {
-            if (
-                draftState.currentTime >=
-                activityState.startTime + activityState.recurrenceIntervalTime
-            ) {
-                activityState.startTime += activityState.recurrenceIntervalTime;
+            if (draftState.currentTime >= activityState.nextOccurrenceTime) {
+                activityState.nextOccurrenceTime +=
+                    activityState.recurrenceIntervalTime;
                 sendSimulationEvent(
                     simulatedRegion,
                     cloneDeep(activityState.event)
