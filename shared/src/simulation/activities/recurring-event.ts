@@ -62,7 +62,7 @@ export const recurringEventActivity: SimulationActivity<RecurringEventActivitySt
                     activityState.recurrenceIntervalTime;
                 sendSimulationEvent(
                     simulatedRegion,
-                    cloneDeep(activityState.event)
+                    activityState.event
                 );
                 terminate();
             }
