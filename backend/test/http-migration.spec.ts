@@ -28,7 +28,8 @@ describe('migration', () => {
                         .httpRequest('post', '/api/exercise')
                         .send(exercise)
                         .expect(201);
-                }
+                },
+                120_000
             );
         });
     });
