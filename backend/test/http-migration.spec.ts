@@ -4,7 +4,7 @@ import { exerciseMap } from 'exercise/exercise-map';
 import { createTestEnvironment } from './utils';
 
 const basePath =
-    'C:/Users/benil/Documents/Uni/BP/Test Scenarios/digital-fuesim-manv-public-test-scenarios/migration-test-scenarios';
+    '../test-scenarios/digital-fuesim-manv-public-test-scenarios/migration-test-scenarios';
 
 describe('migration', () => {
     const environment = createTestEnvironment();
@@ -16,12 +16,12 @@ describe('migration', () => {
 
     fs.readdirSync(basePath).forEach((dir) => {
         describe(dir, () => {
-            test.each(fs.readdirSync(`${basePath }/${ dir}`))(
+            test.each(fs.readdirSync(`${basePath}/${dir}`))(
                 'It imports %s correctly',
                 async (exercisePath) => {
                     const exercise = JSON.parse(
                         fs.readFileSync(
-                            `${basePath }/${ dir}/${exercisePath}`,
+                            `${basePath}/${dir}/${exercisePath}`,
                             'utf8'
                         )
                     );
