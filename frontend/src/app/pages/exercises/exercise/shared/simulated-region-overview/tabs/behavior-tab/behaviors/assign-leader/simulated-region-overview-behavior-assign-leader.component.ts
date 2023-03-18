@@ -1,10 +1,9 @@
 import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { Store } from '@ngrx/store';
 import type { Personnel } from 'digital-fuesim-manv-shared';
 import { AssignLeaderBehaviorState } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { createSelectPersonnel } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
@@ -23,13 +22,13 @@ export class SimulatedRegionOverviewBehaviorAssignLeaderComponent
 
     currentLeader?: Observable<Personnel>;
 
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(private readonly storeService: StoreService) {}
 
     ngOnChanges(): void {
-        if (this.assignLeaderBehaviorState.leaderId) {
-            this.currentLeader = this.store.select(
-                createSelectPersonnel(this.assignLeaderBehaviorState.leaderId)
-            );
-        }
+        this.currentLeader = this.assignLeaderBehaviorState.leaderId
+            ? this.storeService.select$(
+                  createSelectPersonnel(this.assignLeaderBehaviorState.leaderId)
+              )
+            : undefined;
     }
 }

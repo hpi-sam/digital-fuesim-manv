@@ -1,12 +1,12 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
+import { createSelector } from '@ngrx/store';
 import type { UnloadArrivingVehiclesBehaviorState } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     createSelectActivityStatesByType,
     createSelectBehaviorState,
@@ -36,12 +36,12 @@ export class SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        public readonly store: Store<AppState>
+        public readonly storeService: StoreService
     ) {}
 
     ngOnInit(): void {
-        this.unloadDuration$ = this.store
-            .select(
+        this.unloadDuration$ = this.storeService
+            .select$(
                 createSelectBehaviorState<UnloadArrivingVehiclesBehaviorState>(
                     this.simulatedRegionId,
                     this.behaviorId
@@ -62,7 +62,7 @@ export class SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent
                 }))
         );
 
-        this.vehiclesStatus$ = this.store.select(
+        this.vehiclesStatus$ = this.storeService.select$(
             createSelector(
                 selectCurrentTime,
                 unloadingSelector,
