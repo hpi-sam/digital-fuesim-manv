@@ -9,7 +9,7 @@ import { addTypeProperty17 } from './17-add-type-property';
 import { replacePositionWithMetaPosition18 } from './18-replace-position-with-meta-position';
 import { renameStartPointTypes19 } from './19-rename-start-point-types';
 import { addSimulationProperties20 } from './20-add-simulation-properties';
-import { refactorRectangularElementPositionsToCenter21 } from './21-refactor-rectangular-element-positions-to-center';
+import { refactorRectangularElementPositionsToCenter25 } from './25-refactor-rectangular-element-positions-to-center';
 import { fixTypoInRenameSimulatedRegion21 } from './21-fix-typo-in-rename-simulated-region';
 import { removeIllegalVehicleMovementActions22 } from './22-remove-illegal-vehicle-movement-actions';
 import { addTransferPointToSimulatedRegion23 } from './23-add-transfer-point-to-simulated-region';
@@ -72,5 +72,5 @@ export const migrations: {
     22: removeIllegalVehicleMovementActions22,
     23: addTransferPointToSimulatedRegion23,
     24: addRadiograms24,
-    25: refactorRectangularElementPositionsToCenter21,
+    25: refactorRectangularElementPositionsToCenter25,
 };

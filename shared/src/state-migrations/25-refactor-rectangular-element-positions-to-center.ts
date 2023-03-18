@@ -1,7 +1,7 @@
 import { cloneDeep } from 'lodash-es';
 import type { Migration } from './migration-functions';
 
-export const refactorRectangularElementPositionsToCenter21: Migration = {
+export const refactorRectangularElementPositionsToCenter25: Migration = {
     action: (intermediaryState: any, action: any) => {
         switch (action.type) {
             case '[Viewport] Add viewport':
