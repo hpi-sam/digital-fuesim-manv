@@ -1,4 +1,4 @@
-import type { Type, NgZone } from '@angular/core';
+import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { MapCoordinates, Size, Viewport } from 'digital-fuesim-manv-shared';
@@ -42,14 +42,12 @@ export class ViewportFeatureManager
     public register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisibleViewports),
             changePopup$,
             destroy$,
-            ngZone,
             mapInteractionsManager
         );
         mapInteractionsManager.addTrainerInteraction(
@@ -143,6 +141,7 @@ export class ViewportFeatureManager
 
         this.togglePopup$.next({
             component: ViewportPopupComponent,
+            closingUUIDs: [feature.getId() as UUID],
             context: {
                 viewportId: feature.getId() as UUID,
             },

@@ -3,7 +3,7 @@ import type { UUID } from '../utils';
 import type { Migration } from './migration-functions';
 
 export const updateEocLog3: Migration = {
-    actions: null,
+    action: null,
     state: migrateState,
 };
 

@@ -10,6 +10,10 @@ import { replacePositionWithMetaPosition18 } from './18-replace-position-with-me
 import { renameStartPointTypes19 } from './19-rename-start-point-types';
 import { addSimulationProperties20 } from './20-add-simulation-properties';
 import { refactorRectangularElementPositionsToCenter21 } from './21-refactor-rectangular-element-positions-to-center';
+import { fixTypoInRenameSimulatedRegion21 } from './21-fix-typo-in-rename-simulated-region';
+import { removeIllegalVehicleMovementActions22 } from './22-remove-illegal-vehicle-movement-actions';
+import { addTransferPointToSimulatedRegion23 } from './23-add-transfer-point-to-simulated-region';
+import { addRadiograms24 } from './24-add-radiograms';
 import { updateEocLog3 } from './3-update-eoc-log';
 import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
 import { removeStatistics5 } from './5-remove-statistics';
@@ -20,16 +24,16 @@ import { removeIsBeingTreated9 } from './9-remove-is-being-treated';
 import { impossibleMigration } from './impossible-migration';
 
 /**
- * Such a function gets the already migrated initial state of the exercise and an array of all actions (not yet migrated).
- * It is expected that afterwards the actions in the provided array are migrated.
- * It is not allowed to modify the order of the actions, to add an action or to remove an action.
- * To indicate that an action should be removed it can be replaced by `null`.
- * It may throw a {@link RestoreError} when a migration is not possible.
+ * Migrate a single action
+ * @param intermediaryState - The migrated exercise state just before the action is applied
+ * @param action - The action to migrate in place
+ * @returns true if the migration was successful or false to indicate that the action should be deleted
+ * @throws a {@link RestoreError} when a migration is not possible.
  */
-type MigrateActionsFunction = (
-    initialState: object,
-    actions: (object | null)[]
-) => void;
+type MigrateActionFunction = (
+    intermediaryState: object,
+    action: object
+) => boolean;
 
 /**
  * Such a function gets the not yet migrated state and is expected to mutate it to a migrated version.
@@ -38,7 +42,7 @@ type MigrateActionsFunction = (
 type MigrateStateFunction = (state: object) => void;
 
 export interface Migration {
-    actions: MigrateActionsFunction | null;
+    action: MigrateActionFunction | null;
     state: MigrateStateFunction | null;
 }
 
@@ -64,5 +68,9 @@ export const migrations: {
     18: replacePositionWithMetaPosition18,
     19: renameStartPointTypes19,
     20: addSimulationProperties20,
-    21: refactorRectangularElementPositionsToCenter21,
+    21: fixTypoInRenameSimulatedRegion21,
+    22: removeIllegalVehicleMovementActions22,
+    23: addTransferPointToSimulatedRegion23,
+    24: addRadiograms24,
+    25: refactorRectangularElementPositionsToCenter21,
 };

@@ -38,4 +38,5 @@ export type SocketResponse<T = undefined> =
     | {
           readonly success: false;
           readonly message: string;
+          readonly expected: boolean;
       };

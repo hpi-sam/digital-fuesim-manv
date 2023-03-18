@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { NgbDropdownModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
 import { HospitalNameComponent } from './components/hospital-name/hospital-name.component';
 import { PatientStatusDataFieldComponent } from './components/patient-status-displayl/patient-status-data-field/patient-status-data-field.component';
 import { PatientStatusDisplayComponent } from './components/patient-status-displayl/patient-status-display/patient-status-display.component';
@@ -26,6 +28,8 @@ import { JoinIdDirective } from './validation/join-id-validator.directive';
 import { PersonnelNamePipe } from './pipes/personnel-name.pipe';
 import { CaterCapacityCountPipe } from './pipes/cater-capacity-count.pipe';
 import { FooterComponent } from './components/footer/footer.component';
+import { PatientHealthPointDisplayComponent } from './components/patient-health-point-display/patient-health-point-display.component';
+import { PatientsDetailsComponent } from './components/patients-details/patients-details.component';
 
 @NgModule({
     declarations: [
@@ -54,8 +58,16 @@ import { FooterComponent } from './components/footer/footer.component';
         CaterCapacityCountPipe,
         FileInputDirective,
         FooterComponent,
+        PatientHealthPointDisplayComponent,
+        PatientsDetailsComponent,
     ],
-    imports: [CommonModule, RouterModule],
+    imports: [
+        CommonModule,
+        FormsModule,
+        RouterModule,
+        NgbDropdownModule,
+        NgbNavModule,
+    ],
     exports: [
         AutofocusDirective,
         AppSaveOnTypingDirective,
@@ -81,6 +93,8 @@ import { FooterComponent } from './components/footer/footer.component';
         PatientStatusBadgeComponent,
         FileInputDirective,
         FooterComponent,
+        PatientHealthPointDisplayComponent,
+        PatientsDetailsComponent,
     ],
 })
 export class SharedModule {}

@@ -1,4 +1,3 @@
-import type { NgZone } from '@angular/core';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
 import type { TranslateEvent } from 'ol/interaction/Translate';
@@ -136,7 +135,6 @@ export abstract class MoveableFeatureManager<
     public abstract register(
         changePopup$: Subject<OpenPopupOptions<any> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ): void;
 
@@ -144,7 +142,6 @@ export abstract class MoveableFeatureManager<
         elementDictionary$: Observable<{ [id: UUID]: ManagedElement }>,
         changePopup$: Subject<OpenPopupOptions<any> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
         this.olMap.addLayer(this.layer);
@@ -153,7 +150,6 @@ export abstract class MoveableFeatureManager<
         this.registerChangeHandlers(
             elementDictionary$,
             destroy$,
-            ngZone,
             (element) => this.onElementCreated(element),
             (element) => this.onElementDeleted(element),
             (oldElement, newElement) =>

@@ -1,4 +1,4 @@
-import type { Type, NgZone } from '@angular/core';
+import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { MapBrowserEvent, View } from 'ol';
 import { Feature } from 'ol';
@@ -45,7 +45,6 @@ export class DeleteFeatureManager implements FeatureManager<Point> {
     register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
         this.olMap.addLayer(this.layer);

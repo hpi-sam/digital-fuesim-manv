@@ -9,16 +9,8 @@ import type { ExerciseSimulationActivityState } from '../simulation/activities';
 import { getSimulationActivityConstructor } from '../simulation/activities';
 import type { ExerciseSimulationBehaviorState } from '../simulation/behaviors';
 import { simulationBehaviorTypeOptions } from '../simulation/behaviors';
-import {
-    getCreate,
-    isInSimulatedRegion,
-    MapPosition,
-    Position,
-    currentSimulatedRegionIdOf,
-    Size,
-} from './utils';
+import { getCreate, MapPosition, Position, Size } from './utils';
 import type { ImageProperties, MapCoordinates } from './utils';
-import type { WithPosition } from './utils/position/with-position';
 
 export class SimulatedRegion {
     @IsUUID(4, uuidValidationOptions)
@@ -73,14 +65,4 @@ export class SimulatedRegion {
         height: 1800,
         aspectRatio: 1600 / 900,
     };
-
-    static isInSimulatedRegion(
-        region: SimulatedRegion,
-        withPosition: WithPosition
-    ): boolean {
-        return (
-            isInSimulatedRegion(withPosition) &&
-            currentSimulatedRegionIdOf(withPosition) === region.id
-        );
-    }
 }

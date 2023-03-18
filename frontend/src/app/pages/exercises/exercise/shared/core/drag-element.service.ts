@@ -16,6 +16,7 @@ import {
     TransferPoint,
     Viewport,
     SimulatedRegion,
+    SimulatedRegionPosition,
     MapPosition,
 } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
@@ -259,7 +260,7 @@ export class DragElementService {
             case 'transferPoint':
                 {
                     const transferPoint = TransferPoint.create(
-                        position,
+                        MapPosition.create(position),
                         {},
                         {},
                         '???',
@@ -291,10 +292,18 @@ export class DragElementService {
                         },
                         'Einsatzabschnitt ???'
                     );
+                    const transferPoint = TransferPoint.create(
+                        SimulatedRegionPosition.create(simulatedRegion.id),
+                        {},
+                        {},
+                        '',
+                        '[Simuliert] Einsatzabschnitt ???'
+                    );
                     this.exerciseService.proposeAction(
                         {
                             type: '[SimulatedRegion] Add simulated region',
                             simulatedRegion,
+                            transferPoint,
                         },
                         true
                     );
