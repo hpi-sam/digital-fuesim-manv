@@ -1,7 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { SimulatedRegion } from '../../models';
+import { SimulatedRegion, TransferPoint } from '../../models';
 import {
+    isInSpecificSimulatedRegion,
     MapCoordinates,
     MapPosition,
     SimulatedRegionPosition,
@@ -13,16 +14,20 @@ import {
 } from '../../models/utils/position/position-helpers-mutable';
 import {
     ExerciseSimulationBehaviorState,
-    sendSimulationEvent,
     simulationBehaviorTypeOptions,
     VehicleArrivedEvent,
+    PersonnelAvailableEvent,
+    NewPatientEvent,
+    MaterialAvailableEvent,
 } from '../../simulation';
+import { sendSimulationEvent } from '../../simulation/events/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
+import { ExpectedReducerError, ReducerError } from '../reducer-error';
+import { TransferPointActionReducers } from './transfer-point';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
-import { getElement } from './utils/get-element';
+import { getElement, getElementByPredicate } from './utils/get-element';
 
 export class AddSimulatedRegionAction implements Action {
     @IsValue('[SimulatedRegion] Add simulated region' as const)
@@ -30,6 +35,9 @@ export class AddSimulatedRegionAction implements Action {
     @ValidateNested()
     @Type(() => SimulatedRegion)
     public simulatedRegion!: SimulatedRegion;
+    @ValidateNested()
+    @Type(() => TransferPoint)
+    public transferPoint!: TransferPoint;
 }
 
 export class RemoveSimulatedRegionAction implements Action {
@@ -63,8 +71,8 @@ export class ResizeSimulatedRegionAction implements Action {
 }
 
 export class RenameSimulatedRegionAction implements Action {
-    @IsValue('[SimulatedRegion] Rename simulatedRegion' as const)
-    public readonly type = '[SimulatedRegion] Rename simulatedRegion';
+    @IsValue('[SimulatedRegion] Rename simulated region' as const)
+    public readonly type = '[SimulatedRegion] Rename simulated region';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;
@@ -108,10 +116,25 @@ export class AddBehaviorToSimulatedRegionAction implements Action {
     public readonly behaviorState!: ExerciseSimulationBehaviorState;
 }
 
+export class RemoveBehaviorFromSimulatedRegionAction implements Action {
+    @IsValue('[SimulatedRegion] Remove Behavior' as const)
+    public readonly type = '[SimulatedRegion] Remove Behavior';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+}
+
 export namespace SimulatedRegionActionReducers {
     export const addSimulatedRegion: ActionReducer<AddSimulatedRegionAction> = {
         action: AddSimulatedRegionAction,
-        reducer: (draftState, { simulatedRegion }) => {
+        reducer: (draftState, { simulatedRegion, transferPoint }) => {
+            TransferPointActionReducers.addTransferPoint.reducer(draftState, {
+                type: '[TransferPoint] Add TransferPoint',
+                transferPoint,
+            });
             draftState.simulatedRegions[simulatedRegion.id] =
                 cloneDeepMutable(simulatedRegion);
             return draftState;
@@ -123,7 +146,24 @@ export namespace SimulatedRegionActionReducers {
         {
             action: RemoveSimulatedRegionAction,
             reducer: (draftState, { simulatedRegionId }) => {
-                getElement(draftState, 'simulatedRegion', simulatedRegionId);
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const transferPoint = getElementByPredicate(
+                    draftState,
+                    'transferPoint',
+                    (element) =>
+                        isInSpecificSimulatedRegion(element, simulatedRegion.id)
+                );
+                TransferPointActionReducers.removeTransferPoint.reducer(
+                    draftState,
+                    {
+                        type: '[TransferPoint] Remove TransferPoint',
+                        transferPointId: transferPoint.id,
+                    }
+                );
                 delete draftState.simulatedRegions[simulatedRegionId];
                 return draftState;
             },
@@ -177,6 +217,20 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                const transferPoint = getElementByPredicate(
+                    draftState,
+                    'transferPoint',
+                    (element) =>
+                        isInSpecificSimulatedRegion(element, simulatedRegion.id)
+                );
+                TransferPointActionReducers.renameTransferPoint.reducer(
+                    draftState,
+                    {
+                        type: '[TransferPoint] Rename TransferPoint',
+                        transferPointId: transferPoint.id,
+                        externalName: `[Simuliert] ${newName}`,
+                    }
+                );
                 simulatedRegion.name = newName;
                 return draftState;
             },
@@ -205,7 +259,7 @@ export namespace SimulatedRegionActionReducers {
                     element.type === 'vehicle' &&
                     !isCompletelyLoaded(draftState, element)
                 ) {
-                    throw new ReducerError(
+                    throw new ExpectedReducerError(
                         'Das Fahrzeug kann nur in die simulierte Region verschoben werden, wenn Personal und Material eingestiegen sind.'
                     );
                 }
@@ -216,14 +270,34 @@ export namespace SimulatedRegionActionReducers {
                     draftState
                 );
 
-                if (element.type === 'vehicle') {
-                    sendSimulationEvent(
-                        simulatedRegion,
-                        VehicleArrivedEvent.create(
-                            element.id,
-                            draftState.currentTime
-                        )
-                    );
+                switch (element.type) {
+                    case 'vehicle':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            VehicleArrivedEvent.create(
+                                element.id,
+                                draftState.currentTime
+                            )
+                        );
+                        break;
+                    case 'patient':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            NewPatientEvent.create(element.id)
+                        );
+                        break;
+                    case 'personnel':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            PersonnelAvailableEvent.create(element.id)
+                        );
+                        break;
+                    case 'material':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            MaterialAvailableEvent.create(element.id)
+                        );
+                        break;
                 }
 
                 return draftState;
@@ -241,6 +315,29 @@ export namespace SimulatedRegionActionReducers {
                     simulatedRegionId
                 );
                 simulatedRegion.behaviors.push(cloneDeepMutable(behaviorState));
+                return draftState;
+            },
+            rights: 'participant',
+        };
+
+    export const removeBehaviorFromSimulatedRegion: ActionReducer<RemoveBehaviorFromSimulatedRegionAction> =
+        {
+            action: RemoveBehaviorFromSimulatedRegionAction,
+            reducer: (draftState, { simulatedRegionId, behaviorId }) => {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const index = simulatedRegion.behaviors.findIndex(
+                    (behavior) => behavior.id === behaviorId
+                );
+                if (index === -1) {
+                    throw new ReducerError(
+                        `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}. Therefore it could not be removed.`
+                    );
+                }
+                simulatedRegion.behaviors.splice(index, 1);
                 return draftState;
             },
             rights: 'participant',

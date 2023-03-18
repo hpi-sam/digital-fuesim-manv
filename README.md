@@ -30,21 +30,16 @@ This project is currently developed as a [bachelor project](https://hpi.de/en/st
 
 ## Installation
 
-1. Make sure to have [git lfs](https://git-lfs.github.com/) installed.
-2. Install [NodeJs](https://nodejs.org/) (at least version 16.x) (if you need different node versions on your machine we recommend [nvm](https://github.com/nvm-sh/nvm) or [nvm for windows](https://github.com/coreybutler/nvm-windows))
-3. [npm](https://www.npmjs.com/) should already come with NodeJs - if not install it
-4. Clone this repository
-5. Run `npm run setup` from the root folder
-6. Copy the [`.env.example`](./.env.example) file to `./.env` and adjust the settings as you need them. Note that some of the variables are explained under the next point.
-7. Choose whether you want to use a database:
+1. Install [NodeJs](https://nodejs.org/) (at least version 18.x) (if you need different node versions on your machine we recommend [nvm](https://github.com/nvm-sh/nvm) or [nvm for windows](https://github.com/coreybutler/nvm-windows))
+2. [npm](https://www.npmjs.com/) should already come with NodeJs - if not install it
+3. Clone this repository
+4. Run `npm run setup` from the root folder
+5. Copy the [`.env.example`](./.env.example) file to `./.env` and adjust the settings as you need them. Note that some of the variables are explained under the next point.
+6. Choose whether you want to use a database:
    You can (optionally) use a database for the persistence of exercise data. Look at the [relevant section](./backend/README.md#database) in the backend README for further information.
    Note that to not use the database you have to edit an environment variable, see the [relevant section](./backend/README.md#without-a-database).
-8. (Optional) We have a list of recommended [vscode](https://code.visualstudio.com/) extensions. We strongly recommend you to use them if you are developing. You can see them via [the `@recommended` filter in the extensions panel](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
-9. (Optional) We have prepared default settings, tasks and debug configurations for VS Code. You can find them in `.vscode/*.example`. Crete a copy of those files removing the `.example` and adjust them to your needs. The files without `.example`-Extensions are untracked so your adjustments won't be committed automatically.
-
-### Gotchas
-
-If you want the best developer experience, make sure to always install dependencies with `npm install --install-links=false`. The default option changed from previously `false` to `true` with version 9.
+7. (Optional) We have a list of recommended [vscode](https://code.visualstudio.com/) extensions. We strongly recommend you to use them if you are developing. You can see them via [the `@recommended` filter in the extensions panel](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
+8. (Optional) We have prepared default settings, tasks and debug configurations for VS Code. You can find them in `.vscode/*.example`. Crete a copy of those files removing the `.example` and adjust them to your needs. The files without `.example`-Extensions are untracked so your adjustments won't be committed automatically.
 
 ## Starting for development
 
@@ -99,8 +94,6 @@ Note the database requirements depicted in [the installation section](#installat
 
 ## Before you commit
 
--   We are using [git lfs](https://git-lfs.github.com/). You can see the file types that currently use git lfs in [.gitattributes](.gitattributes). If you add another binary (or very large) file type to the repository you should add it there too.
--   To see the images stored in [git lfs](https://git-lfs.github.com/) in diff views in vscode we recommend running the following command once: `git config diff.lfs.textconv cat`.
 -   We are using [prettier](https://prettier.io/) as our code formatter. Run it via `npm run prettier` or `npm run prettier:windows` in the root to format all files and make the CI happy. Please use the [vscode extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
 -   We are using [eslint](https://eslint.org/) as our linter. Run it via `npm run lint:fix` in the root to lint (and auto fix if possible) all files. Please use the [vscode extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
 
@@ -129,8 +122,6 @@ You can run it during the development
 
 ### End to end tests
 
-**Note: We don't really have end-to-end tests yet.**
-
 We are using [cypress](https://www.npmjs.com/package/cypress) to run the end-to-end tests. You can find the code under `/frontend/cypress` in the repository.
 
 #### Running the tests
@@ -138,16 +129,6 @@ We are using [cypress](https://www.npmjs.com/package/cypress) to run the end-to-
 To run the tests locally, it is recommended to use the vscode [task](https://code.visualstudio.com/docs/editor/tasks) `Start all & cypress`. Alternatively, you can start the frontend and backend manually and then run `npm run cy:open` in `/frontend`.
 
 If you only want to check whether the tests pass, you can run `npm run cy:run` in `/frontend` instead.
-
-#### Visual regression testing
-
-We are also making use of visual regression tests via [cypress-image-diff](https://github.com/uktrade/cypress-image-diff).
-The screenshots are stored under `/frontend/cypress-visual-screenshots`.
-
-The `baseline` folder contains the reference screenshots (the desired result).
-If a test fails a new screenshot is taken and put in the `comparison` folder.
-If the new screenshot is the new desired result, then you only have to move it in the `baseline` folder and replace the old reference screenshot with the same name.
-In the `diff` folder you can see the changes between the baseline and the comparison screenshot.
 
 ## Benchmarking
 

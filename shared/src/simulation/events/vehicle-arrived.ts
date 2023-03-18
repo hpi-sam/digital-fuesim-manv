@@ -13,7 +13,7 @@ export class VehicleArrivedEvent implements SimulationEvent {
 
     @IsInt()
     @Min(0)
-    readonly arrivalTime!: number;
+    readonly arrivalTime: number;
 
     /**
      * @deprecated Use {@link create} instead

@@ -1,6 +1,6 @@
 {
     "name": "digital-fuesim-manv-shared",
-    "version": "0.0.0",
+    "version": "0.2.1",
     "type": "module",
     "main": "./dist/index.js",
     "esnext": "./dist/index.js",
@@ -16,12 +16,12 @@
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,html}\"",
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,html}\"",
         "test:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose --ci",
-        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose",
+        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose --no-cache",
         "test:watch": "jest --runInBand --verbose --watch"
     },
     "private": true,
     "engines": {
-        "node": ">=16",
+        "node": ">=18",
         "npm": ">=8"
     },
     "dependencies": {
@@ -49,6 +49,7 @@
         "eslint-plugin-total-functions": "6.0.0",
         "eslint-plugin-unicorn": "^45.0.2",
         "jest": "^29.3.1",
+        "jest-extended": "^3.2.4",
         "ts-jest": "^29.0.5",
         "ts-node": "^10.9.1",
         "typescript": "~4.9.4"

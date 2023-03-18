@@ -2,13 +2,14 @@
     "extends": "../tsconfig.base.json",
     "compilerOptions": {
         "outDir": "./dist",
-        "rootDir": "./src",
+        "rootDir": ".",
         "types": ["jest"],
         // These are needed for using it as a library
         "declaration": true,
-        "declarationMap": true
+        "declarationMap": true,
+        "sourceMap": true
     },
     "references": [],
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "tests/**/*"],
     "exclude": ["node_modules"]
 }

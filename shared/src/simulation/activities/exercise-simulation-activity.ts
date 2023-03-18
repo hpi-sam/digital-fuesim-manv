@@ -1,25 +1,33 @@
 import type { Type } from 'class-transformer';
 import { delayEventActivity } from './delay-event';
 import { SimulationActivityState } from './simulation-activity';
+import { reassignTreatmentsActivity } from './reassign-treatments';
 import { unloadVehicleActivity } from './unload-vehicle';
+import { recurringEventActivity } from './recurring-event';
 
 export const simulationActivities = {
+    reassignTreatmentsActivity,
     unloadVehicleActivity,
     delayEventActivity,
+    recurringEventActivity,
 };
 
 export type ExerciseSimulationActivity =
     (typeof simulationActivities)[keyof typeof simulationActivities];
-
-export type ExerciseSimulationActivityState = InstanceType<
-    ExerciseSimulationActivity['activityState']
->;
 
 type ExerciseSimulationActivityDictionary = {
     [Activity in ExerciseSimulationActivity as InstanceType<
         Activity['activityState']
     >['type']]: Activity;
 };
+
+export type ExerciseSimulationActivityType = InstanceType<
+    ExerciseSimulationActivity['activityState']
+>['type'];
+
+export type ExerciseSimulationActivityState<
+    T extends ExerciseSimulationActivityType = ExerciseSimulationActivityType
+> = InstanceType<ExerciseSimulationActivityDictionary[T]['activityState']>;
 
 export const simulationActivityDictionary = Object.fromEntries(
     Object.values(simulationActivities).map((activity) => [

@@ -1,0 +1,65 @@
+<ng-container>
+    <div class="h-100 d-flex flex-column">
+        <nav #nav="ngbNav" ngbNav [(activeId)]="activeNavId" class="nav-tabs">
+            <ng-container ngbNavItem="general">
+                <a ngbNavLink data-cy="transferPointPopupNamesNav">Übersicht</a>
+                <ng-template ngbNavContent>
+                    <app-simulated-region-overview-general-tab
+                        class="mh-100 d-block h-100"
+                        [simulatedRegion]="(simulatedRegion$ | async)!"
+                    />
+                </ng-template>
+            </ng-container>
+            <ng-container ngbNavItem="patients">
+                <a ngbNavLink data-cy="transferPointPopupNamesNav">Patienten</a>
+                <ng-template ngbNavContent>
+                    <app-simulated-region-overview-patients-tab
+                        class="mh-100 d-block h-100"
+                        [simulatedRegion]="(simulatedRegion$ | async)!"
+                        [selectedPatientId]="selectedPatientId"
+                    />
+                </ng-template>
+            </ng-container>
+            <ng-container ngbNavItem="transferPoint">
+                <a ngbNavLink data-cy="transferPointPopupOtherTransferPointsNav"
+                    >Transfer</a
+                >
+                <ng-template ngbNavContent
+                    ><app-other-transfer-point-tab
+                        class="mh-100 d-block h-100"
+                        *ngIf="transferPointId$ | async as transferPointId"
+                        [transferPointId]="transferPointId"
+                    />
+                </ng-template>
+            </ng-container>
+            <ng-container ngbNavItem="hospitalTransfer">
+                <a ngbNavLink data-cy="transferPointPopupOtherTransferPointsNav"
+                    >Krankenhäuser</a
+                >
+                <ng-template ngbNavContent
+                    ><app-transfer-hospitals-tab
+                        class="mh-100 d-block h-100"
+                        *ngIf="transferPointId$ | async as transferPointId"
+                        [transferPointId]="transferPointId"
+                    />
+                </ng-template>
+            </ng-container>
+            <ng-container ngbNavItem="behaviors">
+                <a ngbNavLink data-cy="transferPointPopupHospitalNav"
+                    >Verhaltensweisen</a
+                >
+                <ng-template ngbNavContent
+                    ><app-simulated-region-overview-behavior-tab
+                        class="mh-100 d-block h-100"
+                        [simulatedRegion]="(simulatedRegion$ | async)!"
+                    />
+                </ng-template>
+            </ng-container>
+        </nav>
+        <div
+            [ngbNavOutlet]="nav"
+            class="mt-2 flex-grow-1 flex-shrink-1 simulated-region-overview-nav-outlet"
+            style="min-height: 0"
+        ></div>
+    </div>
+</ng-container>

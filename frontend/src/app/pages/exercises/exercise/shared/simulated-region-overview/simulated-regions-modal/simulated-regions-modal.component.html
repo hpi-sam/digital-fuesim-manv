@@ -1,0 +1,42 @@
+<div class="modal-header">
+    <h4 class="modal-title">Simulierte Regionen</h4>
+    <button
+        type="button"
+        class="btn-close"
+        (click)="close()"
+        data-cy="transferOverviewCloseButton"
+    ></button>
+</div>
+<div
+    class="modal-body"
+    style="height: min(80vh, 2000px); max-height: min(80vh, 2000px)"
+>
+    <div class="h-100 d-flex flex-column">
+        <nav
+            #nav="ngbNav"
+            ngbNav
+            [(activeId)]="currentSimulatedRegionId"
+            class="nav-tabs"
+        >
+            <ng-container
+                *ngFor="let id of simulatedRegionIds$ | async"
+                [ngbNavItem]="id"
+            >
+                <a ngbNavLink
+                    ><app-simulated-region-name [simulatedRegionId]="id"
+                /></a>
+                <ng-template ngbNavContent>
+                    <app-simulated-region-overview-general
+                        class="mh-100 d-block h-100"
+                        [simulatedRegionId]="id"
+                    />
+                </ng-template>
+            </ng-container>
+        </nav>
+        <div
+            [ngbNavOutlet]="nav"
+            class="mt-2 flex-grow-1 flex-shrink-1 simulated-region-overview-nav-outlet"
+            style="min-height: 0"
+        ></div>
+    </div>
+</div>

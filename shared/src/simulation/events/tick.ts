@@ -9,7 +9,7 @@ export class TickEvent implements SimulationEvent {
 
     @IsInt()
     @IsPositive()
-    public readonly tickInterval!: number;
+    public readonly tickInterval: number;
 
     /**
      * @deprecated Use {@link create} instead

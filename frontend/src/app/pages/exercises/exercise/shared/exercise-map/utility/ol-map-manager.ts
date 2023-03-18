@@ -12,7 +12,7 @@ import { Subject, takeUntil } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    selectSimulatedRegion,
+    selectSimulatedRegions,
     selectViewports,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectRestrictedViewport } from 'src/app/state/application/selectors/shared.selectors';
@@ -172,7 +172,7 @@ export class OlMapManager {
         const elements = [
             ...Object.values(selectStateSnapshot(selectViewports, this.store)),
             ...Object.values(
-                selectStateSnapshot(selectSimulatedRegion, this.store)
+                selectStateSnapshot(selectSimulatedRegions, this.store)
             ),
         ];
         const view = this.olMap.getView();
@@ -293,9 +293,9 @@ export class OlMapManager {
 
         this.featureManagers = [
             deleteFeatureManager,
+            transferLinesFeatureManager,
             simulatedRegionFeatureManager,
             mapImageFeatureManager,
-            transferLinesFeatureManager,
             transferPointFeatureManager,
             vehicleFeatureManager,
             cateringLinesFeatureManager,

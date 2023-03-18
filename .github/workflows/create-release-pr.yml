@@ -24,21 +24,13 @@ jobs:
                   git config user.name "GitHub Actions"
                   git config user.email noreply@github.com
             - name: Cache node modules
-              uses: actions/cache@v3
-              id: cache-node-modules
-              env:
-                  cache-name: cache-node-modules
+              uses: ./.github/actions/cache-build
               with:
-                  path: |
-                      node_modules
-                      shared/node_modules
-                      frontend/node_modules
-                      backend/node_modules
-                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
+                  shared-dist: 'false'
             - name: Update version in packages
-              run: bash .github/update-version.sh "${{ github.event.inputs.versionName }}"
-            - name: Update versions in package-locks
-              run: npm run setup:package-lock-only
+              uses: ./.github/actions/update-version
+              with:
+                  version: ${{ github.event.inputs.versionName }}
             - name: Update changelog
               uses: thomaseizinger/keep-a-changelog-new-release@v1
               with:
@@ -48,7 +40,7 @@ jobs:
             - name: Commit updated version and changelog
               id: create-commit
               run: |
-                  git commit -a --message "Debug v${{ github.event.inputs.versionName }}"
+                  git commit -a --message "Prepare release v${{ github.event.inputs.versionName }}"
                   echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
             - name: Push new branch
               run: git push origin release/v${{ github.event.inputs.versionName }}
