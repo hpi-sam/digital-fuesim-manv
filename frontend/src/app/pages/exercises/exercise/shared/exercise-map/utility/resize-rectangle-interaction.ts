@@ -103,13 +103,13 @@ export class ResizeRectangleInteraction extends PointerInteraction {
         originCorner: number,
         mouseCoordinate: number
     ) {
-        const oldXLength = draggedCorner - originCorner;
-        const newXLength = mouseCoordinate - originCorner;
+        const oldLength = draggedCorner - originCorner;
+        const newLength = mouseCoordinate - originCorner;
         return (
             // We also want to prevent flipping the rectangle
-            (oldXLength < 0
-                ? Math.min(newXLength, -this.minimumSize)
-                : Math.max(newXLength, this.minimumSize)) / oldXLength
+            (oldLength < 0
+                ? Math.min(newLength, -this.minimumSize)
+                : Math.max(newLength, this.minimumSize)) / oldLength
         );
     }
 
