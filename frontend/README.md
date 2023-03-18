@@ -77,7 +77,7 @@ We call Angular components, pipes, directives, services, and modules "Angular el
 
 In [src/app/state](./src/app/state) are all actions, reducers, selectors and state that are used by [NGRX](https://ngrx.io/).
 
-In `src/app` and every descending folder the following guidelines apply:
+In `src/app` and every descending folder, the following guidelines apply:
 
 -   `/core`:
     -   Singleton-services and route guards that can be used by all other Angular elements that are direct or indirect children of the `core`'s parent-folder
@@ -100,6 +100,7 @@ If you want to modify the exercise state, do not do it via [reducers](https://ng
 If you want to switch between time travel, live exercise and no exercise (e.g. on the landing page), use the [ApplicationService](./src/app/core/application.service.ts).
 
 By default, we don't use `ChangeDetectionStrategy.OnPush` because it complicates the code and increases the skill level needed to work with the code while providing a mostly negligible performance benefit.
+For the same reason, there are also no optimizations made regarding how often the change detection is triggered by zones. E.g. OpenLayers runs inside the zone and therefore triggers the change detection on every `pointermove`- and `requestAnimationFrame`-event ([which are also patched by zone.js](frontend\src\polyfills.ts)). Read the angular documentation [regarding change detection](https://angular.io/guide/change-detection) for more information.
 
 ### Exercise map
 

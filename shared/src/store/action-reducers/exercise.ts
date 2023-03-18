@@ -15,7 +15,7 @@ import {
     TransferPosition,
 } from '../../models/utils';
 import { changePosition } from '../../models/utils/position/position-helpers-mutable';
-import { simulateAllRegions } from '../../simulation/utils/simulated-region';
+import { simulateAllRegions } from '../../simulation/utils/simulation';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable } from '../../utils';

@@ -1,4 +1,6 @@
-import type { NgZone, Type } from '@angular/core';
+import type { Type } from '@angular/core';
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import type { Element } from 'digital-fuesim-manv-shared';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
 import LineString from 'ol/geom/LineString';
@@ -9,12 +11,10 @@ import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import type { Subject } from 'rxjs';
+import type { StoreService } from 'src/app/core/store.service';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
 import { selectTransferLines } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
-// eslint-disable-next-line @typescript-eslint/no-shadow
-import type { Element } from 'digital-fuesim-manv-shared';
-import type { StoreService } from 'src/app/core/store.service';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
@@ -47,7 +47,6 @@ export class TransferLinesFeatureManager
     register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
         this.olMap.addLayer(this.layer);
@@ -57,7 +56,6 @@ export class TransferLinesFeatureManager
             this.registerChangeHandlers(
                 this.storeService.select$(selectTransferLines),
                 destroy$,
-                ngZone,
                 (element) => this.onElementCreated(element),
                 (element) => this.onElementDeleted(element),
                 (oldElement, newElement) =>

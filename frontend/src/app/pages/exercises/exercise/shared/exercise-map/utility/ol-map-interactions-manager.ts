@@ -1,4 +1,4 @@
-import type { ExerciseStatus, Role } from 'digital-fuesim-manv-shared';
+import type { ExerciseStatus, Role, UUID } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import { Collection } from 'ol';
 import type { Interaction } from 'ol/interaction';
@@ -146,6 +146,15 @@ export class OlMapInteractionsManager {
         droppedFeature: Feature,
         event: TranslateEvent
     ) {
+        if (
+            droppedFeature.getId() !== undefined &&
+            this.popupManager.currentClosingIds.includes(
+                droppedFeature.getId() as UUID
+            )
+        ) {
+            this.popupManager.closePopup();
+        }
+
         this.olMap.forEachFeatureAtPixel(pixel, (droppedOnFeature, layer) => {
             // Skip layer when unset
             if (layer === null) {

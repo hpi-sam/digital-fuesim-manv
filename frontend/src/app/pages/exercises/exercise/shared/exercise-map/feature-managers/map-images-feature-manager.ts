@@ -1,4 +1,4 @@
-import type { NgZone, Type } from '@angular/core';
+import type { Type } from '@angular/core';
 import type { MapImage, UUID } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
@@ -22,14 +22,12 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
     public register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.storeService.select$(selectVisibleMapImages),
             changePopup$,
             destroy$,
-            ngZone,
             mapInteractionsManager
         );
     }
@@ -78,9 +76,14 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
             return;
         }
         this.togglePopup$.next(
-            this.popupHelper.getPopupOptions(MapImagePopupComponent, feature, {
-                mapImageId: feature.getId() as UUID,
-            })
+            this.popupHelper.getPopupOptions(
+                MapImagePopupComponent,
+                feature,
+                [feature.getId() as UUID],
+                {
+                    mapImageId: feature.getId() as UUID,
+                }
+            )
         );
     }
 

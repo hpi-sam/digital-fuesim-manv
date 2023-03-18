@@ -2,7 +2,6 @@ import type { AfterViewInit, OnDestroy } from '@angular/core';
 import {
     Component,
     ElementRef,
-    NgZone,
     ViewChild,
     ViewContainerRef,
 } from '@angular/core';
@@ -41,7 +40,6 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
 
     constructor(
         private readonly storeService: StoreService,
-        private readonly ngZone: NgZone,
         private readonly exerciseService: ExerciseService,
         public readonly dragElementService: DragElementService,
         public readonly transferLinesService: TransferLinesService
@@ -52,33 +50,26 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
             this.popoverContent,
             this.popoverContainer.nativeElement
         );
-        // run outside angular zone for better performance
-        this.ngZone.runOutsideAngular(() => {
-            this.olMapManager = new OlMapManager(
-                this.storeService,
-                this.exerciseService,
-                this.openLayersContainer.nativeElement,
-                this.ngZone,
-                this.transferLinesService,
-                this.popupManager!
-            );
-            this.dragElementService.registerMap(this.olMapManager.olMap);
-            this.dragElementService.registerLayerFeatureManagerDictionary(
-                this.olMapManager.layerFeatureManagerDictionary
-            );
-        });
+        this.olMapManager = new OlMapManager(
+            this.storeService,
+            this.exerciseService,
+            this.openLayersContainer.nativeElement,
+            this.transferLinesService,
+            this.popupManager!
+        );
+        this.dragElementService.registerMap(this.olMapManager.olMap);
+        this.dragElementService.registerLayerFeatureManagerDictionary(
+            this.olMapManager.layerFeatureManagerDictionary
+        );
 
         this.popupManager!.changePopup$.pipe(
             takeUntil(this.destroy$)
         ).subscribe((options) => {
-            // Because changePopup$ is coming from outside the angular zone, we need to wrap it in a zone
-            this.ngZone.run(() => {
-                if (!options) {
-                    this.popupManager!.closePopup();
-                    return;
-                }
-                this.popupManager!.togglePopup(options);
-            });
+            if (!options) {
+                this.popupManager!.closePopup();
+                return;
+            }
+            this.popupManager!.togglePopup(options);
         });
         // Check whether the map is fullscreen
         this.openLayersContainer.nativeElement.addEventListener(

@@ -1,7 +1,7 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
 import type { UUID, Vehicle } from 'digital-fuesim-manv-shared';
-import { isInVehicle } from 'digital-fuesim-manv-shared';
+import { isInSpecificVehicle } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map, switchMap } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -27,7 +27,9 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public vehicle$?: Observable<Vehicle>;
-    public vehicleIsCompletelyUnloaded$?: Observable<boolean>;
+    public vehicleLoadState$?: Observable<
+        'completelyLoaded' | 'completelyUnloaded' | 'partiallyLoaded'
+    >;
     public readonly currentRole$ = this.storeService.select$(selectCurrentRole);
 
     constructor(
@@ -39,28 +41,40 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
         this.vehicle$ = this.storeService.select$(
             createSelectVehicle(this.vehicleId)
         );
-        this.vehicleIsCompletelyUnloaded$ = this.vehicle$.pipe(
+        this.vehicleLoadState$ = this.vehicle$.pipe(
             switchMap((_vehicle) => {
                 const materialsAreInVehicle$ = Object.keys(
                     _vehicle.materialIds
                 ).map((materialId) =>
                     this.storeService
                         .select$(createSelectMaterial(materialId))
-                        .pipe(map((material) => isInVehicle(material)))
+                        .pipe(
+                            map((material) =>
+                                isInSpecificVehicle(material, _vehicle.id)
+                            )
+                        )
                 );
                 const personnelAreInVehicle$ = Object.keys(
                     _vehicle.personnelIds
                 ).map((personnelId) =>
                     this.storeService
                         .select$(createSelectPersonnel(personnelId))
-                        .pipe(map((personnel) => isInVehicle(personnel)))
+                        .pipe(
+                            map((personnel) =>
+                                isInSpecificVehicle(personnel, _vehicle.id)
+                            )
+                        )
                 );
                 const patientsAreInVehicle$ = Object.keys(
                     _vehicle.patientIds
                 ).map((patientId) =>
                     this.storeService
                         .select$(createSelectPatient(patientId))
-                        .pipe(map((patient) => isInVehicle(patient)))
+                        .pipe(
+                            map((patient) =>
+                                isInSpecificVehicle(patient, _vehicle.id)
+                            )
+                        )
                 );
                 return combineLatest([
                     ...materialsAreInVehicle$,
@@ -68,9 +82,17 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
                     ...patientsAreInVehicle$,
                 ]);
             }),
-            map((areInVehicle) =>
-                areInVehicle.every((isInAVehicle) => !isInAVehicle)
-            )
+            map((areInVehicle) => {
+                if (areInVehicle.every((isInAVehicle) => isInAVehicle)) {
+                    return 'completelyLoaded';
+                } else if (
+                    areInVehicle.every((isInAVehicle) => !isInAVehicle)
+                ) {
+                    return 'completelyUnloaded';
+                }
+
+                return 'partiallyLoaded';
+            })
         );
     }
 
@@ -85,6 +107,14 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
     public unloadVehicle() {
         this.exerciseService.proposeAction({
             type: '[Vehicle] Unload vehicle',
+            vehicleId: this.vehicleId,
+        });
+        this.closePopup.emit();
+    }
+
+    public loadVehicle() {
+        this.exerciseService.proposeAction({
+            type: '[Vehicle] Completely load vehicle',
             vehicleId: this.vehicleId,
         });
         this.closePopup.emit();

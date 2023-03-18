@@ -1,4 +1,3 @@
-import type { NgZone } from '@angular/core';
 // eslint-disable-next-line @typescript-eslint/no-shadow
 import type { Element, UUID } from 'digital-fuesim-manv-shared';
 import { TransferPoint, TransferStartPoint } from 'digital-fuesim-manv-shared';
@@ -58,14 +57,12 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
     public register(
         changePopup$: Subject<OpenPopupOptions<any> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
         super.registerFeatureElementManager(
             this.storeService.select$(selectVisibleTransferPoints),
             changePopup$,
             destroy$,
-            ngZone,
             mapInteractionsManager
         );
     }
@@ -113,6 +110,7 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
             this.popupHelper.getPopupOptions(
                 ChooseTransferTargetPopupComponent,
                 droppedOnFeature,
+                [droppedOnTransferPoint.id, droppedElement.id],
                 {
                     transferPointId: droppedOnTransferPoint.id,
                     droppedElementType: droppedElement.type,
@@ -163,6 +161,7 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
             this.popupHelper.getPopupOptions(
                 TransferPointPopupComponent,
                 feature,
+                [feature.getId() as UUID],
                 {
                     transferPointId: feature.getId() as UUID,
                 }

@@ -1,4 +1,4 @@
-import type { NgZone, Type } from '@angular/core';
+import type { Type } from '@angular/core';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
 import LineString from 'ol/geom/LineString';
@@ -45,7 +45,6 @@ export class CateringLinesFeatureManager
     register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
         this.olMap.addLayer(this.layer);
@@ -55,7 +54,6 @@ export class CateringLinesFeatureManager
         this.registerChangeHandlers(
             this.storeService.select$(selectVisibleCateringLines),
             destroy$,
-            ngZone,
             (element) => this.onElementCreated(element),
             (element) => this.onElementDeleted(element),
             (oldElement, newElement) =>

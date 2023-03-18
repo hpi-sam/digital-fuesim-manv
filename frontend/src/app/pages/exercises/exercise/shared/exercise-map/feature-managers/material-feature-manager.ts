@@ -1,4 +1,4 @@
-import type { NgZone, Type } from '@angular/core';
+import type { Type } from '@angular/core';
 import type { Material, UUID } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
@@ -20,14 +20,12 @@ export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
     public register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.storeService.select$(selectVisibleMaterials),
             changePopup$,
             destroy$,
-            ngZone,
             mapInteractionsManager
         );
     }
@@ -77,9 +75,14 @@ export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
         super.onFeatureClicked(event, feature);
 
         this.togglePopup$.next(
-            this.popupHelper.getPopupOptions(MaterialPopupComponent, feature, {
-                materialId: feature.getId() as UUID,
-            })
+            this.popupHelper.getPopupOptions(
+                MaterialPopupComponent,
+                feature,
+                [feature.getId() as UUID],
+                {
+                    materialId: feature.getId() as UUID,
+                }
+            )
         );
     }
 }

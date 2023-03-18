@@ -7,8 +7,8 @@ import RBush from 'rbush';
 // or look out for a newer version here: https://github.com/mourner/rbush-knn#changelog
 // @ts-expect-error doesn't have a type
 import knn from 'rbush-knn';
-import type { Mutable, UUID } from '../../utils';
-import { ImmutableJsonObject } from '../../utils';
+import type { Mutable, UUID, JsonObject } from '../../utils';
+import { Immutable } from '../../utils';
 import type { MapCoordinates, Size } from '.';
 import { getCreate } from '.';
 
@@ -27,7 +27,7 @@ export class SpatialTree {
      * This must only be mutated by the static functions of this class
      */
     @IsObject()
-    public readonly spatialTreeAsJSON: ImmutableJsonObject = new PointRBush(
+    public readonly spatialTreeAsJSON: Immutable<JsonObject> = new PointRBush(
         SpatialTree.rBushNodeSize
     ).toJSON();
 
@@ -40,7 +40,7 @@ export class SpatialTree {
     constructor() {}
 
     /**
-     * @param spatialTree inlcuding a {@link PointRBush} saved in {@link spatialTreeAsJSON} as an {@link ImmutableJsonObject}
+     * @param spatialTree inlcuding a {@link PointRBush} saved in {@link spatialTreeAsJSON} as an {@link Immutable<JsonObject>}
      * @returns a new {@link PointRBush} with all the methods to search, add etc. elements in it
      */
     private static getPointRBush(spatialTree: SpatialTree) {
@@ -51,7 +51,7 @@ export class SpatialTree {
     }
 
     /**
-     * Writes the {@link PointRBush} as an {@link ImmutableJsonObject} into {@link spatialTree}
+     * Writes the {@link PointRBush} as an {@link Immutable<JsonObject>} into {@link spatialTree}
      */
     private static savePointRBush(
         spatialTree: Mutable<SpatialTree>,

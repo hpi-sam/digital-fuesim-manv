@@ -1,4 +1,4 @@
-import type { NgZone, Type } from '@angular/core';
+import type { Type } from '@angular/core';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { Patient } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
@@ -22,14 +22,12 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
     public register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.storeService.select$(selectVisiblePatients),
             changePopup$,
             destroy$,
-            ngZone,
             mapInteractionsManager
         );
     }
@@ -102,9 +100,14 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
         super.onFeatureClicked(event, feature);
 
         this.togglePopup$.next(
-            this.popupHelper.getPopupOptions(PatientPopupComponent, feature, {
-                patientId: feature.getId() as UUID,
-            })
+            this.popupHelper.getPopupOptions(
+                PatientPopupComponent,
+                feature,
+                [feature.getId() as UUID],
+                {
+                    patientId: feature.getId() as UUID,
+                }
+            )
         );
     }
 }

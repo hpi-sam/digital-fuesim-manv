@@ -11,6 +11,8 @@ import { HospitalPatient } from '../../models/hospital-patient';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
+import { ExpectedReducerError } from '../reducer-error';
+import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 import { deleteVehicle } from './vehicle';
 
@@ -116,7 +118,13 @@ export namespace HospitalActionReducers {
             reducer: (draftState, { hospitalId, vehicleId }) => {
                 const hospital = getElement(draftState, 'hospital', hospitalId);
                 const vehicle = getElement(draftState, 'vehicle', vehicleId);
-                // TODO: Block vehicles whose material and personnel are unloaded
+
+                if (!isCompletelyLoaded(draftState, vehicle)) {
+                    throw new ExpectedReducerError(
+                        'Das Fahrzeug kann nur ein Krankenhaus anfahren, wenn Personal und Material eingestiegen sind.'
+                    );
+                }
+
                 for (const patientId of Object.keys(vehicle.patientIds)) {
                     const patient = getElement(
                         draftState,

@@ -1,5 +1,4 @@
-import type { NgZone } from '@angular/core';
-import type { ImmutableJsonObject } from 'digital-fuesim-manv-shared';
+import type { Immutable, JsonObject } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import type { Geometry, Point } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
@@ -16,7 +15,7 @@ import { generateChangedProperties } from '../utility/generate-changed-propertie
  * {@link Feature<FeatureType>} is the OpenLayers Feature that should be rendered to represent the {@link Element}.
  */
 export abstract class ElementManager<
-    Element extends ImmutableJsonObject,
+    Element extends Immutable<JsonObject>,
     FeatureType extends Geometry
 > {
     /**
@@ -111,7 +110,6 @@ export abstract class ElementManager<
     protected registerChangeHandlers(
         elementDictionary$: Observable<{ [id: string]: Element }>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         createHandler?: (newElement: Element) => void,
         deleteHandler?: (deletedElement: Element) => void,
         changeHandler?: (oldElement: Element, newElement: Element) => void
@@ -119,13 +117,10 @@ export abstract class ElementManager<
         elementDictionary$
             .pipe(startWith({}), pairwise(), takeUntil(destroy$))
             .subscribe(([oldElementDictionary, newElementDictionary]) => {
-                // run outside angular zone for better performance
-                ngZone.runOutsideAngular(() => {
-                    handleChanges(oldElementDictionary, newElementDictionary, {
-                        createHandler,
-                        deleteHandler,
-                        changeHandler,
-                    });
+                handleChanges(oldElementDictionary, newElementDictionary, {
+                    createHandler,
+                    deleteHandler,
+                    changeHandler,
                 });
             });
     }

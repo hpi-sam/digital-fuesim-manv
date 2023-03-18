@@ -1,4 +1,5 @@
 import type { Type } from '@angular/core';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Feature } from 'ol';
 import type { Point } from 'ol/geom';
 import type Layer from 'ol/layer/Layer';
@@ -21,6 +22,7 @@ export class ImagePopupHelper {
     public getPopupOptions<PopupComponentType extends PopupComponent>(
         component: Type<PopupComponentType>,
         feature: Feature<Point>,
+        closingUUIDs: UUID[],
         context: Partial<InstanceType<Type<PopupComponentType>>>
     ): OpenPopupOptions<any> {
         const featureCenter = feature.getGeometry()!.getCoordinates();
@@ -34,6 +36,7 @@ export class ImagePopupHelper {
             position,
             positioning,
             component,
+            closingUUIDs,
             context,
         };
     }

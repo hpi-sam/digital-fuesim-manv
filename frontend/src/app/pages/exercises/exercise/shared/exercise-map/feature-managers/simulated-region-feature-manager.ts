@@ -1,11 +1,10 @@
+import type { Type } from '@angular/core';
 import type {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     Element,
     SimulatedRegion,
     UUID,
 } from 'digital-fuesim-manv-shared';
-
-import type { NgZone, Type } from '@angular/core';
 import { MapCoordinates, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Polygon } from 'ol/geom';
@@ -37,14 +36,12 @@ export class SimulatedRegionFeatureManager
     public register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.storeService.select$(selectVisibleSimulatedRegions),
             changePopup$,
             destroy$,
-            ngZone,
             mapInteractionsManager
         );
         mapInteractionsManager.addTrainerInteraction(
@@ -175,6 +172,7 @@ export class SimulatedRegionFeatureManager
 
         this.togglePopup$.next({
             component: SimulatedRegionPopupComponent,
+            closingUUIDs: [feature.getId() as UUID],
             context: {
                 simulatedRegionId: feature.getId() as UUID,
             },

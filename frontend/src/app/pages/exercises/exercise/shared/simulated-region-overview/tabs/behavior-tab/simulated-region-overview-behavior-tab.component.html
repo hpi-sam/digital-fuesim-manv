@@ -1,0 +1,91 @@
+<div class="container d-flex flex-column h-100" style="min-height: 0">
+    <div
+        class="row align-items-start flex-shrink-1 flex-grow-1"
+        style="min-height: 0"
+    >
+        <div class="col-sm overflow-auto mh-100" style="max-width: 30%">
+            <p
+                *ngIf="simulatedRegion.behaviors.length === 0"
+                class="text-muted font-bold"
+            >
+                Es sind noch keine Verhaltensweisen vorhanden.
+            </p>
+            <div class="mb-3">
+                <div class="list-group">
+                    <button
+                        *ngFor="let behavior of simulatedRegion.behaviors"
+                        [class.active]="behavior === selectedBehavior"
+                        (click)="onBehaviorSelect(behavior)"
+                        class="list-group-item list-group-item-action d-flex align-items-center flex-nowrap"
+                    >
+                        {{ behavior | behaviorToGermanName }}
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm overflow-auto mh-100" style="max-width: 70%">
+            <div [ngSwitch]="selectedBehavior?.type">
+                <app-simulated-region-overview-behavior-assign-leader
+                    *ngSwitchCase="'assignLeaderBehavior'"
+                    [assignLeaderBehaviorState]="$any(selectedBehavior)"
+                ></app-simulated-region-overview-behavior-assign-leader
+                ><app-simulated-region-overview-behavior-treat-patients
+                    *ngSwitchCase="'treatPatientsBehavior'"
+                    [simulatedRegion]="simulatedRegion"
+                    [treatPatientsBehaviorState]="$any(selectedBehavior)"
+                ></app-simulated-region-overview-behavior-treat-patients
+                ><app-simulated-region-overview-behavior-unload-arriving-vehicles
+                    *ngSwitchCase="'unloadArrivingVehiclesBehavior'"
+                    [simulatedRegionId]="simulatedRegion.id"
+                    [behaviorId]="selectedBehavior!.id"
+                ></app-simulated-region-overview-behavior-unload-arriving-vehicles>
+                <p *ngSwitchDefault class="text-muted font-bold">
+                    Es ist noch keine Verhaltensweise ausgewählt.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="row align-items-end justify-content-between flex-shrink-1 mt-3">
+        <div class="col-sm mh-100">
+            <div
+                ngbDropdown
+                placement="bottom-start"
+                autoClose="outside"
+                class="d-inline-block overflow-visible"
+            >
+                <button
+                    ngbDropdownToggle
+                    type="button"
+                    class="btn btn-outline-primary"
+                    [disabled]="behaviorsToBeAdded.length === 0"
+                >
+                    <span class="bi-plus me-1"></span>
+                    Hinzufügen
+                </button>
+                <div *ngIf="behaviorsToBeAdded.length !== 0" ngbDropdownMenu>
+                    <button
+                        *ngFor="let behavior of behaviorsToBeAdded"
+                        ngbDropdownItem
+                        (click)="addBehavior(behavior)"
+                    >
+                        <span class="bi-plus me-1"></span>
+                        {{ behavior | behaviorToGermanName }}
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="d-inline-block float-end">
+                <button
+                    type="button"
+                    class="btn btn-outline-danger"
+                    (click)="removeSelectedBehavior()"
+                    [disabled]="!selectedBehavior"
+                >
+                    <span class="bi-trash me-1"></span>
+                    Entfernen
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

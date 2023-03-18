@@ -1,4 +1,4 @@
-import type { NgZone, Type } from '@angular/core';
+import type { Type } from '@angular/core';
 import type {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     Element,
@@ -27,14 +27,12 @@ export class VehicleFeatureManager extends MoveableFeatureManager<Vehicle> {
     public register(
         changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
-        ngZone: NgZone,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.storeService.select$(selectVisibleVehicles),
             changePopup$,
             destroy$,
-            ngZone,
             mapInteractionsManager
         );
     }
@@ -120,9 +118,14 @@ export class VehicleFeatureManager extends MoveableFeatureManager<Vehicle> {
         super.onFeatureClicked(event, feature);
 
         this.togglePopup$.next(
-            this.popupHelper.getPopupOptions(VehiclePopupComponent, feature, {
-                vehicleId: feature.getId() as UUID,
-            })
+            this.popupHelper.getPopupOptions(
+                VehiclePopupComponent,
+                feature,
+                [feature.getId() as UUID],
+                {
+                    vehicleId: feature.getId() as UUID,
+                }
+            )
         );
     }
 }

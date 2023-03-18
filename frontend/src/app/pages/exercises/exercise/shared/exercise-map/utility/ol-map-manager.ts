@@ -1,4 +1,3 @@
-import type { NgZone } from '@angular/core';
 import {
     lowerRightCornerOf,
     upperLeftCornerOf,
@@ -12,7 +11,7 @@ import { Subject, takeUntil } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { StoreService } from 'src/app/core/store.service';
 import {
-    selectSimulatedRegion,
+    selectSimulatedRegions,
     selectViewports,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectRestrictedViewport } from 'src/app/state/application/selectors/shared.selectors';
@@ -36,10 +35,6 @@ import type { FeatureManager } from './feature-manager';
 import { OlMapInteractionsManager } from './ol-map-interactions-manager';
 import type { PopupManager } from './popup-manager';
 import { SatelliteLayerManager } from './satellite-layer-manager';
-
-/**
- * This class should run outside the Angular zone for performance reasons.
- */
 
 export class OlMapManager {
     private readonly _olMap: OlMap;
@@ -65,7 +60,6 @@ export class OlMapManager {
         private readonly storeService: StoreService,
         private readonly exerciseService: ExerciseService,
         private readonly openLayersContainer: HTMLDivElement,
-        private readonly ngZone: NgZone,
         private readonly transferLinesService: TransferLinesService,
         private readonly popupManager: PopupManager
     ) {
@@ -172,7 +166,7 @@ export class OlMapManager {
         }
         const elements = [
             ...Object.values(this.storeService.select(selectViewports)),
-            ...Object.values(this.storeService.select(selectSimulatedRegion)),
+            ...Object.values(this.storeService.select(selectSimulatedRegions)),
         ];
         const view = this.olMap.getView();
         if (elements.length === 0) {
@@ -224,7 +218,6 @@ export class OlMapManager {
             featureManager.register(
                 this.popupManager.changePopup$,
                 this.destroy$,
-                this.ngZone,
                 this.mapInteractionsManager
             );
         });
@@ -293,9 +286,9 @@ export class OlMapManager {
 
         this.featureManagers = [
             deleteFeatureManager,
+            transferLinesFeatureManager,
             simulatedRegionFeatureManager,
             mapImageFeatureManager,
-            transferLinesFeatureManager,
             transferPointFeatureManager,
             vehicleFeatureManager,
             cateringLinesFeatureManager,

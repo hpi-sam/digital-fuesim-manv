@@ -1,11 +1,12 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import type { SimulatedRegion, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import { ExerciseService } from 'src/app/core/exercise.service';
 import { StoreService } from 'src/app/core/store.service';
 import { createSelectSimulatedRegion } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
+import { openSimulatedRegionsModal } from '../../../simulated-region-overview/open-simulated-regions-modal';
 
 @Component({
     selector: 'app-simulated-region-popup',
@@ -23,7 +24,7 @@ export class SimulatedRegionPopupComponent implements OnInit {
 
     constructor(
         private readonly storeService: StoreService,
-        private readonly exerciseService: ExerciseService
+        private readonly modalService: NgbModal
     ) {}
 
     ngOnInit() {
@@ -32,11 +33,8 @@ export class SimulatedRegionPopupComponent implements OnInit {
         );
     }
 
-    public renameSimulatedRegion(newName: string) {
-        this.exerciseService.proposeAction({
-            type: '[SimulatedRegion] Rename simulatedRegion',
-            simulatedRegionId: this.simulatedRegionId,
-            newName,
-        });
+    openInModal() {
+        this.closePopup.emit();
+        openSimulatedRegionsModal(this.modalService, this.simulatedRegionId);
     }
 }
