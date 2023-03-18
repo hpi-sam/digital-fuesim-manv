@@ -7,6 +7,11 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Changed
+
+-   Viewports and simulated regions now have a minimal size to be resized to. Already placed viewports and simulated regions below this size are not affected.
+-   Viewports and simulated regions can now not be flipped horizontally or vertically during resizing. Due to not completely accurate migrations, it could be that the positions of such regions in imported exercises are now slightly off.
+
 ### Added
 
 -   There are now radiograms, which can be used by the simulation to send messages to the trainees
