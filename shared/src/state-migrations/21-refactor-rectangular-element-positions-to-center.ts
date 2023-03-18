@@ -1,41 +1,53 @@
 import { cloneDeep } from 'lodash-es';
-import type { UUID } from '../utils';
 import type { Migration } from './migration-functions';
 
 export const refactorRectangularElementPositionsToCenter21: Migration = {
-    actions: (_initialState, actions) => {
-        const oldViewportSizes: {
-            [viewportId: UUID]: {
-                width: number;
-                height: number;
-            };
-        } = {};
-        for (const action of actions as any) {
-            switch (action?.type) {
-                case '[Viewport] Add viewport':
-                    if (action.viewport.position.type === 'coordinates') {
-                        oldViewportSizes[action.viewport.id] = cloneDeep(
-                            action.viewport.size
-                        );
-                    }
-                    migrateRectangularElement(action.viewport);
-                    break;
-                case '[Viewport] Move viewport': {
-                    const oldViewportSize = oldViewportSizes[action.viewportId];
-                    if (oldViewportSize) {
-                        migratePosition(action.targetPosition, oldViewportSize);
-                    }
-                    break;
-                }
-                case '[Viewport] Resize viewport': {
-                    const oldViewportSize = cloneDeep(action.newSize);
-                    oldViewportSizes[action.viewportId] = oldViewportSize;
-                    migratePosition(action.targetPosition, oldViewportSize);
-                    migrateSize(action.newSize);
-                    break;
-                }
+    action: (intermediaryState: any, action: any) => {
+        switch (action.type) {
+            case '[Viewport] Add viewport':
+                migrateRectangularElement(action.viewport);
+                break;
+            case '[SimulatedRegion] Add simulated region':
+                migrateRectangularElement(action.simulatedRegion);
+                break;
+            case '[Viewport] Move viewport': {
+                const migratedViewport = cloneDeep(
+                    intermediaryState.viewports[action.viewportId]!
+                );
+                migratePositionWithMigratedSize(
+                    action.targetPosition,
+                    migratedViewport.size
+                );
+                break;
             }
+            case '[SimulatedRegion] Move simulated region': {
+                const migratedSimulatedViewport = cloneDeep(
+                    intermediaryState.simulatedRegions[
+                        action.simulatedRegionId
+                    ]!
+                );
+                migratePositionWithMigratedSize(
+                    action.targetPosition,
+                    migratedSimulatedViewport.size
+                );
+                break;
+            }
+            case '[Viewport] Resize viewport':
+                migratePosition(
+                    action.targetPosition,
+                    cloneDeep(action.newSize)
+                );
+                migrateSize(action.newSize);
+                break;
+            case '[SimulatedRegion] Resize simulated region':
+                migratePosition(
+                    action.targetPosition,
+                    cloneDeep(action.newSize)
+                );
+                migrateSize(action.newSize);
+                break;
         }
+        return true;
     },
     state: (state: any) => {
         for (const viewport of Object.values(state.viewports)) {
@@ -55,10 +67,26 @@ function migrateRectangularElement(element: any) {
     migrateSize(size);
 }
 
-function migratePosition(position: any, oldSize: any) {
+/**
+ * Migrates the position of a rectangular element to the center of the element.
+ * @param oldSize the size of the element before this migration
+ */
+function migratePosition(coordinates: any, oldSize: any) {
     // The position was previously the top-left corner of the rectangle if the width and height was positive.
-    position.x = position.x + oldSize.width / 2;
-    position.y = position.y - oldSize.height / 2;
+    coordinates.x = coordinates.x + oldSize.width / 2;
+    coordinates.y = coordinates.y - oldSize.height / 2;
+}
+
+/**
+ * Migrates the position of a rectangular element to the center of the element.
+ *
+ * This migration is not accurate for previously "flipped" viewports (height and/or width was negative).
+ * To catch this case, access to the size of the viewport before this migration would be required.
+ *
+ * @param migratedSize the size of the element after it had been migrated to the center
+ */
+function migratePositionWithMigratedSize(coordinates: any, migratedSize: any) {
+    migratePosition(coordinates, migratedSize);
 }
 
 function migrateSize(size: any) {

@@ -25,7 +25,7 @@ import { impossibleMigration } from './impossible-migration';
 
 /**
  * Migrate a single action
- * @param intermediaryState - The migrated exercise state just before the action is applied
+ * @param intermediaryState - The immutable migrated exercise state just before the action is applied
  * @param action - The action to migrate in place
  * @returns true if the migration was successful or false to indicate that the action should be deleted
  * @throws a {@link RestoreError} when a migration is not possible.
