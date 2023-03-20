@@ -238,7 +238,6 @@ jobs:
             - test
             - cypress
             - lint
-            - dependencies
         runs-on: ubuntu-latest
         steps:
             - uses: matrix-org/done-action@v2
