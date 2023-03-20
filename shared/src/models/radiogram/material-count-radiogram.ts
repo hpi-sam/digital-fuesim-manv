@@ -6,12 +6,12 @@ import { getCreate } from '../utils';
 import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 
-export class DummyRadiogram implements Radiogram {
+export class MaterialCountRadiogram implements Radiogram {
     @IsUUID()
     readonly id: UUID = uuid();
 
-    @IsValue('dummyRadiogram')
-    readonly type = 'dummyRadiogram';
+    @IsValue('materialCountRadiogram')
+    readonly type = 'materialCountRadiogram';
 
     @IsUUID()
     readonly simulatedRegionId: UUID;
@@ -24,6 +24,10 @@ export class DummyRadiogram implements Radiogram {
     @ValidateNested()
     readonly status: ExerciseRadiogramStatus;
 
+    @IsInt()
+    @Min(0)
+    readonly materialCount: number;
+
     /**
      * @deprecated Use {@link create} instead
      */
@@ -35,6 +39,7 @@ export class DummyRadiogram implements Radiogram {
         this.simulatedRegionId = simulatedRegionId;
         this.transmissionTime = transmissionTime;
         this.status = status;
+        this.materialCount = 0;
     }
 
     static readonly create = getCreate(this);
