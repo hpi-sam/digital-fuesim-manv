@@ -4,6 +4,7 @@ import {
     ExerciseRadiogram,
     radiogramTypeOptions,
 } from '../../models/radiogram/exercise-radiogram';
+import { sendRadiogram } from '../../models/radiogram/utils';
 import { getCreate } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
@@ -68,8 +69,7 @@ export const generateReportActivity: SimulationActivity<GenerateReportActivitySt
                 return;
             }
 
-            draftState.radiograms[activityState.radiogram.id] =
-                activityState.radiogram;
+            sendRadiogram(activityState.radiogram, draftState);
             terminate();
         },
     };
