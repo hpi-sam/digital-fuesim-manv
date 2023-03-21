@@ -1,29 +1,8 @@
-import type { ExerciseRadiogram } from '../exercise-radiogram';
 import type { ExerciseRadiogramStatus } from './exercise-radiogram-status';
 import type { RadiogramAcceptedStatus } from './radiogram-accepted-status';
 import type { RadiogramDoneStatus } from './radiogram-done-status';
+import type { RadiogramUnpublishedStatus } from './radiogram-unpublished-status';
 import type { RadiogramUnreadStatus } from './radiogram-unread-status';
-
-export function isUnread(radiogram: ExerciseRadiogram) {
-    return isUnreadRadiogramStatus(radiogram.status);
-}
-
-export function isAccepted(radiogram: ExerciseRadiogram) {
-    return isAcceptedRadiogramStatus(radiogram.status);
-}
-
-export function isDone(radiogram: ExerciseRadiogram) {
-    return isDoneRadiogramStatus(radiogram.status);
-}
-
-export function currentParticipantIdOf(radiogram: ExerciseRadiogram) {
-    if (isAccepted(radiogram)) {
-        return participantIdOfRadiogramStatus(radiogram.status);
-    }
-    throw new TypeError(
-        `Expected radiogram status to be accepted. Was of type ${radiogram.status.type}.`
-    );
-}
 
 export function isUnreadRadiogramStatus(
     radiogramStatus: ExerciseRadiogramStatus
@@ -41,6 +20,12 @@ export function isDoneRadiogramStatus(
     return radiogramStatus.type === 'doneRadiogramStatus';
 }
 
+export function isUnpublishedRadiogramStatus(
+    radiogramStatus: ExerciseRadiogramStatus
+): radiogramStatus is RadiogramUnpublishedStatus {
+    return radiogramStatus.type === 'unpublishedRadiogramStatus';
+}
+
 export function participantIdOfRadiogramStatus(
     radiogramStatus: ExerciseRadiogramStatus
 ) {
@@ -49,5 +34,16 @@ export function participantIdOfRadiogramStatus(
     }
     throw new TypeError(
         `Expected radiogram status to be accepted. Was of type ${radiogramStatus.type}.`
+    );
+}
+
+export function publishTimeOfRadiogramStatus(
+    radiogramStatus: ExerciseRadiogramStatus
+) {
+    if (!isUnpublishedRadiogramStatus(radiogramStatus)) {
+        return radiogramStatus.publishTime;
+    }
+    throw new TypeError(
+        `Expected radiogram status to be not be unpublished. Was of type ${radiogramStatus.type}.`
     );
 }
