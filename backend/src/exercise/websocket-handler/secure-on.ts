@@ -9,7 +9,7 @@ import type {
 import type { ExerciseSocket } from '../../exercise-server';
 
 function isDevelopment() {
-    return process.env.NODE_ENV !== 'production';
+    return process.env['NODE_ENV'] !== 'production';
 }
 
 export function secureOn<
