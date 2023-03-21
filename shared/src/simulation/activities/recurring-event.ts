@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
+import { IsBoolean, IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
@@ -28,6 +28,9 @@ export class RecurringEventActivityState implements SimulationActivityState {
     @Min(0)
     public readonly recurrenceIntervalTime: number;
 
+    @IsBoolean()
+    public readonly enabled: boolean;
+
     /**
      * @deprecated Use {@link create} instead
      */
@@ -35,12 +38,14 @@ export class RecurringEventActivityState implements SimulationActivityState {
         id: UUID,
         event: ExerciseSimulationEvent,
         firstOccurrenceTime: number,
-        recurrenceIntervalTime: number
+        recurrenceIntervalTime: number,
+        enabled: boolean
     ) {
         this.id = id;
         this.event = event;
         this.nextOccurrenceTime = firstOccurrenceTime;
         this.recurrenceIntervalTime = recurrenceIntervalTime;
+        this.enabled = enabled;
     }
 
     static readonly create = getCreate(this);
@@ -49,18 +54,13 @@ export class RecurringEventActivityState implements SimulationActivityState {
 export const recurringEventActivity: SimulationActivity<RecurringEventActivityState> =
     {
         activityState: RecurringEventActivityState,
-        tick(
-            draftState,
-            simulatedRegion,
-            activityState,
-            _tickInterval,
-            terminate
-        ) {
+        tick(draftState, simulatedRegion, activityState) {
             if (draftState.currentTime >= activityState.nextOccurrenceTime) {
                 activityState.nextOccurrenceTime +=
                     activityState.recurrenceIntervalTime;
-                sendSimulationEvent(simulatedRegion, activityState.event);
-                terminate();
+                if (activityState.enabled) {
+                    sendSimulationEvent(simulatedRegion, activityState.event);
+                }
             }
         },
     };

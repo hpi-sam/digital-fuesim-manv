@@ -13,6 +13,11 @@ import { CollectPatientCountEvent } from './collect/collect-patient-count';
 import { CollectPersonnelCountEvent } from './collect/collect-personnel-count';
 import { CollectVehicleCountEvent } from './collect/collect-vehicle-count';
 import { CollectTreatmentStatusEvent } from './collect/collect-treatment-status';
+import { StartCollectingPatientCountEvent } from './collect/start-collecting-patient-count';
+import { StartCollectingMaterialCountEvent } from './collect/start-collecting-material-count';
+import { StartCollectingPersonnelCountEvent } from './collect/start-collecting-personnel-count';
+import { StartCollectingTreatmentStatusEvent } from './collect/start-collecting-treatment-status';
+import { StartCollectingVehicleCountEvent } from './collect/start-collecting-vehicle-count';
 
 export const simulationEvents = {
     MaterialAvailableEvent,
@@ -27,6 +32,11 @@ export const simulationEvents = {
     CollectPersonnelCountEvent,
     CollectVehicleCountEvent,
     CollectTreatmentStatusEvent,
+    StartCollectingPatientCountEvent,
+    StartCollectingMaterialCountEvent,
+    StartCollectingPersonnelCountEvent,
+    StartCollectingVehicleCountEvent,
+    StartCollectingTreatmentStatusEvent,
 };
 
 export type ExerciseSimulationEvent = InstanceType<
@@ -51,6 +61,11 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     collectPersonnelCountEvent: CollectPersonnelCountEvent,
     collectVehicleCountEvent: CollectVehicleCountEvent,
     collectTreatmentStatusEvent: CollectTreatmentStatusEvent,
+    startCollectingPatientCountEvent: StartCollectingPatientCountEvent,
+    startCollectingMaterialCountEvent: StartCollectingMaterialCountEvent,
+    startCollectingPersonnelCountEvent: StartCollectingPersonnelCountEvent,
+    startCollectingTreatmentStatusEvent: StartCollectingTreatmentStatusEvent,
+    startCollectingVehicleCountEvent: StartCollectingVehicleCountEvent,
 };
 
 export const simulationEventTypeOptions: Parameters<typeof Type> = [
