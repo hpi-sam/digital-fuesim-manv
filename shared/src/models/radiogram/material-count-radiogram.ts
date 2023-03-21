@@ -1,8 +1,9 @@
+import { Type } from 'class-transformer';
 import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
 import { uuid, UUID } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
-import { getCreate } from '../utils';
+import { CanCaterFor, getCreate } from '../utils';
 import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 
@@ -24,9 +25,9 @@ export class MaterialCountRadiogram implements Radiogram {
     @ValidateNested()
     readonly status: ExerciseRadiogramStatus;
 
-    @IsInt()
-    @Min(0)
-    readonly materialCount: number;
+    @ValidateNested()
+    @Type(() => CanCaterFor)
+    readonly materialForPatients: CanCaterFor;
 
     /**
      * @deprecated Use {@link create} instead
@@ -39,7 +40,12 @@ export class MaterialCountRadiogram implements Radiogram {
         this.simulatedRegionId = simulatedRegionId;
         this.transmissionTime = transmissionTime;
         this.status = status;
-        this.materialCount = 0;
+        this.materialForPatients = {
+            red: 0,
+            yellow: 0,
+            green: 0,
+            logicalOperator: 'and',
+        };
     }
 
     static readonly create = getCreate(this);
