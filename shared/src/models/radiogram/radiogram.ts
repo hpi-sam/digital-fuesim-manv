@@ -5,6 +5,5 @@ export class Radiogram {
     readonly id!: UUID;
     readonly type!: `${string}Radiogram`;
     readonly simulatedRegionId!: UUID;
-    readonly transmissionTime!: number;
     readonly status!: ExerciseRadiogramStatus;
 }

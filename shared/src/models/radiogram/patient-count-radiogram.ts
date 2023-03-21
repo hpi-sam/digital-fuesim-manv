@@ -1,4 +1,4 @@
-import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
+import { IsUUID, ValidateNested } from 'class-validator';
 import { UUID } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsPatientCount } from '../../utils/validators/is-patient-count';
@@ -20,10 +20,6 @@ export class PatientCountRadiogram implements Radiogram {
     @IsUUID()
     readonly simulatedRegionId: UUID;
 
-    @IsInt()
-    @Min(0)
-    readonly transmissionTime: number;
-
     @IsRadiogramStatus()
     @ValidateNested()
     readonly status: ExerciseRadiogramStatus;
@@ -37,12 +33,10 @@ export class PatientCountRadiogram implements Radiogram {
     constructor(
         id: UUID,
         simulatedRegionId: UUID,
-        transmissionTime: number,
         status: ExerciseRadiogramStatus
     ) {
         this.id = id;
         this.simulatedRegionId = simulatedRegionId;
-        this.transmissionTime = transmissionTime;
         this.status = status;
         this.patientCount = {
             red: 0,
