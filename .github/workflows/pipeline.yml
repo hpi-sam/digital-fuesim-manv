@@ -233,14 +233,16 @@ jobs:
 
     # Dummy step to gate until all test are complete
     tests-done:
+        if: always()
         needs:
             - test
             - cypress
             - lint
-            - dependencies
         runs-on: ubuntu-latest
         steps:
-            - run: 'true'
+            - uses: matrix-org/done-action@v2
+              with:
+                  needs: ${{ toJSON (needs) }}
 
     deploy-dev:
         timeout-minutes: 10

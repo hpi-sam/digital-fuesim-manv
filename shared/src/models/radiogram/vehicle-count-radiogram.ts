@@ -1,40 +1,48 @@
-import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
-import { uuid, UUID } from '../../utils';
+import { IsUUID, ValidateNested } from 'class-validator';
+import { UUID } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
+import { IsVehicleCount } from '../../utils/validators/is-vehicle-count';
 import { getCreate } from '../utils';
 import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 
-export class DummyRadiogram implements Radiogram {
-    @IsUUID()
-    readonly id: UUID = uuid();
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type VehicleCount = { [key: string]: number };
 
-    @IsValue('dummyRadiogram')
-    readonly type = 'dummyRadiogram';
+export class VehicleCountRadiogram implements Radiogram {
+    @IsUUID()
+    readonly id: UUID;
+
+    @IsValue('vehicleCountRadiogram')
+    readonly type = 'vehicleCountRadiogram';
 
     @IsUUID()
     readonly simulatedRegionId: UUID;
 
-    @IsInt()
-    @Min(0)
-    readonly transmissionTime: number;
-
+    /**
+     * @deprecated use the helpers from {@link radiogram-helpers.ts}
+     * or {@link radiogram-helpers-mutable.ts} instead
+     */
     @IsRadiogramStatus()
     @ValidateNested()
     readonly status: ExerciseRadiogramStatus;
+
+    @IsVehicleCount()
+    readonly vehicleCount: VehicleCount;
 
     /**
      * @deprecated Use {@link create} instead
      */
     constructor(
+        id: UUID,
         simulatedRegionId: UUID,
-        transmissionTime: number,
         status: ExerciseRadiogramStatus
     ) {
+        this.id = id;
         this.simulatedRegionId = simulatedRegionId;
-        this.transmissionTime = transmissionTime;
         this.status = status;
+        this.vehicleCount = {};
     }
 
     static readonly create = getCreate(this);
