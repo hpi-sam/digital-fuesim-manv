@@ -2,7 +2,7 @@ import { IsUUID, ValidateNested } from 'class-validator';
 import {
     TreatmentProgress,
     treatmentProgressAllowedValues,
-} from '../../simulation';
+} from '../../simulation/utils/treatment';
 import { UUID } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
