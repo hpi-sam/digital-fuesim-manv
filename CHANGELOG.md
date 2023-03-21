@@ -9,7 +9,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Added
 
--   There are now radiograms, which can be used by the simulation to send messages to the trainees
+-   There are now radiograms, which can be used by the simulation to send messages to the trainees. These are generated automatically by an activity.
 
 ## [0.2.1] - 2023-03-11
 
