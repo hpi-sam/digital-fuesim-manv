@@ -1,10 +1,18 @@
 import type { Type } from 'class-transformer';
 import type { Constructor } from '../../utils';
-import { DummyRadiogram } from './dummy-radiogram';
+import { MaterialCountRadiogram } from './material-count-radiogram';
+import { PatientCountRadiogram } from './patient-count-radiogram';
+import { PersonnelCountRadiogram } from './personnel-count-radiogram';
 import { Radiogram } from './radiogram';
+import { TreatmentStatusRadiogram } from './treatment-status-radiogram';
+import { VehicleCountRadiogram } from './vehicle-count-radiogram';
 
 export const radiograms = {
-    DummyRadiogram,
+    MaterialCountRadiogram,
+    PatientCountRadiogram,
+    PersonnelCountRadiogram,
+    TreatmentStatusRadiogram,
+    VehicleCountRadiogram,
 };
 
 export type ExerciseRadiogram = InstanceType<
@@ -16,7 +24,11 @@ type ExerciseRadiogramDictionary = {
 };
 
 export const radiogramDictionary: ExerciseRadiogramDictionary = {
-    dummyRadiogram: DummyRadiogram,
+    materialCountRadiogram: MaterialCountRadiogram,
+    patientCountRadiogram: PatientCountRadiogram,
+    personnelCountRadiogram: PersonnelCountRadiogram,
+    treatmentStatusRadiogram: TreatmentStatusRadiogram,
+    vehicleCountRadiogram: VehicleCountRadiogram,
 };
 
 export function getRadiogramConstructor(radiogram: ExerciseRadiogram) {
