@@ -20,6 +20,10 @@ export class PatientCountRadiogram implements Radiogram {
     @IsUUID()
     readonly simulatedRegionId: UUID;
 
+    /**
+     * @deprecated use the helpers from {@link radiogram-helpers.ts}
+     * or {@link radiogram-helpers-mutable.ts} instead
+     */
     @IsRadiogramStatus()
     @ValidateNested()
     readonly status: ExerciseRadiogramStatus;
