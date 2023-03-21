@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     selectCurrentTime,
     selectExerciseStatus,
@@ -12,8 +11,9 @@ import {
     styleUrls: ['./exercise-state-badge.component.scss'],
 })
 export class ExerciseStateBadgeComponent {
-    public readonly exerciseStatus$ = this.store.select(selectExerciseStatus);
-    public readonly currentTime$ = this.store.select(selectCurrentTime);
+    public readonly exerciseStatus$ =
+        this.storeService.select$(selectExerciseStatus);
+    public readonly currentTime$ = this.storeService.select$(selectCurrentTime);
 
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(private readonly storeService: StoreService) {}
 }

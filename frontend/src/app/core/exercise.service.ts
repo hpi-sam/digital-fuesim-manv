@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
 import type {
     ClientToServerEvents,
     ExerciseAction,
@@ -21,7 +20,6 @@ import {
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import { handleChanges } from '../shared/functions/handle-changes';
-import type { AppState } from '../state/app.state';
 import {
     createApplyServerActionAction,
     createJoinExerciseAction,
@@ -38,10 +36,10 @@ import {
     selectOwnClient,
     selectVisibleVehicles,
 } from '../state/application/selectors/shared.selectors';
-import { selectStateSnapshot } from '../state/get-state-snapshot';
 import { websocketOrigin } from './api-origins';
 import { MessageService } from './messages/message.service';
 import { OptimisticActionHandler } from './optimistic-action-handler';
+import { StoreService } from './store.service';
 
 /**
  * This Service deals with the state synchronization of a live exercise.
@@ -68,7 +66,7 @@ export class ExerciseService {
     >;
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly messageService: MessageService
     ) {
         this.socket.on('performAction', (action: ExerciseAction) => {
@@ -138,7 +136,7 @@ export class ExerciseService {
             });
             return false;
         }
-        this.store.dispatch(
+        this.storeService.dispatch(
             createJoinExerciseAction(
                 joinResponse.payload,
                 getStateResponse.payload,
@@ -153,10 +151,14 @@ export class ExerciseService {
             SocketResponse
         >(
             (exercise) =>
-                this.store.dispatch(createSetExerciseStateAction(exercise)),
-            () => selectStateSnapshot(selectExerciseState, this.store),
+                this.storeService.dispatch(
+                    createSetExerciseStateAction(exercise)
+                ),
+            () => this.storeService.select(selectExerciseState),
             (action) =>
-                this.store.dispatch(createApplyServerActionAction(action)),
+                this.storeService.dispatch(
+                    createApplyServerActionAction(action)
+                ),
             async (action) => {
                 const response = await new Promise<SocketResponse>(
                     (resolve) => {
@@ -190,7 +192,7 @@ export class ExerciseService {
         this.socket.disconnect();
         this.stopNotifications();
         this.optimisticActionHandler = undefined;
-        this.store.dispatch(createLeaveExerciseAction());
+        this.storeService.dispatch(createLeaveExerciseAction());
     }
 
     /**
@@ -200,8 +202,7 @@ export class ExerciseService {
      */
     public async proposeAction(action: ExerciseAction, optimistic = false) {
         if (
-            selectStateSnapshot(selectExerciseStateMode, this.store) !==
-                'exercise' ||
+            this.storeService.select(selectExerciseStateMode) !== 'exercise' ||
             this.optimisticActionHandler === undefined
         ) {
             // Especially during timeTravel, buttons that propose actions are only deactivated via best effort
@@ -220,11 +221,11 @@ export class ExerciseService {
 
     private startNotifications() {
         // If the user is a trainer, display a message for each joined or disconnected client
-        this.store
-            .select(selectCurrentRole)
+        this.storeService
+            .select$(selectCurrentRole)
             .pipe(
                 filter((role) => role === 'trainer'),
-                switchMap(() => this.store.select(selectClients)),
+                switchMap(() => this.storeService.select$(selectClients)),
                 pairwise(),
                 takeUntil(this.stopNotifications$)
             )
@@ -249,8 +250,8 @@ export class ExerciseService {
                 });
             });
         // If the user is restricted to a viewport, display a message for each vehicle that arrived at this viewport
-        this.store
-            .select(selectOwnClient)
+        this.storeService
+            .select$(selectOwnClient)
             .pipe(
                 filter(
                     (client) =>
@@ -258,8 +259,8 @@ export class ExerciseService {
                         !client.isInWaitingRoom
                 ),
                 switchMap((client) =>
-                    this.store
-                        .select(selectVisibleVehicles)
+                    this.storeService
+                        .select$(selectVisibleVehicles)
                         // pipe in here so no pairs of events from different viewports are built
                         // Do not trigger the message if the vehicle was removed and added again at the same time
                         .pipe(debounceTime(0), pairwise())

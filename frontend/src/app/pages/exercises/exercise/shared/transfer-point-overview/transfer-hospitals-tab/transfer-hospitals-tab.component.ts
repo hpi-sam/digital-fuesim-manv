@@ -1,11 +1,11 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
+import { createSelector } from '@ngrx/store';
 import type { Hospital, TransferPoint } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     createSelectTransferPoint,
     selectHospitals,
@@ -23,10 +23,10 @@ export class TransferHospitalsTabComponent implements OnInit {
     public transferPoint$!: Observable<TransferPoint>;
 
     public hospitals$: Observable<{ [key: UUID]: Hospital }> =
-        this.store.select(selectHospitals);
+        this.storeService.select$(selectHospitals);
 
     public readonly hospitalsToBeAdded$: Observable<{ [key: UUID]: Hospital }> =
-        this.store.select(
+        this.storeService.select$(
             createSelector(
                 selectTransferPoints,
                 selectHospitals,
@@ -45,11 +45,11 @@ export class TransferHospitalsTabComponent implements OnInit {
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly storeService: StoreService
     ) {}
 
     ngOnInit() {
-        this.transferPoint$ = this.store.select(
+        this.transferPoint$ = this.storeService.select$(
             createSelectTransferPoint(this.transferPointId)
         );
     }

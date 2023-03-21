@@ -1,14 +1,14 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
+import { createSelector } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import {
-    TreatPatientsBehaviorState,
     SimulatedRegion,
+    TreatPatientsBehaviorState,
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     createSelectElementsInSimulatedRegion,
     selectConfiguration,
@@ -53,14 +53,14 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         readonly selectPatientService: SelectPatientService
     ) {}
 
     ngOnInit(): void {
         this.settingsCollapsed = globalLastSettingsCollapsed;
         this.informationCollapsed = globalLastInformationCollapsed;
-        this.patientIds$ = this.store.select(
+        this.patientIds$ = this.storeService.select$(
             createSelector(
                 createSelectElementsInSimulatedRegion(
                     selectPatients,

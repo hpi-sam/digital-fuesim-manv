@@ -1,14 +1,13 @@
 import type { OnDestroy, OnInit } from '@angular/core';
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
 import type { SimulatedRegion } from 'digital-fuesim-manv-shared';
-import { UUID, isInSpecificSimulatedRegion } from 'digital-fuesim-manv-shared';
+import { isInSpecificSimulatedRegion, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import { Subject, takeUntil } from 'rxjs';
-import type { AppState } from 'src/app/state/app.state';
+import { map, Subject, takeUntil } from 'rxjs';
+import { StoreService } from 'src/app/core/store.service';
 import {
-    selectTransferPoints,
     createSelectSimulatedRegion,
+    selectTransferPoints,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { SelectPatientService } from '../select-patient.service';
 
@@ -51,26 +50,27 @@ export class SimulatedRegionOverviewGeneralComponent
     private readonly destroy$ = new Subject<void>();
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         readonly selectPatientService: SelectPatientService
     ) {}
 
     ngOnInit(): void {
-        this.simulatedRegion$ = this.store.select(
+        this.simulatedRegion$ = this.storeService.select$(
             createSelectSimulatedRegion(this.simulatedRegionId)
         );
-        this.transferPointId$ = this.store.select(
-            createSelector(
-                selectTransferPoints,
-                (transferPoints) =>
-                    Object.values(transferPoints).find((transferPoint) =>
-                        isInSpecificSimulatedRegion(
-                            transferPoint,
-                            this.simulatedRegionId
-                        )
-                    )!.id
-            )
-        );
+        this.transferPointId$ = this.storeService
+            .select$(selectTransferPoints)
+            .pipe(
+                map(
+                    (transferPoints) =>
+                        Object.values(transferPoints).find((transferPoint) =>
+                            isInSpecificSimulatedRegion(
+                                transferPoint,
+                                this.simulatedRegionId
+                            )
+                        )!.id
+                )
+            );
 
         this.selectPatientService.patientSelected
             .pipe(takeUntil(this.destroy$))

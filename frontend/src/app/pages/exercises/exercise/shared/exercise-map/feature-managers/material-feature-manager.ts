@@ -1,12 +1,11 @@
 import type { Type } from '@angular/core';
-import type { Store } from '@ngrx/store';
 import type { Material, UUID } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type OlMap from 'ol/Map';
 import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import type { StoreService } from 'src/app/core/store.service';
 import { selectVisibleMaterials } from 'src/app/state/application/selectors/shared.selectors';
 import { MaterialPopupComponent } from '../shared/material-popup/material-popup.component';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
@@ -24,7 +23,7 @@ export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
-            this.store.select(selectVisibleMaterials),
+            this.storeService.select$(selectVisibleMaterials),
             changePopup$,
             destroy$,
             mapInteractionsManager
@@ -49,7 +48,7 @@ export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
 
     constructor(
         olMap: OlMap,
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         exerciseService: ExerciseService
     ) {
         super(

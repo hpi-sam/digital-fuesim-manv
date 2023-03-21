@@ -1,14 +1,12 @@
 import { Component, Input } from '@angular/core';
-import { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { AlarmGroup, AlarmGroupVehicle } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     createSelectVehicleTemplate,
     selectVehicleTemplates,
 } from 'src/app/state/application/selectors/exercise.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 @Component({
     selector: 'app-alarm-group-item',
@@ -20,10 +18,10 @@ export class AlarmGroupItemComponent {
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly storeService: StoreService
     ) {}
 
-    public readonly vehicleTemplates$ = this.store.select(
+    public readonly vehicleTemplates$ = this.storeService.select$(
         selectVehicleTemplates
     );
 
@@ -77,9 +75,8 @@ export class AlarmGroupItemComponent {
     }
 
     public createAlarmGroupVehicle(vehicleTemplateId: UUID) {
-        const vehicleTemplate = selectStateSnapshot(
-            createSelectVehicleTemplate(vehicleTemplateId),
-            this.store
+        const vehicleTemplate = this.storeService.select(
+            createSelectVehicleTemplate(vehicleTemplateId)
         )!;
         this.exerciseService.proposeAction({
             type: '[AlarmGroup] Add AlarmGroupVehicle',

@@ -1,6 +1,6 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
+import { createSelector } from '@ngrx/store';
 import type {
     Material,
     Patient,
@@ -12,15 +12,15 @@ import type {
 import { SimulatedRegion } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
+    createSelectByPredicate,
     createSelectElementsInSimulatedRegion,
     selectMaterials,
     selectPatients,
     selectPersonnel,
-    selectVehicleTemplates,
     selectVehicles,
-    createSelectByPredicate,
+    selectVehicleTemplates,
 } from 'src/app/state/application/selectors/exercise.selectors';
 
 const patientCategories = ['red', 'yellow', 'green', 'black'] as const;
@@ -43,7 +43,7 @@ export type PersonnelCategory = (typeof personnelCategories)[number];
 export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
     @Input() simulatedRegion!: SimulatedRegion;
 
-    public readonly vehicleTemplates$ = this.store.select(
+    public readonly vehicleTemplates$ = this.storeService.select$(
         selectVehicleTemplates
     );
 
@@ -68,7 +68,7 @@ export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly storeService: StoreService
     ) {}
 
     ngOnInit(): void {
@@ -82,9 +82,11 @@ export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
                 this.simulatedRegion.id
             );
 
-        this.patients.all$ = this.store.select(containedPatientsSelector);
+        this.patients.all$ = this.storeService.select$(
+            containedPatientsSelector
+        );
         patientCategories.forEach((category) => {
-            this.patients[`${category}$`] = this.store.select(
+            this.patients[`${category}$`] = this.storeService.select$(
                 createSelectByPredicate(
                     containedPatientsSelector,
                     this.createPatientStatusPredicate(category)
@@ -92,7 +94,7 @@ export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
             );
         });
 
-        this.vehicles$ = this.store.select(
+        this.vehicles$ = this.storeService.select$(
             createSelector(
                 selectVehicleTemplates,
                 createSelectElementsInSimulatedRegion(
@@ -126,9 +128,11 @@ export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
             )
         );
 
-        this.personnel.all$ = this.store.select(containedPersonnelSelector);
+        this.personnel.all$ = this.storeService.select$(
+            containedPersonnelSelector
+        );
         personnelCategories.forEach((category) => {
-            this.personnel[`${category}$`] = this.store.select(
+            this.personnel[`${category}$`] = this.storeService.select$(
                 createSelectByPredicate(
                     containedPersonnelSelector,
                     this.createPersonnelTypePredicate(category)
@@ -136,7 +140,7 @@ export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
             );
         });
 
-        this.material$ = this.store.select(
+        this.material$ = this.storeService.select$(
             createSelectElementsInSimulatedRegion(
                 selectMaterials,
                 this.simulatedRegion.id

@@ -1,6 +1,5 @@
-import type { Store } from '@ngrx/store';
 // eslint-disable-next-line @typescript-eslint/no-shadow
-import type { UUID, Element } from 'digital-fuesim-manv-shared';
+import type { Element, UUID } from 'digital-fuesim-manv-shared';
 import { TransferPoint, TransferStartPoint } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
@@ -8,12 +7,11 @@ import type { TranslateEvent } from 'ol/interaction/Translate';
 import type OlMap from 'ol/Map';
 import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import type { StoreService } from 'src/app/core/store.service';
 import {
     selectCurrentRole,
     selectVisibleTransferPoints,
 } from 'src/app/state/application/selectors/shared.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { ChooseTransferTargetPopupComponent } from '../shared/choose-transfer-target-popup/choose-transfer-target-popup.component';
 import { TransferPointPopupComponent } from '../shared/transfer-point-popup/transfer-point-popup.component';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
@@ -29,7 +27,7 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
 
     constructor(
         olMap: OlMap,
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly exerciseService: ExerciseService
     ) {
         super(
@@ -62,7 +60,7 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
         mapInteractionsManager: OlMapInteractionsManager
     ) {
         super.registerFeatureElementManager(
-            this.store.select(selectVisibleTransferPoints),
+            this.storeService.select$(selectVisibleTransferPoints),
             changePopup$,
             destroy$,
             mapInteractionsManager
@@ -156,7 +154,7 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
     ): void {
         super.onFeatureClicked(event, feature);
 
-        if (selectStateSnapshot(selectCurrentRole, this.store) !== 'trainer') {
+        if (this.storeService.select(selectCurrentRole) !== 'trainer') {
             return;
         }
         this.togglePopup$.next(
@@ -172,6 +170,6 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
     }
 
     override isFeatureTranslatable(feature: Feature<Point>): boolean {
-        return selectStateSnapshot(selectCurrentRole, this.store) === 'trainer';
+        return this.storeService.select(selectCurrentRole) === 'trainer';
     }
 }

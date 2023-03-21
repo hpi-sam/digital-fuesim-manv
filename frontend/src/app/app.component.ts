@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+// eslint-disable-next-line no-restricted-imports
 import { Store } from '@ngrx/store';
 import { httpOrigin, websocketOrigin } from './core/api-origins';
 import { setupCypressTestingValues } from './shared/functions/cypress';

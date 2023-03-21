@@ -1,12 +1,12 @@
-import '@angular/localize/init';
 import type { OnDestroy, OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
+import '@angular/localize/init';
+import { createSelector } from '@ngrx/store';
 import type { PatientStatus, PersonnelType } from 'digital-fuesim-manv-shared';
 import { Patient, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     createSelectPatient,
     selectConfiguration,
@@ -35,7 +35,7 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
     public patient$!: Observable<Patient>;
     public destroy$ = new Subject<void>();
 
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(private readonly storeService: StoreService) {}
     ngOnDestroy(): void {
         this.destroy$.next();
     }
@@ -43,8 +43,8 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
     ngOnInit(): void {
         const patientSelector = createSelectPatient(this.patientId);
 
-        this.caterings$ = this.store
-            .select(
+        this.caterings$ = this.storeService
+            .select$(
                 createSelector(
                     selectPersonnel,
                     patientSelector,
@@ -76,9 +76,9 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
                 takeUntil(this.destroy$)
             );
 
-        this.patient$ = this.store.select(patientSelector);
+        this.patient$ = this.storeService.select$(patientSelector);
 
-        this.visibleStatus$ = this.store.select(
+        this.visibleStatus$ = this.storeService.select$(
             createSelector(
                 patientSelector,
                 selectConfiguration,

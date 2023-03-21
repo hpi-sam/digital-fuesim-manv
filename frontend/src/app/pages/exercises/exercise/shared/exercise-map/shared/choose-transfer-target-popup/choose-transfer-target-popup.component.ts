@@ -1,9 +1,8 @@
 import type { OnInit } from '@angular/core';
-import { EventEmitter, Output, Component } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Component, EventEmitter, Output } from '@angular/core';
 import type { Hospital, TransferPoint, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     createSelectReachableHospitals,
     createSelectReachableTransferPoints,
@@ -33,13 +32,13 @@ export class ChooseTransferTargetPopupComponent
 
     public reachableHospitals$?: Observable<Hospital[]>;
 
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(private readonly storeService: StoreService) {}
 
     ngOnInit(): void {
-        this.reachableTransferPoints$ = this.store.select(
+        this.reachableTransferPoints$ = this.storeService.select$(
             createSelectReachableTransferPoints(this.transferPointId)
         );
-        this.reachableHospitals$ = this.store.select(
+        this.reachableHospitals$ = this.storeService.select$(
             createSelectReachableHospitals(this.transferPointId)
         );
     }

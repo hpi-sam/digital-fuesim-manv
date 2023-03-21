@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { Hospital } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { selectHospitals } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
@@ -13,10 +12,10 @@ import { selectHospitals } from 'src/app/state/application/selectors/exercise.se
     styleUrls: ['./hospital-editor-modal.component.scss'],
 })
 export class HospitalEditorModalComponent {
-    public hospitals$ = this.store.select(selectHospitals);
+    public hospitals$ = this.storeService.select$(selectHospitals);
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         public readonly activeModal: NgbActiveModal,
         private readonly exerciseService: ExerciseService
     ) {}

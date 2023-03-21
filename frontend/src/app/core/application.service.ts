@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { assertExhaustiveness } from 'digital-fuesim-manv-shared';
-import type { AppState } from '../state/app.state';
 import {
     selectExerciseId,
     selectExerciseStateMode,
     selectLastClientName,
 } from '../state/application/selectors/application.selectors';
-import { selectStateSnapshot } from '../state/get-state-snapshot';
 import { ExerciseService } from './exercise.service';
+import { StoreService } from './store.service';
 import { TimeTravelService } from './time-travel.service';
 
 /**
@@ -22,16 +20,15 @@ export class ApplicationService {
     constructor(
         private readonly timeTravelService: TimeTravelService,
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly storeService: StoreService
     ) {}
 
     /**
      * A new mode must be set immediately after this function is called
      */
     private stopCurrentMode() {
-        const currentExerciseStateMode = selectStateSnapshot(
-            selectExerciseStateMode,
-            this.store
+        const currentExerciseStateMode = this.storeService.select(
+            selectExerciseStateMode
         );
         switch (currentExerciseStateMode) {
             case 'exercise':
@@ -63,8 +60,8 @@ export class ApplicationService {
      */
     public async rejoinExercise() {
         return this.joinExercise(
-            selectStateSnapshot(selectExerciseId, this.store)!,
-            selectStateSnapshot(selectLastClientName, this.store)!
+            this.storeService.select(selectExerciseId)!,
+            this.storeService.select(selectLastClientName)!
         );
     }
 

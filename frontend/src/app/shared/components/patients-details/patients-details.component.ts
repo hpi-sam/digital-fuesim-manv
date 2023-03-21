@@ -1,12 +1,12 @@
 import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
+import { createSelector } from '@ngrx/store';
 import type { PatientStatus } from 'digital-fuesim-manv-shared';
 import { Patient, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     createSelectPatient,
     selectConfiguration,
@@ -21,8 +21,8 @@ import { selectCurrentRole } from 'src/app/state/application/selectors/shared.se
 export class PatientsDetailsComponent implements OnChanges {
     @Input() patientId!: UUID;
 
-    readonly currentRole$ = this.store.select(selectCurrentRole);
-    configuration$ = this.store.select(selectConfiguration);
+    readonly currentRole$ = this.storeService.select$(selectCurrentRole);
+    configuration$ = this.storeService.select$(selectConfiguration);
     patient$!: Observable<Patient>;
     visibleStatus$!: Observable<PatientStatus>;
     pretriageStatusIsLocked$?: Observable<boolean>;
@@ -36,13 +36,15 @@ export class PatientsDetailsComponent implements OnChanges {
         );
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly exerciseService: ExerciseService
     ) {}
 
     ngOnChanges(): void {
-        this.patient$ = this.store.select(createSelectPatient(this.patientId));
-        this.visibleStatus$ = this.store.select(
+        this.patient$ = this.storeService.select$(
+            createSelectPatient(this.patientId)
+        );
+        this.visibleStatus$ = this.storeService.select$(
             createSelector(
                 createSelectPatient(this.patientId),
                 selectConfiguration,

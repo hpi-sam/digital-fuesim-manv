@@ -1,5 +1,4 @@
 import type { Type } from '@angular/core';
-import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { Patient } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
@@ -7,10 +6,9 @@ import type OlMap from 'ol/Map';
 import { Fill, Stroke } from 'ol/style';
 import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import type { StoreService } from 'src/app/core/store.service';
 import { selectConfiguration } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectVisiblePatients } from 'src/app/state/application/selectors/shared.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
@@ -27,7 +25,7 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
-            this.store.select(selectVisiblePatients),
+            this.storeService.select$(selectVisiblePatients),
             changePopup$,
             destroy$,
             mapInteractionsManager
@@ -48,10 +46,7 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
     private readonly circleStyleHelper = new CircleStyleHelper(
         (feature) => {
             const patient = this.getElementFromFeature(feature) as Patient;
-            const configuration = selectStateSnapshot(
-                selectConfiguration,
-                this.store
-            );
+            const configuration = this.storeService.select(selectConfiguration);
             const color = Patient.getVisibleStatus(
                 patient,
                 configuration.pretriageEnabled,
@@ -77,7 +72,7 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
     );
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         olMap: OlMap,
         exerciseService: ExerciseService
     ) {

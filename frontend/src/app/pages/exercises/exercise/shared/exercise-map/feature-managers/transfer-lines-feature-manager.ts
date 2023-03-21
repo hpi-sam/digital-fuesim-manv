@@ -1,5 +1,4 @@
 import type { Type } from '@angular/core';
-import type { Store } from '@ngrx/store';
 // eslint-disable-next-line @typescript-eslint/no-shadow
 import type { Element } from 'digital-fuesim-manv-shared';
 import type { MapBrowserEvent } from 'ol';
@@ -12,11 +11,10 @@ import type VectorSource from 'ol/source/Vector';
 import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import type { Subject } from 'rxjs';
+import type { StoreService } from 'src/app/core/store.service';
 import type { TransferLine } from 'src/app/shared/types/transfer-line';
-import type { AppState } from 'src/app/state/app.state';
 import { selectTransferLines } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
@@ -29,7 +27,7 @@ export class TransferLinesFeatureManager
 {
     public readonly layer: VectorLayer<VectorSource<LineString>>;
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly transferLinesService: TransferLinesService,
         private readonly olMap: OlMap
     ) {
@@ -54,9 +52,9 @@ export class TransferLinesFeatureManager
         this.olMap.addLayer(this.layer);
         mapInteractionsManager.addFeatureLayer(this.layer);
         this.togglePopup$?.subscribe(changePopup$);
-        if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
+        if (this.storeService.select(selectCurrentRole) === 'trainer') {
             this.registerChangeHandlers(
-                this.store.select(selectTransferLines),
+                this.storeService.select$(selectTransferLines),
                 destroy$,
                 (element) => this.onElementCreated(element),
                 (element) => this.onElementDeleted(element),

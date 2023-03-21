@@ -1,10 +1,10 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
-import { UUID, TransferPoint } from 'digital-fuesim-manv-shared';
+import { TransferPoint, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
+import { map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     createSelectTransferPoint,
     selectTransferPoints,
@@ -21,31 +21,34 @@ export class OtherTransferPointTabComponent implements OnInit {
     public transferPoint$!: Observable<TransferPoint>;
 
     public transferPoints$: Observable<{ [key: UUID]: TransferPoint }> =
-        this.store.select(selectTransferPoints);
+        this.storeService.select$(selectTransferPoints);
 
     /**
      * All transferPoints that are neither connected to this one nor this one itself
      */
-    public readonly transferPointsToBeAdded$ = this.store.select(
-        createSelector(selectTransferPoints, (transferPoints) => {
-            const currentTransferPoint = transferPoints[this.transferPointId]!;
-            return Object.fromEntries(
-                Object.entries(transferPoints).filter(
-                    ([key]) =>
-                        key !== this.transferPointId &&
-                        !currentTransferPoint.reachableTransferPoints[key]
-                )
-            );
-        })
-    );
+    public readonly transferPointsToBeAdded$ = this.storeService
+        .select$(selectTransferPoints)
+        .pipe(
+            map((transferPoints) => {
+                const currentTransferPoint =
+                    transferPoints[this.transferPointId]!;
+                return Object.fromEntries(
+                    Object.entries(transferPoints).filter(
+                        ([key]) =>
+                            key !== this.transferPointId &&
+                            !currentTransferPoint.reachableTransferPoints[key]
+                    )
+                );
+            })
+        );
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly exerciseService: ExerciseService
     ) {}
 
     ngOnInit() {
-        this.transferPoint$ = this.store.select(
+        this.transferPoint$ = this.storeService.select$(
             createSelectTransferPoint(this.transferPointId)
         );
     }

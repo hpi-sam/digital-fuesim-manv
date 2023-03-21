@@ -1,15 +1,14 @@
 import type { OnInit } from '@angular/core';
 import {
-    ViewEncapsulation,
     Component,
     EventEmitter,
     Output,
+    ViewEncapsulation,
 } from '@angular/core';
-import { Store } from '@ngrx/store';
-import type { UUID, TransferPoint } from 'digital-fuesim-manv-shared';
+import type { TransferPoint, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { createSelectTransferPoint } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
@@ -34,7 +33,7 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
 
     public transferPoint$?: Observable<TransferPoint>;
 
-    public readonly currentRole$ = this.store.select(selectCurrentRole);
+    public readonly currentRole$ = this.storeService.select$(selectCurrentRole);
 
     public get activeNavId() {
         return activeNavId;
@@ -45,11 +44,11 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly storeService: StoreService
     ) {}
 
     ngOnInit() {
-        this.transferPoint$ = this.store.select(
+        this.transferPoint$ = this.storeService.select$(
             createSelectTransferPoint(this.transferPointId)
         );
     }

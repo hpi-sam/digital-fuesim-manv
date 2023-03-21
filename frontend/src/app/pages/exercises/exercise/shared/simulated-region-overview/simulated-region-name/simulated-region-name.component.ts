@@ -1,10 +1,9 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { createSelectSimulatedRegion } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
@@ -17,11 +16,11 @@ export class SimulatedRegionNameComponent implements OnInit {
 
     name$!: Observable<string>;
 
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(private readonly storeService: StoreService) {}
 
     ngOnInit(): void {
-        this.name$ = this.store
-            .select(createSelectSimulatedRegion(this.simulatedRegionId))
+        this.name$ = this.storeService
+            .select$(createSelectSimulatedRegion(this.simulatedRegionId))
             .pipe(map((simulatedRegion) => simulatedRegion.name));
     }
 }

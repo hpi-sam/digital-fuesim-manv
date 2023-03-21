@@ -1,6 +1,5 @@
 import type { OnInit } from '@angular/core';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { Store } from '@ngrx/store';
 import type {
     ChangeZIndexMapImageAction,
     MapImage,
@@ -9,7 +8,7 @@ import type {
 import type { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { createSelectMapImage } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
 import type { PopupComponent } from '../../utility/popup-manager';
@@ -26,17 +25,17 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
     @Output() readonly closePopup = new EventEmitter<void>();
 
     public mapImage$?: Observable<MapImage>;
-    public readonly currentRole$ = this.store.select(selectCurrentRole);
+    public readonly currentRole$ = this.storeService.select$(selectCurrentRole);
 
     public url?: string;
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly exerciseService: ExerciseService
     ) {}
 
     async ngOnInit() {
-        this.mapImage$ = this.store.select(
+        this.mapImage$ = this.storeService.select$(
             createSelectMapImage(this.mapImageId)
         );
 

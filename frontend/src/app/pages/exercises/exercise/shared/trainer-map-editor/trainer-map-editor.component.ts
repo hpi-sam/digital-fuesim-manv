@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Store } from '@ngrx/store';
 import type { UUID, VehicleTemplate } from 'digital-fuesim-manv-shared';
 import {
     colorCodeMap,
+    SimulatedRegion,
     TransferPoint,
     Viewport,
-    SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     selectMapImagesTemplates,
     selectPatientCategories,
@@ -32,15 +31,15 @@ export class TrainerMapEditorComponent {
     public readonly colorCodeMap = colorCodeMap;
     public readonly categories = ['X', 'Y', 'Z'] as const;
 
-    public readonly vehicleTemplates$ = this.store.select(
+    public readonly vehicleTemplates$ = this.storeService.select$(
         selectVehicleTemplates
     );
 
-    public readonly patientCategories$ = this.store.select(
+    public readonly patientCategories$ = this.storeService.select$(
         selectPatientCategories
     );
 
-    public readonly mapImageTemplates$ = this.store.select(
+    public readonly mapImageTemplates$ = this.storeService.select$(
         selectMapImagesTemplates
     );
 
@@ -49,7 +48,7 @@ export class TrainerMapEditorComponent {
     }
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         public readonly dragElementService: DragElementService,
         public readonly transferLinesService: TransferLinesService,
         private readonly ngbModalService: NgbModal

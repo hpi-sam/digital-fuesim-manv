@@ -1,12 +1,10 @@
 import type { Type } from '@angular/core';
-import type { Store } from '@ngrx/store';
 import type {
-    UUID,
-    SimulatedRegion,
     // eslint-disable-next-line @typescript-eslint/no-shadow
     Element,
+    SimulatedRegion,
+    UUID,
 } from 'digital-fuesim-manv-shared';
-
 import { MapCoordinates, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Polygon } from 'ol/geom';
@@ -17,12 +15,11 @@ import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import type { StoreService } from 'src/app/core/store.service';
 import {
     selectCurrentRole,
     selectVisibleSimulatedRegions,
 } from 'src/app/state/application/selectors/shared.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { SimulatedRegionPopupComponent } from '../shared/simulated-region-popup/simulated-region-popup.component';
 import { calculatePopupPositioning } from '../utility/calculate-popup-positioning';
 import type { FeatureManager } from '../utility/feature-manager';
@@ -42,7 +39,7 @@ export class SimulatedRegionFeatureManager
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
-            this.store.select(selectVisibleSimulatedRegions),
+            this.storeService.select$(selectVisibleSimulatedRegions),
             changePopup$,
             destroy$,
             mapInteractionsManager
@@ -54,7 +51,7 @@ export class SimulatedRegionFeatureManager
     constructor(
         olMap: OlMap,
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly storeService: StoreService
     ) {
         super(
             olMap,
@@ -167,7 +164,7 @@ export class SimulatedRegionFeatureManager
         feature: Feature<any>
     ): void {
         super.onFeatureClicked(event, feature);
-        if (selectStateSnapshot(selectCurrentRole, this.store) !== 'trainer') {
+        if (this.storeService.select(selectCurrentRole) !== 'trainer') {
             return;
         }
         const zoom = this.olMap.getView().getZoom()!;
@@ -192,6 +189,6 @@ export class SimulatedRegionFeatureManager
     }
 
     public override isFeatureTranslatable(feature: Feature<Polygon>): boolean {
-        return selectStateSnapshot(selectCurrentRole, this.store) === 'trainer';
+        return this.storeService.select(selectCurrentRole) === 'trainer';
     }
 }

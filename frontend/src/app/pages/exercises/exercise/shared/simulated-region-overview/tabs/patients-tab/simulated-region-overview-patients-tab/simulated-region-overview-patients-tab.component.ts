@@ -1,10 +1,10 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
+import { createSelector } from '@ngrx/store';
 import type { PatientStatus } from 'digital-fuesim-manv-shared';
 import { Patient, SimulatedRegion, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     createSelectElementsInSimulatedRegion,
     selectConfiguration,
@@ -25,12 +25,12 @@ export class SimulatedRegionOverviewPatientsTabComponent implements OnInit {
     patients$!: Observable<(Patient & { visibleStatus: PatientStatus })[]>;
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         readonly selectPatientService: SelectPatientService
     ) {}
 
     ngOnInit(): void {
-        this.patients$ = this.store.select(
+        this.patients$ = this.storeService.select$(
             createSelector(
                 createSelectElementsInSimulatedRegion(
                     selectPatients,

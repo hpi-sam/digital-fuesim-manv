@@ -1,17 +1,16 @@
 import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Store } from '@ngrx/store';
 import type { PatientStatus, PersonnelType } from 'digital-fuesim-manv-shared';
 import { statusNames } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
+import { StoreService } from 'src/app/core/store.service';
 import {
     generateRandomRgbaColor,
     getRgbaColor,
     rgbColorPalette,
 } from 'src/app/shared/functions/colors';
 import { formatDuration } from 'src/app/shared/functions/format-duration';
-import type { AppState } from 'src/app/state/app.state';
 import { selectViewports } from 'src/app/state/application/selectors/exercise.selectors';
 import { StatisticsService } from '../../core/statistics/statistics.service';
 import { AreaStatisticsService } from '../area-statistics.service';
@@ -24,11 +23,11 @@ import { StackedBarChart } from '../stacked-bar-chart/time-line-area-chart';
     styleUrls: ['./exercise-statistics-modal.component.scss'],
 })
 export class ExerciseStatisticsModalComponent {
-    public viewports$ = this.store.select(selectViewports);
+    public viewports$ = this.storeService.select$(selectViewports);
 
     constructor(
         public activeModal: NgbActiveModal,
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         public readonly statisticsService: StatisticsService,
         public readonly areaStatisticsService: AreaStatisticsService
     ) {

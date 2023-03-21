@@ -1,16 +1,14 @@
 import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Store } from '@ngrx/store';
 import { cloneDeepMutable, StateExport } from 'digital-fuesim-manv-shared';
 import { throttle } from 'lodash-es';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
+import { StoreService } from 'src/app/core/store.service';
 import { TimeTravelService } from 'src/app/core/time-travel.service';
-import type { AppState } from 'src/app/state/app.state';
 import { selectTimeConstraints } from 'src/app/state/application/selectors/application.selectors';
 import { selectExerciseState } from 'src/app/state/application/selectors/exercise.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
 import { openExerciseStatisticsModal } from '../exercise-statistics/open-exercise-statistics-modal';
 import { openTransferOverviewModal } from '../transfer-overview/open-transfer-overview-modal';
@@ -21,13 +19,13 @@ import { openTransferOverviewModal } from '../transfer-overview/open-transfer-ov
     styleUrls: ['./time-travel.component.scss'],
 })
 export class TimeTravelComponent implements OnDestroy {
-    public timeConstraints$ = this.store.select(selectTimeConstraints);
+    public timeConstraints$ = this.storeService.select$(selectTimeConstraints);
 
     constructor(
         private readonly modalService: NgbModal,
         private readonly apiService: ApiService,
         private readonly timeTravelService: TimeTravelService,
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly messageService: MessageService
     ) {}
 
@@ -67,9 +65,8 @@ export class TimeTravelComponent implements OnDestroy {
 
     public startReplay() {
         this.replayInterval = setInterval(() => {
-            const timeConstraints = selectStateSnapshot(
-                selectTimeConstraints,
-                this.store
+            const timeConstraints = this.storeService.select(
+                selectTimeConstraints
             )!;
             if (timeConstraints.current >= timeConstraints.end) {
                 this.stopReplay();
@@ -102,19 +99,16 @@ export class TimeTravelComponent implements OnDestroy {
 
     public restartReplay() {
         this.stopReplay();
-        const timeConstraints = selectStateSnapshot(
-            selectTimeConstraints,
-            this.store
+        const timeConstraints = this.storeService.select(
+            selectTimeConstraints
         )!;
         this.timeTravelService.jumpToTime(timeConstraints!.start);
         this.startReplay();
     }
 
     public async createNewExerciseFromTheCurrentState() {
-        const currentExerciseState = selectStateSnapshot(
-            selectExerciseState,
-            this.store
-        );
+        const currentExerciseState =
+            this.storeService.select(selectExerciseState);
         const { trainerId } = await this.apiService.importExercise(
             new StateExport(cloneDeepMutable(currentExerciseState))
         );

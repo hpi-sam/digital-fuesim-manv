@@ -1,7 +1,6 @@
 import type { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Store } from '@ngrx/store';
 import type {
     MapImageTemplate,
     Mutable,
@@ -9,9 +8,8 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import { cloneDeep } from 'lodash-es';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { createSelectMapImageTemplate } from 'src/app/state/application/selectors/exercise.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { ChangedImageTemplateValues } from '../image-template-form/image-template-form.component';
 
 @Component({
@@ -27,15 +25,14 @@ export class EditImageTemplateModalComponent implements OnInit {
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         public readonly activeModal: NgbActiveModal
     ) {}
 
     ngOnInit(): void {
         this.mapImageTemplate = cloneDeep(
-            selectStateSnapshot(
-                createSelectMapImageTemplate(this.mapImageTemplateId),
-                this.store
+            this.storeService.select(
+                createSelectMapImageTemplate(this.mapImageTemplateId)
             )
         );
     }

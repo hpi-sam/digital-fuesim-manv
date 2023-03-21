@@ -1,5 +1,4 @@
 import type { Type } from '@angular/core';
-import type { Store } from '@ngrx/store';
 import type { MapBrowserEvent, View } from 'ol';
 import { Feature } from 'ol';
 import { getTopRight } from 'ol/extent';
@@ -12,11 +11,10 @@ import Icon from 'ol/style/Icon';
 import Style from 'ol/style/Style';
 import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 // eslint-disable-next-line @typescript-eslint/no-shadow
 import type { Element } from 'digital-fuesim-manv-shared';
+import type { StoreService } from 'src/app/core/store.service';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import type { OpenPopupOptions } from '../utility/popup-manager';
@@ -29,7 +27,7 @@ function calculateTopRightViewPoint(view: View) {
 export class DeleteFeatureManager implements FeatureManager<Point> {
     readonly layer: VectorLayer<VectorSource<Point>>;
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly olMap: OlMap,
         private readonly exerciseService: ExerciseService
     ) {
@@ -49,7 +47,7 @@ export class DeleteFeatureManager implements FeatureManager<Point> {
     ) {
         this.olMap.addLayer(this.layer);
         mapInteractionsManager.addFeatureLayer(this.layer);
-        if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
+        if (this.storeService.select(selectCurrentRole) === 'trainer') {
             this.makeVisible();
         }
     }

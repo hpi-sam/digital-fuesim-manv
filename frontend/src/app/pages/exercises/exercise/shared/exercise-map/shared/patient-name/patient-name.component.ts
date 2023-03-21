@@ -1,10 +1,9 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { Store } from '@ngrx/store';
 import type { Patient } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import { createSelectPatient } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
@@ -17,9 +16,11 @@ export class PatientNameComponent implements OnInit {
 
     patient$!: Observable<Patient>;
 
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(private readonly storeService: StoreService) {}
 
     ngOnInit(): void {
-        this.patient$ = this.store.select(createSelectPatient(this.patientId));
+        this.patient$ = this.storeService.select$(
+            createSelectPatient(this.patientId)
+        );
     }
 }

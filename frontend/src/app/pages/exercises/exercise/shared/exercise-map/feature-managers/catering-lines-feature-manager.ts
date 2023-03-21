@@ -1,5 +1,4 @@
 import type { Type } from '@angular/core';
-import type { Store } from '@ngrx/store';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
 import LineString from 'ol/geom/LineString';
@@ -10,10 +9,10 @@ import type VectorSource from 'ol/source/Vector';
 import type { Subject } from 'rxjs';
 import { rgbColorPalette } from 'src/app/shared/functions/colors';
 import type { CateringLine } from 'src/app/shared/types/catering-line';
-import type { AppState } from 'src/app/state/app.state';
 import { selectVisibleCateringLines } from 'src/app/state/application/selectors/shared.selectors';
 // eslint-disable-next-line @typescript-eslint/no-shadow
 import type { Element } from 'digital-fuesim-manv-shared';
+import type { StoreService } from 'src/app/core/store.service';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import type { OpenPopupOptions } from '../utility/popup-manager';
@@ -33,7 +32,7 @@ export class CateringLinesFeatureManager
     public readonly layer: VectorLayer<VectorSource<LineString>>;
 
     constructor(
-        private readonly store: Store<AppState>,
+        private readonly storeService: StoreService,
         private readonly olMap: OlMap
     ) {
         super();
@@ -53,7 +52,7 @@ export class CateringLinesFeatureManager
         this.togglePopup$?.subscribe(changePopup$);
         // Propagate the changes on an element to the featureManager
         this.registerChangeHandlers(
-            this.store.select(selectVisibleCateringLines),
+            this.storeService.select$(selectVisibleCateringLines),
             destroy$,
             (element) => this.onElementCreated(element),
             (element) => this.onElementDeleted(element),

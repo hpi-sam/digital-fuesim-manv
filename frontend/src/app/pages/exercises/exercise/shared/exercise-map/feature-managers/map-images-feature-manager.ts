@@ -1,17 +1,15 @@
 import type { Type } from '@angular/core';
-import type { Store } from '@ngrx/store';
 import type { MapImage, UUID } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type Point from 'ol/geom/Point';
 import type OlMap from 'ol/Map';
 import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import type { AppState } from 'src/app/state/app.state';
+import type { StoreService } from 'src/app/core/store.service';
 import {
     selectCurrentRole,
     selectVisibleMapImages,
 } from 'src/app/state/application/selectors/shared.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popup.component';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
@@ -27,7 +25,7 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
-            this.store.select(selectVisibleMapImages),
+            this.storeService.select$(selectVisibleMapImages),
             changePopup$,
             destroy$,
             mapInteractionsManager
@@ -41,7 +39,7 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
     constructor(
         olMap: OlMap,
         exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly storeService: StoreService
     ) {
         super(
             olMap,
@@ -74,7 +72,7 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
     ): void {
         super.onFeatureClicked(event, feature);
 
-        if (selectStateSnapshot(selectCurrentRole, this.store) !== 'trainer') {
+        if (this.storeService.select(selectCurrentRole) !== 'trainer') {
             return;
         }
         this.togglePopup$.next(
@@ -92,7 +90,7 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
     override isFeatureTranslatable(feature: Feature<Point>): boolean {
         const mapImage = this.getElementFromFeature(feature) as MapImage;
         return (
-            selectStateSnapshot(selectCurrentRole, this.store) === 'trainer' &&
+            this.storeService.select(selectCurrentRole) === 'trainer' &&
             !mapImage.isLocked
         );
     }

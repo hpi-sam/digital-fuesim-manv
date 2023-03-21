@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-restricted-imports
 import type { Store } from '@ngrx/store';
 import { environment } from 'src/environments/environment';
 import { defaults } from 'lodash-es';

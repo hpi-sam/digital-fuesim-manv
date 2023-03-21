@@ -1,6 +1,6 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
+import { createSelector } from '@ngrx/store';
 import type { PatientStatus } from 'digital-fuesim-manv-shared';
 import {
     healthPointsDefaults,
@@ -9,7 +9,7 @@ import {
     UUID,
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import type { AppState } from 'src/app/state/app.state';
+import { StoreService } from 'src/app/core/store.service';
 import {
     createSelectPatient,
     selectConfiguration,
@@ -30,14 +30,14 @@ export class PatientHealthPointDisplayComponent implements OnInit {
         health: number;
     }>;
 
-    public readonly currentRole$ = this.store.select(selectCurrentRole);
+    public readonly currentRole$ = this.storeService.select$(selectCurrentRole);
 
     public readonly healthPointsDefaults = healthPointsDefaults;
 
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(private readonly storeService: StoreService) {}
 
     ngOnInit(): void {
-        this.status$ = this.store.select(
+        this.status$ = this.storeService.select$(
             createSelector(
                 createSelectPatient(this.patientId),
                 selectConfiguration,
