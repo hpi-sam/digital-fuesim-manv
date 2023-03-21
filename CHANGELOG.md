@@ -10,6 +10,11 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Added
 
 -   There are now radiograms, which can be used by the simulation to send messages to the trainees
+    -   There is a radiogram for displaying the material count in a simulated region
+    -   There is a radiogram for displaying the patient count in a simulated region
+    -   There is a radiogram for displaying the personnel count in a simulated region
+    -   There is a radiogram for displaying the vehicle count in a simulated region
+    -   There is a radiogram for displaying the current treatment status in a simulated region
 
 ## [0.2.1] - 2023-03-11
 
