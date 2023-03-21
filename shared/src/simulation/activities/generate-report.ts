@@ -4,7 +4,7 @@ import {
     ExerciseRadiogram,
     radiogramTypeOptions,
 } from '../../models/radiogram/exercise-radiogram';
-import { sendRadiogram } from '../../models/radiogram/utils';
+import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutable';
 import { getCreate } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
@@ -66,10 +66,9 @@ export const generateReportActivity: SimulationActivity<GenerateReportActivitySt
                     activityState.collectEvent
                 );
                 activityState.hasSendEvent = true;
-                return;
+            } else {
+                publishRadiogram(draftState, activityState.radiogram);
+                terminate();
             }
-
-            sendRadiogram(activityState.radiogram, draftState);
-            terminate();
         },
     };
