@@ -3,7 +3,7 @@ import {
     TreatmentProgress,
     treatmentProgressAllowedValues,
 } from '../../simulation';
-import { uuid, UUID } from '../../utils';
+import { UUID } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
 import { getCreate } from '../utils';
@@ -12,7 +12,7 @@ import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 
 export class TreatmentStatusRadiogram implements Radiogram {
     @IsUUID()
-    readonly id: UUID = uuid();
+    readonly id: UUID;
 
     @IsValue('treatmentStatusRadiogram')
     readonly type = 'treatmentStatusRadiogram';
@@ -35,10 +35,12 @@ export class TreatmentStatusRadiogram implements Radiogram {
      * @deprecated Use {@link create} instead
      */
     constructor(
+        id: UUID,
         simulatedRegionId: UUID,
         transmissionTime: number,
         status: ExerciseRadiogramStatus
     ) {
+        this.id = id;
         this.simulatedRegionId = simulatedRegionId;
         this.transmissionTime = transmissionTime;
         this.status = status;

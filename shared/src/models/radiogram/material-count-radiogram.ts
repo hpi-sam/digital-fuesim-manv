@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
-import { uuid, UUID } from '../../utils';
+import { UUID } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
 import { CanCaterFor, getCreate } from '../utils';
@@ -9,7 +9,7 @@ import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 
 export class MaterialCountRadiogram implements Radiogram {
     @IsUUID()
-    readonly id: UUID = uuid();
+    readonly id: UUID;
 
     @IsValue('materialCountRadiogram')
     readonly type = 'materialCountRadiogram';
@@ -33,10 +33,12 @@ export class MaterialCountRadiogram implements Radiogram {
      * @deprecated Use {@link create} instead
      */
     constructor(
+        id: UUID,
         simulatedRegionId: UUID,
         transmissionTime: number,
         status: ExerciseRadiogramStatus
     ) {
+        this.id = id;
         this.simulatedRegionId = simulatedRegionId;
         this.transmissionTime = transmissionTime;
         this.status = status;

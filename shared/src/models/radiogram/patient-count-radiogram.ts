@@ -1,5 +1,5 @@
 import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
-import { uuid, UUID } from '../../utils';
+import { UUID } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsPatientCount } from '../../utils/validators/is-patient-count';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
@@ -12,7 +12,7 @@ export type PatientCount = { [key in PatientStatus]: number };
 
 export class PatientCountRadiogram implements Radiogram {
     @IsUUID()
-    readonly id: UUID = uuid();
+    readonly id: UUID;
 
     @IsValue('patientCountRadiogram')
     readonly type = 'patientCountRadiogram';
@@ -35,10 +35,12 @@ export class PatientCountRadiogram implements Radiogram {
      * @deprecated Use {@link create} instead
      */
     constructor(
+        id: UUID,
         simulatedRegionId: UUID,
         transmissionTime: number,
         status: ExerciseRadiogramStatus
     ) {
+        this.id = id;
         this.simulatedRegionId = simulatedRegionId;
         this.transmissionTime = transmissionTime;
         this.status = status;
