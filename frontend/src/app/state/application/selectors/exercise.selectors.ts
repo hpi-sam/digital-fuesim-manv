@@ -220,7 +220,7 @@ export function createSelectBehaviorState<
         (simulatedRegion) =>
             simulatedRegion?.behaviors.find(
                 (behavior) => behavior.id === behaviorId
-            ) as B | undefined
+            ) as B
     );
 }
 
