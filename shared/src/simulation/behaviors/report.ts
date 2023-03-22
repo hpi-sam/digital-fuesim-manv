@@ -11,18 +11,12 @@ import { getCreate } from '../../models/utils';
 import { cloneDeepMutable, StrictObject, UUID, uuid } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { GenerateReportActivityState } from '../activities/generate-report';
-import { RecurringEventActivityState } from '../activities/recurring-event';
 import type { ExerciseSimulationEvent } from '../events';
 import { CollectMaterialCountEvent } from '../events/collect/collect-material-count';
 import { CollectPatientCountEvent } from '../events/collect/collect-patient-count';
 import { CollectPersonnelCountEvent } from '../events/collect/collect-personnel-count';
 import { CollectTreatmentStatusEvent } from '../events/collect/collect-treatment-status';
 import { CollectVehicleCountEvent } from '../events/collect/collect-vehicle-count';
-import { StartCollectingMaterialCountEvent } from '../events/collect/start-collecting-material-count';
-import { StartCollectingPatientCountEvent } from '../events/collect/start-collecting-patient-count';
-import { StartCollectingPersonnelCountEvent } from '../events/collect/start-collecting-personnel-count';
-import { StartCollectingTreatmentStatusEvent } from '../events/collect/start-collecting-treatment-status';
-import { StartCollectingVehicleCountEvent } from '../events/collect/start-collecting-vehicle-count';
 import { nextUUID } from '../utils/randomness';
 import type {
     SimulationBehavior,
@@ -43,16 +37,6 @@ export const reportableInformations = StrictObject.keys(
 
 export type ReportableInformation =
     keyof typeof reportableInformationAllowedValues;
-
-const createReminderEventMap: {
-    [key in ReportableInformation]: () => ExerciseSimulationEvent;
-} = {
-    patientCount: StartCollectingPatientCountEvent.create,
-    personnelCount: StartCollectingPersonnelCountEvent.create,
-    vehicleCount: StartCollectingVehicleCountEvent.create,
-    treatmentStatus: StartCollectingTreatmentStatusEvent.create,
-    materialCount: StartCollectingMaterialCountEvent.create,
-};
 
 const createRadiogramAndEventMap: {
     [key in ExerciseSimulationEvent['type'] &
@@ -121,34 +105,6 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
     behaviorState: ReportBehaviorState,
     handleEvent: (draftState, simulatedRegion, behaviorState, event) => {
         switch (event.type) {
-            case 'tickEvent': {
-                const defaultDelay = 1000 * 60 * 5; // 5 minutes
-                StrictObject.entries(createReminderEventMap).forEach(
-                    ([reportableInformation, createEvent]) => {
-                        if (
-                            !behaviorState[`${reportableInformation}ActivityId`]
-                        ) {
-                            const activityId = nextUUID(draftState);
-
-                            behaviorState[
-                                `${reportableInformation}ActivityId`
-                            ] = activityId;
-                            simulatedRegion.activities[activityId] =
-                                cloneDeepMutable(
-                                    RecurringEventActivityState.create(
-                                        activityId,
-                                        createEvent(),
-                                        draftState.currentTime + defaultDelay,
-                                        defaultDelay,
-                                        true
-                                    )
-                                );
-                        }
-                    }
-                );
-
-                break;
-            }
             case 'materialCountStartCollectingEvent':
             case 'patientCountStartCollectingEvent':
             case 'personnelCountStartCollectingEvent':

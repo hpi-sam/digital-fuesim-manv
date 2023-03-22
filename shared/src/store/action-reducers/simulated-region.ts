@@ -12,6 +12,11 @@ import {
     changePosition,
     changePositionWithId,
 } from '../../models/utils/position/position-helpers-mutable';
+import type {
+    ReportBehaviorState,
+    ReportableInformation,
+    ExerciseSimulationEvent,
+} from '../../simulation';
 import {
     ExerciseSimulationBehaviorState,
     simulationBehaviorTypeOptions,
@@ -19,8 +24,17 @@ import {
     PersonnelAvailableEvent,
     NewPatientEvent,
     MaterialAvailableEvent,
+    reportableInformations,
+    RecurringEventActivityState,
 } from '../../simulation';
+import { StartCollectingMaterialCountEvent } from '../../simulation/events/collect/start-collecting-material-count';
+import { StartCollectingPatientCountEvent } from '../../simulation/events/collect/start-collecting-patient-count';
+import { StartCollectingPersonnelCountEvent } from '../../simulation/events/collect/start-collecting-personnel-count';
+import { StartCollectingTreatmentStatusEvent } from '../../simulation/events/collect/start-collecting-treatment-status';
+import { StartCollectingVehicleCountEvent } from '../../simulation/events/collect/start-collecting-vehicle-count';
 import { sendSimulationEvent } from '../../simulation/events/utils';
+import { nextUUID } from '../../simulation/utils/randomness';
+import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -126,6 +140,16 @@ export class RemoveBehaviorFromSimulatedRegionAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;
 }
+
+const createReminderEventMap: {
+    [key in ReportableInformation]: () => ExerciseSimulationEvent;
+} = {
+    patientCount: StartCollectingPatientCountEvent.create,
+    personnelCount: StartCollectingPersonnelCountEvent.create,
+    vehicleCount: StartCollectingVehicleCountEvent.create,
+    treatmentStatus: StartCollectingTreatmentStatusEvent.create,
+    materialCount: StartCollectingMaterialCountEvent.create,
+};
 
 export namespace SimulatedRegionActionReducers {
     export const addSimulatedRegion: ActionReducer<AddSimulatedRegionAction> = {
@@ -315,6 +339,30 @@ export namespace SimulatedRegionActionReducers {
                     simulatedRegionId
                 );
                 simulatedRegion.behaviors.push(cloneDeepMutable(behaviorState));
+                const mutableBehaviorState = simulatedRegion.behaviors.at(
+                    -1
+                ) as Mutable<ReportBehaviorState>;
+
+                if (behaviorState.type === 'reportBehavior') {
+                    const defaultDelay = 1000 * 60 * 5; // 5 minutes
+                    reportableInformations.forEach((information) => {
+                        const activityId = nextUUID(draftState);
+
+                        mutableBehaviorState[`${information}ActivityId`] =
+                            activityId;
+                        simulatedRegion.activities[activityId] =
+                            cloneDeepMutable(
+                                RecurringEventActivityState.create(
+                                    activityId,
+                                    createReminderEventMap[information](),
+                                    draftState.currentTime + defaultDelay,
+                                    defaultDelay,
+                                    true
+                                )
+                            );
+                    });
+                }
+
                 return draftState;
             },
             rights: 'participant',
@@ -332,6 +380,16 @@ export namespace SimulatedRegionActionReducers {
                 const index = simulatedRegion.behaviors.findIndex(
                     (behavior) => behavior.id === behaviorId
                 );
+
+                const behaviorState = simulatedRegion.behaviors[index]!;
+                if (behaviorState.type === 'reportBehavior') {
+                    reportableInformations.forEach((information) => {
+                        const activityId =
+                            behaviorState[`${information}ActivityId`]!;
+                        delete simulatedRegion.activities[activityId];
+                    });
+                }
+
                 if (index === -1) {
                     throw new ReducerError(
                         `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}. Therefore it could not be removed.`
