@@ -5,8 +5,8 @@ import { IsValue } from '../../../utils/validators';
 import type { SimulationEvent } from '../simulation-event';
 
 export class CollectTreatmentStatusEvent implements SimulationEvent {
-    @IsValue('collectTreatmentStatusEvent')
-    readonly type = 'collectTreatmentStatusEvent';
+    @IsValue('treatmentStatusCollectEvent')
+    readonly type = 'treatmentStatusCollectEvent';
 
     @IsUUID(4, uuidValidationOptions)
     readonly generateReportActivityId: UUID;

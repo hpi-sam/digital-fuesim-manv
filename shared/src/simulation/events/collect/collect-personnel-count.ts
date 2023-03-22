@@ -5,8 +5,8 @@ import { IsValue } from '../../../utils/validators';
 import type { SimulationEvent } from '../simulation-event';
 
 export class CollectPersonnelCountEvent implements SimulationEvent {
-    @IsValue('collectPersonnelCountEvent')
-    readonly type = 'collectPersonnelCountEvent';
+    @IsValue('personnelCountCollectEvent')
+    readonly type = 'personnelCountCollectEvent';
 
     @IsUUID(4, uuidValidationOptions)
     readonly generateReportActivityId: UUID;

@@ -1,9 +1,9 @@
 import { IsOptional, IsUUID } from 'class-validator';
-import { ExerciseRadiogram } from '../../models/radiogram/exercise-radiogram';
+import type { ExerciseRadiogram } from '../../models/radiogram/exercise-radiogram';
 import { MaterialCountRadiogram } from '../../models/radiogram/material-count-radiogram';
 import { PatientCountRadiogram } from '../../models/radiogram/patient-count-radiogram';
 import { PersonnelCountRadiogram } from '../../models/radiogram/personnel-count-radiogram';
-import { ExerciseRadiogramStatus } from '../../models/radiogram/status/exercise-radiogram-status';
+import type { ExerciseRadiogramStatus } from '../../models/radiogram/status/exercise-radiogram-status';
 import { RadiogramUnpublishedStatus } from '../../models/radiogram/status/radiogram-unpublished-status';
 import { TreatmentStatusRadiogram } from '../../models/radiogram/treatment-status-radiogram';
 import { VehicleCountRadiogram } from '../../models/radiogram/vehicle-count-radiogram';
@@ -12,7 +12,7 @@ import { cloneDeepMutable, StrictObject, UUID, uuid } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { GenerateReportActivityState } from '../activities/generate-report';
 import { RecurringEventActivityState } from '../activities/recurring-event';
-import { ExerciseSimulationEvent } from '../events';
+import type { ExerciseSimulationEvent } from '../events';
 import { CollectMaterialCountEvent } from '../events/collect/collect-material-count';
 import { CollectPatientCountEvent } from '../events/collect/collect-patient-count';
 import { CollectPersonnelCountEvent } from '../events/collect/collect-personnel-count';
@@ -29,19 +29,34 @@ import type {
     SimulationBehaviorState,
 } from './simulation-behavior';
 
+export const reportableInformationAllowedValues = {
+    patientCount: true,
+    personnelCount: true,
+    vehicleCount: true,
+    treatmentStatus: true,
+    materialCount: true,
+};
+
+export const reportableInformations = StrictObject.keys(
+    reportableInformationAllowedValues
+);
+
+export type ReportableInformation =
+    keyof typeof reportableInformationAllowedValues;
+
 const createReminderEventMap: {
-    [key in keyof ReportBehaviorState &
-        `${string}ActivityId`]: () => ExerciseSimulationEvent;
+    [key in ReportableInformation]: () => ExerciseSimulationEvent;
 } = {
-    patientCountActivityId: StartCollectingPatientCountEvent.create,
-    personnelCountActivityId: StartCollectingPersonnelCountEvent.create,
-    vehicleCountActivityId: StartCollectingVehicleCountEvent.create,
-    treatmentStatusActivityId: StartCollectingTreatmentStatusEvent.create,
-    materialCountActivityId: StartCollectingMaterialCountEvent.create,
+    patientCount: StartCollectingPatientCountEvent.create,
+    personnelCount: StartCollectingPersonnelCountEvent.create,
+    vehicleCount: StartCollectingVehicleCountEvent.create,
+    treatmentStatus: StartCollectingTreatmentStatusEvent.create,
+    materialCount: StartCollectingMaterialCountEvent.create,
 };
 
 const createRadiogramAndEventMap: {
-    [key in ExerciseSimulationEvent['type'] & `startCollecting${string}Event`]: [
+    [key in ExerciseSimulationEvent['type'] &
+        `${string}StartCollectingEvent`]: [
         (
             id: UUID,
             simulatedRegionId: UUID,
@@ -50,23 +65,23 @@ const createRadiogramAndEventMap: {
         (generateReportActivityId: UUID) => ExerciseSimulationEvent
     ];
 } = {
-    startCollectingPatientCountEvent: [
+    patientCountStartCollectingEvent: [
         PatientCountRadiogram.create,
         CollectPatientCountEvent.create,
     ],
-    startCollectingPersonnelCountEvent: [
+    personnelCountStartCollectingEvent: [
         PersonnelCountRadiogram.create,
         CollectPersonnelCountEvent.create,
     ],
-    startCollectingVehicleCountEvent: [
+    vehicleCountStartCollectingEvent: [
         VehicleCountRadiogram.create,
         CollectVehicleCountEvent.create,
     ],
-    startCollectingTreatmentStatusEvent: [
+    treatmentStatusStartCollectingEvent: [
         TreatmentStatusRadiogram.create,
         CollectTreatmentStatusEvent.create,
     ],
-    startCollectingMaterialCountEvent: [
+    materialCountStartCollectingEvent: [
         MaterialCountRadiogram.create,
         CollectMaterialCountEvent.create,
     ],
@@ -106,14 +121,18 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
     behaviorState: ReportBehaviorState,
     handleEvent: (draftState, simulatedRegion, behaviorState, event) => {
         switch (event.type) {
-            case 'tickEvent':
+            case 'tickEvent': {
                 const defaultDelay = 1000 * 60 * 5; // 5 minutes
                 StrictObject.entries(createReminderEventMap).forEach(
-                    ([key, createEvent]) => {
-                        if (!behaviorState[key]) {
+                    ([reportableInformation, createEvent]) => {
+                        if (
+                            !behaviorState[`${reportableInformation}ActivityId`]
+                        ) {
                             const activityId = nextUUID(draftState);
 
-                            behaviorState[key] = activityId;
+                            behaviorState[
+                                `${reportableInformation}ActivityId`
+                            ] = activityId;
                             simulatedRegion.activities[activityId] =
                                 cloneDeepMutable(
                                     RecurringEventActivityState.create(
@@ -129,13 +148,15 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
                 );
 
                 break;
-            case 'startCollectingPatientCountEvent':
-            case 'startCollectingMaterialCountEvent':
-            case 'startCollectingVehicleCountEvent':
-            case 'startCollectingPersonnelCountEvent':
-            case 'startCollectingTreatmentStatusEvent':
+            }
+            case 'materialCountStartCollectingEvent':
+            case 'patientCountStartCollectingEvent':
+            case 'personnelCountStartCollectingEvent':
+            case 'treatmentStatusStartCollectingEvent':
+            case 'vehicleCountStartCollectingEvent': {
                 const activityId = nextUUID(draftState);
-                const [createRadiogram, createEvent] = createRadiogramAndEventMap[event.type];
+                const [createRadiogram, createEvent] =
+                    createRadiogramAndEventMap[event.type];
 
                 simulatedRegion.activities[activityId] = cloneDeepMutable(
                     GenerateReportActivityState.create(
@@ -145,10 +166,11 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
                             simulatedRegion.id,
                             RadiogramUnpublishedStatus.create()
                         ),
-                        createEvent(activityId),
+                        createEvent(activityId)
                     )
                 );
                 break;
+            }
             default:
             // Ignore event
         }

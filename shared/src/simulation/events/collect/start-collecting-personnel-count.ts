@@ -3,8 +3,8 @@ import { IsValue } from '../../../utils/validators';
 import type { SimulationEvent } from '../simulation-event';
 
 export class StartCollectingPersonnelCountEvent implements SimulationEvent {
-    @IsValue('startCollectingPersonnelCountEvent')
-    readonly type = 'startCollectingPersonnelCountEvent';
+    @IsValue('personnelCountStartCollectingEvent')
+    readonly type = 'personnelCountStartCollectingEvent';
 
     static readonly create = getCreate(this);
 }
