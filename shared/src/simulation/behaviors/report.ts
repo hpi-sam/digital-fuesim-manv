@@ -1,15 +1,7 @@
 import { isUUID, IsUUID } from 'class-validator';
-import type { ExerciseRadiogram } from '../../models/radiogram/exercise-radiogram';
-import { MaterialCountRadiogram } from '../../models/radiogram/material-count-radiogram';
-import { PatientCountRadiogram } from '../../models/radiogram/patient-count-radiogram';
-import { PersonnelCountRadiogram } from '../../models/radiogram/personnel-count-radiogram';
-import type { ExerciseRadiogramStatus } from '../../models/radiogram/status/exercise-radiogram-status';
 import { RadiogramUnpublishedStatus } from '../../models/radiogram/status/radiogram-unpublished-status';
-import { TreatmentStatusRadiogram } from '../../models/radiogram/treatment-status-radiogram';
-import { VehicleCountRadiogram } from '../../models/radiogram/vehicle-count-radiogram';
 import { getCreate } from '../../models/utils';
-import { cloneDeepMutable, StrictObject, UUID, uuid } from '../../utils';
-import type { AllowedValues } from '../../utils/validators';
+import { cloneDeepMutable, UUID, uuid } from '../../utils';
 import { IsLiteralUnionMap, IsValue } from '../../utils/validators';
 import { GenerateReportActivityState } from '../activities/generate-report';
 import { CollectInformationEvent } from '../events/collect';
@@ -18,40 +10,12 @@ import type {
     SimulationBehavior,
     SimulationBehaviorState,
 } from './simulation-behavior';
-
-export const reportableInformationAllowedValues: AllowedValues<ReportableInformation> =
-    {
-        patientCount: true,
-        personnelCount: true,
-        vehicleCount: true,
-        treatmentStatus: true,
-        materialCount: true,
-    };
-
-export const reportableInformations = StrictObject.keys(
-    reportableInformationAllowedValues
-);
-
-export type ReportableInformation =
-    | 'materialCount'
-    | 'patientCount'
-    | 'personnelCount'
-    | 'treatmentStatus'
-    | 'vehicleCount';
-
-export const createRadiogramMap: {
-    [key in ReportableInformation]: (
-        id: UUID,
-        simulatedRegionId: UUID,
-        status: ExerciseRadiogramStatus
-    ) => ExerciseRadiogram;
-} = {
-    patientCount: PatientCountRadiogram.create,
-    personnelCount: PersonnelCountRadiogram.create,
-    vehicleCount: VehicleCountRadiogram.create,
-    treatmentStatus: TreatmentStatusRadiogram.create,
-    materialCount: MaterialCountRadiogram.create,
-};
+import type {
+    ReportableInformation} from './utils';
+import {
+    createRadiogramMap,
+    reportableInformationAllowedValues,
+} from './utils';
 
 export class ReportBehaviorState implements SimulationBehaviorState {
     @IsValue('reportBehavior')

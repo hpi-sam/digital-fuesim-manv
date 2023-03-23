@@ -5,7 +5,7 @@ import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import {
     ReportableInformation,
     reportableInformationAllowedValues,
-} from '../behaviors';
+} from '../behaviors/utils';
 import type { SimulationEvent } from './simulation-event';
 
 export class CollectInformationEvent implements SimulationEvent {

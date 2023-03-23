@@ -3,7 +3,10 @@ import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import { ExerciseSimulationEvent, simulationEventTypeOptions } from '../events';
+import {
+    ExerciseSimulationEvent,
+    simulationEventTypeOptions,
+} from '../events/exercise-simulation-event';
 import { sendSimulationEvent } from '../events/utils';
 import type {
     SimulationActivity,
