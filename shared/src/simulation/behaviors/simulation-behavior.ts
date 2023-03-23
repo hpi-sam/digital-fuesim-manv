@@ -16,4 +16,9 @@ export interface SimulationBehavior<S extends SimulationBehaviorState> {
         behaviorState: Mutable<S>,
         event: Mutable<ExerciseSimulationEvent>
     ) => void;
+    readonly onRemove?: (
+        draftState: Mutable<ExerciseState>,
+        simulatedRegion: Mutable<SimulatedRegion>,
+        behaviorState: Mutable<S>
+    ) => void;
 }
