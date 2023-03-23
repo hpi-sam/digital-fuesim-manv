@@ -101,7 +101,7 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
         });
     }
 
-    async createReports(
+    createReports(
         informationType: ReportableInformation | 'noSelect',
         interval: string,
         repeating: boolean
