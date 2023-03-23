@@ -101,21 +101,21 @@ export class Config {
             DFM_USE_DB_TESTING: bool({ default: undefined }),
             DFM_DB_USER: str(
                 // Require this variable only when the database should be used.
-                this.isTrue(process.env.DFM_USE_DB)
+                this.isTrue(process.env['DFM_USE_DB'])
                     ? {}
                     : { default: undefined }
             ),
             DFM_DB_USER_TESTING: str({ default: undefined }),
             DFM_DB_PASSWORD: str(
                 // Require this variable only when the database should be used.
-                this.isTrue(process.env.DFM_USE_DB)
+                this.isTrue(process.env['DFM_USE_DB'])
                     ? {}
                     : { default: undefined }
             ),
             DFM_DB_PASSWORD_TESTING: str({ default: undefined }),
             DFM_DB_NAME: str(
                 // Require this variable only when the database should be used.
-                this.isTrue(process.env.DFM_USE_DB)
+                this.isTrue(process.env['DFM_USE_DB'])
                     ? {}
                     : { default: undefined }
             ),
