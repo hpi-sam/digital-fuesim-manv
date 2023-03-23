@@ -18,6 +18,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   In the large simulation overview modal, a column has been added to interact with radiograms.
     -   It displays all radiograms, optionally filtered to those that are not done.
     -   Radiograms can be accepted and marked as done.
+-   Behaviors can clean up the state when they are removed from a simulated region.
 
 ## [0.2.1] - 2023-03-11
 
