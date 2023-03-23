@@ -116,6 +116,12 @@ In addition, you can make use of the following browser extensions:
 
 ## Testing
 
+### Migration tests
+
+Whenever adding a new action or new state altering ui components one should exports of exercises in which the new features where tested to the [Public test scenarios](https://github.com/hpi-sam/digital-fuesim-manv-public-test-scenarios)
+
+If you wish to run the migration tests use `npm run test:migration`
+
 ### Unit tests
 
 We are using [Jest](https://jestjs.io/) for our unit tests.
