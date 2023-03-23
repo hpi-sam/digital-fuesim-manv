@@ -118,7 +118,7 @@ In addition, you can make use of the following browser extensions:
 
 ### Migration tests
 
-Whenever adding a new action or new state altering ui components one should exports of exercises in which the new features where tested to the [Public test scenarios](https://github.com/hpi-sam/digital-fuesim-manv-public-test-scenarios)
+Whenever adding a new action or new state altering ui components (things that a user can use to alter the state in new ways) one should add exports of exercises in which the new features where tested to the [Public test scenarios](https://github.com/hpi-sam/digital-fuesim-manv-public-test-scenarios)
 
 If you wish to run the migration tests use `npm run test:migration`
 
