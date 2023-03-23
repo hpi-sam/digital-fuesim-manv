@@ -13,14 +13,7 @@ concurrency:
 jobs:
     build:
         timeout-minutes: 5
-        runs-on: ${{ matrix.os }}
-
-        strategy:
-            matrix:
-                # As the CI seems to have high run times, limit it to ubuntu-latest
-                # os: [ubuntu-latest, windows-latest, macos-latest]
-                os: [ubuntu-latest]
-            fail-fast: false
+        runs-on: ubuntu-latest
 
         steps:
             - uses: actions/checkout@v3
@@ -38,14 +31,9 @@ jobs:
 
     lint:
         timeout-minutes: 3
-        runs-on: ${{ matrix.os }}
+        runs-on: ubuntu-latest
 
         needs: build
-
-        strategy:
-            matrix:
-                os: [ubuntu-latest]
-            fail-fast: false
 
         steps:
             - uses: actions/checkout@v3
@@ -62,16 +50,11 @@ jobs:
 
     dependencies:
         timeout-minutes: 10
-        runs-on: ${{ matrix.os }}
+        runs-on: ubuntu-latest
 
         needs: build
 
         continue-on-error: true
-
-        strategy:
-            matrix:
-                os: [ubuntu-latest]
-            fail-fast: false
 
         steps:
             - uses: actions/checkout@v3
@@ -95,7 +78,7 @@ jobs:
 
     test:
         timeout-minutes: 4
-        runs-on: ${{ matrix.os }}
+        runs-on: ubuntu-latest
 
         needs: build
 
@@ -114,13 +97,6 @@ jobs:
                     --health-interval 10s
                     --health-timeout 5s
                     --health-retries 5
-
-        strategy:
-            matrix:
-                # As the CI seems to have high run times, limit it to ubuntu-latest
-                # os: [ubuntu-latest, windows-latest, macos-latest]
-                os: [ubuntu-latest]
-            fail-fast: false
 
         steps:
             - uses: actions/checkout@v3
@@ -159,7 +135,7 @@ jobs:
 
     migration-test:
         timeout-minutes: 4
-        runs-on: ${{ matrix.os }}
+        runs-on: ubuntu-latest
 
         needs: build
 
@@ -178,13 +154,6 @@ jobs:
                     --health-interval 10s
                     --health-timeout 5s
                     --health-retries 5
-
-        strategy:
-            matrix:
-                # As the CI seems to have high run times, limit it to ubuntu-latest
-                # os: [ubuntu-latest, windows-latest, macos-latest]
-                os: [ubuntu-latest]
-            fail-fast: false
 
         steps:
             - uses: actions/checkout@v3
@@ -303,11 +272,6 @@ jobs:
 
         if: github.ref == 'refs/heads/dev'
 
-        strategy:
-            matrix:
-                os: [ubuntu-latest]
-            fail-fast: false
-
         steps:
             - uses: actions/checkout@v3
             # Source: https://docs.docker.com/ci-cd/github-actions/
@@ -331,11 +295,6 @@ jobs:
         needs: tests-done
 
         if: github.ref == 'refs/heads/main'
-
-        strategy:
-            matrix:
-                os: [ubuntu-latest]
-            fail-fast: false
 
         steps:
             - uses: actions/checkout@v3

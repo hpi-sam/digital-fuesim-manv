@@ -26,7 +26,11 @@ This project is currently developed as a [bachelor project](https://hpi.de/en/st
 
 ## Links for collaborators
 
--   [(internal) Test scenarios](https://github.com/hpi-sam/digital-fuesim-manv_test-scenarios)
+-   [Internal test scenarios](https://github.com/hpi-sam/digital-fuesim-manv_test-scenarios)
+    -   Used only for private testing
+-   [Public test scenarios](https://github.com/hpi-sam/digital-fuesim-manv-public-test-scenarios)
+    -   Used for test scenarios in pipelines, Can also be used for private testing
+    -   For usage see the README.md in that repo
 
 ## Installation
 
