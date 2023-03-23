@@ -21,13 +21,9 @@ import {
     templateUrl: './simulated-region-overview-behavior-report.component.html',
     styleUrls: ['./simulated-region-overview-behavior-report.component.scss'],
 })
-export class SimulatedRegionOverviewBehaviorReportComponent
-    implements OnInit, OnDestroy
-{
+export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
     @Input() simulatedRegionId!: UUID;
     @Input() reportBehaviorId!: UUID;
-
-    private readonly destroy$ = new Subject<void>();
 
     reportBehaviorState$!: Observable<ReportBehaviorState>;
 
@@ -127,9 +123,5 @@ export class SimulatedRegionOverviewBehaviorReportComponent
                 informationType,
             });
         }
-    }
-
-    ngOnDestroy(): void {
-        this.destroy$.next();
     }
 }
