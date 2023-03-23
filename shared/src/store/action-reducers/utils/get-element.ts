@@ -1,3 +1,7 @@
+import type {
+    ExerciseSimulationActivityState,
+    ExerciseSimulationBehaviorState,
+} from '../../../simulation';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
 import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map';
@@ -46,4 +50,42 @@ export function getElementByPredicate<
         );
     }
     return element;
+}
+
+export function getBehaviorById(
+    state: Mutable<ExerciseState>,
+    simulatedRegionId: UUID,
+    behaviorId: UUID
+): Mutable<ExerciseSimulationBehaviorState> {
+    const simulatedRegion = getElement(
+        state,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+    const behavior = simulatedRegion.behaviors.find((b) => b.id === behaviorId);
+    if (!behavior) {
+        throw new ReducerError(
+            `Behavior with id ${behaviorId} does not exist in simulated region ${simulatedRegionId}`
+        );
+    }
+    return behavior;
+}
+
+export function getActivityById(
+    state: Mutable<ExerciseState>,
+    simulatedRegionId: UUID,
+    activityId: UUID
+): Mutable<ExerciseSimulationActivityState> {
+    const simulatedRegion = getElement(
+        state,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+    const activity = simulatedRegion.activities[activityId];
+    if (!activity) {
+        throw new ReducerError(
+            `Activity with id ${activityId} does not exist in simulated region ${simulatedRegionId}`
+        );
+    }
+    return activity;
 }
