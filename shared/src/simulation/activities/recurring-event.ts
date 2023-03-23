@@ -58,8 +58,7 @@ export const recurringEventActivity: SimulationActivity<RecurringEventActivitySt
                 activityState.lastOccurenceTime +
                     activityState.recurrenceIntervalTime
             ) {
-                activityState.lastOccurenceTime +=
-                    activityState.recurrenceIntervalTime;
+                activityState.lastOccurenceTime = draftState.currentTime;
                 sendSimulationEvent(simulatedRegion, activityState.event);
             }
         },
