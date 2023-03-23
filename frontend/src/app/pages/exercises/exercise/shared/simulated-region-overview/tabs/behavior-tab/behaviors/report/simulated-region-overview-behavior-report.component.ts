@@ -6,11 +6,7 @@ import type {
     ReportableInformation,
     ReportBehaviorState,
 } from 'digital-fuesim-manv-shared';
-import {
-    StrictObject,
-    reportableInformations,
-    UUID,
-} from 'digital-fuesim-manv-shared';
+import { reportableInformations, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { Subject, combineLatest, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -76,12 +72,15 @@ export class SimulatedRegionOverviewBehaviorReportComponent
         ]).pipe(
             map(([reportBehaviorState, activities]) =>
                 Object.fromEntries(
-                    StrictObject.entries(activities).filter(
-                        ([activityId, activityState]) =>
-                            Object.values(
-                                reportBehaviorState.activityIds
-                            ).includes(activityId)
-                    )
+                    Object.entries(reportBehaviorState.activityIds)
+                        .filter(
+                            ([_informationType, activityId]) =>
+                                activityId && activities[activityId]
+                        )
+                        .map(([informationType, activityId]) => [
+                            informationType,
+                            activities[activityId],
+                        ])
                 )
             )
         );
@@ -106,7 +105,7 @@ export class SimulatedRegionOverviewBehaviorReportComponent
         });
     }
 
-    createReports(
+    async createReports(
         informationType: ReportableInformation | 'noSelect',
         interval: string,
         repeating: boolean

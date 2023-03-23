@@ -110,11 +110,11 @@
             <div class="col-4">
                 <div class="input-group input-group-sm float-start">
                     <input
-                        #timeInput
+                        #timeInput="ngModel"
                         type="number"
                         min="0"
                         step="0.1"
-                        [value]="
+                        [ngModel]="
                             ((activities$ | async)?.[information]?.recurrenceIntervalTime ?? 0) /
                             1000 /
                             60

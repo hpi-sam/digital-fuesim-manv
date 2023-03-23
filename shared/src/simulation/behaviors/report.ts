@@ -10,8 +10,7 @@ import type {
     SimulationBehavior,
     SimulationBehaviorState,
 } from './simulation-behavior';
-import type {
-    ReportableInformation} from './utils';
+import type { ReportableInformation } from './utils';
 import {
     createRadiogramMap,
     reportableInformationAllowedValues,
