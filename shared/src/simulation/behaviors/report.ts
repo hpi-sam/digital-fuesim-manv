@@ -1,4 +1,4 @@
-import { IsOptional, IsUUID } from 'class-validator';
+import { isUUID, IsUUID } from 'class-validator';
 import type { ExerciseRadiogram } from '../../models/radiogram/exercise-radiogram';
 import { MaterialCountRadiogram } from '../../models/radiogram/material-count-radiogram';
 import { PatientCountRadiogram } from '../../models/radiogram/patient-count-radiogram';
@@ -9,66 +9,48 @@ import { TreatmentStatusRadiogram } from '../../models/radiogram/treatment-statu
 import { VehicleCountRadiogram } from '../../models/radiogram/vehicle-count-radiogram';
 import { getCreate } from '../../models/utils';
 import { cloneDeepMutable, StrictObject, UUID, uuid } from '../../utils';
-import { IsValue } from '../../utils/validators';
+import type { AllowedValues } from '../../utils/validators';
+import { IsLiteralUnionMap, IsValue } from '../../utils/validators';
 import { GenerateReportActivityState } from '../activities/generate-report';
-import type { ExerciseSimulationEvent } from '../events';
-import { CollectMaterialCountEvent } from '../events/collect/collect-material-count';
-import { CollectPatientCountEvent } from '../events/collect/collect-patient-count';
-import { CollectPersonnelCountEvent } from '../events/collect/collect-personnel-count';
-import { CollectTreatmentStatusEvent } from '../events/collect/collect-treatment-status';
-import { CollectVehicleCountEvent } from '../events/collect/collect-vehicle-count';
+import { CollectInformationEvent } from '../events/collect';
 import { nextUUID } from '../utils/randomness';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
 } from './simulation-behavior';
 
-export const reportableInformationAllowedValues = {
-    patientCount: true,
-    personnelCount: true,
-    vehicleCount: true,
-    treatmentStatus: true,
-    materialCount: true,
-};
+export const reportableInformationAllowedValues: AllowedValues<ReportableInformation> =
+    {
+        patientCount: true,
+        personnelCount: true,
+        vehicleCount: true,
+        treatmentStatus: true,
+        materialCount: true,
+    };
 
 export const reportableInformations = StrictObject.keys(
     reportableInformationAllowedValues
 );
 
 export type ReportableInformation =
-    keyof typeof reportableInformationAllowedValues;
+    | 'materialCount'
+    | 'patientCount'
+    | 'personnelCount'
+    | 'treatmentStatus'
+    | 'vehicleCount';
 
-const createRadiogramAndEventMap: {
-    [key in ExerciseSimulationEvent['type'] &
-        `${string}StartCollectingEvent`]: [
-        (
-            id: UUID,
-            simulatedRegionId: UUID,
-            status: ExerciseRadiogramStatus
-        ) => ExerciseRadiogram,
-        (generateReportActivityId: UUID) => ExerciseSimulationEvent
-    ];
+export const createRadiogramMap: {
+    [key in ReportableInformation]: (
+        id: UUID,
+        simulatedRegionId: UUID,
+        status: ExerciseRadiogramStatus
+    ) => ExerciseRadiogram;
 } = {
-    patientCountStartCollectingEvent: [
-        PatientCountRadiogram.create,
-        CollectPatientCountEvent.create,
-    ],
-    personnelCountStartCollectingEvent: [
-        PersonnelCountRadiogram.create,
-        CollectPersonnelCountEvent.create,
-    ],
-    vehicleCountStartCollectingEvent: [
-        VehicleCountRadiogram.create,
-        CollectVehicleCountEvent.create,
-    ],
-    treatmentStatusStartCollectingEvent: [
-        TreatmentStatusRadiogram.create,
-        CollectTreatmentStatusEvent.create,
-    ],
-    materialCountStartCollectingEvent: [
-        MaterialCountRadiogram.create,
-        CollectMaterialCountEvent.create,
-    ],
+    patientCount: PatientCountRadiogram.create,
+    personnelCount: PersonnelCountRadiogram.create,
+    vehicleCount: VehicleCountRadiogram.create,
+    treatmentStatus: TreatmentStatusRadiogram.create,
+    materialCount: MaterialCountRadiogram.create,
 };
 
 export class ReportBehaviorState implements SimulationBehaviorState {
@@ -78,51 +60,32 @@ export class ReportBehaviorState implements SimulationBehaviorState {
     @IsUUID()
     public readonly id: UUID = uuid();
 
-    @IsOptional()
-    @IsUUID()
-    public readonly patientCountActivityId?: UUID;
-
-    @IsOptional()
-    @IsUUID()
-    public readonly vehicleCountActivityId?: UUID;
-
-    @IsOptional()
-    @IsUUID()
-    public readonly personnelCountActivityId?: UUID;
-
-    @IsOptional()
-    @IsUUID()
-    public readonly materialCountActivityId?: UUID;
-
-    @IsOptional()
-    @IsUUID()
-    public readonly treatmentStatusActivityId?: UUID;
+    @IsLiteralUnionMap(reportableInformationAllowedValues, ((value) =>
+        isUUID(value, 4)) as (value: unknown) => value is UUID)
+    public readonly activityIds: { [key in ReportableInformation]?: UUID } = {};
 
     static readonly create = getCreate(this);
 }
 
 export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
     behaviorState: ReportBehaviorState,
-    handleEvent: (draftState, simulatedRegion, behaviorState, event) => {
+    handleEvent: (draftState, simulatedRegion, _behaviorState, event) => {
         switch (event.type) {
-            case 'materialCountStartCollectingEvent':
-            case 'patientCountStartCollectingEvent':
-            case 'personnelCountStartCollectingEvent':
-            case 'treatmentStatusStartCollectingEvent':
-            case 'vehicleCountStartCollectingEvent': {
+            case 'startCollectingInformationEvent': {
                 const activityId = nextUUID(draftState);
-                const [createRadiogram, createEvent] =
-                    createRadiogramAndEventMap[event.type];
 
                 simulatedRegion.activities[activityId] = cloneDeepMutable(
                     GenerateReportActivityState.create(
                         activityId,
-                        createRadiogram(
+                        createRadiogramMap[event.informationType](
                             nextUUID(draftState),
                             simulatedRegion.id,
                             RadiogramUnpublishedStatus.create()
                         ),
-                        createEvent(activityId)
+                        CollectInformationEvent.create(
+                            activityId,
+                            event.informationType
+                        )
                     )
                 );
                 break;

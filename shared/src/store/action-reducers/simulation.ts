@@ -1,25 +1,26 @@
-import { Type } from 'class-transformer';
-import {
-    IsNumber,
-    IsOptional,
-    IsUUID,
-    Min,
-    ValidateNested,
-} from 'class-validator';
+import { IsNumber, IsOptional, IsUUID, Min } from 'class-validator';
+import { RadiogramUnpublishedStatus } from '../../models/radiogram/status/radiogram-unpublished-status';
 import type {
-    RecurringEventActivityState,
     ReportBehaviorState,
     TreatPatientsBehaviorState,
     UnloadArrivingVehiclesBehaviorState,
 } from '../../simulation';
-import { reportableInformations } from '../../simulation';
+import {
+    createRadiogramMap,
+    ReportableInformation,
+    reportableInformationAllowedValues,
+    RecurringEventActivityState,
+} from '../../simulation';
+import { GenerateReportActivityState } from '../../simulation/activities/generate-report';
+import { CollectInformationEvent } from '../../simulation/events/collect';
+import { StartCollectingInformationEvent } from '../../simulation/events/start-collecting';
+import { nextUUID } from '../../simulation/utils/randomness';
 import type { Mutable } from '../../utils';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
+import { UUID, uuidValidationOptions, cloneDeepMutable } from '../../utils';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { getElement } from './utils';
-import { ReportIntervalConfiguration } from './utils/report-intervals';
 
 export class UpdateTreatPatientsIntervalsAction implements Action {
     @IsValue('[TreatPatientsBehavior] Update TreatPatientsIntervals' as const)
@@ -76,9 +77,20 @@ export class UnloadArrivingVehiclesBehaviorUpdateUnloadDelayAction
     public readonly unloadDelay!: number;
 }
 
-export class UpdateReportIntervalsAction implements Action {
-    @IsValue('[ReportBehavior] Update ReportIntervals' as const)
-    public readonly type = '[ReportBehavior] Update ReportIntervals';
+export class CreateReportAction implements Action {
+    @IsValue('[ReportBehavior] Create Report')
+    public readonly type = '[ReportBehavior] Create Report';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsLiteralUnion(reportableInformationAllowedValues)
+    public readonly informationType!: ReportableInformation;
+}
+
+export class CreateRecurringReportsAction implements Action {
+    @IsValue('[ReportBehavior] Create Recurring Report')
+    public readonly type = '[ReportBehavior] Create Recurring Report';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;
@@ -86,30 +98,44 @@ export class UpdateReportIntervalsAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly behaviorId!: UUID;
 
-    @IsOptional()
-    @Type(() => ReportIntervalConfiguration)
-    @ValidateNested()
-    public readonly patientCountReportInterval?: ReportIntervalConfiguration;
+    @IsNumber()
+    @Min(0)
+    public readonly interval!: number;
 
-    @IsOptional()
-    @Type(() => ReportIntervalConfiguration)
-    @ValidateNested()
-    public readonly vehicleCountReportInterval?: ReportIntervalConfiguration;
+    @IsLiteralUnion(reportableInformationAllowedValues)
+    public readonly informationType!: ReportableInformation;
+}
 
-    @IsOptional()
-    @Type(() => ReportIntervalConfiguration)
-    @ValidateNested()
-    public readonly personnelCountReportInterval?: ReportIntervalConfiguration;
+export class UpdateRecurringReportsAction implements Action {
+    @IsValue('[ReportBehavior] Update Recurring Report')
+    public readonly type = '[ReportBehavior] Update Recurring Report';
 
-    @IsOptional()
-    @Type(() => ReportIntervalConfiguration)
-    @ValidateNested()
-    public readonly materialCountReportInterval?: ReportIntervalConfiguration;
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
 
-    @IsOptional()
-    @Type(() => ReportIntervalConfiguration)
-    @ValidateNested()
-    public readonly treatmentStatusReportInterval?: ReportIntervalConfiguration;
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsNumber()
+    @Min(0)
+    public readonly interval!: number;
+
+    @IsLiteralUnion(reportableInformationAllowedValues)
+    public readonly informationType!: ReportableInformation;
+}
+
+export class RemoveRecurringReportsAction implements Action {
+    @IsValue('[ReportBehavior] Remove Recurring Report')
+    public readonly type = '[ReportBehavior] Remove Recurring Report';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsLiteralUnion(reportableInformationAllowedValues)
+    public readonly informationType!: ReportableInformation;
 }
 
 export namespace SimulationActionReducers {
@@ -188,12 +214,38 @@ export namespace SimulationActionReducers {
             rights: 'trainer',
         };
 
-    export const updateReportIntervals: ActionReducer<UpdateReportIntervalsAction> =
+    export const createReport: ActionReducer<CreateReportAction> = {
+        action: CreateReportAction,
+        reducer(draftState, { simulatedRegionId, informationType }) {
+            const simulatedRegion = getElement(
+                draftState,
+                'simulatedRegion',
+                simulatedRegionId
+            );
+            const activityId = nextUUID(draftState);
+            simulatedRegion.activities[activityId] = cloneDeepMutable(
+                GenerateReportActivityState.create(
+                    activityId,
+                    createRadiogramMap[informationType](
+                        nextUUID(draftState),
+                        simulatedRegionId,
+                        RadiogramUnpublishedStatus.create()
+                    ),
+                    CollectInformationEvent.create(activityId, informationType)
+                )
+            );
+
+            return draftState;
+        },
+        rights: 'trainer',
+    };
+
+    export const createRecurringReports: ActionReducer<CreateRecurringReportsAction> =
         {
-            action: UpdateReportIntervalsAction,
+            action: CreateRecurringReportsAction,
             reducer(
                 draftState,
-                { simulatedRegionId, behaviorId, ...reportIntervals }
+                { simulatedRegionId, behaviorId, interval, informationType }
             ) {
                 const simulatedRegion =
                     draftState.simulatedRegions[simulatedRegionId]!;
@@ -201,36 +253,63 @@ export namespace SimulationActionReducers {
                     (behaviorState) => behaviorState.id === behaviorId
                 ) as Mutable<ReportBehaviorState>;
 
-                reportableInformations.forEach((reportableInformation) => {
-                    if (
-                        !reportIntervals[
-                            `${reportableInformation}ReportInterval`
-                        ]
+                const activityId = nextUUID(draftState);
+                reportBehaviorState.activityIds[informationType] = activityId;
+                simulatedRegion.activities[activityId] = cloneDeepMutable(
+                    RecurringEventActivityState.create(
+                        activityId,
+                        StartCollectingInformationEvent.create(informationType),
+                        draftState.currentTime + interval,
+                        interval
                     )
-                        return;
+                );
 
-                    const intervalConfiguration =
-                        reportIntervals[
-                            `${reportableInformation}ReportInterval`
-                        ]!;
-                    const activityId =
-                        reportBehaviorState[
-                            `${reportableInformation}ActivityId`
-                        ]!;
-                    const recurringActivityState = simulatedRegion.activities[
-                        activityId
-                    ] as Mutable<RecurringEventActivityState>;
+                return draftState;
+            },
+            rights: 'trainer',
+        };
 
-                    if (intervalConfiguration.enabled !== undefined) {
-                        recurringActivityState.enabled =
-                            intervalConfiguration.enabled;
-                    }
+    export const updateRecurringReports: ActionReducer<UpdateRecurringReportsAction> =
+        {
+            action: UpdateRecurringReportsAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, interval, informationType }
+            ) {
+                const simulatedRegion =
+                    draftState.simulatedRegions[simulatedRegionId]!;
+                const reportBehaviorState = simulatedRegion.behaviors.find(
+                    (behaviorState) => behaviorState.id === behaviorId
+                ) as Mutable<ReportBehaviorState>;
+                const activityId =
+                    reportBehaviorState.activityIds[informationType]!;
+                const recurringActivityState = simulatedRegion.activities[
+                    activityId
+                ] as Mutable<RecurringEventActivityState>;
 
-                    if (intervalConfiguration.interval !== undefined) {
-                        recurringActivityState.recurrenceIntervalTime =
-                            intervalConfiguration.interval;
-                    }
-                });
+                recurringActivityState.recurrenceIntervalTime = interval;
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const removeRecurringReports: ActionReducer<RemoveRecurringReportsAction> =
+        {
+            action: RemoveRecurringReportsAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, informationType }
+            ) {
+                const simulatedRegion =
+                    draftState.simulatedRegions[simulatedRegionId]!;
+                const reportBehaviorState = simulatedRegion.behaviors.find(
+                    (behaviorState) => behaviorState.id === behaviorId
+                ) as Mutable<ReportBehaviorState>;
+                const activityId =
+                    reportBehaviorState.activityIds[informationType]!;
+                delete reportBehaviorState.activityIds[informationType];
+                delete simulatedRegion.activities[activityId];
 
                 return draftState;
             },

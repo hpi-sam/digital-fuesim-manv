@@ -1,5 +1,7 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
 import { isIn } from 'class-validator';
+import type { UUID } from '../uuid';
+import { createMapValidator } from './create-map-validator';
 import type { GenericPropertyDecorator } from './generic-property-decorator';
 import { makeValidator } from './make-validator';
 
@@ -53,6 +55,36 @@ export function IsLiteralUnion<
         'isLiteralUnion',
         (value: unknown, args?: ValidationArguments) =>
             isLiteralUnion<T>(allowedValues, value),
+        validationOptions
+    );
+}
+
+export const isLiteralUnionMap = <T extends number | string | symbol, V>(
+    allowedValues: AllowedValues<T>,
+    valueValidator: (value: unknown) => value is V,
+    valueToBeValidated: unknown
+): valueToBeValidated is { [key in T]?: UUID } =>
+    createMapValidator({
+        keyValidator: ((key) => isLiteralUnion(allowedValues, key)) as (
+            key: unknown
+        ) => key is T,
+        valueValidator,
+    })(valueToBeValidated);
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function IsLiteralUnionMap<
+    K extends number | string | symbol,
+    V,
+    Each extends boolean = false
+>(
+    allowedValues: AllowedValues<K>,
+    valueValidator: (value: unknown) => value is V,
+    validationOptions?: ValidationOptions & { each?: Each }
+): GenericPropertyDecorator<{ [key in K]?: V }, Each> {
+    return makeValidator<{ [key in K]?: V }, Each>(
+        'isLiteralUnionToIdMap',
+        (value: unknown, args?: ValidationArguments) =>
+            isLiteralUnionMap<K, V>(allowedValues, valueValidator, value),
         validationOptions
     );
 }

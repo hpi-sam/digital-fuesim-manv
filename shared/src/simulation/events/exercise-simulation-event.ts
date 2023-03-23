@@ -8,16 +8,8 @@ import { TickEvent } from './tick';
 import { VehicleArrivedEvent } from './vehicle-arrived';
 import { TreatmentsTimerEvent } from './treatments-timer-event';
 import { TreatmentProgressChangedEvent } from './treatment-progress-changed';
-import { CollectMaterialCountEvent } from './collect/collect-material-count';
-import { CollectPatientCountEvent } from './collect/collect-patient-count';
-import { CollectPersonnelCountEvent } from './collect/collect-personnel-count';
-import { CollectVehicleCountEvent } from './collect/collect-vehicle-count';
-import { CollectTreatmentStatusEvent } from './collect/collect-treatment-status';
-import { StartCollectingPatientCountEvent } from './collect/start-collecting-patient-count';
-import { StartCollectingMaterialCountEvent } from './collect/start-collecting-material-count';
-import { StartCollectingPersonnelCountEvent } from './collect/start-collecting-personnel-count';
-import { StartCollectingTreatmentStatusEvent } from './collect/start-collecting-treatment-status';
-import { StartCollectingVehicleCountEvent } from './collect/start-collecting-vehicle-count';
+import { CollectInformationEvent } from './collect';
+import { StartCollectingInformationEvent } from './start-collecting';
 
 export const simulationEvents = {
     MaterialAvailableEvent,
@@ -27,16 +19,8 @@ export const simulationEvents = {
     TreatmentProgressChangedEvent,
     TreatmentsTimerEvent,
     VehicleArrivedEvent,
-    CollectMaterialCountEvent,
-    CollectPatientCountEvent,
-    CollectPersonnelCountEvent,
-    CollectVehicleCountEvent,
-    CollectTreatmentStatusEvent,
-    StartCollectingPatientCountEvent,
-    StartCollectingMaterialCountEvent,
-    StartCollectingPersonnelCountEvent,
-    StartCollectingVehicleCountEvent,
-    StartCollectingTreatmentStatusEvent,
+    CollectInformationEvent,
+    StartCollectingInformationEvent,
 };
 
 export type ExerciseSimulationEvent = InstanceType<
@@ -56,16 +40,8 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     treatmentProgressChangedEvent: TreatmentProgressChangedEvent,
     treatmentsTimerEvent: TreatmentsTimerEvent,
     vehicleArrivedEvent: VehicleArrivedEvent,
-    materialCountCollectEvent: CollectMaterialCountEvent,
-    patientCountCollectEvent: CollectPatientCountEvent,
-    personnelCountCollectEvent: CollectPersonnelCountEvent,
-    vehicleCountCollectEvent: CollectVehicleCountEvent,
-    treatmentStatusCollectEvent: CollectTreatmentStatusEvent,
-    materialCountStartCollectingEvent: StartCollectingMaterialCountEvent,
-    patientCountStartCollectingEvent: StartCollectingPatientCountEvent,
-    personnelCountStartCollectingEvent: StartCollectingPersonnelCountEvent,
-    vehicleCountStartCollectingEvent: StartCollectingVehicleCountEvent,
-    treatmentStatusStartCollectingEvent: StartCollectingTreatmentStatusEvent,
+    collectInformationEvent: CollectInformationEvent,
+    startCollectingInformationEvent: StartCollectingInformationEvent,
 };
 
 export const simulationEventTypeOptions: Parameters<typeof Type> = [

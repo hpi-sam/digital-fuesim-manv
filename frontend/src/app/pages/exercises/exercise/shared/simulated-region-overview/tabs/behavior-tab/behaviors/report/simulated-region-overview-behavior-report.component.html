@@ -1,52 +1,141 @@
-<div *ngFor="let information of reportableInformations" class="mb-3">
-    <h6>{{ reportableInformationPluralMap[information] }}</h6>
+<h5>Berichte</h5>
 
-    <div class="row align-items-center">
-        <div class="col-sm">
-            <div class="form-check">
+<div class="rounded-top" [class.bg-primary]="!createReportCollapsed">
+    <button
+        type="button"
+        class="btn btn-primary btn-sm w-100"
+        (click)="createReportCollapsed = !createReportCollapsed"
+    >
+        Bericht erstellen
+    </button>
+</div>
+
+<div
+    #collapse="ngbCollapse"
+    [(ngbCollapse)]="createReportCollapsed"
+    class="border border-primary rounded-bottom p-2"
+>
+    <select class="form-select no-validation" [(ngModel)]="selectedInformation">
+        <option value="noSelect" disabled hidden selected>
+            Wählen Sie die Information des Berichts
+        </option>
+        <option
+            *ngFor="let information of reportableInformations"
+            [value]="information"
+        >
+            {{ reportableInformationTranslationMap[information] }}
+        </option>
+    </select>
+
+    <div class="row align-items-center justify-content-between my-2">
+        <div class="col-6">
+            <div class="input-group input-group-sm">
                 <label
-                    class="form-check-label"
-                    for="patientCountEnabledCheckbox"
-                    >Regelmäßige Berichte</label
-                >
-                <input
-                    #patientCountEnabledCheckbox
-                    type="checkbox"
-                    [checked]="(activities[information] | async)!.enabled"
-                    (change)="
-                        updateEnabled(
-                            information,
-                            patientCountEnabledCheckbox.checked
-                        )
+                    class="btn"
+                    [class]="
+                        once.checked ? 'btn-secondary' : 'btn-outline-secondary'
                     "
-                    class="form-check-input"
-                />
+                    for="once"
+                    >Einmalig</label
+                >
+                <label
+                    class="btn"
+                    [class]="
+                        repeating.checked
+                            ? 'btn-secondary'
+                            : 'btn-outline-secondary'
+                    "
+                    for="repeating"
+                    >Regelmäßig</label
+                >
             </div>
+            <input
+                type="radio"
+                class="btn-check"
+                name="reportType"
+                id="once"
+                #once
+                autocomplete="off"
+                checked
+            />
+            <input
+                type="radio"
+                class="btn-check"
+                name="reportType"
+                id="repeating"
+                #repeating
+                autocomplete="off"
+            />
         </div>
-        <div class="col-sm">
-            <div
-                class="input-group input-group-sm float-start"
-                style="max-width: 250px"
-            >
+        <div class="col-6">
+            <div class="input-group input-group-sm float-start">
                 <input
-                    #timeInput="ngModel"
+                    #timeInput
                     type="number"
                     min="0"
                     step="0.1"
-                    [disabled]="!(activities[information] | async)!.enabled"
-                    [ngModel]="
-                        (activities[information] | async)!
-                            .recurrenceIntervalTime /
-                        1000 /
-                        60
-                    "
-                    (appSaveOnTyping)="
-                        updateInterval(information, timeInput.value)
-                    "
+                    value="5"
+                    [disabled]="once.checked"
                     class="form-control form-control-sm d-inline-block no-validation"
                 />
                 <span class="input-group-text">Min</span>
             </div>
         </div>
     </div>
+
+    <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="selectedInformation === 'noSelect'"
+        (click)="
+            createReports(
+                selectedInformation,
+                timeInput.value,
+                repeating.checked
+            )
+        "
+    >
+        Erstelle Bericht
+    </button>
 </div>
+
+<h5>Regelmäßige Berichte</h5>
+
+<ng-container *ngFor="let information of reportableInformations">
+    <div *ngIf="(reportBehaviorState$ | async)?.activityIds?.[information]">
+        <div class="row align-items-center mb-2 mw-100">
+            <div class="col-7">
+                {{ reportableInformationTranslationMap[information] }}
+            </div>
+            <div class="col-4">
+                <div class="input-group input-group-sm float-start">
+                    <input
+                        #timeInput
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        [value]="
+                            ((activities$ | async)?.[information]?.recurrenceIntervalTime ?? 0) /
+                            1000 /
+                            60
+                        "
+                        (appSaveOnTyping)="
+                            updateInterval(information, timeInput.value)
+                        "
+                        class="form-control form-control-sm d-inline-block no-validation"
+                    />
+                    <span class="input-group-text">Min</span>
+                </div>
+            </div>
+            <div class="col-1">
+                <button
+                    type="button"
+                    class="btn btn-outline-danger"
+                    (click)="removeRepeatingReports(information)"
+                >
+                    <span class="bi-trash me-1"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-container>

@@ -6,13 +6,17 @@ import type {
     ReportableInformation,
     ReportBehaviorState,
 } from 'digital-fuesim-manv-shared';
-import { reportableInformations, UUID } from 'digital-fuesim-manv-shared';
+import {
+    StrictObject,
+    reportableInformations,
+    UUID,
+} from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, combineLatest, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    createSelectActivityState,
+    createSelectActivityStates,
     createSelectBehaviorState,
 } from 'src/app/state/application/selectors/exercise.selectors';
 
@@ -29,21 +33,25 @@ export class SimulatedRegionOverviewBehaviorReportComponent
 
     private readonly destroy$ = new Subject<void>();
 
-    reportBehaviorState$?: Observable<ReportBehaviorState>;
+    reportBehaviorState$!: Observable<ReportBehaviorState>;
 
-    activities: {
-        [key in ReportableInformation]?: Observable<RecurringEventActivityState>;
-    } = {};
+    activities$!: Observable<{
+        [key in ReportableInformation]?: RecurringEventActivityState;
+    }>;
 
     reportableInformations = reportableInformations;
-    reportableInformationPluralMap: { [key in ReportableInformation]: string } =
-        {
-            patientCount: 'Anzahl an Patienten',
-            vehicleCount: 'Anzahl an Fahrzeugen',
-            personnelCount: 'Anzahl an Rettungskräften',
-            materialCount: 'Anzahl an Material',
-            treatmentStatus: 'Behandlungsstatus',
-        };
+    reportableInformationTranslationMap: {
+        [key in ReportableInformation]: string;
+    } = {
+        patientCount: 'Anzahl an Patienten',
+        vehicleCount: 'Anzahl an Fahrzeugen',
+        personnelCount: 'Anzahl an Rettungskräften',
+        materialCount: 'Anzahl an Material',
+        treatmentStatus: 'Behandlungsstatus',
+    };
+
+    createReportCollapsed = true;
+    selectedInformation: ReportableInformation | 'noSelect' = 'noSelect';
 
     constructor(
         private readonly exerciseService: ExerciseService,
@@ -57,38 +65,69 @@ export class SimulatedRegionOverviewBehaviorReportComponent
                 this.reportBehaviorId
             )
         );
-        this.reportBehaviorState$
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((reportBehaviorState) => {
-                reportableInformations.forEach((information) => {
-                    this.activities[information] = this.store.select(
-                        createSelectActivityState(
-                            this.simulatedRegionId,
-                            reportBehaviorState[`${information}ActivityId`]!
-                        )
-                    );
-                });
-            });
+
+        const activities$ = this.store.select(
+            createSelectActivityStates(this.simulatedRegionId)
+        );
+
+        this.activities$ = combineLatest([
+            this.reportBehaviorState$,
+            activities$,
+        ]).pipe(
+            map(([reportBehaviorState, activities]) =>
+                Object.fromEntries(
+                    StrictObject.entries(activities).filter(
+                        ([activityId, activityState]) =>
+                            Object.values(
+                                reportBehaviorState.activityIds
+                            ).includes(activityId)
+                    )
+                )
+            )
+        );
     }
 
-    updateInterval(information: ReportableInformation, interval: string) {
+    updateInterval(informationType: ReportableInformation, interval: string) {
         this.exerciseService.proposeAction({
-            type: '[ReportBehavior] Update ReportIntervals',
+            type: '[ReportBehavior] Update Recurring Report',
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.reportBehaviorId,
-            [`${information}ReportInterval`]: {
+            informationType,
+            interval: Number(interval) * 1000 * 60,
+        });
+    }
+
+    removeRepeatingReports(informationType: ReportableInformation) {
+        this.exerciseService.proposeAction({
+            type: '[ReportBehavior] Remove Recurring Report',
+            simulatedRegionId: this.simulatedRegionId,
+            behaviorId: this.reportBehaviorId,
+            informationType,
+        });
+    }
+
+    createReports(
+        informationType: ReportableInformation | 'noSelect',
+        interval: string,
+        repeating: boolean
+    ) {
+        if (informationType === 'noSelect') return;
+
+        if (repeating) {
+            this.exerciseService.proposeAction({
+                type: '[ReportBehavior] Create Recurring Report',
+                simulatedRegionId: this.simulatedRegionId,
+                behaviorId: this.reportBehaviorId,
+                informationType,
                 interval: Number(interval) * 1000 * 60,
-            },
-        });
-    }
-
-    updateEnabled(information: ReportableInformation, enabled: boolean) {
-        this.exerciseService.proposeAction({
-            type: '[ReportBehavior] Update ReportIntervals',
-            simulatedRegionId: this.simulatedRegionId,
-            behaviorId: this.reportBehaviorId,
-            [`${information}ReportInterval`]: { enabled },
-        });
+            });
+        } else {
+            this.exerciseService.proposeAction({
+                type: '[ReportBehavior] Create Report',
+                simulatedRegionId: this.simulatedRegionId,
+                informationType,
+            });
+        }
     }
 
     ngOnDestroy(): void {

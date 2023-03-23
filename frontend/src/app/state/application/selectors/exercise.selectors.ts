@@ -212,15 +212,31 @@ export function createSelectByPredicate<E extends WithPosition>(
     );
 }
 
+export function createSelectBehaviorStates(simulatedRegionId: UUID) {
+    return createSelector(
+        createSelectSimulatedRegion(simulatedRegionId),
+        (simulatedRegion) =>
+            simulatedRegion.behaviors as ExerciseSimulationBehaviorState[]
+    );
+}
+
+export function createSelectActivityStates(simulatedRegionId: UUID) {
+    return createSelector(
+        createSelectSimulatedRegion(simulatedRegionId),
+        (simulatedRegion) =>
+            simulatedRegion.activities as {
+                [key: UUID]: ExerciseSimulationActivityState;
+            }
+    );
+}
+
 export function createSelectBehaviorState<
     B extends ExerciseSimulationBehaviorState
 >(simulatedRegionId: UUID, behaviorId: UUID) {
     return createSelector(
-        createSelectSimulatedRegion(simulatedRegionId),
-        (simulatedRegion) =>
-            simulatedRegion?.behaviors.find(
-                (behavior) => behavior.id === behaviorId
-            ) as B
+        createSelectBehaviorStates(simulatedRegionId),
+        (behaviors) =>
+            behaviors.find((behavior) => behavior.id === behaviorId) as B
     );
 }
 
@@ -228,8 +244,8 @@ export function createSelectActivityState<
     B extends ExerciseSimulationActivityState
 >(simulatedRegionId: UUID, activityId: UUID) {
     return createSelector(
-        createSelectSimulatedRegion(simulatedRegionId),
-        (simulatedRegion) => simulatedRegion.activities[activityId] as B
+        createSelectActivityStates(simulatedRegionId),
+        (activities) => activities[activityId] as B
     );
 }
 
@@ -237,9 +253,9 @@ export function createSelectBehaviorStatesByType<
     T extends ExerciseSimulationBehaviorType
 >(simulatedRegionId: UUID, behaviorType: T) {
     return createSelector(
-        createSelectSimulatedRegion(simulatedRegionId),
-        (simulatedRegion) =>
-            simulatedRegion?.behaviors.filter(
+        createSelectBehaviorStates(simulatedRegionId),
+        (behaviors) =>
+            behaviors.filter(
                 (behavior): behavior is ExerciseSimulationBehaviorState<T> =>
                     behavior.type === behaviorType
             )
@@ -250,9 +266,9 @@ export function createSelectActivityStatesByType<
     T extends ExerciseSimulationActivityType
 >(simulatedRegionId: UUID, activityType: T) {
     return createSelector(
-        createSelectSimulatedRegion(simulatedRegionId),
-        (simulatedRegion) =>
-            Object.values(simulatedRegion?.activities).filter(
+        createSelectActivityStates(simulatedRegionId),
+        (activities) =>
+            Object.values(activities).filter(
                 (activity): activity is ExerciseSimulationActivityState<T> =>
                     activity.type === activityType
             )
