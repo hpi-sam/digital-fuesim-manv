@@ -1,7 +1,7 @@
 import { isUUID, IsUUID } from 'class-validator';
 import { RadiogramUnpublishedStatus } from '../../models/radiogram/status/radiogram-unpublished-status';
 import { getCreate } from '../../models/utils';
-import { cloneDeepMutable, UUID, uuid } from '../../utils';
+import { cloneDeepMutable, StrictObject, UUID, uuid } from '../../utils';
 import { IsLiteralUnionMap, IsValue } from '../../utils/validators';
 import { GenerateReportActivityState } from '../activities/generate-report';
 import { CollectInformationEvent } from '../events/collect';
@@ -12,7 +12,6 @@ import type {
 } from './simulation-behavior';
 import type { ReportableInformation } from './utils';
 import {
-    reportableInformations,
     createRadiogramMap,
     reportableInformationAllowedValues,
 } from './utils';
@@ -58,12 +57,11 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
             // Ignore event
         }
     },
-    onRemove(draftState, simulatedRegion, behaviorState) {
-        reportableInformations.forEach((information) => {
-            if (information in behaviorState.activityIds) {
-                const activityId = behaviorState.activityIds[information]!;
-                delete simulatedRegion.activities[activityId];
-            }
-        });
+    onRemove(_draftState, simulatedRegion, behaviorState) {
+        StrictObject.values(behaviorState.activityIds)
+            .filter((activityId) => activityId !== undefined)
+            .forEach((activityId) => {
+                delete simulatedRegion.activities[activityId!];
+            });
     },
 };
