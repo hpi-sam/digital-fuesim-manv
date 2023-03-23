@@ -31,13 +31,13 @@ This project is currently developed as a [bachelor project](https://hpi.de/en/st
 -   [Public test scenarios](https://github.com/hpi-sam/digital-fuesim-manv-public-test-scenarios)
     -   Used for test scenarios in pipelines, Can also be used for private testing
     -   For usage see the README.md in that repo
-    -   This repo is also a submodule of this repo
+    -   This repo is also a submodule of this repo. Use `--recurse-submodules` when cloning the repo or `run git submodule update --init --recursive` if you have cloned the repo already to get its contents.
 
 ## Installation
 
 1. Install [NodeJs](https://nodejs.org/) (at least version 18.x) (if you need different node versions on your machine we recommend [nvm](https://github.com/nvm-sh/nvm) or [nvm for windows](https://github.com/coreybutler/nvm-windows))
 2. [npm](https://www.npmjs.com/) should already come with NodeJs - if not install it
-3. Clone this repository
+3. Clone the repo by running `git clone https://github.com/hpi-sam/digital-fuesim-manv`. To be able to run migration tests, you also have to clone the submodules: use `git clone --recurse-submodules https://github.com/hpi-sam/digital-fuesim-manv` or run `git submodule update --init --recursive` if you have cloned the repo already.
 4. Run `npm run setup` from the root folder
 5. Copy the [`.env.example`](./.env.example) file to `./.env` and adjust the settings as you need them. Note that some of the variables are explained under the next point.
 6. Choose whether you want to use a database:
@@ -119,6 +119,8 @@ In addition, you can make use of the following browser extensions:
 ### Migration tests
 
 Whenever adding a new action or new state altering ui components (things that a user can use to alter the state in new ways) one should add exports of exercises in which the new features where tested to the [Public test scenarios](https://github.com/hpi-sam/digital-fuesim-manv-public-test-scenarios)
+
+The test scenarios are stored in a submodule. Use `--recurse-submodules` when cloning the repo or run `git submodule update --init --recursive` if you have cloned the repo already.
 
 If you wish to run the migration tests use `npm run test:migration`
 
