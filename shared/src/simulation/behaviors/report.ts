@@ -12,6 +12,7 @@ import type {
 } from './simulation-behavior';
 import type { ReportableInformation } from './utils';
 import {
+    reportableInformations,
     createRadiogramMap,
     reportableInformationAllowedValues,
 } from './utils';
@@ -56,5 +57,13 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
             default:
             // Ignore event
         }
+    },
+    onRemove(draftState, simulatedRegion, behaviorState) {
+        reportableInformations.forEach((information) => {
+            if (information in behaviorState.activityIds) {
+                const activityId = behaviorState.activityIds[information]!;
+                delete simulatedRegion.activities[activityId];
+            }
+        });
     },
 };

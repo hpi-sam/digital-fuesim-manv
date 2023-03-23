@@ -15,6 +15,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   There is a radiogram for displaying the personnel count in a simulated region
     -   There is a radiogram for displaying the vehicle count in a simulated region
     -   There is a radiogram for displaying the current treatment status in a simulated region
+-   There is a behavior responsible for creating and managing the activities which create radiograms
 -   In the large simulation overview modal, a column has been added to interact with radiograms.
 -   Behaviors can clean up the state when they are removed from a simulated region.
 

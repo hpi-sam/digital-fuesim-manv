@@ -13,7 +13,6 @@ import {
     changePositionWithId,
 } from '../../models/utils/position/position-helpers-mutable';
 import {
-    reportableInformations,
     ExerciseSimulationBehaviorState,
     simulationBehaviorTypeOptions,
     VehicleArrivedEvent,
@@ -335,18 +334,6 @@ export namespace SimulatedRegionActionReducers {
                 const index = simulatedRegion.behaviors.findIndex(
                     (behavior) => behavior.id === behaviorId
                 );
-
-                // TODO: https://github.com/hpi-sam/digital-fuesim-manv/issues/719
-                const behaviorState = simulatedRegion.behaviors[index]!;
-                if (behaviorState.type === 'reportBehavior') {
-                    reportableInformations.forEach((information) => {
-                        if (information in behaviorState.activityIds) {
-                            const activityId =
-                                behaviorState.activityIds[information]!;
-                            delete simulatedRegion.activities[activityId];
-                        }
-                    });
-                }
 
                 if (index === -1) {
                     throw new ReducerError(
