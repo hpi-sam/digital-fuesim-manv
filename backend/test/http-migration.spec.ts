@@ -16,8 +16,8 @@ describe('migration', () => {
     fs.readdirSync(basePath).forEach((dir) => {
         describe(dir, () => {
             const exercisePaths = fs.readdirSync(`${basePath}/${dir}`);
-            const exercisePathsToTest = exercisePaths.filter((exercisePath) =>
-                exercisePath.startsWith('EXCLUDE-FROM-TEST')
+            const exercisePathsToTest = exercisePaths.filter(
+                (exercisePath) => !exercisePath.startsWith('EXCLUDE-FROM-TEST')
             );
             test.each(exercisePathsToTest)(
                 'It imports %s without throwing an error',
