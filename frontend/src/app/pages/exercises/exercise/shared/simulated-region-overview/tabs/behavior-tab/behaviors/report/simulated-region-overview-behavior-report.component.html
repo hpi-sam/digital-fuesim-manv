@@ -1,141 +1,174 @@
-<h5>Berichte</h5>
+<ng-container *ngIf="reportBehaviorState$ | async as reportBehaviorState">
+    <ng-container *ngIf="activities$ | async as activities">
+        <h5>Berichte</h5>
 
-<div class="rounded-top" [class.bg-primary]="!createReportCollapsed">
-    <button
-        type="button"
-        class="btn btn-primary btn-sm w-100"
-        (click)="createReportCollapsed = !createReportCollapsed"
-    >
-        Bericht erstellen
-    </button>
-</div>
+        <div class="rounded-top" [class.bg-primary]="!createReportCollapsed">
+            <button
+                type="button"
+                class="btn btn-primary btn-sm w-100"
+                (click)="createReportCollapsed = !createReportCollapsed"
+            >
+                Bericht erstellen
+            </button>
+        </div>
 
-<div
-    #collapse="ngbCollapse"
-    [(ngbCollapse)]="createReportCollapsed"
-    class="border border-primary rounded-bottom p-2"
->
-    <select class="form-select no-validation" [(ngModel)]="selectedInformation">
-        <option value="noSelect" disabled hidden selected>
-            Wählen Sie die Information des Berichts
-        </option>
-        <option
-            *ngFor="let information of reportableInformations"
-            [value]="information"
+        <div
+            #collapse="ngbCollapse"
+            [(ngbCollapse)]="createReportCollapsed"
+            class="border border-primary rounded-bottom p-2"
         >
-            {{ reportableInformationTranslationMap[information] }}
-        </option>
-    </select>
-
-    <div class="row align-items-center justify-content-between my-2">
-        <div class="col-6">
-            <div class="input-group input-group-sm">
-                <label
-                    class="btn"
-                    [class]="
-                        once.checked ? 'btn-secondary' : 'btn-outline-secondary'
-                    "
-                    for="once"
-                    >Einmalig</label
+            <select
+                class="form-select no-validation"
+                [(ngModel)]="selectedInformation"
+            >
+                <option value="noSelect" disabled hidden selected>
+                    Wählen Sie die Information des Berichts
+                </option>
+                <option
+                    *ngFor="let information of reportableInformations"
+                    [value]="information"
                 >
-                <label
-                    class="btn"
-                    [class]="
-                        repeating.checked
-                            ? 'btn-secondary'
-                            : 'btn-outline-secondary'
-                    "
-                    for="repeating"
-                    >Regelmäßig</label
-                >
-            </div>
-            <input
-                type="radio"
-                class="btn-check"
-                name="reportType"
-                id="once"
-                #once
-                autocomplete="off"
-                checked
-            />
-            <input
-                type="radio"
-                class="btn-check"
-                name="reportType"
-                id="repeating"
-                #repeating
-                autocomplete="off"
-            />
-        </div>
-        <div class="col-6">
-            <div class="input-group input-group-sm float-start">
-                <input
-                    #timeInput
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value="5"
-                    [disabled]="once.checked"
-                    class="form-control form-control-sm d-inline-block no-validation"
-                />
-                <span class="input-group-text">Min</span>
-            </div>
-        </div>
-    </div>
+                    {{ reportableInformationTranslationMap[information] }}
+                </option>
+            </select>
 
-    <button
-        type="button"
-        class="btn btn-primary"
-        [disabled]="selectedInformation === 'noSelect'"
-        (click)="
-            createReports(
-                selectedInformation,
-                timeInput.value,
-                repeating.checked
-            )
-        "
-    >
-        Erstelle Bericht
-    </button>
-</div>
-
-<h5>Regelmäßige Berichte</h5>
-
-<ng-container *ngFor="let information of reportableInformations">
-    <div *ngIf="(reportBehaviorState$ | async)?.activityIds?.[information]">
-        <div class="row align-items-center mb-2 mw-100">
-            <div class="col-7">
-                {{ reportableInformationTranslationMap[information] }}
-            </div>
-            <div class="col-4">
-                <div class="input-group input-group-sm float-start">
+            <div class="row align-items-center justify-content-between my-2">
+                <div class="col-6">
+                    <div class="input-group input-group-sm">
+                        <label
+                            class="btn"
+                            [class]="
+                                once.checked
+                                    ? 'btn-secondary'
+                                    : 'btn-outline-secondary'
+                            "
+                            for="once"
+                            >Einmalig</label
+                        >
+                        <label
+                            class="btn"
+                            [class]="
+                                repeating.checked
+                                    ? 'btn-secondary'
+                                    : 'btn-outline-secondary'
+                            "
+                            for="repeating"
+                            >Regelmäßig</label
+                        >
+                    </div>
                     <input
-                        #timeInput="ngModel"
-                        type="number"
-                        min="0"
-                        step="0.1"
-                        [ngModel]="
-                            ((activities$ | async)?.[information]?.recurrenceIntervalTime ?? 0) /
+                        type="radio"
+                        class="btn-check"
+                        name="reportType"
+                        id="once"
+                        #once
+                        autocomplete="off"
+                        checked
+                    />
+                    <input
+                        type="radio"
+                        class="btn-check"
+                        name="reportType"
+                        id="repeating"
+                        #repeating
+                        autocomplete="off"
+                    />
+                </div>
+                <div class="col-6">
+                    <div class="input-group input-group-sm float-start">
+                        <input
+                            #timeInput
+                            type="number"
+                            min="0"
+                            step="0.1"
+                            value="5"
+                            [disabled]="once.checked"
+                            class="form-control form-control-sm d-inline-block no-validation"
+                        />
+                        <span class="input-group-text">Min</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-5 mt-4">
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        [disabled]="
+                            selectedInformation === 'noSelect' ||
+                            (repeating.checked &&
+                                activities[selectedInformation] !== undefined)
+                        "
+                        (click)="
+                            createReports(
+                                selectedInformation,
+                                timeInput.value,
+                                repeating.checked
+                            )
+                        "
+                    >
+                        Erstelle Bericht
+                    </button>
+                </div>
+                <div class="col-7">
+                    <div
+                        class="ms-3"
+                        *ngIf="
+                            selectedInformation !== 'noSelect' &&
+                            repeating.checked &&
+                            activities[selectedInformation] !== undefined
+                        "
+                    >
+                        <i
+                            class="bi bi-exclamation-triangle-fill text-warning"
+                        ></i>
+                        Es werden bereits regelmäßig Berichte für diese
+                        Information erstellt.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h5>Regelmäßige Berichte</h5>
+
+        <ng-container *ngFor="let information of reportableInformations">
+            <div *ngIf="reportBehaviorState?.activityIds?.[information]">
+                <div class="row align-items-center mb-2 mw-100">
+                    <div class="col-7">
+                        {{ reportableInformationTranslationMap[information] }}
+                    </div>
+                    <div class="col-4">
+                        <div class="input-group input-group-sm float-start">
+                            <input
+                                #timeInput="ngModel"
+                                type="number"
+                                min="0"
+                                step="0.1"
+                                [ngModel]="
+                            (activities?.[information]?.recurrenceIntervalTime ?? 0) /
                             1000 /
                             60
                         "
-                        (appSaveOnTyping)="
-                            updateInterval(information, timeInput.value)
-                        "
-                        class="form-control form-control-sm d-inline-block no-validation"
-                    />
-                    <span class="input-group-text">Min</span>
+                                (appSaveOnTyping)="
+                                    updateInterval(information, timeInput.value)
+                                "
+                                class="form-control form-control-sm d-inline-block no-validation"
+                            />
+                            <span class="input-group-text">Min</span>
+                        </div>
+                    </div>
+                    <div class="col-1">
+                        <button
+                            type="button"
+                            class="btn btn-outline-danger"
+                            (click)="removeRepeatingReports(information)"
+                        >
+                            <span class="bi-trash me-1"></span>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="col-1">
-                <button
-                    type="button"
-                    class="btn btn-outline-danger"
-                    (click)="removeRepeatingReports(information)"
-                >
-                    <span class="bi-trash me-1"></span>
-                </button>
-            </div>
-        </div>
-    </div>
+        </ng-container>
+    </ng-container>
 </ng-container>
