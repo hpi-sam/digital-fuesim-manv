@@ -15,6 +15,7 @@ import { ViewportActionReducers } from './viewport';
 import { EmergencyOperationCenterActionReducers } from './emergency-operation-center';
 import { SimulatedRegionActionReducers } from './simulated-region';
 import { SimulationActionReducers } from './simulation';
+import { RadiogramActionReducers } from './radiogram';
 
 /**
  * All action reducers of the exercise must be registered here
@@ -37,6 +38,7 @@ const actionReducers = {
     ...EmergencyOperationCenterActionReducers,
     ...SimulatedRegionActionReducers,
     ...SimulationActionReducers,
+    ...RadiogramActionReducers,
 };
 
 type ExerciseActionReducer =

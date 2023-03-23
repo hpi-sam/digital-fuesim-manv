@@ -18,6 +18,7 @@ declare global {
 export * from './export-import/file-format';
 export * from './models';
 export * from './models/utils';
+export * from './models/radiogram/index';
 export * from './utils';
 export * from './simulation';
 export * from './state';
