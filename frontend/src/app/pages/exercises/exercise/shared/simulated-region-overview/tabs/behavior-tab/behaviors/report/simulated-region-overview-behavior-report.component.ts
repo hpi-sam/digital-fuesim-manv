@@ -1,4 +1,4 @@
-import type { OnDestroy, OnInit } from '@angular/core';
+import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type {
@@ -8,7 +8,7 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import { reportableInformations, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import { Subject, combineLatest, map } from 'rxjs';
+import { combineLatest, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
@@ -25,9 +25,7 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
     @Input() simulatedRegionId!: UUID;
     @Input() reportBehaviorId!: UUID;
 
-    reportBehaviorState$!: Observable<ReportBehaviorState>;
-
-    activities$!: Observable<{
+    recurringActivities$!: Observable<{
         [key in ReportableInformation]?: RecurringEventActivityState;
     }>;
 
@@ -51,8 +49,8 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.reportBehaviorState$ = this.store.select(
-            createSelectBehaviorState(
+        const reportBehaviorState$ = this.store.select(
+            createSelectBehaviorState<ReportBehaviorState>(
                 this.simulatedRegionId,
                 this.reportBehaviorId
             )
@@ -62,8 +60,8 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
             createSelectActivityStates(this.simulatedRegionId)
         );
 
-        this.activities$ = combineLatest([
-            this.reportBehaviorState$,
+        this.recurringActivities$ = combineLatest([
+            reportBehaviorState$,
             activities$,
         ]).pipe(
             map(([reportBehaviorState, activities]) =>
@@ -123,5 +121,7 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
                 informationType,
             });
         }
+
+        this.createReportCollapsed = true;
     }
 }

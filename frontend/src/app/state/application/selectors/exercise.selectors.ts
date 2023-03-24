@@ -215,18 +215,14 @@ export function createSelectByPredicate<E extends WithPosition>(
 export function createSelectBehaviorStates(simulatedRegionId: UUID) {
     return createSelector(
         createSelectSimulatedRegion(simulatedRegionId),
-        (simulatedRegion) =>
-            simulatedRegion.behaviors as ExerciseSimulationBehaviorState[]
+        (simulatedRegion) => simulatedRegion.behaviors
     );
 }
 
 export function createSelectActivityStates(simulatedRegionId: UUID) {
     return createSelector(
         createSelectSimulatedRegion(simulatedRegionId),
-        (simulatedRegion) =>
-            simulatedRegion.activities as {
-                [key: UUID]: ExerciseSimulationActivityState;
-            }
+        (simulatedRegion) => simulatedRegion.activities
     );
 }
 
@@ -241,11 +237,11 @@ export function createSelectBehaviorState<
 }
 
 export function createSelectActivityState<
-    B extends ExerciseSimulationActivityState
+    A extends ExerciseSimulationActivityState
 >(simulatedRegionId: UUID, activityId: UUID) {
     return createSelector(
         createSelectActivityStates(simulatedRegionId),
-        (activities) => activities[activityId] as B
+        (activities) => activities[activityId] as A
     );
 }
 

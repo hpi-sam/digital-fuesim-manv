@@ -1,5 +1,5 @@
-<ng-container *ngIf="reportBehaviorState$ | async as reportBehaviorState">
-    <ng-container *ngIf="activities$ | async as activities">
+<ng-container *ngIf="recurringActivities$ | async as recurringActivities">
+    <div>
         <h5>Berichte</h5>
 
         <div class="rounded-top" [class.bg-primary]="!createReportCollapsed">
@@ -98,7 +98,8 @@
                         [disabled]="
                             selectedInformation === 'noSelect' ||
                             (repeating.checked &&
-                                activities[selectedInformation] !== undefined)
+                                recurringActivities[selectedInformation] !==
+                                    undefined)
                         "
                         (click)="
                             createReports(
@@ -117,7 +118,8 @@
                         *ngIf="
                             selectedInformation !== 'noSelect' &&
                             repeating.checked &&
-                            activities[selectedInformation] !== undefined
+                            recurringActivities[selectedInformation] !==
+                                undefined
                         "
                     >
                         <i
@@ -129,11 +131,13 @@
                 </div>
             </div>
         </div>
+    </div>
 
+    <div class="mt-3">
         <h5>Regelmäßige Berichte</h5>
 
         <ng-container *ngFor="let information of reportableInformations">
-            <div *ngIf="reportBehaviorState?.activityIds?.[information]">
+            <div *ngIf="recurringActivities[information]">
                 <div class="row align-items-center mb-2 mw-100">
                     <div class="col-7">
                         {{ reportableInformationTranslationMap[information] }}
@@ -146,10 +150,12 @@
                                 min="0"
                                 step="0.1"
                                 [ngModel]="
-                            (activities?.[information]?.recurrenceIntervalTime ?? 0) /
-                            1000 /
-                            60
-                        "
+                                    (recurringActivities[information]
+                                        ?.recurrenceIntervalTime ??
+                                        0) /
+                                    1000 /
+                                    60
+                                "
                                 (appSaveOnTyping)="
                                     updateInterval(information, timeInput.value)
                                 "
@@ -170,5 +176,5 @@
                 </div>
             </div>
         </ng-container>
-    </ng-container>
+    </div>
 </ng-container>
