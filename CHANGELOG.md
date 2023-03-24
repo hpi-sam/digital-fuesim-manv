@@ -18,6 +18,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   There is a behavior responsible for creating and managing the activities which create radiograms
 -   In the large simulation overview modal, a column has been added to interact with radiograms.
 -   Behaviors can clean up the state when they are removed from a simulated region.
+-   There are now tests, that ensure that migrations do not fail
 
 ## [0.2.1] - 2023-03-11
 
