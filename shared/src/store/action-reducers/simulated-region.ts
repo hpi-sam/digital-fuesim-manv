@@ -316,6 +316,7 @@ export namespace SimulatedRegionActionReducers {
                     simulatedRegionId
                 );
                 simulatedRegion.behaviors.push(cloneDeepMutable(behaviorState));
+
                 return draftState;
             },
             rights: 'participant',
@@ -333,6 +334,7 @@ export namespace SimulatedRegionActionReducers {
                 const index = simulatedRegion.behaviors.findIndex(
                     (behavior) => behavior.id === behaviorId
                 );
+
                 if (index === -1) {
                     throw new ReducerError(
                         `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}. Therefore it could not be removed.`

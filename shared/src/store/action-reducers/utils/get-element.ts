@@ -1,3 +1,9 @@
+import type {
+    ExerciseSimulationActivityState,
+    ExerciseSimulationActivityType,
+    ExerciseSimulationBehaviorState,
+    ExerciseSimulationBehaviorType,
+} from '../../../simulation';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
 import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map';
@@ -46,4 +52,54 @@ export function getElementByPredicate<
         );
     }
     return element;
+}
+
+export function getBehaviorById<T extends ExerciseSimulationBehaviorType>(
+    state: Mutable<ExerciseState>,
+    simulatedRegionId: UUID,
+    behaviorId: UUID,
+    behaviorType: T
+) {
+    const simulatedRegion = getElement(
+        state,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+    const behavior = simulatedRegion.behaviors.find((b) => b.id === behaviorId);
+    if (!behavior) {
+        throw new ReducerError(
+            `Behavior with id ${behaviorId} does not exist in simulated region ${simulatedRegionId}`
+        );
+    }
+    if (behavior.type !== behaviorType) {
+        throw new ReducerError(
+            `Expected behavior with id ${behaviorId} to be of type ${behaviorType}, but was ${behavior.type}`
+        );
+    }
+    return behavior as Mutable<ExerciseSimulationBehaviorState<T>>;
+}
+
+export function getActivityById<T extends ExerciseSimulationActivityType>(
+    state: Mutable<ExerciseState>,
+    simulatedRegionId: UUID,
+    activityId: UUID,
+    activityType: T
+) {
+    const simulatedRegion = getElement(
+        state,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+    const activity = simulatedRegion.activities[activityId];
+    if (!activity) {
+        throw new ReducerError(
+            `Activity with id ${activityId} does not exist in simulated region ${simulatedRegionId}`
+        );
+    }
+    if (activity.type !== activityType) {
+        throw new ReducerError(
+            `Expected activity with id ${activityId} to be of type ${activityType}, but was ${activity.type}`
+        );
+    }
+    return activity as Mutable<ExerciseSimulationActivityState<T>>;
 }
