@@ -1,16 +1,16 @@
 <h5 class="card-title">Meldung über Fahrzeuganzahlen</h5>
 
-<p class="card-text" *ngIf="totalVehicleCount === 0">
+<p class="card-text" *ngIf="(totalVehicleCount$ | async) === 0">
     Derzeit befinden sich hier keine Fahrzeuge.
 </p>
 
-<p class="card-text" *ngIf="totalVehicleCount > 0">
+<p class="card-text" *ngIf="(totalVehicleCount$ | async) ?? 0 > 0">
     Derzeit befinden sich hier
-    {{ totalVehicleCount }} Fahrzeuge, die unter die folgenden Kategorien
-    fallen:
+    {{ totalVehicleCount$ | async }} Fahrzeuge, die unter die folgenden
+    Kategorien fallen:
 </p>
 
-<table *ngIf="totalVehicleCount > 0" class="table card-text">
+<table *ngIf="(totalVehicleCount$ | async) ?? 0" class="table card-text">
     <thead>
         <tr>
             <th class="w-75">Kategorie</th>
@@ -18,7 +18,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let vehicleCount of vehicleCounts">
+        <tr *ngFor="let vehicleCount of vehicleCounts$ | async">
             <td>{{ vehicleCount.vehicleType }}</td>
             <td>{{ vehicleCount.vehicleCount }}</td>
         </tr>
