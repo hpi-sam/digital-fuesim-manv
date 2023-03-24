@@ -6,7 +6,12 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import { getCreate } from '../../models/utils';
+import { groupBy } from 'lodash-es';
+import { Patient } from '../../models';
+import type { PatientCountRadiogram } from '../../models/radiogram';
+import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
+import { getActivityById } from '../../store/action-reducers/utils';
+import type { Mutable } from '../../utils';
 import { uuid, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import { DelayEventActivityState } from '../activities';
@@ -185,6 +190,47 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                 }
                 case 'treatmentProgressChangedEvent':
                     behaviorState.treatmentProgress = event.newProgress;
+                    break;
+                case 'collectInformationEvent':
+                    // This behavior answerers this query because the treating personnel has the knowledge of how many patients are in a given category
+                    {
+                        if (event.informationType !== 'patientCount') {
+                            return;
+                        }
+                        const radiogram = getActivityById(
+                            draftState,
+                            simulatedRegion.id,
+                            event.generateReportActivityId,
+                            'generateReportActivity'
+                        ).radiogram as Mutable<PatientCountRadiogram>;
+                        const patientCount = radiogram.patientCount;
+                        const patients = Object.values(
+                            draftState.patients
+                        ).filter((patient) =>
+                            isInSpecificSimulatedRegion(
+                                patient,
+                                simulatedRegion.id
+                            )
+                        );
+                        const groupedPatients = groupBy(patients, (patient) =>
+                            Patient.getVisibleStatus(
+                                patient,
+                                draftState.configuration.pretriageEnabled,
+                                draftState.configuration.bluePatientsEnabled
+                            )
+                        );
+                        patientCount.black =
+                            groupedPatients['black']?.length ?? 0;
+                        patientCount.white =
+                            groupedPatients['white']?.length ?? 0;
+                        patientCount.red = groupedPatients['red']?.length ?? 0;
+                        patientCount.yellow =
+                            groupedPatients['yellow']?.length ?? 0;
+                        patientCount.green =
+                            groupedPatients['green']?.length ?? 0;
+                        patientCount.blue =
+                            groupedPatients['blue']?.length ?? 0;
+                    }
                     break;
                 default:
                 // Ignore event
