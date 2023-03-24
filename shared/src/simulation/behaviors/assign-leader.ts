@@ -9,7 +9,7 @@ import type { PersonnelType } from '../../models/utils';
 import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
 import { getActivityById, getElement } from '../../store/action-reducers/utils';
 import type { Mutable } from '../../utils';
-import { UUID, uuid, uuidValidationOptions } from '../../utils';
+import { StrictObject, UUID, uuid, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type {
     SimulationBehavior,
@@ -206,12 +206,13 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
                                         vehicles,
                                         (vehicle) => vehicle.vehicleType
                                     );
-                                    Object.entries(groupedVehicles).forEach(
-                                        ([vehicleType, vehicleGroup]) => {
-                                            radiogram.vehicleCount[
-                                                vehicleType
-                                            ] = vehicleGroup.length;
-                                        }
+                                    radiogram.vehicleCount = Object.fromEntries(
+                                        StrictObject.entries(
+                                            groupedVehicles
+                                        ).map(([vehicleType, vehicleGroup]) => [
+                                            vehicleType,
+                                            vehicleGroup.length,
+                                        ])
                                     );
                                 }
                                 break;
