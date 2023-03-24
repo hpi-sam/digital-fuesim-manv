@@ -1,4 +1,8 @@
 <ng-container [ngSwitch]="radiogram.type">
+    <app-radiogram-card-content-treatment-status
+        *ngSwitchCase="'treatmentStatusRadiogram'"
+        [radiogramId]="radiogram.id"
+    ></app-radiogram-card-content-treatment-status>
     <app-radiogram-card-content-personnel-count
         *ngSwitchCase="'personnelCountRadiogram'"
         [radiogramId]="radiogram.id"
