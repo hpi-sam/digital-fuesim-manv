@@ -3,7 +3,10 @@ import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import { ExerciseSimulationEvent, simulationEventTypeOptions } from '../events';
+import {
+    ExerciseSimulationEvent,
+    simulationEventTypeOptions,
+} from '../events/exercise-simulation-event';
 import { sendSimulationEvent } from '../events/utils';
 import type {
     SimulationActivity,
@@ -23,7 +26,7 @@ export class RecurringEventActivityState implements SimulationActivityState {
 
     @IsInt()
     @Min(0)
-    public readonly nextOccurrenceTime: number;
+    public readonly lastOccurrenceTime: number;
 
     @Min(0)
     public readonly recurrenceIntervalTime: number;
@@ -39,7 +42,7 @@ export class RecurringEventActivityState implements SimulationActivityState {
     ) {
         this.id = id;
         this.event = event;
-        this.nextOccurrenceTime = firstOccurrenceTime;
+        this.lastOccurrenceTime = firstOccurrenceTime - recurrenceIntervalTime;
         this.recurrenceIntervalTime = recurrenceIntervalTime;
     }
 
@@ -49,18 +52,14 @@ export class RecurringEventActivityState implements SimulationActivityState {
 export const recurringEventActivity: SimulationActivity<RecurringEventActivityState> =
     {
         activityState: RecurringEventActivityState,
-        tick(
-            draftState,
-            simulatedRegion,
-            activityState,
-            _tickInterval,
-            terminate
-        ) {
-            if (draftState.currentTime >= activityState.nextOccurrenceTime) {
-                activityState.nextOccurrenceTime +=
-                    activityState.recurrenceIntervalTime;
+        tick(draftState, simulatedRegion, activityState) {
+            if (
+                draftState.currentTime >=
+                activityState.lastOccurrenceTime +
+                    activityState.recurrenceIntervalTime
+            ) {
+                activityState.lastOccurrenceTime = draftState.currentTime;
                 sendSimulationEvent(simulatedRegion, activityState.event);
-                terminate();
             }
         },
     };

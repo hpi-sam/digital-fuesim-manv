@@ -30,6 +30,8 @@ import { RadiogramCardComponent } from './radiogram-list/radiogram-card/radiogra
 import { RadiogramCardContentComponent } from './radiogram-list/radiogram-card/radiogram-card-content/radiogram-card-content.component';
 import { RadiogramCardContentFallbackComponent } from './radiogram-list/radiogram-card/radiogram-card-content-fallback/radiogram-card-content-fallback.component';
 import { RadiogramCardContentTreatmentStatusComponent } from './radiogram-list/radiogram-card/radiogram-card-content-treatment-status/radiogram-card-content-treatment-status.component';
+import { SimulatedRegionOverviewBehaviorReportComponent } from './tabs/behavior-tab/behaviors/report/simulated-region-overview-behavior-report.component';
+
 
 @NgModule({
     declarations: [
@@ -52,6 +54,7 @@ import { RadiogramCardContentTreatmentStatusComponent } from './radiogram-list/r
         RadiogramCardContentComponent,
         RadiogramCardContentFallbackComponent,
         RadiogramCardContentTreatmentStatusComponent,
+        SimulatedRegionOverviewBehaviorReportComponent,
     ],
     imports: [
         CommonModule,
