@@ -1,5 +1,5 @@
-<ng-container *NgIf="totalPatientCount$ | async as totalPatientCount">
-    <ng-container *NgIf="radiogram$ | async as radiogram"
+<ng-container *ngIf="totalPatientCount$ | async as totalPatientCount">
+    <ng-container *ngIf="radiogram$ | async as radiogram"
         ><h5 class="card-title">Meldung über Patientenanzahlen</h5>
         <p class="card-text" *ngIf="totalPatientCount === 0">
             Derzeit befinden sich hier keine Patienten.
