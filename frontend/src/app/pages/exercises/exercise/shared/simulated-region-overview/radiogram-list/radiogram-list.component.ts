@@ -24,7 +24,7 @@ import { RadiogramListService } from './radiogram-list.service';
     styleUrls: ['./radiogram-list.component.scss'],
 })
 export class RadiogramListComponent implements OnInit {
-    ownClientId: UUID | undefined;
+    ownClientId!: UUID;
     publishedRadiograms$!: Observable<ExerciseRadiogram[]>;
     visibleRadiograms$!: Observable<ExerciseRadiogram[]>;
 

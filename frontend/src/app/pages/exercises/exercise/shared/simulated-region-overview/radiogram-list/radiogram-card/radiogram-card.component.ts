@@ -39,7 +39,7 @@ export class RadiogramCardComponent implements OnInit {
     radiogram$!: Observable<ExerciseRadiogram>;
     simulatedRegion$!: Observable<SimulatedRegion | undefined>;
 
-    ownClientId: UUID | undefined;
+    ownClientId!: UUID;
 
     status$!: Observable<
         'done' | 'otherAccepted' | 'ownAccepted' | 'unread' | undefined
@@ -52,7 +52,7 @@ export class RadiogramCardComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.ownClientId = selectStateSnapshot(selectOwnClientId, this.store);
+        this.ownClientId = selectStateSnapshot(selectOwnClientId, this.store)!;
 
         const selectRadiogram = createSelectRadiogram(this.radiogramId);
         this.radiogram$ = this.store.select(selectRadiogram);
