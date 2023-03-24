@@ -28,9 +28,8 @@ export class RadiogramCardContentPersonnelCountComponent implements OnInit {
     constructor(private readonly store: Store<AppState>) {}
 
     ngOnInit(): void {
-        const selectRadiogram = createSelectRadiogram(this.radiogramId);
         this.radiogram$ = this.store.select(
-            selectRadiogram
+            createSelectRadiogram(this.radiogramId)
         ) as Observable<PersonnelCountRadiogram>;
     }
 }
