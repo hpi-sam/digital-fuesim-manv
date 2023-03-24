@@ -19,6 +19,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   It displays all radiograms, optionally filtered to those that are not done.
     -   Radiograms can be accepted and marked as done.
 -   Behaviors can clean up the state when they are removed from a simulated region.
+-   There are now tests, that ensure that migrations do not fail
 
 ## [0.2.1] - 2023-03-11
 
