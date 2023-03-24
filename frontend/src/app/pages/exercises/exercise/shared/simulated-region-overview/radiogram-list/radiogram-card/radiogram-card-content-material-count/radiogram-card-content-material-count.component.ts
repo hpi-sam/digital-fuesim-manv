@@ -1,9 +1,7 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type {
-    MaterialCountRadiogram,
-} from 'digital-fuesim-manv-shared';
+import type { MaterialCountRadiogram } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
