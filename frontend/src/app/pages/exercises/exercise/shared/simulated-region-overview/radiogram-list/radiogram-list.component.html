@@ -6,12 +6,27 @@
                 Durchgesagte Funksprüche anzeigen
             </label>
             <input
-                [ngModel]="showDone$ | async"
-                (ngModelChange)="changeShowDone($event)"
+                [ngModel]="radiogramListService.showDone$ | async"
+                (ngModelChange)="radiogramListService.setShowDone($event)"
                 type="checkbox"
                 role="switch"
                 class="form-check-input"
                 id="showDoneSwitch"
+            />
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <label class="from-check-label" for="showOthersSwitch">
+                Funksprüche aller Nutzer anzeigen
+            </label>
+            <input
+                [ngModel]="radiogramListService.showOtherClients$ | async"
+                (ngModelChange)="
+                    radiogramListService.setShowOtherClients($event)
+                "
+                type="checkbox"
+                role="switch"
+                class="form-check-input"
+                id="showOthersSwitch"
             />
         </div>
     </div>
@@ -29,7 +44,10 @@
         ></app-radiogram-card>
         <ng-template #noRadiograms>
             <div
-                *ngIf="showDone$ | async; else noNotDoneRadiograms"
+                *ngIf="
+                    radiogramListService.showDone$ | async;
+                    else noNotDoneRadiograms
+                "
                 class="text-muted mt-3 mb-3"
             >
                 Es sind noch keine Funksprüche vorhanden.

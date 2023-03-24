@@ -3,17 +3,20 @@ import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { ExerciseRadiogram, UUID } from 'digital-fuesim-manv-shared';
 import {
+    currentParticipantIdOf,
+    isAccepted,
     isDone,
     publishTimeOf,
     isUnpublished,
     StrictObject,
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import { BehaviorSubject, map, combineLatest } from 'rxjs';
+import { map, combineLatest } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
 import { selectOwnClientId } from 'src/app/state/application/selectors/application.selectors';
 import { selectRadiograms } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { RadiogramListService } from './radiogram-list.service';
 
 @Component({
     selector: 'app-radiogram-list',
@@ -25,9 +28,10 @@ export class RadiogramListComponent implements OnInit {
     publishedRadiograms$!: Observable<ExerciseRadiogram[]>;
     visibleRadiograms$!: Observable<ExerciseRadiogram[]>;
 
-    showDone$ = new BehaviorSubject<boolean>(false);
-
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(
+        private readonly store: Store<AppState>,
+        public readonly radiogramListService: RadiogramListService
+    ) {}
 
     ngOnInit(): void {
         this.ownClientId = selectStateSnapshot(selectOwnClientId, this.store)!;
@@ -37,26 +41,43 @@ export class RadiogramListComponent implements OnInit {
             map((radiograms) =>
                 radiograms.filter((radiogram) => !isUnpublished(radiogram))
             ),
-            map((radiograms) => [...radiograms].sort(this.compareFn))
+            map((radiograms) =>
+                [...radiograms].sort(this.compareRadiogramsByPublishTime)
+            )
         );
 
         this.visibleRadiograms$ = combineLatest([
             this.publishedRadiograms$,
-            this.showDone$,
+            this.radiogramListService.showDone$,
+            this.radiogramListService.showOtherClients$,
         ]).pipe(
-            map(([radiograms, showDone]) =>
-                showDone
-                    ? radiograms
-                    : radiograms.filter((radiogram) => !isDone(radiogram))
+            map(([radiograms, showDone, showOthers]) =>
+                radiograms.filter((radiogram) =>
+                    this.shouldBeShown(radiogram, showDone, showOthers)
+                )
             )
         );
     }
 
-    compareFn(a: ExerciseRadiogram, b: ExerciseRadiogram): number {
+    compareRadiogramsByPublishTime(
+        a: ExerciseRadiogram,
+        b: ExerciseRadiogram
+    ): number {
         return publishTimeOf(b) - publishTimeOf(a);
     }
 
-    changeShowDone(value: boolean) {
-        this.showDone$.next(value);
+    shouldBeShown(
+        radiogram: ExerciseRadiogram,
+        showDone: boolean,
+        showOthers: boolean
+    ): boolean {
+        if (!showDone && isDone(radiogram)) return false;
+        if (
+            !showOthers &&
+            isAccepted(radiogram) &&
+            currentParticipantIdOf(radiogram) !== this.ownClientId
+        )
+            return false;
+        return true;
     }
 }
