@@ -41,6 +41,7 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
     };
 
     createReportCollapsed = true;
+    repeatingReport = false;
     selectedInformation: ReportableInformation | 'noSelect' = 'noSelect';
 
     constructor(
