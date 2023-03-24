@@ -124,10 +124,21 @@
         <h5>Regelmäßige Berichte</h5>
 
         <ng-container *ngFor="let information of reportableInformations">
-            <div *ngIf="recurringActivities[information]">
+            <div *ngIf="recurringActivities[information] as recurringActivity">
                 <div class="row align-items-center mb-2 mw-100">
                     <div class="col-7">
                         {{ reportableInformationTranslationMap[information] }}
+                        <span
+                            *ngIf="currentTime$ | async as currentTime"
+                            class="text-muted"
+                        >
+                            in
+                            {{
+                                recurringActivity.lastOccurrenceTime +
+                                    recurringActivity.recurrenceIntervalTime -
+                                    currentTime | date : 'mm:ss'
+                            }}</span
+                        >
                     </div>
                     <div class="col-4">
                         <div class="input-group input-group-sm float-start">
@@ -137,9 +148,7 @@
                                 min="0"
                                 step="0.1"
                                 [ngModel]="
-                                    (recurringActivities[information]
-                                        ?.recurrenceIntervalTime ??
-                                        0) /
+                                    recurringActivity.recurrenceIntervalTime /
                                     1000 /
                                     60
                                 "

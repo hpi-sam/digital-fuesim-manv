@@ -14,6 +14,7 @@ import type { AppState } from 'src/app/state/app.state';
 import {
     createSelectActivityStates,
     createSelectBehaviorState,
+    selectCurrentTime,
 } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
@@ -28,6 +29,8 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
     recurringActivities$!: Observable<{
         [key in ReportableInformation]?: RecurringEventActivityState;
     }>;
+
+    currentTime$!: Observable<number>;
 
     reportableInformations = reportableInformations;
     reportableInformationTranslationMap: {
@@ -79,6 +82,8 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
                 )
             )
         );
+
+        this.currentTime$ = this.store.select(selectCurrentTime);
     }
 
     updateInterval(informationType: ReportableInformation, interval: string) {
