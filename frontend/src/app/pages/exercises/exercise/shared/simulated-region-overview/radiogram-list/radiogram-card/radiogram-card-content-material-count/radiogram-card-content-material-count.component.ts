@@ -3,7 +3,6 @@ import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type {
     MaterialCountRadiogram,
-    PatientStatus,
 } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
@@ -19,7 +18,7 @@ import { createSelectRadiogram } from 'src/app/state/application/selectors/exerc
 export class RadiogramCardContentMaterialCountComponent implements OnInit {
     @Input() radiogramId!: UUID;
 
-    capacity$!: Observable<Partial<{ [key in PatientStatus]: number }>>;
+    capacity$!: Observable<{ green: number; yellow: number; red: number }>;
 
     constructor(private readonly store: Store<AppState>) {}
 
