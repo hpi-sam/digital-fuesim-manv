@@ -96,22 +96,18 @@ export class RadiogramCardComponent implements OnInit {
     }
 
     accept() {
-        if (this.ownClientId) {
-            this.exerciseService.proposeAction({
-                type: '[Radiogram] Accept radiogram',
-                clientId: this.ownClientId,
-                radiogramId: this.radiogramId,
-            });
-        }
+        this.exerciseService.proposeAction({
+            type: '[Radiogram] Accept radiogram',
+            clientId: this.ownClientId,
+            radiogramId: this.radiogramId,
+        });
     }
 
     markAsDone() {
-        if (this.ownClientId) {
-            this.exerciseService.proposeAction({
-                type: '[Radiogram] Mark as done',
-                clientId: this.ownClientId,
-                radiogramId: this.radiogramId,
-            });
-        }
+        this.exerciseService.proposeAction({
+            type: '[Radiogram] Mark as done',
+            clientId: this.ownClientId,
+            radiogramId: this.radiogramId,
+        });
     }
 }
