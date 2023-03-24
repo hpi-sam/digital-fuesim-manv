@@ -25,6 +25,10 @@ import { SimulatedRegionsModalComponent } from './simulated-regions-modal/simula
 import { SimulatedRegionNameComponent } from './simulated-region-name/simulated-region-name.component';
 import { SimulatedRegionOverviewPatientsTabComponent } from './tabs/patients-tab/simulated-region-overview-patients-tab/simulated-region-overview-patients-tab.component';
 import { SelectPatientService } from './select-patient.service';
+import { RadiogramListComponent } from './radiogram-list/radiogram-list.component';
+import { RadiogramCardComponent } from './radiogram-list/radiogram-card/radiogram-card.component';
+import { RadiogramCardContentComponent } from './radiogram-list/radiogram-card/radiogram-card-content/radiogram-card-content.component';
+import { RadiogramCardContentFallbackComponent } from './radiogram-list/radiogram-card/radiogram-card-content-fallback/radiogram-card-content-fallback.component';
 import { SimulatedRegionOverviewBehaviorReportComponent } from './tabs/behavior-tab/behaviors/report/simulated-region-overview-behavior-report.component';
 
 @NgModule({
@@ -43,6 +47,10 @@ import { SimulatedRegionOverviewBehaviorReportComponent } from './tabs/behavior-
         PersonnelTypeToGermanAbbreviationPipe,
         SimulatedRegionsModalComponent,
         SimulatedRegionOverviewPatientsTabComponent,
+        RadiogramListComponent,
+        RadiogramCardComponent,
+        RadiogramCardContentComponent,
+        RadiogramCardContentFallbackComponent,
         SimulatedRegionOverviewBehaviorReportComponent,
     ],
     imports: [
