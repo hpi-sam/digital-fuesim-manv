@@ -1,8 +1,9 @@
+import type { MapCoordinates } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Point } from 'ol/geom';
 import { Translate } from 'ol/interaction';
-import type { GeometryWithCoordinates, Positions } from './geometry-helper';
+import type { GeometryWithCoordinates } from './geometry-helper';
 
 /**
  * Translates (moves) a feature to a new position.
@@ -48,8 +49,8 @@ export class TranslateInteraction extends Translate {
      */
     public static onTranslateEnd<T extends GeometryWithCoordinates = Point>(
         feature: Feature<T>,
-        callback: (newCoordinates: Positions<T>) => void,
-        getPosition: (feature: Feature<T>) => Positions<T>
+        callback: (newCoordinates: MapCoordinates) => void,
+        getPosition: (feature: Feature<T>) => MapCoordinates
     ) {
         feature.addEventListener('translateend', (event) => {
             // The end coordinates in the event are the mouse coordinates and not the feature coordinates.

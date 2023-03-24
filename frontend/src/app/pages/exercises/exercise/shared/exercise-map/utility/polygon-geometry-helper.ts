@@ -3,12 +3,12 @@ import {
     MapCoordinates,
 } from 'digital-fuesim-manv-shared';
 import { Feature } from 'ol';
+import { getCenter } from 'ol/extent';
 import { Polygon } from 'ol/geom';
 import type {
     CoordinatePair,
     Coordinates,
     GeometryHelper,
-    Positions,
     ResizableElement,
 } from './geometry-helper';
 import { interpolate } from './geometry-helper';
@@ -21,24 +21,24 @@ export class PolygonGeometryHelper
 
     getElementCoordinates = (
         element: ResizableElement
-    ): Coordinates<Polygon> => [
-        [
-            [currentCoordinatesOf(element).x, currentCoordinatesOf(element).y],
+    ): Coordinates<Polygon> => {
+        const center = currentCoordinatesOf(element);
+        const { width, height } = element.size;
+        return [
             [
-                currentCoordinatesOf(element).x + element.size.width,
-                currentCoordinatesOf(element).y,
+                // top left
+                [center.x - width / 2, center.y + height / 2],
+                // top right
+                [center.x + width / 2, center.y + height / 2],
+                // bottom right
+                [center.x + width / 2, center.y - height / 2],
+                // bottom left
+                [center.x - width / 2, center.y - height / 2],
+                // top left (close the rectangle)
+                [center.x - width / 2, center.y + height / 2],
             ],
-            [
-                currentCoordinatesOf(element).x + element.size.width,
-                currentCoordinatesOf(element).y - element.size.height,
-            ],
-            [
-                currentCoordinatesOf(element).x,
-                currentCoordinatesOf(element).y - element.size.height,
-            ],
-            [currentCoordinatesOf(element).x, currentCoordinatesOf(element).y],
-        ],
-    ];
+        ];
+    };
 
     getFeatureCoordinates = (feature: Feature<Polygon>): Coordinates<Polygon> =>
         feature.getGeometry()!.getCoordinates();
@@ -57,10 +57,11 @@ export class PolygonGeometryHelper
             )
         );
 
-    getFeaturePosition = (feature: Feature<Polygon>): Positions<Polygon> =>
-        this.getFeatureCoordinates(feature).map((coordinates) =>
-            coordinates.map((coordinate) =>
-                MapCoordinates.create(coordinate[0]!, coordinate[1]!)
-            )
+    getFeaturePosition = (feature: Feature<Polygon>) => {
+        const centerCoordinates = getCenter(feature.getGeometry()!.getExtent());
+        return MapCoordinates.create(
+            centerCoordinates[0]!,
+            centerCoordinates[1]!
         );
+    };
 }

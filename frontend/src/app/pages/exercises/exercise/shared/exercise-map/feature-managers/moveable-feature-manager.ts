@@ -7,13 +7,12 @@ import type VectorSource from 'ol/source/Vector';
 import type { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
 // eslint-disable-next-line @typescript-eslint/no-shadow
-import type { Element, UUID } from 'digital-fuesim-manv-shared';
+import type { Element, MapCoordinates, UUID } from 'digital-fuesim-manv-shared';
 import type { FeatureManager } from '../utility/feature-manager';
 import type {
     GeometryHelper,
     GeometryWithCoordinates,
     PositionableElement,
-    Positions,
 } from '../utility/geometry-helper';
 import { MovementAnimator } from '../utility/movement-animator';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
@@ -39,7 +38,7 @@ export abstract class MoveableFeatureManager<
     constructor(
         protected readonly olMap: OlMap,
         private readonly proposeMovementAction: (
-            newPosition: Positions<FeatureType>,
+            newPosition: MapCoordinates,
             element: ManagedElement
         ) => void,
         protected readonly geometryHelper: GeometryHelper<

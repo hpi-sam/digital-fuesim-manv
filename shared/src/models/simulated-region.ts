@@ -20,7 +20,7 @@ export class SimulatedRegion {
     public readonly type = 'simulatedRegion';
 
     /**
-     * top-left position
+     * The center coordinates of the simulatedRegion
      *
      * @deprecated Do not access directly, use helper methods from models/utils/position/position-helpers(-mutable) instead.
      */
@@ -36,11 +36,10 @@ export class SimulatedRegion {
     public readonly name: string;
 
     /**
-     * @param position top-left position
      * @deprecated Use {@link create} instead
      */
-    constructor(position: MapCoordinates, size: Size, name: string) {
-        this.position = MapPosition.create(position);
+    constructor(centerCoordinates: MapCoordinates, size: Size, name: string) {
+        this.position = MapPosition.create(centerCoordinates);
         this.size = size;
         this.name = name;
     }

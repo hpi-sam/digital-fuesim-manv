@@ -61,11 +61,11 @@ export class ViewportFeatureManager
     ) {
         super(
             olMap,
-            (targetPositions, viewport) => {
+            (targetPosition, viewport) => {
                 exerciseService.proposeAction({
                     type: '[Viewport] Move viewport',
                     viewportId: viewport.id,
-                    targetPosition: targetPositions[0]![0]!,
+                    targetPosition,
                 });
             },
             new PolygonGeometryHelper()
@@ -85,7 +85,7 @@ export class ViewportFeatureManager
         const feature = super.createFeature(element);
         ResizeRectangleInteraction.onResize(
             feature,
-            ({ topLeftCoordinate, scale }) => {
+            ({ centerCoordinate, scale }) => {
                 const currentElement = this.getElementFromFeature(
                     feature
                 ) as Viewport;
@@ -94,8 +94,8 @@ export class ViewportFeatureManager
                         type: '[Viewport] Resize viewport',
                         viewportId: element.id,
                         targetPosition: MapCoordinates.create(
-                            topLeftCoordinate[0]!,
-                            topLeftCoordinate[1]!
+                            centerCoordinate[0]!,
+                            centerCoordinate[1]!
                         ),
                         newSize: Size.create(
                             currentElement.size.width * scale.x,

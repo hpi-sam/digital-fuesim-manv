@@ -1,7 +1,7 @@
 import type { WithPosition } from 'digital-fuesim-manv-shared';
 import {
-    MapCoordinates,
     currentCoordinatesOf,
+    MapCoordinates,
 } from 'digital-fuesim-manv-shared';
 import { Feature } from 'ol';
 import { Point } from 'ol/geom';
@@ -9,7 +9,6 @@ import type {
     CoordinatePair,
     Coordinates,
     GeometryHelper,
-    Positions,
 } from './geometry-helper';
 import { interpolate } from './geometry-helper';
 
@@ -31,7 +30,7 @@ export class PointGeometryHelper implements GeometryHelper<Point> {
     ): Coordinates<Point> =>
         interpolate(positions.startPosition, positions.endPosition, progress);
 
-    getFeaturePosition = (feature: Feature<Point>): Positions<Point> =>
+    getFeaturePosition = (feature: Feature<Point>) =>
         MapCoordinates.create(
             this.getFeatureCoordinates(feature)[0]!,
             this.getFeatureCoordinates(feature)[1]!

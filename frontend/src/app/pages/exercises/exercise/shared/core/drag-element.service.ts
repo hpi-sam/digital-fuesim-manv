@@ -221,8 +221,8 @@ export class DragElementService {
                     const width = height * Viewport.image.aspectRatio;
                     const viewport = Viewport.create(
                         {
-                            x: position.x - width / 2,
-                            y: position.y + height / 2,
+                            x: position.x,
+                            y: position.y,
                         },
                         {
                             height,
@@ -283,8 +283,8 @@ export class DragElementService {
                     const width = height * SimulatedRegion.image.aspectRatio;
                     const simulatedRegion = SimulatedRegion.create(
                         {
-                            x: position.x - width / 2,
-                            y: position.y + height / 2,
+                            x: position.x,
+                            y: position.y,
                         },
                         {
                             height,

@@ -58,11 +58,11 @@ export class SimulatedRegionFeatureManager
     ) {
         super(
             olMap,
-            (targetPositions, simulatedRegion) => {
+            (targetPosition, simulatedRegion) => {
                 exerciseService.proposeAction({
                     type: '[SimulatedRegion] Move simulated region',
                     simulatedRegionId: simulatedRegion.id,
-                    targetPosition: targetPositions[0]![0]!,
+                    targetPosition,
                 });
             },
             new PolygonGeometryHelper()
@@ -84,7 +84,7 @@ export class SimulatedRegionFeatureManager
         const feature = super.createFeature(element);
         ResizeRectangleInteraction.onResize(
             feature,
-            ({ topLeftCoordinate, scale }) => {
+            ({ centerCoordinate, scale }) => {
                 const currentElement = this.getElementFromFeature(
                     feature
                 ) as SimulatedRegion;
@@ -93,8 +93,8 @@ export class SimulatedRegionFeatureManager
                         type: '[SimulatedRegion] Resize simulated region',
                         simulatedRegionId: element.id,
                         targetPosition: MapCoordinates.create(
-                            topLeftCoordinate[0]!,
-                            topLeftCoordinate[1]!
+                            centerCoordinate[0]!,
+                            centerCoordinate[1]!
                         ),
                         newSize: Size.create(
                             currentElement.size.width * scale.x,
@@ -140,19 +140,16 @@ export class SimulatedRegionFeatureManager
             return false;
         }
         if (
-            ['vehicle', 'personnel', 'material', 'patient'].includes(
-                droppedElement.type
-            )
+            droppedElement.type === 'vehicle' ||
+            droppedElement.type === 'personnel' ||
+            droppedElement.type === 'material' ||
+            droppedElement.type === 'patient'
         ) {
             this.exerciseService.proposeAction(
                 {
                     type: '[SimulatedRegion] Add Element',
                     simulatedRegionId: droppedOnSimulatedRegion.id,
-                    elementToBeAddedType: droppedElement.type as
-                        | 'material'
-                        | 'patient'
-                        | 'personnel'
-                        | 'vehicle',
+                    elementToBeAddedType: droppedElement.type,
                     elementToBeAddedId: droppedElement.id,
                 },
                 true

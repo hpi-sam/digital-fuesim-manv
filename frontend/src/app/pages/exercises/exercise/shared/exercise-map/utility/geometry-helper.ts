@@ -32,36 +32,25 @@ export type Coordinates<T extends GeometryWithCoordinates> = Exclude<
     null
 >;
 
-type ArrayElement<ArrayType> = ArrayType extends readonly (infer ElementType)[]
-    ? ElementType
-    : never;
-
-type SubstituteCoordinateForPoint<T> = T extends Coordinate
-    ? MapCoordinates
-    : T extends Array<ArrayElement<T>>
-    ? SubstituteCoordinateForPoint<ArrayElement<T>>[]
-    : never;
-
-export type Positions<T extends GeometryWithCoordinates> =
-    SubstituteCoordinateForPoint<Coordinates<T>>;
-
 export interface CoordinatePair<T extends GeometryWithCoordinates> {
     startPosition: Coordinates<T>;
     endPosition: Coordinates<T>;
 }
 
 export interface GeometryHelper<
-    T extends GeometryWithCoordinates,
+    GeometryType extends GeometryWithCoordinates,
     Element extends PositionableElement = PositionableElement
 > {
-    create: (element: Element) => Feature<T>;
-    getElementCoordinates: (element: Element) => Coordinates<T>;
-    getFeatureCoordinates: (feature: Feature<T>) => Coordinates<T>;
+    create: (element: Element) => Feature<GeometryType>;
+    getElementCoordinates: (element: Element) => Coordinates<GeometryType>;
+    getFeatureCoordinates: (
+        feature: Feature<GeometryType>
+    ) => Coordinates<GeometryType>;
     interpolateCoordinates: (
-        positions: CoordinatePair<T>,
+        positions: CoordinatePair<GeometryType>,
         progress: number
-    ) => Coordinates<T>;
-    getFeaturePosition: (feature: Feature<T>) => Positions<T>;
+    ) => Coordinates<GeometryType>;
+    getFeaturePosition: (feature: Feature<GeometryType>) => MapCoordinates;
 }
 
 export const interpolate = (

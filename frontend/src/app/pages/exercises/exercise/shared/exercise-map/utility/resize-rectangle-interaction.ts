@@ -2,12 +2,14 @@ import type { Feature, MapBrowserEvent } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
 import { distance } from 'ol/coordinate';
 import BaseEvent from 'ol/events/Event';
+import { getCenter } from 'ol/extent';
 import type { Polygon } from 'ol/geom';
 import PointerInteraction from 'ol/interaction/Pointer';
 import type VectorSource from 'ol/source/Vector';
 
 /**
  * Provides the ability to resize a rectangle by dragging any of its corners.
+ * It prevents the rectangle from flipping and from getting too small.
  */
 export class ResizeRectangleInteraction extends PointerInteraction {
     /**
@@ -21,7 +23,14 @@ export class ResizeRectangleInteraction extends PointerInteraction {
      */
     private currentResizeValues?: CurrentResizeValues;
 
-    constructor(private readonly source: VectorSource<Polygon>) {
+    constructor(
+        private readonly source: VectorSource<Polygon>,
+        /**
+         * The minimum allowed distance between two corners of the rectangle.
+         */
+        // TODO: Add a proper unit for this. Blocked by #374
+        private readonly minimumSize = 10
+    ) {
         super({
             handleDownEvent: (event) => this._handleDownEvent(event),
             handleDragEvent: (event) => this._handleDragEvent(event),
@@ -66,47 +75,54 @@ export class ResizeRectangleInteraction extends PointerInteraction {
             return false;
         }
         const mouseCoordinate = event.coordinate;
-        const newXScale =
-            (mouseCoordinate[0]! - this.currentResizeValues.originCorner[0]!) /
-            (this.currentResizeValues.draggedCorner[0]! -
-                this.currentResizeValues.originCorner[0]!);
-        const newYScale =
-            (this.currentResizeValues.originCorner[1]! - mouseCoordinate[1]!) /
-            (this.currentResizeValues.originCorner[1]! -
-                this.currentResizeValues.draggedCorner[1]!);
-        this.currentResizeValues.feature
+        const { draggedCorner, originCorner, currentScale, feature } =
+            this.currentResizeValues;
+        const newXScale = this.calculateNewScale(
+            draggedCorner[0]!,
+            originCorner[0]!,
+            mouseCoordinate[0]!
+        );
+        const newYScale = this.calculateNewScale(
+            draggedCorner[1]!,
+            originCorner[1]!,
+            mouseCoordinate[1]!
+        );
+        feature
             .getGeometry()!
             .scale(
-                newXScale / this.currentResizeValues.currentScale!.x,
-                newYScale / this.currentResizeValues.currentScale!.y,
-                this.currentResizeValues.originCorner
+                newXScale / currentScale.x,
+                newYScale / currentScale.y,
+                originCorner
             );
         this.currentResizeValues.currentScale = { x: newXScale, y: newYScale };
         return true;
+    }
+
+    private calculateNewScale(
+        draggedCorner: number,
+        originCorner: number,
+        mouseCoordinate: number
+    ) {
+        const oldLength = draggedCorner - originCorner;
+        const newLength = mouseCoordinate - originCorner;
+        return (
+            // We also want to prevent flipping the rectangle
+            (oldLength < 0
+                ? Math.min(newLength, -this.minimumSize)
+                : Math.max(newLength, this.minimumSize)) / oldLength
+        );
     }
 
     private _handleUpEvent(event: MapBrowserEvent<any>): boolean {
         if (this.currentResizeValues === undefined) {
             return true;
         }
-
-        const coordinates = this.currentResizeValues.feature
-            .getGeometry()!
-            .getCoordinates()![0]!;
-        const topLeftCoordinate = coordinates.reduce<Coordinate>(
-            (smallestCoordinate, coordinate) =>
-                coordinate[0]! <= smallestCoordinate[0]! ||
-                coordinate[1]! >= smallestCoordinate[1]!
-                    ? coordinate
-                    : smallestCoordinate,
-            [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]
+        const { currentScale, feature } = this.currentResizeValues;
+        const newCenterCoordinate = getCenter(
+            feature.getGeometry()!.getExtent()
         );
-        this.currentResizeValues.feature.dispatchEvent(
-            new ResizeEvent(
-                this.currentResizeValues.currentScale,
-                this.currentResizeValues.originCorner,
-                topLeftCoordinate
-            )
+        feature.dispatchEvent(
+            new ResizeEvent(currentScale, newCenterCoordinate)
         );
         this.currentResizeValues = undefined;
         return false;
@@ -127,6 +143,7 @@ interface CurrentResizeValues {
     draggedCorner: Coordinate;
     /**
      * The corner that doesn't move during the resize.
+     * It is always opposite to the dragged corner.
      */
     originCorner: Coordinate;
     /**
@@ -142,14 +159,7 @@ const resizeRectangleEventType = 'resizerectangle';
 class ResizeEvent extends BaseEvent {
     constructor(
         public readonly scale: { x: number; y: number },
-        /**
-         * The coordinate of the corner that didn't move during the resize.
-         */
-        public readonly origin: Coordinate,
-        /**
-         * The new top left coordinate of the rectangle.
-         */
-        public readonly topLeftCoordinate: Coordinate
+        public readonly centerCoordinate: Coordinate
     ) {
         super(resizeRectangleEventType);
     }

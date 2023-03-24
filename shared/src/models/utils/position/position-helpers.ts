@@ -155,31 +155,19 @@ export function simulatedRegionIdOfPosition(position: Position): UUID {
 }
 
 export function upperLeftCornerOf(element: WithExtent): MapCoordinates {
-    const corner = { ...currentCoordinatesOf(element) };
-
-    if (element.size.width < 0) {
-        corner.x += element.size.width;
-    }
-
-    if (element.size.height < 0) {
-        corner.y -= element.size.height;
-    }
-
-    return MapCoordinates.create(corner.x, corner.y);
+    const centerCoordinate = currentCoordinatesOf(element);
+    return MapCoordinates.create(
+        centerCoordinate.x - element.size.width / 2,
+        centerCoordinate.y + element.size.height / 2
+    );
 }
 
 export function lowerRightCornerOf(element: WithExtent): MapCoordinates {
-    const corner = { ...currentCoordinatesOf(element) };
-
-    if (element.size.width > 0) {
-        corner.x += element.size.width;
-    }
-
-    if (element.size.height > 0) {
-        corner.y -= element.size.height;
-    }
-
-    return MapCoordinates.create(corner.x, corner.y);
+    const centerCoordinate = currentCoordinatesOf(element);
+    return MapCoordinates.create(
+        centerCoordinate.x + element.size.width / 2,
+        centerCoordinate.y - element.size.height / 2
+    );
 }
 
 export function nestedCoordinatesOf(
