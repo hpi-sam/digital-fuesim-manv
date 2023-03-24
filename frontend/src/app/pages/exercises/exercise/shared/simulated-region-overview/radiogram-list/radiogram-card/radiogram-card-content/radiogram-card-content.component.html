@@ -1,4 +1,8 @@
 <ng-container [ngSwitch]="radiogram.type">
+    <app-radiogram-card-content-vehicle-count
+        *ngSwitchCase="'vehicleCountRadiogram'"
+        [radiogram]="$any(radiogram)"
+    ></app-radiogram-card-content-vehicle-count>
     <app-radiogram-card-content-fallback
         *ngSwitchDefault
         [radiogramType]="radiogram.type"
