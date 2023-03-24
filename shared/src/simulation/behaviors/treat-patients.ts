@@ -6,9 +6,14 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
+import { groupBy } from 'lodash-es';
+import { Patient } from '../../models';
+import type {
+    PatientCountRadiogram,
+    TreatmentStatusRadiogram,
+} from '../../models/radiogram';
+import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
 import type { SimulatedRegion } from '../../models';
-import type { TreatmentStatusRadiogram } from '../../models/radiogram';
-import { getCreate } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import { getActivityById } from '../../store/action-reducers/utils';
 import type { Mutable } from '../../utils';
@@ -183,25 +188,63 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                     behaviorState.treatmentProgress = event.newProgress;
                     break;
                 case 'collectInformationEvent': {
+                    // This behavior answerers this query because the treating personnel has the knowledge of how many patients are in a given category
+                    if (
+                        event.informationType === 'patientCount' &&
+                        behaviorState.treatmentProgress !== 'unknown'
+                    ) {
+                        const radiogram = getActivityById(
+                            draftState,
+                            simulatedRegion.id,
+                            event.generateReportActivityId,
+                            'generateReportActivity'
+                        ).radiogram as Mutable<PatientCountRadiogram>;
+                        const patientCount = radiogram.patientCount;
+                        const patients = Object.values(
+                            draftState.patients
+                        ).filter((patient) =>
+                            isInSpecificSimulatedRegion(
+                                patient,
+                                simulatedRegion.id
+                            )
+                        );
+                        const groupedPatients = groupBy(patients, (patient) =>
+                            Patient.getVisibleStatus(
+                                patient,
+                                draftState.configuration.pretriageEnabled,
+                                draftState.configuration.bluePatientsEnabled
+                            )
+                        );
+                        patientCount.black =
+                            groupedPatients['black']?.length ?? 0;
+                        patientCount.white =
+                            groupedPatients['white']?.length ?? 0;
+                        patientCount.red = groupedPatients['red']?.length ?? 0;
+                        patientCount.yellow =
+                            groupedPatients['yellow']?.length ?? 0;
+                        patientCount.green =
+                            groupedPatients['green']?.length ?? 0;
+                        patientCount.blue =
+                            groupedPatients['blue']?.length ?? 0;
+                    }
+
                     const collectInformationEvent = event;
 
                     if (
-                        collectInformationEvent.informationType !==
+                        collectInformationEvent.informationType ===
                         'treatmentStatus'
-                    )
-                        return;
+                    ) {
+                        const activity = getActivityById(
+                            draftState,
+                            simulatedRegion.id,
+                            collectInformationEvent.generateReportActivityId,
+                            'generateReportActivity'
+                        );
 
-                    const activity = getActivityById(
-                        draftState,
-                        simulatedRegion.id,
-                        collectInformationEvent.generateReportActivityId,
-                        'generateReportActivity'
-                    );
-
-                    (
-                        activity.radiogram as Mutable<TreatmentStatusRadiogram>
-                    ).treatmentStatus = behaviorState.treatmentProgress;
-
+                        (
+                            activity.radiogram as Mutable<TreatmentStatusRadiogram>
+                        ).treatmentStatus = behaviorState.treatmentProgress;
+                    }
                     break;
                 }
                 default:
