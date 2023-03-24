@@ -29,6 +29,9 @@ import { RadiogramListComponent } from './radiogram-list/radiogram-list.componen
 import { RadiogramCardComponent } from './radiogram-list/radiogram-card/radiogram-card.component';
 import { RadiogramCardContentComponent } from './radiogram-list/radiogram-card/radiogram-card-content/radiogram-card-content.component';
 import { RadiogramCardContentFallbackComponent } from './radiogram-list/radiogram-card/radiogram-card-content-fallback/radiogram-card-content-fallback.component';
+import { RadiogramCardContentMaterialCountComponent } from './radiogram-list/radiogram-card/radiogram-card-content-material-count/radiogram-card-content-material-count.component';
+import { RadiogramCardContentTreatmentStatusComponent } from './radiogram-list/radiogram-card/radiogram-card-content-treatment-status/radiogram-card-content-treatment-status.component';
+import { RadiogramCardContentPersonnelCountComponent } from './radiogram-list/radiogram-card/radiogram-card-content-personnel-count/radiogram-card-content-personnel-count.component';
 import { RadiogramCardContentVehicleCountComponent } from './radiogram-list/radiogram-card/radiogram-card-content-vehicle-count/radiogram-card-content-vehicle-count.component';
 import { SimulatedRegionOverviewBehaviorReportComponent } from './tabs/behavior-tab/behaviors/report/simulated-region-overview-behavior-report.component';
 
@@ -52,6 +55,9 @@ import { SimulatedRegionOverviewBehaviorReportComponent } from './tabs/behavior-
         RadiogramCardComponent,
         RadiogramCardContentComponent,
         RadiogramCardContentFallbackComponent,
+        RadiogramCardContentMaterialCountComponent,
+        RadiogramCardContentTreatmentStatusComponent,
+        RadiogramCardContentPersonnelCountComponent,
         RadiogramCardContentVehicleCountComponent,
         SimulatedRegionOverviewBehaviorReportComponent,
     ],
