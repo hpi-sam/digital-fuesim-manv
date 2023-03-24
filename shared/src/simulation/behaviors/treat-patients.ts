@@ -6,7 +6,12 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
+import type { SimulatedRegion } from '../../models';
+import type { TreatmentStatusRadiogram } from '../../models/radiogram';
 import { getCreate } from '../../models/utils';
+import type { ExerciseState } from '../../state';
+import { getActivityById } from '../../store/action-reducers/utils';
+import type { Mutable } from '../../utils';
 import { uuid, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import { DelayEventActivityState } from '../activities';
@@ -104,7 +109,7 @@ export class TreatPatientsBehaviorState implements SimulationBehaviorState {
     public readonly treatmentActivityId: UUID | null = null;
 
     @IsLiteralUnion(treatmentProgressAllowedValues)
-    public readonly treatmentProgress: TreatmentProgress = 'unknown';
+    public readonly treatmentProgress: TreatmentProgress = 'noTreatment';
 
     static readonly create = getCreate(this);
 }
@@ -115,6 +120,15 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
         handleEvent(draftState, simulatedRegion, behaviorState, event) {
             switch (event.type) {
                 case 'tickEvent':
+                    if (behaviorState.treatmentProgress === 'noTreatment') {
+                        startNewTreatmentReassignment(
+                            draftState,
+                            simulatedRegion,
+                            behaviorState
+                        );
+                        break;
+                    }
+
                     if (
                         behaviorState.delayActivityId === null &&
                         (behaviorState.treatmentActivityId === null ||
@@ -157,37 +171,70 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                         behaviorState.delayActivityId = null;
                     }
 
-                    if (
-                        behaviorState.treatmentActivityId &&
-                        simulatedRegion.activities[
-                            behaviorState.treatmentActivityId
-                        ]
-                    ) {
-                        terminateActivity(
-                            draftState,
-                            simulatedRegion,
-                            behaviorState.treatmentActivityId
-                        );
-                        behaviorState.treatmentActivityId = null;
-                    }
-
-                    const id = nextUUID(draftState);
-                    addActivity(
+                    startNewTreatmentReassignment(
+                        draftState,
                         simulatedRegion,
-                        ReassignTreatmentsActivityState.create(
-                            id,
-                            behaviorState.treatmentProgress,
-                            behaviorState.intervals.countingTimePerPatient
-                        )
+                        behaviorState
                     );
-                    behaviorState.treatmentActivityId = id;
+
                     break;
                 }
                 case 'treatmentProgressChangedEvent':
                     behaviorState.treatmentProgress = event.newProgress;
                     break;
+                case 'collectInformationEvent': {
+                    const collectInformationEvent = event;
+
+                    if (
+                        collectInformationEvent.informationType !==
+                        'treatmentStatus'
+                    )
+                        return;
+
+                    const activity = getActivityById(
+                        draftState,
+                        simulatedRegion.id,
+                        collectInformationEvent.generateReportActivityId,
+                        'generateReportActivity'
+                    );
+
+                    (
+                        activity.radiogram as Mutable<TreatmentStatusRadiogram>
+                    ).treatmentStatus = behaviorState.treatmentProgress;
+
+                    break;
+                }
                 default:
                 // Ignore event
             }
         },
     };
+
+function startNewTreatmentReassignment(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegion>,
+    behaviorState: Mutable<TreatPatientsBehaviorState>
+) {
+    if (
+        behaviorState.treatmentActivityId &&
+        simulatedRegion.activities[behaviorState.treatmentActivityId]
+    ) {
+        terminateActivity(
+            draftState,
+            simulatedRegion,
+            behaviorState.treatmentActivityId
+        );
+        behaviorState.treatmentActivityId = null;
+    }
+
+    const id = nextUUID(draftState);
+    addActivity(
+        simulatedRegion,
+        ReassignTreatmentsActivityState.create(
+            id,
+            behaviorState.treatmentProgress,
+            behaviorState.intervals.countingTimePerPatient
+        )
+    );
+    behaviorState.treatmentActivityId = id;
+}

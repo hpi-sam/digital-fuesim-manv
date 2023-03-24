@@ -36,7 +36,7 @@ export class ReassignTreatmentsActivityState
     public readonly id: UUID;
 
     @IsLiteralUnion(treatmentProgressAllowedValues)
-    public readonly treatmentProgress: TreatmentProgress = 'unknown';
+    public readonly treatmentProgress: TreatmentProgress;
 
     @IsOptional()
     @IsInt()
@@ -112,6 +112,14 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
             let allowTerminate = true;
 
             switch (activityState.treatmentProgress) {
+                case 'noTreatment': {
+                    // Since we've reached this line, there is a leader and other personnel so treatment can start
+                    sendSimulationEvent(
+                        simulatedRegion,
+                        TreatmentProgressChangedEvent.create('unknown')
+                    );
+                    break;
+                }
                 case 'unknown': {
                     const finished = count(draftState, activityState, patients);
                     if (finished) {

@@ -1,0 +1,12 @@
+<h5>Personalstatus</h5>
+
+<p>Aktuell verfügbares Personal:</p>
+
+<table *ngIf="radiogram$ | async as radiogram" class="table table-sm">
+    <tbody>
+        <tr *ngFor="let personnelCategory of personnelCategories">
+            <td>{{ personnelCategory | personnelName }}</td>
+            <td>{{ radiogram.personnelCount[personnelCategory] }}</td>
+        </tr>
+    </tbody>
+</table>
