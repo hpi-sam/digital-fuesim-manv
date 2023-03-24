@@ -123,5 +123,6 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
         }
 
         this.createReportCollapsed = true;
+        this.selectedInformation = 'noSelect';
     }
 }
