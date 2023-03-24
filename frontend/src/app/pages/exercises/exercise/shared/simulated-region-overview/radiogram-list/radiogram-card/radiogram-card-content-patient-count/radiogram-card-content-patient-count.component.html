@@ -1,7 +1,6 @@
 <h5 class="card-title">Meldung über Patientenanzahlen</h5>
 <p class="card-text" *ngIf="totalPatientCount === 0">
-    Derzeit befinden sich im Bereich {{ simulatedRegionName$ | async }} keine
-    Patienten.
+    Derzeit befinden sich hier keine Patienten.
 </p>
 <p
     class="card-text"
@@ -10,14 +9,14 @@
         radiogram.patientCount.white === totalPatientCount
     "
 >
-    Derzeit befinden sich im Bereich {{ simulatedRegionName$ | async }}
+    Derzeit befinden sich hier
     {{ totalPatientCount }} Patienten, die jedoch noch nicht gesichtet wurden.
 </p>
 <p
     class="card-text"
     *ngIf="totalPatientCount > 0 && radiogram.patientCount.white === 0"
 >
-    Derzeit befinden sich im Bereich {{ simulatedRegionName$ | async }}
+    Derzeit befinden sich hier
     {{ totalPatientCount }} Patienten, die wie folgt gesichtet wurden:
 </p>
 <p
@@ -28,7 +27,7 @@
         radiogram.patientCount.white !== totalPatientCount
     "
 >
-    Derzeit befinden sich im Bereich {{ simulatedRegionName$ | async }}
+    Derzeit befinden sich hier
     {{ totalPatientCount }} Patienten, von denen
     {{ totalPatientCount - radiogram.patientCount.white }} wie folgt gesichtet
     wurden:
@@ -36,8 +35,8 @@
 <table *ngIf="totalPatientCount > 0" class="table card-text">
     <thead>
         <tr>
-            <th class="w-50">SK</th>
-            <th class="w-50">Anzahl</th>
+            <th class="w-75">SK</th>
+            <th class="w-25">Anzahl</th>
         </tr>
     </thead>
     <tbody>

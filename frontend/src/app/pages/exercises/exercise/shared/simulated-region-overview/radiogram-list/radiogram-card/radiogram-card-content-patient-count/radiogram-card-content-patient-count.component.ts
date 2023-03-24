@@ -4,10 +4,7 @@ import { createSelector, Store } from '@ngrx/store';
 import { PatientCountRadiogram } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
-import {
-    createSelectSimulatedRegion,
-    selectConfiguration,
-} from 'src/app/state/application/selectors/exercise.selectors';
+import { selectConfiguration } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
     selector: 'app-radiogram-card-content-patient-count',
@@ -17,7 +14,6 @@ import {
 export class RadiogramCardContentPatientCountComponent implements OnInit {
     @Input() radiogram!: PatientCountRadiogram;
     bluePatientsEnabled$!: Observable<boolean>;
-    simulatedRegionName$!: Observable<string>;
     totalPatientCount!: number;
 
     constructor(private readonly store: Store<AppState>) {}
@@ -37,17 +33,6 @@ export class RadiogramCardContentPatientCountComponent implements OnInit {
         );
         this.bluePatientsEnabled$ = this.store.select(
             bluePatientsEnabledSelector
-        );
-
-        const simulatedRegionSelector = createSelectSimulatedRegion(
-            this.radiogram.simulatedRegionId
-        );
-        const simulatedRegionNameSelector = createSelector(
-            simulatedRegionSelector,
-            (simulatedRegion) => simulatedRegion.name
-        );
-        this.simulatedRegionName$ = this.store.select(
-            simulatedRegionNameSelector
         );
     }
 }
