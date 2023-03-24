@@ -125,30 +125,27 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
                                             simulatedRegion.id
                                         )
                                     );
-                                    const canCaterForRed = materials
-                                        .map(
-                                            (material) =>
-                                                material.canCaterFor.red
-                                        )
-                                        .reduce((a, b) => a + b, 0);
-                                    const canCaterForYellow = materials
-                                        .map(
-                                            (material) =>
-                                                material.canCaterFor.yellow
-                                        )
-                                        .reduce((a, b) => a + b, 0);
-                                    const canCaterForGreen = materials
-                                        .map(
-                                            (material) =>
-                                                material.canCaterFor.green
-                                        )
-                                        .reduce((a, b) => a + b, 0);
                                     radiogram.materialForPatients.red =
-                                        canCaterForRed;
+                                        materials
+                                            .map(
+                                                (material) =>
+                                                    material.canCaterFor.red
+                                            )
+                                            .reduce((a, b) => a + b, 0);
                                     radiogram.materialForPatients.yellow =
-                                        canCaterForYellow;
+                                        materials
+                                            .map(
+                                                (material) =>
+                                                    material.canCaterFor.yellow
+                                            )
+                                            .reduce((a, b) => a + b, 0);
                                     radiogram.materialForPatients.green =
-                                        canCaterForGreen;
+                                        materials
+                                            .map(
+                                                (material) =>
+                                                    material.canCaterFor.green
+                                            )
+                                            .reduce((a, b) => a + b, 0);
                                 }
                                 break;
                             case 'personnelCount':
