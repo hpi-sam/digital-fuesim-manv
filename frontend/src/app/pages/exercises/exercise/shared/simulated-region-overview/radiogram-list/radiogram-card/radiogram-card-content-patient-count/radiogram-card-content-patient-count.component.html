@@ -1,38 +1,46 @@
 <h5 class="card-title">Meldung über Patientenanzahlen</h5>
-<p class="card-text" *ngIf="totalPatientCount === 0">
+<p class="card-text" *ngIf="(totalPatientCount$ | async) === 0">
     Derzeit befinden sich hier keine Patienten.
 </p>
 <p
     class="card-text"
     *ngIf="
-        totalPatientCount > 0 &&
-        radiogram.patientCount.white === totalPatientCount
+        (totalPatientCount$ | async)! > 0 &&
+        (radiogram$ | async)!.patientCount.white ===
+            (totalPatientCount$ | async)
     "
 >
     Derzeit befinden sich hier
-    {{ totalPatientCount }} Patienten, die jedoch noch nicht gesichtet wurden.
-</p>
-<p
-    class="card-text"
-    *ngIf="totalPatientCount > 0 && radiogram.patientCount.white === 0"
->
-    Derzeit befinden sich hier
-    {{ totalPatientCount }} Patienten, die wie folgt gesichtet wurden:
+    {{ totalPatientCount$ | async }} Patienten, die jedoch noch nicht gesichtet
+    wurden.
 </p>
 <p
     class="card-text"
     *ngIf="
-        totalPatientCount > 0 &&
-        radiogram.patientCount.white > 0 &&
-        radiogram.patientCount.white !== totalPatientCount
+        (totalPatientCount$ | async)! > 0 &&
+        (radiogram$ | async)!.patientCount.white === 0
     "
 >
     Derzeit befinden sich hier
-    {{ totalPatientCount }} Patienten, von denen
-    {{ totalPatientCount - radiogram.patientCount.white }} wie folgt gesichtet
-    wurden:
+    {{ totalPatientCount$ | async }} Patienten, die wie folgt gesichtet wurden:
 </p>
-<table *ngIf="totalPatientCount > 0" class="table card-text">
+<p
+    class="card-text"
+    *ngIf="
+        (totalPatientCount$ | async)! > 0 &&
+        (radiogram$ | async)!.patientCount.white > 0 &&
+        (radiogram$ | async)!.patientCount.white !==
+            (totalPatientCount$ | async)
+    "
+>
+    Derzeit befinden sich hier
+    {{ totalPatientCount$ | async }} Patienten, von denen
+    {{
+        (totalPatientCount$ | async)! - (radiogram$ | async)!.patientCount.white
+    }}
+    wie folgt gesichtet wurden:
+</p>
+<table *ngIf="(totalPatientCount$ | async)! > 0" class="table card-text">
     <thead>
         <tr>
             <th class="w-75">SK</th>
@@ -40,7 +48,12 @@
         </tr>
     </thead>
     <tbody>
-        <tr *ngIf="radiogram.patientCount.white !== totalPatientCount">
+        <tr
+            *ngIf="
+                (radiogram$ | async)!.patientCount.white !==
+                (totalPatientCount$ | async)
+            "
+        >
             <td>
                 <app-patient-status-badge
                     [status]="'red'"
@@ -48,33 +61,44 @@
             </td>
             <td>
                 {{
-                    radiogram.patientCount.red +
+                    (radiogram$ | async)!.patientCount.red +
                         ((bluePatientsEnabled$ | async)
                             ? 0
-                            : radiogram.patientCount.blue)
+                            : (radiogram$ | async)!.patientCount.blue)
                 }}
             </td>
         </tr>
-        <tr *ngIf="radiogram.patientCount.white !== totalPatientCount">
+        <tr
+            *ngIf="
+                (radiogram$ | async)!.patientCount.white !==
+                (totalPatientCount$ | async)
+            "
+        >
             <td>
                 <app-patient-status-badge
                     [status]="'yellow'"
                 ></app-patient-status-badge>
             </td>
-            <td>{{ radiogram.patientCount.yellow }}</td>
+            <td>{{ (radiogram$ | async)!.patientCount.yellow }}</td>
         </tr>
-        <tr *ngIf="radiogram.patientCount.white !== totalPatientCount">
+        <tr
+            *ngIf="
+                (radiogram$ | async)!.patientCount.white !==
+                (totalPatientCount$ | async)
+            "
+        >
             <td>
                 <app-patient-status-badge
                     [status]="'green'"
                 ></app-patient-status-badge>
             </td>
-            <td>{{ radiogram.patientCount.green }}</td>
+            <td>{{ (radiogram$ | async)!.patientCount.green }}</td>
         </tr>
         <tr
             *ngIf="
                 (bluePatientsEnabled$ | async) &&
-                radiogram.patientCount.white !== totalPatientCount
+                (radiogram$ | async)!.patientCount.white !==
+                    (totalPatientCount$ | async)
             "
         >
             <td>
@@ -82,23 +106,28 @@
                     [status]="'blue'"
                 ></app-patient-status-badge>
             </td>
-            <td>{{ radiogram.patientCount.blue }}</td>
+            <td>{{ (radiogram$ | async)!.patientCount.blue }}</td>
         </tr>
-        <tr *ngIf="radiogram.patientCount.white !== totalPatientCount">
+        <tr
+            *ngIf="
+                (radiogram$ | async)!.patientCount.white !==
+                (totalPatientCount$ | async)
+            "
+        >
             <td>
                 <app-patient-status-badge
                     [status]="'black'"
                 ></app-patient-status-badge>
             </td>
-            <td>{{ radiogram.patientCount.black }}</td>
+            <td>{{ (radiogram$ | async)!.patientCount.black }}</td>
         </tr>
-        <tr *ngIf="radiogram.patientCount.white !== 0">
+        <tr *ngIf="(radiogram$ | async)!.patientCount.white !== 0">
             <td>
                 <app-patient-status-badge
                     [status]="'white'"
                 ></app-patient-status-badge>
             </td>
-            <td>{{ radiogram.patientCount.white }}</td>
+            <td>{{ (radiogram$ | async)!.patientCount.white }}</td>
         </tr>
     </tbody>
 </table>
