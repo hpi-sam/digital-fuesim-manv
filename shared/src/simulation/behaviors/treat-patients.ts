@@ -189,7 +189,10 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                     break;
                 case 'collectInformationEvent': {
                     // This behavior answerers this query because the treating personnel has the knowledge of how many patients are in a given category
-                    if (event.informationType === 'patientCount') {
+                    if (
+                        event.informationType === 'patientCount' &&
+                        behaviorState.treatmentProgress !== 'unknown'
+                    ) {
                         const radiogram = getActivityById(
                             draftState,
                             simulatedRegion.id,
