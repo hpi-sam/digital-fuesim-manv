@@ -10,7 +10,7 @@
     Kategorien fallen:
 </p>
 
-<table *ngIf="(totalVehicleCount$ | async) ?? 0" class="table card-text">
+<table *ngIf="totalVehicleCount$ | async" class="table card-text">
     <thead>
         <tr>
             <th class="w-75">Kategorie</th>
