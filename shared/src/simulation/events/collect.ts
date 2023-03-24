@@ -13,10 +13,10 @@ export class CollectInformationEvent implements SimulationEvent {
     readonly type = 'collectInformationEvent';
 
     @IsUUID(4, uuidValidationOptions)
-    readonly generateReportActivityId!: UUID;
+    readonly generateReportActivityId: UUID;
 
     @IsLiteralUnion(reportableInformationAllowedValues)
-    readonly informationType!: ReportableInformation;
+    readonly informationType: ReportableInformation;
     /**
      * @deprecated Use {@link create} instead.
      */

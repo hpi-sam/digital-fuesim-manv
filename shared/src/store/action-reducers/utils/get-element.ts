@@ -1,6 +1,8 @@
 import type {
     ExerciseSimulationActivityState,
+    ExerciseSimulationActivityType,
     ExerciseSimulationBehaviorState,
+    ExerciseSimulationBehaviorType,
 } from '../../../simulation';
 import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
@@ -52,11 +54,12 @@ export function getElementByPredicate<
     return element;
 }
 
-export function getBehaviorById(
+export function getBehaviorById<T extends ExerciseSimulationBehaviorType>(
     state: Mutable<ExerciseState>,
     simulatedRegionId: UUID,
-    behaviorId: UUID
-): Mutable<ExerciseSimulationBehaviorState> {
+    behaviorId: UUID,
+    behaviorType: T
+) {
     const simulatedRegion = getElement(
         state,
         'simulatedRegion',
@@ -68,14 +71,20 @@ export function getBehaviorById(
             `Behavior with id ${behaviorId} does not exist in simulated region ${simulatedRegionId}`
         );
     }
-    return behavior;
+    if (behavior.type !== behaviorType) {
+        throw new ReducerError(
+            `Expected behavior with id ${behaviorId} to be of type ${behaviorType}, but was ${behavior.type}`
+        );
+    }
+    return behavior as Mutable<ExerciseSimulationBehaviorState<T>>;
 }
 
-export function getActivityById(
+export function getActivityById<T extends ExerciseSimulationActivityType>(
     state: Mutable<ExerciseState>,
     simulatedRegionId: UUID,
-    activityId: UUID
-): Mutable<ExerciseSimulationActivityState> {
+    activityId: UUID,
+    activityType: T
+) {
     const simulatedRegion = getElement(
         state,
         'simulatedRegion',
@@ -87,5 +96,10 @@ export function getActivityById(
             `Activity with id ${activityId} does not exist in simulated region ${simulatedRegionId}`
         );
     }
-    return activity;
+    if (activity.type !== activityType) {
+        throw new ReducerError(
+            `Expected activity with id ${activityId} to be of type ${activityType}, but was ${activity.type}`
+        );
+    }
+    return activity as Mutable<ExerciseSimulationActivityState<T>>;
 }

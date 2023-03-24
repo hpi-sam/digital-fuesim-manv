@@ -11,7 +11,7 @@ export class StartCollectingInformationEvent implements SimulationEvent {
     readonly type = 'startCollectingInformationEvent';
 
     @IsLiteralUnion(reportableInformationAllowedValues)
-    readonly informationType!: ReportableInformation;
+    readonly informationType: ReportableInformation;
     /**
      * @deprecated Use {@link create} instead.
      */

@@ -26,7 +26,7 @@ export class RecurringEventActivityState implements SimulationActivityState {
 
     @IsInt()
     @Min(0)
-    public readonly lastOccurenceTime: number;
+    public readonly lastOccurrenceTime: number;
 
     @Min(0)
     public readonly recurrenceIntervalTime: number;
@@ -42,7 +42,7 @@ export class RecurringEventActivityState implements SimulationActivityState {
     ) {
         this.id = id;
         this.event = event;
-        this.lastOccurenceTime = firstOccurrenceTime - recurrenceIntervalTime;
+        this.lastOccurrenceTime = firstOccurrenceTime - recurrenceIntervalTime;
         this.recurrenceIntervalTime = recurrenceIntervalTime;
     }
 
@@ -55,10 +55,10 @@ export const recurringEventActivity: SimulationActivity<RecurringEventActivitySt
         tick(draftState, simulatedRegion, activityState) {
             if (
                 draftState.currentTime >=
-                activityState.lastOccurenceTime +
+                activityState.lastOccurrenceTime +
                     activityState.recurrenceIntervalTime
             ) {
-                activityState.lastOccurenceTime = draftState.currentTime;
+                activityState.lastOccurrenceTime = draftState.currentTime;
                 sendSimulationEvent(simulatedRegion, activityState.event);
             }
         },

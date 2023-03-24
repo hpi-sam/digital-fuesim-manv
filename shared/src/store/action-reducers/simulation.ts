@@ -1,6 +1,5 @@
 import { IsNumber, IsOptional, IsUUID, Min } from 'class-validator';
 import type {
-    ReportBehaviorState,
     TreatPatientsBehaviorState,
     UnloadArrivingVehiclesBehaviorState,
 } from '../../simulation';
@@ -16,7 +15,7 @@ import type { Mutable } from '../../utils';
 import { UUID, uuidValidationOptions, cloneDeepMutable } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
+import { ExpectedReducerError, ReducerError } from '../reducer-error';
 import { getActivityById, getBehaviorById, getElement } from './utils';
 
 export class UpdateTreatPatientsIntervalsAction implements Action {
@@ -244,8 +243,9 @@ export namespace SimulationActionReducers {
                 const reportBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
-                    behaviorId
-                ) as Mutable<ReportBehaviorState>;
+                    behaviorId,
+                    'reportBehavior'
+                );
                 if (!reportBehaviorState) {
                     throw new ReducerError(
                         `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}.`
@@ -253,7 +253,7 @@ export namespace SimulationActionReducers {
                 }
 
                 if (reportBehaviorState.activityIds[informationType]) {
-                    throw new ReducerError(
+                    throw new ExpectedReducerError(
                         `The behavior with id ${behaviorId} already has a recurring report for information type ${informationType}.`
                     );
                 }
@@ -284,8 +284,9 @@ export namespace SimulationActionReducers {
                 const reportBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
-                    behaviorId
-                ) as Mutable<ReportBehaviorState>;
+                    behaviorId,
+                    'reportBehavior'
+                );
                 const activityId =
                     reportBehaviorState.activityIds[informationType];
                 if (!activityId) {
@@ -296,8 +297,9 @@ export namespace SimulationActionReducers {
                 const recurringActivityState = getActivityById(
                     draftState,
                     simulatedRegionId,
-                    activityId
-                ) as Mutable<RecurringEventActivityState>;
+                    activityId,
+                    'recurringEventActivity'
+                );
 
                 recurringActivityState.recurrenceIntervalTime = interval;
 
@@ -321,8 +323,9 @@ export namespace SimulationActionReducers {
                 const reportBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
-                    behaviorId
-                ) as Mutable<ReportBehaviorState>;
+                    behaviorId,
+                    'reportBehavior'
+                );
                 const activityId =
                     reportBehaviorState.activityIds[informationType];
                 if (!activityId) {
@@ -330,7 +333,12 @@ export namespace SimulationActionReducers {
                         `The behavior with id ${behaviorId} has no recurring report for information type ${informationType}.`
                     );
                 }
-                getActivityById(draftState, simulatedRegionId, activityId);
+                getActivityById(
+                    draftState,
+                    simulatedRegionId,
+                    activityId,
+                    'recurringEventActivity'
+                );
                 delete reportBehaviorState.activityIds[informationType];
                 delete simulatedRegion.activities[activityId];
 
