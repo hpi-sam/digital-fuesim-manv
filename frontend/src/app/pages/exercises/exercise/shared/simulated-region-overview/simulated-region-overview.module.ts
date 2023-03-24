@@ -29,6 +29,7 @@ import { RadiogramListComponent } from './radiogram-list/radiogram-list.componen
 import { RadiogramCardComponent } from './radiogram-list/radiogram-card/radiogram-card.component';
 import { RadiogramCardContentComponent } from './radiogram-list/radiogram-card/radiogram-card-content/radiogram-card-content.component';
 import { RadiogramCardContentFallbackComponent } from './radiogram-list/radiogram-card/radiogram-card-content-fallback/radiogram-card-content-fallback.component';
+import { RadiogramCardContentPersonnelCountComponent } from './radiogram-list/radiogram-card/radiogram-card-content-personnel-count/radiogram-card-content-personnel-count.component';
 
 @NgModule({
     declarations: [
@@ -50,6 +51,7 @@ import { RadiogramCardContentFallbackComponent } from './radiogram-list/radiogra
         RadiogramCardComponent,
         RadiogramCardContentComponent,
         RadiogramCardContentFallbackComponent,
+        RadiogramCardContentPersonnelCountComponent,
     ],
     imports: [
         CommonModule,
