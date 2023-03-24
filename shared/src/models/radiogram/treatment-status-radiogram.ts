@@ -42,7 +42,7 @@ export class TreatmentStatusRadiogram implements Radiogram {
         this.id = id;
         this.simulatedRegionId = simulatedRegionId;
         this.status = status;
-        this.treatmentStatus = 'unknown';
+        this.treatmentStatus = 'noTreatment';
     }
 
     static readonly create = getCreate(this);

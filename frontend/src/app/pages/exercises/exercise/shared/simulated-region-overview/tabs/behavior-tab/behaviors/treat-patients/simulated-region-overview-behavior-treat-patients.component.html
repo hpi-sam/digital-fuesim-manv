@@ -21,7 +21,10 @@
                 [class.text-bg-info]="
                     treatPatientsBehaviorState.treatmentProgress ===
                         'unknown' ||
-                    treatPatientsBehaviorState.treatmentProgress === 'counted'
+                    treatPatientsBehaviorState.treatmentProgress ===
+                        'counted' ||
+                    treatPatientsBehaviorState.treatmentProgress ===
+                        'noTreatment'
                 "
                 [class.text-bg-warning]="
                     treatPatientsBehaviorState.treatmentProgress === 'triaged'
