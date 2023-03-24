@@ -1,0 +1,6 @@
+<ng-container [ngSwitch]="radiogram.type">
+    <app-radiogram-card-content-fallback
+        *ngSwitchDefault
+        [radiogramType]="radiogram.type"
+    ></app-radiogram-card-content-fallback>
+</ng-container>

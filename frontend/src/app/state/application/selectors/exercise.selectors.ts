@@ -45,6 +45,7 @@ export const selectTransferPoints = selectPropertyFactory('transferPoints');
 export const selectHospitals = selectPropertyFactory('hospitals');
 export const selectHospitalPatients = selectPropertyFactory('hospitalPatients');
 export const selectClients = selectPropertyFactory('clients');
+export const selectRadiograms = selectPropertyFactory('radiograms');
 // Array properties
 export const selectVehicleTemplates = selectPropertyFactory('vehicleTemplates');
 export const selectPersonnelTemplates =
@@ -95,6 +96,8 @@ export const createSelectSimulatedRegion = createSelectElementFromMapFactory(
 );
 export const createSelectClient =
     createSelectElementFromMapFactory(selectClients);
+export const createSelectRadiogram =
+    createSelectElementFromMapFactory(selectRadiograms);
 
 function createSelectElementFromArrayFactory<Element extends { id: UUID }>(
     elementsSelector: (state: AppState) => readonly Element[]
