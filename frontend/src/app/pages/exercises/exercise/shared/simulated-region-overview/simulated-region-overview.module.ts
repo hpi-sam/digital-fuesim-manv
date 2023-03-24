@@ -33,7 +33,6 @@ import { RadiogramCardContentTreatmentStatusComponent } from './radiogram-list/r
 import { RadiogramCardContentPersonnelCountComponent } from './radiogram-list/radiogram-card/radiogram-card-content-personnel-count/radiogram-card-content-personnel-count.component';
 import { SimulatedRegionOverviewBehaviorReportComponent } from './tabs/behavior-tab/behaviors/report/simulated-region-overview-behavior-report.component';
 
-
 @NgModule({
     declarations: [
         SimulatedRegionNameComponent,
