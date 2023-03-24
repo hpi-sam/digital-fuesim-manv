@@ -182,6 +182,28 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                 case 'treatmentProgressChangedEvent':
                     behaviorState.treatmentProgress = event.newProgress;
                     break;
+                case 'collectInformationEvent': {
+                    const collectInformationEvent = event;
+
+                    if (
+                        collectInformationEvent.informationType !==
+                        'treatmentStatus'
+                    )
+                        return;
+
+                    const activity = getActivityById(
+                        draftState,
+                        simulatedRegion.id,
+                        collectInformationEvent.generateReportActivityId,
+                        'generateReportActivity'
+                    );
+
+                    (
+                        activity.radiogram as Mutable<TreatmentStatusRadiogram>
+                    ).treatmentStatus = behaviorState.treatmentProgress;
+
+                    break;
+                }
                 default:
                 // Ignore event
             }
