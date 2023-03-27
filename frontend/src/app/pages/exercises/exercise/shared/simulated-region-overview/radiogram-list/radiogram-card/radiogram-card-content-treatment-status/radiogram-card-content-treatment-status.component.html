@@ -1,23 +1,11 @@
 <h5 class="card-title">Behandlungsphase</h5>
-<p class="card-text">
-    <ng-container [ngSwitch]="(radiogram$ | async)?.treatmentStatus">
-        <ng-container *ngSwitchCase="'noTreatment'">
-            Es findet <span class="fw-semibold">keine Behandlung</span> statt.
-        </ng-container>
-        <ng-container *ngSwitchCase="'unknown'">
-            Die <span class="fw-semibold">Erkundung der Lage</span> hat
-            begonnen.</ng-container
-        >
-        <ng-container *ngSwitchCase="'counted'">
-            Die <span class="fw-semibold">Vorsichtung</span> hat begonnen.
-        </ng-container>
-        <ng-container *ngSwitchCase="'secured'">
-            Die <span class="fw-semibold">Erstversorgung</span> ist
-            <span class="fw-semibold">sichergestellt</span>.
-        </ng-container>
-        <ng-container *ngSwitchCase="'triaged'">
-            Die <span class="fw-semibold">Behandlung</span> hat begonnen.
-            <span class="fw-semibold">Es fehlt an Personal</span>.
-        </ng-container>
-    </ng-container>
-</p>
+<div class="card-text row align-items-center">
+    <span class="col-sm">Derzeitige Phase:</span>
+    <div class="col-sm">
+        <app-treatment-status-badge
+            [treatmentProgress]="
+                (radiogram$ | async)?.treatmentStatus ?? 'noTreatment'
+            "
+        ></app-treatment-status-badge>
+    </div>
+</div>

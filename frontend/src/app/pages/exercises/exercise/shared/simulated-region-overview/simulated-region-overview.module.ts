@@ -37,6 +37,7 @@ import { RadiogramCardContentVehicleCountComponent } from './radiogram-list/radi
 import { SimulatedRegionOverviewBehaviorReportComponent } from './tabs/behavior-tab/behaviors/report/simulated-region-overview-behavior-report.component';
 import { RadiogramCardContentInformationUnavailableComponent } from './radiogram-list/radiogram-card/radiogram-card-content-information-unavailable/radiogram-card-content-information-unavailable.component';
 import { HumanReadableRadiogramTypePipe } from './radiogram-list/human-readable-radiogram-type.pipe';
+import { TreatmentStatusBadgeComponent } from './treatment-status-badge/treatment-status-badge.component';
 
 @NgModule({
     declarations: [
@@ -66,6 +67,7 @@ import { HumanReadableRadiogramTypePipe } from './radiogram-list/human-readable-
         SimulatedRegionOverviewBehaviorReportComponent,
         RadiogramCardContentInformationUnavailableComponent,
         HumanReadableRadiogramTypePipe,
+        TreatmentStatusBadgeComponent,
     ],
     imports: [
         CommonModule,
