@@ -5,6 +5,7 @@ const treatmentProgressToGermanNameDictionary: {
     [Key in TreatmentProgress]: string;
 } = {
     counted: 'Vorsichten',
+    noTreatment: 'Keine Behandlung',
     secured: 'Erstversorgung sichergestellt',
     triaged: 'Behandeln, Personal fehlt',
     unknown: 'Erkunden',

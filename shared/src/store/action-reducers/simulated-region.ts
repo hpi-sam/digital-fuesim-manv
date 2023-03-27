@@ -19,6 +19,7 @@ import {
     PersonnelAvailableEvent,
     NewPatientEvent,
     MaterialAvailableEvent,
+    simulationBehaviorDictionary,
 } from '../../simulation';
 import { sendSimulationEvent } from '../../simulation/events/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
@@ -315,6 +316,7 @@ export namespace SimulatedRegionActionReducers {
                     simulatedRegionId
                 );
                 simulatedRegion.behaviors.push(cloneDeepMutable(behaviorState));
+
                 return draftState;
             },
             rights: 'participant',
@@ -332,11 +334,22 @@ export namespace SimulatedRegionActionReducers {
                 const index = simulatedRegion.behaviors.findIndex(
                     (behavior) => behavior.id === behaviorId
                 );
+
                 if (index === -1) {
                     throw new ReducerError(
                         `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}. Therefore it could not be removed.`
                     );
                 }
+
+                const behaviorState = simulatedRegion.behaviors[index]!;
+                if (simulationBehaviorDictionary[behaviorState.type].onRemove) {
+                    simulationBehaviorDictionary[behaviorState.type].onRemove!(
+                        draftState,
+                        simulatedRegion,
+                        behaviorState as any
+                    );
+                }
+
                 simulatedRegion.behaviors.splice(index, 1);
                 return draftState;
             },

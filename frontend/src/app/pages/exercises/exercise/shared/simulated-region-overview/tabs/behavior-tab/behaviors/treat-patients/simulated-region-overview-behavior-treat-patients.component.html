@@ -16,25 +16,11 @@
             </h4>
         </div>
         <div class="col-sm justify-content-center" *ngIf="informationCollapsed">
-            <span
-                class="badge rounded-pill"
-                [class.text-bg-info]="
-                    treatPatientsBehaviorState.treatmentProgress ===
-                        'unknown' ||
-                    treatPatientsBehaviorState.treatmentProgress === 'counted'
-                "
-                [class.text-bg-warning]="
-                    treatPatientsBehaviorState.treatmentProgress === 'triaged'
-                "
-                [class.text-bg-success]="
-                    treatPatientsBehaviorState.treatmentProgress === 'secured'
-                "
-            >
-                {{
+            <app-treatment-status-badge
+                [treatmentProgress]="
                     treatPatientsBehaviorState.treatmentProgress
-                        | treatmentProgressToGermanName
-                }}
-            </span>
+                "
+            ></app-treatment-status-badge>
         </div>
     </div>
     <div
@@ -51,25 +37,11 @@
     >
         <div class="col-sm">Derzeitige Phase</div>
         <div class="col-sm" *ngIf="!informationCollapsed">
-            <span
-                class="badge rounded-pill"
-                [class.text-bg-info]="
-                    treatPatientsBehaviorState.treatmentProgress ===
-                        'unknown' ||
-                    treatPatientsBehaviorState.treatmentProgress === 'counted'
-                "
-                [class.text-bg-warning]="
-                    treatPatientsBehaviorState.treatmentProgress === 'triaged'
-                "
-                [class.text-bg-success]="
-                    treatPatientsBehaviorState.treatmentProgress === 'secured'
-                "
-            >
-                {{
+            <app-treatment-status-badge
+                [treatmentProgress]="
                     treatPatientsBehaviorState.treatmentProgress
-                        | treatmentProgressToGermanName
-                }}
-            </span>
+                "
+            ></app-treatment-status-badge>
         </div>
     </div>
 

@@ -1,5 +1,5 @@
 <div class="modal-header">
-    <h4 class="modal-title">Simulierte Regionen</h4>
+    <h4 class="modal-title">Simulationsübersicht</h4>
     <button
         type="button"
         class="btn-close"
@@ -8,35 +8,44 @@
     ></button>
 </div>
 <div
-    class="modal-body"
+    class="modal-body p-0"
     style="height: min(80vh, 2000px); max-height: min(80vh, 2000px)"
 >
-    <div class="h-100 d-flex flex-column">
-        <nav
-            #nav="ngbNav"
-            ngbNav
-            [(activeId)]="currentSimulatedRegionId"
-            class="nav-tabs"
-        >
-            <ng-container
-                *ngFor="let id of simulatedRegionIds$ | async"
-                [ngbNavItem]="id"
-            >
-                <a ngbNavLink
-                    ><app-simulated-region-name [simulatedRegionId]="id"
-                /></a>
-                <ng-template ngbNavContent>
-                    <app-simulated-region-overview-general
-                        class="mh-100 d-block h-100"
-                        [simulatedRegionId]="id"
-                    />
-                </ng-template>
-            </ng-container>
-        </nav>
+    <div class="d-flex flex-row w-100 h-100">
         <div
-            [ngbNavOutlet]="nav"
-            class="mt-2 flex-grow-1 flex-shrink-1 simulated-region-overview-nav-outlet"
-            style="min-height: 0"
-        ></div>
+            class="flex-shrink-1 mh-100"
+            style="min-width: 25em; max-width: 25em"
+        >
+            <app-radiogram-list></app-radiogram-list>
+        </div>
+        <div class="vr"></div>
+        <div class="flex-grow-1 flex-shrink-1 h-100 d-flex flex-column p-4">
+            <nav
+                #nav="ngbNav"
+                ngbNav
+                [(activeId)]="currentSimulatedRegionId"
+                class="nav-tabs"
+            >
+                <ng-container
+                    *ngFor="let id of simulatedRegionIds$ | async"
+                    [ngbNavItem]="id"
+                >
+                    <a ngbNavLink
+                        ><app-simulated-region-name [simulatedRegionId]="id"
+                    /></a>
+                    <ng-template ngbNavContent>
+                        <app-simulated-region-overview-general
+                            class="mh-100 d-block h-100"
+                            [simulatedRegionId]="id"
+                        />
+                    </ng-template>
+                </ng-container>
+            </nav>
+            <div
+                [ngbNavOutlet]="nav"
+                class="mt-2 flex-grow-1 flex-shrink-1 simulated-region-overview-nav-outlet"
+                style="min-height: 0"
+            ></div>
+        </div>
     </div>
 </div>

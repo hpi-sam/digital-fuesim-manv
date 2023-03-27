@@ -1,0 +1,11 @@
+<h5 class="card-title">Behandlungsphase</h5>
+<div class="card-text row align-items-center">
+    <span class="col-sm">Derzeitige Phase:</span>
+    <div class="col-sm">
+        <app-treatment-status-badge
+            [treatmentProgress]="
+                (radiogram$ | async)?.treatmentStatus ?? 'noTreatment'
+            "
+        ></app-treatment-status-badge>
+    </div>
+</div>

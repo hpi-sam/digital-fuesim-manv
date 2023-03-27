@@ -39,6 +39,11 @@
                     [simulatedRegionId]="simulatedRegion.id"
                     [behaviorId]="selectedBehavior!.id"
                 ></app-simulated-region-overview-behavior-unload-arriving-vehicles>
+                <app-simulated-region-overview-behavior-report
+                    *ngSwitchCase="'reportBehavior'"
+                    [simulatedRegionId]="simulatedRegion.id"
+                    [reportBehaviorId]="selectedBehavior!.id"
+                ></app-simulated-region-overview-behavior-report>
                 <p *ngSwitchDefault class="text-muted font-bold">
                     Es ist noch keine Verhaltensweise ausgewählt.
                 </p>

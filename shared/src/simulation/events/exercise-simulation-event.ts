@@ -8,6 +8,8 @@ import { TickEvent } from './tick';
 import { VehicleArrivedEvent } from './vehicle-arrived';
 import { TreatmentsTimerEvent } from './treatments-timer-event';
 import { TreatmentProgressChangedEvent } from './treatment-progress-changed';
+import { CollectInformationEvent } from './collect';
+import { StartCollectingInformationEvent } from './start-collecting';
 
 export const simulationEvents = {
     MaterialAvailableEvent,
@@ -17,6 +19,8 @@ export const simulationEvents = {
     TreatmentProgressChangedEvent,
     TreatmentsTimerEvent,
     VehicleArrivedEvent,
+    CollectInformationEvent,
+    StartCollectingInformationEvent,
 };
 
 export type ExerciseSimulationEvent = InstanceType<
@@ -36,6 +40,8 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     treatmentProgressChangedEvent: TreatmentProgressChangedEvent,
     treatmentsTimerEvent: TreatmentsTimerEvent,
     vehicleArrivedEvent: VehicleArrivedEvent,
+    collectInformationEvent: CollectInformationEvent,
+    startCollectingInformationEvent: StartCollectingInformationEvent,
 };
 
 export const simulationEventTypeOptions: Parameters<typeof Type> = [

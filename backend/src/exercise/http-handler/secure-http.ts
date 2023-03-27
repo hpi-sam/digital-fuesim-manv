@@ -35,7 +35,7 @@ export async function secureHttp<Result extends object | undefined>(
             });
         } catch (innerError: unknown) {
             // Nothing works. Log if in production mode, otherwise re-throw inner error
-            if (process.env.NODE_ENV !== 'production') {
+            if (process.env['NODE_ENV'] !== 'production') {
                 throw innerError;
             }
             console.warn(

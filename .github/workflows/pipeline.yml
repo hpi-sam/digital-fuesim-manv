@@ -13,14 +13,7 @@ concurrency:
 jobs:
     build:
         timeout-minutes: 5
-        runs-on: ${{ matrix.os }}
-
-        strategy:
-            matrix:
-                # As the CI seems to have high run times, limit it to ubuntu-latest
-                # os: [ubuntu-latest, windows-latest, macos-latest]
-                os: [ubuntu-latest]
-            fail-fast: false
+        runs-on: ubuntu-latest
 
         steps:
             - uses: actions/checkout@v3
@@ -38,14 +31,9 @@ jobs:
 
     lint:
         timeout-minutes: 3
-        runs-on: ${{ matrix.os }}
+        runs-on: ubuntu-latest
 
         needs: build
-
-        strategy:
-            matrix:
-                os: [ubuntu-latest]
-            fail-fast: false
 
         steps:
             - uses: actions/checkout@v3
@@ -62,16 +50,11 @@ jobs:
 
     dependencies:
         timeout-minutes: 10
-        runs-on: ${{ matrix.os }}
+        runs-on: ubuntu-latest
 
         needs: build
 
         continue-on-error: true
-
-        strategy:
-            matrix:
-                os: [ubuntu-latest]
-            fail-fast: false
 
         steps:
             - uses: actions/checkout@v3
@@ -95,7 +78,7 @@ jobs:
 
     test:
         timeout-minutes: 4
-        runs-on: ${{ matrix.os }}
+        runs-on: ubuntu-latest
 
         needs: build
 
@@ -115,13 +98,6 @@ jobs:
                     --health-timeout 5s
                     --health-retries 5
 
-        strategy:
-            matrix:
-                # As the CI seems to have high run times, limit it to ubuntu-latest
-                # os: [ubuntu-latest, windows-latest, macos-latest]
-                os: [ubuntu-latest]
-            fail-fast: false
-
         steps:
             - uses: actions/checkout@v3
             - uses: actions/setup-node@v3
@@ -139,7 +115,7 @@ jobs:
             - name: Run migrations
               run: cd backend && npm run migration:run && cd ..
             - name: Run Backend Tests
-              run: cd backend && npm run test:ci; cd ..
+              run: cd backend && npm run test:ci-no-migration; cd ..
               if: always()
             - name: Run Frontend Tests
               run: cd frontend && npm run test:ci; cd ..
@@ -156,6 +132,51 @@ jobs:
               with:
                   name: coverage-output
                   path: coverage
+
+    migration-test:
+        timeout-minutes: 4
+        runs-on: ubuntu-latest
+
+        needs: build
+
+        services:
+            postgres:
+                image: postgres:14
+                env:
+                    POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+                    POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+                    POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+                ports:
+                    - 5432:5432
+                # Set health checks to wait until postgres has started
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: '18'
+            - name: Cache node modules and shared/dist
+              uses: ./.github/actions/cache-build
+            - name: Create .env
+              run: >
+                  cat ./.env.example
+                  | sed -e "s/^DFM_DB_USER=.*$/DFM_DB_USER=${{ secrets.POSTGRES_USER }}/"
+                  | sed -e "s/^#DFM_DB_PASSWORD=.*$/DFM_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/"
+                  | sed -e "s/^DFM_DB_NAME=.*$/DFM_DB_NAME=${{ secrets.POSTGRES_DB }}/"
+                  | sed -e "s/^DFM_DB_HOST=.*$/DFM_DB_HOST=127.0.0.1/" > ./.env
+            - name: Run migrations
+              run: cd backend && npm run migration:run && cd ..
+            - name: Fetch Test Scenarios
+              run: git submodule update --init --recursive
+              if: always()
+            - name: Run Migration Tests
+              run: cd backend && npm run test:ci-migration; cd ..
+              if: always()
 
     cypress:
         timeout-minutes: 20
@@ -233,14 +254,17 @@ jobs:
 
     # Dummy step to gate until all test are complete
     tests-done:
+        if: always()
         needs:
             - test
             - cypress
             - lint
-            - dependencies
+            - migration-test
         runs-on: ubuntu-latest
         steps:
-            - run: 'true'
+            - uses: matrix-org/done-action@v2
+              with:
+                  needs: ${{ toJSON (needs) }}
 
     deploy-dev:
         timeout-minutes: 10
@@ -249,11 +273,6 @@ jobs:
         needs: tests-done
 
         if: github.ref == 'refs/heads/dev'
-
-        strategy:
-            matrix:
-                os: [ubuntu-latest]
-            fail-fast: false
 
         steps:
             - uses: actions/checkout@v3
@@ -278,11 +297,6 @@ jobs:
         needs: tests-done
 
         if: github.ref == 'refs/heads/main'
-
-        strategy:
-            matrix:
-                os: [ubuntu-latest]
-            fail-fast: false
 
         steps:
             - uses: actions/checkout@v3

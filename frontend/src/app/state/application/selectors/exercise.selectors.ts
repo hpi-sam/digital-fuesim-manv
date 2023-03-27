@@ -45,6 +45,7 @@ export const selectTransferPoints = selectPropertyFactory('transferPoints');
 export const selectHospitals = selectPropertyFactory('hospitals');
 export const selectHospitalPatients = selectPropertyFactory('hospitalPatients');
 export const selectClients = selectPropertyFactory('clients');
+export const selectRadiograms = selectPropertyFactory('radiograms');
 // Array properties
 export const selectVehicleTemplates = selectPropertyFactory('vehicleTemplates');
 export const selectPersonnelTemplates =
@@ -95,6 +96,8 @@ export const createSelectSimulatedRegion = createSelectElementFromMapFactory(
 );
 export const createSelectClient =
     createSelectElementFromMapFactory(selectClients);
+export const createSelectRadiogram =
+    createSelectElementFromMapFactory(selectRadiograms);
 
 function createSelectElementFromArrayFactory<Element extends { id: UUID }>(
     elementsSelector: (state: AppState) => readonly Element[]
@@ -212,24 +215,36 @@ export function createSelectByPredicate<E extends WithPosition>(
     );
 }
 
+export function createSelectBehaviorStates(simulatedRegionId: UUID) {
+    return createSelector(
+        createSelectSimulatedRegion(simulatedRegionId),
+        (simulatedRegion) => simulatedRegion.behaviors
+    );
+}
+
+export function createSelectActivityStates(simulatedRegionId: UUID) {
+    return createSelector(
+        createSelectSimulatedRegion(simulatedRegionId),
+        (simulatedRegion) => simulatedRegion.activities
+    );
+}
+
 export function createSelectBehaviorState<
     B extends ExerciseSimulationBehaviorState
 >(simulatedRegionId: UUID, behaviorId: UUID) {
     return createSelector(
-        createSelectSimulatedRegion(simulatedRegionId),
-        (simulatedRegion) =>
-            simulatedRegion?.behaviors.find(
-                (behavior) => behavior.id === behaviorId
-            ) as B | undefined
+        createSelectBehaviorStates(simulatedRegionId),
+        (behaviors) =>
+            behaviors.find((behavior) => behavior.id === behaviorId) as B
     );
 }
 
 export function createSelectActivityState<
-    B extends ExerciseSimulationActivityState
+    A extends ExerciseSimulationActivityState
 >(simulatedRegionId: UUID, activityId: UUID) {
     return createSelector(
-        createSelectSimulatedRegion(simulatedRegionId),
-        (simulatedRegion) => simulatedRegion.activities[activityId] as B
+        createSelectActivityStates(simulatedRegionId),
+        (activities) => activities[activityId] as A
     );
 }
 
@@ -237,9 +252,9 @@ export function createSelectBehaviorStatesByType<
     T extends ExerciseSimulationBehaviorType
 >(simulatedRegionId: UUID, behaviorType: T) {
     return createSelector(
-        createSelectSimulatedRegion(simulatedRegionId),
-        (simulatedRegion) =>
-            simulatedRegion?.behaviors.filter(
+        createSelectBehaviorStates(simulatedRegionId),
+        (behaviors) =>
+            behaviors.filter(
                 (behavior): behavior is ExerciseSimulationBehaviorState<T> =>
                     behavior.type === behaviorType
             )
@@ -250,9 +265,9 @@ export function createSelectActivityStatesByType<
     T extends ExerciseSimulationActivityType
 >(simulatedRegionId: UUID, activityType: T) {
     return createSelector(
-        createSelectSimulatedRegion(simulatedRegionId),
-        (simulatedRegion) =>
-            Object.values(simulatedRegion?.activities).filter(
+        createSelectActivityStates(simulatedRegionId),
+        (activities) =>
+            Object.values(activities).filter(
                 (activity): activity is ExerciseSimulationActivityState<T> =>
                     activity.type === activityType
             )

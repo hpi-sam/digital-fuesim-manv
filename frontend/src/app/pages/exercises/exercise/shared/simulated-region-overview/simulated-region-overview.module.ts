@@ -25,6 +25,19 @@ import { SimulatedRegionsModalComponent } from './simulated-regions-modal/simula
 import { SimulatedRegionNameComponent } from './simulated-region-name/simulated-region-name.component';
 import { SimulatedRegionOverviewPatientsTabComponent } from './tabs/patients-tab/simulated-region-overview-patients-tab/simulated-region-overview-patients-tab.component';
 import { SelectPatientService } from './select-patient.service';
+import { RadiogramListComponent } from './radiogram-list/radiogram-list.component';
+import { RadiogramCardComponent } from './radiogram-list/radiogram-card/radiogram-card.component';
+import { RadiogramCardContentComponent } from './radiogram-list/radiogram-card/radiogram-card-content/radiogram-card-content.component';
+import { RadiogramCardContentFallbackComponent } from './radiogram-list/radiogram-card/radiogram-card-content-fallback/radiogram-card-content-fallback.component';
+import { RadiogramCardContentMaterialCountComponent } from './radiogram-list/radiogram-card/radiogram-card-content-material-count/radiogram-card-content-material-count.component';
+import { RadiogramCardContentTreatmentStatusComponent } from './radiogram-list/radiogram-card/radiogram-card-content-treatment-status/radiogram-card-content-treatment-status.component';
+import { RadiogramCardContentPatientCountComponent } from './radiogram-list/radiogram-card/radiogram-card-content-patient-count/radiogram-card-content-patient-count.component';
+import { RadiogramCardContentPersonnelCountComponent } from './radiogram-list/radiogram-card/radiogram-card-content-personnel-count/radiogram-card-content-personnel-count.component';
+import { RadiogramCardContentVehicleCountComponent } from './radiogram-list/radiogram-card/radiogram-card-content-vehicle-count/radiogram-card-content-vehicle-count.component';
+import { SimulatedRegionOverviewBehaviorReportComponent } from './tabs/behavior-tab/behaviors/report/simulated-region-overview-behavior-report.component';
+import { RadiogramCardContentInformationUnavailableComponent } from './radiogram-list/radiogram-card/radiogram-card-content-information-unavailable/radiogram-card-content-information-unavailable.component';
+import { HumanReadableRadiogramTypePipe } from './radiogram-list/human-readable-radiogram-type.pipe';
+import { TreatmentStatusBadgeComponent } from './treatment-status-badge/treatment-status-badge.component';
 
 @NgModule({
     declarations: [
@@ -42,6 +55,19 @@ import { SelectPatientService } from './select-patient.service';
         PersonnelTypeToGermanAbbreviationPipe,
         SimulatedRegionsModalComponent,
         SimulatedRegionOverviewPatientsTabComponent,
+        RadiogramListComponent,
+        RadiogramCardComponent,
+        RadiogramCardContentComponent,
+        RadiogramCardContentFallbackComponent,
+        RadiogramCardContentMaterialCountComponent,
+        RadiogramCardContentTreatmentStatusComponent,
+        RadiogramCardContentPatientCountComponent,
+        RadiogramCardContentPersonnelCountComponent,
+        RadiogramCardContentVehicleCountComponent,
+        SimulatedRegionOverviewBehaviorReportComponent,
+        RadiogramCardContentInformationUnavailableComponent,
+        HumanReadableRadiogramTypePipe,
+        TreatmentStatusBadgeComponent,
     ],
     imports: [
         CommonModule,

@@ -1,6 +1,6 @@
 {
     "name": "digital-fuesim-manv-backend",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "type": "module",
     "scripts": {
         "start:once:linux-macos": "NODE_ENV=production node --experimental-specifier-resolution=node dist/src/index.js",
@@ -13,7 +13,9 @@
         "lint": "eslint --max-warnings 0 --ignore-path .gitignore \"./**/*.{ts,js,yml,html}\"",
         "lint:fix": "eslint --ignore-path .gitignore --fix \"./**/*.{ts,js,yml,html}\"",
         "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose",
-        "test:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose --ci",
+        "test:migration": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose ./test/http-migration.spec.ts",
+        "test:ci-no-migration": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose --ci --testPathIgnorePatterns ./test/http-migration.spec.ts",
+        "test:ci-migration": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose --ci ./test/http-migration.spec.ts",
         "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --verbose --watch",
         "typeorm:cli": "NODE_ENV=migration node --experimental-specifier-resolution=node --loader ts-node/esm ./node_modules/typeorm/cli -d src/database/migration-datasource.ts",
         "typeorm:cli:prod": "NODE_ENV=migration node --experimental-specifier-resolution=node ./node_modules/typeorm/cli -d dist/src/database/migration-datasource.js",
