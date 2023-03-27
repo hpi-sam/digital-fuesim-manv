@@ -63,7 +63,7 @@ export class RadiogramListComponent implements OnInit {
         a: ExerciseRadiogram,
         b: ExerciseRadiogram
     ): number {
-        return publishTimeOf(b) - publishTimeOf(a);
+        return publishTimeOf(a) - publishTimeOf(b);
     }
 
     shouldBeShown(
