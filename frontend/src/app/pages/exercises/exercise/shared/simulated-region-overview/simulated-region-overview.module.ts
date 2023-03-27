@@ -35,6 +35,7 @@ import { RadiogramCardContentPatientCountComponent } from './radiogram-list/radi
 import { RadiogramCardContentPersonnelCountComponent } from './radiogram-list/radiogram-card/radiogram-card-content-personnel-count/radiogram-card-content-personnel-count.component';
 import { RadiogramCardContentVehicleCountComponent } from './radiogram-list/radiogram-card/radiogram-card-content-vehicle-count/radiogram-card-content-vehicle-count.component';
 import { SimulatedRegionOverviewBehaviorReportComponent } from './tabs/behavior-tab/behaviors/report/simulated-region-overview-behavior-report.component';
+import { TreatmentStatusBadgeComponent } from './treatment-status-badge/treatment-status-badge.component';
 
 @NgModule({
     declarations: [
@@ -62,6 +63,7 @@ import { SimulatedRegionOverviewBehaviorReportComponent } from './tabs/behavior-
         RadiogramCardContentPersonnelCountComponent,
         RadiogramCardContentVehicleCountComponent,
         SimulatedRegionOverviewBehaviorReportComponent,
+        TreatmentStatusBadgeComponent,
     ],
     imports: [
         CommonModule,
