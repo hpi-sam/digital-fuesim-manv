@@ -108,8 +108,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/0.3.0...HEAD
-[0.3.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.1...0.3.0
+[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.0.0...v0.1.0
