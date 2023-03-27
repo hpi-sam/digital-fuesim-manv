@@ -29,7 +29,7 @@ export class PersonnelCountRadiogram implements Radiogram {
     readonly status: ExerciseRadiogramStatus;
 
     @IsBoolean()
-    readonly informationAvailable!: boolean;
+    readonly informationAvailable: boolean = false;
 
     @IsPersonnelCount()
     readonly personnelCount: PersonnelCount;

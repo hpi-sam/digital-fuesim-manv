@@ -29,7 +29,7 @@ export class TreatmentStatusRadiogram implements Radiogram {
     readonly status: ExerciseRadiogramStatus;
 
     @IsBoolean()
-    readonly informationAvailable!: boolean;
+    readonly informationAvailable: boolean = false;
 
     @IsLiteralUnion(treatmentProgressAllowedValues)
     readonly treatmentStatus: TreatmentProgress;

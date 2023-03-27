@@ -29,7 +29,7 @@ export class PatientCountRadiogram implements Radiogram {
     readonly status: ExerciseRadiogramStatus;
 
     @IsBoolean()
-    readonly informationAvailable!: boolean;
+    readonly informationAvailable: boolean = false;
 
     @IsPatientCount()
     readonly patientCount: PatientCount;

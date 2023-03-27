@@ -26,7 +26,7 @@ export class MaterialCountRadiogram implements Radiogram {
     readonly status: ExerciseRadiogramStatus;
 
     @IsBoolean()
-    readonly informationAvailable!: boolean;
+    readonly informationAvailable: boolean = false;
 
     @ValidateNested()
     @Type(() => CanCaterFor)

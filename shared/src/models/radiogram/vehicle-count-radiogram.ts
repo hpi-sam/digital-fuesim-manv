@@ -29,7 +29,7 @@ export class VehicleCountRadiogram implements Radiogram {
     readonly status: ExerciseRadiogramStatus;
 
     @IsBoolean()
-    readonly informationAvailable!: boolean;
+    readonly informationAvailable: boolean = false;
 
     @IsVehicleCount()
     readonly vehicleCount: VehicleCount;
