@@ -226,6 +226,8 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                             groupedPatients['green']?.length ?? 0;
                         patientCount.blue =
                             groupedPatients['blue']?.length ?? 0;
+
+                        radiogram.informationAvailable = true;
                     }
 
                     const collectInformationEvent = event;
@@ -234,16 +236,17 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                         collectInformationEvent.informationType ===
                         'treatmentStatus'
                     ) {
-                        const activity = getActivityById(
+                        const radiogram = getActivityById(
                             draftState,
                             simulatedRegion.id,
                             collectInformationEvent.generateReportActivityId,
                             'generateReportActivity'
-                        );
+                        ).radiogram as Mutable<TreatmentStatusRadiogram>;
 
-                        (
-                            activity.radiogram as Mutable<TreatmentStatusRadiogram>
-                        ).treatmentStatus = behaviorState.treatmentProgress;
+                        radiogram.treatmentStatus =
+                            behaviorState.treatmentProgress;
+
+                        radiogram.informationAvailable = true;
                     }
                     break;
                 }
