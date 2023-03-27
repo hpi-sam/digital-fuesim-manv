@@ -1,4 +1,4 @@
-import { IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
 import { UUID } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
@@ -27,6 +27,9 @@ export class VehicleCountRadiogram implements Radiogram {
     @IsRadiogramStatus()
     @ValidateNested()
     readonly status: ExerciseRadiogramStatus;
+
+    @IsBoolean()
+    readonly informationAvailable!: boolean;
 
     @IsVehicleCount()
     readonly vehicleCount: VehicleCount;

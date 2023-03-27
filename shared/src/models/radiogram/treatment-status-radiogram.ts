@@ -1,4 +1,4 @@
-import { IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
 import {
     TreatmentProgress,
     treatmentProgressAllowedValues,
@@ -27,6 +27,9 @@ export class TreatmentStatusRadiogram implements Radiogram {
     @IsRadiogramStatus()
     @ValidateNested()
     readonly status: ExerciseRadiogramStatus;
+
+    @IsBoolean()
+    readonly informationAvailable!: boolean;
 
     @IsLiteralUnion(treatmentProgressAllowedValues)
     readonly treatmentStatus: TreatmentProgress;
