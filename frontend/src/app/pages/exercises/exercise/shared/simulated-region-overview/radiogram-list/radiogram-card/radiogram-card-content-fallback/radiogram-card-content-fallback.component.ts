@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import type { ExerciseRadiogram } from 'digital-fuesim-manv-shared';
 
 @Component({
     selector: 'app-radiogram-card-content-fallback',
@@ -6,5 +7,5 @@ import { Component, Input } from '@angular/core';
     styleUrls: ['./radiogram-card-content-fallback.component.scss'],
 })
 export class RadiogramCardContentFallbackComponent {
-    @Input() radiogramType!: string;
+    @Input() radiogramType!: ExerciseRadiogram['type'];
 }
