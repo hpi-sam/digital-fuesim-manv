@@ -1,4 +1,7 @@
-<ng-container [ngSwitch]="radiogram.type">
+<ng-container
+    *ngIf="radiogram.informationAvailable; else informationUnavailable"
+    [ngSwitch]="radiogram.type"
+>
     <app-radiogram-card-content-vehicle-count
         *ngSwitchCase="'vehicleCountRadiogram'"
         [radiogramId]="radiogram.id"
@@ -25,3 +28,8 @@
         [radiogramId]="radiogram.id"
     ></app-radiogram-card-content-material-count>
 </ng-container>
+<ng-template #informationUnavailable>
+    <app-radiogram-card-content-information-unavailable
+        [radiogramType]="radiogram.type"
+    ></app-radiogram-card-content-information-unavailable>
+</ng-template>
