@@ -53,7 +53,7 @@ export function letElementArrive(
         'transferPoint',
         currentTransferOf(element).targetTransferPointId
     );
-    const newPosition = targetTransferPoint.position;
+    const newPosition = cloneDeepMutable(targetTransferPoint.position);
     if (isPositionOnMap(newPosition)) {
         offsetMapPositionBy(newPosition as Mutable<MapPosition>, {
             x: 0,
