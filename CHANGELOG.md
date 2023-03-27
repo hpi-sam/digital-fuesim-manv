@@ -7,6 +7,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [0.3.0] - 2023-03-27
+
 ### Added
 
 -   There are now radiograms, which can be used by the simulation to send messages to the trainees. These are generated automatically by an activity.
@@ -21,6 +23,11 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   Radiograms can be accepted and marked as done.
 -   Behaviors can clean up the state when they are removed from a simulated region.
 -   There are now tests, that ensure that migrations do not fail
+
+### Fixed
+
+-   "Leitstelle" was misspelled in the title of the EOC modal
+-   Transfer points do not change their connection upon arrival of a vehicle
 
 ## [0.2.1] - 2023-03-11
 
@@ -101,7 +108,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.0.0...v0.1.0
