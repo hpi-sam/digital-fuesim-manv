@@ -24,6 +24,11 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Behaviors can clean up the state when they are removed from a simulated region.
 -   There are now tests, that ensure that migrations do not fail
 
+### Fixed
+
+-   "Leitstelle" was misspelled in the title of the EOC modal
+-   Transfer points do not change their connection upon arrival of a vehicle
+
 ## [0.2.1] - 2023-03-11
 
 ### Changed
