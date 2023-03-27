@@ -2,10 +2,7 @@ import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import type { MemoizedSelector } from '@ngrx/store';
 import { createSelector, Store } from '@ngrx/store';
-import type {
-    ExerciseRadiogram,
-    VehicleCountRadiogram,
-} from 'digital-fuesim-manv-shared';
+import type { VehicleCountRadiogram } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
@@ -20,7 +17,6 @@ export class RadiogramCardContentVehicleCountComponent implements OnInit {
     @Input() radiogramId!: UUID;
     radiogram$!: Observable<VehicleCountRadiogram>;
     totalVehicleCount$!: Observable<number>;
-    simulatedRegionName$!: Observable<string>;
     vehicleCounts$!: Observable<
         { vehicleType: string; vehicleCount: number }[]
     >;
@@ -30,13 +26,7 @@ export class RadiogramCardContentVehicleCountComponent implements OnInit {
     ngOnInit(): void {
         const radiogramSelector = createSelectRadiogram(
             this.radiogramId
-        ) as MemoizedSelector<
-            AppState,
-            NonNullable<VehicleCountRadiogram>,
-            (s1: {
-                [key: string]: ExerciseRadiogram;
-            }) => NonNullable<VehicleCountRadiogram>
-        >;
+        ) as MemoizedSelector<AppState, NonNullable<VehicleCountRadiogram>>;
 
         const vehicleCountsSelector = createSelector(
             radiogramSelector,
@@ -49,7 +39,7 @@ export class RadiogramCardContentVehicleCountComponent implements OnInit {
                 )
         );
 
-        const totalvehicleCountSelector = createSelector(
+        const totalVehicleCountSelector = createSelector(
             vehicleCountsSelector,
             (vehicleCount) =>
                 Object.values(vehicleCount).reduce(
@@ -60,6 +50,6 @@ export class RadiogramCardContentVehicleCountComponent implements OnInit {
 
         this.vehicleCounts$ = this.store.select(vehicleCountsSelector);
         this.radiogram$ = this.store.select(radiogramSelector);
-        this.totalVehicleCount$ = this.store.select(totalvehicleCountSelector);
+        this.totalVehicleCount$ = this.store.select(totalVehicleCountSelector);
     }
 }
