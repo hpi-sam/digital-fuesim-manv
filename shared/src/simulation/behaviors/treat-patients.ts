@@ -188,63 +188,77 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                     behaviorState.treatmentProgress = event.newProgress;
                     break;
                 case 'collectInformationEvent': {
-                    // This behavior answerers this query because the treating personnel has the knowledge of how many patients are in a given category
-                    if (
-                        event.informationType === 'patientCount' &&
-                        behaviorState.treatmentProgress !== 'unknown'
-                    ) {
-                        const radiogram = getActivityById(
-                            draftState,
-                            simulatedRegion.id,
-                            event.generateReportActivityId,
-                            'generateReportActivity'
-                        ).radiogram as Mutable<PatientCountRadiogram>;
-                        const patientCount = radiogram.patientCount;
-                        const patients = Object.values(
-                            draftState.patients
-                        ).filter((patient) =>
-                            isInSpecificSimulatedRegion(
-                                patient,
-                                simulatedRegion.id
-                            )
-                        );
-                        const groupedPatients = groupBy(patients, (patient) =>
-                            Patient.getVisibleStatus(
-                                patient,
-                                draftState.configuration.pretriageEnabled,
-                                draftState.configuration.bluePatientsEnabled
-                            )
-                        );
-                        patientCount.black =
-                            groupedPatients['black']?.length ?? 0;
-                        patientCount.white =
-                            groupedPatients['white']?.length ?? 0;
-                        patientCount.red = groupedPatients['red']?.length ?? 0;
-                        patientCount.yellow =
-                            groupedPatients['yellow']?.length ?? 0;
-                        patientCount.green =
-                            groupedPatients['green']?.length ?? 0;
-                        patientCount.blue =
-                            groupedPatients['blue']?.length ?? 0;
-                    }
-
                     const collectInformationEvent = event;
 
-                    if (
-                        collectInformationEvent.informationType ===
-                        'treatmentStatus'
-                    ) {
-                        const activity = getActivityById(
-                            draftState,
-                            simulatedRegion.id,
-                            collectInformationEvent.generateReportActivityId,
-                            'generateReportActivity'
-                        );
+                    const radiogram = getActivityById(
+                        draftState,
+                        simulatedRegion.id,
+                        event.generateReportActivityId,
+                        'generateReportActivity'
+                    ).radiogram;
 
-                        (
-                            activity.radiogram as Mutable<TreatmentStatusRadiogram>
-                        ).treatmentStatus = behaviorState.treatmentProgress;
+                    switch (collectInformationEvent.informationType) {
+                        // This behavior answerers this query because the treating personnel has the knowledge of how many patients are in a given category
+                        case 'patientCount': {
+                            if (behaviorState.treatmentProgress === 'unknown') {
+                                return;
+                            }
+
+                            const patientCountRadiogram =
+                                radiogram as Mutable<PatientCountRadiogram>;
+
+                            const patientCount =
+                                patientCountRadiogram.patientCount;
+                            const patients = Object.values(
+                                draftState.patients
+                            ).filter((patient) =>
+                                isInSpecificSimulatedRegion(
+                                    patient,
+                                    simulatedRegion.id
+                                )
+                            );
+                            const groupedPatients = groupBy(
+                                patients,
+                                (patient) =>
+                                    Patient.getVisibleStatus(
+                                        patient,
+                                        draftState.configuration
+                                            .pretriageEnabled,
+                                        draftState.configuration
+                                            .bluePatientsEnabled
+                                    )
+                            );
+                            patientCount.black =
+                                groupedPatients['black']?.length ?? 0;
+                            patientCount.white =
+                                groupedPatients['white']?.length ?? 0;
+                            patientCount.red =
+                                groupedPatients['red']?.length ?? 0;
+                            patientCount.yellow =
+                                groupedPatients['yellow']?.length ?? 0;
+                            patientCount.green =
+                                groupedPatients['green']?.length ?? 0;
+                            patientCount.blue =
+                                groupedPatients['blue']?.length ?? 0;
+
+                            patientCountRadiogram.informationAvailable = true;
+                            break;
+                        }
+                        case 'treatmentStatus': {
+                            const treatmentStatusRadiogram =
+                                radiogram as Mutable<TreatmentStatusRadiogram>;
+
+                            treatmentStatusRadiogram.treatmentStatus =
+                                behaviorState.treatmentProgress;
+
+                            treatmentStatusRadiogram.informationAvailable =
+                                true;
+                            break;
+                        }
+                        default:
+                        // Ignore event, since this behavior can't answer this query
                     }
+
                     break;
                 }
                 default:

@@ -146,6 +146,8 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
                                                     material.canCaterFor.green
                                             )
                                             .reduce((a, b) => a + b, 0);
+
+                                    radiogram.informationAvailable = true;
                                 }
                                 break;
                             case 'personnelCount':
@@ -183,6 +185,8 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
                                         0;
                                     personnelCount.san =
                                         groupedPersonnel['san']?.length ?? 0;
+
+                                    radiogram.informationAvailable = true;
                                 }
                                 break;
                             case 'vehicleCount':
@@ -214,6 +218,8 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
                                             vehicleGroup.length,
                                         ])
                                     );
+
+                                    radiogram.informationAvailable = true;
                                 }
                                 break;
                             default:
