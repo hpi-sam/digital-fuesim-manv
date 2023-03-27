@@ -1,46 +1,45 @@
-<ng-container *ngIf="{ count: totalPatientCount$ | async } as totalPatients">
-    <ng-container *ngIf="totalPatients.count !== null">
+<ng-container *appLet="totalPatientCount$ | async as totalPatientCount">
+    <ng-container *ngIf="totalPatientCount !== null">
         <ng-container *ngIf="radiogram$ | async as radiogram"
             ><h5 class="card-title">Meldung über Patientenanzahlen</h5>
-            <p class="card-text" *ngIf="totalPatients.count === 0">
+            <p class="card-text" *ngIf="totalPatientCount === 0">
                 Derzeit befinden sich hier keine Patienten.
             </p>
             <p
                 class="card-text"
                 *ngIf="
-                    totalPatients.count > 0 &&
-                    radiogram.patientCount.white === totalPatients.count
+                    totalPatientCount > 0 &&
+                    radiogram.patientCount.white === totalPatientCount
                 "
             >
                 Derzeit befinden sich hier
-                {{ totalPatients.count }} Patienten, die jedoch noch nicht
+                {{ totalPatientCount }} Patienten, die jedoch noch nicht
                 gesichtet wurden.
             </p>
             <p
                 class="card-text"
                 *ngIf="
-                    totalPatients.count > 0 &&
-                    radiogram.patientCount.white === 0
+                    totalPatientCount > 0 && radiogram.patientCount.white === 0
                 "
             >
                 Derzeit befinden sich hier
-                {{ totalPatients.count }} Patienten, die wie folgt gesichtet
+                {{ totalPatientCount }} Patienten, die wie folgt gesichtet
                 wurden:
             </p>
             <p
                 class="card-text"
                 *ngIf="
-                    totalPatients.count > 0 &&
+                    totalPatientCount > 0 &&
                     radiogram.patientCount.white > 0 &&
-                    radiogram.patientCount.white !== totalPatients.count
+                    radiogram.patientCount.white !== totalPatientCount
                 "
             >
                 Derzeit befinden sich hier
-                {{ totalPatients.count }} Patienten, von denen
-                {{ totalPatients.count - radiogram.patientCount.white }} wie
-                folgt gesichtet wurden:
+                {{ totalPatientCount }} Patienten, von denen
+                {{ totalPatientCount - radiogram.patientCount.white }} wie folgt
+                gesichtet wurden:
             </p>
-            <table *ngIf="totalPatients.count > 0" class="table card-text">
+            <table *ngIf="totalPatientCount > 0" class="table card-text">
                 <thead>
                     <tr>
                         <th class="w-75">SK</th>
@@ -50,7 +49,7 @@
                 <tbody>
                     <tr
                         *ngIf="
-                            radiogram.patientCount.white !== totalPatients.count
+                            radiogram.patientCount.white !== totalPatientCount
                         "
                     >
                         <td>
@@ -69,7 +68,7 @@
                     </tr>
                     <tr
                         *ngIf="
-                            radiogram.patientCount.white !== totalPatients.count
+                            radiogram.patientCount.white !== totalPatientCount
                         "
                     >
                         <td>
@@ -81,7 +80,7 @@
                     </tr>
                     <tr
                         *ngIf="
-                            radiogram.patientCount.white !== totalPatients.count
+                            radiogram.patientCount.white !== totalPatientCount
                         "
                     >
                         <td>
@@ -94,7 +93,7 @@
                     <tr
                         *ngIf="
                             (bluePatientsEnabled$ | async) &&
-                            radiogram.patientCount.white !== totalPatients.count
+                            radiogram.patientCount.white !== totalPatientCount
                         "
                     >
                         <td>
@@ -106,7 +105,7 @@
                     </tr>
                     <tr
                         *ngIf="
-                            radiogram.patientCount.white !== totalPatients.count
+                            radiogram.patientCount.white !== totalPatientCount
                         "
                     >
                         <td>
