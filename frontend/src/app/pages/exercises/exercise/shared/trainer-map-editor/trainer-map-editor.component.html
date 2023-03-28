@@ -138,7 +138,9 @@
                                 ngbDropdownToggle
                             >
                                 <app-patient-status-badge
-                                    [status]="colorCodeMap[currentCategory]"
+                                    [status]="
+                                        currentCategory | patientStatusColor
+                                    "
                                 >
                                 </app-patient-status-badge>
                             </button>
@@ -154,7 +156,7 @@
                                     class="btn-outline-secondary"
                                 >
                                     <app-patient-status-badge
-                                        [status]="colorCodeMap[category]"
+                                        [status]="category | patientStatusColor"
                                         class="float-end"
                                     >
                                     </app-patient-status-badge>

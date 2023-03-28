@@ -1,9 +1,5 @@
 import { Component, Input } from '@angular/core';
-import {
-    PatientStatusDataField,
-    colorCodeMap,
-    behaviourCodeMap,
-} from 'digital-fuesim-manv-shared';
+import { PatientStatusDataField } from 'digital-fuesim-manv-shared';
 import { rgbColorPalette } from 'src/app/shared/functions/colors';
 
 @Component({
@@ -13,14 +9,6 @@ import { rgbColorPalette } from 'src/app/shared/functions/colors';
 })
 export class PatientStatusDataFieldComponent {
     @Input() patientStatusDataField!: PatientStatusDataField;
-
-    public get colorCodeMap() {
-        return colorCodeMap;
-    }
-
-    public get behaviourCodeMap() {
-        return behaviourCodeMap;
-    }
 
     public get rgbColorPalette() {
         return rgbColorPalette;
