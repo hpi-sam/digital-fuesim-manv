@@ -7,6 +7,11 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Added
+
+-   There is now a display for how many different variations of a patient template exists.
+-   There is now a display for whether a patient is pregnant.
+
 ## [0.3.0] - 2023-03-27
 
 ### Added

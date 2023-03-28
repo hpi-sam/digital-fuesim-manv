@@ -1,5 +1,7 @@
 import { Type } from 'class-transformer';
-import { ValidateNested } from 'class-validator';
+import { IsArray, ValidateNested } from 'class-validator';
+import type { Immutable } from 'immer';
+import { cloneDeepImmutable } from '../../utils';
 import type { AllowedValues } from '../../utils/validators';
 import { IsLiteralUnion } from '../../utils/validators';
 import { getCreate } from './get-create';
@@ -20,6 +22,13 @@ const behaviourCodeAllowedValues: AllowedValues<BehaviourCode> = {
     D: true,
     E: true,
 };
+
+type Tag = 'P';
+const tagAllowedValues: AllowedValues<Tag> = {
+    P: true,
+};
+
+export type Tags = Immutable<Tag[]>;
 
 export const colorCodeMap = {
     V: 'black',
@@ -68,6 +77,12 @@ export class PatientStatusCode {
     @Type(() => PatientStatusDataField)
     public readonly thirdField!: PatientStatusDataField;
 
+    @IsArray()
+    @IsLiteralUnion(tagAllowedValues, {
+        each: true,
+    })
+    public readonly tags!: Tags;
+
     /**
      * @deprecated Use {@link create} instead
      */
@@ -88,6 +103,7 @@ export class PatientStatusCode {
             code[4] as ColorCode,
             code[5] as BehaviourCode
         );
+        this.tags = cloneDeepImmutable([...code.slice(6)]) as Tags;
     }
 
     static readonly create = getCreate(this);

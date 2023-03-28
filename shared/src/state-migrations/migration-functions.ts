@@ -13,6 +13,7 @@ import { fixTypoInRenameSimulatedRegion21 } from './21-fix-typo-in-rename-simula
 import { removeIllegalVehicleMovementActions22 } from './22-remove-illegal-vehicle-movement-actions';
 import { addTransferPointToSimulatedRegion23 } from './23-add-transfer-point-to-simulated-region';
 import { addRadiograms24 } from './24-add-radiograms';
+import { addPatientStatusTags25 } from './25-add-patient-status-tags';
 import { updateEocLog3 } from './3-update-eoc-log';
 import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
 import { removeStatistics5 } from './5-remove-statistics';
@@ -71,4 +72,5 @@ export const migrations: {
     22: removeIllegalVehicleMovementActions22,
     23: addTransferPointToSimulatedRegion23,
     24: addRadiograms24,
+    25: addPatientStatusTags25,
 };

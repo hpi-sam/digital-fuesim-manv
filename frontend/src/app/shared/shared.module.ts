@@ -30,6 +30,7 @@ import { CaterCapacityCountPipe } from './pipes/cater-capacity-count.pipe';
 import { FooterComponent } from './components/footer/footer.component';
 import { PatientHealthPointDisplayComponent } from './components/patient-health-point-display/patient-health-point-display.component';
 import { PatientsDetailsComponent } from './components/patients-details/patients-details.component';
+import { PatientStatusTagsFieldComponent } from './components/patient-status-displayl/patient-status-tags-field/patient-status-tags-field.component';
 
 @NgModule({
     declarations: [
@@ -60,6 +61,7 @@ import { PatientsDetailsComponent } from './components/patients-details/patients
         FooterComponent,
         PatientHealthPointDisplayComponent,
         PatientsDetailsComponent,
+        PatientStatusTagsFieldComponent,
     ],
     imports: [
         CommonModule,

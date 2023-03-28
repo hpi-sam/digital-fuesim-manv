@@ -810,8 +810,8 @@ const prioRedUntilPhase2State = PatientHealthState.create(
 );
 
 export const defaultPatientCategories: readonly PatientCategory[] = [
-    // XAXAXA Patients
-    PatientCategory.create('XAXAXA', defaultPatientImage, [
+    // XAXAXA Patients - Pregnant
+    PatientCategory.create('XAXAXAP', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'female',
@@ -1308,7 +1308,7 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
         ),
     ]),
 
-    // ZBZAZA Patients
+    // ZBZAZA Patients - Not Pregnant
     PatientCategory.create('ZBZAZA', defaultPatientImage, [
         PatientTemplate.create(
             {
@@ -1397,6 +1397,10 @@ export const defaultPatientCategories: readonly PatientCategory[] = [
             healthPointsDefaults.redAverage,
             redUntilBlackPhase2State.id
         ),
+    ]),
+
+    // ZBZAZA Patients - Pregnant
+    PatientCategory.create('ZBZAZAP', defaultPatientImage, [
         PatientTemplate.create(
             {
                 sex: 'female',
