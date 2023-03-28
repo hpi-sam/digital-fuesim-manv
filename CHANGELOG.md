@@ -7,6 +7,14 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Added
+
+-   The patient status display that visualizes the progression of a patient explains its icons via a tooltip
+
+### Changed
+
+-   The icon for `C` (transport priority) in a patient status code has been changed to a road sign to be distinguishable from the icon for `D` (complication)
+
 ## [0.3.0] - 2023-03-27
 
 ### Added
