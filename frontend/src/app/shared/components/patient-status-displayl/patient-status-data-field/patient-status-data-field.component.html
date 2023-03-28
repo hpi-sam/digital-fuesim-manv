@@ -1,10 +1,13 @@
 <span>
     <i
-        [ngClass]="behaviourCodeMap[patientStatusDataField.behaviourCode]"
+        [ngClass]="patientStatusDataField.behaviourCode | patientBehaviorIcon"
         [ngStyle]="{
             color: rgbColorPalette[
-                colorCodeMap[patientStatusDataField.colorCode]
+                patientStatusDataField.colorCode | patientStatusColor
             ]
         }"
+        [ngbTooltip]="
+            patientStatusDataField.behaviourCode | patientBehaviorDescription
+        "
     ></i>
 </span>

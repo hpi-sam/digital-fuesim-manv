@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import type { UUID, VehicleTemplate } from 'digital-fuesim-manv-shared';
+import type {
+    ColorCode,
+    UUID,
+    VehicleTemplate,
+} from 'digital-fuesim-manv-shared';
 import {
-    colorCodeMap,
     TransferPoint,
     Viewport,
     SimulatedRegion,
@@ -28,8 +31,7 @@ import { openEditImageTemplateModal } from '../editor-panel/edit-image-template-
  * A wrapper around the map that provides trainers with more options and tools.
  */
 export class TrainerMapEditorComponent {
-    public currentCategory: keyof typeof colorCodeMap = 'X';
-    public readonly colorCodeMap = colorCodeMap;
+    public currentCategory: ColorCode = 'X';
     public readonly categories = ['X', 'Y', 'Z'] as const;
 
     public readonly vehicleTemplates$ = this.store.select(
@@ -75,7 +77,7 @@ export class TrainerMapEditorComponent {
         openEditImageTemplateModal(this.ngbModalService, mapImageTemplateId);
     }
 
-    public setCurrentCategory(category: keyof typeof colorCodeMap) {
+    public setCurrentCategory(category: ColorCode) {
         this.currentCategory = category;
     }
     public async vehicleOnMouseDown(
