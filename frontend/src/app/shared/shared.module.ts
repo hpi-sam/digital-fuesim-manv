@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NgbDropdownModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import {
+    NgbDropdownModule,
+    NgbNavModule,
+    NgbTooltip,
+} from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { HospitalNameComponent } from './components/hospital-name/hospital-name.component';
 import { PatientStatusDataFieldComponent } from './components/patient-status-displayl/patient-status-data-field/patient-status-data-field.component';
@@ -30,7 +34,10 @@ import { CaterCapacityCountPipe } from './pipes/cater-capacity-count.pipe';
 import { FooterComponent } from './components/footer/footer.component';
 import { PatientHealthPointDisplayComponent } from './components/patient-health-point-display/patient-health-point-display.component';
 import { PatientsDetailsComponent } from './components/patients-details/patients-details.component';
+import { PatientStatusColorPipe } from './pipes/patient-status-color.pipe';
 import { PatientStatusTagsFieldComponent } from './components/patient-status-displayl/patient-status-tags-field/patient-status-tags-field.component';
+import { PatientBehaviorIconPipe } from './pipes/patient-behavior-icon.pipe';
+import { PatientBehaviorDescriptionPipe } from './pipes/patient-behavior-description.pipe';
 
 @NgModule({
     declarations: [
@@ -61,7 +68,10 @@ import { PatientStatusTagsFieldComponent } from './components/patient-status-dis
         FooterComponent,
         PatientHealthPointDisplayComponent,
         PatientsDetailsComponent,
+        PatientStatusColorPipe,
         PatientStatusTagsFieldComponent,
+        PatientBehaviorIconPipe,
+        PatientBehaviorDescriptionPipe,
     ],
     imports: [
         CommonModule,
@@ -69,6 +79,7 @@ import { PatientStatusTagsFieldComponent } from './components/patient-status-dis
         RouterModule,
         NgbDropdownModule,
         NgbNavModule,
+        NgbTooltip,
     ],
     exports: [
         AutofocusDirective,
@@ -97,6 +108,7 @@ import { PatientStatusTagsFieldComponent } from './components/patient-status-dis
         FooterComponent,
         PatientHealthPointDisplayComponent,
         PatientsDetailsComponent,
+        PatientStatusColorPipe,
     ],
 })
 export class SharedModule {}

@@ -6,7 +6,15 @@ import type { AllowedValues } from '../../utils/validators';
 import { IsLiteralUnion } from '../../utils/validators';
 import { getCreate } from './get-create';
 
-type ColorCode = 'V' | 'W' | 'X' | 'Y' | 'Z';
+/**
+ * A letter that defines the color of a patient in a patient status.
+ * * `V`: ex (black)
+ * * `W`: SK IV (blue)
+ * * `X`: SK III (green)
+ * * `Y`: SK II (yellow)
+ * * `Z`: SK I (red)
+ */
+export type ColorCode = 'V' | 'W' | 'X' | 'Y' | 'Z';
 const colorCodeAllowedValues: AllowedValues<ColorCode> = {
     V: true,
     W: true,
@@ -14,7 +22,16 @@ const colorCodeAllowedValues: AllowedValues<ColorCode> = {
     Y: true,
     Z: true,
 };
-type BehaviourCode = 'A' | 'B' | 'C' | 'D' | 'E';
+
+/**
+ * A letter that defines how a patients changes
+ * * `A`: stable
+ * * `B`: treatment required
+ * * `C`: transport priority
+ * * `D`: complication
+ * * `E`: dead
+ */
+export type BehaviourCode = 'A' | 'B' | 'C' | 'D' | 'E';
 const behaviourCodeAllowedValues: AllowedValues<BehaviourCode> = {
     A: true,
     B: true,
@@ -29,22 +46,6 @@ const tagAllowedValues: AllowedValues<Tag> = {
 };
 
 export type Tags = Immutable<Tag[]>;
-
-export const colorCodeMap = {
-    V: 'black',
-    W: 'blue',
-    X: 'green',
-    Y: 'yellow',
-    Z: 'red',
-} as const satisfies { readonly [Key in ColorCode]: string };
-
-export const behaviourCodeMap: { [Key in BehaviourCode]: string } = {
-    A: 'bi-arrow-right-square-fill',
-    B: 'bi-heartbreak-fill',
-    C: 'bi-exclamation-circle-fill',
-    D: 'bi-exclamation-triangle-fill',
-    E: 'bi-x-circle-fill',
-};
 
 export class PatientStatusDataField {
     @IsLiteralUnion(colorCodeAllowedValues)
