@@ -213,6 +213,26 @@
                                     >
                                     </app-patient-status-display>
                                 </div>
+                                <p
+                                    *ngIf="
+                                        patientCategory.patientTemplates
+                                            .length === 1
+                                    "
+                                >
+                                    Eine Variante
+                                </p>
+
+                                <p
+                                    *ngIf="
+                                        patientCategory.patientTemplates
+                                            .length > 1
+                                    "
+                                >
+                                    {{
+                                        patientCategory.patientTemplates.length
+                                    }}
+                                    Varianten
+                                </p>
                             </div>
                         </div>
                     </div>
