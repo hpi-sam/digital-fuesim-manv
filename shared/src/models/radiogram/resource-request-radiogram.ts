@@ -8,12 +8,12 @@ import { VehicleResource } from '../utils/vehicle-resource';
 import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 
-export class VehicleRequestRadiogram implements Radiogram {
+export class ResourceRequestRadiogram implements Radiogram {
     @IsUUID()
     readonly id: UUID;
 
-    @IsValue('vehicleRequestRadiogram')
-    readonly type = 'vehicleRequestRadiogram';
+    @IsValue('resourceRequestRadiogram')
+    readonly type = 'resourceRequestRadiogram';
 
     @IsUUID()
     readonly simulatedRegionId: UUID;
@@ -31,7 +31,7 @@ export class VehicleRequestRadiogram implements Radiogram {
 
     @Type(() => VehicleResource)
     @ValidateNested()
-    readonly requestedVehicles: VehicleResource;
+    readonly requiredResource: VehicleResource;
 
     /**
      * @deprecated Use {@link create} instead
@@ -40,12 +40,12 @@ export class VehicleRequestRadiogram implements Radiogram {
         id: UUID,
         simulatedRegionId: UUID,
         status: ExerciseRadiogramStatus,
-        requestedVehicles: VehicleResource
+        requiredResource: VehicleResource
     ) {
         this.id = id;
         this.simulatedRegionId = simulatedRegionId;
         this.status = status;
-        this.requestedVehicles = requestedVehicles;
+        this.requiredResource = requiredResource;
     }
 
     static readonly create = getCreate(this);
