@@ -1,6 +1,7 @@
 import type { MemoizedSelector } from '@ngrx/store';
 import { createSelector } from '@ngrx/store';
 import type {
+    ExerciseRadiogram,
     ExerciseSimulationActivityState,
     ExerciseSimulationActivityType,
     ExerciseSimulationBehaviorState,
@@ -96,8 +97,12 @@ export const createSelectSimulatedRegion = createSelectElementFromMapFactory(
 );
 export const createSelectClient =
     createSelectElementFromMapFactory(selectClients);
-export const createSelectRadiogram =
-    createSelectElementFromMapFactory(selectRadiograms);
+export function createSelectRadiogram<R extends ExerciseRadiogram>(id: UUID) {
+    return createSelector(
+        selectRadiograms,
+        (radiograms) => radiograms[id] as R
+    );
+}
 
 function createSelectElementFromArrayFactory<Element extends { id: UUID }>(
     elementsSelector: (state: AppState) => readonly Element[]

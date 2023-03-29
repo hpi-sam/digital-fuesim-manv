@@ -38,6 +38,7 @@ import { SimulatedRegionOverviewBehaviorReportComponent } from './tabs/behavior-
 import { RadiogramCardContentInformationUnavailableComponent } from './radiogram-list/radiogram-card/radiogram-card-content-information-unavailable/radiogram-card-content-information-unavailable.component';
 import { HumanReadableRadiogramTypePipe } from './radiogram-list/human-readable-radiogram-type.pipe';
 import { TreatmentStatusBadgeComponent } from './treatment-status-badge/treatment-status-badge.component';
+import { RadigoramCardContentMissingTransferConnectionComponent } from './radiogram-list/radiogram-card/radigoram-card-content-missing-transfer-connection/radigoram-card-content-missing-transfer-connection.component';
 
 @NgModule({
     declarations: [
@@ -68,6 +69,7 @@ import { TreatmentStatusBadgeComponent } from './treatment-status-badge/treatmen
         RadiogramCardContentInformationUnavailableComponent,
         HumanReadableRadiogramTypePipe,
         TreatmentStatusBadgeComponent,
+        RadigoramCardContentMissingTransferConnectionComponent,
     ],
     imports: [
         CommonModule,
