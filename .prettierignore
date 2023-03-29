@@ -8,3 +8,5 @@ docker-compose.yml
 
 # The states in here should not be touched by humans
 benchmark/data
+
+test-scenarios/
