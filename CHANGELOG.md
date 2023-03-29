@@ -12,6 +12,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   There is now a display for how many different variations of a patient template exists.
 -   There is now a display for whether a patient is pregnant.
 -   The patient status display that visualizes the progression of a patient explains its icons via a tooltip
+-   There is now a radiogram for missing transfer connections
 
 ### Changed
 
