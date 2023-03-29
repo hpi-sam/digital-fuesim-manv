@@ -30,6 +30,7 @@ export class VehicleRequestRadiogram implements Radiogram {
     readonly informationAvailable: boolean = true;
 
     @Type(() => VehicleResource)
+    @ValidateNested()
     readonly requestedVehicles: VehicleResource;
 
     /**

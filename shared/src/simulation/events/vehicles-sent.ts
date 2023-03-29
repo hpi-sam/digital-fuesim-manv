@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsUUID } from 'class-validator';
+import { IsUUID, ValidateNested } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { VehicleResource } from '../../models/utils/vehicle-resource';
 import { UUID, uuidValidationOptions } from '../../utils';
@@ -14,6 +14,7 @@ export class VehiclesSentEvent implements SimulationEvent {
     public readonly id: UUID;
 
     @Type(() => VehicleResource)
+    @ValidateNested()
     readonly vehiclesSent!: VehicleResource;
 
     /**
