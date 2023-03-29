@@ -1,13 +1,12 @@
 import type { ValidationArguments, ValidationOptions } from 'class-validator';
-import { isNumber, min, isString } from 'class-validator';
+import { min, isString, isInt } from 'class-validator';
 import { createMapValidator } from './create-map-validator';
 import type { GenericPropertyDecorator } from './generic-property-decorator';
 import { makeValidator } from './make-validator';
 
 export const isResourceDescription = createMapValidator<string, number>({
-    keyValidator: (key): key is string => isString(key),
-    valueValidator: (value): value is number =>
-        isNumber(value) && min(value, 0),
+    keyValidator: isString,
+    valueValidator: (value): value is number => isInt(value) && min(value, 0),
 });
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

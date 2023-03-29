@@ -9,13 +9,13 @@ export class VehicleResource {
 
     @ValidateNested()
     @IsResourceDescription()
-    public readonly vehicleTypes!: { [key: string]: number };
+    public readonly vehicleCounts!: { [key: string]: number };
 
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(vehicleTypes: { [key: string]: number }) {
-        this.vehicleTypes = vehicleTypes;
+    constructor(vehicleCounts: { [key: string]: number }) {
+        this.vehicleCounts = vehicleCounts;
     }
 
     static readonly create = getCreate(this);
