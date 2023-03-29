@@ -1,5 +1,6 @@
 export * from './exercise-radiogram';
 export * from './material-count-radiogram';
+export * from './missing-transfer-connection-radiogram';
 export * from './patient-count-radiogram';
 export * from './personnel-count-radiogram';
 export * from './radiogram-helpers';

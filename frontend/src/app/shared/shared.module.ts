@@ -35,6 +35,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { PatientHealthPointDisplayComponent } from './components/patient-health-point-display/patient-health-point-display.component';
 import { PatientsDetailsComponent } from './components/patients-details/patients-details.component';
 import { PatientStatusColorPipe } from './pipes/patient-status-color.pipe';
+import { PatientStatusTagsFieldComponent } from './components/patient-status-displayl/patient-status-tags-field/patient-status-tags-field.component';
 import { PatientBehaviorIconPipe } from './pipes/patient-behavior-icon.pipe';
 import { PatientBehaviorDescriptionPipe } from './pipes/patient-behavior-description.pipe';
 
@@ -68,6 +69,7 @@ import { PatientBehaviorDescriptionPipe } from './pipes/patient-behavior-descrip
         PatientHealthPointDisplayComponent,
         PatientsDetailsComponent,
         PatientStatusColorPipe,
+        PatientStatusTagsFieldComponent,
         PatientBehaviorIconPipe,
         PatientBehaviorDescriptionPipe,
     ],
