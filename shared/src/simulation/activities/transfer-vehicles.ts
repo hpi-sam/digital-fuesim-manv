@@ -139,7 +139,7 @@ export const transferVehiclesActivity: SimulationActivity<TransferVehiclesActivi
                         nextUUID(draftState),
                         simulatedRegion.id,
                         VehicleResource.create(missingVehicles),
-                        `transfer-vehicles-requirement-${nextUUID(draftState)}`
+                        activityState.key
                     )
                 );
             }
