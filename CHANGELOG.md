@@ -10,6 +10,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Added
 
 -   The patient status display that visualizes the progression of a patient explains its icons via a tooltip
+-   There is now a radiogram for missing transfer connections
 
 ### Changed
 
