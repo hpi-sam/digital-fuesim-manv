@@ -7,7 +7,6 @@ export class VehicleResource {
     @IsValue('vehicleResource' as const)
     public readonly type = 'vehicleResource';
 
-    @ValidateNested()
     @IsResourceDescription()
     public readonly vehicleCounts!: { [key: string]: number };
 
