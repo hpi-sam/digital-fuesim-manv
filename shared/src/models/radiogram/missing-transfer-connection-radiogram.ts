@@ -25,10 +25,10 @@ export class MissingTransferConnectionRadiogram implements Radiogram {
     readonly status: ExerciseRadiogramStatus;
 
     @IsBoolean()
-    readonly informationAvailable: boolean = false;
+    readonly informationAvailable: boolean = true;
 
     @IsUUID()
-    readonly targetTransferPointID: UUID;
+    readonly targetTransferPointId: UUID;
 
     /**
      * @deprecated Use {@link create} instead
@@ -36,12 +36,13 @@ export class MissingTransferConnectionRadiogram implements Radiogram {
     constructor(
         id: UUID,
         simulatedRegionId: UUID,
-        status: ExerciseRadiogramStatus
+        status: ExerciseRadiogramStatus,
+        targetTransferPointId: UUID
     ) {
         this.id = id;
         this.simulatedRegionId = simulatedRegionId;
         this.status = status;
-        this.targetTransferPointID = '';
+        this.targetTransferPointId = targetTransferPointId;
     }
 
     static readonly create = getCreate(this);
