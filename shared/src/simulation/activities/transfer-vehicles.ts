@@ -171,7 +171,10 @@ export const transferVehiclesActivity: SimulationActivity<TransferVehiclesActivi
                 'transferPoint',
                 activityState.targetTransferPointId
             );
-            if (isInSimulatedRegion(targetTransferPoint)) {
+            if (
+                isInSimulatedRegion(targetTransferPoint) &&
+                Object.values(sentVehicles).some((value) => value !== 0)
+            ) {
                 sendSimulationEvent(
                     getElement(
                         draftState,
