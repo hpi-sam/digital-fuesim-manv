@@ -10,6 +10,7 @@ import { TreatmentsTimerEvent } from './treatments-timer-event';
 import { TreatmentProgressChangedEvent } from './treatment-progress-changed';
 import { CollectInformationEvent } from './collect';
 import { StartCollectingInformationEvent } from './start-collecting';
+import { ResourceRequiredEvent } from './resources-required';
 
 export const simulationEvents = {
     MaterialAvailableEvent,
@@ -21,6 +22,7 @@ export const simulationEvents = {
     VehicleArrivedEvent,
     CollectInformationEvent,
     StartCollectingInformationEvent,
+    ResourceRequiredEvent,
 };
 
 export type ExerciseSimulationEvent = InstanceType<
@@ -42,6 +44,7 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     vehicleArrivedEvent: VehicleArrivedEvent,
     collectInformationEvent: CollectInformationEvent,
     startCollectingInformationEvent: StartCollectingInformationEvent,
+    resourceRequiredEvent: ResourceRequiredEvent,
 };
 
 export const simulationEventTypeOptions: Parameters<typeof Type> = [
