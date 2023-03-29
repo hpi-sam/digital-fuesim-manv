@@ -6,4 +6,5 @@ export * from './personnel-count-radiogram';
 export * from './radiogram-helpers';
 export * from './treatment-status-radiogram';
 export * from './vehicle-count-radiogram';
+export * from './resource-request-radiogram';
 export * from './status';

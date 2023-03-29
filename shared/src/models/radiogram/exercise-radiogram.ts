@@ -7,12 +7,14 @@ import { PersonnelCountRadiogram } from './personnel-count-radiogram';
 import { Radiogram } from './radiogram';
 import { TreatmentStatusRadiogram } from './treatment-status-radiogram';
 import { VehicleCountRadiogram } from './vehicle-count-radiogram';
+import { ResourceRequestRadiogram } from './resource-request-radiogram';
 
 export const radiograms = {
     MaterialCountRadiogram,
     MissingTransferConnectionRadiogram,
     PatientCountRadiogram,
     PersonnelCountRadiogram,
+    ResourceRequestRadiogram,
     TreatmentStatusRadiogram,
     VehicleCountRadiogram,
 };
@@ -30,6 +32,7 @@ export const radiogramDictionary: ExerciseRadiogramDictionary = {
     missingTransferConnectionRadiogram: MissingTransferConnectionRadiogram,
     patientCountRadiogram: PatientCountRadiogram,
     personnelCountRadiogram: PersonnelCountRadiogram,
+    resourceRequestRadiogram: ResourceRequestRadiogram,
     treatmentStatusRadiogram: TreatmentStatusRadiogram,
     vehicleCountRadiogram: VehicleCountRadiogram,
 };
