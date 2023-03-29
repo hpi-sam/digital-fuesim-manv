@@ -29,7 +29,7 @@ export class RadiogramCardContentPersonnelCountComponent implements OnInit {
 
     ngOnInit(): void {
         this.radiogram$ = this.store.select(
-            createSelectRadiogram(this.radiogramId)
-        ) as Observable<PersonnelCountRadiogram>;
+            createSelectRadiogram<PersonnelCountRadiogram>(this.radiogramId)
+        );
     }
 }

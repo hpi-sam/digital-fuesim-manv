@@ -1,6 +1,5 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import type { MemoizedSelector } from '@ngrx/store';
 import { createSelector, Store } from '@ngrx/store';
 import type { VehicleCountRadiogram } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
@@ -24,9 +23,9 @@ export class RadiogramCardContentVehicleCountComponent implements OnInit {
     constructor(private readonly store: Store<AppState>) {}
 
     ngOnInit(): void {
-        const radiogramSelector = createSelectRadiogram(
+        const radiogramSelector = createSelectRadiogram<VehicleCountRadiogram>(
             this.radiogramId
-        ) as MemoizedSelector<AppState, NonNullable<VehicleCountRadiogram>>;
+        );
 
         const vehicleCountsSelector = createSelector(
             radiogramSelector,
