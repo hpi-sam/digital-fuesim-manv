@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
 import { UUID } from '../../utils';
 import { IsValue } from '../../utils/validators';
@@ -28,7 +29,7 @@ export class VehicleRequestRadiogram implements Radiogram {
     @IsBoolean()
     readonly informationAvailable: boolean = true;
 
-    @IsUUID()
+    @Type(() => VehicleResource)
     readonly requestedVehicles: VehicleResource;
 
     /**
