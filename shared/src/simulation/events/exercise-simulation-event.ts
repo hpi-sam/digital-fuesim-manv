@@ -10,6 +10,7 @@ import { TreatmentsTimerEvent } from './treatments-timer-event';
 import { TreatmentProgressChangedEvent } from './treatment-progress-changed';
 import { CollectInformationEvent } from './collect';
 import { StartCollectingInformationEvent } from './start-collecting';
+import { ResourceRequiredEvent } from './resources-required';
 import { VehiclesSentEvent } from './vehicles-sent';
 
 export const simulationEvents = {
@@ -22,6 +23,7 @@ export const simulationEvents = {
     VehicleArrivedEvent,
     CollectInformationEvent,
     StartCollectingInformationEvent,
+    ResourceRequiredEvent,
     VehiclesSentEvent,
 };
 
@@ -44,6 +46,7 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     vehicleArrivedEvent: VehicleArrivedEvent,
     collectInformationEvent: CollectInformationEvent,
     startCollectingInformationEvent: StartCollectingInformationEvent,
+    resourceRequiredEvent: ResourceRequiredEvent,
     vehiclesSentEvent: VehiclesSentEvent,
 };
 
