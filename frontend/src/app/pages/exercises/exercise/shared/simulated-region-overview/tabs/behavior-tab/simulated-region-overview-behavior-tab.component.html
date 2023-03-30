@@ -44,6 +44,13 @@
                     [simulatedRegionId]="simulatedRegion.id"
                     [reportBehaviorId]="selectedBehavior!.id"
                 ></app-simulated-region-overview-behavior-report>
+                <app-simulated-region-overview-behavior-automatically-distribute-vehicles
+                    *ngSwitchCase="'automaticallyDistributeVehiclesBehavior'"
+                    [simulatedRegionId]="simulatedRegion.id"
+                    [automaticallyDistributeVehiclesBehaviorId]="
+                        selectedBehavior!.id
+                    "
+                ></app-simulated-region-overview-behavior-automatically-distribute-vehicles>
                 <app-simulated-region-overview-behavior-answer-vehicle-requests
                     *ngSwitchCase="'answerRequestsBehavior'"
                 ></app-simulated-region-overview-behavior-answer-vehicle-requests>

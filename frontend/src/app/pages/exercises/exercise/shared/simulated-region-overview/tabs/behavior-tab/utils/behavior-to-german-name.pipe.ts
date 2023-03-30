@@ -10,6 +10,7 @@ const behaviorToGermanNameDictionary: {
     unloadArrivingVehiclesBehavior: 'Fahrzeuge entladen',
     reportBehavior: 'Berichte erstellen',
     answerRequestsBehavior: 'Fahrzeuganfragen beantworten',
+    automaticallyDistributeVehiclesBehavior: 'Fahrzeuge verteilen',
 };
 @Pipe({
     name: 'behaviorToGermanName',
