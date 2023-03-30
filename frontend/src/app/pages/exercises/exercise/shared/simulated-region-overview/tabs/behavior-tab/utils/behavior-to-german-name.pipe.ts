@@ -9,6 +9,7 @@ const behaviorToGermanNameDictionary: {
     treatPatientsBehavior: 'Patienten behandeln',
     unloadArrivingVehiclesBehavior: 'Fahrzeuge entladen',
     reportBehavior: 'Berichte erstellen',
+    answerRequestsBehavior: 'Fahrzeuganfragen beantworten',
 };
 @Pipe({
     name: 'behaviorToGermanName',
