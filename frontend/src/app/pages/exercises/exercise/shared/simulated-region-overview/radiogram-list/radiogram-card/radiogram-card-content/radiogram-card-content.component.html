@@ -27,6 +27,10 @@
         *ngSwitchCase="'missingTransferConnectionRadiogram'"
         [radiogramId]="radiogram.id"
     ></app-radigoram-card-content-missing-transfer-connection>
+    <app-radigoram-card-content-resource-request
+        *ngSwitchCase="'resourceRequestRadiogram'"
+        [radiogramId]="radiogram.id"
+    ></app-radigoram-card-content-resource-request>
     <app-radiogram-card-content-fallback
         *ngSwitchDefault
         [radiogramType]="radiogram.type"

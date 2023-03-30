@@ -39,6 +39,8 @@ import { RadiogramCardContentInformationUnavailableComponent } from './radiogram
 import { HumanReadableRadiogramTypePipe } from './radiogram-list/human-readable-radiogram-type.pipe';
 import { TreatmentStatusBadgeComponent } from './treatment-status-badge/treatment-status-badge.component';
 import { RadigoramCardContentMissingTransferConnectionComponent } from './radiogram-list/radiogram-card/radigoram-card-content-missing-transfer-connection/radigoram-card-content-missing-transfer-connection.component';
+import { SimulatedRegionOverviewBehaviorAnswerVehicleRequestsComponent } from './tabs/behavior-tab/behaviors/answer-vehicle-requests/simulated-region-overview-behavior-answer-vehicle-requests.component';
+import { RadigoramCardContentResourceRequestComponent } from './radiogram-list/radiogram-card/radigoram-card-content-resource-request/radigoram-card-content-resource-request.component';
 
 @NgModule({
     declarations: [
@@ -70,6 +72,8 @@ import { RadigoramCardContentMissingTransferConnectionComponent } from './radiog
         HumanReadableRadiogramTypePipe,
         TreatmentStatusBadgeComponent,
         RadigoramCardContentMissingTransferConnectionComponent,
+        SimulatedRegionOverviewBehaviorAnswerVehicleRequestsComponent,
+        RadigoramCardContentResourceRequestComponent,
     ],
     imports: [
         CommonModule,

@@ -44,6 +44,9 @@
                     [simulatedRegionId]="simulatedRegion.id"
                     [reportBehaviorId]="selectedBehavior!.id"
                 ></app-simulated-region-overview-behavior-report>
+                <app-simulated-region-overview-behavior-answer-vehicle-requests
+                    *ngSwitchCase="'answerRequestsBehavior'"
+                ></app-simulated-region-overview-behavior-answer-vehicle-requests>
                 <p *ngSwitchDefault class="text-muted font-bold">
                     Es ist noch keine Verhaltensweise ausgewählt.
                 </p>
