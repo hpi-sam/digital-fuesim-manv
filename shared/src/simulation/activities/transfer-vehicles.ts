@@ -18,12 +18,7 @@ import { TransferActionReducers } from '../../store/action-reducers/transfer';
 import { getElement } from '../../store/action-reducers/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ExerciseSimulationEvent,
-    ResourceRequiredEvent,
-    VehiclesSentEvent,
-} from '../events';
+import { ResourceRequiredEvent, VehiclesSentEvent } from '../events';
 import { sendSimulationEvent } from '../events/utils';
 import { nextUUID } from '../utils/randomness';
 import type {
