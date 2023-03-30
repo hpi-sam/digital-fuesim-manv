@@ -15,7 +15,10 @@ import {
 } from '../../models/utils';
 import { VehicleResource } from '../../models/utils/vehicle-resource';
 import { TransferActionReducers } from '../../store/action-reducers/transfer';
-import { getElement } from '../../store/action-reducers/utils';
+import {
+    getElement,
+    getElementByPredicate,
+} from '../../store/action-reducers/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { ResourceRequiredEvent, VehiclesSentEvent } from '../events';
@@ -71,16 +74,20 @@ export const transferVehiclesActivity: SimulationActivity<TransferVehiclesActivi
             _tickInterval,
             terminate
         ) {
-            const ownTransferPoint = Object.values(
-                draftState.transferPoints
-            ).find((transferPoint) =>
-                isInSpecificSimulatedRegion(transferPoint, simulatedRegion.id)
-            )!;
+            const ownTransferPoint = getElementByPredicate(
+                draftState,
+                'transferPoint',
+                (transferPoint) =>
+                    isInSpecificSimulatedRegion(
+                        transferPoint,
+                        simulatedRegion.id
+                    )
+            );
 
             if (
-                !Object.keys(ownTransferPoint.reachableTransferPoints).includes(
+                ownTransferPoint.reachableTransferPoints[
                     activityState.targetTransferPointId
-                )
+                ] === undefined
             ) {
                 publishRadiogram(
                     draftState,
