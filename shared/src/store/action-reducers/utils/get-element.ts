@@ -1,3 +1,4 @@
+import type { ExerciseRadiogram } from '../../../models/radiogram';
 import type {
     ExerciseSimulationActivityState,
     ExerciseSimulationActivityType,
@@ -52,6 +53,25 @@ export function getElementByPredicate<
         );
     }
     return element;
+}
+
+export function getRadiogramById<R extends ExerciseRadiogram>(
+    state: Mutable<ExerciseState>,
+    radiogramId: UUID,
+    radiogramType: R['type']
+) {
+    const radiogram = state.radiograms[radiogramId];
+    if (!radiogram) {
+        throw new ReducerError(
+            `Radiogram with id ${radiogramId} does not exist`
+        );
+    }
+    if (radiogram.type !== radiogramType) {
+        throw new ReducerError(
+            `Expected radiogram with id ${radiogramId} to be of type ${radiogramType}, but was ${radiogram.type}`
+        );
+    }
+    return radiogram as Mutable<R>;
 }
 
 export function getBehaviorById<T extends ExerciseSimulationBehaviorType>(

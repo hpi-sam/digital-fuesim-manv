@@ -18,3 +18,4 @@ export { PatientCategory } from './patient-category';
 export { SimulatedRegion } from './simulated-region';
 export { Element } from './element';
 export { ExerciseConfiguration } from './exercise-configuration';
+export * from './utils';
