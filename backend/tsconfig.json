@@ -1,6 +1,7 @@
 {
     "extends": "../tsconfig.base.json",
     "compilerOptions": {
+        "moduleResolution": "node",
         "outDir": "./dist",
         "rootDir": ".",
         "types": ["jest", "node"],
