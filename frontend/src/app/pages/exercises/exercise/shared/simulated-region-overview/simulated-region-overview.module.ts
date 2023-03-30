@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import {
     NgbCollapseModule,
     NgbDropdownModule,
@@ -15,7 +16,7 @@ import { SimulatedRegionOverviewBehaviorTabComponent } from './tabs/behavior-tab
 import { SimulatedRegionOverviewGeneralTabComponent } from './tabs/general-tab/simulated-region-overview-general-tab.component';
 import { SimulatedRegionOverviewBehaviorTreatPatientsComponent } from './tabs/behavior-tab/behaviors/treat-patients/simulated-region-overview-behavior-treat-patients.component';
 import { SimulatedRegionOverviewBehaviorAssignLeaderComponent } from './tabs/behavior-tab/behaviors/assign-leader/simulated-region-overview-behavior-assign-leader.component';
-import { BehaviorToGermanNamePipe } from './tabs/behavior-tab/utils/behavior-to-german-name.pipe';
+import { BehaviorTypeToGermanNamePipe } from './tabs/behavior-tab/utils/behavior-to-german-name.pipe';
 import { SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent } from './tabs/behavior-tab/behaviors/unload-arriving-vehicles/simulated-region-overview-behavior-unload-arriving-vehicles.component';
 import { TreatmentProgressToGermanNamePipe } from './tabs/behavior-tab/utils/treatment-progress-to-german-name.pipe';
 import { SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent } from './tabs/behavior-tab/behaviors/treat-patients/patient-details/simulated-region-overview-behavior-treat-patients-patient-details.component';
@@ -49,7 +50,7 @@ import { RadigoramCardContentMissingTransferConnectionComponent } from './radiog
         SimulatedRegionOverviewBehaviorTreatPatientsComponent,
         SimulatedRegionOverviewBehaviorAssignLeaderComponent,
         SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent,
-        BehaviorToGermanNamePipe,
+        BehaviorTypeToGermanNamePipe,
         TreatmentProgressToGermanNamePipe,
         SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent,
         WithDollarPipe,
@@ -80,6 +81,7 @@ import { RadigoramCardContentMissingTransferConnectionComponent } from './radiog
         NgbDropdownModule,
         NgbProgressbarModule,
         NgbTooltipModule,
+        DragDropModule,
         TransferPointOverviewModule,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],

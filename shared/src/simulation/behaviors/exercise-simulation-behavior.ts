@@ -19,7 +19,7 @@ export type ExerciseSimulationBehaviorType = InstanceType<
     ExerciseSimulationBehavior['behaviorState']
 >['type'];
 
-type ExerciseSimulationBehaviorDictionary = {
+export type ExerciseSimulationBehaviorDictionary = {
     [Behavior in ExerciseSimulationBehavior as InstanceType<
         Behavior['behaviorState']
     >['type']]: Behavior;

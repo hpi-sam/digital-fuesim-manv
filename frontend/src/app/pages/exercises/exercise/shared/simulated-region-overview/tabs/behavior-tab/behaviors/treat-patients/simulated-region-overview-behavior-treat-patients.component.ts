@@ -1,18 +1,22 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID, VehicleTemplate } from 'digital-fuesim-manv-shared';
+import type { CdkDragDrop } from '@angular/cdk/drag-drop';
 import {
     TreatPatientsBehaviorState,
     SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
+import { combineLatest, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
+    createSelectBehaviorState,
     createSelectElementsInSimulatedRegion,
     selectConfiguration,
     selectPatients,
+    selectVehicleTemplates,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { SelectPatientService } from '../../../../select-patient.service';
 import { comparePatientsByVisibleStatus } from '../../../compare-patients';
@@ -33,6 +37,9 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
     @Input() simulatedRegion!: SimulatedRegion;
     @Input() treatPatientsBehaviorState!: TreatPatientsBehaviorState;
     public patientIds$!: Observable<UUID[]>;
+    public vehicleTemplatesToAdd$!: Observable<readonly VehicleTemplate[]>;
+    public vehicleTemplatesPriority$!: Observable<readonly VehicleTemplate[]>;
+
     private _settingsCollapsed!: boolean;
     private _informationCollapsed!: boolean;
 
@@ -79,6 +86,34 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
                         .map((patient) => patient.id)
             )
         );
+
+        const behaviorState$ = this.store.select(
+            createSelectBehaviorState<TreatPatientsBehaviorState>(
+                this.simulatedRegion.id,
+                this.treatPatientsBehaviorState.id
+            )
+        );
+
+        const ownVehicleTemplateIds$ = behaviorState$.pipe(
+            map((behaviorState) => behaviorState.vehicleTemplatePriorities)
+        );
+        const availableVehicleTemplates$ = this.store.select(
+            selectVehicleTemplates
+        );
+        this.vehicleTemplatesPriority$ = combineLatest(
+            [availableVehicleTemplates$, ownVehicleTemplateIds$],
+            (templates, ownIds) => {
+                const templateMap = Object.fromEntries(
+                    templates.map((template) => [template.id, template])
+                );
+                return ownIds.map((id) => templateMap[id]!);
+            }
+        );
+        this.vehicleTemplatesToAdd$ = combineLatest(
+            [availableVehicleTemplates$, ownVehicleTemplateIds$],
+            (templates, ownIds) =>
+                templates.filter((template) => !ownIds.includes(template.id))
+        );
     }
 
     public updateTreatPatientsBehaviorState(
@@ -98,5 +133,44 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
             secured,
             countingTimePerPatient,
         });
+    }
+
+    public vehiclePriorityDrop({
+        item: { data: id },
+        currentIndex,
+    }: CdkDragDrop<UUID[]>) {
+        const newPriorities =
+            this.treatPatientsBehaviorState.vehicleTemplatePriorities.filter(
+                (item) => item !== id
+            );
+        newPriorities.splice(currentIndex, 0, id);
+        this.proposeVehiclePriorities(newPriorities);
+    }
+
+    public vehiclePriorityRemove(id: UUID) {
+        this.proposeVehiclePriorities(
+            this.treatPatientsBehaviorState.vehicleTemplatePriorities.filter(
+                (item) => item !== id
+            )
+        );
+    }
+
+    public vehiclePriorityAdd(id: UUID) {
+        this.proposeVehiclePriorities([
+            id,
+            ...this.treatPatientsBehaviorState.vehicleTemplatePriorities,
+        ]);
+    }
+
+    private proposeVehiclePriorities(newPriorities: UUID[]) {
+        this.exerciseService.proposeAction(
+            {
+                type: '[TreatPatientsBehavior] Update VehiclePriorities',
+                simulatedRegionId: this.simulatedRegion.id,
+                behaviorId: this.treatPatientsBehaviorState.id,
+                priorities: newPriorities,
+            },
+            true
+        );
     }
 }

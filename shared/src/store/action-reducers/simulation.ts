@@ -12,7 +12,12 @@ import { StartCollectingInformationEvent } from '../../simulation/events/start-c
 import { sendSimulationEvent } from '../../simulation/events/utils';
 import { nextUUID } from '../../simulation/utils/randomness';
 import type { Mutable } from '../../utils';
-import { UUID, uuidValidationOptions, cloneDeepMutable } from '../../utils';
+import {
+    UUID,
+    uuidValidationOptions,
+    cloneDeepMutable,
+    uuidArrayValidationOptions,
+} from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
@@ -53,6 +58,22 @@ export class UpdateTreatPatientsIntervalsAction implements Action {
     @IsNumber()
     @Min(0)
     public readonly countingTimePerPatient?: number;
+}
+
+export class TreatPatientsBehaviorUpdateVehiclePrioritiesAction
+    implements Action
+{
+    @IsValue('[TreatPatientsBehavior] Update VehiclePriorities' as const)
+    public readonly type = '[TreatPatientsBehavior] Update VehiclePriorities';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidArrayValidationOptions)
+    public readonly priorities!: readonly UUID[];
 }
 
 export class UnloadArrivingVehiclesBehaviorUpdateUnloadDelayAction
@@ -341,6 +362,24 @@ export namespace SimulationActionReducers {
                 );
                 delete reportBehaviorState.activityIds[informationType];
                 delete simulatedRegion.activities[activityId];
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+    export const updateTreatmentVehiclePriorities: ActionReducer<TreatPatientsBehaviorUpdateVehiclePrioritiesAction> =
+        {
+            action: TreatPatientsBehaviorUpdateVehiclePrioritiesAction,
+            reducer(draftState, { simulatedRegionId, behaviorId, priorities }) {
+                const treatPatientsBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'treatPatientsBehavior'
+                );
+
+                treatPatientsBehaviorState.vehicleTemplatePriorities =
+                    cloneDeepMutable(priorities);
 
                 return draftState;
             },
