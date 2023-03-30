@@ -4,7 +4,7 @@ import { groupBy } from 'lodash-es';
 import {
     MissingTransferConnectionRadiogram,
     RadiogramUnpublishedStatus,
-} from '../../models/radiogram';
+} from '../../models/radiogram/index';
 import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutable';
 import {
     currentSimulatedRegionIdOf,
