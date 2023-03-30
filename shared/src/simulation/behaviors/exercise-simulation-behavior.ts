@@ -4,8 +4,10 @@ import { assignLeaderBehavior } from './assign-leader';
 import { treatPatientsBehavior } from './treat-patients';
 import { unloadArrivingVehiclesBehavior } from './unload-arrived-vehicles';
 import { reportBehavior } from './report';
+import { automaticallyDistributeVehiclesBehavior } from './automatically-distribute-vehicles';
 
 export const simulationBehaviors = {
+    automaticallyDistributeVehiclesBehavior,
     assignLeaderBehavior,
     treatPatientsBehavior,
     unloadArrivingVehiclesBehavior,
