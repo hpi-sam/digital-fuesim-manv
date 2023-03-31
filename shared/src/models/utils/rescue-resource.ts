@@ -1,4 +1,5 @@
 import type { Type } from 'class-transformer';
+import { StrictObject } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { getCreate } from './get-create';
@@ -35,8 +36,14 @@ export class PersonnelResource {
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(personnelCounts: { [key in PersonnelType]: number }) {
-        this.personnelCounts = personnelCounts;
+    constructor(personnelCounts?: { [key in PersonnelType]: number }) {
+        this.personnelCounts = personnelCounts ?? {
+            gf: 0,
+            notarzt: 0,
+            notSan: 0,
+            rettSan: 0,
+            san: 0,
+        };
     }
 
     static readonly create = getCreate(this);
@@ -57,3 +64,18 @@ export const rescueResourceTypeOptions: Parameters<typeof Type> = [
         },
     },
 ];
+
+export function isEmptyResource(resource: ExerciseRescueResource) {
+    const resourceDescriptions = [];
+    switch (resource.type) {
+        case 'personnelResource':
+            resourceDescriptions.push(resource.personnelCounts);
+            break;
+        case 'vehicleResource':
+            resourceDescriptions.push(resource.vehicleCounts);
+            break;
+    }
+    return resourceDescriptions.every((desc) =>
+        StrictObject.values(desc).every((cnt) => cnt === 0)
+    );
+}

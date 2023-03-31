@@ -1,8 +1,17 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
 import type { Material, Personnel } from '../../models';
 import { Patient } from '../../models';
-import type { PatientStatus, PersonnelType } from '../../models/utils';
-import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
+import type {
+    CanCaterFor,
+    PatientStatus,
+    PersonnelType,
+} from '../../models/utils';
+import {
+    isEmptyResource,
+    PersonnelResource,
+    getCreate,
+    isInSpecificSimulatedRegion,
+} from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { CatersFor } from '../../store/action-reducers/utils/calculate-treatments';
 import {
@@ -11,20 +20,56 @@ import {
     tryToCaterFor,
 } from '../../store/action-reducers/utils/calculate-treatments';
 import type { Mutable } from '../../utils';
-import { UUID, uuidValidationOptions } from '../../utils';
+import {
+    UUID,
+    uuidValidationOptions,
+    cloneDeepMutable,
+    StrictObject,
+} from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 // Do not import from "../utils" since it would cause circular dependencies
 import {
     TreatmentProgress,
     treatmentProgressAllowedValues,
 } from '../utils/treatment';
-import { TreatmentProgressChangedEvent } from '../events';
+import {
+    ResourceRequiredEvent,
+    TreatmentProgressChangedEvent,
+} from '../events';
 import { sendSimulationEvent } from '../events/utils';
 import type { AssignLeaderBehaviorState } from '../behaviors/assign-leader';
+import { nextUUID } from '../utils/randomness';
+import { defaultPersonnelTemplates } from '../../data/default-state/personnel-templates';
 import type {
     SimulationActivity,
     SimulationActivityState,
 } from './simulation-activity';
+
+const capacities = Object.fromEntries(
+    StrictObject.entries(defaultPersonnelTemplates).map(
+        ([personnelType, { canCaterFor }]) => [personnelType, canCaterFor]
+    )
+) as { [key in PersonnelType]: CanCaterFor };
+
+// TODO: in this entire file, calculate personnel needs for (each personnel category X each patient category)
+// The if caterFor has 'or' semantics, Math.ceil all values and add them. For 'and', use Math.max and then Math.ceil.
+
+// Estimation matricies for required personnel based on the 7/2/1 (green/yellow/red) rule.
+// This Does not take into account if patients can walk
+const skEst = { green: 7 / 10, yellow: 2 / 10, red: 1 / 10 };
+const perUntriagedPatientPersonnelEstimation: {
+    [key in PersonnelType]: number;
+} = {
+    gf: 0,
+    san: skEst.green * (1 / capacities.san.green),
+    rettSan: skEst.yellow * 1 + skEst.red * 1,
+    notSan: skEst.red * 1,
+    // Notarzt is limited by either patient category ('and' semantic hardcoded for now)
+    notarzt: Math.max(
+        skEst.yellow * (1 / capacities.notarzt.yellow),
+        skEst.red * (1 / capacities.notarzt.red)
+    ),
+};
 
 export class ReassignTreatmentsActivityState
     implements SimulationActivityState
@@ -111,6 +156,8 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
 
             let allowTerminate = true;
 
+            let missingPersonnel: PersonnelResource | null = null;
+
             switch (activityState.treatmentProgress) {
                 case 'noTreatment': {
                     // Since we've reached this line, there is a leader and other personnel so treatment can start
@@ -132,12 +179,13 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                     break;
                 }
                 case 'counted': {
-                    const finished = triage(
+                    const [finished, missingResource] = triage(
                         draftState,
                         patients,
                         personnel,
                         materials
                     );
+                    missingPersonnel = missingResource;
                     if (finished) {
                         sendSimulationEvent(
                             simulatedRegion,
@@ -148,12 +196,13 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 }
                 case 'triaged':
                 case 'secured': {
-                    const secured = treat(
+                    const [secured, missingResource] = treat(
                         draftState,
                         patients,
                         personnel,
                         materials
                     );
+                    missingPersonnel = missingResource;
                     if (
                         activityState.treatmentProgress === 'triaged' &&
                         secured
@@ -165,8 +214,18 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                     }
                     break;
                 }
-                default:
-                // Unknown state
+            }
+
+            if (missingPersonnel && !isEmptyResource(missingPersonnel)) {
+                sendSimulationEvent(
+                    simulatedRegion,
+                    ResourceRequiredEvent.create(
+                        nextUUID(draftState),
+                        simulatedRegion.id,
+                        missingPersonnel,
+                        'reassignTreatmentsActivity'
+                    )
+                );
             }
 
             if (allowTerminate) {
@@ -255,7 +314,8 @@ function triage(
     patients: Mutable<Patient>[],
     personnel: Mutable<Personnel>[],
     materials: Mutable<Material>[]
-): boolean {
+): [boolean, Mutable<PersonnelResource>] {
+    const missingPersonnel = estimateRequiredPersonnel(patients, personnel);
     const cateringPersonnel = createCateringPersonnel(personnel).sort(
         (a, b) => a.priority - b.priority
     );
@@ -287,8 +347,8 @@ function triage(
     });
 
     assignTreatments(draftState, patientsToTreat, cateringPersonnel, materials);
-
-    return patientsToTreat.length === patients.length;
+    const triageDone = patientsToTreat.length === patients.length;
+    return [triageDone, missingPersonnel];
 }
 
 /**
@@ -298,14 +358,14 @@ function triage(
  * @param patients A list of the patients to operate on
  * @param personnel A list of the personnel to operate on
  * @param materials A list of the patients to operate on
- * @returns Whether the treatment for all patients is secured.
+ * @returns Whether the treatment for all patients is secured and numbers of personnel that is missing to secure treatment.
  */
 function treat(
     draftState: Mutable<ExerciseState>,
     patients: Mutable<Patient>[],
     personnel: Mutable<Personnel>[],
     materials: Mutable<Material>[]
-): boolean {
+): [boolean, Mutable<PersonnelResource>] {
     return assignTreatments(
         draftState,
         patients,
@@ -473,14 +533,14 @@ function findAssignablePersonnel(
  * @param cateringPersonnel A list of the personnel to operate on.
  *  Personnel may be treating some other patients already, expressed by the catersFor property.
  * @param materials A list of the materials to operate on.
- * @returns Whether the treatment for all patients is secured.
+ * @returns Whether the treatment for all patients is secured and numbers of personnel that is missing to secure treatment.
  */
 function assignTreatments(
     draftState: Mutable<ExerciseState>,
     patients: Mutable<Patient>[],
     cateringPersonnel: CateringPersonnel[],
     materials: Mutable<Material>[]
-): boolean {
+): [boolean, Mutable<PersonnelResource>] {
     const groupedPatients = groupBy(patients, (patient) =>
         Patient.getVisibleStatus(
             patient,
@@ -495,6 +555,14 @@ function assignTreatments(
     );
 
     let securedPatients = 0;
+
+    // The minimum required personnel, with least possible qualifications to have all patients secured.
+    // Note that higher qualifications are not always better, e.g. one 'san' can treat more green patients than any other qualification.
+    // This might include fractions during calculation but will be rounded up in the end.
+    const missingPersonnelResource = cloneDeepMutable(
+        PersonnelResource.create()
+    );
+    const missingPersonnel = missingPersonnelResource.personnelCounts;
 
     groupedPatients.red?.forEach((patient) => {
         const assignableNotSan = findAssignablePersonnel(
@@ -534,6 +602,8 @@ function assignTreatments(
         if (assignableNotSan?.isExclusive && assignableRettSan?.isExclusive) {
             securedPatients++;
         }
+        missingPersonnel.notSan += assignableNotSan?.isExclusive ? 0 : 1;
+        missingPersonnel.rettSan += assignableRettSan?.isExclusive ? 0 : 1;
     });
 
     groupedPatients.yellow?.forEach((patient) => {
@@ -557,6 +627,7 @@ function assignTreatments(
                 securedPatients++;
             }
         }
+        missingPersonnel.rettSan += assignableRettSan?.isExclusive ? 0 : 1;
     });
 
     groupedPatients.green?.forEach((patient) => {
@@ -580,18 +651,10 @@ function assignTreatments(
             // Green patients do not need individual treatment to be secured
             securedPatients++;
         }
+        missingPersonnel.san += assignableSan ? 0 : 1 / capacities.san.green;
     });
 
     const cateringMaterials = createCateringMaterials(materials);
-
-    // A notarzt may be used to replace a lower tier personnel if there is not enough
-    // In this case, we consider the notarzt to be more occupied that by it's normal work so we don't want to use them here
-    const remainingNotarzts =
-        groupedPersonnel.notarzt?.filter((notarzt) =>
-            hasNoTreatments(notarzt)
-        ) ?? [];
-
-    let patientsWithNotarzt = 0;
 
     [
         ...(groupedPatients.red ?? []),
@@ -609,38 +672,81 @@ function assignTreatments(
                 draftState.configuration.bluePatientsEnabled
             )
         );
+    });
 
+    let patientsWithNotarzt = 0;
+
+    // A notarzt may be used to replace a lower tier personnel if there is not enough
+    // In this case, we consider the notarzt to be more occupied that by it's normal work so we don't want to use them here
+    const remainingNotarzts =
+        groupedPersonnel.notarzt?.filter((notarzt) =>
+            hasNoTreatments(notarzt)
+        ) ?? [];
+
+    [
+        ...(groupedPatients.red?.map((patient) => ['red', patient] as const) ??
+            []),
+        ...(groupedPatients.yellow?.map(
+            (patient) => ['yellow', patient] as const
+        ) ?? []),
+    ].forEach(([visibleStatus, patient]) => {
+        // Usually, notarzts are needed for some specific tasks, but they do not have to treat a patient continuously and exclusively.
+        // Therefore, we can just use this simple approach based on their normal treatment capacity
         if (
-            Patient.getVisibleStatus(
-                patient,
-                draftState.configuration.pretriageEnabled,
-                draftState.configuration.bluePatientsEnabled
-            ) !== 'green'
-        ) {
-            // Usually, notarzts are needed for some specific tasks, but they do not have to treat a patient continuously and exclusively.
-            // Therefore, we can just use this simple approach based on their normal treatment capacity
-            if (
-                remainingNotarzts.some((notarzt) =>
-                    tryToCaterFor(
-                        notarzt.personnel,
-                        notarzt.catersFor,
-                        patient,
-                        draftState.configuration.pretriageEnabled,
-                        draftState.configuration.bluePatientsEnabled
-                    )
+            remainingNotarzts.some((notarzt) =>
+                tryToCaterFor(
+                    notarzt.personnel,
+                    notarzt.catersFor,
+                    patient,
+                    draftState.configuration.pretriageEnabled,
+                    draftState.configuration.bluePatientsEnabled
                 )
-            ) {
-                patientsWithNotarzt++;
-            }
+            )
+        ) {
+            patientsWithNotarzt++;
+        } else {
+            missingPersonnel.notarzt += 1 / capacities.notarzt[visibleStatus];
         }
     });
+
+    StrictObject.keys(missingPersonnel).forEach(
+        (key) => (missingPersonnel[key] = Math.ceil(missingPersonnel[key]))
+    );
 
     const redAndYellowPatientsCount =
         (groupedPatients.red?.length ?? 0) +
         (groupedPatients.yellow?.length ?? 0);
 
-    return (
+    const secured =
         securedPatients >= patients.length &&
-        patientsWithNotarzt >= redAndYellowPatientsCount
+        patientsWithNotarzt >= redAndYellowPatientsCount;
+    return [secured, missingPersonnelResource];
+}
+
+/**
+ * Computes an estimation of required personnel based on the number of patients and typical MCI rules of thumb.
+ * @param patients patients to treat, ignoring their triage status
+ * @param personnel available personnel
+ * @returns the types and number of personnel estimated to missing to secure treatment
+ */
+function estimateRequiredPersonnel(
+    patients: Patient[],
+    personnel: Personnel[]
+): Mutable<PersonnelResource> {
+    const patientCount = patients.length;
+    const havePersonnel = groupBy(personnel, (p) => p.personnelType);
+
+    const resource = cloneDeepMutable(
+        PersonnelResource.create(perUntriagedPatientPersonnelEstimation)
     );
+    StrictObject.keys(resource.personnelCounts).forEach(
+        (key) =>
+            (resource.personnelCounts[key] = Math.max(
+                Math.ceil(resource.personnelCounts[key] * patientCount) -
+                    (havePersonnel[key]?.length ?? 0),
+                0
+            ))
+    );
+
+    return resource;
 }

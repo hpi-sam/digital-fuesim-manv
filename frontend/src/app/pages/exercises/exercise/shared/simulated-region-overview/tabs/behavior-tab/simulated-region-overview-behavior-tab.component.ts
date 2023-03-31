@@ -77,7 +77,7 @@ export class SimulatedRegionOverviewBehaviorTabComponent
     public addBehavior(behaviorType: ExerciseSimulationBehaviorType) {
         const args: any[] = [];
         switch (behaviorType) {
-            case 'treatPatientsBehavior':
+            case 'providePersonnelBehavior':
                 args.push(
                     selectStateSnapshot(selectVehicleTemplates, this.store).map(
                         (template) => template.id
