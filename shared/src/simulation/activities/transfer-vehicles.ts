@@ -23,6 +23,7 @@ import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import {
     ResourceRequiredEvent,
+    TransferConnectionMissingEvent,
     VehiclesSentEvent,
     VehicleTransferSuccessfulEvent,
 } from '../events';
@@ -93,6 +94,13 @@ export const transferVehiclesActivity: SimulationActivity<TransferVehiclesActivi
                     activityState.targetTransferPointId
                 ] === undefined
             ) {
+                sendSimulationEvent(
+                    simulatedRegion,
+                    TransferConnectionMissingEvent.create(
+                        nextUUID(draftState),
+                        activityState.targetTransferPointId
+                    )
+                );
                 publishRadiogram(
                     draftState,
                     cloneDeepMutable(

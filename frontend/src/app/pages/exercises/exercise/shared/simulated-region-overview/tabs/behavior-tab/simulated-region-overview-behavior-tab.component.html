@@ -23,7 +23,10 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm overflow-auto mh-100" style="max-width: 70%">
+        <div
+            class="col-sm overflow-auto mh-100 h-100 w-100"
+            style="max-width: 70%"
+        >
             <div [ngSwitch]="selectedBehavior?.type">
                 <app-simulated-region-overview-behavior-assign-leader
                     *ngSwitchCase="'assignLeaderBehavior'"
