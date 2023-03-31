@@ -4,7 +4,7 @@ import { UUID } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
 import { getCreate } from '../utils';
-import { VehicleResource } from '../utils/vehicle-resource';
+import { VehicleResource } from '../utils/rescue-resource';
 import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 

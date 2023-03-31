@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
 import { getCreate } from '../../models/utils';
-import { VehicleResource } from '../../models/utils/vehicle-resource';
+import { VehicleResource } from '../../models/utils/rescue-resource';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { SimulationEvent } from './simulation-event';

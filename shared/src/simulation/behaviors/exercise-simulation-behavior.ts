@@ -4,12 +4,14 @@ import { assignLeaderBehavior } from './assign-leader';
 import { treatPatientsBehavior } from './treat-patients';
 import { unloadArrivingVehiclesBehavior } from './unload-arrived-vehicles';
 import { reportBehavior } from './report';
+import { providePersonnelBehavior } from './provide-personnel';
 
 export const simulationBehaviors = {
     assignLeaderBehavior,
     treatPatientsBehavior,
     unloadArrivingVehiclesBehavior,
     reportBehavior,
+    providePersonnelBehavior,
 };
 
 export type ExerciseSimulationBehavior =

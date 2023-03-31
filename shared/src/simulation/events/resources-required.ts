@@ -1,7 +1,10 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { getCreate } from '../../models/utils';
-import { VehicleResource } from '../../models/utils/vehicle-resource';
+import {
+    ExerciseRescueResource,
+    rescueResourceTypeOptions,
+} from '../../models/utils/rescue-resource';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { SimulationEvent } from './simulation-event';
@@ -17,8 +20,8 @@ export class ResourceRequiredEvent implements SimulationEvent {
     readonly requiringSimulatedRegionId: UUID;
 
     @ValidateNested()
-    @Type(() => VehicleResource)
-    readonly requiredResource: VehicleResource;
+    @Type(...rescueResourceTypeOptions)
+    readonly requiredResource: ExerciseRescueResource;
 
     /**
      * Used for deduplication of needs between different events of this type
@@ -32,7 +35,7 @@ export class ResourceRequiredEvent implements SimulationEvent {
     constructor(
         id: UUID,
         requiringSimulatedRegionId: UUID,
-        requiredResource: VehicleResource,
+        requiredResource: ExerciseRescueResource,
         key: string
     ) {
         this.id = id;

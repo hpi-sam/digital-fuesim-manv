@@ -17,12 +17,7 @@ import type { SimulatedRegion } from '../../models';
 import type { ExerciseState } from '../../state';
 import { getActivityById } from '../../store/action-reducers/utils';
 import type { Mutable } from '../../utils';
-import {
-    uuid,
-    UUID,
-    uuidValidationOptions,
-    uuidArrayValidationOptions,
-} from '../../utils';
+import { uuid, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import { DelayEventActivityState } from '../activities';
 import { ReassignTreatmentsActivityState } from '../activities/reassign-treatments';
@@ -120,16 +115,6 @@ export class TreatPatientsBehaviorState implements SimulationBehaviorState {
 
     @IsLiteralUnion(treatmentProgressAllowedValues)
     public readonly treatmentProgress: TreatmentProgress = 'noTreatment';
-
-    @IsUUID(4, uuidArrayValidationOptions)
-    public readonly vehicleTemplatePriorities: readonly UUID[];
-
-    /**
-     * @deprecated Use {@link create} instead.
-     */
-    constructor(vehicleTemplatePriorities?: UUID[]) {
-        this.vehicleTemplatePriorities = vehicleTemplatePriorities ?? [];
-    }
 
     static readonly create = getCreate(this);
 }

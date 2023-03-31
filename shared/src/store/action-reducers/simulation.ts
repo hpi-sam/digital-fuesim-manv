@@ -60,11 +60,12 @@ export class UpdateTreatPatientsIntervalsAction implements Action {
     public readonly countingTimePerPatient?: number;
 }
 
-export class TreatPatientsBehaviorUpdateVehiclePrioritiesAction
+export class ProvidePersonnelBehaviorUpdateVehiclePrioritiesAction
     implements Action
 {
-    @IsValue('[TreatPatientsBehavior] Update VehiclePriorities' as const)
-    public readonly type = '[TreatPatientsBehavior] Update VehiclePriorities';
+    @IsValue('[ProvidePersonnelBehavior] Update VehiclePriorities' as const)
+    public readonly type =
+        '[ProvidePersonnelBehavior] Update VehiclePriorities';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;
@@ -367,18 +368,18 @@ export namespace SimulationActionReducers {
             },
             rights: 'trainer',
         };
-    export const updateTreatmentVehiclePriorities: ActionReducer<TreatPatientsBehaviorUpdateVehiclePrioritiesAction> =
+    export const updateTreatmentVehiclePriorities: ActionReducer<ProvidePersonnelBehaviorUpdateVehiclePrioritiesAction> =
         {
-            action: TreatPatientsBehaviorUpdateVehiclePrioritiesAction,
+            action: ProvidePersonnelBehaviorUpdateVehiclePrioritiesAction,
             reducer(draftState, { simulatedRegionId, behaviorId, priorities }) {
-                const treatPatientsBehaviorState = getBehaviorById(
+                const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
                     behaviorId,
-                    'treatPatientsBehavior'
+                    'providePersonnelBehavior'
                 );
 
-                treatPatientsBehaviorState.vehicleTemplatePriorities =
+                behaviorState.vehicleTemplatePriorities =
                     cloneDeepMutable(priorities);
 
                 return draftState;
