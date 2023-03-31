@@ -13,12 +13,14 @@ import {
     isInSpecificSimulatedRegion,
     TransferStartPoint,
 } from '../../models/utils';
+import { amountOfResourcesInVehicle } from '../../models/utils/amount-of-resources-in-vehicle';
 import { VehicleResource } from '../../models/utils/vehicle-resource';
 import { TransferActionReducers } from '../../store/action-reducers/transfer';
 import {
     getElement,
     getElementByPredicate,
 } from '../../store/action-reducers/utils';
+import { completelyLoadVehicle } from '../../store/action-reducers/utils/completely-load-vehicle';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { ResourceRequiredEvent, VehiclesSentEvent } from '../events';
@@ -104,10 +106,13 @@ export const transferVehiclesActivity: SimulationActivity<TransferVehiclesActivi
                 return;
             }
 
-            const vehicles = Object.values(draftState.vehicles).filter(
-                (vehicle) =>
+            const vehicles = Object.values(draftState.vehicles)
+                .filter((vehicle) =>
                     isInSpecificSimulatedRegion(vehicle, simulatedRegion.id)
-            );
+                )
+                .filter(
+                    (vehicle) => Object.keys(vehicle.patientIds).length === 0
+                );
             const groupedVehicles = groupBy(
                 vehicles,
                 (vehicle) => vehicle.vehicleType
@@ -154,7 +159,18 @@ export const transferVehiclesActivity: SimulationActivity<TransferVehiclesActivi
                     groupedVehicles[vehicleType]?.length ?? 0,
                     vehicleCount
                 );
+                // sort the vehicles by number of loaded resources descending
+                groupedVehicles[vehicleType]?.sort(
+                    (a, b) =>
+                        amountOfResourcesInVehicle(draftState, b.id) -
+                        amountOfResourcesInVehicle(draftState, a.id)
+                );
                 for (let i = 0; i < sentVehicles[vehicleType]!; i++) {
+                    completelyLoadVehicle(
+                        draftState,
+                        groupedVehicles[vehicleType]![i]!
+                    );
+
                     TransferActionReducers.addToTransfer.reducer(draftState, {
                         type: '[Transfer] Add to transfer',
                         elementType: 'vehicle',
