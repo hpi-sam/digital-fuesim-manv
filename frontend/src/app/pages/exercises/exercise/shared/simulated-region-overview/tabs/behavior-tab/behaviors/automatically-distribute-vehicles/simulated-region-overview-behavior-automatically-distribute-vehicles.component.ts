@@ -1,16 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
+import type { OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
 import {
     isInSpecificSimulatedRegion,
     TransferPoint,
     UUID,
-    UUIDSet,
-    VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
-import { AutomaticallyDistributeVehiclesBehaviorState } from 'digital-fuesim-manv-shared/dist/simulation/behaviors/automatically-distribute-vehicles';
-import { Observable } from 'rxjs';
+import type { AutomaticallyDistributeVehiclesBehaviorState } from 'digital-fuesim-manv-shared';
+import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import { AppState } from 'src/app/state/app.state';
+import type { AppState } from 'src/app/state/app.state';
 import {
     createSelectBehaviorState,
     selectTransferPoints,
@@ -29,27 +28,26 @@ import {
 export class SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesComponent
     implements OnInit
 {
-    public transferPointsToBeAdded$!: Observable<{
-        [k: string]: TransferPoint;
-    }>;
-
-    public getTransferPointOrderByValue: (
-        transferPoint: TransferPoint
-    ) => string = (transferPoint) => TransferPoint.getFullName(transferPoint);
-
     @Input() simulatedRegionId!: UUID;
     @Input() automaticallyDistributeVehiclesBehaviorId!: UUID;
-
-    public readonly infinity = Number.MAX_VALUE;
 
     public automaticallyDistributeVehiclesBehaviorState$!: Observable<AutomaticallyDistributeVehiclesBehaviorState>;
     public distributionLimits$!: Observable<
         { vehicleType: string; vehicleAmount: number }[]
     >;
-    public addableVehicleTypes$!: Observable<string[]>;
     public distributionDestinations$!: Observable<
         { name: string; id: string }[]
     >;
+
+    public addableVehicleTypes$!: Observable<string[]>;
+    public addableTransferPoints$!: Observable<{
+        [k: string]: TransferPoint;
+    }>;
+    public getTransferPointOrderByValue: (
+        transferPoint: TransferPoint
+    ) => string = (transferPoint) => TransferPoint.getFullName(transferPoint);
+
+    public readonly infinity = Number.MAX_VALUE;
 
     constructor(
         private readonly exerciseService: ExerciseService,
@@ -62,9 +60,7 @@ export class SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesCompo
                 this.simulatedRegionId,
                 this.automaticallyDistributeVehiclesBehaviorId
             );
-        this.automaticallyDistributeVehiclesBehaviorState$ = this.store.select(
-            automaticallyDistributeVehiclesBehaviorStateSelector
-        );
+
         const distributionLimitsSelector = createSelector(
             automaticallyDistributeVehiclesBehaviorStateSelector,
             (automaticallyDistributeVehiclesBehaviorState) =>
@@ -74,12 +70,16 @@ export class SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesCompo
                     .filter(
                         ([_vehicleType, vehicleAmount]) => vehicleAmount > 0
                     )
-                    .map(([vehicleType, vehicleAmount]) => {
-                        return { vehicleType, vehicleAmount };
-                    })
+                    .map(([vehicleType, vehicleAmount]) => ({
+                        vehicleType,
+                        vehicleAmount,
+                    }))
         );
-        this.distributionLimits$ = this.store.select(
-            distributionLimitsSelector
+
+        const presentDistributionDestinationsSelector = createSelector(
+            automaticallyDistributeVehiclesBehaviorStateSelector,
+            (automaticallyDistributeVehiclesBehaviorState) =>
+                automaticallyDistributeVehiclesBehaviorState.distributionDestinations
         );
 
         const presentVehicleTypesSelector = createSelector(
@@ -88,11 +88,6 @@ export class SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesCompo
                 distributionLimits.map(
                     (distributionLimit) => distributionLimit.vehicleType
                 )
-        );
-        const presentDistributionDestinationsSelector = createSelector(
-            automaticallyDistributeVehiclesBehaviorStateSelector,
-            (automaticallyDistributeVehiclesBehaviorState) =>
-                automaticallyDistributeVehiclesBehaviorState.distributionDestinations
         );
 
         const addableVehicleTypesSelector = createSelector(
@@ -107,8 +102,14 @@ export class SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesCompo
                     )
         );
 
-        this.addableVehicleTypes$ = this.store.select(
-            addableVehicleTypesSelector
+        const distributionDestinationsSelector = createSelector(
+            presentDistributionDestinationsSelector,
+            selectTransferPoints,
+            (presentDestinations, transferPoints) =>
+                Object.keys(presentDestinations).map((destinationId) => ({
+                    name: transferPoints[destinationId]!.externalName,
+                    id: destinationId,
+                }))
         );
 
         const ownTransferPointSelector = createSelector(
@@ -122,37 +123,38 @@ export class SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesCompo
                 )!
         );
 
-        this.transferPointsToBeAdded$ = this.store.select(
-            createSelector(
-                selectTransferPoints,
-                ownTransferPointSelector,
-                presentDistributionDestinationsSelector,
-                (
-                    transferPoints,
-                    ownTransferPoint,
-                    presentDistributionDestinations
-                ) => {
-                    return Object.fromEntries(
-                        Object.entries(transferPoints).filter(
-                            ([key]) =>
-                                key !== ownTransferPoint.id &&
-                                !presentDistributionDestinations[key]
-                        )
-                    );
-                }
-            )
+        const addableTransferPointsSelector = createSelector(
+            selectTransferPoints,
+            ownTransferPointSelector,
+            presentDistributionDestinationsSelector,
+            (
+                transferPoints,
+                ownTransferPoint,
+                presentDistributionDestinations
+            ) =>
+                Object.fromEntries(
+                    Object.entries(transferPoints).filter(
+                        ([key]) =>
+                            key !== ownTransferPoint.id &&
+                            !presentDistributionDestinations[key]
+                    )
+                )
         );
 
-        const distributionDestinationsSelector = createSelector(
-            presentDistributionDestinationsSelector,
-            selectTransferPoints,
-            (presentDestinations, transferPoints) =>
-                Object.keys(presentDestinations).map((destinationId) => {
-                    return {
-                        name: transferPoints[destinationId]!.externalName,
-                        id: destinationId,
-                    };
-                })
+        this.addableVehicleTypes$ = this.store.select(
+            addableVehicleTypesSelector
+        );
+
+        this.automaticallyDistributeVehiclesBehaviorState$ = this.store.select(
+            automaticallyDistributeVehiclesBehaviorStateSelector
+        );
+
+        this.addableTransferPoints$ = this.store.select(
+            addableTransferPointsSelector
+        );
+
+        this.distributionLimits$ = this.store.select(
+            distributionLimitsSelector
         );
 
         this.distributionDestinations$ = this.store.select(

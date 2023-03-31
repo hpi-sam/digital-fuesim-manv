@@ -145,9 +145,7 @@
     <h5>Fahrzeuge Erhaltende Bereiche</h5>
 
     <div
-        *ngIf="
-            transferPointsToBeAdded$ | async | values as transferPointsToBeAdded
-        "
+        *ngIf="addableTransferPoints$ | async | values as addableTransferPoints"
         ngbDropdown
         placement="bottom-start"
         autoClose="outside"
@@ -157,15 +155,15 @@
             ngbDropdownToggle
             type="button"
             class="btn btn-outline-primary"
-            [disabled]="transferPointsToBeAdded.length === 0"
+            [disabled]="addableTransferPoints.length === 0"
         >
             <span class="bi-plus me-1"></span>
             Ziel hinzufügen
         </button>
-        <div *ngIf="transferPointsToBeAdded.length" ngbDropdownMenu>
+        <div *ngIf="addableTransferPoints.length" ngbDropdownMenu>
             <button
                 *ngFor="
-                    let transferPoint of transferPointsToBeAdded
+                    let transferPoint of addableTransferPoints
                         | orderBy : getTransferPointOrderByValue;
                     trackBy: 'id' | appTrackByProperty
                 "
