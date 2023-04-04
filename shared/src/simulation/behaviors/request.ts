@@ -177,6 +177,7 @@ function syncTimerActivity(
                 behaviorState.requestInterval
             )
         );
+        behaviorState.recurringEventActivityId = activityId;
     }
 }
 
