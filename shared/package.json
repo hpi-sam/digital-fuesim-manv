@@ -18,7 +18,7 @@
         "test:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose --ci",
         "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage --verbose --no-cache",
         "test:watch": "jest --runInBand --verbose --watch",
-        "lint:circular": "npm run build && madge --circular dist"
+        "lint:circular": "madge --circular dist"
     },
     "private": true,
     "engines": {
