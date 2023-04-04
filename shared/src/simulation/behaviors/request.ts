@@ -13,7 +13,7 @@ import type { Mutable } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { getActivityById, getElement } from '../../store/action-reducers/utils';
 import type { ExerciseState } from '../../state';
-import { addActivity } from '../activities/utils';
+import { addActivity, terminateActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
 import { DelayEventActivityState } from '../activities';
 import { SendRequestEvent } from '../events/send-request';
@@ -29,6 +29,7 @@ import {
 } from '../../models/utils/request-target/exercise-request-target';
 import { TraineesRequestTargetConfiguration } from '../../models/utils/request-target/trainees';
 import { getCreate } from '../../models/utils/get-create';
+import type { SimulatedRegion } from '../../models';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -65,10 +66,17 @@ export class RequestBehaviorState implements SimulationBehaviorState {
     @Min(0)
     public readonly requestInterval: number = 1000 * 60 * 5;
 
+    /**
+     * @deprecated Use {@link updateTarget} instead
+     */
     @Type(...requestTargetTypeOptions)
     @ValidateNested()
     public readonly requestTarget: ExerciseRequestTargetConfiguration =
         TraineesRequestTargetConfiguration.create();
+
+    @IsInt()
+    @Min(0)
+    public readonly requestTargetVersion: number = 0;
 
     static readonly create = getCreate(this);
 }
@@ -83,7 +91,7 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                         event.requiredResource;
 
                     if (!behaviorState.answerKey) {
-                        behaviorState.answerKey = `${simulatedRegion.id}-request`;
+                        behaviorState.answerKey = `${simulatedRegion.id}-request-${behaviorState.requestTargetVersion}`;
                         behaviorState.delayEventActivityId =
                             nextUUID(draftState);
                         addActivity(
@@ -168,14 +176,14 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
 
 export function updateInterval(
     draftState: Mutable<ExerciseState>,
-    simulatedRegionId: UUID,
+    simulatedRegion: Mutable<SimulatedRegion>,
     behaviorState: Mutable<RequestBehaviorState>,
     requestInterval: number
 ) {
     if (behaviorState.delayEventActivityId) {
         const activity = getActivityById(
             draftState,
-            simulatedRegionId,
+            simulatedRegion.id,
             behaviorState.delayEventActivityId,
             'delayEventActivity'
         );
@@ -183,6 +191,34 @@ export function updateInterval(
         activity.endTime += requestInterval;
     }
     behaviorState.requestInterval = requestInterval;
+}
+
+export function updateTarget(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegion>,
+    behaviorState: Mutable<RequestBehaviorState>,
+    requestTarget: ExerciseRequestTargetConfiguration
+) {
+    behaviorState.requestTarget = cloneDeepMutable(requestTarget);
+    behaviorState.requestTargetVersion++;
+    behaviorState.answerKey = `${simulatedRegion.id}-request-${behaviorState.requestTargetVersion}`;
+    if (behaviorState.delayEventActivityId) {
+        terminateActivity(
+            draftState,
+            simulatedRegion,
+            behaviorState.delayEventActivityId
+        );
+    }
+
+    behaviorState.delayEventActivityId = nextUUID(draftState);
+    addActivity(
+        simulatedRegion,
+        DelayEventActivityState.create(
+            behaviorState.delayEventActivityId,
+            SendRequestEvent.create(behaviorState.answerKey),
+            0
+        )
+    );
 }
 
 function getResourcesToRequest(behaviorState: Mutable<RequestBehaviorState>) {
