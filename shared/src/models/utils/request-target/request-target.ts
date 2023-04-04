@@ -12,6 +12,7 @@ export interface RequestTarget<T extends RequestTargetConfiguration> {
         draftState: Mutable<ExerciseState>,
         requestingSimulatedRegionId: UUID,
         configuration: Mutable<T>,
-        requestedResource: Mutable<VehicleResource>
+        requestedResource: Mutable<VehicleResource>,
+        key: string
     ) => void;
 }

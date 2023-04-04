@@ -38,11 +38,11 @@
             >
                 <input
                     type="number"
-                    min="0.25"
+                    min="0"
                     step="0.1"
                     [ngModel]="requestBehaviorState.requestInterval / 1000 / 60"
                     (appSaveOnTyping)="updateInterval($event)"
-                    class="form-control form-control-sm d-inline-block"
+                    class="form-control form-control-sm d-inline-block novalidate"
                 />
                 <span class="input-group-text">Min</span>
             </div>

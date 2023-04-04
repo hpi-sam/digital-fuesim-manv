@@ -1,4 +1,4 @@
-import { IsUUID, ValidateNested } from 'class-validator';
+import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
@@ -30,17 +30,22 @@ export class CreateRequestActivityState implements SimulationActivityState {
     @ValidateNested()
     public readonly requestedResource: VehicleResource;
 
+    @IsString()
+    public readonly key: string;
+
     /**
      * @deprecated Use {@link create} instead
      */
     constructor(
         id: UUID,
         target: ExerciseRequestTargetConfiguration,
-        requestedResource: VehicleResource
+        requestedResource: VehicleResource,
+        key: string
     ) {
         this.id = id;
         this.targetConfiguration = target;
         this.requestedResource = requestedResource;
+        this.key = key;
     }
 
     static readonly create = getCreate(this);
@@ -63,7 +68,8 @@ export const createRequestActivity: SimulationActivity<CreateRequestActivityStat
                 draftState,
                 simulatedRegion.id,
                 activityState.targetConfiguration,
-                activityState.requestedResource
+                activityState.requestedResource,
+                activityState.key
             );
             terminate();
         },

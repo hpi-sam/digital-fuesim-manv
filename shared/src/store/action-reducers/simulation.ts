@@ -12,6 +12,7 @@ import type {
     UnloadArrivingVehiclesBehaviorState,
 } from '../../simulation';
 import {
+    updateInterval,
     ReportableInformation,
     reportableInformationAllowedValues,
     RecurringEventActivityState,
@@ -24,7 +25,6 @@ import { UUID, uuidValidationOptions, cloneDeepMutable } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
-import { updateInterval } from '../../simulation/behaviors/request';
 import {
     requestTargetTypeOptions,
     ExerciseRequestTargetConfiguration,

@@ -1,6 +1,7 @@
 import {
     IsInt,
     IsOptional,
+    IsString,
     IsUUID,
     Min,
     ValidateNested,
@@ -12,9 +13,9 @@ import type { Mutable } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { getActivityById, getElement } from '../../store/action-reducers/utils';
 import type { ExerciseState } from '../../state';
-import { terminateActivity } from '../activities/utils';
+import { addActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
-import { RecurringEventActivityState } from '../activities';
+import { DelayEventActivityState } from '../activities';
 import { SendRequestEvent } from '../events/send-request';
 import { CreateRequestActivityState } from '../activities/create-request';
 import {
@@ -28,7 +29,6 @@ import {
 } from '../../models/utils/request-target/exercise-request-target';
 import { TraineesRequestTargetConfiguration } from '../../models/utils/request-target/trainees';
 import { getCreate } from '../../models/utils/get-create';
-import type { SimulatedRegion } from '../../models/simulated-region';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -41,9 +41,13 @@ export class RequestBehaviorState implements SimulationBehaviorState {
     @IsUUID()
     public readonly id: UUID = uuid();
 
+    @IsString()
+    @IsOptional()
+    public readonly answerKey?: string;
+
     @IsUUID()
     @IsOptional()
-    public readonly recurringEventActivityId?: UUID;
+    public readonly delayEventActivityId?: UUID;
 
     @IsStringMap(VehicleResource)
     public readonly requestedResources: { [key: string]: VehicleResource } = {};
@@ -56,11 +60,9 @@ export class RequestBehaviorState implements SimulationBehaviorState {
 
     /**
      * @deprecated Use {@link updateInterval} instead
-     * The minimum value is 15 seconds, because lower values could cause
-     * duplicate requests to other regions.
      */
     @IsInt()
-    @Min(1000 * 15)
+    @Min(0)
     public readonly requestInterval: number = 1000 * 60 * 5;
 
     @Type(...requestTargetTypeOptions)
@@ -79,11 +81,22 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                 if (event.requiringSimulatedRegionId === simulatedRegion.id) {
                     behaviorState.requestedResources[event.key] =
                         event.requiredResource;
-                    syncTimerActivity(
-                        draftState,
-                        simulatedRegion,
-                        behaviorState
-                    );
+
+                    if (!behaviorState.answerKey) {
+                        behaviorState.answerKey = `${simulatedRegion.id}-request`;
+                        behaviorState.delayEventActivityId =
+                            nextUUID(draftState);
+                        addActivity(
+                            simulatedRegion,
+                            DelayEventActivityState.create(
+                                behaviorState.delayEventActivityId,
+                                SendRequestEvent.create(
+                                    behaviorState.answerKey
+                                ),
+                                0
+                            )
+                        );
+                    }
                 }
                 break;
             }
@@ -92,7 +105,18 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                     behaviorState.promisedResources,
                     event.vehiclesSent,
                 ]);
-                syncTimerActivity(draftState, simulatedRegion, behaviorState);
+
+                if (event.key === behaviorState.answerKey) {
+                    behaviorState.delayEventActivityId = nextUUID(draftState);
+                    addActivity(
+                        simulatedRegion,
+                        DelayEventActivityState.create(
+                            behaviorState.delayEventActivityId,
+                            SendRequestEvent.create(behaviorState.answerKey),
+                            behaviorState.requestInterval
+                        )
+                    );
+                }
                 break;
             }
             case 'vehicleArrivedEvent': {
@@ -107,19 +131,33 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                         VehicleResource.create({ [vehicle.type]: 1 })
                     )
                 );
-                syncTimerActivity(draftState, simulatedRegion, behaviorState);
                 break;
             }
             case 'sendRequestEvent': {
-                const activityId = nextUUID(draftState);
-                const resourcesToRequest = getResourcesToRequest(behaviorState);
-                simulatedRegion.activities[activityId] = cloneDeepMutable(
-                    CreateRequestActivityState.create(
-                        activityId,
-                        behaviorState.requestTarget,
-                        resourcesToRequest
-                    )
-                );
+                const resourcecsToRequest =
+                    getResourcesToRequest(behaviorState);
+                if (
+                    Object.keys(
+                        getResourcesToRequest(behaviorState).vehicleCounts
+                    ).length > 0
+                ) {
+                    const activityId = nextUUID(draftState);
+                    addActivity(
+                        simulatedRegion,
+                        CreateRequestActivityState.create(
+                            activityId,
+                            behaviorState.requestTarget,
+                            resourcecsToRequest,
+                            event.key
+                        )
+                    );
+                } else {
+                    /**
+                     * We are not requesting more resouces,
+                     * so we are not waiting for a response.
+                     */
+                    behaviorState.answerKey = undefined;
+                }
                 break;
             }
             default:
@@ -134,51 +172,17 @@ export function updateInterval(
     behaviorState: Mutable<RequestBehaviorState>,
     requestInterval: number
 ) {
-    behaviorState.requestInterval = requestInterval;
-
-    if (behaviorState.recurringEventActivityId) {
+    if (behaviorState.delayEventActivityId) {
         const activity = getActivityById(
             draftState,
             simulatedRegionId,
-            behaviorState.recurringEventActivityId,
-            'recurringEventActivity'
+            behaviorState.delayEventActivityId,
+            'delayEventActivity'
         );
-        activity.recurrenceIntervalTime = requestInterval;
+        activity.endTime -= behaviorState.requestInterval;
+        activity.endTime += requestInterval;
     }
-}
-
-function syncTimerActivity(
-    draftState: Mutable<ExerciseState>,
-    simulatedRegion: Mutable<SimulatedRegion>,
-    behaviorState: Mutable<RequestBehaviorState>
-) {
-    const resourcesToRequest = getResourcesToRequest(behaviorState);
-    if (
-        Object.keys(resourcesToRequest.vehicleCounts).length === 0 &&
-        behaviorState.recurringEventActivityId
-    ) {
-        terminateActivity(
-            draftState,
-            simulatedRegion,
-            behaviorState.recurringEventActivityId
-        );
-    }
-
-    if (
-        Object.keys(resourcesToRequest.vehicleCounts).length > 0 &&
-        !behaviorState.recurringEventActivityId
-    ) {
-        const activityId = nextUUID(draftState);
-        simulatedRegion.activities[activityId] = cloneDeepMutable(
-            RecurringEventActivityState.create(
-                activityId,
-                SendRequestEvent.create(),
-                draftState.currentTime,
-                behaviorState.requestInterval
-            )
-        );
-        behaviorState.recurringEventActivityId = activityId;
-    }
+    behaviorState.requestInterval = requestInterval;
 }
 
 function getResourcesToRequest(behaviorState: Mutable<RequestBehaviorState>) {

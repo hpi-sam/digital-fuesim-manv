@@ -26,7 +26,8 @@ export const traineesRequestTarget: RequestTarget<TraineesRequestTargetConfigura
             draftState,
             requestingSimulatedRegionId,
             _configuration,
-            requestedResource
+            requestedResource,
+            key
         ) => {
             publishRadiogram(
                 draftState,
@@ -35,7 +36,8 @@ export const traineesRequestTarget: RequestTarget<TraineesRequestTargetConfigura
                         nextUUID(draftState),
                         requestingSimulatedRegionId,
                         RadiogramUnpublishedStatus.create(),
-                        requestedResource
+                        requestedResource,
+                        key
                     )
                 )
             );

@@ -37,7 +37,8 @@ export const simulatedRegionRequestTarget: RequestTarget<SimulatedRegionRequestT
             draftState,
             requestingSimulatedRegionId,
             configuration,
-            requestedResource
+            requestedResource,
+            key
         ) => {
             sendSimulationEvent(
                 getElement(
@@ -49,7 +50,7 @@ export const simulatedRegionRequestTarget: RequestTarget<SimulatedRegionRequestT
                     nextUUID(draftState),
                     requestingSimulatedRegionId,
                     requestedResource,
-                    requestingSimulatedRegionId
+                    key
                 )
             );
         },

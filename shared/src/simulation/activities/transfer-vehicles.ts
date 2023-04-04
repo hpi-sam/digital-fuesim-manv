@@ -185,7 +185,8 @@ export const transferVehiclesActivity: SimulationActivity<TransferVehiclesActivi
                     ),
                     VehiclesSentEvent.create(
                         nextUUID(draftState),
-                        VehicleResource.create(sentVehicles)
+                        VehicleResource.create(sentVehicles),
+                        activityState.key
                     )
                 );
             }
