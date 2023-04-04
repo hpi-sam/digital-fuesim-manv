@@ -1,6 +1,4 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
-import type { Material, Personnel } from '../../models';
-import { Patient } from '../../models';
 import type { PatientStatus, PersonnelType } from '../../models/utils';
 import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
 import type { ExerciseState } from '../../state';
@@ -21,6 +19,9 @@ import {
 import { TreatmentProgressChangedEvent } from '../events';
 import { sendSimulationEvent } from '../events/utils';
 import type { AssignLeaderBehaviorState } from '../behaviors/assign-leader';
+import type { Material } from '../../models/material';
+import type { Personnel } from '../../models/personnel';
+import { Patient } from '../../models/patient';
 import type {
     SimulationActivity,
     SimulationActivityState,
