@@ -12,6 +12,7 @@ import { CollectInformationEvent } from './collect';
 import { StartCollectingInformationEvent } from './start-collecting';
 import { ResourceRequiredEvent } from './resources-required';
 import { VehiclesSentEvent } from './vehicles-sent';
+import { SendRequestEvent } from './send-request';
 
 export const simulationEvents = {
     MaterialAvailableEvent,
@@ -25,6 +26,7 @@ export const simulationEvents = {
     StartCollectingInformationEvent,
     ResourceRequiredEvent,
     VehiclesSentEvent,
+    SendRequestEvent,
 };
 
 export type ExerciseSimulationEvent = InstanceType<
@@ -48,6 +50,7 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     startCollectingInformationEvent: StartCollectingInformationEvent,
     resourceRequiredEvent: ResourceRequiredEvent,
     vehiclesSentEvent: VehiclesSentEvent,
+    sendRequestEvent: SendRequestEvent,
 };
 
 export const simulationEventTypeOptions: Parameters<typeof Type> = [

@@ -24,3 +24,4 @@ export * from './patient-status-code';
 export * from './start-points';
 export * from './spatial-tree';
 export * from './vehicle-resource';
+export * from './request-target';

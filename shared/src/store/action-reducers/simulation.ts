@@ -1,4 +1,12 @@
-import { IsNumber, IsOptional, IsUUID, Min } from 'class-validator';
+import {
+    IsInt,
+    IsNumber,
+    IsOptional,
+    IsUUID,
+    Min,
+    ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 import type {
     TreatPatientsBehaviorState,
     UnloadArrivingVehiclesBehaviorState,
@@ -16,6 +24,11 @@ import { UUID, uuidValidationOptions, cloneDeepMutable } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
+import { updateInterval } from '../../simulation/behaviors/request';
+import {
+    requestTargetTypeOptions,
+    ExerciseRequestTargetConfiguration,
+} from '../../models';
 import { getActivityById, getBehaviorById, getElement } from './utils';
 
 export class UpdateTreatPatientsIntervalsAction implements Action {
@@ -132,6 +145,36 @@ export class RemoveRecurringReportsAction implements Action {
 
     @IsLiteralUnion(reportableInformationAllowedValues)
     public readonly informationType!: ReportableInformation;
+}
+
+export class UpdateRequestIntervalAction implements Action {
+    @IsValue('[RequestBehavior] Update RequestInterval')
+    public readonly type = '[RequestBehavior] Update RequestInterval';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly requestInterval!: number;
+}
+
+export class UpdateRequestTargetAction implements Action {
+    @IsValue('[RequestBehavior] Update RequestTarget')
+    public readonly type = '[RequestBehavior] Update RequestTarget';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @Type(...requestTargetTypeOptions)
+    @ValidateNested()
+    public readonly requestTarget!: ExerciseRequestTargetConfiguration;
 }
 
 export namespace SimulationActionReducers {
@@ -342,6 +385,49 @@ export namespace SimulationActionReducers {
                 delete reportBehaviorState.activityIds[informationType];
                 delete simulatedRegion.activities[activityId];
 
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateRequestInterval: ActionReducer<UpdateRequestIntervalAction> =
+        {
+            action: UpdateRequestIntervalAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, requestInterval }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'requestBehavior'
+                );
+                updateInterval(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorState,
+                    requestInterval
+                );
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateRequestTarget: ActionReducer<UpdateRequestTargetAction> =
+        {
+            action: UpdateRequestTargetAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, requestTarget }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'requestBehavior'
+                );
+                behaviorState.requestTarget = cloneDeepMutable(requestTarget);
                 return draftState;
             },
             rights: 'trainer',
