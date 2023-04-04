@@ -10,9 +10,10 @@
             *ngIf="requestTargetOptions$ | async as requestTargetOptions"
         >
             <select
+                #requestTargetSelect
                 class="form-select no-validation"
                 [ngModel]="initialRequestTargetOption"
-                (update)="(updateRequestTarget)"
+                (change)="updateRequestTarget(requestTargetSelect.value)"
             >
                 <option
                     *ngFor="let option of requestTargetOptions | keys"
@@ -40,7 +41,7 @@
                     min="0.25"
                     step="0.1"
                     [ngModel]="requestBehaviorState.requestInterval / 1000 / 60"
-                    (appSaveOnTyping)="(updateInterval)"
+                    (appSaveOnTyping)="updateInterval($event)"
                     class="form-control form-control-sm d-inline-block no-validation"
                 />
                 <span class="input-group-text">Min</span>
