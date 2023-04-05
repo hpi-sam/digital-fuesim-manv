@@ -424,7 +424,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                updateRequestInterval(
+                updateBehaviorsRequestInterval(
                     draftState,
                     simulatedRegion,
                     behaviorState,
@@ -453,7 +453,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                updateRequestTarget(
+                updateBehaviorsRequestTarget(
                     draftState,
                     simulatedRegion,
                     behaviorState,
