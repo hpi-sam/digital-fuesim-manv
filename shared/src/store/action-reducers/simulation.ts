@@ -12,8 +12,8 @@ import type {
     UnloadArrivingVehiclesBehaviorState,
 } from '../../simulation';
 import {
-    updateRequestTarget,
-    updateRequestInterval,
+    updateBehaviorsRequestTarget,
+    updateBehaviorsRequestInterval,
     ReportableInformation,
     reportableInformationAllowedValues,
     RecurringEventActivityState,
