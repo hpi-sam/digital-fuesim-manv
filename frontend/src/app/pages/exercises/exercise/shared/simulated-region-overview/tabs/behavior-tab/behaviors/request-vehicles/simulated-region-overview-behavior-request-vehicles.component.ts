@@ -125,12 +125,21 @@ export class RequestVehiclesComponent implements OnChanges {
         );
     }
 
-    updateInterval(interval: number) {
+    updateRequestInterval(interval: number) {
         this.exerciseService.proposeAction({
             type: '[RequestBehavior] Update RequestInterval',
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.requestBehaviorId,
             requestInterval: interval,
+        });
+    }
+
+    updatePromiseInterval(interval: number) {
+        this.exerciseService.proposeAction({
+            type: '[RequestBehavior] Update Promise invalidation interval',
+            simulatedRegionId: this.simulatedRegionId,
+            behaviorId: this.requestBehaviorId,
+            promiseInvalidationInterval: interval,
         });
     }
 

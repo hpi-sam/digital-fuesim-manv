@@ -178,6 +178,21 @@ export class UpdateRequestTargetAction implements Action {
     public readonly requestTarget!: ExerciseRequestTargetConfiguration;
 }
 
+export class UpdatePromiseInvalidationIntervalAction implements Action {
+    @IsValue('[RequestBehavior] Update Promise invalidation interval')
+    public readonly type = '[RequestBehavior] Update Promise invalidation interval';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly promiseInvalidationInterval!: number;
+}
+
 export namespace SimulationActionReducers {
     export const updateTreatPatientsIntervals: ActionReducer<UpdateTreatPatientsIntervalsAction> =
         {
@@ -447,5 +462,21 @@ export namespace SimulationActionReducers {
                 return draftState;
             },
             rights: 'trainer',
-        };
+    };
+
+    export const UpdatePromiseInvalidationInterval: ActionReducer<UpdatePromiseInvalidationIntervalAction> =
+    {
+        action: UpdatePromiseInvalidationIntervalAction,
+        reducer(draftState, { simulatedRegionId, behaviorId, promiseInvalidationInterval }) {
+            const behaviorState = getBehaviorById(
+                draftState,
+                simulatedRegionId,
+                behaviorId,
+                'requestBehavior'
+            );
+            behaviorState.invalidatePromiseInterval = promiseInvalidationInterval;
+            return draftState;
+        },
+        rights: 'trainer'
+    }
 }

@@ -34,6 +34,7 @@ import type {
     SimulationBehavior,
     SimulationBehaviorState,
 } from './simulation-behavior';
+import { freeze } from 'immer';
 
 export class RequestBehaviorState implements SimulationBehaviorState {
     @IsValue('requestBehavior')
@@ -61,9 +62,10 @@ export class RequestBehaviorState implements SimulationBehaviorState {
 
     @Type(() => VehicleResource)
     @ValidateNested()
-    public readonly promisedResources: VehicleResource = VehicleResource.create(
-        {}
-    );
+    public readonly promisedResources: readonly {
+        readonly promisedTime: number;
+        readonly resource: VehicleResource;
+    }[] = [];
 
     /**
      * @deprecated Use {@link updateInterval} instead
@@ -72,6 +74,9 @@ export class RequestBehaviorState implements SimulationBehaviorState {
     @Min(0)
     public readonly requestInterval: number = 1000 * 60 * 5;
 
+    @IsInt()
+    @Min(0)
+    public readonly invalidatePromiseInterval: number = 1000 * 60 * 30;
     /**
      * @deprecated Use {@link updateTarget} instead
      */
@@ -116,10 +121,10 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                 break;
             }
             case 'vehiclesSentEvent': {
-                behaviorState.promisedResources = aggregateResources([
-                    behaviorState.promisedResources,
-                    event.vehiclesSent,
-                ]);
+                behaviorState.promisedResources.push({
+                    promisedTime: draftState.currentTime,
+                    resource: event.vehiclesSent,
+                });
 
                 if (event.key === behaviorState.answerKey) {
                     // we are not waiting for an answer anymore
@@ -130,7 +135,8 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                         DelayEventActivityState.create(
                             behaviorState.delayEventActivityId,
                             SendRequestEvent.create(),
-                            draftState.currentTime + behaviorState.requestInterval
+                            draftState.currentTime +
+                                behaviorState.requestInterval
                         )
                     );
                 }
@@ -142,23 +148,36 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                     'vehicle',
                     event.vehicleId
                 );
-                behaviorState.promisedResources = subtractResources(
-                    behaviorState.promisedResources,
-                    cloneDeepMutable(
-                        VehicleResource.create({ [vehicle.type]: 1 })
-                    )
+                let arrivatedResource = cloneDeepMutable(
+                    VehicleResource.create({ [vehicle.type]: 1 })
+                );
+                behaviorState.promisedResources.forEach(
+                    (promise, index, array) => {
+                        const remainingResources = subtractResources(
+                            arrivatedResource,
+                            promise.resource
+                        );
+
+                        promise.resource = subtractResources(
+                            promise.resource,
+                            arrivatedResource
+                        );
+                        if (Object.keys(promise.resource).length === 0)
+                            array.splice(index, 1);
+
+                        arrivatedResource = remainingResources;
+                    }
                 );
                 break;
             }
             case 'sendRequestEvent': {
                 behaviorState.delayEventActivityId = undefined;
-                const resourcecsToRequest =
-                    getResourcesToRequest(behaviorState);
-                if (
-                    Object.keys(
-                        resourcecsToRequest.vehicleCounts
-                    ).length > 0
-                ) {
+                const resourcesToRequest = getResourcesToRequest(
+                    draftState,
+                    simulatedRegion,
+                    behaviorState
+                );
+                if (Object.keys(resourcesToRequest.vehicleCounts).length > 0) {
                     // create a request to wait for an answer
                     behaviorState.answerKey = `${simulatedRegion.id}-request-${behaviorState.requestTargetVersion}`;
                     const activityId = nextUUID(draftState);
@@ -167,7 +186,7 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                         CreateRequestActivityState.create(
                             activityId,
                             behaviorState.requestTarget,
-                            resourcecsToRequest,
+                            resourcesToRequest,
                             behaviorState.answerKey
                         )
                     );
@@ -238,12 +257,28 @@ export function updateTarget(
     );
 }
 
-function getResourcesToRequest(behaviorState: Mutable<RequestBehaviorState>) {
+function getResourcesToRequest(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegion>,
+    behaviorState: Mutable<RequestBehaviorState>
+) {
     const requestedResources = aggregateResources(
         Object.values(behaviorState.requestedResources)
     );
-    return subtractResources(
-        requestedResources,
-        behaviorState.promisedResources
+
+    // remove invalidated resources
+    let firstValidIndex: number | undefined =
+        behaviorState.promisedResources.findIndex(
+            (promise) =>
+                promise.promisedTime + behaviorState.invalidatePromiseInterval >
+                draftState.currentTime
+        );
+    if (firstValidIndex == -1)
+        firstValidIndex = behaviorState.promisedResources.length;
+    behaviorState.promisedResources.splice(0, firstValidIndex);
+
+    const promisedResources = aggregateResources(
+        behaviorState.promisedResources.map((promise) => promise.resource)
     );
+    return subtractResources(requestedResources, promisedResources);
 }
