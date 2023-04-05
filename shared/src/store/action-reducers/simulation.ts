@@ -12,8 +12,8 @@ import type {
     UnloadArrivingVehiclesBehaviorState,
 } from '../../simulation';
 import {
-    updateTarget,
-    updateInterval,
+    updateRequestTarget,
+    updateRequestInterval,
     ReportableInformation,
     reportableInformationAllowedValues,
     RecurringEventActivityState,
@@ -424,7 +424,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                updateInterval(
+                updateRequestInterval(
                     draftState,
                     simulatedRegion,
                     behaviorState,
@@ -453,7 +453,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                updateTarget(
+                updateRequestTarget(
                     draftState,
                     simulatedRegion,
                     behaviorState,

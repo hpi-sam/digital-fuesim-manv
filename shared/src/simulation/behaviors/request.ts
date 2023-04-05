@@ -68,7 +68,7 @@ export class RequestBehaviorState implements SimulationBehaviorState {
     }[] = [];
 
     /**
-     * @deprecated Use {@link updateInterval} instead
+     * @deprecated Use {@link updateRequestInterval} instead
      */
     @IsInt()
     @Min(0)
@@ -78,7 +78,7 @@ export class RequestBehaviorState implements SimulationBehaviorState {
     @Min(0)
     public readonly invalidatePromiseInterval: number = 1000 * 60 * 30;
     /**
-     * @deprecated Use {@link updateTarget} instead
+     * @deprecated Use {@link updateRequestTarget} instead
      */
     @Type(...requestTargetTypeOptions)
     @ValidateNested()
@@ -207,7 +207,7 @@ export function isWaitingForAnswer(behaviorState: RequestBehaviorState) {
     return behaviorState.answerKey !== undefined;
 }
 
-export function updateInterval(
+export function updateRequestInterval(
     draftState: Mutable<ExerciseState>,
     simulatedRegion: Mutable<SimulatedRegion>,
     behaviorState: Mutable<RequestBehaviorState>,
@@ -225,7 +225,7 @@ export function updateInterval(
     behaviorState.requestInterval = requestInterval;
 }
 
-export function updateTarget(
+export function updateRequestTarget(
     draftState: Mutable<ExerciseState>,
     simulatedRegion: Mutable<SimulatedRegion>,
     behaviorState: Mutable<RequestBehaviorState>,
