@@ -108,7 +108,7 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                             DelayEventActivityState.create(
                                 behaviorState.delayEventActivityId,
                                 SendRequestEvent.create(),
-                                0
+                                draftState.currentTime
                             )
                         );
                     }
@@ -130,7 +130,7 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                         DelayEventActivityState.create(
                             behaviorState.delayEventActivityId,
                             SendRequestEvent.create(),
-                            behaviorState.requestInterval
+                            draftState.currentTime + behaviorState.requestInterval
                         )
                     );
                 }
@@ -156,7 +156,7 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                     getResourcesToRequest(behaviorState);
                 if (
                     Object.keys(
-                        getResourcesToRequest(behaviorState).vehicleCounts
+                        resourcecsToRequest.vehicleCounts
                     ).length > 0
                 ) {
                     // create a request to wait for an answer
@@ -201,8 +201,7 @@ export function updateInterval(
             behaviorState.delayEventActivityId,
             'delayEventActivity'
         );
-        activity.endTime -= behaviorState.requestInterval;
-        activity.endTime += requestInterval;
+        activity.endTime += requestInterval - behaviorState.requestInterval;
     }
     behaviorState.requestInterval = requestInterval;
 }
@@ -234,7 +233,7 @@ export function updateTarget(
         DelayEventActivityState.create(
             behaviorState.delayEventActivityId,
             SendRequestEvent.create(),
-            0
+            draftState.currentTime
         )
     );
 }

@@ -1,11 +1,15 @@
 <ng-container *ngIf="requestBehaviorState$ | async as requestBehaviorState">
     <h5>Anfragenziel</h5>
 
-    <span *ngIf="(waitingForAnswer$ | async) === false && (waitingForTimeout$ | async) === false" class="text-muted">Es
-        gibt aktuell keine Fahrzeuganfragen in dieser Region</span>
-    <span *ngIf="(waitingForAnswer$ | async) === true">Wartet auf die Antwort einer Anfrage</span>
-    <span *ngIf="(waitingForTimeout$ | async) === true">Nächste Anfrage potenziell in {{ (nextTimeout$ | async)! -
-        (currentTime$ | async)! | date : 'mm:ss'}}</span>
+    <ng-container *ngIf="{ time: nextTimeoutIn$ | async } as nextTimeoutIn">
+        <span *ngIf="(waitingForAnswer$ | async) === false && nextTimeoutIn.time === -1" class="text-muted">Es
+            gibt aktuell keine Fahrzeuganfragen in dieser Region</span>
+        <span *ngIf="(waitingForAnswer$ | async) === true" class="text-muted">Wartet auf die Antwort einer Anfrage
+            von</span>
+        <span *ngIf="nextTimeoutIn.time !== -1" class="text-muted">Nächste Anfrage potenziell in {{ nextTimeoutIn.time |
+            date :
+            'mm:ss'}} an</span>
+    </ng-container>
 
     <ng-container *ngIf="
             initialRequestTargetOption$ | async as initialRequestTargetOption
@@ -23,14 +27,13 @@
     <div class="mt-3 d-flex row">
         <h5>Einstellungen</h5>
         <div class="col-sm">
-            <span>Wiederholungsintervall</span>
+            <span>Zeitabstand zwischen Antwort und nächster Anfrage</span>
         </div>
         <div class="col-sm">
-            <div title="Mit welchem Intervall Anfragen wiederholt werden sollen, wenn die Fahrzeuge noch nicht zugesagt wurden."
-                class="input-group input-group-sm float-start" style="max-width: 250px">
+            <div class="input-group input-group-sm" style="max-width: 250px">
                 <input type="number" min="0" step="0.1" [ngModel]="requestBehaviorState.requestInterval / 1000 / 60"
                     (appSaveOnTyping)="updateInterval($event * 1000 * 60)"
-                    class="form-control form-control-sm d-inline-block novalidate" />
+                    class="form-control form-control-sm d-inline-block no-validation" />
                 <span class="input-group-text">Min</span>
             </div>
         </div>

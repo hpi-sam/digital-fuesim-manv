@@ -40,9 +40,11 @@ export function subtractResources(
     const result = cloneDeepMutable(minuend);
     Object.entries(subtrahend.vehicleCounts).forEach(([type, count]) => {
         if (!(type in result.vehicleCounts)) return;
-        if (result.vehicleCounts[type]! <= count)
+        if (result.vehicleCounts[type]! <= count) {
             delete result.vehicleCounts[type];
-        result.vehicleCounts[type] -= count;
+        } else {
+            result.vehicleCounts[type] -= count;
+        }
     });
     return result;
 }

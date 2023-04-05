@@ -45,11 +45,7 @@ export class RequestVehiclesComponent implements OnChanges {
 
     waitingForAnswer$!: Observable<boolean>;
 
-    waitingForTimeout$!: Observable<boolean>;
-
-    currentTime$!: Observable<number>;
-
-    nextTimeout$!: Observable<number>;
+    nextTimeoutIn$!: Observable<number>;
 
     initialRequestTargetOption$!: Observable<RequestTargetOption>;
 
@@ -103,28 +99,28 @@ export class RequestVehiclesComponent implements OnChanges {
             )
         );
 
-        this.waitingForTimeout$ = this.requestBehaviorState$.pipe(
-            map((requestBehaviorState) =>
-                isWaitingForTimeout(requestBehaviorState)
-            )
-        );
-
         const activities$ = this.store.select(
             createSelectActivityStates(this.simulatedRegionId)
         );
 
-        this.currentTime$ = this.store.select(selectCurrentTime);
+        const currentTime$ = this.store.select(selectCurrentTime);
 
-        this.nextTimeout$ = combineLatest([
+        this.nextTimeoutIn$ = combineLatest([
             this.requestBehaviorState$,
             activities$,
+            currentTime$
         ]).pipe(
-            map(([requestBehaviorState, activities]) => {
-                if (!requestBehaviorState.delayEventActivityId) return 0;
+            map(([requestBehaviorState, activities, currentTime]) => {
+                if (!requestBehaviorState.delayEventActivityId) return -1;
                 const delayEventActivityState = activities[
                     requestBehaviorState.delayEventActivityId
                 ] as DelayEventActivityState;
-                return delayEventActivityState.endTime;
+                if (!delayEventActivityState) return 0;
+                console.log(`delayEventActivityState.endTime: ${delayEventActivityState.endTime}`);
+                console.log(`currentTime: ${currentTime}`);
+                console.log(`delayEventActivityState.endTime - currentTime: ${delayEventActivityState.endTime - currentTime}`);
+
+                return Math.max(delayEventActivityState.endTime - currentTime, 0);
             })
         );
     }
