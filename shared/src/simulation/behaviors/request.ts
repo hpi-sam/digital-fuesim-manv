@@ -149,24 +149,24 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                     event.vehicleId
                 );
                 let arrivatedResource = cloneDeepMutable(
-                    VehicleResource.create({ [vehicle.type]: 1 })
+                    VehicleResource.create({ [vehicle.vehicleType]: 1 })
                 );
-                behaviorState.promisedResources.forEach(
-                    (promise, index, array) => {
-                        const remainingResources = subtractResources(
-                            arrivatedResource,
-                            promise.resource
-                        );
+                behaviorState.promisedResources.forEach((promise) => {
+                    const remainingResources = subtractResources(
+                        arrivatedResource,
+                        promise.resource
+                    );
 
-                        promise.resource = subtractResources(
-                            promise.resource,
-                            arrivatedResource
-                        );
-                        if (Object.keys(promise.resource).length === 0)
-                            array.splice(index, 1);
+                    promise.resource = subtractResources(
+                        promise.resource,
+                        arrivatedResource
+                    );
 
-                        arrivatedResource = remainingResources;
-                    }
+                    arrivatedResource = remainingResources;
+                });
+                behaviorState.promisedResources = behaviorState.promisedResources.filter(
+                    (promise) =>
+                        Object.keys(promise.resource.vehicleCounts).length > 0
                 );
                 break;
             }
