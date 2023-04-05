@@ -42,10 +42,16 @@ export class RequestBehaviorState implements SimulationBehaviorState {
     @IsUUID()
     public readonly id: UUID = uuid();
 
+    /**
+     * @deprecated Use {@link isWaitingForAnswer} instead
+     */
     @IsString()
     @IsOptional()
     public readonly answerKey?: string;
 
+    /**
+     * @deprecated Use {@link isWaitingForTimeout} instead
+     */
     @IsUUID()
     @IsOptional()
     public readonly delayEventActivityId?: UUID;
@@ -90,17 +96,18 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                     behaviorState.requestedResources[event.key] =
                         event.requiredResource;
 
-                    if (!behaviorState.answerKey) {
-                        behaviorState.answerKey = `${simulatedRegion.id}-request-${behaviorState.requestTargetVersion}`;
+                    if (
+                        !isWaitingForTimeout(behaviorState) &&
+                        !isWaitingForAnswer(behaviorState)
+                    ) {
+                        // create a new request now
                         behaviorState.delayEventActivityId =
                             nextUUID(draftState);
                         addActivity(
                             simulatedRegion,
                             DelayEventActivityState.create(
                                 behaviorState.delayEventActivityId,
-                                SendRequestEvent.create(
-                                    behaviorState.answerKey
-                                ),
+                                SendRequestEvent.create(),
                                 0
                             )
                         );
@@ -115,12 +122,14 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                 ]);
 
                 if (event.key === behaviorState.answerKey) {
+                    // we are not waiting for an answer anymore
+                    behaviorState.answerKey = undefined;
                     behaviorState.delayEventActivityId = nextUUID(draftState);
                     addActivity(
                         simulatedRegion,
                         DelayEventActivityState.create(
                             behaviorState.delayEventActivityId,
-                            SendRequestEvent.create(behaviorState.answerKey),
+                            SendRequestEvent.create(),
                             behaviorState.requestInterval
                         )
                     );
@@ -142,6 +151,7 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                 break;
             }
             case 'sendRequestEvent': {
+                behaviorState.delayEventActivityId = undefined;
                 const resourcecsToRequest =
                     getResourcesToRequest(behaviorState);
                 if (
@@ -149,6 +159,8 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                         getResourcesToRequest(behaviorState).vehicleCounts
                     ).length > 0
                 ) {
+                    // create a request to wait for an answer
+                    behaviorState.answerKey = `${simulatedRegion.id}-request-${behaviorState.requestTargetVersion}`;
                     const activityId = nextUUID(draftState);
                     addActivity(
                         simulatedRegion,
@@ -156,15 +168,9 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                             activityId,
                             behaviorState.requestTarget,
                             resourcecsToRequest,
-                            event.key
+                            behaviorState.answerKey
                         )
                     );
-                } else {
-                    /**
-                     * We are not requesting more resouces,
-                     * so we are not waiting for a response.
-                     */
-                    behaviorState.answerKey = undefined;
                 }
                 break;
             }
@@ -173,6 +179,14 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
         }
     },
 };
+
+export function isWaitingForTimeout(behaviorState: RequestBehaviorState) {
+    return behaviorState.delayEventActivityId !== undefined;
+}
+
+export function isWaitingForAnswer(behaviorState: RequestBehaviorState) {
+    return behaviorState.answerKey !== undefined;
+}
 
 export function updateInterval(
     draftState: Mutable<ExerciseState>,
@@ -201,13 +215,17 @@ export function updateTarget(
 ) {
     behaviorState.requestTarget = cloneDeepMutable(requestTarget);
     behaviorState.requestTargetVersion++;
-    behaviorState.answerKey = `${simulatedRegion.id}-request-${behaviorState.requestTargetVersion}`;
-    if (behaviorState.delayEventActivityId) {
+
+    if (isWaitingForTimeout(behaviorState)) {
         terminateActivity(
             draftState,
             simulatedRegion,
-            behaviorState.delayEventActivityId
+            behaviorState.delayEventActivityId!
         );
+        behaviorState.delayEventActivityId = undefined;
+    }
+    if (isWaitingForAnswer(behaviorState)) {
+        behaviorState.answerKey = undefined;
     }
 
     behaviorState.delayEventActivityId = nextUUID(draftState);
@@ -215,7 +233,7 @@ export function updateTarget(
         simulatedRegion,
         DelayEventActivityState.create(
             behaviorState.delayEventActivityId,
-            SendRequestEvent.create(behaviorState.answerKey),
+            SendRequestEvent.create(),
             0
         )
     );

@@ -7,12 +7,5 @@ export class SendRequestEvent implements SimulationEvent {
     @IsValue('sendRequestEvent')
     readonly type = 'sendRequestEvent';
 
-    @IsString()
-    readonly key: string;
-
-    constructor(key: string) {
-        this.key = key;
-    }
-
     static readonly create = getCreate(this);
 }

@@ -1,24 +1,19 @@
 <ng-container *ngIf="requestBehaviorState$ | async as requestBehaviorState">
     <h5>Anfragenziel</h5>
 
-    <ng-container
-        *ngIf="
+    <span *ngIf="(waitingForAnswer$ | async) === false && (waitingForTimeout$ | async) === false" class="text-muted">Es
+        gibt aktuell keine Fahrzeuganfragen in dieser Region</span>
+    <span *ngIf="(waitingForAnswer$ | async) === true">Wartet auf die Antwort einer Anfrage</span>
+    <span *ngIf="(waitingForTimeout$ | async) === true">Nächste Anfrage potenziell in {{ (nextTimeout$ | async)! -
+        (currentTime$ | async)! | date : 'mm:ss'}}</span>
+
+    <ng-container *ngIf="
             initialRequestTargetOption$ | async as initialRequestTargetOption
-        "
-    >
-        <ng-container
-            *ngIf="requestTargetOptions$ | async as requestTargetOptions"
-        >
-            <select
-                #requestTargetSelect
-                class="form-select no-validation"
-                [ngModel]="initialRequestTargetOption"
-                (change)="updateRequestTarget(requestTargetSelect.value)"
-            >
-                <option
-                    *ngFor="let option of requestTargetOptions | keys"
-                    [value]="option"
-                >
+        ">
+        <ng-container *ngIf="requestTargetOptions$ | async as requestTargetOptions">
+            <select #requestTargetSelect class="form-select no-validation" [ngModel]="initialRequestTargetOption"
+                (change)="updateRequestTarget(requestTargetSelect.value)">
+                <option *ngFor="let option of requestTargetOptions | keys" [value]="option">
                     {{ requestTargetOptions[option] }}
                 </option>
             </select>
@@ -31,19 +26,11 @@
             <span>Wiederholungsintervall</span>
         </div>
         <div class="col-sm">
-            <div
-                title="Mit welchem Intervall Anfragen wiederholt werden sollen, wenn die Fahrzeuge noch nicht zugesagt wurden."
-                class="input-group input-group-sm float-start"
-                style="max-width: 250px"
-            >
-                <input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    [ngModel]="requestBehaviorState.requestInterval / 1000 / 60"
-                    (appSaveOnTyping)="updateInterval($event)"
-                    class="form-control form-control-sm d-inline-block novalidate"
-                />
+            <div title="Mit welchem Intervall Anfragen wiederholt werden sollen, wenn die Fahrzeuge noch nicht zugesagt wurden."
+                class="input-group input-group-sm float-start" style="max-width: 250px">
+                <input type="number" min="0" step="0.1" [ngModel]="requestBehaviorState.requestInterval / 1000 / 60"
+                    (appSaveOnTyping)="updateInterval($event * 1000 * 60)"
+                    class="form-control form-control-sm d-inline-block novalidate" />
                 <span class="input-group-text">Min</span>
             </div>
         </div>

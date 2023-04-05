@@ -1,19 +1,26 @@
 import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { RequestBehaviorState } from 'digital-fuesim-manv-shared';
+import {
+    DelayEventActivityState,
+    RequestBehaviorState,
+    isWaitingForAnswer,
+    isWaitingForTimeout,
+} from 'digital-fuesim-manv-shared';
 import {
     UUID,
     SimulatedRegionRequestTargetConfiguration,
     TraineesRequestTargetConfiguration,
 } from 'digital-fuesim-manv-shared';
-import type { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
+import { createSelectActivityStates } from 'src/app/state/application/selectors/exercise.selectors';
 import {
     createSelectBehaviorState,
     selectSimulatedRegions,
+    selectCurrentTime,
 } from 'src/app/state/application/selectors/exercise.selectors';
 
 type RequestTargetOption = UUID | 'trainees';
@@ -35,6 +42,14 @@ export class RequestVehiclesComponent implements OnChanges {
     requestTargetOptions$!: Observable<{
         [key in RequestTargetOption]: string;
     }>;
+
+    waitingForAnswer$!: Observable<boolean>;
+
+    waitingForTimeout$!: Observable<boolean>;
+
+    currentTime$!: Observable<number>;
+
+    nextTimeout$!: Observable<number>;
 
     initialRequestTargetOption$!: Observable<RequestTargetOption>;
 
@@ -81,6 +96,37 @@ export class RequestVehiclesComponent implements OnChanges {
                     .targetSimulatedRegionId;
             })
         );
+
+        this.waitingForAnswer$ = this.requestBehaviorState$.pipe(
+            map((requestBehaviorState) =>
+                isWaitingForAnswer(requestBehaviorState)
+            )
+        );
+
+        this.waitingForTimeout$ = this.requestBehaviorState$.pipe(
+            map((requestBehaviorState) =>
+                isWaitingForTimeout(requestBehaviorState)
+            )
+        );
+
+        const activities$ = this.store.select(
+            createSelectActivityStates(this.simulatedRegionId)
+        );
+
+        this.currentTime$ = this.store.select(selectCurrentTime);
+
+        this.nextTimeout$ = combineLatest([
+            this.requestBehaviorState$,
+            activities$,
+        ]).pipe(
+            map(([requestBehaviorState, activities]) => {
+                if (!requestBehaviorState.delayEventActivityId) return 0;
+                const delayEventActivityState = activities[
+                    requestBehaviorState.delayEventActivityId
+                ] as DelayEventActivityState;
+                return delayEventActivityState.endTime;
+            })
+        );
     }
 
     updateInterval(interval: number) {
@@ -88,7 +134,7 @@ export class RequestVehiclesComponent implements OnChanges {
             type: '[RequestBehavior] Update RequestInterval',
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.requestBehaviorId,
-            requestInterval: interval * 1000 * 60,
+            requestInterval: interval,
         });
     }
 
