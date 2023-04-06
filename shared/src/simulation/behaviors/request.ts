@@ -257,7 +257,7 @@ export function updateBehaviorsRequestTarget(
     );
 }
 
-function getResourcesToRequest(
+export function getResourcesToRequest(
     draftState: Mutable<ExerciseState>,
     simulatedRegion: Mutable<SimulatedRegion>,
     behaviorState: Mutable<RequestBehaviorState>
