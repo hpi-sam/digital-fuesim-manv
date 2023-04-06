@@ -1,4 +1,5 @@
 import {
+    IsArray,
     IsInt,
     IsOptional,
     IsString,
@@ -30,6 +31,7 @@ import {
 import { TraineesRequestTargetConfiguration } from '../../models/utils/request-target/trainees';
 import { getCreate } from '../../models/utils/get-create';
 import type { SimulatedRegion } from '../../models';
+import { ResourcePromise } from '../utils/resource-promise';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -59,12 +61,10 @@ export class RequestBehaviorState implements SimulationBehaviorState {
     @IsStringMap(VehicleResource)
     public readonly requestedResources: { [key: string]: VehicleResource } = {};
 
-    @Type(() => VehicleResource)
-    @ValidateNested()
-    public readonly promisedResources: readonly {
-        readonly promisedTime: number;
-        readonly resource: VehicleResource;
-    }[] = [];
+    @IsArray()
+    @Type(() => ResourcePromise)
+    @ValidateNested({ each: true })
+    public readonly promisedResources: readonly ResourcePromise[] = [];
 
     /**
      * @deprecated Use {@link updateBehaviorsRequestInterval} instead
@@ -120,10 +120,14 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                 break;
             }
             case 'vehiclesSentEvent': {
-                behaviorState.promisedResources.push({
-                    promisedTime: draftState.currentTime,
-                    resource: event.vehiclesSent,
-                });
+                behaviorState.promisedResources.push(
+                    cloneDeepMutable(
+                        ResourcePromise.create(
+                            draftState.currentTime,
+                            event.vehiclesSent
+                        )
+                    )
+                );
 
                 if (event.key === behaviorState.answerKey) {
                     // we are not waiting for an answer anymore

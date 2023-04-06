@@ -25,6 +25,7 @@ import { DelayEventActivityState } from '../activities';
 import { addActivity } from '../activities/utils';
 import { SendRequestEvent } from '../events/send-request';
 import type { CreateRequestActivityState } from '../activities/create-request';
+import { ResourcePromise } from '../utils/resource-promise';
 import {
     RequestBehaviorState,
     getResourcesToRequest,
@@ -260,10 +261,10 @@ const addRequestsAndPromises = {
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
         behaviorState.promisedResources = cloneDeepMutable([
-            {
-                promisedTime: draftState.currentTime,
-                resource: VehicleResource.create({ KTW: 1 }),
-            },
+            ResourcePromise.create(
+                draftState.currentTime,
+                VehicleResource.create({ KTW: 1 })
+            ),
         ]);
     },
     withOldPromises: (
@@ -272,10 +273,7 @@ const addRequestsAndPromises = {
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
         behaviorState.promisedResources = cloneDeepMutable([
-            {
-                promisedTime: oldTime,
-                resource: VehicleResource.create({ KTW: 1 }),
-            },
+            ResourcePromise.create(oldTime, VehicleResource.create({ KTW: 1 })),
         ]);
     },
     withOldAndNewPromises: (
@@ -284,14 +282,11 @@ const addRequestsAndPromises = {
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
         behaviorState.promisedResources = cloneDeepMutable([
-            {
-                promisedTime: oldTime,
-                resource: VehicleResource.create({ KTW: 1 }),
-            },
-            {
-                promisedTime: draftState.currentTime,
-                resource: VehicleResource.create({ KTW: 1 }),
-            },
+            ResourcePromise.create(oldTime, VehicleResource.create({ KTW: 1 })),
+            ResourcePromise.create(
+                draftState.currentTime,
+                VehicleResource.create({ KTW: 1 })
+            ),
         ]);
     },
     withRequestsAndEnoughPromises: (
@@ -305,10 +300,10 @@ const addRequestsAndPromises = {
             })
         );
         behaviorState.promisedResources = cloneDeepMutable([
-            {
-                promisedTime: draftState.currentTime,
-                resource: VehicleResource.create({ KTW: 1 }),
-            },
+            ResourcePromise.create(
+                draftState.currentTime,
+                VehicleResource.create({ KTW: 1 })
+            ),
         ]);
     },
     withRequestsAndNotEnoughPromises: (
@@ -322,10 +317,10 @@ const addRequestsAndPromises = {
             })
         );
         behaviorState.promisedResources = cloneDeepMutable([
-            {
-                promisedTime: draftState.currentTime,
-                resource: VehicleResource.create({ KTW: 1 }),
-            },
+            ResourcePromise.create(
+                draftState.currentTime,
+                VehicleResource.create({ KTW: 1 })
+            ),
         ]);
     },
     withPromiseOfOtherType: (
@@ -334,10 +329,10 @@ const addRequestsAndPromises = {
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
         behaviorState.promisedResources = cloneDeepMutable([
-            {
-                promisedTime: draftState.currentTime,
-                resource: VehicleResource.create({ RTW: 1 }),
-            },
+            ResourcePromise.create(
+                draftState.currentTime,
+                VehicleResource.create({ RTW: 1 })
+            ),
         ]);
     },
     withPromisesOfMultipleTypes: (
@@ -346,14 +341,14 @@ const addRequestsAndPromises = {
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
         behaviorState.promisedResources = cloneDeepMutable([
-            {
-                promisedTime: draftState.currentTime,
-                resource: VehicleResource.create({ KTW: 1 }),
-            },
-            {
-                promisedTime: draftState.currentTime,
-                resource: VehicleResource.create({ RTW: 1 }),
-            },
+            ResourcePromise.create(
+                draftState.currentTime,
+                VehicleResource.create({ KTW: 1 })
+            ),
+            ResourcePromise.create(
+                draftState.currentTime,
+                VehicleResource.create({ RTW: 1 })
+            ),
         ]);
     },
 };
