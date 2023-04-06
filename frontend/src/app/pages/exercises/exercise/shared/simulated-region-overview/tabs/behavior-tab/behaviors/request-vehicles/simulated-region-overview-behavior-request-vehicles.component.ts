@@ -115,15 +115,6 @@ export class RequestVehiclesComponent implements OnChanges {
                     requestBehaviorState.delayEventActivityId
                 ] as DelayEventActivityState;
                 if (!delayEventActivityState) return 0;
-                console.log(
-                    `delayEventActivityState.endTime: ${delayEventActivityState.endTime}`
-                );
-                console.log(`currentTime: ${currentTime}`);
-                console.log(
-                    `delayEventActivityState.endTime - currentTime: ${
-                        delayEventActivityState.endTime - currentTime
-                    }`
-                );
 
                 return Math.max(
                     delayEventActivityState.endTime - currentTime,
