@@ -16,37 +16,37 @@ import {
     VehicleArrivedEvent,
     VehiclesSentEvent,
 } from '../events';
-import {
-    RequestBehaviorState,
-    getResourcesToRequest,
-    updateBehaviorsRequestInterval,
-    updateBehaviorsRequestTarget,
-} from './request';
 import { cloneDeepMutable } from '../../utils/clone-deep';
-import { Mutable } from '../../utils/immutability';
+import type { Mutable } from '../../utils/immutability';
 import { sendSimulationEvent } from '../events/utils';
 import { handleSimulationEvents } from '../utils/simulation';
 import { StrictObject, uuid } from '../../utils';
 import { DelayEventActivityState } from '../activities';
 import { addActivity } from '../activities/utils';
 import { SendRequestEvent } from '../events/send-request';
-import { CreateRequestActivityState } from '../activities/create-request';
+import type { CreateRequestActivityState } from '../activities/create-request';
+import {
+    RequestBehaviorState,
+    getResourcesToRequest,
+    updateBehaviorsRequestInterval,
+    updateBehaviorsRequestTarget,
+} from './request';
 
 const emptyState = ExerciseState.create('123456');
 const currentTime = 12345;
 
 function setupStateAndInteract(
-    setBehaviorState: (
+    initializeBehaviorState: (
         state: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
     ) => void,
-    addRequestsAndPromises: (
+    initializeRequestsAndPromises: (
         state: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
     ) => void,
-    interact: (
+    interaction: (
         state: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
@@ -80,8 +80,12 @@ function setupStateAndInteract(
             draftState.simulatedRegions[simulatedRegion.id]!;
         const behaviorState = mutableSimulatedRegion
             .behaviors[0] as Mutable<RequestBehaviorState>;
-        setBehaviorState(draftState, mutableSimulatedRegion, behaviorState);
-        addRequestsAndPromises(
+        initializeBehaviorState(
+            draftState,
+            mutableSimulatedRegion,
+            behaviorState
+        );
+        initializeRequestsAndPromises(
             draftState,
             mutableSimulatedRegion,
             behaviorState
@@ -91,7 +95,7 @@ function setupStateAndInteract(
     const afterState = produce(beforeState, (draftState) => {
         const mutableSimulatedRegion =
             draftState.simulatedRegions[simulatedRegion.id]!;
-        interact(
+        interaction(
             draftState,
             mutableSimulatedRegion,
             mutableSimulatedRegion.behaviors[0] as Mutable<RequestBehaviorState>
@@ -124,6 +128,7 @@ const setBehaviorState = {
         draftState: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
     ) => {},
     onTimer: (
         draftState: Mutable<ExerciseState>,
@@ -189,33 +194,34 @@ function assertWaitingState(behaviorState: RequestBehaviorState) {
     expect(behaviorState.answerKey).toBeDefined();
 }
 
-const withoutKTWPromise: (keyof typeof addRequestsAndPromises)[] = [
+const withoutKTWPromise: Set<keyof typeof addRequestsAndPromises> = new Set([
     'withoutRequestsAndPromises',
     'withRequests',
     'withPromiseOfOtherType',
-];
-const withOneKTWPromised: (keyof typeof addRequestsAndPromises)[] = [
+]);
+const withOneKTWPromised: Set<keyof typeof addRequestsAndPromises> = new Set([
     'withPromises',
     'withOldPromises',
     'withRequestsAndEnoughPromises',
     'withRequestsAndNotEnoughPromises',
     'withPromisesOfMultipleTypes',
-];
+]);
 
-const withOneKTWRequired: (keyof typeof addRequestsAndPromises)[] = [
+const withOneKTWRequired: Set<keyof typeof addRequestsAndPromises> = new Set([
     'withRequests',
     'withRequestsAndNotEnoughPromises',
-];
-const withoutVehiclesRequired: (keyof typeof addRequestsAndPromises)[] = [
-    'withoutRequestsAndPromises',
-    'withPromises',
-    'withRequestsAndEnoughPromises',
-    'withPromiseOfOtherType',
-    'withPromisesOfMultipleTypes',
-];
+]);
+const withoutVehiclesRequired: Set<keyof typeof addRequestsAndPromises> =
+    new Set([
+        'withoutRequestsAndPromises',
+        'withPromises',
+        'withRequestsAndEnoughPromises',
+        'withPromiseOfOtherType',
+        'withPromisesOfMultipleTypes',
+    ]);
 
 const oldTime = currentTime - 100;
-const withoutOldTime: (keyof typeof addRequestsAndPromises)[] = [
+const withoutOldTime: Set<keyof typeof addRequestsAndPromises> = new Set([
     'withoutRequestsAndPromises',
     'withRequests',
     'withPromises',
@@ -223,58 +229,61 @@ const withoutOldTime: (keyof typeof addRequestsAndPromises)[] = [
     'withRequestsAndNotEnoughPromises',
     'withPromiseOfOtherType',
     'withPromisesOfMultipleTypes',
-];
+]);
 
-const withOldTime: (keyof typeof addRequestsAndPromises)[] = [
+const withOldTime: Set<keyof typeof addRequestsAndPromises> = new Set([
     'withOldPromises',
     'withOldAndNewPromises',
-];
+]);
 
 const addRequestsAndPromises = {
     withoutRequestsAndPromises: (
         draftState: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
     ) => {},
     withRequests: (
         draftState: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
-        behaviorState.requestedResources[requestKey] = VehicleResource.create({
-            KTW: 1,
-        });
+        behaviorState.requestedResources[requestKey] = cloneDeepMutable(
+            VehicleResource.create({
+                KTW: 1,
+            })
+        );
     },
     withPromises: (
         draftState: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
-        behaviorState.promisedResources = [
+        behaviorState.promisedResources = cloneDeepMutable([
             {
                 promisedTime: draftState.currentTime,
                 resource: VehicleResource.create({ KTW: 1 }),
             },
-        ];
+        ]);
     },
     withOldPromises: (
         draftState: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
-        behaviorState.promisedResources = [
+        behaviorState.promisedResources = cloneDeepMutable([
             {
                 promisedTime: oldTime,
                 resource: VehicleResource.create({ KTW: 1 }),
             },
-        ];
+        ]);
     },
     withOldAndNewPromises: (
         draftState: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
-        behaviorState.promisedResources = [
+        behaviorState.promisedResources = cloneDeepMutable([
             {
                 promisedTime: oldTime,
                 resource: VehicleResource.create({ KTW: 1 }),
@@ -283,56 +292,60 @@ const addRequestsAndPromises = {
                 promisedTime: draftState.currentTime,
                 resource: VehicleResource.create({ KTW: 1 }),
             },
-        ];
+        ]);
     },
     withRequestsAndEnoughPromises: (
         draftState: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
-        behaviorState.requestedResources[requestKey] = VehicleResource.create({
-            KTW: 1,
-        });
-        behaviorState.promisedResources = [
+        behaviorState.requestedResources[requestKey] = cloneDeepMutable(
+            VehicleResource.create({
+                KTW: 1,
+            })
+        );
+        behaviorState.promisedResources = cloneDeepMutable([
             {
                 promisedTime: draftState.currentTime,
                 resource: VehicleResource.create({ KTW: 1 }),
             },
-        ];
+        ]);
     },
     withRequestsAndNotEnoughPromises: (
         draftState: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
-        behaviorState.requestedResources[requestKey] = VehicleResource.create({
-            KTW: 2,
-        });
-        behaviorState.promisedResources = [
+        behaviorState.requestedResources[requestKey] = cloneDeepMutable(
+            VehicleResource.create({
+                KTW: 2,
+            })
+        );
+        behaviorState.promisedResources = cloneDeepMutable([
             {
                 promisedTime: draftState.currentTime,
                 resource: VehicleResource.create({ KTW: 1 }),
             },
-        ];
+        ]);
     },
     withPromiseOfOtherType: (
         draftState: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
-        behaviorState.promisedResources = [
+        behaviorState.promisedResources = cloneDeepMutable([
             {
                 promisedTime: draftState.currentTime,
                 resource: VehicleResource.create({ RTW: 1 }),
             },
-        ];
+        ]);
     },
     withPromisesOfMultipleTypes: (
         draftState: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
-        behaviorState.promisedResources = [
+        behaviorState.promisedResources = cloneDeepMutable([
             {
                 promisedTime: draftState.currentTime,
                 resource: VehicleResource.create({ KTW: 1 }),
@@ -341,14 +354,14 @@ const addRequestsAndPromises = {
                 promisedTime: draftState.currentTime,
                 resource: VehicleResource.create({ RTW: 1 }),
             },
-        ];
+        ]);
     },
 };
 
-const vehicleSendEvents: (keyof typeof sendEvent)[] = [
+const vehicleSendEvents: Set<keyof typeof sendEvent> = new Set([
     'vehiclesSendEventForAnswerKey',
     'vehiclesSendEventForOtherKey',
-];
+]);
 
 const sendEvent = {
     resourceRequiredEvent: (
@@ -422,7 +435,7 @@ const sendEvent = {
             ImageProperties.create('', 0, 0),
             SimulatedRegionPosition.create(simulatedRegion.id)
         );
-        draftState.vehicles[vehicle.id] = vehicle;
+        draftState.vehicles[vehicle.id] = cloneDeepMutable(vehicle);
 
         sendSimulationEvent(
             simulatedRegion,
@@ -471,8 +484,10 @@ const updateRequestTarget = (
         '',
         `[Simuliert] requestable region`
     );
-    draftState.transferPoints[transferPoint.id] = transferPoint;
-    draftState.simulatedRegions[otherSimulatedRegion.id] = otherSimulatedRegion;
+    draftState.transferPoints[transferPoint.id] =
+        cloneDeepMutable(transferPoint);
+    draftState.simulatedRegions[otherSimulatedRegion.id] =
+        cloneDeepMutable(otherSimulatedRegion);
     updateBehaviorsRequestTarget(
         draftState,
         simulatedRegion,
@@ -483,17 +498,17 @@ const updateRequestTarget = (
     );
 };
 
+const newInvalidationInterval = 1;
+
 const updateInvalidationInterval = (
     draftState: Mutable<ExerciseState>,
     simulatedRegion: Mutable<SimulatedRegion>,
     behaviorState: Mutable<RequestBehaviorState>
 ) => {
-    behaviorState.invalidatePromiseInterval = 1;
+    behaviorState.invalidatePromiseInterval = newInvalidationInterval;
     // update its promised resources
     getResourcesToRequest(draftState, simulatedRegion, behaviorState);
 };
-
-const newInvalidationInterval = 1000;
 
 describe('request behavior', () => {
     describe.each(StrictObject.keys(addRequestsAndPromises))(
@@ -573,7 +588,7 @@ describe('request behavior', () => {
 
                     describe.each(
                         StrictObject.keys(sendEvent).filter((type) =>
-                            vehicleSendEvents.includes(type)
+                            vehicleSendEvents.has(type)
                         )
                     )('on a %s', (event) => {
                         it('should note the promise', () => {
@@ -636,7 +651,7 @@ describe('request behavior', () => {
                     });
 
                     describe('on a ktw vehicle arrived event', () => {
-                        if (withoutKTWPromise.includes(requestsAndPromises)) {
+                        if (withoutKTWPromise.has(requestsAndPromises)) {
                             it('should not change its noted promises', () => {
                                 const {
                                     beforeBehaviorState,
@@ -654,7 +669,7 @@ describe('request behavior', () => {
                                 );
                             });
                         }
-                        if (withOneKTWPromised.includes(requestsAndPromises)) {
+                        if (withOneKTWPromised.has(requestsAndPromises)) {
                             it('should remove the promise', () => {
                                 const { afterBehaviorState } =
                                     setupStateAndInteract(
@@ -679,9 +694,7 @@ describe('request behavior', () => {
                     describe('on a send request event', () => {
                         // other states should not be possible
                         if (state === 'onTimer') {
-                            if (
-                                withOneKTWRequired.includes(requestsAndPromises)
-                            ) {
+                            if (withOneKTWRequired.has(requestsAndPromises)) {
                                 it('should move to the waiting state', () => {
                                     const { afterBehaviorState } =
                                         setupStateAndInteract(
@@ -710,10 +723,10 @@ describe('request behavior', () => {
                                     const activities =
                                         afterSimulatedRegion.activities;
                                     expect(
-                                        Object.keys(activities).length
+                                        StrictObject.keys(activities).length
                                     ).toBeGreaterThanOrEqual(1);
 
-                                    const activity = Object.values(
+                                    const activity = StrictObject.values(
                                         activities
                                     ).find(
                                         (a) =>
@@ -737,9 +750,7 @@ describe('request behavior', () => {
                                 });
                             }
                             if (
-                                withoutVehiclesRequired.includes(
-                                    requestsAndPromises
-                                )
+                                withoutVehiclesRequired.has(requestsAndPromises)
                             ) {
                                 it('should move to the idle state', () => {
                                     const { afterBehaviorState } =
@@ -783,16 +794,18 @@ describe('request behavior', () => {
                                     updateRequestInterval
                                 );
 
-                                const beforeDelayEventActivity = Object.values(
-                                    beforeSimulatedRegion.activities
-                                ).find(
-                                    (a) => a.type === 'delayEventActivity'
-                                ) as Mutable<DelayEventActivityState>;
-                                const afterDelayEventActivity = Object.values(
-                                    afterSimulatedRegion.activities
-                                ).find(
-                                    (a) => a.type === 'delayEventActivity'
-                                ) as Mutable<DelayEventActivityState>;
+                                const beforeDelayEventActivity =
+                                    StrictObject.values(
+                                        beforeSimulatedRegion.activities
+                                    ).find(
+                                        (a) => a.type === 'delayEventActivity'
+                                    ) as DelayEventActivityState;
+                                const afterDelayEventActivity =
+                                    StrictObject.values(
+                                        afterSimulatedRegion.activities
+                                    ).find(
+                                        (a) => a.type === 'delayEventActivity'
+                                    ) as DelayEventActivityState;
 
                                 expect(
                                     afterDelayEventActivity.endTime -
@@ -843,12 +856,14 @@ describe('request behavior', () => {
                                 );
 
                             const activities = afterSimulatedRegion.activities;
-                            expect(Object.keys(activities).length).toBe(1);
+                            expect(StrictObject.keys(activities).length).toBe(
+                                1
+                            );
                         });
                     });
 
                     describe('when the invalidation interval for promises is updated', () => {
-                        if (withoutOldTime.includes(requestsAndPromises)) {
+                        if (withoutOldTime.has(requestsAndPromises)) {
                             it('should not invalidate any promises', () => {
                                 const {
                                     beforeBehaviorState,
@@ -866,16 +881,16 @@ describe('request behavior', () => {
                                 );
                             });
                         }
-                        if (withOldTime.includes(requestsAndPromises)) {
+                        if (withOldTime.has(requestsAndPromises)) {
                             it('should invalidate old promises', () => {
-                                const {
-                                    beforeBehaviorState,
-                                    afterBehaviorState,
-                                } = setupStateAndInteract(
-                                    setBehaviorState[state],
-                                    addRequestsAndPromises[requestsAndPromises],
-                                    updateInvalidationInterval
-                                );
+                                const { afterBehaviorState } =
+                                    setupStateAndInteract(
+                                        setBehaviorState[state],
+                                        addRequestsAndPromises[
+                                            requestsAndPromises
+                                        ],
+                                        updateInvalidationInterval
+                                    );
 
                                 expect(
                                     Object.keys(

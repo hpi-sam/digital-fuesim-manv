@@ -1,23 +1,22 @@
 import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
-import {
+import type {
     DelayEventActivityState,
     RequestBehaviorState,
-    isWaitingForAnswer,
-    isWaitingForTimeout,
 } from 'digital-fuesim-manv-shared';
 import {
+    isWaitingForAnswer,
     UUID,
     SimulatedRegionRequestTargetConfiguration,
     TraineesRequestTargetConfiguration,
 } from 'digital-fuesim-manv-shared';
-import { Observable, combineLatest } from 'rxjs';
-import { map } from 'rxjs';
+import type { Observable } from 'rxjs';
+import { map, combineLatest } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { createSelectActivityStates } from 'src/app/state/application/selectors/exercise.selectors';
 import {
+    createSelectActivityStates,
     createSelectBehaviorState,
     selectSimulatedRegions,
     selectCurrentTime,
@@ -108,7 +107,7 @@ export class RequestVehiclesComponent implements OnChanges {
         this.nextTimeoutIn$ = combineLatest([
             this.requestBehaviorState$,
             activities$,
-            currentTime$
+            currentTime$,
         ]).pipe(
             map(([requestBehaviorState, activities, currentTime]) => {
                 if (!requestBehaviorState.delayEventActivityId) return -1;
@@ -116,11 +115,20 @@ export class RequestVehiclesComponent implements OnChanges {
                     requestBehaviorState.delayEventActivityId
                 ] as DelayEventActivityState;
                 if (!delayEventActivityState) return 0;
-                console.log(`delayEventActivityState.endTime: ${delayEventActivityState.endTime}`);
+                console.log(
+                    `delayEventActivityState.endTime: ${delayEventActivityState.endTime}`
+                );
                 console.log(`currentTime: ${currentTime}`);
-                console.log(`delayEventActivityState.endTime - currentTime: ${delayEventActivityState.endTime - currentTime}`);
+                console.log(
+                    `delayEventActivityState.endTime - currentTime: ${
+                        delayEventActivityState.endTime - currentTime
+                    }`
+                );
 
-                return Math.max(delayEventActivityState.endTime - currentTime, 0);
+                return Math.max(
+                    delayEventActivityState.endTime - currentTime,
+                    0
+                );
             })
         );
     }

@@ -34,7 +34,6 @@ import type {
     SimulationBehavior,
     SimulationBehaviorState,
 } from './simulation-behavior';
-import { freeze } from 'immer';
 
 export class RequestBehaviorState implements SimulationBehaviorState {
     @IsValue('requestBehavior')
@@ -164,10 +163,12 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
 
                     arrivatedResource = remainingResources;
                 });
-                behaviorState.promisedResources = behaviorState.promisedResources.filter(
-                    (promise) =>
-                        Object.keys(promise.resource.vehicleCounts).length > 0
-                );
+                behaviorState.promisedResources =
+                    behaviorState.promisedResources.filter(
+                        (promise) =>
+                            Object.keys(promise.resource.vehicleCounts).length >
+                            0
+                    );
                 break;
             }
             case 'sendRequestEvent': {
@@ -273,7 +274,7 @@ export function getResourcesToRequest(
                 promise.promisedTime + behaviorState.invalidatePromiseInterval >
                 draftState.currentTime
         );
-    if (firstValidIndex == -1)
+    if (firstValidIndex === -1)
         firstValidIndex = behaviorState.promisedResources.length;
     behaviorState.promisedResources.splice(0, firstValidIndex);
 
