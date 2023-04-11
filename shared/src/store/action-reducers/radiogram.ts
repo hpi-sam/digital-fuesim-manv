@@ -4,7 +4,7 @@ import {
     acceptRadiogram,
     markRadiogramDone,
 } from '../../models/radiogram/radiogram-helpers-mutable';
-import { VehicleResource } from '../../models/utils/vehicle-resource';
+import { VehicleResource } from '../../models/utils/rescue-resource';
 import { VehiclesSentEvent } from '../../simulation';
 import { sendSimulationEvent } from '../../simulation/events/utils';
 import { nextUUID } from '../../simulation/utils/randomness';
