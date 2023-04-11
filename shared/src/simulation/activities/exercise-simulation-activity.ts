@@ -6,6 +6,7 @@ import { unloadVehicleActivity } from './unload-vehicle';
 import { recurringEventActivity } from './recurring-event';
 import { generateReportActivity } from './generate-report';
 import { providePersonnelFromVehiclesActivity } from './provide-personnel-from-vehicles';
+import { transferVehiclesActivity } from './transfer-vehicles';
 
 export const simulationActivities = {
     reassignTreatmentsActivity,
@@ -14,6 +15,7 @@ export const simulationActivities = {
     recurringEventActivity,
     generateReportActivity,
     providePersonnelFromVehiclesActivity,
+    transferVehiclesActivity,
 };
 
 export type ExerciseSimulationActivity =

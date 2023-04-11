@@ -3,6 +3,7 @@
     "extends": "../tsconfig.base.json",
     "compileOnSave": false,
     "compilerOptions": {
+        "moduleResolution": "node",
         "baseUrl": "./",
         "outDir": "./dist/out-tsc",
         "lib": ["ES2022", "dom"],

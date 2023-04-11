@@ -5,6 +5,7 @@ import { treatPatientsBehavior } from './treat-patients';
 import { unloadArrivingVehiclesBehavior } from './unload-arrived-vehicles';
 import { reportBehavior } from './report';
 import { providePersonnelBehavior } from './provide-personnel';
+import { answerRequestsBehavior } from './answer-requests';
 
 export const simulationBehaviors = {
     assignLeaderBehavior,
@@ -12,6 +13,7 @@ export const simulationBehaviors = {
     unloadArrivingVehiclesBehavior,
     reportBehavior,
     providePersonnelBehavior,
+    answerRequestsBehavior,
 };
 
 export type ExerciseSimulationBehavior =
