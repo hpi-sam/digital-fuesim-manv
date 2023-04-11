@@ -1,7 +1,10 @@
 import type { Type } from 'class-transformer';
 import { StrictObject } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import { IsResourceDescription } from '../../utils/validators/is-resource-description';
+import {
+    IsResourceDescription,
+    ResourceDescription,
+} from '../../utils/validators/is-resource-description';
 import { getCreate } from './get-create';
 import type { PersonnelType } from './personnel-type';
 
@@ -14,12 +17,12 @@ export class VehicleResource {
     public readonly type = 'vehicleResource';
 
     @IsResourceDescription()
-    public readonly vehicleCounts!: { [key: string]: number };
+    public readonly vehicleCounts!: ResourceDescription;
 
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(vehicleCounts: { [key: string]: number }) {
+    constructor(vehicleCounts: ResourceDescription) {
         this.vehicleCounts = vehicleCounts;
     }
 
@@ -31,12 +34,12 @@ export class PersonnelResource {
     public readonly type = 'personnelResource';
 
     @IsResourceDescription()
-    public readonly personnelCounts!: { [key in PersonnelType]: number };
+    public readonly personnelCounts!: ResourceDescription<PersonnelType>;
 
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(personnelCounts?: { [key in PersonnelType]: number }) {
+    constructor(personnelCounts?: ResourceDescription<PersonnelType>) {
         this.personnelCounts = personnelCounts ?? {
             gf: 0,
             notarzt: 0,

@@ -7,6 +7,9 @@ import {
     uuidValidationOptions,
 } from '../../utils';
 import { IsValue } from '../../utils/validators';
+import { ProvidePersonnelFromVehiclesActivityState } from '../activities/provide-personnel-from-vehicles';
+import { addActivity } from '../activities/utils';
+import { nextUUID } from '../utils/randomness';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -40,7 +43,15 @@ export const providePersonnelBehavior: SimulationBehavior<ProvidePersonnelBehavi
                 event.type === 'resourceRequiredEvent' &&
                 event.requiredResource.type === 'personnelResource'
             ) {
-                // TODO: create activity to translate event.requiredResource.personnelCounts
+                addActivity(
+                    simulatedRegion,
+                    ProvidePersonnelFromVehiclesActivityState.create(
+                        nextUUID(draftState),
+                        event.requiredResource.personnelCounts,
+                        behaviorState.vehicleTemplatePriorities,
+                        event.key
+                    )
+                );
             }
         },
     };
