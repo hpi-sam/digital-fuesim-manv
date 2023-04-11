@@ -45,7 +45,7 @@ export const selectOwnClient = createSelector(
 );
 
 /**
- * @deprecated Do not use this to distinguish between the exerciseStateModes
+ * Do not use this to distinguish between the exerciseStateModes
  */
 export const selectCurrentRole = createSelector(
     selectExerciseStateMode,
