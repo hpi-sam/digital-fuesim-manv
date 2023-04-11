@@ -2,7 +2,7 @@ import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type {
-    DelayEventActivityState,
+    RecurringEventActivityState,
     RequestBehaviorState,
 } from 'digital-fuesim-manv-shared';
 import {
@@ -44,9 +44,9 @@ export class RequestVehiclesComponent implements OnChanges {
 
     waitingForAnswer$!: Observable<boolean>;
 
-    nextTimeoutIn$!: Observable<number>;
+    nextTimeoutIn$!: Observable<number | undefined>;
 
-    initialRequestTargetOption$!: Observable<RequestTargetOption>;
+    selectedRequestTarget$!: Observable<RequestTargetOption>;
 
     constructor(
         private readonly store: Store<AppState>,
@@ -79,7 +79,7 @@ export class RequestVehiclesComponent implements OnChanges {
             )
         );
 
-        this.initialRequestTargetOption$ = this.requestBehaviorState$.pipe(
+        this.selectedRequestTarget$ = this.requestBehaviorState$.pipe(
             map((requestBehaviorState) => {
                 if (
                     requestBehaviorState.requestTarget.type ===
@@ -110,14 +110,17 @@ export class RequestVehiclesComponent implements OnChanges {
             currentTime$,
         ]).pipe(
             map(([requestBehaviorState, activities, currentTime]) => {
-                if (!requestBehaviorState.delayEventActivityId) return -1;
-                const delayEventActivityState = activities[
-                    requestBehaviorState.delayEventActivityId
-                ] as DelayEventActivityState;
-                if (!delayEventActivityState) return 0;
+                if (!requestBehaviorState.recurringEventActivityId)
+                    return undefined;
+                const recurringEventActivityState = activities[
+                    requestBehaviorState.recurringEventActivityId
+                ] as RecurringEventActivityState;
+                if (!recurringEventActivityState) return undefined;
 
                 return Math.max(
-                    delayEventActivityState.endTime - currentTime,
+                    recurringEventActivityState.lastOccurrenceTime +
+                        recurringEventActivityState.recurrenceIntervalTime -
+                        currentTime,
                     0
                 );
             })

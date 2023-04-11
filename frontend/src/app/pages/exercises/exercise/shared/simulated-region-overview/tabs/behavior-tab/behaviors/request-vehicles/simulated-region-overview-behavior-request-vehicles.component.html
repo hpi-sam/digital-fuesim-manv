@@ -2,27 +2,17 @@
     <h5>Anfragenziel</h5>
 
     <ng-container *ngIf="{ time: nextTimeoutIn$ | async } as nextTimeoutIn">
-        <span
-            *ngIf="
-                (waitingForAnswer$ | async) === false &&
-                nextTimeoutIn.time === -1
-            "
-            class="text-muted"
-            >Es gibt aktuell keine Fahrzeuganfragen in dieser Region</span
-        >
         <span *ngIf="(waitingForAnswer$ | async) === true" class="text-muted"
             >Wartet auf die Antwort einer Anfrage von</span
         >
-        <span *ngIf="nextTimeoutIn.time !== -1" class="text-muted"
-            >Nächste Anfrage potenziell in
+        <span *ngIf="nextTimeoutIn.time !== undefined" class="text-muted"
+            >Nächste Anfrage potentiell in
             {{ nextTimeoutIn.time | date : 'mm:ss' }} an</span
         >
     </ng-container>
 
     <ng-container
-        *ngIf="
-            initialRequestTargetOption$ | async as initialRequestTargetOption
-        "
+        *ngIf="selectedRequestTarget$ | async as selectedRequestTarget"
     >
         <ng-container
             *ngIf="requestTargetOptions$ | async as requestTargetOptions"
@@ -30,7 +20,7 @@
             <select
                 #requestTargetSelect
                 class="form-select no-validation"
-                [ngModel]="initialRequestTargetOption"
+                [ngModel]="selectedRequestTarget"
                 (change)="updateRequestTarget(requestTargetSelect.value)"
             >
                 <option
@@ -73,8 +63,8 @@
         <div class="d-flex row">
             <div class="col-sm">
                 <span
-                    >Dauer, nachdem ein nicht eingelöstes Versprechen nach
-                    Fahrzeugen invalidiert werden soll</span
+                    >Dauer, nachdem eine nicht eingelöste Zusage von Fahrzeugen
+                    invalidiert werden soll</span
                 >
             </div>
             <div class="col-sm">

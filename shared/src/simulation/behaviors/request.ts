@@ -14,9 +14,9 @@ import type { Mutable } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { getActivityById, getElement } from '../../store/action-reducers/utils';
 import type { ExerciseState } from '../../state';
-import { addActivity, terminateActivity } from '../activities/utils';
+import { addActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
-import { DelayEventActivityState } from '../activities';
+import { RecurringEventActivityState } from '../activities';
 import { SendRequestEvent } from '../events/send-request';
 import { CreateRequestActivityState } from '../activities/create-request';
 import {
@@ -51,12 +51,9 @@ export class RequestBehaviorState implements SimulationBehaviorState {
     @IsOptional()
     public readonly answerKey?: string;
 
-    /**
-     * @deprecated Use {@link isWaitingForTimeout} instead
-     */
     @IsUUID()
     @IsOptional()
-    public readonly delayEventActivityId?: UUID;
+    public readonly recurringEventActivityId?: UUID;
 
     @IsStringMap(VehicleResource)
     public readonly requestedResources: { [key: string]: VehicleResource } = {};
@@ -95,27 +92,26 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
     behaviorState: RequestBehaviorState,
     handleEvent(draftState, simulatedRegion, behaviorState, event) {
         switch (event.type) {
+            case 'tickEvent': {
+                if (!behaviorState.recurringEventActivityId) {
+                    behaviorState.recurringEventActivityId =
+                        nextUUID(draftState);
+                    addActivity(
+                        simulatedRegion,
+                        RecurringEventActivityState.create(
+                            behaviorState.recurringEventActivityId,
+                            SendRequestEvent.create(),
+                            draftState.currentTime,
+                            behaviorState.requestInterval
+                        )
+                    );
+                }
+                break;
+            }
             case 'resourceRequiredEvent': {
                 if (event.requiringSimulatedRegionId === simulatedRegion.id) {
                     behaviorState.requestedResources[event.key] =
                         event.requiredResource;
-
-                    if (
-                        !isWaitingForTimeout(behaviorState) &&
-                        !isWaitingForAnswer(behaviorState)
-                    ) {
-                        // create a new request now
-                        behaviorState.delayEventActivityId =
-                            nextUUID(draftState);
-                        addActivity(
-                            simulatedRegion,
-                            DelayEventActivityState.create(
-                                behaviorState.delayEventActivityId,
-                                SendRequestEvent.create(),
-                                draftState.currentTime
-                            )
-                        );
-                    }
                 }
                 break;
             }
@@ -130,18 +126,7 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                 );
 
                 if (event.key === behaviorState.answerKey) {
-                    // we are not waiting for an answer anymore
                     behaviorState.answerKey = undefined;
-                    behaviorState.delayEventActivityId = nextUUID(draftState);
-                    addActivity(
-                        simulatedRegion,
-                        DelayEventActivityState.create(
-                            behaviorState.delayEventActivityId,
-                            SendRequestEvent.create(),
-                            draftState.currentTime +
-                                behaviorState.requestInterval
-                        )
-                    );
                 }
                 break;
             }
@@ -176,25 +161,28 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                 break;
             }
             case 'sendRequestEvent': {
-                behaviorState.delayEventActivityId = undefined;
-                const resourcesToRequest = getResourcesToRequest(
-                    draftState,
-                    simulatedRegion,
-                    behaviorState
-                );
-                if (Object.keys(resourcesToRequest.vehicleCounts).length > 0) {
-                    // create a request to wait for an answer
-                    behaviorState.answerKey = `${simulatedRegion.id}-request-${behaviorState.requestTargetVersion}`;
-                    const activityId = nextUUID(draftState);
-                    addActivity(
+                if (!isWaitingForAnswer(behaviorState)) {
+                    const resourcesToRequest = getResourcesToRequest(
+                        draftState,
                         simulatedRegion,
-                        CreateRequestActivityState.create(
-                            activityId,
-                            behaviorState.requestTarget,
-                            resourcesToRequest,
-                            behaviorState.answerKey
-                        )
+                        behaviorState
                     );
+                    if (
+                        Object.keys(resourcesToRequest.vehicleCounts).length > 0
+                    ) {
+                        // create a request to wait for an answer
+                        behaviorState.answerKey = `${simulatedRegion.id}-request-${behaviorState.requestTargetVersion}`;
+                        const activityId = nextUUID(draftState);
+                        addActivity(
+                            simulatedRegion,
+                            CreateRequestActivityState.create(
+                                activityId,
+                                behaviorState.requestTarget,
+                                resourcesToRequest,
+                                behaviorState.answerKey
+                            )
+                        );
+                    }
                 }
                 break;
             }
@@ -203,10 +191,6 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
         }
     },
 };
-
-export function isWaitingForTimeout(behaviorState: RequestBehaviorState) {
-    return behaviorState.delayEventActivityId !== undefined;
-}
 
 export function isWaitingForAnswer(behaviorState: RequestBehaviorState) {
     return behaviorState.answerKey !== undefined;
@@ -218,14 +202,14 @@ export function updateBehaviorsRequestInterval(
     behaviorState: Mutable<RequestBehaviorState>,
     requestInterval: number
 ) {
-    if (behaviorState.delayEventActivityId) {
+    if (behaviorState.recurringEventActivityId) {
         const activity = getActivityById(
             draftState,
             simulatedRegion.id,
-            behaviorState.delayEventActivityId,
-            'delayEventActivity'
+            behaviorState.recurringEventActivityId,
+            'recurringEventActivity'
         );
-        activity.endTime += requestInterval - behaviorState.requestInterval;
+        activity.recurrenceIntervalTime = requestInterval;
     }
     behaviorState.requestInterval = requestInterval;
 }
@@ -239,27 +223,9 @@ export function updateBehaviorsRequestTarget(
     behaviorState.requestTarget = cloneDeepMutable(requestTarget);
     behaviorState.requestTargetVersion++;
 
-    if (isWaitingForTimeout(behaviorState)) {
-        terminateActivity(
-            draftState,
-            simulatedRegion,
-            behaviorState.delayEventActivityId!
-        );
-        behaviorState.delayEventActivityId = undefined;
-    }
     if (isWaitingForAnswer(behaviorState)) {
         behaviorState.answerKey = undefined;
     }
-
-    behaviorState.delayEventActivityId = nextUUID(draftState);
-    addActivity(
-        simulatedRegion,
-        DelayEventActivityState.create(
-            behaviorState.delayEventActivityId,
-            SendRequestEvent.create(),
-            draftState.currentTime
-        )
-    );
 }
 
 export function getResourcesToRequest(

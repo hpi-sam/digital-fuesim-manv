@@ -21,7 +21,7 @@ import type { Mutable } from '../../utils/immutability';
 import { sendSimulationEvent } from '../events/utils';
 import { handleSimulationEvents } from '../utils/simulation';
 import { StrictObject, uuid } from '../../utils';
-import { DelayEventActivityState } from '../activities';
+import { RecurringEventActivityState } from '../activities';
 import { addActivity } from '../activities/utils';
 import { SendRequestEvent } from '../events/send-request';
 import type { CreateRequestActivityState } from '../activities/create-request';
@@ -29,6 +29,7 @@ import { ResourcePromise } from '../utils/resource-promise';
 import {
     RequestBehaviorState,
     getResourcesToRequest,
+    isWaitingForAnswer,
     updateBehaviorsRequestInterval,
     updateBehaviorsRequestTarget,
 } from './request';
@@ -125,24 +126,19 @@ function setupStateAndInteract(
 const requestKey = 'initial-request';
 
 const setBehaviorState = {
-    idle: (
-        draftState: Mutable<ExerciseState>,
-        simulatedRegion: Mutable<SimulatedRegion>,
-        behaviorState: Mutable<RequestBehaviorState>
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-    ) => {},
     onTimer: (
         draftState: Mutable<ExerciseState>,
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
-        behaviorState.delayEventActivityId = uuid();
+        behaviorState.recurringEventActivityId = uuid();
         addActivity(
             simulatedRegion,
-            DelayEventActivityState.create(
-                behaviorState.delayEventActivityId,
+            RecurringEventActivityState.create(
+                behaviorState.recurringEventActivityId,
                 SendRequestEvent.create(),
-                draftState.currentTime
+                draftState.currentTime,
+                behaviorState.requestInterval
             )
         );
     },
@@ -151,6 +147,16 @@ const setBehaviorState = {
         simulatedRegion: Mutable<SimulatedRegion>,
         behaviorState: Mutable<RequestBehaviorState>
     ) => {
+        behaviorState.recurringEventActivityId = uuid();
+        addActivity(
+            simulatedRegion,
+            RecurringEventActivityState.create(
+                behaviorState.recurringEventActivityId,
+                SendRequestEvent.create(),
+                draftState.currentTime,
+                behaviorState.requestInterval
+            )
+        );
         behaviorState.answerKey = `${simulatedRegion.id}-request-${behaviorState.requestTargetVersion}`;
     },
 };
@@ -159,40 +165,14 @@ function assertSameState(
     beforeBehaviorState: RequestBehaviorState,
     afterBehaviorState: RequestBehaviorState
 ) {
-    expect(afterBehaviorState.delayEventActivityId).toEqual(
-        beforeBehaviorState.delayEventActivityId
-    );
     expect(afterBehaviorState.answerKey).toEqual(beforeBehaviorState.answerKey);
 }
 
-function assertIdleState(behaviorState: RequestBehaviorState) {
-    expect(behaviorState.delayEventActivityId).toBeUndefined();
-    expect(behaviorState.answerKey).toBeUndefined();
-}
-
-function assertTimerState(
-    simulatedRegion: SimulatedRegion,
-    behaviorState: RequestBehaviorState,
-    nextTime: number
-) {
-    expect(behaviorState.answerKey).toBeUndefined();
-
-    const activityId = behaviorState.delayEventActivityId;
-    expect(activityId).toBeDefined();
-
-    const activityState = simulatedRegion.activities[activityId!];
-    expect(activityState).toBeDefined();
-
-    const activityType = activityState!.type;
-    expect(activityType).toBe('delayEventActivity');
-
-    const typedActivityState = activityState as DelayEventActivityState;
-    expect(typedActivityState.endTime).toBe(nextTime);
-}
-
 function assertWaitingState(behaviorState: RequestBehaviorState) {
-    expect(behaviorState.delayEventActivityId).toBeUndefined();
-    expect(behaviorState.answerKey).toBeDefined();
+    expect(isWaitingForAnswer(behaviorState)).toBe(true);
+}
+function assertNotWaitingState(behaviorState: RequestBehaviorState) {
+    expect(isWaitingForAnswer(behaviorState)).toBe(false);
 }
 
 const withoutKTWPromise: Set<keyof typeof addRequestsAndPromises> = new Set([
@@ -528,40 +508,19 @@ describe('request behavior', () => {
                             ).toEqual(VehicleResource.create({ KTW: 1 }));
                         });
 
-                        if (state === 'idle') {
-                            it('should move to the onTimer state', () => {
-                                const {
-                                    afterSimulatedRegion,
-                                    afterBehaviorState,
-                                } = setupStateAndInteract(
+                        it('should not change its state', () => {
+                            const { beforeBehaviorState, afterBehaviorState } =
+                                setupStateAndInteract(
                                     setBehaviorState[state],
                                     addRequestsAndPromises[requestsAndPromises],
                                     sendEvent.resourceRequiredEvent
                                 );
 
-                                assertTimerState(
-                                    afterSimulatedRegion,
-                                    afterBehaviorState,
-                                    currentTime
-                                );
-                            });
-                        } else {
-                            it('should not change its state', () => {
-                                const {
-                                    beforeBehaviorState,
-                                    afterBehaviorState,
-                                } = setupStateAndInteract(
-                                    setBehaviorState[state],
-                                    addRequestsAndPromises[requestsAndPromises],
-                                    sendEvent.resourceRequiredEvent
-                                );
-
-                                assertSameState(
-                                    beforeBehaviorState,
-                                    afterBehaviorState
-                                );
-                            });
-                        }
+                            assertSameState(
+                                beforeBehaviorState,
+                                afterBehaviorState
+                            );
+                        });
                     });
 
                     describe('on a resource required event with a known key', () => {
@@ -609,22 +568,17 @@ describe('request behavior', () => {
                             state === 'waiting' &&
                             event === 'vehiclesSendEventForAnswerKey'
                         ) {
-                            it('should move to the onTimer state', () => {
-                                const {
-                                    afterSimulatedRegion,
-                                    afterBehaviorState,
-                                } = setupStateAndInteract(
-                                    setBehaviorState[state],
-                                    addRequestsAndPromises[requestsAndPromises],
-                                    sendEvent[event]
-                                );
+                            it('should not continue waiting for an answer', () => {
+                                const { afterBehaviorState } =
+                                    setupStateAndInteract(
+                                        setBehaviorState[state],
+                                        addRequestsAndPromises[
+                                            requestsAndPromises
+                                        ],
+                                        sendEvent[event]
+                                    );
 
-                                assertTimerState(
-                                    afterSimulatedRegion,
-                                    afterBehaviorState,
-                                    currentTime +
-                                        afterBehaviorState.requestInterval
-                                );
+                                assertNotWaitingState(afterBehaviorState);
                             });
                         } else {
                             it('should not change its state', () => {
@@ -747,7 +701,7 @@ describe('request behavior', () => {
                             if (
                                 withoutVehiclesRequired.has(requestsAndPromises)
                             ) {
-                                it('should move to the idle state', () => {
+                                it('should stay in the onTimer state', () => {
                                     const { afterBehaviorState } =
                                         setupStateAndInteract(
                                             setBehaviorState[state],
@@ -757,7 +711,7 @@ describe('request behavior', () => {
                                             sendEvent.sendRequestEvent
                                         );
 
-                                    assertIdleState(afterBehaviorState);
+                                    assertNotWaitingState(afterBehaviorState);
                                 });
                             }
                         }
@@ -777,40 +731,25 @@ describe('request behavior', () => {
                             );
                         });
 
-                        if (state === 'onTimer') {
-                            it('should update the timer', () => {
-                                const {
-                                    beforeBehaviorState,
-                                    beforeSimulatedRegion,
-                                    afterSimulatedRegion,
-                                } = setupStateAndInteract(
+                        it('should update the timer', () => {
+                            const { afterSimulatedRegion } =
+                                setupStateAndInteract(
                                     setBehaviorState[state],
                                     addRequestsAndPromises[requestsAndPromises],
                                     updateRequestInterval
                                 );
 
-                                const beforeDelayEventActivity =
-                                    StrictObject.values(
-                                        beforeSimulatedRegion.activities
-                                    ).find(
-                                        (a) => a.type === 'delayEventActivity'
-                                    ) as DelayEventActivityState;
-                                const afterDelayEventActivity =
-                                    StrictObject.values(
-                                        afterSimulatedRegion.activities
-                                    ).find(
-                                        (a) => a.type === 'delayEventActivity'
-                                    ) as DelayEventActivityState;
+                            const afterRecurringEventActivity =
+                                StrictObject.values(
+                                    afterSimulatedRegion.activities
+                                ).find(
+                                    (a) => a.type === 'recurringEventActivity'
+                                ) as RecurringEventActivityState;
 
-                                expect(
-                                    afterDelayEventActivity.endTime -
-                                        beforeDelayEventActivity.endTime
-                                ).toBe(
-                                    newRequestInterval -
-                                        beforeBehaviorState.requestInterval
-                                );
-                            });
-                        }
+                            expect(
+                                afterRecurringEventActivity.recurrenceIntervalTime
+                            ).toBe(newRequestInterval);
+                        });
                     });
 
                     describe('when the request target is updated', () => {
@@ -827,33 +766,15 @@ describe('request behavior', () => {
                             ).toEqual('simulatedRegionRequestTarget');
                         });
 
-                        it('should switch to the onTimer state', () => {
-                            const { afterSimulatedRegion, afterBehaviorState } =
+                        it('should not continue waiting for an answer', () => {
+                            const { afterBehaviorState } =
                                 setupStateAndInteract(
                                     setBehaviorState[state],
                                     addRequestsAndPromises[requestsAndPromises],
                                     updateRequestTarget
                                 );
 
-                            assertTimerState(
-                                afterSimulatedRegion,
-                                afterBehaviorState,
-                                currentTime
-                            );
-                        });
-
-                        it('should have deleted any other timer activities', () => {
-                            const { afterSimulatedRegion } =
-                                setupStateAndInteract(
-                                    setBehaviorState[state],
-                                    addRequestsAndPromises[requestsAndPromises],
-                                    updateRequestTarget
-                                );
-
-                            const activities = afterSimulatedRegion.activities;
-                            expect(StrictObject.keys(activities).length).toBe(
-                                1
-                            );
+                            assertNotWaitingState(afterBehaviorState);
                         });
                     });
 
@@ -878,7 +799,7 @@ describe('request behavior', () => {
                         }
                         if (withOldTime.has(requestsAndPromises)) {
                             it('should invalidate old promises', () => {
-                                const { afterBehaviorState } =
+                                const { afterState, afterBehaviorState } =
                                     setupStateAndInteract(
                                         setBehaviorState[state],
                                         addRequestsAndPromises[
@@ -891,8 +812,9 @@ describe('request behavior', () => {
                                     Object.keys(
                                         afterBehaviorState.promisedResources.filter(
                                             (promise) =>
-                                                promise.promisedTime <
-                                                currentTime
+                                                promise.promisedTime +
+                                                    newInvalidationInterval <
+                                                afterState.currentTime
                                         )
                                     ).length
                                 ).toBe(0);
@@ -911,7 +833,8 @@ describe('request behavior', () => {
                                 beforeBehaviorState.promisedResources.forEach(
                                     (beforePromise) => {
                                         if (
-                                            beforePromise.promisedTime >=
+                                            beforePromise.promisedTime +
+                                                newInvalidationInterval >=
                                             currentTime
                                         ) {
                                             expect(
