@@ -3,14 +3,14 @@ import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuid, uuidValidationOptions } from '../utils';
 import { IsPosition } from '../utils/validators/is-position';
 import { IsMultiTypedIdMap, IsValue } from '../utils/validators';
-import type { ExerciseSimulationEvent } from '../simulation';
-import { simulationEventTypeOptions } from '../simulation';
-import type { ExerciseSimulationActivityState } from '../simulation/activities';
-import { getSimulationActivityConstructor } from '../simulation/activities';
-import type { ExerciseSimulationBehaviorState } from '../simulation/behaviors';
-import { simulationBehaviorTypeOptions } from '../simulation/behaviors';
-import { getCreate, MapPosition, Position, Size } from './utils';
+import type { ExerciseSimulationEvent } from '../simulation/events/exercise-simulation-event';
+import { simulationEventTypeOptions } from '../simulation/events/exercise-simulation-event';
+import type { ExerciseSimulationActivityState } from '../simulation/activities/exercise-simulation-activity';
+import { getSimulationActivityConstructor } from '../simulation/activities/exercise-simulation-activity';
+import type { ExerciseSimulationBehaviorState } from '../simulation/behaviors/exercise-simulation-behavior';
+import { simulationBehaviorTypeOptions } from '../simulation/behaviors/exercise-simulation-behavior';
 import type { ImageProperties, MapCoordinates } from './utils';
+import { getCreate, MapPosition, Position, Size } from './utils';
 
 export class SimulatedRegion {
     @IsUUID(4, uuidValidationOptions)
