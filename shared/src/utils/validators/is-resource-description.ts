@@ -21,9 +21,9 @@ export const isResourceDescription = createMapValidator<string, number>({
 export const addResourceDescription = createCombine((a, b) => a + b);
 export const subtractResourceDescription = createCombine((a, b) => a - b);
 export const greaterEqualResourceDescription = createCompare((a, b) => a >= b);
-export const scaleResourceDescription = createMap((a, s) => a * s)
-export const ceilResourceDescription = createMap(Math.ceil)
-export const maxResourceDescription = createMap(Math.max)
+export const scaleResourceDescription = createMap((a, s) => a * s);
+export const ceilResourceDescription = createMap(Math.ceil);
+export const maxResourceDescription = createMap(Math.max);
 
 export function createCombine(fn: (a: number, b: number) => number) {
     return <K extends string>(
@@ -43,7 +43,10 @@ export function createCompare(fn: (a: number, b: number) => boolean) {
 }
 
 export function createMap(fn: (a: number, ...args: any) => number) {
-    return <K extends string>(a: ReadonlyResourceDescription<K>, ...args: any) =>
+    return <K extends string>(
+        a: ReadonlyResourceDescription<K>,
+        ...args: any
+    ) =>
         Object.fromEntries(
             StrictObject.entries(a).map(([k, v]) => [k, fn(v, ...args)])
         ) as ResourceDescription<K>;
