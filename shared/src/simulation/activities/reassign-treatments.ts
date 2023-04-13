@@ -1,6 +1,4 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
-import type { Material, Personnel } from '../../models';
-import { Patient } from '../../models';
 import type { PatientStatus, PersonnelType } from '../../models/utils';
 import {
     isEmptyResource,
@@ -41,6 +39,9 @@ import {
 } from '../../utils/validators/is-resource-description';
 import { StrictObject } from '../../utils/strict-object';
 import { cloneDeepMutable } from '../../utils/clone-deep';
+import type { Material } from '../../models/material';
+import type { Personnel } from '../../models/personnel';
+import { Patient } from '../../models/patient';
 import type {
     SimulationActivity,
     SimulationActivityState,
