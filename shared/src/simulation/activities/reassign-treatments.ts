@@ -29,19 +29,19 @@ import { sendSimulationEvent } from '../events/utils';
 import type { AssignLeaderBehaviorState } from '../behaviors/assign-leader';
 import { nextUUID } from '../utils/randomness';
 import { defaultPersonnelTemplates } from '../../data/default-state/personnel-templates';
-import type { ResourceDescription } from '../../utils/validators/is-resource-description';
+import { StrictObject } from '../../utils/strict-object';
+import { cloneDeepMutable } from '../../utils/clone-deep';
+import type { Material } from '../../models/material';
+import type { Personnel } from '../../models/personnel';
+import { Patient } from '../../models/patient';
+import type { ResourceDescription } from '../../models/utils/resource-description';
 import {
     addResourceDescription,
     ceilResourceDescription,
     maxResourceDescription,
     scaleResourceDescription,
     subtractResourceDescription,
-} from '../../utils/validators/is-resource-description';
-import { StrictObject } from '../../utils/strict-object';
-import { cloneDeepMutable } from '../../utils/clone-deep';
-import type { Material } from '../../models/material';
-import type { Personnel } from '../../models/personnel';
-import { Patient } from '../../models/patient';
+} from '../../models/utils/resource-description';
 import type {
     SimulationActivity,
     SimulationActivityState,
