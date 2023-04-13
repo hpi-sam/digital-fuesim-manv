@@ -34,9 +34,57 @@ import {
     updateBehaviorsRequestTarget,
 } from './request';
 
+// constants
 const emptyState = ExerciseState.create('123456');
 const currentTime = 12345;
+const requestKey = 'initial-request';
+const oldTime = currentTime - 100;
+const newRequestInterval = 1000;
+const newInvalidationInterval = 1;
 
+// partial states
+const withoutKTWPromise = [
+    'withoutRequestsAndPromises',
+    'withRequests',
+    'withPromiseOfOtherType',
+] as const;
+const withOneKTWPromised = [
+    'withPromises',
+    'withOldPromises',
+    'withRequestsAndEnoughPromises',
+    'withRequestsAndNotEnoughPromises',
+    'withPromisesOfMultipleTypes',
+] as const;
+
+const withOneKTWRequired = [
+    'withRequests',
+    'withRequestsAndNotEnoughPromises',
+] as const;
+const withoutVehiclesRequired = [
+    'withoutRequestsAndPromises',
+    'withPromises',
+    'withRequestsAndEnoughPromises',
+    'withPromiseOfOtherType',
+    'withPromisesOfMultipleTypes',
+] as const;
+const withoutOldTime = [
+    'withoutRequestsAndPromises',
+    'withRequests',
+    'withPromises',
+    'withRequestsAndEnoughPromises',
+    'withRequestsAndNotEnoughPromises',
+    'withPromiseOfOtherType',
+    'withPromisesOfMultipleTypes',
+] as const;
+
+const withOldTime = ['withOldPromises', 'withOldAndNewPromises'] as const;
+
+const vehicleSendEvents = [
+    'vehiclesSendEventForAnswerKey',
+    'vehiclesSendEventForOtherKey',
+] as const;
+
+// helper functions
 function setupStateAndInteract(
     initializeBehaviorState: (
         state: Mutable<ExerciseState>,
@@ -123,8 +171,63 @@ function setupStateAndInteract(
     };
 }
 
-const requestKey = 'initial-request';
+const updateRequestInterval = (
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegion>,
+    behaviorState: Mutable<RequestBehaviorState>
+) => {
+    updateBehaviorsRequestInterval(
+        draftState,
+        simulatedRegion,
+        behaviorState,
+        newRequestInterval
+    );
+};
 
+const updateRequestTarget = (
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegion>,
+    behaviorState: Mutable<RequestBehaviorState>
+) => {
+    const otherSimulatedRegion = cloneDeepMutable(
+        SimulatedRegion.create(
+            MapCoordinates.create(0, 0),
+            Size.create(10, 10),
+            'requestable region'
+        )
+    );
+    const transferPoint = TransferPoint.create(
+        SimulatedRegionPosition.create(otherSimulatedRegion.id),
+        {},
+        {},
+        '',
+        `[Simuliert] requestable region`
+    );
+    draftState.transferPoints[transferPoint.id] =
+        cloneDeepMutable(transferPoint);
+    draftState.simulatedRegions[otherSimulatedRegion.id] =
+        cloneDeepMutable(otherSimulatedRegion);
+    updateBehaviorsRequestTarget(
+        draftState,
+        simulatedRegion,
+        behaviorState,
+        SimulatedRegionRequestTargetConfiguration.create(
+            otherSimulatedRegion.id
+        )
+    );
+};
+
+const updateInvalidationInterval = (
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegion>,
+    behaviorState: Mutable<RequestBehaviorState>
+) => {
+    behaviorState.invalidatePromiseInterval = newInvalidationInterval;
+    // update its promised resources
+    getResourcesToRequest(draftState, simulatedRegion, behaviorState);
+};
+
+// factories
 const setBehaviorState = {
     onTimer: (
         draftState: Mutable<ExerciseState>,
@@ -160,62 +263,6 @@ const setBehaviorState = {
         behaviorState.answerKey = `${simulatedRegion.id}-request-${behaviorState.requestTargetVersion}`;
     },
 };
-
-function assertSameState(
-    beforeBehaviorState: RequestBehaviorState,
-    afterBehaviorState: RequestBehaviorState
-) {
-    expect(afterBehaviorState.answerKey).toEqual(beforeBehaviorState.answerKey);
-}
-
-function assertWaitingState(behaviorState: RequestBehaviorState) {
-    expect(isWaitingForAnswer(behaviorState)).toBe(true);
-}
-function assertNotWaitingState(behaviorState: RequestBehaviorState) {
-    expect(isWaitingForAnswer(behaviorState)).toBe(false);
-}
-
-const withoutKTWPromise: Set<keyof typeof addRequestsAndPromises> = new Set([
-    'withoutRequestsAndPromises',
-    'withRequests',
-    'withPromiseOfOtherType',
-]);
-const withOneKTWPromised: Set<keyof typeof addRequestsAndPromises> = new Set([
-    'withPromises',
-    'withOldPromises',
-    'withRequestsAndEnoughPromises',
-    'withRequestsAndNotEnoughPromises',
-    'withPromisesOfMultipleTypes',
-]);
-
-const withOneKTWRequired: Set<keyof typeof addRequestsAndPromises> = new Set([
-    'withRequests',
-    'withRequestsAndNotEnoughPromises',
-]);
-const withoutVehiclesRequired: Set<keyof typeof addRequestsAndPromises> =
-    new Set([
-        'withoutRequestsAndPromises',
-        'withPromises',
-        'withRequestsAndEnoughPromises',
-        'withPromiseOfOtherType',
-        'withPromisesOfMultipleTypes',
-    ]);
-
-const oldTime = currentTime - 100;
-const withoutOldTime: Set<keyof typeof addRequestsAndPromises> = new Set([
-    'withoutRequestsAndPromises',
-    'withRequests',
-    'withPromises',
-    'withRequestsAndEnoughPromises',
-    'withRequestsAndNotEnoughPromises',
-    'withPromiseOfOtherType',
-    'withPromisesOfMultipleTypes',
-]);
-
-const withOldTime: Set<keyof typeof addRequestsAndPromises> = new Set([
-    'withOldPromises',
-    'withOldAndNewPromises',
-]);
 
 const addRequestsAndPromises = {
     withoutRequestsAndPromises: (
@@ -333,11 +380,6 @@ const addRequestsAndPromises = {
     },
 };
 
-const vehicleSendEvents: Set<keyof typeof sendEvent> = new Set([
-    'vehiclesSendEventForAnswerKey',
-    'vehiclesSendEventForOtherKey',
-]);
-
 const sendEvent = {
     resourceRequiredEvent: (
         draftState: Mutable<ExerciseState>,
@@ -426,73 +468,30 @@ const sendEvent = {
     },
 };
 
-const newRequestInterval = 1000;
-const updateRequestInterval = (
-    draftState: Mutable<ExerciseState>,
-    simulatedRegion: Mutable<SimulatedRegion>,
-    behaviorState: Mutable<RequestBehaviorState>
-) => {
-    updateBehaviorsRequestInterval(
-        draftState,
-        simulatedRegion,
-        behaviorState,
-        newRequestInterval
-    );
-};
+// assertion helpers
+function assertSameState(
+    beforeBehaviorState: RequestBehaviorState,
+    afterBehaviorState: RequestBehaviorState
+) {
+    expect(afterBehaviorState.answerKey).toEqual(beforeBehaviorState.answerKey);
+}
 
-const updateRequestTarget = (
-    draftState: Mutable<ExerciseState>,
-    simulatedRegion: Mutable<SimulatedRegion>,
-    behaviorState: Mutable<RequestBehaviorState>
-) => {
-    const otherSimulatedRegion = cloneDeepMutable(
-        SimulatedRegion.create(
-            MapCoordinates.create(0, 0),
-            Size.create(10, 10),
-            'requestable region'
-        )
-    );
-    const transferPoint = TransferPoint.create(
-        SimulatedRegionPosition.create(otherSimulatedRegion.id),
-        {},
-        {},
-        '',
-        `[Simuliert] requestable region`
-    );
-    draftState.transferPoints[transferPoint.id] =
-        cloneDeepMutable(transferPoint);
-    draftState.simulatedRegions[otherSimulatedRegion.id] =
-        cloneDeepMutable(otherSimulatedRegion);
-    updateBehaviorsRequestTarget(
-        draftState,
-        simulatedRegion,
-        behaviorState,
-        SimulatedRegionRequestTargetConfiguration.create(
-            otherSimulatedRegion.id
-        )
-    );
-};
+function assertWaitingState(behaviorState: RequestBehaviorState) {
+    expect(isWaitingForAnswer(behaviorState)).toBe(true);
+}
+function assertNotWaitingState(behaviorState: RequestBehaviorState) {
+    expect(isWaitingForAnswer(behaviorState)).toBe(false);
+}
 
-const newInvalidationInterval = 1;
-
-const updateInvalidationInterval = (
-    draftState: Mutable<ExerciseState>,
-    simulatedRegion: Mutable<SimulatedRegion>,
-    behaviorState: Mutable<RequestBehaviorState>
-) => {
-    behaviorState.invalidatePromiseInterval = newInvalidationInterval;
-    // update its promised resources
-    getResourcesToRequest(draftState, simulatedRegion, behaviorState);
-};
-
+// tests
 describe('request behavior', () => {
-    describe.each(StrictObject.keys(addRequestsAndPromises))(
-        '%s',
-        (requestsAndPromises) => {
-            describe.each(StrictObject.keys(setBehaviorState))(
-                'in %s state',
-                (state) => {
-                    describe('on a resource required event', () => {
+    describe('on a resource required event', () => {
+        describe.each(StrictObject.keys(addRequestsAndPromises))(
+            '%s',
+            (requestsAndPromises) => {
+                describe.each(StrictObject.keys(setBehaviorState))(
+                    'in %s state',
+                    (state) => {
                         it('should note the request', () => {
                             const { afterBehaviorState } =
                                 setupStateAndInteract(
@@ -521,9 +520,19 @@ describe('request behavior', () => {
                                 afterBehaviorState
                             );
                         });
-                    });
+                    }
+                );
+            }
+        );
+    });
 
-                    describe('on a resource required event with a known key', () => {
+    describe('on a resource required event with a known key', () => {
+        describe.each(StrictObject.keys(addRequestsAndPromises))(
+            '%s',
+            (requestsAndPromises) => {
+                describe.each(StrictObject.keys(setBehaviorState))(
+                    'in %s state',
+                    (state) => {
                         it('should overwrite any existing requests', () => {
                             const { afterBehaviorState } =
                                 setupStateAndInteract(
@@ -538,13 +547,19 @@ describe('request behavior', () => {
                                 ).length
                             ).toBe(1);
                         });
-                    });
+                    }
+                );
+            }
+        );
+    });
 
-                    describe.each(
-                        StrictObject.keys(sendEvent).filter((type) =>
-                            vehicleSendEvents.has(type)
-                        )
-                    )('on a %s', (event) => {
+    describe.each(vehicleSendEvents)('on a %s', (event) => {
+        describe.each(StrictObject.keys(addRequestsAndPromises))(
+            '%s',
+            (requestsAndPromises) => {
+                describe.each(StrictObject.keys(setBehaviorState))(
+                    'in %s state',
+                    (state) => {
                         it('should note the promise', () => {
                             const { afterBehaviorState } =
                                 setupStateAndInteract(
@@ -563,161 +578,172 @@ describe('request behavior', () => {
                                 VehicleResource.create({ KTW: 1 })
                             );
                         });
+                    }
+                );
 
-                        if (
-                            state === 'waiting' &&
-                            event === 'vehiclesSendEventForAnswerKey'
-                        ) {
-                            it('should not continue waiting for an answer', () => {
-                                const { afterBehaviorState } =
-                                    setupStateAndInteract(
-                                        setBehaviorState[state],
-                                        addRequestsAndPromises[
-                                            requestsAndPromises
-                                        ],
-                                        sendEvent[event]
-                                    );
+                it('should not start waiting for an answer', () => {
+                    const { afterBehaviorState } = setupStateAndInteract(
+                        setBehaviorState.onTimer,
+                        addRequestsAndPromises[requestsAndPromises],
+                        sendEvent[event]
+                    );
 
-                                assertNotWaitingState(afterBehaviorState);
-                            });
-                        } else {
-                            it('should not change its state', () => {
-                                const {
-                                    beforeBehaviorState,
-                                    afterBehaviorState,
-                                } = setupStateAndInteract(
-                                    setBehaviorState[state],
-                                    addRequestsAndPromises[requestsAndPromises],
-                                    sendEvent[event]
-                                );
+                    assertNotWaitingState(afterBehaviorState);
+                });
+            }
+        );
+    });
 
-                                assertSameState(
-                                    beforeBehaviorState,
-                                    afterBehaviorState
-                                );
-                            });
-                        }
+    describe('on a vehiclesSendEventForAnswerKey', () => {
+        describe.each(StrictObject.keys(addRequestsAndPromises))(
+            '%s',
+            (requestsAndPromises) => {
+                describe('in waiting state', () => {
+                    it('should not continue waiting for an answer', () => {
+                        const { afterBehaviorState } = setupStateAndInteract(
+                            setBehaviorState.waiting,
+                            addRequestsAndPromises[requestsAndPromises],
+                            sendEvent.vehiclesSendEventForAnswerKey
+                        );
+
+                        assertNotWaitingState(afterBehaviorState);
                     });
+                });
+            }
+        );
+    });
 
-                    describe('on a ktw vehicle arrived event', () => {
-                        if (withoutKTWPromise.has(requestsAndPromises)) {
-                            it('should not change its noted promises', () => {
-                                const {
-                                    beforeBehaviorState,
-                                    afterBehaviorState,
-                                } = setupStateAndInteract(
-                                    setBehaviorState[state],
-                                    addRequestsAndPromises[requestsAndPromises],
-                                    sendEvent.ktwVehicleArrivedEvent
-                                );
+    describe('on a vehiclesSendEventForOtherKey', () => {
+        describe.each(StrictObject.keys(addRequestsAndPromises))(
+            '%s',
+            (requestsAndPromises) => {
+                describe('in waiting state', () => {
+                    it('should continue waiting for an answer', () => {
+                        const { afterBehaviorState } = setupStateAndInteract(
+                            setBehaviorState.waiting,
+                            addRequestsAndPromises[requestsAndPromises],
+                            sendEvent.vehiclesSendEventForOtherKey
+                        );
 
-                                expect(
-                                    afterBehaviorState.promisedResources
-                                ).toEqual(
-                                    beforeBehaviorState.promisedResources
-                                );
-                            });
-                        }
-                        if (withOneKTWPromised.has(requestsAndPromises)) {
-                            it('should remove the promise', () => {
-                                const { afterBehaviorState } =
-                                    setupStateAndInteract(
-                                        setBehaviorState[state],
-                                        addRequestsAndPromises[
-                                            requestsAndPromises
-                                        ],
-                                        sendEvent.ktwVehicleArrivedEvent
-                                    );
-
-                                expect(
-                                    afterBehaviorState.promisedResources.find(
-                                        (promise) =>
-                                            'KTW' in
-                                            promise.resource.vehicleCounts
-                                    )
-                                ).toBeUndefined();
-                            });
-                        }
+                        assertWaitingState(afterBehaviorState);
                     });
+                });
+            }
+        );
+    });
 
-                    describe('on a send request event', () => {
-                        // other states should not be possible
-                        if (state === 'onTimer') {
-                            if (withOneKTWRequired.has(requestsAndPromises)) {
-                                it('should move to the waiting state', () => {
-                                    const { afterBehaviorState } =
-                                        setupStateAndInteract(
-                                            setBehaviorState[state],
-                                            addRequestsAndPromises[
-                                                requestsAndPromises
-                                            ],
-                                            sendEvent.sendRequestEvent
-                                        );
+    describe('on a ktw vehicle arrived event', () => {
+        describe.each(withoutKTWPromise)('%s', (requestsAndPromises) => {
+            describe.each(StrictObject.keys(setBehaviorState))(
+                'in %s state',
+                (state) => {
+                    it('should not change its noted promises', () => {
+                        const { beforeBehaviorState, afterBehaviorState } =
+                            setupStateAndInteract(
+                                setBehaviorState[state],
+                                addRequestsAndPromises[requestsAndPromises],
+                                sendEvent.ktwVehicleArrivedEvent
+                            );
 
-                                    assertWaitingState(afterBehaviorState);
-                                });
-
-                                it('should create a request via an activity', () => {
-                                    const {
-                                        afterSimulatedRegion,
-                                        afterBehaviorState,
-                                    } = setupStateAndInteract(
-                                        setBehaviorState[state],
-                                        addRequestsAndPromises[
-                                            requestsAndPromises
-                                        ],
-                                        sendEvent.sendRequestEvent
-                                    );
-
-                                    const activities =
-                                        afterSimulatedRegion.activities;
-                                    expect(
-                                        StrictObject.keys(activities).length
-                                    ).toBeGreaterThanOrEqual(1);
-
-                                    const activity = StrictObject.values(
-                                        activities
-                                    ).find(
-                                        (a) =>
-                                            a.type === 'createRequestActivity'
-                                    );
-                                    expect(activity).toBeDefined();
-
-                                    const typedActivity =
-                                        activity as CreateRequestActivityState;
-                                    expect(
-                                        typedActivity.targetConfiguration
-                                    ).toEqual(afterBehaviorState.requestTarget);
-                                    expect(
-                                        typedActivity.requestedResource
-                                    ).toEqual(
-                                        VehicleResource.create({ KTW: 1 })
-                                    );
-                                    expect(typedActivity.key).toEqual(
-                                        afterBehaviorState.answerKey
-                                    );
-                                });
-                            }
-                            if (
-                                withoutVehiclesRequired.has(requestsAndPromises)
-                            ) {
-                                it('should stay in the onTimer state', () => {
-                                    const { afterBehaviorState } =
-                                        setupStateAndInteract(
-                                            setBehaviorState[state],
-                                            addRequestsAndPromises[
-                                                requestsAndPromises
-                                            ],
-                                            sendEvent.sendRequestEvent
-                                        );
-
-                                    assertNotWaitingState(afterBehaviorState);
-                                });
-                            }
-                        }
+                        expect(afterBehaviorState.promisedResources).toEqual(
+                            beforeBehaviorState.promisedResources
+                        );
                     });
+                }
+            );
+        });
 
-                    describe('when the request interval is updated', () => {
+        describe.each(withOneKTWPromised)('%s', (requestsAndPromises) => {
+            describe.each(StrictObject.keys(setBehaviorState))(
+                'in %s state',
+                (state) => {
+                    it('should remove the promise', () => {
+                        const { afterBehaviorState } = setupStateAndInteract(
+                            setBehaviorState[state],
+                            addRequestsAndPromises[requestsAndPromises],
+                            sendEvent.ktwVehicleArrivedEvent
+                        );
+
+                        expect(
+                            afterBehaviorState.promisedResources.find(
+                                (promise) =>
+                                    'KTW' in promise.resource.vehicleCounts
+                            )
+                        ).toBeUndefined();
+                    });
+                }
+            );
+        });
+    });
+
+    describe('on a send request event', () => {
+        describe.each(withOneKTWRequired)('%s', (requestsAndPromises) => {
+            describe('in onTimer State', () => {
+                it('should move to the waiting state', () => {
+                    const { afterBehaviorState } = setupStateAndInteract(
+                        setBehaviorState.onTimer,
+                        addRequestsAndPromises[requestsAndPromises],
+                        sendEvent.sendRequestEvent
+                    );
+
+                    assertWaitingState(afterBehaviorState);
+                });
+
+                it('should create a request via an activity', () => {
+                    const { afterSimulatedRegion, afterBehaviorState } =
+                        setupStateAndInteract(
+                            setBehaviorState.onTimer,
+                            addRequestsAndPromises[requestsAndPromises],
+                            sendEvent.sendRequestEvent
+                        );
+
+                    const activities = afterSimulatedRegion.activities;
+                    expect(
+                        StrictObject.keys(activities).length
+                    ).toBeGreaterThanOrEqual(1);
+
+                    const activity = StrictObject.values(activities).find(
+                        (a) => a.type === 'createRequestActivity'
+                    );
+                    expect(activity).toBeDefined();
+
+                    const typedActivity =
+                        activity as CreateRequestActivityState;
+                    expect(typedActivity.targetConfiguration).toEqual(
+                        afterBehaviorState.requestTarget
+                    );
+                    expect(typedActivity.requestedResource).toEqual(
+                        VehicleResource.create({ KTW: 1 })
+                    );
+                    expect(typedActivity.key).toEqual(
+                        afterBehaviorState.answerKey
+                    );
+                });
+            });
+        });
+
+        describe.each(withoutVehiclesRequired)('%s', (requestsAndPromises) => {
+            describe('in onTimer state', () => {
+                it('should stay in the onTimer state', () => {
+                    const { afterBehaviorState } = setupStateAndInteract(
+                        setBehaviorState.onTimer,
+                        addRequestsAndPromises[requestsAndPromises],
+                        sendEvent.sendRequestEvent
+                    );
+
+                    assertNotWaitingState(afterBehaviorState);
+                });
+            });
+        });
+    });
+
+    describe('when the request interval is updated', () => {
+        describe.each(StrictObject.keys(addRequestsAndPromises))(
+            '%s',
+            (requestsAndPromises) => {
+                describe.each(StrictObject.keys(setBehaviorState))(
+                    'in %s state',
+                    (state) => {
                         it('should update the request interval', () => {
                             const { afterBehaviorState } =
                                 setupStateAndInteract(
@@ -750,9 +776,19 @@ describe('request behavior', () => {
                                 afterRecurringEventActivity.recurrenceIntervalTime
                             ).toBe(newRequestInterval);
                         });
-                    });
+                    }
+                );
+            }
+        );
+    });
 
-                    describe('when the request target is updated', () => {
+    describe('when the request target is updated', () => {
+        describe.each(StrictObject.keys(addRequestsAndPromises))(
+            '%s',
+            (requestsAndPromises) => {
+                describe.each(StrictObject.keys(setBehaviorState))(
+                    'in %s state',
+                    (state) => {
                         it('should update the request target', () => {
                             const { afterBehaviorState } =
                                 setupStateAndInteract(
@@ -765,89 +801,93 @@ describe('request behavior', () => {
                                 afterBehaviorState.requestTarget.type
                             ).toEqual('simulatedRegionRequestTarget');
                         });
+                    }
+                );
 
-                        it('should not continue waiting for an answer', () => {
-                            const { afterBehaviorState } =
-                                setupStateAndInteract(
-                                    setBehaviorState[state],
-                                    addRequestsAndPromises[requestsAndPromises],
-                                    updateRequestTarget
-                                );
+                describe('in waiting state', () => {
+                    it('should not continue waiting for an answer', () => {
+                        const { afterBehaviorState } = setupStateAndInteract(
+                            setBehaviorState.waiting,
+                            addRequestsAndPromises[requestsAndPromises],
+                            updateRequestTarget
+                        );
 
-                            assertNotWaitingState(afterBehaviorState);
-                        });
+                        assertNotWaitingState(afterBehaviorState);
                     });
+                });
+            }
+        );
+    });
 
-                    describe('when the invalidation interval for promises is updated', () => {
-                        if (withoutOldTime.has(requestsAndPromises)) {
-                            it('should not invalidate any promises', () => {
-                                const {
-                                    beforeBehaviorState,
-                                    afterBehaviorState,
-                                } = setupStateAndInteract(
-                                    setBehaviorState[state],
-                                    addRequestsAndPromises[requestsAndPromises],
-                                    updateInvalidationInterval
-                                );
+    describe('when the invalidation interval for promises is updated', () => {
+        describe.each(withoutOldTime)('%s', (requestsAndPromises) => {
+            describe.each(StrictObject.keys(setBehaviorState))(
+                'in %s state',
+                (state) => {
+                    it('should not invalidate any promises', () => {
+                        const { beforeBehaviorState, afterBehaviorState } =
+                            setupStateAndInteract(
+                                setBehaviorState[state],
+                                addRequestsAndPromises[requestsAndPromises],
+                                updateInvalidationInterval
+                            );
 
-                                expect(
-                                    afterBehaviorState.promisedResources
-                                ).toEqual(
-                                    beforeBehaviorState.promisedResources
-                                );
-                            });
-                        }
-                        if (withOldTime.has(requestsAndPromises)) {
-                            it('should invalidate old promises', () => {
-                                const { afterState, afterBehaviorState } =
-                                    setupStateAndInteract(
-                                        setBehaviorState[state],
-                                        addRequestsAndPromises[
-                                            requestsAndPromises
-                                        ],
-                                        updateInvalidationInterval
-                                    );
-
-                                expect(
-                                    Object.keys(
-                                        afterBehaviorState.promisedResources.filter(
-                                            (promise) =>
-                                                promise.promisedTime +
-                                                    newInvalidationInterval <
-                                                afterState.currentTime
-                                        )
-                                    ).length
-                                ).toBe(0);
-                            });
-
-                            it('should keep current promises', () => {
-                                const {
-                                    beforeBehaviorState,
-                                    afterBehaviorState,
-                                } = setupStateAndInteract(
-                                    setBehaviorState[state],
-                                    addRequestsAndPromises[requestsAndPromises],
-                                    updateInvalidationInterval
-                                );
-
-                                beforeBehaviorState.promisedResources.forEach(
-                                    (beforePromise) => {
-                                        if (
-                                            beforePromise.promisedTime +
-                                                newInvalidationInterval >=
-                                            currentTime
-                                        ) {
-                                            expect(
-                                                afterBehaviorState.promisedResources
-                                            ).toContainEqual(beforePromise);
-                                        }
-                                    }
-                                );
-                            });
-                        }
+                        expect(afterBehaviorState.promisedResources).toEqual(
+                            beforeBehaviorState.promisedResources
+                        );
                     });
                 }
             );
-        }
-    );
+        });
+
+        describe.each(withOldTime)('%s', (requestsAndPromises) => {
+            describe.each(StrictObject.keys(setBehaviorState))(
+                'in %s state',
+                (state) => {
+                    it('should invalidate old promises', () => {
+                        const { afterState, afterBehaviorState } =
+                            setupStateAndInteract(
+                                setBehaviorState[state],
+                                addRequestsAndPromises[requestsAndPromises],
+                                updateInvalidationInterval
+                            );
+
+                        expect(
+                            Object.keys(
+                                afterBehaviorState.promisedResources.filter(
+                                    (promise) =>
+                                        promise.promisedTime +
+                                            newInvalidationInterval <
+                                        afterState.currentTime
+                                )
+                            ).length
+                        ).toBe(0);
+                    });
+
+                    it('should keep current promises', () => {
+                        const { beforeBehaviorState, afterBehaviorState } =
+                            setupStateAndInteract(
+                                setBehaviorState[state],
+                                addRequestsAndPromises[requestsAndPromises],
+                                updateInvalidationInterval
+                            );
+
+                        beforeBehaviorState.promisedResources.forEach(
+                            (beforePromise) => {
+                                if (
+                                    beforePromise.promisedTime +
+                                        newInvalidationInterval >=
+                                    currentTime
+                                ) {
+                                    expect(
+                                        afterBehaviorState.promisedResources
+                                    ).toContainEqual(beforePromise);
+                                }
+                            }
+                        );
+                    });
+                }
+            );
+        });
+    });
 });
