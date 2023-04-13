@@ -844,23 +844,11 @@ function calculateMissingPersonnel(
                             }
                         });
                 });
-                console.log(
-                    `Single patient ${patientStatus}, missing ${JSON.stringify(
-                        patientMissingPersonnel
-                    )}, treated by ${JSON.stringify(
-                        patientTreatments[patient.id]
-                    )}`
-                );
                 statusMissingPersonnel = addResourceDescription(
                     statusMissingPersonnel,
                     maxResourceDescription(patientMissingPersonnel, 0)
                 );
             });
-            console.log(
-                `All patients ${patientStatus}, missing ${JSON.stringify(
-                    statusMissingPersonnel
-                )}`
-            );
             return [patientStatus, statusMissingPersonnel] as const;
         })
     ) as { [K in TreatablePatientStatus]: ResourceDescription<PersonnelType> };
@@ -934,10 +922,6 @@ function calculateSubstitutedMissingPersonnel(
             return { from, to: realPersonnelType };
         });
 
-    console.log(personnelTreatments);
-    console.log(substitutions);
-    console.log(missing);
-
     reversedPersonnelTypePriorityList.forEach((personnelType) => {
         while (missing[personnelType] > 0) {
             const substitutionIndex = substitutions.findIndex(
@@ -945,11 +929,6 @@ function calculateSubstitutedMissingPersonnel(
             );
             if (substitutionIndex === -1) break;
             const substitution = substitutions.splice(substitutionIndex, 1)[0]!;
-            console.log(
-                `Substituting ${substitution.to} by ${JSON.stringify(
-                    substitution.from
-                )}`
-            );
             missing[substitution!.to] -= 1;
 
             missing = addResourceDescription(missing, substitution.from);

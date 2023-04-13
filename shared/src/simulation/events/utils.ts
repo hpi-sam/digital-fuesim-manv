@@ -7,7 +7,5 @@ export function sendSimulationEvent(
     simulatedRegion: Mutable<SimulatedRegion>,
     event: ExerciseSimulationEvent
 ) {
-    if (event.type === 'resourceRequiredEvent')
-        console.log(event.requiredResource);
     simulatedRegion.inEvents.push(cloneDeepMutable(event));
 }
