@@ -3,7 +3,7 @@ import {
     TreatmentProgress,
     treatmentProgressAllowedValues,
 } from '../../simulation/utils/treatment';
-import { UUID } from '../../utils';
+import { UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
 import { getCreate } from '../utils';
@@ -11,13 +11,13 @@ import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 
 export class TreatmentStatusRadiogram implements Radiogram {
-    @IsUUID()
+    @IsUUID(4, uuidValidationOptions)
     readonly id: UUID;
 
     @IsValue('treatmentStatusRadiogram')
     readonly type = 'treatmentStatusRadiogram';
 
-    @IsUUID()
+    @IsUUID(4, uuidValidationOptions)
     readonly simulatedRegionId: UUID;
 
     /**

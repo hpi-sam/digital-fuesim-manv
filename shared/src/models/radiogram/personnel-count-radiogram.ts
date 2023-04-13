@@ -1,5 +1,5 @@
 import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
-import { UUID } from '../../utils';
+import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsPersonnelCount } from '../../utils/validators/is-personnel-count';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
@@ -11,13 +11,13 @@ import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 export type PersonnelCount = { [key in PersonnelType]: number };
 
 export class PersonnelCountRadiogram implements Radiogram {
-    @IsUUID()
+    @IsUUID(4, uuidValidationOptions)
     readonly id: UUID;
 
     @IsValue('personnelCountRadiogram')
     readonly type = 'personnelCountRadiogram';
 
-    @IsUUID()
+    @IsUUID(4, uuidValidationOptions)
     readonly simulatedRegionId: UUID;
 
     /**

@@ -1,5 +1,5 @@
 import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
-import { UUID } from '../../utils';
+import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
 import { getCreate } from '../utils';
@@ -7,13 +7,13 @@ import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 
 export class MissingTransferConnectionRadiogram implements Radiogram {
-    @IsUUID()
+    @IsUUID(4, uuidValidationOptions)
     readonly id: UUID;
 
     @IsValue('missingTransferConnectionRadiogram')
     readonly type = 'missingTransferConnectionRadiogram';
 
-    @IsUUID()
+    @IsUUID(4, uuidValidationOptions)
     readonly simulatedRegionId: UUID;
 
     /**
@@ -27,7 +27,7 @@ export class MissingTransferConnectionRadiogram implements Radiogram {
     @IsBoolean()
     readonly informationAvailable: boolean = true;
 
-    @IsUUID()
+    @IsUUID(4, uuidValidationOptions)
     readonly targetTransferPointId: UUID;
 
     /**
