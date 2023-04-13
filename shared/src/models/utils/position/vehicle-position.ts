@@ -1,5 +1,5 @@
 import { IsUUID } from 'class-validator';
-import { UUID } from '../../../utils';
+import { UUID, uuidValidationOptions } from '../../../utils';
 import { IsValue } from '../../../utils/validators';
 import { getCreate } from '../get-create';
 import {
@@ -24,7 +24,7 @@ export class VehiclePosition {
     /**
      * @deprecated Use {@link currentVehicleIdOf } instead
      */
-    @IsUUID()
+    @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId: UUID;
 
     /**
