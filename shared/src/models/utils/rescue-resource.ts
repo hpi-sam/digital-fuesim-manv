@@ -1,12 +1,10 @@
 import type { Type } from 'class-transformer';
 import { StrictObject } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import {
-    IsResourceDescription,
-    ResourceDescription,
-} from '../../utils/validators/is-resource-description';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { getCreate } from './get-create';
 import type { PersonnelType } from './personnel-type';
+import { ResourceDescription } from './resource-description';
 
 class RescueResource {
     public readonly type!: string;

@@ -6,6 +6,11 @@ import {
     VehicleResource,
     getCreate,
 } from '../../models/utils';
+import {
+    addResourceDescription,
+    greaterEqualResourceDescription,
+    ResourceDescription,
+} from '../../models/utils/resource-description';
 import type { ExerciseState } from '../../state';
 import {
     cloneDeepMutable,
@@ -15,12 +20,7 @@ import {
     uuidValidationOptions,
 } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import {
-    addResourceDescription,
-    greaterEqualResourceDescription,
-    IsResourceDescription,
-    ResourceDescription,
-} from '../../utils/validators/is-resource-description';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { ResourceRequiredEvent } from '../events';
 import { sendSimulationEvent } from '../events/utils';
 import { nextUUID } from '../utils/randomness';
