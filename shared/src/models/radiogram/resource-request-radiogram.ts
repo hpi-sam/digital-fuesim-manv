@@ -3,7 +3,7 @@ import { IsBoolean, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
-import { getCreate } from '../utils';
+import { getCreate } from '../utils/get-create';
 import { VehicleResource } from '../utils/vehicle-resource';
 import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
