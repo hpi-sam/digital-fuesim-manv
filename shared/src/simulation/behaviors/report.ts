@@ -1,7 +1,13 @@
 import { isUUID, IsUUID } from 'class-validator';
 import { RadiogramUnpublishedStatus } from '../../models/radiogram/status/radiogram-unpublished-status';
 import { getCreate } from '../../models/utils';
-import { cloneDeepMutable, StrictObject, UUID, uuid } from '../../utils';
+import {
+    cloneDeepMutable,
+    StrictObject,
+    UUID,
+    uuid,
+    uuidValidationOptions,
+} from '../../utils';
 import { IsLiteralUnionMap, IsValue } from '../../utils/validators';
 import { GenerateReportActivityState } from '../activities/generate-report';
 import { CollectInformationEvent } from '../events/collect';
@@ -20,7 +26,7 @@ export class ReportBehaviorState implements SimulationBehaviorState {
     @IsValue('reportBehavior')
     readonly type = 'reportBehavior';
 
-    @IsUUID()
+    @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
 
     @IsLiteralUnionMap(reportableInformationAllowedValues, ((value) =>
