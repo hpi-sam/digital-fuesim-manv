@@ -1,9 +1,19 @@
-import { IsNumber, IsOptional, IsUUID, Min } from 'class-validator';
+import {
+    IsInt,
+    IsNumber,
+    IsOptional,
+    IsUUID,
+    Min,
+    ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 import type {
     TreatPatientsBehaviorState,
     UnloadArrivingVehiclesBehaviorState,
 } from '../../simulation';
 import {
+    updateBehaviorsRequestTarget,
+    updateBehaviorsRequestInterval,
     ReportableInformation,
     reportableInformationAllowedValues,
     RecurringEventActivityState,
@@ -16,6 +26,10 @@ import { UUID, uuidValidationOptions, cloneDeepMutable } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
+import {
+    requestTargetTypeOptions,
+    ExerciseRequestTargetConfiguration,
+} from '../../models';
 import { getActivityById, getBehaviorById, getElement } from './utils';
 
 export class UpdateTreatPatientsIntervalsAction implements Action {
@@ -132,6 +146,52 @@ export class RemoveRecurringReportsAction implements Action {
 
     @IsLiteralUnion(reportableInformationAllowedValues)
     public readonly informationType!: ReportableInformation;
+}
+
+export class UpdateRequestIntervalAction implements Action {
+    @IsValue('[RequestBehavior] Update RequestInterval')
+    public readonly type = '[RequestBehavior] Update RequestInterval';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly requestInterval!: number;
+}
+
+export class UpdateRequestTargetAction implements Action {
+    @IsValue('[RequestBehavior] Update RequestTarget')
+    public readonly type = '[RequestBehavior] Update RequestTarget';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @Type(...requestTargetTypeOptions)
+    @ValidateNested()
+    public readonly requestTarget!: ExerciseRequestTargetConfiguration;
+}
+
+export class UpdatePromiseInvalidationIntervalAction implements Action {
+    @IsValue('[RequestBehavior] Update Promise invalidation interval')
+    public readonly type =
+        '[RequestBehavior] Update Promise invalidation interval';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly promiseInvalidationInterval!: number;
 }
 
 export namespace SimulationActionReducers {
@@ -342,6 +402,84 @@ export namespace SimulationActionReducers {
                 delete reportBehaviorState.activityIds[informationType];
                 delete simulatedRegion.activities[activityId];
 
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateRequestInterval: ActionReducer<UpdateRequestIntervalAction> =
+        {
+            action: UpdateRequestIntervalAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, requestInterval }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'requestBehavior'
+                );
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                updateBehaviorsRequestInterval(
+                    draftState,
+                    simulatedRegion,
+                    behaviorState,
+                    requestInterval
+                );
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateRequestTarget: ActionReducer<UpdateRequestTargetAction> =
+        {
+            action: UpdateRequestTargetAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, requestTarget }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'requestBehavior'
+                );
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                updateBehaviorsRequestTarget(
+                    draftState,
+                    simulatedRegion,
+                    behaviorState,
+                    requestTarget
+                );
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updatePromiseInvalidationInterval: ActionReducer<UpdatePromiseInvalidationIntervalAction> =
+        {
+            action: UpdatePromiseInvalidationIntervalAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, promiseInvalidationInterval }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'requestBehavior'
+                );
+                behaviorState.invalidatePromiseInterval =
+                    promiseInvalidationInterval;
                 return draftState;
             },
             rights: 'trainer',

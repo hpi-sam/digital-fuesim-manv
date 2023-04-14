@@ -2,7 +2,7 @@
 import { IsInt, Min, ValidateIf } from 'class-validator';
 import { sha256 } from '@noble/hashes/sha256';
 import { v4 } from 'uuid';
-import { getCreate } from '../../models/utils';
+import { getCreate } from '../../models/utils/get-create';
 import type { ExerciseState } from '../../state';
 import type { Mutable, UUID } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
