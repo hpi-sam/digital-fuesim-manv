@@ -21,7 +21,7 @@ export function createCombine(fn: (a: number, b: number) => number) {
         b: ResourceDescription<K>
     ) =>
         Object.fromEntries(
-            StrictObject.keys(a).map((k) => [k, fn(a[k], b[k])])
+            StrictObject.keys(a).map((key) => [key, fn(a[key], b[key])])
         ) as ResourceDescription<K>;
 }
 
