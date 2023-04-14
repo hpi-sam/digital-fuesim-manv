@@ -25,11 +25,11 @@ export function createCombine(fn: (a: number, b: number) => number) {
         ) as ResourceDescription<K>;
 }
 
-export function createCompare(fn: (a: number, b: number) => boolean) {
+export function createCompare(comparator: (a: number, b: number) => boolean) {
     return <K extends string>(
         a: ReadonlyResourceDescription<K>,
         b: ReadonlyResourceDescription<K>
-    ) => StrictObject.keys(a).every((k) => fn(a[k], b[k]));
+    ) => StrictObject.keys(a).every((key) => comparator(a[key], b[key]));
 }
 
 export function createMap(fn: (a: number, ...args: any) => number) {
