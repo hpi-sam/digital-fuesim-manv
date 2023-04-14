@@ -111,8 +111,8 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
             }
 
             let allowTerminate = true;
-
-            switch (activityState.treatmentProgress) {
+            const progress = activityState.treatmentProgress;
+            switch (progress) {
                 case 'noTreatment': {
                     // Since we've reached this line, there is a leader and other personnel so treatment can start
                     sendSimulationEvent(
@@ -132,37 +132,44 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                     allowTerminate = finished;
                     break;
                 }
-                case 'counted': {
-                    const finished = triage(
-                        draftState,
-                        patients,
-                        personnel,
-                        materials
-                    );
-                    if (finished) {
-                        sendSimulationEvent(
-                            simulatedRegion,
-                            TreatmentProgressChangedEvent.create('triaged')
-                        );
-                    }
-                    break;
-                }
+                case 'counted':
                 case 'triaged':
                 case 'secured': {
+                    const shouldTriage = !allPatientsTriaged(patients);
+                    if (shouldTriage) {
+                        if (progress === 'counted') {
+                            triage(draftState, patients, personnel, materials);
+                        } else {
+                            sendSimulationEvent(
+                                simulatedRegion,
+                                TreatmentProgressChangedEvent.create('counted')
+                            );
+                            allowTerminate = true;
+                        }
+                    }
+
                     const secured = treat(
                         draftState,
                         patients,
                         personnel,
                         materials
                     );
-                    if (
-                        activityState.treatmentProgress === 'triaged' &&
-                        secured
-                    ) {
+
+                    if (secured && progress !== 'secured') {
                         sendSimulationEvent(
                             simulatedRegion,
                             TreatmentProgressChangedEvent.create('secured')
                         );
+                        allowTerminate = true;
+                        break;
+                    }
+                    if (!secured && progress !== 'triaged') {
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            TreatmentProgressChangedEvent.create('triaged')
+                        );
+                        allowTerminate = true;
+                        break;
                     }
                     break;
                 }
@@ -379,6 +386,15 @@ function sumOfTreatments(cateringPersonnel: CateringPersonnel): number {
         cateringPersonnel.catersFor.red +
         cateringPersonnel.catersFor.yellow +
         cateringPersonnel.catersFor.green
+    );
+}
+
+/**
+ * Determines if {@link patients} contains no patient that is not triaged.
+ */
+function allPatientsTriaged(patients: Patient[]): boolean {
+    return patients.every((patient) =>
+        Patient.pretriageStatusIsLocked(patient)
     );
 }
 
