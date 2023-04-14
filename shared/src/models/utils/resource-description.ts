@@ -38,6 +38,6 @@ export function createMap(fn: (a: number, ...args: any) => number) {
         ...args: any
     ) =>
         Object.fromEntries(
-            StrictObject.entries(a).map(([k, v]) => [k, fn(v, ...args)])
+            StrictObject.entries(a).map(([key, value]) => [key, fn(value, ...args)])
         ) as ResourceDescription<K>;
 }
