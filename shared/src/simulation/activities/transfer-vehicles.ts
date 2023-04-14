@@ -14,7 +14,7 @@ import {
     TransferStartPoint,
 } from '../../models/utils';
 import { amountOfResourcesInVehicle } from '../../models/utils/amount-of-resources-in-vehicle';
-import { VehicleResource } from '../../models/utils/vehicle-resource';
+import { VehicleResource } from '../../models/utils/rescue-resource';
 import { TransferActionReducers } from '../../store/action-reducers/transfer';
 import {
     getElement,
@@ -201,7 +201,8 @@ export const transferVehiclesActivity: SimulationActivity<TransferVehiclesActivi
                     ),
                     VehiclesSentEvent.create(
                         nextUUID(draftState),
-                        VehicleResource.create(sentVehicles)
+                        VehicleResource.create(sentVehicles),
+                        activityState.key
                     )
                 );
             }

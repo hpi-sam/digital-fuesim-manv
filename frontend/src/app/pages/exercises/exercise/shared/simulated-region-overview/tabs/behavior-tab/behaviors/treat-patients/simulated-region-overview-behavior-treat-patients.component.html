@@ -1,11 +1,11 @@
-<div class="table">
+<div class="container">
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         (click)="informationCollapsed = !informationCollapsed"
         style="cursor: pointer"
     >
         <div class="col-sm">
-            <h4 class="ps-0 pe-0">
+            <h4 class="ps-0 pe-0 text-nowrap">
                 <i
                     *ngIf="informationCollapsed; else informationExpanded"
                     class="bi bi-caret-right-fill"
@@ -24,14 +24,14 @@
         </div>
     </div>
     <div
-        class="row"
+        class="row m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="informationCollapsed"
     >
         <h5 class="mt-2">Allgemein</h5>
     </div>
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="informationCollapsed"
     >
@@ -46,7 +46,7 @@
     </div>
 
     <div
-        class="row"
+        class="row m-3"
         *ngIf="((patientIds$ | async) ?? []).length > 0"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="informationCollapsed"
@@ -58,7 +58,7 @@
     </div>
 
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         *ngIf="((patientIds$ | async) ?? []).length > 0"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="informationCollapsed"
@@ -78,7 +78,7 @@
     </div>
     <div
         *ngFor="let patientId of patientIds$ | async"
-        class="row"
+        class="row m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="informationCollapsed"
     >
@@ -96,7 +96,7 @@
     </div>
 
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         (click)="settingsCollapsed = !settingsCollapsed"
         style="cursor: pointer"
     >
@@ -113,7 +113,7 @@
         </div>
     </div>
     <div
-        class="row"
+        class="row m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >
@@ -123,7 +123,7 @@
         </h5>
     </div>
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >
@@ -161,7 +161,7 @@
         </div>
     </div>
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >
@@ -199,7 +199,7 @@
         </div>
     </div>
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >
@@ -237,7 +237,7 @@
         </div>
     </div>
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >
@@ -274,7 +274,7 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row m-3">
         <h5
             class="mt-2"
             #collapse="ngbCollapse"
@@ -284,7 +284,7 @@
         </h5>
     </div>
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >

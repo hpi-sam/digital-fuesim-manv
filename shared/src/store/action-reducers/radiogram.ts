@@ -4,7 +4,7 @@ import {
     acceptRadiogram,
     markRadiogramDone,
 } from '../../models/radiogram/radiogram-helpers-mutable';
-import { VehicleResource } from '../../models/utils/vehicle-resource';
+import { VehicleResource } from '../../models/utils/rescue-resource';
 import { VehiclesSentEvent } from '../../simulation';
 import { sendSimulationEvent } from '../../simulation/events/utils';
 import { nextUUID } from '../../simulation/utils/randomness';
@@ -66,7 +66,27 @@ export namespace RadiogramActionReducers {
     export const markDoneReducer: ActionReducer<MarkDoneRadiogramAction> = {
         action: MarkDoneRadiogramAction,
         reducer: (draftState, { radiogramId }) => {
+            const radiogram = draftState.radiograms[radiogramId];
+            if (radiogram?.type === 'resourceRequestRadiogram') {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    radiogram.simulatedRegionId
+                );
+                sendSimulationEvent(
+                    simulatedRegion,
+                    cloneDeepMutable(
+                        VehiclesSentEvent.create(
+                            nextUUID(draftState),
+                            VehicleResource.create({}),
+                            radiogram.key
+                        )
+                    )
+                );
+            }
+
             markRadiogramDone(draftState, radiogramId);
+
             return draftState;
         },
         rights: 'participant',
@@ -92,7 +112,8 @@ export namespace RadiogramActionReducers {
                     cloneDeepMutable(
                         VehiclesSentEvent.create(
                             nextUUID(draftState),
-                            radiogram.requiredResource
+                            radiogram.requiredResource,
+                            radiogram.key
                         )
                     )
                 );
@@ -124,7 +145,8 @@ export namespace RadiogramActionReducers {
                     cloneDeepMutable(
                         VehiclesSentEvent.create(
                             nextUUID(draftState),
-                            VehicleResource.create({})
+                            VehicleResource.create({}),
+                            radiogram.key
                         )
                     )
                 );

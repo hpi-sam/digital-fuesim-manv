@@ -1401,7 +1401,7 @@ describe('reassign treatment', () => {
                 ],
             },
         ] as const)(
-            'does not send an event if not all patients are secured (case %#)',
+            'does not send a treatment progress changed event if not all patients are secured (case %#)',
             ({ patients, personnel }) => {
                 const leaderId = uuid();
 
@@ -1436,7 +1436,12 @@ describe('reassign treatment', () => {
                     );
 
                 expect(terminate).toBeCalled();
-                expect(simulatedRegion?.inEvents).toBeEmpty();
+                expect(
+                    simulatedRegion?.inEvents.filter(
+                        (element) =>
+                            element.type === 'treatmentProgressChangedEvent'
+                    )
+                ).toBeEmpty();
             }
         );
 

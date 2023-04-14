@@ -1,10 +1,10 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
-import { getCreate } from '../utils';
-import { VehicleResource } from '../utils/vehicle-resource';
+import { getCreate } from '../utils/get-create';
+import { VehicleResource } from '../utils/rescue-resource';
 import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 
@@ -33,6 +33,9 @@ export class ResourceRequestRadiogram implements Radiogram {
     @ValidateNested()
     readonly requiredResource: VehicleResource;
 
+    @IsString()
+    readonly key: string;
+
     /**
      * @deprecated Use {@link create} instead
      */
@@ -40,12 +43,14 @@ export class ResourceRequestRadiogram implements Radiogram {
         id: UUID,
         simulatedRegionId: UUID,
         status: ExerciseRadiogramStatus,
-        requiredResource: VehicleResource
+        requiredResource: VehicleResource,
+        key: string
     ) {
         this.id = id;
         this.simulatedRegionId = simulatedRegionId;
         this.status = status;
         this.requiredResource = requiredResource;
+        this.key = key;
     }
 
     static readonly create = getCreate(this);
