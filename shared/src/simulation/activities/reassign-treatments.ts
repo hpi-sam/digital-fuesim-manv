@@ -366,7 +366,7 @@ function count(
  * @param patients A list of the patients to operate on
  * @param personnel A list of the personnel to operate on
  * @param materials A list of the patients to operate on
- * @returns Whether all patients are triaged
+ * @returns Whether all patients are triaged and estimated numbers of personnel that is missing to secure treatment
  */
 function triage(
     draftState: Mutable<ExerciseState>,
