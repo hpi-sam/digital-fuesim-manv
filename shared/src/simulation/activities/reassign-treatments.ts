@@ -812,7 +812,7 @@ function requiredPersonnelForPatients(
             ]
         )
     );
-    return addResourceDescription(
+    const result = addResourceDescription(
         ceilResourceDescription(
             addResourceDescription(
                 requiredByType['red']!,
@@ -822,6 +822,13 @@ function requiredPersonnelForPatients(
         // Green should not be mixed. Therefore we ceil them before merging.
         ceilResourceDescription(requiredByType['green']!)
     );
+    result.notarzt = Math.ceil(
+        Math.max(
+            requiredByType['red']!.notarzt,
+            requiredByType['yellow']!.notarzt
+        )
+    );
+    return result;
 }
 
 function calculateMissingPersonnel(
