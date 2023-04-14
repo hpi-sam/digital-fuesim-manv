@@ -22,7 +22,12 @@ import { StartCollectingInformationEvent } from '../../simulation/events/start-c
 import { sendSimulationEvent } from '../../simulation/events/utils';
 import { nextUUID } from '../../simulation/utils/randomness';
 import type { Mutable } from '../../utils';
-import { UUID, uuidValidationOptions, cloneDeepMutable } from '../../utils';
+import {
+    UUID,
+    uuidValidationOptions,
+    cloneDeepMutable,
+    uuidArrayValidationOptions,
+} from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
@@ -67,6 +72,23 @@ export class UpdateTreatPatientsIntervalsAction implements Action {
     @IsNumber()
     @Min(0)
     public readonly countingTimePerPatient?: number;
+}
+
+export class ProvidePersonnelBehaviorUpdateVehiclePrioritiesAction
+    implements Action
+{
+    @IsValue('[ProvidePersonnelBehavior] Update VehiclePriorities' as const)
+    public readonly type =
+        '[ProvidePersonnelBehavior] Update VehiclePriorities';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidArrayValidationOptions)
+    public readonly priorities!: readonly UUID[];
 }
 
 export class UnloadArrivingVehiclesBehaviorUpdateUnloadDelayAction
@@ -480,6 +502,25 @@ export namespace SimulationActionReducers {
                 );
                 behaviorState.invalidatePromiseInterval =
                     promiseInvalidationInterval;
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateTreatmentVehiclePriorities: ActionReducer<ProvidePersonnelBehaviorUpdateVehiclePrioritiesAction> =
+        {
+            action: ProvidePersonnelBehaviorUpdateVehiclePrioritiesAction,
+            reducer(draftState, { simulatedRegionId, behaviorId, priorities }) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'providePersonnelBehavior'
+                );
+
+                behaviorState.vehicleTemplatePriorities =
+                    cloneDeepMutable(priorities);
+
                 return draftState;
             },
             rights: 'trainer',

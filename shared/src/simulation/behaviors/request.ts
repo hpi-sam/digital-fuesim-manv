@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IsStringMap } from '../../utils/validators/is-string-map';
-import { cloneDeepMutable, uuid, UUID } from '../../utils';
+import { cloneDeepMutable, StrictObject, uuid, UUID } from '../../utils';
 import type { Mutable } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { getActivityById, getElement } from '../../store/action-reducers/utils';
@@ -20,10 +20,9 @@ import { RecurringEventActivityState } from '../activities';
 import { SendRequestEvent } from '../events/send-request';
 import { CreateRequestActivityState } from '../activities/create-request';
 import {
+    isEmptyResource,
     VehicleResource,
-    aggregateResources,
-    subtractResources,
-} from '../../models/utils/vehicle-resource';
+} from '../../models/utils/rescue-resource';
 import {
     ExerciseRequestTargetConfiguration,
     requestTargetTypeOptions,
@@ -32,6 +31,11 @@ import { TraineesRequestTargetConfiguration } from '../../models/utils/request-t
 import { getCreate } from '../../models/utils/get-create';
 import type { SimulatedRegion } from '../../models';
 import { ResourcePromise } from '../utils/resource-promise';
+import type { ResourceDescription } from '../../models/utils/resource-description';
+import {
+    addPartialResourceDescriptions,
+    subtractPartialResourceDescriptions,
+} from '../../models/utils/resource-description';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -109,7 +113,10 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                 break;
             }
             case 'resourceRequiredEvent': {
-                if (event.requiringSimulatedRegionId === simulatedRegion.id) {
+                if (
+                    event.requiringSimulatedRegionId === simulatedRegion.id &&
+                    event.requiredResource.type === 'vehicleResource'
+                ) {
                     behaviorState.requestedResources[event.key] =
                         event.requiredResource;
                 }
@@ -136,21 +143,23 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                     'vehicle',
                     event.vehicleId
                 );
-                let arrivatedResource = cloneDeepMutable(
-                    VehicleResource.create({ [vehicle.vehicleType]: 1 })
-                );
+                let arrivedResourceDescripton: Partial<ResourceDescription> = {
+                    [vehicle.vehicleType]: 1,
+                };
                 behaviorState.promisedResources.forEach((promise) => {
-                    const remainingResources = subtractResources(
-                        arrivatedResource,
-                        promise.resource
-                    );
+                    const remainingResources =
+                        subtractPartialResourceDescriptions(
+                            arrivedResourceDescripton,
+                            promise.resource.vehicleCounts
+                        );
 
-                    promise.resource = subtractResources(
-                        promise.resource,
-                        arrivatedResource
-                    );
+                    promise.resource.vehicleCounts =
+                        subtractPartialResourceDescriptions(
+                            promise.resource.vehicleCounts,
+                            arrivedResourceDescripton
+                        ) as ResourceDescription;
 
-                    arrivatedResource = remainingResources;
+                    arrivedResourceDescripton = remainingResources;
                 });
                 behaviorState.promisedResources =
                     behaviorState.promisedResources.filter(
@@ -167,9 +176,10 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                         simulatedRegion,
                         behaviorState
                     );
-                    if (
-                        Object.keys(resourcesToRequest.vehicleCounts).length > 0
-                    ) {
+                    const resource = VehicleResource.create(
+                        resourcesToRequest as ResourceDescription
+                    );
+                    if (!isEmptyResource(resource)) {
                         // create a request to wait for an answer
                         behaviorState.answerKey = `${simulatedRegion.id}-request-${behaviorState.requestTargetVersion}`;
                         const activityId = nextUUID(draftState);
@@ -178,7 +188,7 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                             CreateRequestActivityState.create(
                                 activityId,
                                 behaviorState.requestTarget,
-                                resourcesToRequest,
+                                resource,
                                 behaviorState.answerKey
                             )
                         );
@@ -233,8 +243,10 @@ export function getResourcesToRequest(
     simulatedRegion: Mutable<SimulatedRegion>,
     behaviorState: Mutable<RequestBehaviorState>
 ) {
-    const requestedResources = aggregateResources(
-        Object.values(behaviorState.requestedResources)
+    const requestedResources = addPartialResourceDescriptions(
+        StrictObject.values(behaviorState.requestedResources).map(
+            (resource) => resource.vehicleCounts
+        )
     );
 
     // remove invalidated resources
@@ -248,8 +260,13 @@ export function getResourcesToRequest(
         firstValidIndex = behaviorState.promisedResources.length;
     behaviorState.promisedResources.splice(0, firstValidIndex);
 
-    const promisedResources = aggregateResources(
-        behaviorState.promisedResources.map((promise) => promise.resource)
+    const promisedResources = addPartialResourceDescriptions(
+        behaviorState.promisedResources.map(
+            (promise) => promise.resource.vehicleCounts
+        )
     );
-    return subtractResources(requestedResources, promisedResources);
+    return subtractPartialResourceDescriptions(
+        requestedResources,
+        promisedResources
+    );
 }
