@@ -7,7 +7,7 @@ import type { PersonnelType } from './personnel-type';
 import { ResourceDescription } from './resource-description';
 
 class RescueResource {
-    public readonly type!: string;
+    public readonly type!: `${string}Resource`;
 }
 
 export class VehicleResource {
