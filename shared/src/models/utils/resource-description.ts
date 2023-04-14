@@ -15,13 +15,13 @@ type ReadonlyResourceDescription<K extends string = string> = {
     readonly [key in K]: number;
 };
 
-export function createCombine(fn: (a: number, b: number) => number) {
+export function createCombine(comparator: (a: number, b: number) => number) {
     return <K extends string>(
         a: ResourceDescription<K>,
         b: ResourceDescription<K>
     ) =>
         Object.fromEntries(
-            StrictObject.keys(a).map((key) => [key, fn(a[key], b[key])])
+            StrictObject.keys(a).map((key) => [key, comparator(a[key], b[key])])
         ) as ResourceDescription<K>;
 }
 
@@ -38,6 +38,9 @@ export function createMap(fn: (a: number, ...args: any) => number) {
         ...args: any
     ) =>
         Object.fromEntries(
-            StrictObject.entries(a).map(([key, value]) => [key, fn(value, ...args)])
+            StrictObject.entries(a).map(([key, value]) => [
+                key,
+                fn(value, ...args),
+            ])
         ) as ResourceDescription<K>;
 }

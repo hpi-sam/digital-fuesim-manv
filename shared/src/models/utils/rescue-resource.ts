@@ -67,16 +67,16 @@ export const rescueResourceTypeOptions: Parameters<typeof Type> = [
 ];
 
 export function isEmptyResource(resource: ExerciseRescueResource) {
-    const resourceDescriptions = [];
+    let resourceDescription: ResourceDescription;
     switch (resource.type) {
         case 'personnelResource':
-            resourceDescriptions.push(resource.personnelCounts);
+            resourceDescription = resource.personnelCounts;
             break;
         case 'vehicleResource':
-            resourceDescriptions.push(resource.vehicleCounts);
+            resourceDescription = resource.vehicleCounts;
             break;
     }
-    return resourceDescriptions.every((desc) =>
-        StrictObject.values(desc).every((cnt) => cnt === 0)
+    return StrictObject.values(resourceDescription).every(
+        (count) => count === 0
     );
 }
