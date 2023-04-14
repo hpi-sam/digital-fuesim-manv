@@ -1,7 +1,7 @@
 import { IsUUID } from 'class-validator';
 import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
 import { getElementByPredicate } from '../../store/action-reducers/utils';
-import { UUID, uuid } from '../../utils';
+import { UUID, uuid, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { TransferVehiclesActivityState } from '../activities';
 import { addActivity } from '../activities/utils';
@@ -15,7 +15,7 @@ export class AnswerRequestsBehaviorState implements SimulationBehaviorState {
     @IsValue('answerRequestsBehavior')
     readonly type = 'answerRequestsBehavior';
 
-    @IsUUID()
+    @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
 
     static readonly create = getCreate(this);
