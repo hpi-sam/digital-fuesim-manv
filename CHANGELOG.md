@@ -16,6 +16,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   There is now a behavior to forward requests to other simulated regions or the trainees
 -   There is now a radiogram for missing transfer connections and vehicle requests
     -   Radiograms for vehicle requests can also be answered in the user interface, whether they have been accepted or not
+-   The time until the next treatment recalculation for the automatic patient treatment is shown
 
 ### Changed
 
