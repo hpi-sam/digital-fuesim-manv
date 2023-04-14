@@ -66,7 +66,6 @@ export class ProvidePersonnelFromVehiclesActivityState
     static readonly create = getCreate(this);
 }
 
-// Because this activity relies on a cancel condition, we cannot model it as a DelayEventActivity
 export const providePersonnelFromVehiclesActivity: SimulationActivity<ProvidePersonnelFromVehiclesActivityState> =
     {
         activityState: ProvidePersonnelFromVehiclesActivityState,
