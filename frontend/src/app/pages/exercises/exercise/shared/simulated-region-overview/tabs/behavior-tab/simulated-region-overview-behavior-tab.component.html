@@ -18,7 +18,7 @@
                         (click)="onBehaviorSelect(behavior)"
                         class="list-group-item list-group-item-action d-flex align-items-center flex-nowrap"
                     >
-                        {{ behavior.type | behaviorToGermanName }}
+                        {{ behavior.type | behaviorTypeToGermanName }}
                     </button>
                 </div>
             </div>
@@ -89,7 +89,7 @@
                         (click)="addBehavior($any(behaviorType))"
                     >
                         <span class="bi-plus me-1"></span>
-                        {{ $any(behaviorType) | behaviorToGermanName }}
+                        {{ $any(behaviorType) | behaviorTypeToGermanName }}
                     </button>
                 </div>
             </div>
