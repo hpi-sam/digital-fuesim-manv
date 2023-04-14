@@ -15,13 +15,13 @@ type ReadonlyResourceDescription<K extends string = string> = {
     readonly [key in K]: number;
 };
 
-export function createCombine(comparator: (a: number, b: number) => number) {
+export function createCombine(transform: (a: number, b: number) => number) {
     return <K extends string>(
         a: ResourceDescription<K>,
         b: ResourceDescription<K>
     ) =>
         Object.fromEntries(
-            StrictObject.keys(a).map((key) => [key, comparator(a[key], b[key])])
+            StrictObject.keys(a).map((key) => [key, transform(a[key], b[key])])
         ) as ResourceDescription<K>;
 }
 
@@ -43,4 +43,32 @@ export function createMap(fn: (a: number, ...args: any) => number) {
                 fn(value, ...args),
             ])
         ) as ResourceDescription<K>;
+}
+
+export function addPartialResourceDescriptions<K extends string>(
+    resourceDescriptions: Partial<ResourceDescription<K>>[]
+): Partial<ResourceDescription<K>> {
+    return resourceDescriptions.reduce<Partial<ResourceDescription<K>>>(
+        (total, current) => {
+            StrictObject.entries(current).forEach(([key, value]) => {
+                total[key] = (total[key] ?? 0) + (value ?? 0);
+            });
+            return total;
+        },
+        {}
+    );
+}
+
+export function subtractPartialResourceDescriptions<K extends string>(
+    minuend: Partial<ResourceDescription<K>>,
+    subtrahend: Partial<ResourceDescription<K>>
+): Partial<ResourceDescription<K>> {
+    const result = addPartialResourceDescriptions([
+        minuend,
+        scaleResourceDescription(subtrahend as ResourceDescription, -1),
+    ]);
+    StrictObject.entries(result)
+        .filter(([_, value]) => (value ?? 0) <= 0)
+        .forEach(([key]) => delete result[key]);
+    return result;
 }

@@ -8,7 +8,7 @@ import {
     requestTargetDictionary,
     requestTargetTypeOptions,
 } from '../../models/utils/request-target/exercise-request-target';
-import { VehicleResource } from '../../models/utils/vehicle-resource';
+import { VehicleResource } from '../../models/utils/rescue-resource';
 import { getCreate } from '../../models/utils/get-create';
 import type {
     SimulationActivity,
