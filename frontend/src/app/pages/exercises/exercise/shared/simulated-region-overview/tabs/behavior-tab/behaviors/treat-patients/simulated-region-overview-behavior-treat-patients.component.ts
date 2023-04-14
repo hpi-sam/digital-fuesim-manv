@@ -1,17 +1,22 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type { UUID } from 'digital-fuesim-manv-shared';
-import {
+import { UUID } from 'digital-fuesim-manv-shared';
+import type {
     TreatPatientsBehaviorState,
-    SimulatedRegion,
+    DelayEventActivityState,
+    ReassignTreatmentsActivityState,
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
+import { combineLatest, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
+    createSelectBehaviorState,
     createSelectElementsInSimulatedRegion,
+    createSelectSimulatedRegion,
     selectConfiguration,
+    selectCurrentTime,
     selectPatients,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { SelectPatientService } from '../../../../select-patient.service';
@@ -30,9 +35,12 @@ let globalLastInformationCollapsed = true;
 export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
     implements OnInit
 {
-    @Input() simulatedRegion!: SimulatedRegion;
-    @Input() treatPatientsBehaviorState!: TreatPatientsBehaviorState;
+    @Input() simulatedRegionId!: UUID;
+    @Input() treatPatientsBehaviorId!: UUID;
+
+    public treatPatientsBehaviorState$!: Observable<TreatPatientsBehaviorState>;
     public patientIds$!: Observable<UUID[]>;
+    public timeUntilNextRecalculation$!: Observable<number | null>;
     private _settingsCollapsed!: boolean;
     private _informationCollapsed!: boolean;
 
@@ -60,11 +68,19 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
     ngOnInit(): void {
         this.settingsCollapsed = globalLastSettingsCollapsed;
         this.informationCollapsed = globalLastInformationCollapsed;
+
+        this.treatPatientsBehaviorState$ = this.store.select(
+            createSelectBehaviorState(
+                this.simulatedRegionId,
+                this.treatPatientsBehaviorId
+            )
+        );
+
         this.patientIds$ = this.store.select(
             createSelector(
                 createSelectElementsInSimulatedRegion(
                     selectPatients,
-                    this.simulatedRegion.id
+                    this.simulatedRegionId
                 ),
                 selectConfiguration,
                 (patients, configuration) =>
@@ -79,6 +95,49 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
                         .map((patient) => patient.id)
             )
         );
+
+        const simulatedRegion$ = this.store.select(
+            createSelectSimulatedRegion(this.simulatedRegionId)
+        );
+
+        const currentTime$ = this.store.select(selectCurrentTime);
+
+        this.timeUntilNextRecalculation$ = combineLatest([
+            this.treatPatientsBehaviorState$,
+            simulatedRegion$,
+            currentTime$,
+            this.patientIds$,
+        ]).pipe(
+            map(([behaviorState, simulatedRegion, currentTime, patientIds]) => {
+                if (behaviorState.treatmentProgress === 'noTreatment')
+                    return null;
+
+                if (behaviorState.treatmentProgress === 'unknown') {
+                    if (!behaviorState.treatmentActivityId) return null;
+
+                    const reassignActivity = simulatedRegion.activities[
+                        behaviorState.treatmentActivityId
+                    ] as ReassignTreatmentsActivityState | undefined;
+                    if (!reassignActivity) return null;
+
+                    return (
+                        (reassignActivity.countingStartedAt ?? currentTime) +
+                        reassignActivity.countingTimePerPatient *
+                            patientIds.length -
+                        currentTime
+                    );
+                }
+
+                if (behaviorState.delayActivityId === null) return 0;
+
+                const delayActivity = simulatedRegion.activities[
+                    behaviorState.delayActivityId
+                ] as DelayEventActivityState | undefined;
+                if (!delayActivity) return null;
+
+                return delayActivity.endTime - currentTime;
+            })
+        );
     }
 
     public updateTreatPatientsBehaviorState(
@@ -90,8 +149,8 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
     ) {
         this.exerciseService.proposeAction({
             type: '[TreatPatientsBehavior] Update TreatPatientsIntervals',
-            simulatedRegionId: this.simulatedRegion.id,
-            behaviorStateId: this.treatPatientsBehaviorState.id,
+            simulatedRegionId: this.simulatedRegionId,
+            behaviorStateId: this.treatPatientsBehaviorId,
             unknown,
             counted,
             triaged,
