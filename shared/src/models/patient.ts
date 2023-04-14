@@ -183,8 +183,7 @@ export class Patient {
         bluePatientsEnabled: boolean
     ) {
         const status =
-            !pretriageEnabled ||
-            patient.treatmentTime >= this.pretriageTimeThreshold
+            !pretriageEnabled || Patient.pretriageStatusIsLocked(patient)
                 ? patient.realStatus
                 : patient.pretriageStatus;
         return status === 'blue' && !bluePatientsEnabled ? 'red' : status;
