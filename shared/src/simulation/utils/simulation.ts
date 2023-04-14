@@ -48,7 +48,7 @@ function tickActivities(
     });
 }
 
-function handleSimulationEvents(
+export function handleSimulationEvents(
     draftState: Mutable<ExerciseState>,
     simulatedRegion: Mutable<SimulatedRegion>
 ) {

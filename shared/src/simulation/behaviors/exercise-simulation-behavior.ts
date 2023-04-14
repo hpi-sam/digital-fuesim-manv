@@ -6,6 +6,7 @@ import { unloadArrivingVehiclesBehavior } from './unload-arrived-vehicles';
 import { reportBehavior } from './report';
 import { providePersonnelBehavior } from './provide-personnel';
 import { answerRequestsBehavior } from './answer-requests';
+import { requestBehavior } from './request';
 
 export const simulationBehaviors = {
     assignLeaderBehavior,
@@ -14,6 +15,7 @@ export const simulationBehaviors = {
     reportBehavior,
     providePersonnelBehavior,
     answerRequestsBehavior,
+    requestBehavior,
 };
 
 export type ExerciseSimulationBehavior =

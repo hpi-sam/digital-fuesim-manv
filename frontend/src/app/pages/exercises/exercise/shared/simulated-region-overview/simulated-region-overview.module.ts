@@ -43,6 +43,7 @@ import { RadigoramCardContentMissingTransferConnectionComponent } from './radiog
 import { SimulatedRegionOverviewBehaviorProvidePersonnelComponent } from './tabs/behavior-tab/behaviors/provide-personnel/simulated-region-overview-behavior-provide-personnel.component';
 import { SimulatedRegionOverviewBehaviorAnswerVehicleRequestsComponent } from './tabs/behavior-tab/behaviors/answer-vehicle-requests/simulated-region-overview-behavior-answer-vehicle-requests.component';
 import { RadigoramCardContentResourceRequestComponent } from './radiogram-list/radiogram-card/radigoram-card-content-resource-request/radigoram-card-content-resource-request.component';
+import { RequestVehiclesComponent } from './tabs/behavior-tab/behaviors/request-vehicles/simulated-region-overview-behavior-request-vehicles.component';
 
 @NgModule({
     declarations: [
@@ -77,6 +78,7 @@ import { RadigoramCardContentResourceRequestComponent } from './radiogram-list/r
         SimulatedRegionOverviewBehaviorProvidePersonnelComponent,
         SimulatedRegionOverviewBehaviorAnswerVehicleRequestsComponent,
         RadigoramCardContentResourceRequestComponent,
+        RequestVehiclesComponent,
     ],
     imports: [
         CommonModule,

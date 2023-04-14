@@ -52,6 +52,11 @@
                 <app-simulated-region-overview-behavior-answer-vehicle-requests
                     *ngSwitchCase="'answerRequestsBehavior'"
                 ></app-simulated-region-overview-behavior-answer-vehicle-requests>
+                <app-simulated-region-overview-behavior-request-vehicles
+                    *ngSwitchCase="'requestBehavior'"
+                    [simulatedRegionId]="simulatedRegion.id"
+                    [requestBehaviorId]="selectedBehavior!.id"
+                ></app-simulated-region-overview-behavior-request-vehicles>
                 <p *ngSwitchDefault class="text-muted font-bold">
                     Es ist noch keine Verhaltensweise ausgewählt.
                 </p>
