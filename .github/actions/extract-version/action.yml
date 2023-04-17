@@ -1,0 +1,10 @@
+name: Extract version
+description: Reads the current version number from the package.json and writes it to the VERSION_NAME GitHub environment variable
+runs:
+    using: composite
+    steps:
+        - name: Read version from package.json
+          run: |
+              versionName=`jq -jM .version package.json`
+              echo "VERSION_NAME=$versionName" >> "$GITHUB_ENV"
+          shell: bash
