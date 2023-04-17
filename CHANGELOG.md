@@ -22,6 +22,12 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Development builds (the docker container with the `dev` tag) now show the commit hash they have been built from in the version number.
 -   The time until the next treatment recalculation for the automatic patient treatment is shown.
 
+### Fixed
+
+-   New patients added to simulated regions during treatment are now also triaged and treated.
+-   When treatment is no longer secured, the displayed status is reverted back to lack of personnel.
+-   When the treatment status changes, personnel is reassigned immediately instead of after the next interval.
+
 ### Changed
 
 -   The icon for `C` (transport priority) in a patient status code has been changed to a road sign to be distinguishable from the icon for `D` (complication).
