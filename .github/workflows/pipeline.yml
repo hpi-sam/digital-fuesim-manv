@@ -30,7 +30,7 @@ jobs:
               run: cd shared && npm run build && cd ..
 
     lint:
-        timeout-minutes: 3
+        timeout-minutes: 5
         runs-on: ubuntu-latest
 
         needs: build
