@@ -20,10 +20,16 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   A new behavior has been added to respond to personnel shortages by instructing the region to request new vehicles.
     -   The priorities of vehicles to request can be configured in a new behavior tab.
 -   Development builds (the docker container with the `dev` tag) now show the commit hash they have been built from in the version number.
+-   The time until the next treatment recalculation for the automatic patient treatment is shown.
 
 ### Changed
 
--   The icon for `C` (transport priority) in a patient status code has been changed to a road sign to be distinguishable from the icon for `D` (complication)
+-   The icon for `C` (transport priority) in a patient status code has been changed to a road sign to be distinguishable from the icon for `D` (complication).
+-   `ConditionParameters.minimumHealth` and `ConditionParameters.maximumHealth` are now inclusive.
+
+### Fixed
+
+-   Dead/Black patients can now be treated (for the automatic triage to work), but they won't be treated after triage.
 
 ## [0.3.0] - 2023-03-27
 
