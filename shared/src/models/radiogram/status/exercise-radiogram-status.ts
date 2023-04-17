@@ -1,5 +1,5 @@
 import type { Type } from 'class-transformer';
-import type { Constructor } from '../../../utils';
+import type { Constructor } from '../../../utils/constructor';
 import { RadiogramAcceptedStatus } from './radiogram-accepted-status';
 import { RadiogramDoneStatus } from './radiogram-done-status';
 import { RadiogramStatus } from './radiogram-status';

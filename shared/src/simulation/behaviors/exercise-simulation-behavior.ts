@@ -5,7 +5,9 @@ import { treatPatientsBehavior } from './treat-patients';
 import { unloadArrivingVehiclesBehavior } from './unload-arrived-vehicles';
 import { reportBehavior } from './report';
 import { automaticallyDistributeVehiclesBehavior } from './automatically-distribute-vehicles';
+import { providePersonnelBehavior } from './provide-personnel';
 import { answerRequestsBehavior } from './answer-requests';
+import { requestBehavior } from './request';
 
 export const simulationBehaviors = {
     automaticallyDistributeVehiclesBehavior,
@@ -13,7 +15,9 @@ export const simulationBehaviors = {
     treatPatientsBehavior,
     unloadArrivingVehiclesBehavior,
     reportBehavior,
+    providePersonnelBehavior,
     answerRequestsBehavior,
+    requestBehavior,
 };
 
 export type ExerciseSimulationBehavior =
@@ -23,7 +27,7 @@ export type ExerciseSimulationBehaviorType = InstanceType<
     ExerciseSimulationBehavior['behaviorState']
 >['type'];
 
-type ExerciseSimulationBehaviorDictionary = {
+export type ExerciseSimulationBehaviorDictionary = {
     [Behavior in ExerciseSimulationBehavior as InstanceType<
         Behavior['behaviorState']
     >['type']]: Behavior;

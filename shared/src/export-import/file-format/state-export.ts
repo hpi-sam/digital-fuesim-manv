@@ -1,10 +1,10 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsOptional, ValidateNested } from 'class-validator';
 import { ExerciseState } from '../../state';
-import type { ExerciseAction } from '../../store';
-import { IsExerciseAction } from '../../store';
 import { Mutable } from '../../utils';
 import { IsValue } from '../../utils/validators';
+import type { ExerciseAction } from '../../store/action-reducers/action-reducers';
+import { IsExerciseAction } from '../../store/validate-exercise-action';
 import { BaseExportImportFile } from './base-file';
 
 export class StateHistoryCompound {

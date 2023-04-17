@@ -9,8 +9,9 @@ import RBush from 'rbush';
 import knn from 'rbush-knn';
 import type { Mutable, UUID, JsonObject } from '../../utils';
 import { Immutable } from '../../utils';
-import type { MapCoordinates, Size } from '.';
-import { getCreate } from '.';
+import { getCreate } from './get-create';
+import type { MapCoordinates } from './position/map-coordinates';
+import type { Size } from './size';
 
 /**
  * A data structure that enables efficient search of elements (interpreted as points) in a circle or rectangle

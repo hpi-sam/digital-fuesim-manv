@@ -11,11 +11,16 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 -   There is now a display for how many different variations of a patient template exists.
 -   There is now a display for whether a patient is pregnant.
--   The patient status display that visualizes the progression of a patient explains its icons via a tooltip
+-   The patient status display that visualizes the progression of a patient explains its icons via a tooltip.
+-   There is now a behavior that answers vehicle requests from other regions.
 -   There is now a behavior that answers vehicle requests from other regions
--   There is now a behavior that automatically distributes vehicles to other regions/transfer points
--   There is now a radiogram for missing transfer connections and vehicle requests
-    -   Radiograms for vehicle requests can also be answered in the user interface, whether they have been accepted or not
+-   There is now a behavior to forward requests to other simulated regions or the trainees.
+-   There is now a radiogram for missing transfer connections and vehicle requests.
+    -   Radiograms for vehicle requests can also be answered in the user interface, whether they have been accepted or not.
+-   When personnel is missing during patient treatment in a simulated region, the reassign treatment activity now sends an event to notify the region about the shortage.
+-   A new behavior has been added to respond to personnel shortages by instructing the region to request new vehicles.
+    -   The priorities of vehicles to request can be configured in a new behavior tab.
+-   Development builds (the docker container with the `dev` tag) now show the commit hash they have been built from in the version number.
 
 ### Changed
 
