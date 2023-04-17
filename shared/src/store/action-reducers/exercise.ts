@@ -92,10 +92,7 @@ export namespace ExerciseActionReducers {
 
     export const exerciseTick: ActionReducer<ExerciseTickAction> = {
         action: ExerciseTickAction,
-        reducer: (
-            draftState,
-            { patientUpdates, refreshTreatments, tickInterval }
-        ) => {
+        reducer: (draftState, { patientUpdates, tickInterval }) => {
             // Refresh the current time
             draftState.currentTime += tickInterval;
 
@@ -124,7 +121,6 @@ export namespace ExerciseActionReducers {
                 currentPatient.visibleStatusChanged =
                     visibleStatusBefore !== visibleStatusAfter;
                 if (
-                    refreshTreatments &&
                     // We only want to do this expensive calculation, when it is really necessary
                     currentPatient.visibleStatusChanged
                 ) {

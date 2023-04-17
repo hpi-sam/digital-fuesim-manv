@@ -30,7 +30,12 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Changed
 
--   The icon for `C` (transport priority) in a patient status code has been changed to a road sign to be distinguishable from the icon for `D` (complication)
+-   The icon for `C` (transport priority) in a patient status code has been changed to a road sign to be distinguishable from the icon for `D` (complication).
+-   `ConditionParameters.minimumHealth` and `ConditionParameters.maximumHealth` are now inclusive.
+
+### Fixed
+
+-   Dead/Black patients can now be treated (for the automatic triage to work), but they won't be treated after triage.
 
 ## [0.3.0] - 2023-03-27
 

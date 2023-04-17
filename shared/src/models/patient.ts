@@ -28,7 +28,6 @@ import {
     healthPointsDefaults,
     HealthPoints,
     getCreate,
-    isAlive,
     isOnMap,
     isInSimulatedRegion,
 } from './utils';
@@ -198,9 +197,6 @@ export class Patient {
     }
 
     static canBeTreated(patient: Patient) {
-        return (
-            isAlive(patient.health) &&
-            (isOnMap(patient) || isInSimulatedRegion(patient))
-        );
+        return isOnMap(patient) || isInSimulatedRegion(patient);
     }
 }
