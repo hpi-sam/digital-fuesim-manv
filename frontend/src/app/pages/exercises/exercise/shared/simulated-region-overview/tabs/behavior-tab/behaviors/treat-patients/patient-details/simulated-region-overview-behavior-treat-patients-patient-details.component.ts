@@ -49,7 +49,7 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
                     selectPersonnel,
                     patientSelector,
                     (personnel, patient) =>
-                        Object.keys(patient.assignedPersonnelIds)
+                        Object.keys(patient?.assignedPersonnelIds ?? {})
                             .map((personnelId) => personnel[personnelId])
                             .filter((person) => person !== undefined)
                             .map((person) => ({

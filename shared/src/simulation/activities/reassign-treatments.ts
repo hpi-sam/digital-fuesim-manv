@@ -16,7 +16,6 @@ import {
 import type { Immutable, Mutable } from '../../utils/immutability';
 import { UUID, uuidValidationOptions } from '../../utils/uuid';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
-// Do not import from "../utils" since it would cause circular dependencies
 import {
     TreatmentProgress,
     treatmentProgressAllowedValues,
@@ -131,10 +130,12 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
             }
 
             let allowTerminate = true;
+            let missingPersonnel:
+                | ResourceDescription<PersonnelType>
+                | undefined;
 
-            let missingPersonnel: PersonnelResource | null = null;
-
-            switch (activityState.treatmentProgress) {
+            const progress = activityState.treatmentProgress;
+            switch (progress) {
                 case 'noTreatment': {
                     // Since we've reached this line, there is a leader and other personnel so treatment can start
                     sendSimulationEvent(
@@ -154,54 +155,68 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                     allowTerminate = finished;
                     break;
                 }
-                case 'counted': {
-                    const [finished, missingResource] = triage(
-                        draftState,
-                        patients,
-                        personnel,
-                        materials
-                    );
-                    missingPersonnel = missingResource;
-                    if (finished) {
-                        sendSimulationEvent(
-                            simulatedRegion,
-                            TreatmentProgressChangedEvent.create('triaged')
-                        );
-                    }
-                    break;
-                }
+                case 'counted':
                 case 'triaged':
                 case 'secured': {
-                    const [secured, missingResource] = treat(
+                    const shouldTriage = !allPatientsTriaged(patients);
+                    if (shouldTriage) {
+                        if (progress === 'counted') {
+                            [, missingPersonnel] = triage(
+                                draftState,
+                                patients,
+                                personnel,
+                                materials
+                            );
+                        } else {
+                            sendSimulationEvent(
+                                simulatedRegion,
+                                TreatmentProgressChangedEvent.create('counted')
+                            );
+                        }
+                        break;
+                    }
+
+                    let secured: boolean;
+                    [secured, missingPersonnel] = treat(
                         draftState,
                         patients,
                         personnel,
                         materials
                     );
-                    missingPersonnel = missingResource;
-                    if (
-                        activityState.treatmentProgress === 'triaged' &&
-                        secured
-                    ) {
+
+                    if (secured && progress !== 'secured') {
                         sendSimulationEvent(
                             simulatedRegion,
                             TreatmentProgressChangedEvent.create('secured')
                         );
+                        break;
+                    }
+                    if (!secured && progress !== 'triaged') {
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            TreatmentProgressChangedEvent.create('triaged')
+                        );
+                        break;
                     }
                     break;
                 }
             }
 
-            if (missingPersonnel && !isEmptyResource(missingPersonnel)) {
-                sendSimulationEvent(
-                    simulatedRegion,
-                    ResourceRequiredEvent.create(
-                        nextUUID(draftState),
-                        simulatedRegion.id,
-                        missingPersonnel,
-                        'reassignTreatmentsActivity'
-                    )
+            if (missingPersonnel !== undefined) {
+                const missingResource = PersonnelResource.create(
+                    ceilResourceDescription(missingPersonnel)
                 );
+                if (!isEmptyResource(missingResource)) {
+                    sendSimulationEvent(
+                        simulatedRegion,
+                        ResourceRequiredEvent.create(
+                            nextUUID(draftState),
+                            simulatedRegion.id,
+                            missingResource,
+                            'reassignTreatmentsActivity'
+                        )
+                    );
+                }
             }
 
             if (allowTerminate) {
@@ -237,6 +252,11 @@ type PersonnelToPatientCategoryDict = {
         };
     };
 };
+
+interface PersonnelSubstitution {
+    from: ResourceDescription<PersonnelType>;
+    to: Mutable<PersonnelType>;
+}
 
 function createCateringMaterials(
     materials: Mutable<Material>[]
@@ -373,13 +393,13 @@ function triage(
     patients: Mutable<Patient>[],
     personnel: Mutable<Personnel>[],
     materials: Mutable<Material>[]
-): [boolean, PersonnelResource] {
-    const missingPersonnel = estimateRequiredPersonnel(patients, personnel);
+): [boolean, ResourceDescription<PersonnelType>] {
+    const patientsToTreat: Mutable<Patient>[] = [];
     const cateringPersonnel = createCateringPersonnel(personnel).sort(
         (a, b) => a.priority - b.priority
     );
-
-    const patientsToTreat: Mutable<Patient>[] = [];
+    const emptyPersonnelCount = PersonnelResource.create().personnelCounts;
+    const triagePersonnelSubstitution: PersonnelSubstitution[] = [];
 
     patients.forEach((patient) => {
         if (Patient.pretriageStatusIsLocked(patient)) {
@@ -401,13 +421,39 @@ function triage(
 
         if (triagePersonnelIndex !== -1) {
             // Personnel that is used for triage shall not be used for treatments
-            cateringPersonnel.splice(triagePersonnelIndex, 1);
+            const triagePersonnel = cateringPersonnel.splice(
+                triagePersonnelIndex,
+                1
+            );
+            // But we can get it back
+            triagePersonnelSubstitution.push({
+                to: triagePersonnel[0]!.personnel.personnelType,
+                from: emptyPersonnelCount,
+            });
         }
     });
 
-    assignTreatments(draftState, patientsToTreat, cateringPersonnel, materials);
+    const missingPersonnel = estimateRequiredPersonnel(
+        patients.length - patientsToTreat.length,
+        personnel
+    );
+    let [, treatmentMissingPersonnel] = assignTreatments(
+        draftState,
+        patientsToTreat,
+        cateringPersonnel,
+        materials
+    );
+
+    treatmentMissingPersonnel = applySubstitutions(
+        treatmentMissingPersonnel,
+        triagePersonnelSubstitution
+    );
+
     const triageDone = patientsToTreat.length === patients.length;
-    return [triageDone, missingPersonnel];
+    return [
+        triageDone,
+        addResourceDescription(missingPersonnel, treatmentMissingPersonnel),
+    ];
 }
 
 /**
@@ -424,7 +470,7 @@ function treat(
     patients: Mutable<Patient>[],
     personnel: Mutable<Personnel>[],
     materials: Mutable<Material>[]
-): [boolean, PersonnelResource] {
+): [boolean, ResourceDescription<PersonnelType>] {
     return assignTreatments(
         draftState,
         patients,
@@ -497,6 +543,15 @@ function sumOfTreatments(cateringPersonnel: CateringPersonnel): number {
         cateringPersonnel.catersFor.red +
         cateringPersonnel.catersFor.yellow +
         cateringPersonnel.catersFor.green
+    );
+}
+
+/**
+ * Determines if {@link patients} contains no patient that is not triaged.
+ */
+function allPatientsTriaged(patients: Patient[]): boolean {
+    return patients.every((patient) =>
+        Patient.pretriageStatusIsLocked(patient)
     );
 }
 
@@ -577,7 +632,7 @@ function assignTreatments(
     patients: Mutable<Patient>[],
     cateringPersonnel: CateringPersonnel[],
     materials: Mutable<Material>[]
-): [boolean, PersonnelResource] {
+): [boolean, ResourceDescription<PersonnelType>] {
     const groupedPatients = groupBy(patients, (patient) =>
         Patient.getVisibleStatus(
             patient,
@@ -679,7 +734,7 @@ function assignTreatments(
         personnelTreatments,
         patientTreatments
     );
-    return [secured, PersonnelResource.create(missingPersonnel)];
+    return [secured, missingPersonnel];
 }
 
 function tryAssignPersonnel(
@@ -754,10 +809,9 @@ function recordPatientTreatedByPersonnel(
  * @returns the types and number of personnel estimated to missing to secure treatment
  */
 function estimateRequiredPersonnel(
-    patients: Patient[],
+    patientCount: number,
     personnel: Personnel[]
-): PersonnelResource {
-    const patientCount = patients.length;
+): ResourceDescription<PersonnelType> {
     const groupedPersonnel = groupBy(personnel, (p) => p.personnelType);
     const havePersonnel = Object.fromEntries(
         StrictObject.keys(personnelPriorities).map((pt) => [
@@ -769,12 +823,10 @@ function estimateRequiredPersonnel(
         scaleResourceDescription(estimatedSkDistribution, patientCount)
     );
 
-    // We want the missing personnel exactly, no substitution of personnel tiers takes place.
-    return PersonnelResource.create(
-        maxResourceDescription(
-            subtractResourceDescription(wantPersonnel, havePersonnel),
-            0
-        )
+    // We want the missing personnel exactly, no substitution of personnel qualification takes place.
+    return maxResourceDescription(
+        subtractResourceDescription(wantPersonnel, havePersonnel),
+        0
     );
 }
 
@@ -792,16 +844,19 @@ function requiredPersonnelForPatients(
             ]
         )
     );
-    return addResourceDescription(
-        ceilResourceDescription(
-            addResourceDescription(
-                requiredByType['red']!,
-                requiredByType['yellow']!
-            )
+    const result = addResourceDescription(
+        addResourceDescription(
+            requiredByType['red']!,
+            requiredByType['yellow']!
         ),
         // Green should not be mixed. Therefore we ceil them before merging.
         ceilResourceDescription(requiredByType['green']!)
     );
+    result.notarzt = Math.max(
+        requiredByType['red']!.notarzt,
+        requiredByType['yellow']!.notarzt
+    );
+    return result;
 }
 
 function calculateMissingPersonnel(
@@ -855,11 +910,9 @@ function calculateMissingPersonnel(
     ) as { [K in TreatablePatientStatus]: ResourceDescription<PersonnelType> };
 
     const totalMissingPersonnel = addResourceDescription(
-        ceilResourceDescription(
-            addResourceDescription(
-                patientStatusMissingPersonnel.red,
-                patientStatusMissingPersonnel.yellow
-            )
+        addResourceDescription(
+            patientStatusMissingPersonnel.red,
+            patientStatusMissingPersonnel.yellow
         ),
         ceilResourceDescription(patientStatusMissingPersonnel.green)
     );
@@ -892,7 +945,6 @@ function calculateSubstitutedMissingPersonnel(
     cateringDict: { [k: string]: CateringPersonnel },
     personnelTreatments: PersonnelToPatientCategoryDict
 ): ResourceDescription<PersonnelType> {
-    let missing = { ...missingPersonnel };
     const substitutions = StrictObject.entries(personnelTreatments)
         .map(
             ([persId, roles]) =>
@@ -923,17 +975,28 @@ function calculateSubstitutedMissingPersonnel(
             return { from, to: realPersonnelType };
         });
 
+    return applySubstitutions(missingPersonnel, substitutions);
+}
+
+function applySubstitutions(
+    missing: ResourceDescription<PersonnelType>,
+    substitutions: PersonnelSubstitution[]
+) {
+    let stillMissing = { ...missing };
     reversedPersonnelTypePriorityList.forEach((personnelType) => {
-        while (missing[personnelType] > 0) {
+        while (stillMissing[personnelType] > 0) {
             const substitutionIndex = substitutions.findIndex(
                 (s) => s.to === personnelType
             );
             if (substitutionIndex === -1) break;
             const substitution = substitutions.splice(substitutionIndex, 1)[0]!;
-            missing[substitution!.to] -= 1;
+            stillMissing[substitution!.to] -= 1;
 
-            missing = addResourceDescription(missing, substitution.from);
+            stillMissing = addResourceDescription(
+                stillMissing,
+                substitution.from
+            );
         }
     });
-    return maxResourceDescription(ceilResourceDescription(missing), 0);
+    return maxResourceDescription(stillMissing, 0);
 }
