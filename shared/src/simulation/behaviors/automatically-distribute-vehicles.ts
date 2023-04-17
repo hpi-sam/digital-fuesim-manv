@@ -215,7 +215,7 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                         Object.entries(
                             event.vehiclesSent.vehicleCounts
                         ).forEach(([vehicleType, vehicleAmount]) => {
-                            if (vehicleAmount < 1) {
+                            if (vehicleAmount === 0) {
                                 return;
                             }
                             if (
