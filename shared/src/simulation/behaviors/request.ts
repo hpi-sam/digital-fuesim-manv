@@ -2,7 +2,6 @@ import {
     IsArray,
     IsInt,
     IsOptional,
-    IsString,
     IsUUID,
     Min,
     ValidateNested,
@@ -48,13 +47,6 @@ export class RequestBehaviorState implements SimulationBehaviorState {
     @IsUUID()
     public readonly id: UUID = uuid();
 
-    /**
-     * @deprecated Use {@link isWaitingForAnswer} instead
-     */
-    @IsString()
-    @IsOptional()
-    public readonly answerKey?: string;
-
     @IsUUID()
     @IsOptional()
     public readonly recurringEventActivityId?: UUID;
@@ -77,17 +69,11 @@ export class RequestBehaviorState implements SimulationBehaviorState {
     @IsInt()
     @Min(0)
     public readonly invalidatePromiseInterval: number = 1000 * 60 * 30;
-    /**
-     * @deprecated Use {@link updateBehaviorsRequestTarget} instead
-     */
+
     @Type(...requestTargetTypeOptions)
     @ValidateNested()
     public readonly requestTarget: ExerciseRequestTargetConfiguration =
         TraineesRequestTargetConfiguration.create();
-
-    @IsInt()
-    @Min(0)
-    public readonly requestTargetVersion: number = 0;
 
     static readonly create = getCreate(this);
 }
@@ -131,10 +117,6 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                         )
                     )
                 );
-
-                if (event.key === behaviorState.answerKey) {
-                    behaviorState.answerKey = undefined;
-                }
                 break;
             }
             case 'vehicleArrivedEvent': {
@@ -170,29 +152,23 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                 break;
             }
             case 'sendRequestEvent': {
-                if (!isWaitingForAnswer(behaviorState)) {
-                    const resourcesToRequest = getResourcesToRequest(
-                        draftState,
+                const resourcesToRequest = getResourcesToRequest(
+                    draftState,
+                    behaviorState
+                );
+                const resource = VehicleResource.create(
+                    resourcesToRequest as ResourceDescription
+                );
+                if (!isEmptyResource(resource)) {
+                    addActivity(
                         simulatedRegion,
-                        behaviorState
+                        CreateRequestActivityState.create(
+                            nextUUID(draftState),
+                            behaviorState.requestTarget,
+                            resource,
+                            `${simulatedRegion.id}-request`
+                        )
                     );
-                    const resource = VehicleResource.create(
-                        resourcesToRequest as ResourceDescription
-                    );
-                    if (!isEmptyResource(resource)) {
-                        // create a request to wait for an answer
-                        behaviorState.answerKey = `${simulatedRegion.id}-request-${behaviorState.requestTargetVersion}`;
-                        const activityId = nextUUID(draftState);
-                        addActivity(
-                            simulatedRegion,
-                            CreateRequestActivityState.create(
-                                activityId,
-                                behaviorState.requestTarget,
-                                resource,
-                                behaviorState.answerKey
-                            )
-                        );
-                    }
                 }
                 break;
             }
@@ -201,10 +177,6 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
         }
     },
 };
-
-export function isWaitingForAnswer(behaviorState: RequestBehaviorState) {
-    return behaviorState.answerKey !== undefined;
-}
 
 export function updateBehaviorsRequestInterval(
     draftState: Mutable<ExerciseState>,
@@ -224,23 +196,8 @@ export function updateBehaviorsRequestInterval(
     behaviorState.requestInterval = requestInterval;
 }
 
-export function updateBehaviorsRequestTarget(
-    draftState: Mutable<ExerciseState>,
-    simulatedRegion: Mutable<SimulatedRegion>,
-    behaviorState: Mutable<RequestBehaviorState>,
-    requestTarget: ExerciseRequestTargetConfiguration
-) {
-    behaviorState.requestTarget = cloneDeepMutable(requestTarget);
-    behaviorState.requestTargetVersion++;
-
-    if (isWaitingForAnswer(behaviorState)) {
-        behaviorState.answerKey = undefined;
-    }
-}
-
 export function getResourcesToRequest(
     draftState: Mutable<ExerciseState>,
-    simulatedRegion: Mutable<SimulatedRegion>,
     behaviorState: Mutable<RequestBehaviorState>
 ) {
     const requestedResources = addPartialResourceDescriptions(
@@ -250,12 +207,11 @@ export function getResourcesToRequest(
     );
 
     // remove invalidated resources
-    let firstValidIndex: number | undefined =
-        behaviorState.promisedResources.findIndex(
-            (promise) =>
-                promise.promisedTime + behaviorState.invalidatePromiseInterval >
-                draftState.currentTime
-        );
+    let firstValidIndex = behaviorState.promisedResources.findIndex(
+        (promise) =>
+            promise.promisedTime + behaviorState.invalidatePromiseInterval >
+            draftState.currentTime
+    );
     if (firstValidIndex === -1)
         firstValidIndex = behaviorState.promisedResources.length;
     behaviorState.promisedResources.splice(0, firstValidIndex);

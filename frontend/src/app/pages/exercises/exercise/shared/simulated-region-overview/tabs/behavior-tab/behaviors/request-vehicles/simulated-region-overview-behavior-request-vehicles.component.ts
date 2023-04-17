@@ -6,7 +6,6 @@ import type {
     RequestBehaviorState,
 } from 'digital-fuesim-manv-shared';
 import {
-    isWaitingForAnswer,
     UUID,
     SimulatedRegionRequestTargetConfiguration,
     TraineesRequestTargetConfiguration,
@@ -41,8 +40,6 @@ export class RequestVehiclesComponent implements OnChanges {
     requestTargetOptions$!: Observable<{
         [key in RequestTargetOption]: string;
     }>;
-
-    waitingForAnswer$!: Observable<boolean>;
 
     nextTimeoutIn$!: Observable<number | undefined>;
 
@@ -90,12 +87,6 @@ export class RequestVehiclesComponent implements OnChanges {
                 return requestBehaviorState.requestTarget
                     .targetSimulatedRegionId;
             })
-        );
-
-        this.waitingForAnswer$ = this.requestBehaviorState$.pipe(
-            map((requestBehaviorState) =>
-                isWaitingForAnswer(requestBehaviorState)
-            )
         );
 
         const activities$ = this.store.select(

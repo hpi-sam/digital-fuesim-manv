@@ -12,7 +12,6 @@ import type {
     UnloadArrivingVehiclesBehaviorState,
 } from '../../simulation';
 import {
-    updateBehaviorsRequestTarget,
     updateBehaviorsRequestInterval,
     ReportableInformation,
     reportableInformationAllowedValues,
@@ -471,17 +470,7 @@ export namespace SimulationActionReducers {
                     behaviorId,
                     'requestBehavior'
                 );
-                const simulatedRegion = getElement(
-                    draftState,
-                    'simulatedRegion',
-                    simulatedRegionId
-                );
-                updateBehaviorsRequestTarget(
-                    draftState,
-                    simulatedRegion,
-                    behaviorState,
-                    requestTarget
-                );
+                behaviorState.requestTarget = cloneDeepMutable(requestTarget);
                 return draftState;
             },
             rights: 'trainer',

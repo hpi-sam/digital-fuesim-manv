@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsUUID, ValidateNested } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { VehicleResource } from '../../models/utils/rescue-resource';
 import { UUID, uuidValidationOptions } from '../../utils';
@@ -17,16 +17,12 @@ export class VehiclesSentEvent implements SimulationEvent {
     @ValidateNested()
     readonly vehiclesSent!: VehicleResource;
 
-    @IsString()
-    readonly key: string;
-
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(id: UUID, vehiclesSent: VehicleResource, key: string) {
+    constructor(id: UUID, vehiclesSent: VehicleResource) {
         this.id = id;
         this.vehiclesSent = vehiclesSent;
-        this.key = key;
     }
 
     static readonly create = getCreate(this);
