@@ -20,6 +20,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   A new behavior has been added to respond to personnel shortages by instructing the region to request new vehicles.
     -   The priorities of vehicles to request can be configured in a new behavior tab.
 -   Development builds (the docker container with the `dev` tag) now show the commit hash they have been built from in the version number.
+-   The time until the next treatment recalculation for the automatic patient treatment is shown.
 
 ### Changed
 
