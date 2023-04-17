@@ -3,12 +3,7 @@ description: Adds the current branch name and commit hash as suffix to the curre
 runs:
     using: composite
     steps:
-        - name: Get version
-          id: get-version
-          run: |
-              versionName=`jq -jM .version package.json`
-              echo "VERSION=$versionName" >> $GITHUB_OUTPUT
-          shell: bash
+        - uses: ./.github/actions/extract-version
         - name: Get suffix
           id: get-suffix
           run: echo "SUFFIX=$(git branch --show-current).$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
@@ -16,4 +11,4 @@ runs:
         - name: Add suffix to version number
           uses: ./.github/actions/update-version
           with:
-              version: '${{ steps.get-version.outputs.VERSION }}+${{ steps.get-suffix.outputs.SUFFIX }}'
+              version: '${{ env.VERSION_NAME }}+${{ steps.get-suffix.outputs.SUFFIX }}'
