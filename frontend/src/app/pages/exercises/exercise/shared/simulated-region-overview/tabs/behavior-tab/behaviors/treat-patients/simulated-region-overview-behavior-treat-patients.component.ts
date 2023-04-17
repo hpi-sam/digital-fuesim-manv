@@ -128,12 +128,12 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
                     );
                 }
 
-                if (behaviorState.delayActivityId === null) return 0;
+                if (behaviorState.delayActivityId === null) return null;
 
                 const delayActivity = simulatedRegion.activities[
                     behaviorState.delayActivityId
                 ] as DelayEventActivityState | undefined;
-                if (!delayActivity) return null;
+                if (!delayActivity) return 0;
 
                 return delayActivity.endTime - currentTime;
             })
