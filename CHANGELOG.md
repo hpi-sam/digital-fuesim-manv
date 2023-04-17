@@ -19,7 +19,12 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   When personnel is missing during patient treatment in a simulated region, the reassign treatment activity now sends an event to notify the region about the shortage.
 -   A new behavior has been added to respond to personnel shortages by instructing the region to request new vehicles.
     -   The priorities of vehicles to request can be configured in a new behavior tab.
--   New patients added to simulated regions during treatment are triaged and treated and the phase can change back if more personnel is required.
+
+### Fixed
+
+-   New patients added to simulated regions during treatment are now also triaged and treated.
+-   When treatment is no longer secured, the displayed status is reverted back to lack of personnel.
+-   When the treatment status changes, personnel is reassigned immediately instead of after the next interval.
 
 ### Changed
 
