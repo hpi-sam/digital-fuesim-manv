@@ -25,35 +25,32 @@ export function patientTick(
     state: ExerciseState,
     patientTickInterval: number
 ): PatientUpdate[] {
-    return (
-        Object.values(state.patients)
-            // Only look at patients that are alive and have a position, i.e. are not in a vehicle
-            .filter((patient) => Patient.canBeTreated(patient))
-            .map((patient) => {
-                // update the time a patient is being treated, to check for pretriage later
-                const treatmentTime = Patient.isTreatedByPersonnel(patient)
-                    ? patient.treatmentTime + patientTickInterval
-                    : patient.treatmentTime;
-                const nextHealthPoints = getNextPatientHealthPoints(
-                    patient,
-                    getDedicatedResources(state, patient),
-                    patientTickInterval
-                );
-                const nextStateId = getNextStateId(patient);
-                const nextStateTime =
-                    nextStateId === patient.currentHealthStateId
-                        ? patient.stateTime +
-                          patientTickInterval * patient.timeSpeed
-                        : 0;
-                return {
-                    id: patient.id,
-                    nextHealthPoints,
-                    nextStateId,
-                    nextStateTime,
-                    treatmentTime,
-                };
-            })
-    );
+    return Object.values(state.patients)
+        .filter((patient) => Patient.canBeTreated(patient))
+        .map((patient) => {
+            // update the time a patient is being treated, to check for pretriage later
+            const treatmentTime = Patient.isTreatedByPersonnel(patient)
+                ? patient.treatmentTime + patientTickInterval
+                : patient.treatmentTime;
+            const nextHealthPoints = getNextPatientHealthPoints(
+                patient,
+                getDedicatedResources(state, patient),
+                patientTickInterval
+            );
+            const nextStateId = getNextStateId(patient);
+            const nextStateTime =
+                nextStateId === patient.currentHealthStateId
+                    ? patient.stateTime +
+                      patientTickInterval * patient.timeSpeed
+                    : 0;
+            return {
+                id: patient.id,
+                nextHealthPoints,
+                nextStateId,
+                nextStateTime,
+                treatmentTime,
+            };
+        });
 }
 
 /**
@@ -155,9 +152,9 @@ function getNextStateId(patient: Patient) {
             (nextConditions.latestTime === undefined ||
                 patient.stateTime < nextConditions.latestTime) &&
             (nextConditions.minimumHealth === undefined ||
-                patient.health > nextConditions.minimumHealth) &&
+                patient.health >= nextConditions.minimumHealth) &&
             (nextConditions.maximumHealth === undefined ||
-                patient.health < nextConditions.maximumHealth) &&
+                patient.health <= nextConditions.maximumHealth) &&
             (nextConditions.isBeingTreated === undefined ||
                 Patient.isTreatedByPersonnel(patient) ===
                     nextConditions.isBeingTreated)
