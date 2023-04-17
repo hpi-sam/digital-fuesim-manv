@@ -266,6 +266,19 @@ jobs:
               with:
                   needs: ${{ toJSON (needs) }}
 
+    test-commit-hash-in-version:
+        timeout-minutes: 5
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+            - name: Add commit hash to version
+              uses: ./.github/actions/add-commit-hash-to-version
+            - name: Show new version
+              run: cat package.json | head
+            - name: Show new frontend version
+              run: cat frontend/package.json | head
+
     deploy-dev:
         timeout-minutes: 10
         runs-on: ubuntu-latest
