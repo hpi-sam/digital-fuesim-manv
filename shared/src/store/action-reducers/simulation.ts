@@ -5,9 +5,6 @@ import {
     IsString,
     IsUUID,
     Min,
-} from 'class-validator';
-    IsUUID,
-    Min,
     ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -177,9 +174,6 @@ export class RemoveRecurringReportsAction implements Action {
 export class ChangeAutomaticDistributionLimitAction implements Action {
     @IsValue('[AutomaticDistributionBehavior] Change Limit')
     public readonly type = '[AutomaticDistributionBehavior] Change Limit';
-export class UpdateRequestIntervalAction implements Action {
-    @IsValue('[RequestBehavior] Update RequestInterval')
-    public readonly type = '[RequestBehavior] Update RequestInterval';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;
@@ -194,13 +188,33 @@ export class UpdateRequestIntervalAction implements Action {
     @Min(0)
     public readonly newLimit!: number;
 }
+export class UpdateRequestIntervalAction implements Action {
+    @IsValue('[RequestBehavior] Update RequestInterval')
+    public readonly type = '[RequestBehavior] Update RequestInterval';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly requestInterval!: number;
+}
 
 export class AddAutomaticDistributionDestinationAction implements Action {
     @IsValue('[AutomaticDistributionBehavior] Add Destination')
     public readonly type = '[AutomaticDistributionBehavior] Add Destination';
-    @IsInt()
-    @Min(0)
-    public readonly requestInterval!: number;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly destinationId!: string;
 }
 
 export class UpdateRequestTargetAction implements Action {
@@ -213,16 +227,23 @@ export class UpdateRequestTargetAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly behaviorId!: UUID;
 
-    @IsUUID(4, uuidValidationOptions)
-    public readonly destinationId!: string;
+    @Type(...requestTargetTypeOptions)
+    @ValidateNested()
+    public readonly requestTarget!: ExerciseRequestTargetConfiguration;
 }
 
 export class RemoveAutomaticDistributionDestinationAction implements Action {
     @IsValue('[AutomaticDistributionBehavior] Remove Destination')
     public readonly type = '[AutomaticDistributionBehavior] Remove Destination';
-    @Type(...requestTargetTypeOptions)
-    @ValidateNested()
-    public readonly requestTarget!: ExerciseRequestTargetConfiguration;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly destinationId!: string;
 }
 
 export class UpdatePromiseInvalidationIntervalAction implements Action {
@@ -236,8 +257,6 @@ export class UpdatePromiseInvalidationIntervalAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly behaviorId!: UUID;
 
-    @IsUUID(4, uuidValidationOptions)
-    public readonly destinationId!: string;
     @IsInt()
     @Min(0)
     public readonly promiseInvalidationInterval!: number;
@@ -491,6 +510,10 @@ export namespace SimulationActionReducers {
                         );
                     }
                 }
+                return draftState;
+            },
+            rights: 'trainer',
+        };
 
     export const updateRequestInterval: ActionReducer<UpdateRequestIntervalAction> =
         {
@@ -544,6 +567,10 @@ export namespace SimulationActionReducers {
                 ).forEach((regionsInNeed) => {
                     regionsInNeed[destinationId] = true;
                 });
+                return draftState;
+            },
+            rights: 'trainer',
+        };
 
     export const updateRequestTarget: ActionReducer<UpdateRequestTargetAction> =
         {
@@ -596,6 +623,10 @@ export namespace SimulationActionReducers {
                 ).forEach((regionsInNeed) => {
                     delete regionsInNeed[destinationId];
                 });
+                return draftState;
+            },
+            rights: 'trainer',
+        };
     export const updatePromiseInvalidationInterval: ActionReducer<UpdatePromiseInvalidationIntervalAction> =
         {
             action: UpdatePromiseInvalidationIntervalAction,

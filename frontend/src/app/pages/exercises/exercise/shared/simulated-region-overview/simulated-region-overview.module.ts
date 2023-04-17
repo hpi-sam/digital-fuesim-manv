@@ -80,9 +80,12 @@ import { RequestVehiclesComponent } from './tabs/behavior-tab/behaviors/request-
         SimulatedRegionOverviewBehaviorAnswerVehicleRequestsComponent,
         RadigoramCardContentResourceRequestComponent,
         SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesComponent,
+        RequestVehiclesComponent,
+    ],
     imports: [
         FormsModule,
         SharedModule,
+        CommonModule,
         NgbNavModule,
         NgbCollapseModule,
         NgbDropdownModule,
