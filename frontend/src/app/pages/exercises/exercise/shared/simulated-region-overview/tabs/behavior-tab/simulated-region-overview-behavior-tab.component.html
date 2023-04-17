@@ -31,8 +31,8 @@
                 ></app-simulated-region-overview-behavior-assign-leader
                 ><app-simulated-region-overview-behavior-treat-patients
                     *ngSwitchCase="'treatPatientsBehavior'"
-                    [simulatedRegion]="simulatedRegion"
-                    [treatPatientsBehaviorState]="$any(selectedBehavior)"
+                    [simulatedRegionId]="simulatedRegion.id"
+                    [treatPatientsBehaviorId]="selectedBehavior!.id"
                 ></app-simulated-region-overview-behavior-treat-patients
                 ><app-simulated-region-overview-behavior-unload-arriving-vehicles
                     *ngSwitchCase="'unloadArrivingVehiclesBehavior'"

@@ -1,4 +1,7 @@
-<div class="container">
+<div
+    class="container"
+    *appLet="treatPatientsBehaviorState$ | async as treatPatientsBehaviorState"
+>
     <div
         class="row align-items-center m-3"
         (click)="informationCollapsed = !informationCollapsed"
@@ -42,6 +45,19 @@
                     treatPatientsBehaviorState.treatmentProgress
                 "
             ></app-treatment-status-badge>
+        </div>
+    </div>
+    <div
+        class="row align-items-center m-3"
+        #collapse="ngbCollapse"
+        [(ngbCollapse)]="informationCollapsed"
+        *ngIf="
+            timeUntilNextRecalculation$ | async as timeUntilNextRecalculation
+        "
+    >
+        <div class="col-sm">Nächste Zuteilungs-Berechnung in</div>
+        <div class="col-sm">
+            {{ timeUntilNextRecalculation | formatDuration }}
         </div>
     </div>
 
@@ -118,7 +134,7 @@
         [(ngbCollapse)]="settingsCollapsed"
     >
         <h5 class="mt-2">
-            Häufigkeit der Zuteilungsberechnung durch die Simulation in den
+            Häufigkeit der Zuteilungs-Berechnung durch die Simulation in den
             jeweiligen Zuständen
         </h5>
     </div>
