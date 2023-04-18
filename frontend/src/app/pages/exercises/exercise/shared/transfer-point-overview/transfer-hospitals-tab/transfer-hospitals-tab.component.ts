@@ -1,15 +1,15 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import type { Hospital, TransferPoint } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
+import { combineLatest, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
     createSelectTransferPoint,
     selectHospitals,
-    selectTransferPoints,
 } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
@@ -22,26 +22,11 @@ export class TransferHospitalsTabComponent implements OnInit {
 
     public transferPoint$!: Observable<TransferPoint>;
 
-    public hospitals$: Observable<{ [key: UUID]: Hospital }> =
-        this.store.select(selectHospitals);
+    public reachableHospitals$!: Observable<
+        { id: UUID; name: string; transportDuration: number }[]
+    >;
 
-    public readonly hospitalsToBeAdded$: Observable<{ [key: UUID]: Hospital }> =
-        this.store.select(
-            createSelector(
-                selectTransferPoints,
-                selectHospitals,
-                (transferPoints, hospitals) => {
-                    const currentTransferPoint =
-                        transferPoints[this.transferPointId]!;
-                    return Object.fromEntries(
-                        Object.entries(hospitals).filter(
-                            ([key]) =>
-                                !currentTransferPoint.reachableHospitals[key]
-                        )
-                    );
-                }
-            )
-        );
+    public hospitalsToBeAdded$!: Observable<{ [key: UUID]: Hospital }>;
 
     constructor(
         private readonly exerciseService: ExerciseService,
@@ -51,6 +36,39 @@ export class TransferHospitalsTabComponent implements OnInit {
     ngOnInit() {
         this.transferPoint$ = this.store.select(
             createSelectTransferPoint(this.transferPointId)
+        );
+
+        const hospitals$ = this.store.select(selectHospitals);
+
+        this.hospitalsToBeAdded$ = combineLatest([
+            this.transferPoint$,
+            hospitals$,
+        ]).pipe(
+            map(([transferPoint, hospitals]) => {
+                {
+                    return Object.fromEntries(
+                        Object.entries(hospitals).filter(
+                            ([key]) => !transferPoint.reachableHospitals[key]
+                        )
+                    );
+                }
+            })
+        );
+
+        this.reachableHospitals$ = combineLatest([
+            this.transferPoint$,
+            hospitals$,
+        ]).pipe(
+            map(([transferPoint, hospitals]) =>
+                Object.entries(transferPoint.reachableHospitals)
+                    .map(([key]) => ({
+                        id: key,
+                        name: hospitals[key]?.name ?? '',
+                        transportDuration:
+                            hospitals[key]?.transportDuration ?? 0,
+                    }))
+                    .sort((a, b) => a.name.localeCompare(b.name))
+            )
         );
     }
 
