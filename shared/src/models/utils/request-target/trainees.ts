@@ -8,6 +8,7 @@ import { ResourceRequestRadiogram } from '../../radiogram/resource-request-radio
 import type { Mutable } from '../../../utils/immutability';
 import { isDone, isUnread } from '../../radiogram/radiogram-helpers';
 import { StrictObject } from '../../../utils/strict-object';
+import { isEmptyResource } from '../rescue-resource';
 import type {
     RequestTarget,
     RequestTargetConfiguration,
@@ -41,7 +42,11 @@ export const traineesRequestTarget: RequestTarget<TraineesRequestTargetConfigura
                     radiogram.key === key
             ) as Mutable<ResourceRequestRadiogram> | undefined;
             if (unreadRadiogram) {
-                unreadRadiogram.requiredResource = requestedResource;
+                if (isEmptyResource(requestedResource)) {
+                    delete draftState.radiograms[unreadRadiogram.id];
+                } else {
+                    unreadRadiogram.requiredResource = requestedResource;
+                }
                 return;
             }
 
@@ -52,7 +57,8 @@ export const traineesRequestTarget: RequestTarget<TraineesRequestTargetConfigura
                             radiogram.type === 'resourceRequestRadiogram' &&
                             radiogram.key === key
                     )
-                    .every(isDone)
+                    .every(isDone) &&
+                !isEmptyResource(requestedResource)
             ) {
                 publishRadiogram(
                     draftState,

@@ -1,7 +1,6 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
 import type { PatientStatus, PersonnelType } from '../../models/utils';
 import {
-    isEmptyResource,
     PersonnelResource,
     getCreate,
     isInSpecificSimulatedRegion,
@@ -206,17 +205,16 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 const missingResource = PersonnelResource.create(
                     ceilResourceDescription(missingPersonnel)
                 );
-                if (!isEmptyResource(missingResource)) {
-                    sendSimulationEvent(
-                        simulatedRegion,
-                        ResourceRequiredEvent.create(
-                            nextUUID(draftState),
-                            simulatedRegion.id,
-                            missingResource,
-                            'reassignTreatmentsActivity'
-                        )
-                    );
-                }
+                sendSimulationEvent(
+                    simulatedRegion,
+
+                    ResourceRequiredEvent.create(
+                        nextUUID(draftState),
+                        simulatedRegion.id,
+                        missingResource,
+                        'reassignTreatmentsActivity'
+                    )
+                );
             }
 
             if (allowTerminate) {

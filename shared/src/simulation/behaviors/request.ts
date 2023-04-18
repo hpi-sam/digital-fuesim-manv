@@ -18,10 +18,7 @@ import { nextUUID } from '../utils/randomness';
 import { RecurringEventActivityState } from '../activities';
 import { SendRequestEvent } from '../events/send-request';
 import { CreateRequestActivityState } from '../activities/create-request';
-import {
-    isEmptyResource,
-    VehicleResource,
-} from '../../models/utils/rescue-resource';
+import { VehicleResource } from '../../models/utils/rescue-resource';
 import {
     ExerciseRequestTargetConfiguration,
     requestTargetTypeOptions,
@@ -159,17 +156,15 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                 const resource = VehicleResource.create(
                     resourcesToRequest as ResourceDescription
                 );
-                if (!isEmptyResource(resource)) {
-                    addActivity(
-                        simulatedRegion,
-                        CreateRequestActivityState.create(
-                            nextUUID(draftState),
-                            behaviorState.requestTarget,
-                            resource,
-                            `${simulatedRegion.id}-request`
-                        )
-                    );
-                }
+                addActivity(
+                    simulatedRegion,
+                    CreateRequestActivityState.create(
+                        nextUUID(draftState),
+                        behaviorState.requestTarget,
+                        resource,
+                        `${simulatedRegion.id}-request`
+                    )
+                );
                 break;
             }
             default:
