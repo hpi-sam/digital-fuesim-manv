@@ -30,6 +30,7 @@ import {
     RequestBehaviorState,
     getResourcesToRequest,
     updateBehaviorsRequestInterval,
+    updateBehaviorsRequestTarget,
 } from './request';
 
 // constants
@@ -193,7 +194,10 @@ const updateRequestTarget = (
         cloneDeepMutable(transferPoint);
     draftState.simulatedRegions[otherSimulatedRegion.id] =
         cloneDeepMutable(otherSimulatedRegion);
-    behaviorState.requestTarget = cloneDeepMutable(
+    updateBehaviorsRequestTarget(
+        draftState,
+        simulatedRegion,
+        behaviorState,
         SimulatedRegionRequestTargetConfiguration.create(
             otherSimulatedRegion.id
         )

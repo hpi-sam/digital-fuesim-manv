@@ -171,7 +171,36 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                 break;
         }
     },
+    onRemove(draftState, simulatedRegion, behaviorState) {
+        addActivity(
+            simulatedRegion,
+            CreateRequestActivityState.create(
+                nextUUID(draftState),
+                behaviorState.requestTarget,
+                VehicleResource.create({}),
+                `${simulatedRegion.id}-request`
+            )
+        );
+    },
 };
+
+export function updateBehaviorsRequestTarget(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegion>,
+    behaviorState: Mutable<RequestBehaviorState>,
+    requestTarget: ExerciseRequestTargetConfiguration
+) {
+    addActivity(
+        simulatedRegion,
+        CreateRequestActivityState.create(
+            nextUUID(draftState),
+            behaviorState.requestTarget,
+            VehicleResource.create({}),
+            `${simulatedRegion.id}-request`
+        )
+    );
+    behaviorState.requestTarget = cloneDeepMutable(requestTarget);
+}
 
 export function updateBehaviorsRequestInterval(
     draftState: Mutable<ExerciseState>,
