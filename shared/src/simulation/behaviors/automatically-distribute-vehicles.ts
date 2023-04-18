@@ -261,11 +261,11 @@ function distributionLimitOfVehicleTypeReached(
 
 function numberOfDifferentVehiclesNeeded(
     behaviorState: Mutable<AutomaticallyDistributeVehiclesBehaviorState>,
-    regionIdB: string
+    regionId: string
 ) {
     return Object.values(behaviorState.remainingInNeed).reduce(
         (numberOfVehiclesNeededByRegion, regionsInNeed) => {
-            if (regionsInNeed[regionIdB]) {
+            if (regionsInNeed[regionId]) {
                 return numberOfVehiclesNeededByRegion + 1;
             }
             return numberOfVehiclesNeededByRegion;
