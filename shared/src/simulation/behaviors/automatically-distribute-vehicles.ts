@@ -34,6 +34,10 @@ export class AutomaticallyDistributeVehiclesBehaviorState
     @IsResourceDescription()
     public readonly distributedRounds: { [vehicleType: string]: number } = {};
 
+    @IsResourceDescription()
+    public readonly distributedLastRound: { [vehicleType: string]: number } =
+        {};
+
     @IsUUIDSetMap()
     public readonly remainingInNeed: { [vehicleType: string]: UUIDSet } = {};
 
@@ -105,13 +109,25 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                                         ] = 0;
                                     }
 
-                                    behaviorState.distributedRounds[
-                                        vehicleType
-                                    ]++;
+                                    // Check if a vehicle was distributed during the last distribution try
+                                    // to not increase the distributed rounds if all transfer connections were missing
+
+                                    if (
+                                        (behaviorState.distributedLastRound[
+                                            vehicleType
+                                        ] ?? 0) > 0
+                                    ) {
+                                        behaviorState.distributedRounds[
+                                            vehicleType
+                                        ]++;
+                                    }
 
                                     behaviorState.remainingInNeed[vehicleType] =
                                         behaviorState.distributionDestinations;
                                 }
+                                behaviorState.distributedLastRound[
+                                    vehicleType
+                                ] = 0;
                             }
                         );
 
@@ -209,6 +225,14 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                             if (vehicleAmount === 0) {
                                 return;
                             }
+                            if (
+                                !behaviorState.distributedLastRound[vehicleType]
+                            ) {
+                                behaviorState.distributedLastRound[
+                                    vehicleType
+                                ] = 0;
+                            }
+                            behaviorState.distributedLastRound[vehicleType]++;
 
                             if (behaviorState.remainingInNeed[vehicleType]) {
                                 delete behaviorState.remainingInNeed[
