@@ -493,7 +493,7 @@ export namespace SimulationActionReducers {
                     vehicleType
                 ] = newLimit;
 
-                if (newLimit < 1) {
+                if (newLimit === 0) {
                     delete automaticDistributionBehaviorState.remainingInNeed[
                         vehicleType
                     ];
@@ -557,6 +557,18 @@ export namespace SimulationActionReducers {
                     behaviorId,
                     'automaticallyDistributeVehiclesBehavior'
                 );
+
+                //  Do not re-add the destination if it was already added previously
+
+                if (
+                    automaticDistributionBehaviorState.distributionDestinations[
+                        destinationId
+                    ]
+                ) {
+                    throw new ReducerError(
+                        `The destination with id: ${destinationId} was already added to the behavior with id: ${behaviorId} in simulated region with id:${simulatedRegionId}`
+                    );
+                }
 
                 automaticDistributionBehaviorState.distributionDestinations[
                     destinationId

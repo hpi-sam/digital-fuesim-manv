@@ -1,5 +1,6 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
 import { getCreate, VehicleResource } from '../../models/utils';
+import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuid, UUIDSet } from '../../utils';
 import { IsUUIDSet, IsUUIDSetMap, IsValue } from '../../utils/validators';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
@@ -32,10 +33,6 @@ export class AutomaticallyDistributeVehiclesBehaviorState
 
     @IsResourceDescription()
     public readonly distributedRounds: { [vehicleType: string]: number } = {};
-
-    @IsResourceDescription()
-    public readonly distributedLastRound: { [vehicleType: string]: number } =
-        {};
 
     @IsUUIDSetMap()
     public readonly remainingInNeed: { [vehicleType: string]: UUIDSet } = {};
@@ -78,6 +75,12 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                 }
                 case 'tryToDistributeEvent':
                     {
+                        // Ignore the event if it is not meant for this behavior
+
+                        if (event.behaviorId !== behaviorState.id) {
+                            return;
+                        }
+
                         // Don't do anything until there is a region to distribute to
 
                         if (
@@ -101,22 +104,14 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                                             vehicleType
                                         ] = 0;
                                     }
-                                    if (
-                                        (behaviorState.distributedLastRound[
-                                            vehicleType
-                                        ] ?? 0) > 0
-                                    ) {
-                                        behaviorState.distributedRounds[
-                                            vehicleType
-                                        ]++;
-                                    }
+
+                                    behaviorState.distributedRounds[
+                                        vehicleType
+                                    ]++;
 
                                     behaviorState.remainingInNeed[vehicleType] =
                                         behaviorState.distributionDestinations;
                                 }
-                                behaviorState.distributedLastRound[
-                                    vehicleType
-                                ] = 0;
                             }
                         );
 
@@ -128,13 +123,15 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                             )
                         );
                         regionsOrderedByNeed.sort(
-                            (a, b) =>
-                                Object.values(
-                                    behaviorState.remainingInNeed
-                                ).reduce((c, d) => c + (d[b] ? 1 : 0), 0) -
-                                Object.values(
-                                    behaviorState.remainingInNeed
-                                ).reduce((c, d) => c + (d[a] ? 1 : 0), 0)
+                            (regionIdA, regionIdB) =>
+                                numberOfDifferentVehiclesNeeded(
+                                    behaviorState,
+                                    regionIdB
+                                ) -
+                                numberOfDifferentVehiclesNeeded(
+                                    behaviorState,
+                                    regionIdA
+                                )
                         );
 
                         const vehiclesToBeSent: {
@@ -144,12 +141,10 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                         Object.entries(behaviorState.remainingInNeed).forEach(
                             ([vehicleType, regionsInNeed]) => {
                                 if (
-                                    (behaviorState.distributedRounds[
+                                    distributionLimitOfVehicleTypeReached(
+                                        behaviorState,
                                         vehicleType
-                                    ] ?? 0) >=
-                                    (behaviorState.distributionLimits[
-                                        vehicleType
-                                    ] ?? 0)
+                                    )
                                 ) {
                                     return;
                                 }
@@ -190,18 +185,14 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                         Object.entries(behaviorState.remainingInNeed).forEach(
                             ([vehicleType, regionsInNeed]) => {
                                 if (
-                                    (behaviorState.distributedRounds[
+                                    distributionLimitOfVehicleTypeReached(
+                                        behaviorState,
                                         vehicleType
-                                    ] ?? 0) >=
-                                    (behaviorState.distributionLimits[
-                                        vehicleType
-                                    ] ?? 0)
+                                    )
                                 ) {
                                     return;
                                 }
-                                if (regionsInNeed[event.transferPointId]) {
-                                    delete regionsInNeed[event.transferPointId];
-                                }
+                                delete regionsInNeed[event.transferPointId];
                             }
                         );
                     }
@@ -218,14 +209,6 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                             if (vehicleAmount === 0) {
                                 return;
                             }
-                            if (
-                                !behaviorState.distributedLastRound[vehicleType]
-                            ) {
-                                behaviorState.distributedLastRound[
-                                    vehicleType
-                                ] = 0;
-                            }
-                            behaviorState.distributedLastRound[vehicleType]++;
 
                             if (behaviorState.remainingInNeed[vehicleType]) {
                                 delete behaviorState.remainingInNeed[
@@ -241,3 +224,28 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
             }
         },
     };
+
+function distributionLimitOfVehicleTypeReached(
+    behaviorState: Mutable<AutomaticallyDistributeVehiclesBehaviorState>,
+    vehicleType: string
+) {
+    return (
+        (behaviorState.distributedRounds[vehicleType] ?? 0) >=
+        (behaviorState.distributionLimits[vehicleType] ?? 0)
+    );
+}
+
+function numberOfDifferentVehiclesNeeded(
+    behaviorState: Mutable<AutomaticallyDistributeVehiclesBehaviorState>,
+    regionIdB: string
+) {
+    return Object.values(behaviorState.remainingInNeed).reduce(
+        (numberOfVehiclesNeededByRegion, regionsInNeed) => {
+            if (regionsInNeed[regionIdB]) {
+                return numberOfVehiclesNeededByRegion + 1;
+            }
+            return numberOfVehiclesNeededByRegion;
+        },
+        0
+    );
+}

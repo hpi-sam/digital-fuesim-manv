@@ -43,9 +43,8 @@ export class SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesCompo
     public addableTransferPoints$!: Observable<{
         [k: string]: TransferPoint;
     }>;
-    public getTransferPointOrderByValue: (
-        transferPoint: TransferPoint
-    ) => string = (transferPoint) => TransferPoint.getFullName(transferPoint);
+    public getTransferPointOrderByValue = (transferPoint: TransferPoint) =>
+        TransferPoint.getFullName(transferPoint);
 
     public readonly infinity = Number.MAX_VALUE;
 
