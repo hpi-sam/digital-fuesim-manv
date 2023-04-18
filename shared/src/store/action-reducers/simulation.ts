@@ -2,6 +2,7 @@ import {
     IsInt,
     IsNumber,
     IsOptional,
+    IsString,
     IsUUID,
     Min,
     ValidateNested,
@@ -170,6 +171,23 @@ export class RemoveRecurringReportsAction implements Action {
     public readonly informationType!: ReportableInformation;
 }
 
+export class ChangeAutomaticDistributionLimitAction implements Action {
+    @IsValue('[AutomaticDistributionBehavior] Change Limit')
+    public readonly type = '[AutomaticDistributionBehavior] Change Limit';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsString()
+    public readonly vehicleType!: string;
+
+    @IsInt()
+    @Min(0)
+    public readonly newLimit!: number;
+}
 export class UpdateRequestIntervalAction implements Action {
     @IsValue('[RequestBehavior] Update RequestInterval')
     public readonly type = '[RequestBehavior] Update RequestInterval';
@@ -185,6 +203,20 @@ export class UpdateRequestIntervalAction implements Action {
     public readonly requestInterval!: number;
 }
 
+export class AddAutomaticDistributionDestinationAction implements Action {
+    @IsValue('[AutomaticDistributionBehavior] Add Destination')
+    public readonly type = '[AutomaticDistributionBehavior] Add Destination';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly destinationId!: string;
+}
+
 export class UpdateRequestTargetAction implements Action {
     @IsValue('[RequestBehavior] Update RequestTarget')
     public readonly type = '[RequestBehavior] Update RequestTarget';
@@ -198,6 +230,20 @@ export class UpdateRequestTargetAction implements Action {
     @Type(...requestTargetTypeOptions)
     @ValidateNested()
     public readonly requestTarget!: ExerciseRequestTargetConfiguration;
+}
+
+export class RemoveAutomaticDistributionDestinationAction implements Action {
+    @IsValue('[AutomaticDistributionBehavior] Remove Destination')
+    public readonly type = '[AutomaticDistributionBehavior] Remove Destination';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly destinationId!: string;
 }
 
 export class UpdatePromiseInvalidationIntervalAction implements Action {
@@ -429,6 +475,46 @@ export namespace SimulationActionReducers {
             rights: 'trainer',
         };
 
+    export const changeAutomaticDistributionLimit: ActionReducer<ChangeAutomaticDistributionLimitAction> =
+        {
+            action: ChangeAutomaticDistributionLimitAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, vehicleType, newLimit }
+            ) {
+                const automaticDistributionBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'automaticallyDistributeVehiclesBehavior'
+                );
+
+                automaticDistributionBehaviorState.distributionLimits[
+                    vehicleType
+                ] = newLimit;
+
+                if (newLimit === 0) {
+                    delete automaticDistributionBehaviorState.remainingInNeed[
+                        vehicleType
+                    ];
+                } else {
+                    if (
+                        !automaticDistributionBehaviorState.remainingInNeed[
+                            vehicleType
+                        ]
+                    ) {
+                        automaticDistributionBehaviorState.remainingInNeed[
+                            vehicleType
+                        ] = cloneDeepMutable(
+                            automaticDistributionBehaviorState.distributionDestinations
+                        );
+                    }
+                }
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
     export const updateRequestInterval: ActionReducer<UpdateRequestIntervalAction> =
         {
             action: UpdateRequestIntervalAction,
@@ -453,6 +539,46 @@ export namespace SimulationActionReducers {
                     behaviorState,
                     requestInterval
                 );
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const addAutomaticDistributionLimit: ActionReducer<AddAutomaticDistributionDestinationAction> =
+        {
+            action: AddAutomaticDistributionDestinationAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, destinationId }
+            ) {
+                const automaticDistributionBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'automaticallyDistributeVehiclesBehavior'
+                );
+
+                //  Do not re-add the destination if it was already added previously
+
+                if (
+                    automaticDistributionBehaviorState.distributionDestinations[
+                        destinationId
+                    ]
+                ) {
+                    throw new ReducerError(
+                        `The destination with id: ${destinationId} was already added to the behavior with id: ${behaviorId} in simulated region with id:${simulatedRegionId}`
+                    );
+                }
+
+                automaticDistributionBehaviorState.distributionDestinations[
+                    destinationId
+                ] = true;
+
+                Object.values(
+                    automaticDistributionBehaviorState.remainingInNeed
+                ).forEach((regionsInNeed) => {
+                    regionsInNeed[destinationId] = true;
+                });
                 return draftState;
             },
             rights: 'trainer',
@@ -487,6 +613,32 @@ export namespace SimulationActionReducers {
             rights: 'trainer',
         };
 
+    export const removeAutomaticDistributionLimit: ActionReducer<RemoveAutomaticDistributionDestinationAction> =
+        {
+            action: RemoveAutomaticDistributionDestinationAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, destinationId }
+            ) {
+                const automaticDistributionBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'automaticallyDistributeVehiclesBehavior'
+                );
+
+                delete automaticDistributionBehaviorState
+                    .distributionDestinations[destinationId];
+
+                Object.values(
+                    automaticDistributionBehaviorState.remainingInNeed
+                ).forEach((regionsInNeed) => {
+                    delete regionsInNeed[destinationId];
+                });
+                return draftState;
+            },
+            rights: 'trainer',
+        };
     export const updatePromiseInvalidationInterval: ActionReducer<UpdatePromiseInvalidationIntervalAction> =
         {
             action: UpdatePromiseInvalidationIntervalAction,

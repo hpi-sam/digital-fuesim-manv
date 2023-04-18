@@ -23,7 +23,10 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm overflow-auto mh-100" style="max-width: 70%">
+        <div
+            class="col-sm overflow-auto mh-100 h-100 w-100"
+            style="max-width: 70%"
+        >
             <div [ngSwitch]="selectedBehavior?.type">
                 <app-simulated-region-overview-behavior-assign-leader
                     *ngSwitchCase="'assignLeaderBehavior'"
@@ -44,6 +47,13 @@
                     [simulatedRegionId]="simulatedRegion.id"
                     [reportBehaviorId]="selectedBehavior!.id"
                 ></app-simulated-region-overview-behavior-report>
+                <app-simulated-region-overview-behavior-automatically-distribute-vehicles
+                    *ngSwitchCase="'automaticallyDistributeVehiclesBehavior'"
+                    [simulatedRegionId]="simulatedRegion.id"
+                    [automaticallyDistributeVehiclesBehaviorId]="
+                        selectedBehavior!.id
+                    "
+                ></app-simulated-region-overview-behavior-automatically-distribute-vehicles>
                 <app-simulated-region-overview-behavior-provide-personnel
                     *ngSwitchCase="'providePersonnelBehavior'"
                     [simulatedRegionId]="simulatedRegion.id"

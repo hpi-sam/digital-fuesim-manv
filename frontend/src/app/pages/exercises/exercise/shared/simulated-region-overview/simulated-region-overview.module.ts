@@ -43,6 +43,7 @@ import { RadigoramCardContentMissingTransferConnectionComponent } from './radiog
 import { SimulatedRegionOverviewBehaviorProvidePersonnelComponent } from './tabs/behavior-tab/behaviors/provide-personnel/simulated-region-overview-behavior-provide-personnel.component';
 import { SimulatedRegionOverviewBehaviorAnswerVehicleRequestsComponent } from './tabs/behavior-tab/behaviors/answer-vehicle-requests/simulated-region-overview-behavior-answer-vehicle-requests.component';
 import { RadigoramCardContentResourceRequestComponent } from './radiogram-list/radiogram-card/radigoram-card-content-resource-request/radigoram-card-content-resource-request.component';
+import { SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesComponent } from './tabs/behavior-tab/behaviors/automatically-distribute-vehicles/simulated-region-overview-behavior-automatically-distribute-vehicles.component';
 import { RequestVehiclesComponent } from './tabs/behavior-tab/behaviors/request-vehicles/simulated-region-overview-behavior-request-vehicles.component';
 
 @NgModule({
@@ -78,12 +79,13 @@ import { RequestVehiclesComponent } from './tabs/behavior-tab/behaviors/request-
         SimulatedRegionOverviewBehaviorProvidePersonnelComponent,
         SimulatedRegionOverviewBehaviorAnswerVehicleRequestsComponent,
         RadigoramCardContentResourceRequestComponent,
+        SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesComponent,
         RequestVehiclesComponent,
     ],
     imports: [
-        CommonModule,
         FormsModule,
         SharedModule,
+        CommonModule,
         NgbNavModule,
         NgbCollapseModule,
         NgbDropdownModule,
