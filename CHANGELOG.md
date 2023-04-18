@@ -32,6 +32,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 -   The icon for `C` (transport priority) in a patient status code has been changed to a road sign to be distinguishable from the icon for `D` (complication).
 -   `ConditionParameters.minimumHealth` and `ConditionParameters.maximumHealth` are now inclusive.
+-   Connected transfer points and hospitals are now listed in alphabetical order in the transfer popups.
 
 ### Fixed
 
