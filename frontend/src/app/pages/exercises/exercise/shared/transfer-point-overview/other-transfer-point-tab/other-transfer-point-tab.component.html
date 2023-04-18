@@ -9,17 +9,14 @@
         Es sind noch keine Transferpunkte verbunden.
     </p>
     <div class="mb-3 overflow-auto flex-grow-1 flex-shrink-1">
-        <ul
-            *ngIf="transferPoints$ | async as transferPoints"
-            class="list-group"
-        >
+        <ul class="list-group">
             <li
                 *ngFor="
-                    let reachableTransferPointConnection of transferPoint.reachableTransferPoints
-                        | keyvalue;
-                    trackBy: 'key'
+                    let reachableTransferPoint of reachableTransferPoints$
+                        | async;
+                    trackBy: 'id'
                         | appTrackByProperty
-                            : (transferPoint.reachableTransferPoints | keyvalue)
+                            : (reachableTransferPoints$ | async)
                 "
                 class="list-group-item d-flex align-items-center flex-nowrap p-0"
             >
@@ -28,21 +25,17 @@
                     style="max-width: 300px"
                 >
                     <app-transfer-point-name
-                        [transferPointId]="reachableTransferPointConnection.key"
+                        [transferPointId]="reachableTransferPoint.id"
                     ></app-transfer-point-name>
                 </div>
                 <input
                     required
                     [min]="0"
                     [max]="24 * 60"
-                    [ngModel]="
-                        reachableTransferPointConnection.value.duration /
-                        1000 /
-                        60
-                    "
+                    [ngModel]="reachableTransferPoint.duration / 1000 / 60"
                     (appSaveOnTyping)="
                         connectTransferPoint(
-                            reachableTransferPointConnection.key,
+                            reachableTransferPoint.id,
                             $event * 1000 * 60
                         )
                     "
@@ -57,11 +50,7 @@
                 <button
                     class="btn btn-link text-danger text-decoration-none"
                     title="Verbindung löschen"
-                    (click)="
-                        disconnectTransferPoint(
-                            reachableTransferPointConnection.key
-                        )
-                    "
+                    (click)="disconnectTransferPoint(reachableTransferPoint.id)"
                     data-cy="transferPointPopupRemoveOtherTransferPointButton"
                 >
                     <i class="bi-trash"></i>

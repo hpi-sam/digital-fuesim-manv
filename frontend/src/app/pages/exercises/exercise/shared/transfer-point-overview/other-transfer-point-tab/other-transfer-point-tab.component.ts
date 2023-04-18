@@ -1,8 +1,9 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { createSelector, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { UUID, TransferPoint } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
+import { combineLatest, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
@@ -20,24 +21,16 @@ export class OtherTransferPointTabComponent implements OnInit {
 
     public transferPoint$!: Observable<TransferPoint>;
 
-    public transferPoints$: Observable<{ [key: UUID]: TransferPoint }> =
-        this.store.select(selectTransferPoints);
+    public reachableTransferPoints$!: Observable<
+        { id: UUID; name: string; duration: number }[]
+    >;
 
     /**
      * All transferPoints that are neither connected to this one nor this one itself
      */
-    public readonly transferPointsToBeAdded$ = this.store.select(
-        createSelector(selectTransferPoints, (transferPoints) => {
-            const currentTransferPoint = transferPoints[this.transferPointId]!;
-            return Object.fromEntries(
-                Object.entries(transferPoints).filter(
-                    ([key]) =>
-                        key !== this.transferPointId &&
-                        !currentTransferPoint.reachableTransferPoints[key]
-                )
-            );
-        })
-    );
+    public transferPointsToBeAdded$!: Observable<{
+        [key: UUID]: TransferPoint;
+    }>;
 
     constructor(
         private readonly store: Store<AppState>,
@@ -47,6 +40,37 @@ export class OtherTransferPointTabComponent implements OnInit {
     ngOnInit() {
         this.transferPoint$ = this.store.select(
             createSelectTransferPoint(this.transferPointId)
+        );
+
+        const transferPoints$ = this.store.select(selectTransferPoints);
+
+        this.transferPointsToBeAdded$ = transferPoints$.pipe(
+            map((transferPoints) => {
+                const currentTransferPoint =
+                    transferPoints[this.transferPointId]!;
+                return Object.fromEntries(
+                    Object.entries(transferPoints).filter(
+                        ([key]) =>
+                            key !== this.transferPointId &&
+                            !currentTransferPoint.reachableTransferPoints[key]
+                    )
+                );
+            })
+        );
+
+        this.reachableTransferPoints$ = combineLatest([
+            this.transferPoint$,
+            transferPoints$,
+        ]).pipe(
+            map(([transferPoint, transferPoints]) =>
+                Object.entries(transferPoint.reachableTransferPoints)
+                    .map(([key, value]) => ({
+                        id: key,
+                        name: TransferPoint.getFullName(transferPoints[key]!),
+                        duration: value.duration,
+                    }))
+                    .sort((a, b) => a.name.localeCompare(b.name))
+            )
         );
     }
 
