@@ -3,7 +3,7 @@
 
     <ng-container *ngIf="{ time: nextTimeoutIn$ | async } as nextTimeoutIn">
         <span *ngIf="nextTimeoutIn.time !== undefined" class="text-muted"
-            >Nächste Anfrage potentiell in
+            >Nächste potentielle Anfrage in
             {{ nextTimeoutIn.time | date : 'mm:ss' }}</span
         >
     </ng-container>
