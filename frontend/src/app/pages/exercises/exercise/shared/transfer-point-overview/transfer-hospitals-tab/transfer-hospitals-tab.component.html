@@ -9,36 +9,32 @@
         Es sind noch keine Krankenhäuser verbunden.
     </p>
     <div class="mb-3 overflow-auto flex-grow-1 flex-shrink-1">
-        <ul *ngIf="hospitals$ | async as hospitals" class="list-group">
+        <ul class="list-group">
             <li
                 *ngFor="
-                    let reachableHospitalId of transferPoint.reachableHospitals
-                        | keys;
-                    trackBy: '$value'
-                        | appTrackByProperty
-                            : (transferPoint.reachableHospitals | keys)
+                    let reachableHospital of reachableHospitals$ | async;
+                    trackBy: 'id'
+                        | appTrackByProperty : (reachableHospitals$ | async)
                 "
                 class="list-group-item d-flex align-items-center flex-nowrap p-0"
             >
                 <div
-                    [title]="hospitals[reachableHospitalId]!.name"
+                    [title]="reachableHospital.name"
                     class="flex-grow-1 ps-2 pe-2 text-truncate"
                     style="max-width: 300px"
                 >
                     <app-hospital-name
-                        [hospitalId]="reachableHospitalId"
+                        [hospitalId]="reachableHospital.id"
                     ></app-hospital-name>
                 </div>
                 <span class="font-monospace text-end" style="width: 125px">{{
-                    hospitals[reachableHospitalId]!.transportDuration /
-                        1000 /
-                        60
+                    reachableHospital.transportDuration / 1000 / 60
                 }}</span>
                 <span class="ps-2 pe-2" title="Minuten">min</span>
                 <button
                     class="btn btn-link text-danger text-decoration-none"
                     title="Verbindung löschen"
-                    (click)="disconnectHospital(reachableHospitalId)"
+                    (click)="disconnectHospital(reachableHospital.id)"
                     data-cy="transferPointPopupRemoveHospitalButton"
                 >
                     <i class="bi-trash"></i>
