@@ -7,6 +7,42 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [0.4.0] - 2023-04-19
+
+### Added
+
+-   There is now a display for how many different variations of a patient template exists.
+-   There is now a display for whether a patient is pregnant.
+-   The patient status display that visualizes the progression of a patient explains its icons via a tooltip.
+-   There is now a behavior that answers vehicle requests from other regions.
+-   There is now a behavior that automatically distributes vehicles to regions.
+    -   The types and optional limits of the distribution can be specified.
+    -   The behavior distributes the vehicles in rounds of one vehicle per category for every region every 60 seconds
+-   There is now a behavior to forward requests to other simulated regions or the trainees.
+-   There is now a radiogram for missing transfer connections and vehicle requests.
+    -   Radiograms for vehicle requests can also be answered in the user interface, whether they have been accepted or not.
+-   When personnel is missing during patient treatment in a simulated region, the reassign treatment activity now sends an event to notify the region about the shortage.
+-   A new behavior has been added to respond to personnel shortages by instructing the region to request new vehicles.
+    -   The priorities of vehicles to request can be configured in a new behavior tab.
+-   Development builds (the docker container with the `dev` tag) now show the commit hash they have been built from in the version number.
+-   The time until the next treatment recalculation for the automatic patient treatment is shown.
+
+### Fixed
+
+-   New patients added to simulated regions during treatment are now also triaged and treated.
+-   When treatment is no longer secured, the displayed status is reverted back to lack of personnel.
+-   When the treatment status changes, personnel is reassigned immediately instead of after the next interval.
+
+### Changed
+
+-   The icon for `C` (transport priority) in a patient status code has been changed to a road sign to be distinguishable from the icon for `D` (complication).
+-   `ConditionParameters.minimumHealth` and `ConditionParameters.maximumHealth` are now inclusive.
+-   Connected transfer points and hospitals are now listed in alphabetical order in the transfer popups.
+
+### Fixed
+
+-   Dead/Black patients can now be treated (for the automatic triage to work), but they won't be treated after triage.
+
 ## [0.3.0] - 2023-03-27
 
 ### Added
@@ -108,7 +144,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...0.4.0
 [0.3.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.1.0...v0.2.0

@@ -1,6 +1,4 @@
 import { groupBy } from 'lodash-es';
-import type { Material, Personnel } from '../../../models';
-import { Patient } from '../../../models';
 import type { MapCoordinates, PatientStatus } from '../../../models/utils';
 import {
     currentCoordinatesOf,
@@ -12,6 +10,9 @@ import type { ExerciseState } from '../../../state';
 import { maxTreatmentRange } from '../../../state-helpers/max-treatment-range';
 import type { Mutable, UUID } from '../../../utils';
 import { elementTypePluralMap } from '../../../utils/element-type-plural-map';
+import type { Personnel } from '../../../models/personnel';
+import type { Material } from '../../../models/material';
+import { Patient } from '../../../models/patient';
 import { getElement } from './get-element';
 
 // TODO: `caterFor` and `treat` are currently used as synonyms without a clear distinction.

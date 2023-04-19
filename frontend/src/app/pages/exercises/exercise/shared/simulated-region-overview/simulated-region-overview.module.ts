@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import {
     NgbCollapseModule,
     NgbDropdownModule,
@@ -15,7 +16,7 @@ import { SimulatedRegionOverviewBehaviorTabComponent } from './tabs/behavior-tab
 import { SimulatedRegionOverviewGeneralTabComponent } from './tabs/general-tab/simulated-region-overview-general-tab.component';
 import { SimulatedRegionOverviewBehaviorTreatPatientsComponent } from './tabs/behavior-tab/behaviors/treat-patients/simulated-region-overview-behavior-treat-patients.component';
 import { SimulatedRegionOverviewBehaviorAssignLeaderComponent } from './tabs/behavior-tab/behaviors/assign-leader/simulated-region-overview-behavior-assign-leader.component';
-import { BehaviorToGermanNamePipe } from './tabs/behavior-tab/utils/behavior-to-german-name.pipe';
+import { BehaviorTypeToGermanNamePipe } from './tabs/behavior-tab/utils/behavior-to-german-name.pipe';
 import { SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent } from './tabs/behavior-tab/behaviors/unload-arriving-vehicles/simulated-region-overview-behavior-unload-arriving-vehicles.component';
 import { TreatmentProgressToGermanNamePipe } from './tabs/behavior-tab/utils/treatment-progress-to-german-name.pipe';
 import { SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent } from './tabs/behavior-tab/behaviors/treat-patients/patient-details/simulated-region-overview-behavior-treat-patients-patient-details.component';
@@ -38,6 +39,12 @@ import { SimulatedRegionOverviewBehaviorReportComponent } from './tabs/behavior-
 import { RadiogramCardContentInformationUnavailableComponent } from './radiogram-list/radiogram-card/radiogram-card-content-information-unavailable/radiogram-card-content-information-unavailable.component';
 import { HumanReadableRadiogramTypePipe } from './radiogram-list/human-readable-radiogram-type.pipe';
 import { TreatmentStatusBadgeComponent } from './treatment-status-badge/treatment-status-badge.component';
+import { RadigoramCardContentMissingTransferConnectionComponent } from './radiogram-list/radiogram-card/radigoram-card-content-missing-transfer-connection/radigoram-card-content-missing-transfer-connection.component';
+import { SimulatedRegionOverviewBehaviorProvidePersonnelComponent } from './tabs/behavior-tab/behaviors/provide-personnel/simulated-region-overview-behavior-provide-personnel.component';
+import { SimulatedRegionOverviewBehaviorAnswerVehicleRequestsComponent } from './tabs/behavior-tab/behaviors/answer-vehicle-requests/simulated-region-overview-behavior-answer-vehicle-requests.component';
+import { RadigoramCardContentResourceRequestComponent } from './radiogram-list/radiogram-card/radigoram-card-content-resource-request/radigoram-card-content-resource-request.component';
+import { SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesComponent } from './tabs/behavior-tab/behaviors/automatically-distribute-vehicles/simulated-region-overview-behavior-automatically-distribute-vehicles.component';
+import { RequestVehiclesComponent } from './tabs/behavior-tab/behaviors/request-vehicles/simulated-region-overview-behavior-request-vehicles.component';
 
 @NgModule({
     declarations: [
@@ -48,7 +55,7 @@ import { TreatmentStatusBadgeComponent } from './treatment-status-badge/treatmen
         SimulatedRegionOverviewBehaviorTreatPatientsComponent,
         SimulatedRegionOverviewBehaviorAssignLeaderComponent,
         SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent,
-        BehaviorToGermanNamePipe,
+        BehaviorTypeToGermanNamePipe,
         TreatmentProgressToGermanNamePipe,
         SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent,
         WithDollarPipe,
@@ -68,16 +75,23 @@ import { TreatmentStatusBadgeComponent } from './treatment-status-badge/treatmen
         RadiogramCardContentInformationUnavailableComponent,
         HumanReadableRadiogramTypePipe,
         TreatmentStatusBadgeComponent,
+        RadigoramCardContentMissingTransferConnectionComponent,
+        SimulatedRegionOverviewBehaviorProvidePersonnelComponent,
+        SimulatedRegionOverviewBehaviorAnswerVehicleRequestsComponent,
+        RadigoramCardContentResourceRequestComponent,
+        SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesComponent,
+        RequestVehiclesComponent,
     ],
     imports: [
-        CommonModule,
         FormsModule,
         SharedModule,
+        CommonModule,
         NgbNavModule,
         NgbCollapseModule,
         NgbDropdownModule,
         NgbProgressbarModule,
         NgbTooltipModule,
+        DragDropModule,
         TransferPointOverviewModule,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],

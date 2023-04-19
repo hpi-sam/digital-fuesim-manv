@@ -1,10 +1,9 @@
-import { plainToInstance, Transform } from 'class-transformer';
 import type { ValidationOptions } from 'class-validator';
-import { isUUID, ValidateNested } from 'class-validator';
+import { isUUID } from 'class-validator';
 import type { Constructor } from '../constructor';
 import type { UUID } from '../uuid';
-import { combineDecorators } from './combine-decorators';
 import type { GenericPropertyDecorator } from './generic-property-decorator';
+import { IsMultiTypedStringMap } from './is-string-map';
 
 // An `isIdMap` function is omitted.
 // It's currently not used and it's not trivial to migrate the decorator approach below
@@ -42,29 +41,10 @@ export function IsMultiTypedIdMap<
         (value as { id: UUID }).id,
     validationOptions?: ValidationOptions & { each?: Each }
 ): GenericPropertyDecorator<{ readonly [key: UUID]: InstanceType<T> }, Each> {
-    const transform = Transform(
-        ({ value }) => {
-            const plainMap = value as { [key: UUID]: InstanceType<T> };
-            if (
-                Object.entries(plainMap).some(
-                    ([key, plain]) => !isUUID(key, 4) || key !== getId(plain)
-                )
-            ) {
-                return 'invalid';
-            }
-            const plainWithConstructor = Object.values(plainMap).map(
-                (entry) => [entry, getConstructor(entry)] as const
-            );
-            if (plainWithConstructor.some(([_, constr]) => !constr)) {
-                return 'invalid';
-            }
-            const instances = plainWithConstructor.map(([entry, constr]) =>
-                plainToInstance(constr!, entry)
-            );
-            return instances;
-        },
-        { toClassOnly: true }
+    return IsMultiTypedStringMap(
+        getConstructor,
+        (key: string, plain: InstanceType<T>) =>
+            isUUID(key, 4) && key === getId(plain),
+        validationOptions
     );
-    const validateNested = ValidateNested({ ...validationOptions, each: true });
-    return combineDecorators(transform, validateNested);
 }

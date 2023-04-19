@@ -6,3 +6,8 @@ export * from './tick';
 export * from './treatment-progress-changed';
 export * from './treatments-timer-event';
 export * from './vehicle-arrived';
+export * from './resources-required';
+export * from './vehicles-sent';
+export * from './try-to-distribute';
+export * from './vehicle-transfer-successful';
+export * from './transfer-connection-missing';

@@ -7,13 +7,11 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { groupBy } from 'lodash-es';
-import { Patient } from '../../models';
 import type {
     PatientCountRadiogram,
     TreatmentStatusRadiogram,
 } from '../../models/radiogram';
 import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
-import type { SimulatedRegion } from '../../models';
 import type { ExerciseState } from '../../state';
 import { getActivityById } from '../../store/action-reducers/utils';
 import type { Mutable } from '../../utils';
@@ -28,6 +26,8 @@ import {
     TreatmentProgress,
     treatmentProgressAllowedValues,
 } from '../utils/treatment';
+import { Patient } from '../../models/patient';
+import type { SimulatedRegion } from '../../models/simulated-region';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -156,10 +156,14 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                         behaviorState.delayActivityId = id;
                     }
                     break;
+                case 'treatmentProgressChangedEvent':
                 case 'materialAvailableEvent':
                 case 'newPatientEvent':
                 case 'personnelAvailableEvent':
                 case 'treatmentsTimerEvent': {
+                    if (event.type === 'treatmentProgressChangedEvent') {
+                        behaviorState.treatmentProgress = event.newProgress;
+                    }
                     if (behaviorState.delayActivityId) {
                         if (
                             simulatedRegion.activities[
@@ -184,9 +188,6 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
 
                     break;
                 }
-                case 'treatmentProgressChangedEvent':
-                    behaviorState.treatmentProgress = event.newProgress;
-                    break;
                 case 'collectInformationEvent': {
                     const collectInformationEvent = event;
 

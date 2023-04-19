@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsUUID, ValidateNested } from 'class-validator';
-import { TransferPoint } from '../../models';
 import {
     isPositionOnMap,
     isInTransfer,
@@ -18,15 +17,17 @@ import {
     offsetMapPositionBy,
 } from '../../models/utils/position/position-helpers-mutable';
 import type { ExerciseState } from '../../state';
-import { imageSizeToPosition } from '../../state-helpers';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { AllowedValues } from '../../utils/validators';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
-import { PersonnelAvailableEvent, VehicleArrivedEvent } from '../../simulation';
 import { sendSimulationEvent } from '../../simulation/events/utils';
+import { TransferPoint } from '../../models/transfer-point';
+import { PersonnelAvailableEvent } from '../../simulation/events/personnel-available';
+import { VehicleArrivedEvent } from '../../simulation/events/vehicle-arrived';
+import { imageSizeToPosition } from '../../state-helpers/image-size-to-position';
 import { getElement } from './utils';
 
 export type TransferableElementType = 'personnel' | 'vehicle';

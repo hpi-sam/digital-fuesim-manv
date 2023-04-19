@@ -19,14 +19,22 @@
         *ngSwitchCase="'personnelCountRadiogram'"
         [radiogramId]="radiogram.id"
     ></app-radiogram-card-content-personnel-count>
-    <app-radiogram-card-content-fallback
-        *ngSwitchDefault
-        [radiogramType]="radiogram.type"
-    ></app-radiogram-card-content-fallback>
     <app-radiogram-card-content-material-count
         *ngSwitchCase="'materialCountRadiogram'"
         [radiogramId]="radiogram.id"
     ></app-radiogram-card-content-material-count>
+    <app-radigoram-card-content-missing-transfer-connection
+        *ngSwitchCase="'missingTransferConnectionRadiogram'"
+        [radiogramId]="radiogram.id"
+    ></app-radigoram-card-content-missing-transfer-connection>
+    <app-radigoram-card-content-resource-request
+        *ngSwitchCase="'resourceRequestRadiogram'"
+        [radiogramId]="radiogram.id"
+    ></app-radigoram-card-content-resource-request>
+    <app-radiogram-card-content-fallback
+        *ngSwitchDefault
+        [radiogramType]="radiogram.type"
+    ></app-radiogram-card-content-fallback>
 </ng-container>
 <ng-template #informationUnavailable>
     <app-radiogram-card-content-information-unavailable

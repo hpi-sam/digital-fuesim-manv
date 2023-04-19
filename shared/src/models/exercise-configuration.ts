@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, ValidateNested } from 'class-validator';
-import { defaultTileMapProperties } from '../data';
 import { IsValue } from '../utils/validators';
+import { defaultTileMapProperties } from '../data/default-state/tile-map-properties';
 import { getCreate, TileMapProperties } from './utils';
 
 export class ExerciseConfiguration {

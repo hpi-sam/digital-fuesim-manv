@@ -1,16 +1,20 @@
 import type { Type } from 'class-transformer';
 import type { Constructor } from '../../utils';
 import { MaterialCountRadiogram } from './material-count-radiogram';
+import { MissingTransferConnectionRadiogram } from './missing-transfer-connection-radiogram';
 import { PatientCountRadiogram } from './patient-count-radiogram';
 import { PersonnelCountRadiogram } from './personnel-count-radiogram';
 import { Radiogram } from './radiogram';
 import { TreatmentStatusRadiogram } from './treatment-status-radiogram';
 import { VehicleCountRadiogram } from './vehicle-count-radiogram';
+import { ResourceRequestRadiogram } from './resource-request-radiogram';
 
 export const radiograms = {
     MaterialCountRadiogram,
+    MissingTransferConnectionRadiogram,
     PatientCountRadiogram,
     PersonnelCountRadiogram,
+    ResourceRequestRadiogram,
     TreatmentStatusRadiogram,
     VehicleCountRadiogram,
 };
@@ -25,8 +29,10 @@ type ExerciseRadiogramDictionary = {
 
 export const radiogramDictionary: ExerciseRadiogramDictionary = {
     materialCountRadiogram: MaterialCountRadiogram,
+    missingTransferConnectionRadiogram: MissingTransferConnectionRadiogram,
     patientCountRadiogram: PatientCountRadiogram,
     personnelCountRadiogram: PersonnelCountRadiogram,
+    resourceRequestRadiogram: ResourceRequestRadiogram,
     treatmentStatusRadiogram: TreatmentStatusRadiogram,
     vehicleCountRadiogram: VehicleCountRadiogram,
 };

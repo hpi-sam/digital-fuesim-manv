@@ -1,11 +1,14 @@
-<div class="table">
+<div
+    class="container"
+    *appLet="treatPatientsBehaviorState$ | async as treatPatientsBehaviorState"
+>
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         (click)="informationCollapsed = !informationCollapsed"
         style="cursor: pointer"
     >
         <div class="col-sm">
-            <h4 class="ps-0 pe-0">
+            <h4 class="ps-0 pe-0 text-nowrap">
                 <i
                     *ngIf="informationCollapsed; else informationExpanded"
                     class="bi bi-caret-right-fill"
@@ -24,14 +27,14 @@
         </div>
     </div>
     <div
-        class="row"
+        class="row m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="informationCollapsed"
     >
         <h5 class="mt-2">Allgemein</h5>
     </div>
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="informationCollapsed"
     >
@@ -44,9 +47,22 @@
             ></app-treatment-status-badge>
         </div>
     </div>
+    <div
+        class="row align-items-center m-3"
+        #collapse="ngbCollapse"
+        [(ngbCollapse)]="informationCollapsed"
+        *ngIf="
+            timeUntilNextRecalculation$ | async as timeUntilNextRecalculation
+        "
+    >
+        <div class="col-sm">Nächste Zuteilungs-Berechnung in</div>
+        <div class="col-sm">
+            {{ timeUntilNextRecalculation | formatDuration }}
+        </div>
+    </div>
 
     <div
-        class="row"
+        class="row m-3"
         *ngIf="((patientIds$ | async) ?? []).length > 0"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="informationCollapsed"
@@ -58,7 +74,7 @@
     </div>
 
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         *ngIf="((patientIds$ | async) ?? []).length > 0"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="informationCollapsed"
@@ -78,7 +94,7 @@
     </div>
     <div
         *ngFor="let patientId of patientIds$ | async"
-        class="row"
+        class="row m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="informationCollapsed"
     >
@@ -96,7 +112,7 @@
     </div>
 
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         (click)="settingsCollapsed = !settingsCollapsed"
         style="cursor: pointer"
     >
@@ -113,17 +129,17 @@
         </div>
     </div>
     <div
-        class="row"
+        class="row m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >
         <h5 class="mt-2">
-            Häufigkeit der Zuteilungsberechnung durch die Simulation in den
+            Häufigkeit der Zuteilungs-Berechnung durch die Simulation in den
             jeweiligen Zuständen
         </h5>
     </div>
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >
@@ -161,7 +177,7 @@
         </div>
     </div>
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >
@@ -199,7 +215,7 @@
         </div>
     </div>
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >
@@ -237,7 +253,7 @@
         </div>
     </div>
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >
@@ -274,7 +290,7 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row m-3">
         <h5
             class="mt-2"
             #collapse="ngbCollapse"
@@ -284,7 +300,7 @@
         </h5>
     </div>
     <div
-        class="row align-items-center"
+        class="row align-items-center m-3"
         #collapse="ngbCollapse"
         [(ngbCollapse)]="settingsCollapsed"
     >

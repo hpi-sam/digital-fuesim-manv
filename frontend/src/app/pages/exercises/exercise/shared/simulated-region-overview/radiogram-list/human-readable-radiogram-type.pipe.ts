@@ -4,10 +4,12 @@ import type { ExerciseRadiogram } from 'digital-fuesim-manv-shared';
 
 const map: { [Key in ExerciseRadiogram['type']]: string } = {
     materialCountRadiogram: 'Anzahl an Material',
+    missingTransferConnectionRadiogram: 'Es fehlt eine Transferverbindung',
     patientCountRadiogram: 'Anzahl an Patienten',
     personnelCountRadiogram: 'Anzahl an Personal',
     treatmentStatusRadiogram: 'Behandlungsstatus',
     vehicleCountRadiogram: 'Anzahl an Fahrzeugen',
+    resourceRequestRadiogram: 'Anfrage nach Fahrzeugen',
 };
 
 @Pipe({
