@@ -12,6 +12,9 @@ import { CollectInformationEvent } from './collect';
 import { StartCollectingInformationEvent } from './start-collecting';
 import { ResourceRequiredEvent } from './resources-required';
 import { VehiclesSentEvent } from './vehicles-sent';
+import { TryToDistributeEvent } from './try-to-distribute';
+import { VehicleTransferSuccessfulEvent } from './vehicle-transfer-successful';
+import { TransferConnectionMissingEvent } from './transfer-connection-missing';
 import { SendRequestEvent } from './send-request';
 
 export const simulationEvents = {
@@ -26,6 +29,9 @@ export const simulationEvents = {
     StartCollectingInformationEvent,
     ResourceRequiredEvent,
     VehiclesSentEvent,
+    TryToDistributeEvent,
+    VehicleTransferSuccessfulEvent,
+    TransferConnectionMissingEvent,
     SendRequestEvent,
 };
 
@@ -50,6 +56,9 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     startCollectingInformationEvent: StartCollectingInformationEvent,
     resourceRequiredEvent: ResourceRequiredEvent,
     vehiclesSentEvent: VehiclesSentEvent,
+    tryToDistributeEvent: TryToDistributeEvent,
+    vehicleTransferSuccessfulEvent: VehicleTransferSuccessfulEvent,
+    transferConnectionMissingEvent: TransferConnectionMissingEvent,
     sendRequestEvent: SendRequestEvent,
 };
 

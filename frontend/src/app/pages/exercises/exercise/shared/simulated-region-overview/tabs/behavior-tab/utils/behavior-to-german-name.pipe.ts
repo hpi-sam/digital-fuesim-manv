@@ -11,6 +11,7 @@ const behaviorTypeToGermanNameDictionary: {
     reportBehavior: 'Berichte erstellen',
     providePersonnelBehavior: 'Personal nachfordern',
     answerRequestsBehavior: 'Fahrzeuganfragen beantworten',
+    automaticallyDistributeVehiclesBehavior: 'Fahrzeuge verteilen',
     requestBehavior: 'Fahrzeuge anfordern',
 };
 @Pipe({

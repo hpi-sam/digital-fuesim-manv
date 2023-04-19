@@ -15,7 +15,7 @@ export class VehiclesSentEvent implements SimulationEvent {
 
     @Type(() => VehicleResource)
     @ValidateNested()
-    readonly vehiclesSent!: VehicleResource;
+    readonly vehiclesSent: VehicleResource;
 
     /**
      * @deprecated Use {@link create} instead

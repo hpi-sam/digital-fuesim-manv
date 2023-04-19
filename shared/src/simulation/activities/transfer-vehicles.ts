@@ -23,7 +23,12 @@ import {
 import { completelyLoadVehicle } from '../../store/action-reducers/utils/completely-load-vehicle';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import { ResourceRequiredEvent, VehiclesSentEvent } from '../events';
+import {
+    ResourceRequiredEvent,
+    TransferConnectionMissingEvent,
+    VehiclesSentEvent,
+    VehicleTransferSuccessfulEvent,
+} from '../events';
 import { sendSimulationEvent } from '../events/utils';
 import { nextUUID } from '../utils/randomness';
 import type {
@@ -91,6 +96,13 @@ export const transferVehiclesActivity: SimulationActivity<TransferVehiclesActivi
                     activityState.targetTransferPointId
                 ] === undefined
             ) {
+                sendSimulationEvent(
+                    simulatedRegion,
+                    TransferConnectionMissingEvent.create(
+                        nextUUID(draftState),
+                        activityState.targetTransferPointId
+                    )
+                );
                 publishRadiogram(
                     draftState,
                     cloneDeepMutable(
@@ -178,21 +190,30 @@ export const transferVehiclesActivity: SimulationActivity<TransferVehiclesActivi
                 'transferPoint',
                 activityState.targetTransferPointId
             );
-            if (
-                isInSimulatedRegion(targetTransferPoint) &&
-                Object.values(sentVehicles).some((value) => value !== 0)
-            ) {
+            if (Object.values(sentVehicles).some((value) => value !== 0)) {
                 sendSimulationEvent(
-                    getElement(
-                        draftState,
-                        'simulatedRegion',
-                        currentSimulatedRegionIdOf(targetTransferPoint)
-                    ),
-                    VehiclesSentEvent.create(
+                    simulatedRegion,
+                    VehicleTransferSuccessfulEvent.create(
                         nextUUID(draftState),
+                        targetTransferPoint.id,
+                        activityState.key,
                         VehicleResource.create(sentVehicles)
                     )
                 );
+
+                if (isInSimulatedRegion(targetTransferPoint)) {
+                    sendSimulationEvent(
+                        getElement(
+                            draftState,
+                            'simulatedRegion',
+                            currentSimulatedRegionIdOf(targetTransferPoint)
+                        ),
+                        VehiclesSentEvent.create(
+                            nextUUID(draftState),
+                            VehicleResource.create(sentVehicles),
+                        )
+                    );
+                }
             }
 
             terminate();
