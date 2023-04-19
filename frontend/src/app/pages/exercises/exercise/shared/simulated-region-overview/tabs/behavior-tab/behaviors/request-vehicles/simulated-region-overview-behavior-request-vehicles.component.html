@@ -2,9 +2,13 @@
     <h5>Anfragenziel</h5>
 
     <ng-container *ngIf="{ time: nextTimeoutIn$ | async } as nextTimeoutIn">
-        <span *ngIf="nextTimeoutIn.time !== undefined" class="text-muted"
+        <span
+            *ngIf="
+                nextTimeoutIn.time !== null && nextTimeoutIn.time !== undefined
+            "
+            class="text-muted"
             >Nächste potentielle Anfrage in
-            {{ nextTimeoutIn.time | date : 'mm:ss' }}</span
+            {{ nextTimeoutIn.time | formatDuration }}</span
         >
     </ng-container>
 

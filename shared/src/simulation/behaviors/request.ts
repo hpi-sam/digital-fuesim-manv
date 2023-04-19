@@ -122,23 +122,23 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                     'vehicle',
                     event.vehicleId
                 );
-                let arrivedResourceDescripton: Partial<ResourceDescription> = {
+                let arrivedResourceDescription: Partial<ResourceDescription> = {
                     [vehicle.vehicleType]: 1,
                 };
                 behaviorState.promisedResources.forEach((promise) => {
                     const remainingResources =
                         subtractPartialResourceDescriptions(
-                            arrivedResourceDescripton,
+                            arrivedResourceDescription,
                             promise.resource.vehicleCounts
                         );
 
                     promise.resource.vehicleCounts =
                         subtractPartialResourceDescriptions(
                             promise.resource.vehicleCounts,
-                            arrivedResourceDescripton
+                            arrivedResourceDescription
                         ) as ResourceDescription;
 
-                    arrivedResourceDescripton = remainingResources;
+                    arrivedResourceDescription = remainingResources;
                 });
                 behaviorState.promisedResources =
                     behaviorState.promisedResources.filter(
@@ -164,7 +164,7 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                         nextUUID(draftState),
                         behaviorState.requestTarget,
                         resource,
-                        `${simulatedRegion.id}-request`
+                        requestBehaviorKey(simulatedRegion)
                     )
                 );
                 break;
@@ -180,11 +180,15 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                 nextUUID(draftState),
                 behaviorState.requestTarget,
                 VehicleResource.create({}),
-                `${simulatedRegion.id}-request`
+                requestBehaviorKey(simulatedRegion)
             )
         );
     },
 };
+
+function requestBehaviorKey(simulatedRegion: Mutable<SimulatedRegion>) {
+    return `${simulatedRegion.id}-request`;
+}
 
 export function updateBehaviorsRequestTarget(
     draftState: Mutable<ExerciseState>,
@@ -198,7 +202,7 @@ export function updateBehaviorsRequestTarget(
             nextUUID(draftState),
             behaviorState.requestTarget,
             VehicleResource.create({}),
-            `${simulatedRegion.id}-request`
+            requestBehaviorKey(simulatedRegion)
         )
     );
     behaviorState.requestTarget = cloneDeepMutable(requestTarget);

@@ -72,11 +72,13 @@ export const traineesRequestTarget: RequestTarget<TraineesRequestTargetConfigura
                         )
                     )
                 );
+                // eslint-disable-next-line no-useless-return
+                return;
             }
 
             /**
-             * If there is a radiogram that is currently accepted,
-             * we wait for an answer and don't send another request
+             * There is a radiogram that is currently accepted,
+             * we therefore wait for an answer and don't send another request
              */
         },
     };

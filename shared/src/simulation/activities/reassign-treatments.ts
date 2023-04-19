@@ -207,7 +207,6 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 );
                 sendSimulationEvent(
                     simulatedRegion,
-
                     ResourceRequiredEvent.create(
                         nextUUID(draftState),
                         simulatedRegion.id,
