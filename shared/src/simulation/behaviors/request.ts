@@ -8,12 +8,12 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IsStringMap } from '../../utils/validators/is-string-map';
-import { cloneDeepMutable, StrictObject, uuid, UUID, uuidValidationOptions } from '../../utils';
+import { cloneDeepMutable, StrictObject, uuid, UUID } from '../../utils';
 import type { Mutable } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { getActivityById, getElement } from '../../store/action-reducers/utils';
 import type { ExerciseState } from '../../state';
-import { addActivity, terminateActivity } from '../activities/utils';
+import { addActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
 import { RecurringEventActivityState } from '../activities';
 import { SendRequestEvent } from '../events/send-request';
@@ -147,7 +147,7 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                             0
                     );
 
-                behaviorState.requestedResources = {}
+                behaviorState.requestedResources = {};
                 break;
             }
             case 'sendRequestEvent': {
