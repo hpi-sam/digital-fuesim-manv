@@ -2,17 +2,13 @@
     <h5>Anfragenziel</h5>
 
     <ng-container *ngIf="{ time: nextTimeoutIn$ | async } as nextTimeoutIn">
-        <span *ngIf="(waitingForAnswer$ | async) === true" class="text-muted"
-            >Wartet auf die Antwort einer Anfrage von</span
-        >
         <span
             *ngIf="
-                nextTimeoutIn.time !== undefined &&
-                (waitingForAnswer$ | async) === false
+                nextTimeoutIn.time !== null && nextTimeoutIn.time !== undefined
             "
             class="text-muted"
-            >Nächste Anfrage potentiell in
-            {{ nextTimeoutIn.time | date : 'mm:ss' }} an</span
+            >Nächste potentielle Anfrage in
+            {{ nextTimeoutIn.time | formatDuration }}</span
         >
     </ng-container>
 

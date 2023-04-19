@@ -2,7 +2,6 @@ import {
     IsArray,
     IsInt,
     IsOptional,
-    IsString,
     IsUUID,
     Min,
     ValidateNested,
@@ -19,10 +18,7 @@ import { nextUUID } from '../utils/randomness';
 import { RecurringEventActivityState } from '../activities';
 import { SendRequestEvent } from '../events/send-request';
 import { CreateRequestActivityState } from '../activities/create-request';
-import {
-    isEmptyResource,
-    VehicleResource,
-} from '../../models/utils/rescue-resource';
+import { VehicleResource } from '../../models/utils/rescue-resource';
 import {
     ExerciseRequestTargetConfiguration,
     requestTargetTypeOptions,
@@ -48,13 +44,6 @@ export class RequestBehaviorState implements SimulationBehaviorState {
     @IsUUID()
     public readonly id: UUID = uuid();
 
-    /**
-     * @deprecated Use {@link isWaitingForAnswer} instead
-     */
-    @IsString()
-    @IsOptional()
-    public readonly answerKey?: string;
-
     @IsUUID()
     @IsOptional()
     public readonly recurringEventActivityId?: UUID;
@@ -77,17 +66,11 @@ export class RequestBehaviorState implements SimulationBehaviorState {
     @IsInt()
     @Min(0)
     public readonly invalidatePromiseInterval: number = 1000 * 60 * 30;
-    /**
-     * @deprecated Use {@link updateBehaviorsRequestTarget} instead
-     */
+
     @Type(...requestTargetTypeOptions)
     @ValidateNested()
     public readonly requestTarget: ExerciseRequestTargetConfiguration =
         TraineesRequestTargetConfiguration.create();
-
-    @IsInt()
-    @Min(0)
-    public readonly requestTargetVersion: number = 0;
 
     static readonly create = getCreate(this);
 }
@@ -131,10 +114,6 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                         )
                     )
                 );
-
-                if (event.key === behaviorState.answerKey) {
-                    behaviorState.answerKey = undefined;
-                }
                 break;
             }
             case 'vehicleArrivedEvent': {
@@ -143,23 +122,23 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                     'vehicle',
                     event.vehicleId
                 );
-                let arrivedResourceDescripton: Partial<ResourceDescription> = {
+                let arrivedResourceDescription: Partial<ResourceDescription> = {
                     [vehicle.vehicleType]: 1,
                 };
                 behaviorState.promisedResources.forEach((promise) => {
                     const remainingResources =
                         subtractPartialResourceDescriptions(
-                            arrivedResourceDescripton,
+                            arrivedResourceDescription,
                             promise.resource.vehicleCounts
                         );
 
                     promise.resource.vehicleCounts =
                         subtractPartialResourceDescriptions(
                             promise.resource.vehicleCounts,
-                            arrivedResourceDescripton
+                            arrivedResourceDescription
                         ) as ResourceDescription;
 
-                    arrivedResourceDescripton = remainingResources;
+                    arrivedResourceDescription = remainingResources;
                 });
                 behaviorState.promisedResources =
                     behaviorState.promisedResources.filter(
@@ -167,43 +146,66 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                             Object.keys(promise.resource.vehicleCounts).length >
                             0
                     );
+
+                behaviorState.requestedResources = {};
                 break;
             }
             case 'sendRequestEvent': {
-                if (!isWaitingForAnswer(behaviorState)) {
-                    const resourcesToRequest = getResourcesToRequest(
-                        draftState,
-                        simulatedRegion,
-                        behaviorState
-                    );
-                    const resource = VehicleResource.create(
-                        resourcesToRequest as ResourceDescription
-                    );
-                    if (!isEmptyResource(resource)) {
-                        // create a request to wait for an answer
-                        behaviorState.answerKey = `${simulatedRegion.id}-request-${behaviorState.requestTargetVersion}`;
-                        const activityId = nextUUID(draftState);
-                        addActivity(
-                            simulatedRegion,
-                            CreateRequestActivityState.create(
-                                activityId,
-                                behaviorState.requestTarget,
-                                resource,
-                                behaviorState.answerKey
-                            )
-                        );
-                    }
-                }
+                const resourcesToRequest = getResourcesToRequest(
+                    draftState,
+                    behaviorState
+                );
+                const resource = VehicleResource.create(
+                    resourcesToRequest as ResourceDescription
+                );
+                addActivity(
+                    simulatedRegion,
+                    CreateRequestActivityState.create(
+                        nextUUID(draftState),
+                        behaviorState.requestTarget,
+                        resource,
+                        requestBehaviorKey(simulatedRegion)
+                    )
+                );
                 break;
             }
             default:
                 break;
         }
     },
+    onRemove(draftState, simulatedRegion, behaviorState) {
+        addActivity(
+            simulatedRegion,
+            CreateRequestActivityState.create(
+                nextUUID(draftState),
+                behaviorState.requestTarget,
+                VehicleResource.create({}),
+                requestBehaviorKey(simulatedRegion)
+            )
+        );
+    },
 };
 
-export function isWaitingForAnswer(behaviorState: RequestBehaviorState) {
-    return behaviorState.answerKey !== undefined;
+function requestBehaviorKey(simulatedRegion: Mutable<SimulatedRegion>) {
+    return `${simulatedRegion.id}-request`;
+}
+
+export function updateBehaviorsRequestTarget(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegion>,
+    behaviorState: Mutable<RequestBehaviorState>,
+    requestTarget: ExerciseRequestTargetConfiguration
+) {
+    addActivity(
+        simulatedRegion,
+        CreateRequestActivityState.create(
+            nextUUID(draftState),
+            behaviorState.requestTarget,
+            VehicleResource.create({}),
+            requestBehaviorKey(simulatedRegion)
+        )
+    );
+    behaviorState.requestTarget = cloneDeepMutable(requestTarget);
 }
 
 export function updateBehaviorsRequestInterval(
@@ -224,23 +226,8 @@ export function updateBehaviorsRequestInterval(
     behaviorState.requestInterval = requestInterval;
 }
 
-export function updateBehaviorsRequestTarget(
-    draftState: Mutable<ExerciseState>,
-    simulatedRegion: Mutable<SimulatedRegion>,
-    behaviorState: Mutable<RequestBehaviorState>,
-    requestTarget: ExerciseRequestTargetConfiguration
-) {
-    behaviorState.requestTarget = cloneDeepMutable(requestTarget);
-    behaviorState.requestTargetVersion++;
-
-    if (isWaitingForAnswer(behaviorState)) {
-        behaviorState.answerKey = undefined;
-    }
-}
-
 export function getResourcesToRequest(
     draftState: Mutable<ExerciseState>,
-    simulatedRegion: Mutable<SimulatedRegion>,
     behaviorState: Mutable<RequestBehaviorState>
 ) {
     const requestedResources = addPartialResourceDescriptions(
@@ -250,12 +237,11 @@ export function getResourcesToRequest(
     );
 
     // remove invalidated resources
-    let firstValidIndex: number | undefined =
-        behaviorState.promisedResources.findIndex(
-            (promise) =>
-                promise.promisedTime + behaviorState.invalidatePromiseInterval >
-                draftState.currentTime
-        );
+    let firstValidIndex = behaviorState.promisedResources.findIndex(
+        (promise) =>
+            promise.promisedTime + behaviorState.invalidatePromiseInterval >
+            draftState.currentTime
+    );
     if (firstValidIndex === -1)
         firstValidIndex = behaviorState.promisedResources.length;
     behaviorState.promisedResources.splice(0, firstValidIndex);

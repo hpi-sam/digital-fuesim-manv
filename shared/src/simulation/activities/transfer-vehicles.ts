@@ -130,38 +130,27 @@ export const transferVehiclesActivity: SimulationActivity<TransferVehiclesActivi
                 (vehicle) => vehicle.vehicleType
             );
 
-            if (
-                Object.entries(
-                    activityState.vehiclesToBeTransferred.vehicleCounts
-                ).some(
-                    ([vehicleType, vehicleCount]) =>
-                        (groupedVehicles[vehicleType]?.length ?? 0) <
-                        vehicleCount
+            const missingVehicles: { [key: string]: number } = {};
+            Object.entries(
+                activityState.vehiclesToBeTransferred.vehicleCounts
+            ).forEach(([vehicleType, vehicleCount]) => {
+                if (
+                    (groupedVehicles[vehicleType]?.length ?? 0) < vehicleCount
+                ) {
+                    missingVehicles[vehicleType] =
+                        vehicleCount -
+                        (groupedVehicles[vehicleType]?.length ?? 0);
+                }
+            });
+            sendSimulationEvent(
+                simulatedRegion,
+                ResourceRequiredEvent.create(
+                    nextUUID(draftState),
+                    simulatedRegion.id,
+                    VehicleResource.create(missingVehicles),
+                    activityState.key
                 )
-            ) {
-                const missingVehicles: { [key: string]: number } = {};
-                Object.entries(
-                    activityState.vehiclesToBeTransferred.vehicleCounts
-                ).forEach(([vehicleType, vehicleCount]) => {
-                    if (
-                        (groupedVehicles[vehicleType]?.length ?? 0) <
-                        vehicleCount
-                    ) {
-                        missingVehicles[vehicleType] =
-                            vehicleCount -
-                            (groupedVehicles[vehicleType]?.length ?? 0);
-                    }
-                });
-                sendSimulationEvent(
-                    simulatedRegion,
-                    ResourceRequiredEvent.create(
-                        nextUUID(draftState),
-                        simulatedRegion.id,
-                        VehicleResource.create(missingVehicles),
-                        activityState.key
-                    )
-                );
-            }
+            );
 
             const sentVehicles: { [key: string]: number } = {};
             Object.entries(
@@ -221,8 +210,7 @@ export const transferVehiclesActivity: SimulationActivity<TransferVehiclesActivi
                         ),
                         VehiclesSentEvent.create(
                             nextUUID(draftState),
-                            VehicleResource.create(sentVehicles),
-                            activityState.key
+                            VehicleResource.create(sentVehicles)
                         )
                     );
                 }

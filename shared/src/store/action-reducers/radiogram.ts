@@ -78,8 +78,7 @@ export namespace RadiogramActionReducers {
                     cloneDeepMutable(
                         VehiclesSentEvent.create(
                             nextUUID(draftState),
-                            VehicleResource.create({}),
-                            radiogram.key
+                            VehicleResource.create({})
                         )
                     )
                 );
@@ -112,8 +111,7 @@ export namespace RadiogramActionReducers {
                     cloneDeepMutable(
                         VehiclesSentEvent.create(
                             nextUUID(draftState),
-                            radiogram.requiredResource,
-                            radiogram.key
+                            radiogram.requiredResource
                         )
                     )
                 );
@@ -145,8 +143,7 @@ export namespace RadiogramActionReducers {
                     cloneDeepMutable(
                         VehiclesSentEvent.create(
                             nextUUID(draftState),
-                            VehicleResource.create({}),
-                            radiogram.key
+                            VehicleResource.create({})
                         )
                     )
                 );

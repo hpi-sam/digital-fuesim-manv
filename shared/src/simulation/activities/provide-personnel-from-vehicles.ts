@@ -83,16 +83,6 @@ export const providePersonnelFromVehiclesActivity: SimulationActivity<ProvidePer
             );
             const missingPersonnel = activityState.requiredPersonnelCounts;
 
-            if (
-                greaterEqualResourceDescription(
-                    availablePersonnel,
-                    missingPersonnel
-                )
-            ) {
-                terminate();
-                return;
-            }
-
             const vehiclePriorities = activityState.vehiclePriorities
                 .map((id) => personnelInVehicleTemplate(draftState, id))
                 .filter(
@@ -146,19 +136,13 @@ export const providePersonnelFromVehiclesActivity: SimulationActivity<ProvidePer
                 );
             }
 
-            if (
-                Object.values(missingVehicleCounts).some(
-                    (vehicleCount) => vehicleCount > 0
-                )
-            ) {
-                const event = ResourceRequiredEvent.create(
-                    nextUUID(draftState),
-                    simulatedRegion.id,
-                    VehicleResource.create(missingVehicleCounts),
-                    activityState.key
-                );
-                sendSimulationEvent(simulatedRegion, event);
-            }
+            const event = ResourceRequiredEvent.create(
+                nextUUID(draftState),
+                simulatedRegion.id,
+                VehicleResource.create(missingVehicleCounts),
+                activityState.key
+            );
+            sendSimulationEvent(simulatedRegion, event);
 
             terminate();
         },
