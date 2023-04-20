@@ -67,18 +67,24 @@ export class SimulatedRegionFeatureManager
             },
             new PolygonGeometryHelper()
         );
-        this.layer.setStyle(this.style);
+        this.layer.setStyle(
+            (feature) =>
+                new Style({
+                    fill: this.fill,
+                    stroke: new Stroke({
+                        color: (
+                            this.getElementFromFeature(
+                                feature as Feature
+                            ) as SimulatedRegion
+                        ).borderColor,
+                        width: this.strokeWidth,
+                    }),
+                })
+        );
     }
 
-    private readonly style = new Style({
-        fill: new Fill({
-            color: '#808080cc',
-        }),
-        stroke: new Stroke({
-            color: '#cccc00',
-            width: 2,
-        }),
-    });
+    private readonly fill = new Fill({ color: '#808080cc' });
+    private readonly strokeWidth = 2;
 
     override createFeature(element: SimulatedRegion): Feature<Polygon> {
         const feature = super.createFeature(element);

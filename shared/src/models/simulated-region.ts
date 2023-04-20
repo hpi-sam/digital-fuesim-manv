@@ -35,14 +35,23 @@ export class SimulatedRegion {
     @IsString()
     public readonly name: string;
 
+    @IsString()
+    public readonly borderColor: string;
+
     /**
      * @param position top-left position
      * @deprecated Use {@link create} instead
      */
-    constructor(position: MapCoordinates, size: Size, name: string) {
+    constructor(
+        position: MapCoordinates,
+        size: Size,
+        name: string,
+        borderColor: string
+    ) {
         this.position = MapPosition.create(position);
         this.size = size;
         this.name = name;
+        this.borderColor = borderColor;
     }
 
     @Type(...simulationEventTypeOptions)
