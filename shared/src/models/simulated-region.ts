@@ -46,7 +46,7 @@ export class SimulatedRegion {
         position: MapCoordinates,
         size: Size,
         name: string,
-        borderColor: string
+        borderColor: string = '#cccc00'
     ) {
         this.position = MapPosition.create(position);
         this.size = size;
