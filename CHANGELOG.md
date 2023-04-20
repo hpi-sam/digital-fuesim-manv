@@ -7,6 +7,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Added
+
+-   There are now events for the removal of patients, vehicles, material, and personnel from simulated regions.
+
 ## [0.4.0] - 2023-04-19
 
 ### Added
