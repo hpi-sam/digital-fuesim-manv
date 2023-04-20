@@ -1,4 +1,5 @@
 import type { ExerciseState } from '../../state';
+import { ReducerError } from '../../store/reducer-error';
 import type { Mutable, UUID } from '../../utils';
 import type { ExerciseRadiogram } from './exercise-radiogram';
 import { publishTimeOf } from './radiogram-helpers';
@@ -19,7 +20,12 @@ export function acceptRadiogram(
     radiogramId: UUID,
     clientId: UUID
 ) {
-    const radiogram = draftState.radiograms[radiogramId]!;
+    const radiogram = draftState.radiograms[radiogramId];
+    if (!radiogram) {
+        throw new ReducerError(
+            `Expected to find radiogram with id ${radiogramId}, but there was none`
+        );
+    }
     radiogram.status = {
         type: 'acceptedRadiogramStatus',
         publishTime: publishTimeOf(radiogram),
@@ -31,7 +37,12 @@ export function markRadiogramDone(
     draftState: Mutable<ExerciseState>,
     radiogramId: UUID
 ) {
-    const radiogram = draftState.radiograms[radiogramId]!;
+    const radiogram = draftState.radiograms[radiogramId];
+    if (!radiogram) {
+        throw new ReducerError(
+            `Expected to find radiogram with id ${radiogramId}, but there was none`
+        );
+    }
     radiogram.status = {
         type: 'doneRadiogramStatus',
         publishTime: publishTimeOf(radiogram),
