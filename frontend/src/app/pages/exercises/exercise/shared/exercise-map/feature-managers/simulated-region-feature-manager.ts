@@ -6,8 +6,7 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     Element,
 } from 'digital-fuesim-manv-shared';
-
-import { MapCoordinates, Size } from 'digital-fuesim-manv-shared';
+import { normalZoom, MapCoordinates, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Polygon } from 'ol/geom';
 import type { TranslateEvent } from 'ol/interaction/Translate';
@@ -30,6 +29,7 @@ import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-ma
 import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
+import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class SimulatedRegionFeatureManager
@@ -67,24 +67,39 @@ export class SimulatedRegionFeatureManager
             },
             new PolygonGeometryHelper()
         );
-        this.layer.setStyle(
-            (feature) =>
-                new Style({
-                    fill: this.fill,
-                    stroke: new Stroke({
-                        color: (
-                            this.getElementFromFeature(
-                                feature as Feature
-                            ) as SimulatedRegion
-                        ).borderColor,
-                        width: this.strokeWidth,
-                    }),
-                })
-        );
+        this.layer.setStyle((feature, resolution) => [
+            new Style({
+                fill: this.fill,
+                stroke: new Stroke({
+                    color: (
+                        this.getElementFromFeature(
+                            feature as Feature
+                        ) as SimulatedRegion
+                    ).borderColor,
+                    width: this.strokeWidth,
+                }),
+            }),
+            this.nameStyleHelper.getStyle(feature as Feature, resolution),
+        ]);
     }
 
     private readonly fill = new Fill({ color: '#808080cc' });
     private readonly strokeWidth = 2;
+
+    private readonly nameStyleHelper = new NameStyleHelper(
+        (feature) => {
+            const region = this.getElementFromFeature(
+                feature
+            ) as SimulatedRegion;
+            return {
+                name: region.name,
+                offsetY: region.size.height / 2 / normalZoom,
+                offsetX: region.size.width / 2 / normalZoom,
+            };
+        },
+        0.5,
+        'middle'
+    );
 
     override createFeature(element: SimulatedRegion): Feature<Polygon> {
         const feature = super.createFeature(element);
