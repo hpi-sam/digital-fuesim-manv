@@ -7,6 +7,12 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Added
+
+-   The trainer editor now offers pre-configured templates for different kinds of simulated regions.
+    -   These templates come with different border colors.
+-   Simulated regions display their names on the map.
+
 ## [0.4.0] - 2023-04-19
 
 ### Added
