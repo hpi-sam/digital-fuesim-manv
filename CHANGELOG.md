@@ -7,6 +7,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [0.4.0] - 2023-04-19
+
 ### Added
 
 -   There is now a display for how many different variations of a patient template exists.
@@ -14,7 +16,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   The patient status display that visualizes the progression of a patient explains its icons via a tooltip.
 -   There is now a behavior that answers vehicle requests from other regions.
 -   There is now a behavior that automatically distributes vehicles to regions.
-    -   The types and optional limits of the distribution can be specified
+    -   The types and optional limits of the distribution can be specified.
     -   The behavior distributes the vehicles in rounds of one vehicle per category for every region every 60 seconds
 -   There is now a behavior to forward requests to other simulated regions or the trainees.
 -   There is now a radiogram for missing transfer connections and vehicle requests.
@@ -142,7 +144,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...0.4.0
 [0.3.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.1.0...v0.2.0
