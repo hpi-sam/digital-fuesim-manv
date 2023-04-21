@@ -1,22 +1,12 @@
 {
+    "extends": "../tsconfig.base.json",
     "compilerOptions": {
-        "strict": true,
-        "noUncheckedIndexedAccess": true,
-        "module": "ESNext",
-        "target": "ESNext",
-        "declaration": true,
-        "outDir": "./dist",
-        "sourceMap": true,
         "moduleResolution": "node",
-        "declarationMap": true,
+        "outDir": "./dist",
         "rootDir": ".",
-        "skipLibCheck": true,
-        "esModuleInterop": true,
         "types": ["jest", "node"],
-        // For typeorm
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "baseUrl": "./src"
+        "baseUrl": "./src",
+        "emitDecoratorMetadata": true // For typeorm - See https://github.com/typeorm/typeorm/issues/2897
     },
     "references": [],
     "include": ["src/**/*", "test/**/*"],

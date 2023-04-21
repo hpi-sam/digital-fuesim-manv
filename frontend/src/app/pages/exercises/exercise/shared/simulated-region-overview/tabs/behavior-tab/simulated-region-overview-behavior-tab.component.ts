@@ -1,13 +1,26 @@
 import type { OnChanges, OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import type { ExerciseSimulationBehaviorState } from 'digital-fuesim-manv-shared';
+import { Store } from '@ngrx/store';
+import type {
+    ExerciseSimulationBehaviorState,
+    ExerciseSimulationBehaviorType,
+} from 'digital-fuesim-manv-shared';
 import {
-    simulationBehaviors,
+    simulationBehaviorDictionary,
+    StrictObject,
     SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
+import type { Observable } from 'rxjs';
+import { map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
+import type { AppState } from 'src/app/state/app.state';
+import {
+    createSelectBehaviorStates,
+    selectVehicleTemplates,
+} from 'src/app/state/application/selectors/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
-let globalLastBehavior: ExerciseSimulationBehaviorState | undefined;
+let globalLastBehaviorType: ExerciseSimulationBehaviorType | undefined;
 
 @Component({
     selector: 'app-simulated-region-overview-behavior-tab',
@@ -18,19 +31,38 @@ export class SimulatedRegionOverviewBehaviorTabComponent
     implements OnChanges, OnInit
 {
     @Input() simulatedRegion!: SimulatedRegion;
-    public behaviorsToBeAdded: ExerciseSimulationBehaviorState[] = [];
+    public behaviorTypesToBeAdded$!: Observable<
+        ExerciseSimulationBehaviorType[]
+    >;
     public selectedBehavior?: ExerciseSimulationBehaviorState;
-    constructor(private readonly exerciseService: ExerciseService) {}
+
+    constructor(
+        private readonly exerciseService: ExerciseService,
+        private readonly store: Store<AppState>
+    ) {}
+
     ngOnInit(): void {
-        if (globalLastBehavior?.type !== undefined) {
+        if (globalLastBehaviorType !== undefined) {
             this.selectedBehavior = this.simulatedRegion.behaviors.find(
-                (behavior) => behavior.type === globalLastBehavior?.type
+                (behavior) => behavior.type === globalLastBehaviorType
             );
         }
+
+        this.behaviorTypesToBeAdded$ = this.store
+            .select(createSelectBehaviorStates(this.simulatedRegion.id))
+            .pipe(
+                map((states) => {
+                    const currentTypes = new Set(
+                        states.map((state) => state.type)
+                    );
+                    return StrictObject.keys(
+                        simulationBehaviorDictionary
+                    ).filter((type) => !currentTypes.has(type));
+                })
+            );
     }
 
     public ngOnChanges() {
-        this.updateBehaviorsToBeAdded();
         if (
             // if the selected behavior has been removed by a different client
             this.selectedBehavior !== undefined &&
@@ -42,7 +74,22 @@ export class SimulatedRegionOverviewBehaviorTabComponent
         }
     }
 
-    public addBehavior(behaviorState: ExerciseSimulationBehaviorState) {
+    public addBehavior(behaviorType: ExerciseSimulationBehaviorType) {
+        const args: any[] = [];
+        switch (behaviorType) {
+            case 'providePersonnelBehavior':
+                args.push(
+                    selectStateSnapshot(selectVehicleTemplates, this.store).map(
+                        (template) => template.id
+                    )
+                );
+                break;
+            default:
+                break;
+        }
+        const behaviorState = simulationBehaviorDictionary[
+            behaviorType
+        ].behaviorState.create(...args);
         this.exerciseService.proposeAction({
             type: '[SimulatedRegion] Add Behavior',
             simulatedRegionId: this.simulatedRegion.id,
@@ -61,18 +108,6 @@ export class SimulatedRegionOverviewBehaviorTabComponent
 
     public onBehaviorSelect(behavior: ExerciseSimulationBehaviorState): void {
         this.selectedBehavior = behavior;
-        globalLastBehavior = behavior;
-    }
-
-    private updateBehaviorsToBeAdded() {
-        this.behaviorsToBeAdded = Object.values(simulationBehaviors)
-            .map((behavior) => new behavior.behaviorState())
-            .filter(
-                (behaviorState) =>
-                    !this.simulatedRegion.behaviors.some(
-                        (regionBehaviorState) =>
-                            regionBehaviorState.type === behaviorState.type
-                    )
-            );
+        globalLastBehaviorType = behavior.type;
     }
 }

@@ -28,7 +28,6 @@ import {
     healthPointsDefaults,
     HealthPoints,
     getCreate,
-    isAlive,
     isOnMap,
     isInSimulatedRegion,
 } from './utils';
@@ -183,8 +182,7 @@ export class Patient {
         bluePatientsEnabled: boolean
     ) {
         const status =
-            !pretriageEnabled ||
-            patient.treatmentTime >= this.pretriageTimeThreshold
+            !pretriageEnabled || Patient.pretriageStatusIsLocked(patient)
                 ? patient.realStatus
                 : patient.pretriageStatus;
         return status === 'blue' && !bluePatientsEnabled ? 'red' : status;
@@ -199,9 +197,6 @@ export class Patient {
     }
 
     static canBeTreated(patient: Patient) {
-        return (
-            isAlive(patient.health) &&
-            (isOnMap(patient) || isInSimulatedRegion(patient))
-        );
+        return isOnMap(patient) || isInSimulatedRegion(patient);
     }
 }

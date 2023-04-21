@@ -104,8 +104,8 @@ export const defaultVehicleTemplates: readonly VehicleTemplate[] = [
     rtwVehicleTemplate,
     ktwVehicleTemplate,
     ktwKatSchutzVehicleTemplate,
-    gwSanVehicleTemplate,
     nefVehicleTemplate,
+    gwSanVehicleTemplate,
     carryingUnitVehicleTemplate,
     rthVehicleTemplate,
 ];

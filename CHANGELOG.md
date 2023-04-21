@@ -7,6 +7,81 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [0.4.1] - 2023-04-20
+
+### Fixed
+
+-   Added a guard clause to handle exercises with radiogram actions containing incorrect uuids.
+-   Fixed deletion of invalid actions in the database.
+
+## [0.4.0] - 2023-04-19
+
+### Added
+
+-   There is now a display for how many different variations of a patient template exists.
+-   There is now a display for whether a patient is pregnant.
+-   The patient status display that visualizes the progression of a patient explains its icons via a tooltip.
+-   There is now a behavior that answers vehicle requests from other regions.
+-   There is now a behavior that automatically distributes vehicles to regions.
+    -   The types and optional limits of the distribution can be specified.
+    -   The behavior distributes the vehicles in rounds of one vehicle per category for every region every 60 seconds
+-   There is now a behavior to forward requests to other simulated regions or the trainees.
+-   There is now a radiogram for missing transfer connections and vehicle requests.
+    -   Radiograms for vehicle requests can also be answered in the user interface, whether they have been accepted or not.
+-   When personnel is missing during patient treatment in a simulated region, the reassign treatment activity now sends an event to notify the region about the shortage.
+-   A new behavior has been added to respond to personnel shortages by instructing the region to request new vehicles.
+    -   The priorities of vehicles to request can be configured in a new behavior tab.
+-   Development builds (the docker container with the `dev` tag) now show the commit hash they have been built from in the version number.
+-   The time until the next treatment recalculation for the automatic patient treatment is shown.
+
+### Fixed
+
+-   New patients added to simulated regions during treatment are now also triaged and treated.
+-   When treatment is no longer secured, the displayed status is reverted back to lack of personnel.
+-   When the treatment status changes, personnel is reassigned immediately instead of after the next interval.
+
+### Changed
+
+-   The icon for `C` (transport priority) in a patient status code has been changed to a road sign to be distinguishable from the icon for `D` (complication).
+-   `ConditionParameters.minimumHealth` and `ConditionParameters.maximumHealth` are now inclusive.
+-   Connected transfer points and hospitals are now listed in alphabetical order in the transfer popups.
+
+### Fixed
+
+-   Dead/Black patients can now be treated (for the automatic triage to work), but they won't be treated after triage.
+
+## [0.3.0] - 2023-03-27
+
+### Added
+
+-   There are now radiograms, which can be used by the simulation to send messages to the trainees. These are generated automatically by an activity.
+    -   There is a radiogram for displaying the material count in a simulated region.
+    -   There is a radiogram for displaying the patient count in a simulated region.
+    -   There is a radiogram for displaying the personnel count in a simulated region.
+    -   There is a radiogram for displaying the vehicle count in a simulated region.
+    -   There is a radiogram for displaying the current treatment status in a simulated region
+-   There is a behavior responsible for creating and managing the activities which create radiograms
+-   In the large simulation overview modal, a column has been added to interact with radiograms.
+    -   It displays all radiograms, optionally filtered to those that are not done.
+    -   Radiograms can be accepted and marked as done.
+-   Behaviors can clean up the state when they are removed from a simulated region.
+-   There are now tests, that ensure that migrations do not fail
+
+### Fixed
+
+-   "Leitstelle" was misspelled in the title of the EOC modal
+-   Transfer points do not change their connection upon arrival of a vehicle
+
+## [0.2.1] - 2023-03-11
+
+### Changed
+
+-   Revert previous change: Patients, vehicles, personnel and material inside a simulated region are now deleted, when the simulated region is deleted. For vehicles, personnel, and material, they will only be deleted if all that belong together are in the same simulated region.
+
+### Fixed
+
+-   Exercises in which simulated regions are deleted no longer crash on import due missing patients in the tick action.
+
 ## [0.2.0] - 2023-03-10
 
 ### Added
@@ -76,7 +151,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/0.2.0...HEAD
-[0.2.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/0.1.0...0.2.0
-[0.1.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.0.0...0.1.0
+[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...0.4.0
+[0.3.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.1...v0.3.0
+[0.2.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.0.0...v0.1.0
 [0.0.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/37bd43bc1beb4aa9ad597b1ac763dd71b5709737...v0.0.0

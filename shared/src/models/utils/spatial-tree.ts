@@ -9,8 +9,9 @@ import RBush from 'rbush';
 import knn from 'rbush-knn';
 import type { Mutable, UUID, JsonObject } from '../../utils';
 import { Immutable } from '../../utils';
-import type { MapCoordinates, Size } from '.';
-import { getCreate } from '.';
+import { getCreate } from './get-create';
+import type { MapCoordinates } from './position/map-coordinates';
+import type { Size } from './size';
 
 /**
  * A data structure that enables efficient search of elements (interpreted as points) in a circle or rectangle
@@ -163,7 +164,7 @@ interface PointRBushElement {
  * @see https://github.com/mourner/rbush#data-format
  */
 class PointRBush extends RBush<PointRBushElement> {
-    toBBox(element: PointRBushElement) {
+    override toBBox(element: PointRBushElement) {
         return {
             minX: element.position.x,
             minY: element.position.y,
@@ -171,10 +172,10 @@ class PointRBush extends RBush<PointRBushElement> {
             maxY: element.position.y,
         };
     }
-    compareMinX(a: PointRBushElement, b: PointRBushElement) {
+    override compareMinX(a: PointRBushElement, b: PointRBushElement) {
         return a.position.x - b.position.x;
     }
-    compareMinY(a: PointRBushElement, b: PointRBushElement) {
+    override compareMinY(a: PointRBushElement, b: PointRBushElement) {
         return a.position.y - b.position.y;
     }
 }

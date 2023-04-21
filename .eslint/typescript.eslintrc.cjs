@@ -7,6 +7,7 @@ module.exports = {
     extends: [
         'eslint:recommended',
         'plugin:@typescript-eslint/recommended',
+        'plugin:import/typescript',
         // TODO: doesn't work for some reason from this config and has to be imported separately
         // 'prettier',
     ],
@@ -249,6 +250,7 @@ module.exports = {
          */
         'import/no-deprecated': 'warn',
         'import/order': 'warn',
+        'import/no-cycle': 'warn',
 
         /**
          * @typescript-eslint

@@ -1,31 +1,13 @@
 /* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
+    "extends": "../tsconfig.base.json",
     "compileOnSave": false,
     "compilerOptions": {
+        "moduleResolution": "node",
         "baseUrl": "./",
         "outDir": "./dist/out-tsc",
-        "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "noUncheckedIndexedAccess": true,
-        "noImplicitOverride": true,
-        "noPropertyAccessFromIndexSignature": true,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "sourceMap": true,
-        "declaration": false,
-        "downlevelIteration": true,
-        "experimentalDecorators": true,
-        "esModuleInterop": true,
-        "moduleResolution": "node",
-        "skipLibCheck": true,
-        "importHelpers": true,
-        "target": "ES2022",
-        "module": "ES2020",
         "lib": ["ES2022", "dom"],
-        // needed for https://github.com/typescript-eslint/typescript-eslint/issues/2559#issuecomment-692882427
-        "emitDecoratorMetadata": true,
-        "useDefineForClassFields": false,
-        "resolveJsonModule": true
+        "useDefineForClassFields": false // TODO: Enabling this requires multiple changes in the code
     },
     // this fixes jest globals in .spec.ts being overwritten by cypress globals
     "include": ["src"],

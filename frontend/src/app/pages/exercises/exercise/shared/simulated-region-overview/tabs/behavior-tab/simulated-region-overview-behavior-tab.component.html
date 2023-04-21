@@ -18,12 +18,15 @@
                         (click)="onBehaviorSelect(behavior)"
                         class="list-group-item list-group-item-action d-flex align-items-center flex-nowrap"
                     >
-                        {{ behavior | behaviorToGermanName }}
+                        {{ behavior.type | behaviorTypeToGermanName }}
                     </button>
                 </div>
             </div>
         </div>
-        <div class="col-sm overflow-auto mh-100" style="max-width: 70%">
+        <div
+            class="col-sm overflow-auto mh-100 h-100 w-100"
+            style="max-width: 70%"
+        >
             <div [ngSwitch]="selectedBehavior?.type">
                 <app-simulated-region-overview-behavior-assign-leader
                     *ngSwitchCase="'assignLeaderBehavior'"
@@ -31,14 +34,39 @@
                 ></app-simulated-region-overview-behavior-assign-leader
                 ><app-simulated-region-overview-behavior-treat-patients
                     *ngSwitchCase="'treatPatientsBehavior'"
-                    [simulatedRegion]="simulatedRegion"
-                    [treatPatientsBehaviorState]="$any(selectedBehavior)"
+                    [simulatedRegionId]="simulatedRegion.id"
+                    [treatPatientsBehaviorId]="selectedBehavior!.id"
                 ></app-simulated-region-overview-behavior-treat-patients
                 ><app-simulated-region-overview-behavior-unload-arriving-vehicles
                     *ngSwitchCase="'unloadArrivingVehiclesBehavior'"
                     [simulatedRegionId]="simulatedRegion.id"
                     [behaviorId]="selectedBehavior!.id"
                 ></app-simulated-region-overview-behavior-unload-arriving-vehicles>
+                <app-simulated-region-overview-behavior-report
+                    *ngSwitchCase="'reportBehavior'"
+                    [simulatedRegionId]="simulatedRegion.id"
+                    [reportBehaviorId]="selectedBehavior!.id"
+                ></app-simulated-region-overview-behavior-report>
+                <app-simulated-region-overview-behavior-automatically-distribute-vehicles
+                    *ngSwitchCase="'automaticallyDistributeVehiclesBehavior'"
+                    [simulatedRegionId]="simulatedRegion.id"
+                    [automaticallyDistributeVehiclesBehaviorId]="
+                        selectedBehavior!.id
+                    "
+                ></app-simulated-region-overview-behavior-automatically-distribute-vehicles>
+                <app-simulated-region-overview-behavior-provide-personnel
+                    *ngSwitchCase="'providePersonnelBehavior'"
+                    [simulatedRegionId]="simulatedRegion.id"
+                    [behaviorId]="selectedBehavior!.id"
+                ></app-simulated-region-overview-behavior-provide-personnel>
+                <app-simulated-region-overview-behavior-answer-vehicle-requests
+                    *ngSwitchCase="'answerRequestsBehavior'"
+                ></app-simulated-region-overview-behavior-answer-vehicle-requests>
+                <app-simulated-region-overview-behavior-request-vehicles
+                    *ngSwitchCase="'requestBehavior'"
+                    [simulatedRegionId]="simulatedRegion.id"
+                    [requestBehaviorId]="selectedBehavior!.id"
+                ></app-simulated-region-overview-behavior-request-vehicles>
                 <p *ngSwitchDefault class="text-muted font-bold">
                     Es ist noch keine Verhaltensweise ausgewählt.
                 </p>
@@ -57,19 +85,26 @@
                     ngbDropdownToggle
                     type="button"
                     class="btn btn-outline-primary"
-                    [disabled]="behaviorsToBeAdded.length === 0"
+                    [disabled]="
+                        ((behaviorTypesToBeAdded$ | async)?.length ?? 0) === 0
+                    "
                 >
                     <span class="bi-plus me-1"></span>
                     Hinzufügen
                 </button>
-                <div *ngIf="behaviorsToBeAdded.length !== 0" ngbDropdownMenu>
+                <div
+                    *ngIf="(behaviorTypesToBeAdded$ | async)?.length"
+                    ngbDropdownMenu
+                >
                     <button
-                        *ngFor="let behavior of behaviorsToBeAdded"
+                        *ngFor="
+                            let behaviorType of behaviorTypesToBeAdded$ | async
+                        "
                         ngbDropdownItem
-                        (click)="addBehavior(behavior)"
+                        (click)="addBehavior($any(behaviorType))"
                     >
                         <span class="bi-plus me-1"></span>
-                        {{ behavior | behaviorToGermanName }}
+                        {{ $any(behaviorType) | behaviorTypeToGermanName }}
                     </button>
                 </div>
             </div>

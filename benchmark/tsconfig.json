@@ -1,19 +1,9 @@
 {
+    "extends": "../tsconfig.base.json",
     "compilerOptions": {
-        "strict": true,
-        "noUncheckedIndexedAccess": true,
-        "module": "ESNext",
-        "target": "ESNext",
-        "declaration": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "esModuleInterop": true,
-        "outDir": "./dist",
-        "sourceMap": true,
         "moduleResolution": "node",
-        "declarationMap": true,
+        "outDir": "./dist",
         "rootDir": "./src",
-        "skipLibCheck": true,
         "types": ["node"]
     },
     "references": [],

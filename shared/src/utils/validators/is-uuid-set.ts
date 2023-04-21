@@ -1,5 +1,5 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
-import { isUUID } from 'class-validator';
+import { isUUID, isString } from 'class-validator';
 import type { UUID } from '../uuid';
 import type { UUIDSet } from '../uuid-set';
 import { createMapValidator } from './create-map-validator';
@@ -22,6 +22,22 @@ export function IsUUIDSet<Each extends boolean = false>(
     return makeValidator<UUIDSet, Each>(
         'isUUIDSet',
         (value: unknown, args?: ValidationArguments) => isUUIDSet(value),
+        validationOptions
+    );
+}
+
+export const isUUIDSetMap = createMapValidator<string, UUIDSet>({
+    keyValidator: isString,
+    valueValidator: isUUIDSet,
+});
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function IsUUIDSetMap<Each extends boolean = false>(
+    validationOptions?: ValidationOptions & { each?: Each }
+): GenericPropertyDecorator<{ [key: string]: UUIDSet }, Each> {
+    return makeValidator<{ [key: string]: UUIDSet }, Each>(
+        'isUUIDSetMap',
+        (value: unknown, args?: ValidationArguments) => isUUIDSetMap(value),
         validationOptions
     );
 }

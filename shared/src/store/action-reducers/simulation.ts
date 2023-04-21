@@ -1,14 +1,42 @@
-import { IsNumber, IsOptional, IsUUID, Min } from 'class-validator';
+import {
+    IsInt,
+    IsNumber,
+    IsOptional,
+    IsString,
+    IsUUID,
+    Min,
+    ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 import type {
     TreatPatientsBehaviorState,
     UnloadArrivingVehiclesBehaviorState,
 } from '../../simulation';
+import {
+    updateBehaviorsRequestTarget,
+    updateBehaviorsRequestInterval,
+    ReportableInformation,
+    reportableInformationAllowedValues,
+    RecurringEventActivityState,
+} from '../../simulation';
+import { StartCollectingInformationEvent } from '../../simulation/events/start-collecting';
+import { sendSimulationEvent } from '../../simulation/events/utils';
+import { nextUUID } from '../../simulation/utils/randomness';
 import type { Mutable } from '../../utils';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
+import {
+    UUID,
+    uuidValidationOptions,
+    cloneDeepMutable,
+    uuidArrayValidationOptions,
+} from '../../utils';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
-import { getElement } from './utils';
+import { ExpectedReducerError, ReducerError } from '../reducer-error';
+import {
+    requestTargetTypeOptions,
+    ExerciseRequestTargetConfiguration,
+} from '../../models';
+import { getActivityById, getBehaviorById, getElement } from './utils';
 
 export class UpdateTreatPatientsIntervalsAction implements Action {
     @IsValue('[TreatPatientsBehavior] Update TreatPatientsIntervals' as const)
@@ -47,6 +75,23 @@ export class UpdateTreatPatientsIntervalsAction implements Action {
     public readonly countingTimePerPatient?: number;
 }
 
+export class ProvidePersonnelBehaviorUpdateVehiclePrioritiesAction
+    implements Action
+{
+    @IsValue('[ProvidePersonnelBehavior] Update VehiclePriorities' as const)
+    public readonly type =
+        '[ProvidePersonnelBehavior] Update VehiclePriorities';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidArrayValidationOptions)
+    public readonly priorities!: readonly UUID[];
+}
+
 export class UnloadArrivingVehiclesBehaviorUpdateUnloadDelayAction
     implements Action
 {
@@ -63,6 +108,158 @@ export class UnloadArrivingVehiclesBehaviorUpdateUnloadDelayAction
     @IsNumber()
     @Min(0)
     public readonly unloadDelay!: number;
+}
+
+export class CreateReportAction implements Action {
+    @IsValue('[ReportBehavior] Create Report')
+    public readonly type = '[ReportBehavior] Create Report';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsLiteralUnion(reportableInformationAllowedValues)
+    public readonly informationType!: ReportableInformation;
+}
+
+export class CreateRecurringReportsAction implements Action {
+    @IsValue('[ReportBehavior] Create Recurring Report')
+    public readonly type = '[ReportBehavior] Create Recurring Report';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsNumber()
+    @Min(0)
+    public readonly interval!: number;
+
+    @IsLiteralUnion(reportableInformationAllowedValues)
+    public readonly informationType!: ReportableInformation;
+}
+
+export class UpdateRecurringReportsAction implements Action {
+    @IsValue('[ReportBehavior] Update Recurring Report')
+    public readonly type = '[ReportBehavior] Update Recurring Report';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsNumber()
+    @Min(0)
+    public readonly interval!: number;
+
+    @IsLiteralUnion(reportableInformationAllowedValues)
+    public readonly informationType!: ReportableInformation;
+}
+
+export class RemoveRecurringReportsAction implements Action {
+    @IsValue('[ReportBehavior] Remove Recurring Report')
+    public readonly type = '[ReportBehavior] Remove Recurring Report';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsLiteralUnion(reportableInformationAllowedValues)
+    public readonly informationType!: ReportableInformation;
+}
+
+export class ChangeAutomaticDistributionLimitAction implements Action {
+    @IsValue('[AutomaticDistributionBehavior] Change Limit')
+    public readonly type = '[AutomaticDistributionBehavior] Change Limit';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsString()
+    public readonly vehicleType!: string;
+
+    @IsInt()
+    @Min(0)
+    public readonly newLimit!: number;
+}
+export class UpdateRequestIntervalAction implements Action {
+    @IsValue('[RequestBehavior] Update RequestInterval')
+    public readonly type = '[RequestBehavior] Update RequestInterval';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly requestInterval!: number;
+}
+
+export class AddAutomaticDistributionDestinationAction implements Action {
+    @IsValue('[AutomaticDistributionBehavior] Add Destination')
+    public readonly type = '[AutomaticDistributionBehavior] Add Destination';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly destinationId!: string;
+}
+
+export class UpdateRequestTargetAction implements Action {
+    @IsValue('[RequestBehavior] Update RequestTarget')
+    public readonly type = '[RequestBehavior] Update RequestTarget';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @Type(...requestTargetTypeOptions)
+    @ValidateNested()
+    public readonly requestTarget!: ExerciseRequestTargetConfiguration;
+}
+
+export class RemoveAutomaticDistributionDestinationAction implements Action {
+    @IsValue('[AutomaticDistributionBehavior] Remove Destination')
+    public readonly type = '[AutomaticDistributionBehavior] Remove Destination';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly destinationId!: string;
+}
+
+export class UpdatePromiseInvalidationIntervalAction implements Action {
+    @IsValue('[RequestBehavior] Update Promise invalidation interval')
+    public readonly type =
+        '[RequestBehavior] Update Promise invalidation interval';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly promiseInvalidationInterval!: number;
 }
 
 export namespace SimulationActionReducers {
@@ -136,6 +333,346 @@ export namespace SimulationActionReducers {
                         `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}.`
                     );
                 }
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const createReport: ActionReducer<CreateReportAction> = {
+        action: CreateReportAction,
+        reducer(draftState, { simulatedRegionId, informationType }) {
+            const simulatedRegion = getElement(
+                draftState,
+                'simulatedRegion',
+                simulatedRegionId
+            );
+            sendSimulationEvent(
+                simulatedRegion,
+                StartCollectingInformationEvent.create(informationType)
+            );
+
+            return draftState;
+        },
+        rights: 'trainer',
+    };
+
+    export const createRecurringReports: ActionReducer<CreateRecurringReportsAction> =
+        {
+            action: CreateRecurringReportsAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, interval, informationType }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const reportBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'reportBehavior'
+                );
+                if (!reportBehaviorState) {
+                    throw new ReducerError(
+                        `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}.`
+                    );
+                }
+
+                if (reportBehaviorState.activityIds[informationType]) {
+                    throw new ExpectedReducerError(
+                        `The behavior with id ${behaviorId} already has a recurring report for information type ${informationType}.`
+                    );
+                }
+
+                const activityId = nextUUID(draftState);
+                reportBehaviorState.activityIds[informationType] = activityId;
+                simulatedRegion.activities[activityId] = cloneDeepMutable(
+                    RecurringEventActivityState.create(
+                        activityId,
+                        StartCollectingInformationEvent.create(informationType),
+                        draftState.currentTime + interval,
+                        interval
+                    )
+                );
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateRecurringReports: ActionReducer<UpdateRecurringReportsAction> =
+        {
+            action: UpdateRecurringReportsAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, interval, informationType }
+            ) {
+                const reportBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'reportBehavior'
+                );
+                const activityId =
+                    reportBehaviorState.activityIds[informationType];
+                if (!activityId) {
+                    throw new ReducerError(
+                        `The behavior with id ${behaviorId} has no recurring report for information type ${informationType}.`
+                    );
+                }
+                const recurringActivityState = getActivityById(
+                    draftState,
+                    simulatedRegionId,
+                    activityId,
+                    'recurringEventActivity'
+                );
+
+                recurringActivityState.recurrenceIntervalTime = interval;
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const removeRecurringReports: ActionReducer<RemoveRecurringReportsAction> =
+        {
+            action: RemoveRecurringReportsAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, informationType }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const reportBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'reportBehavior'
+                );
+                const activityId =
+                    reportBehaviorState.activityIds[informationType];
+                if (!activityId) {
+                    throw new ReducerError(
+                        `The behavior with id ${behaviorId} has no recurring report for information type ${informationType}.`
+                    );
+                }
+                getActivityById(
+                    draftState,
+                    simulatedRegionId,
+                    activityId,
+                    'recurringEventActivity'
+                );
+                delete reportBehaviorState.activityIds[informationType];
+                delete simulatedRegion.activities[activityId];
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const changeAutomaticDistributionLimit: ActionReducer<ChangeAutomaticDistributionLimitAction> =
+        {
+            action: ChangeAutomaticDistributionLimitAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, vehicleType, newLimit }
+            ) {
+                const automaticDistributionBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'automaticallyDistributeVehiclesBehavior'
+                );
+
+                automaticDistributionBehaviorState.distributionLimits[
+                    vehicleType
+                ] = newLimit;
+
+                if (newLimit === 0) {
+                    delete automaticDistributionBehaviorState.remainingInNeed[
+                        vehicleType
+                    ];
+                } else {
+                    if (
+                        !automaticDistributionBehaviorState.remainingInNeed[
+                            vehicleType
+                        ]
+                    ) {
+                        automaticDistributionBehaviorState.remainingInNeed[
+                            vehicleType
+                        ] = cloneDeepMutable(
+                            automaticDistributionBehaviorState.distributionDestinations
+                        );
+                    }
+                }
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateRequestInterval: ActionReducer<UpdateRequestIntervalAction> =
+        {
+            action: UpdateRequestIntervalAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, requestInterval }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'requestBehavior'
+                );
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                updateBehaviorsRequestInterval(
+                    draftState,
+                    simulatedRegion,
+                    behaviorState,
+                    requestInterval
+                );
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const addAutomaticDistributionLimit: ActionReducer<AddAutomaticDistributionDestinationAction> =
+        {
+            action: AddAutomaticDistributionDestinationAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, destinationId }
+            ) {
+                const automaticDistributionBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'automaticallyDistributeVehiclesBehavior'
+                );
+
+                //  Do not re-add the destination if it was already added previously
+
+                if (
+                    automaticDistributionBehaviorState.distributionDestinations[
+                        destinationId
+                    ]
+                ) {
+                    throw new ReducerError(
+                        `The destination with id: ${destinationId} was already added to the behavior with id: ${behaviorId} in simulated region with id:${simulatedRegionId}`
+                    );
+                }
+
+                automaticDistributionBehaviorState.distributionDestinations[
+                    destinationId
+                ] = true;
+
+                Object.values(
+                    automaticDistributionBehaviorState.remainingInNeed
+                ).forEach((regionsInNeed) => {
+                    regionsInNeed[destinationId] = true;
+                });
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateRequestTarget: ActionReducer<UpdateRequestTargetAction> =
+        {
+            action: UpdateRequestTargetAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, requestTarget }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'requestBehavior'
+                );
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                updateBehaviorsRequestTarget(
+                    draftState,
+                    simulatedRegion,
+                    behaviorState,
+                    requestTarget
+                );
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const removeAutomaticDistributionLimit: ActionReducer<RemoveAutomaticDistributionDestinationAction> =
+        {
+            action: RemoveAutomaticDistributionDestinationAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, destinationId }
+            ) {
+                const automaticDistributionBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'automaticallyDistributeVehiclesBehavior'
+                );
+
+                delete automaticDistributionBehaviorState
+                    .distributionDestinations[destinationId];
+
+                Object.values(
+                    automaticDistributionBehaviorState.remainingInNeed
+                ).forEach((regionsInNeed) => {
+                    delete regionsInNeed[destinationId];
+                });
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+    export const updatePromiseInvalidationInterval: ActionReducer<UpdatePromiseInvalidationIntervalAction> =
+        {
+            action: UpdatePromiseInvalidationIntervalAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, promiseInvalidationInterval }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'requestBehavior'
+                );
+                behaviorState.invalidatePromiseInterval =
+                    promiseInvalidationInterval;
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateTreatmentVehiclePriorities: ActionReducer<ProvidePersonnelBehaviorUpdateVehiclePrioritiesAction> =
+        {
+            action: ProvidePersonnelBehaviorUpdateVehiclePrioritiesAction,
+            reducer(draftState, { simulatedRegionId, behaviorId, priorities }) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'providePersonnelBehavior'
+                );
+
+                behaviorState.vehicleTemplatePriorities =
+                    cloneDeepMutable(priorities);
+
                 return draftState;
             },
             rights: 'trainer',

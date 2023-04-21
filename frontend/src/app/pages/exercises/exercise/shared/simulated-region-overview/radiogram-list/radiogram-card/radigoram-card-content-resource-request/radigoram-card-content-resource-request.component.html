@@ -1,0 +1,48 @@
+<ng-container *ngIf="requiredResource$ | async as requiredResource">
+    <h5>Anfrage von Ressourcen</h5>
+
+    <ng-container
+        *ngIf="(requiredResource | keys).length > 0; else noResourcesRequired"
+    >
+        <table class="table card-text">
+            <thead>
+                <tr>
+                    <th class="w-75">Kategorie</th>
+                    <th class="w-25">Anzahl</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    *ngFor="
+                        let vehicleType of requiredResource.vehicleCounts | keys
+                    "
+                >
+                    <td>{{ vehicleType }}</td>
+                    <td>{{ requiredResource.vehicleCounts[vehicleType] }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="d-flex row my-1">
+            <button
+                type="button"
+                [disabled]="(enableActionButtons$ | async) === false"
+                (click)="denyRequest()"
+                class="btn btn-danger col-sm mx-1"
+            >
+                Ablehnen
+            </button>
+            <button
+                type="button"
+                [disabled]="(enableActionButtons$ | async) === false"
+                (click)="acceptRequest()"
+                class="btn btn-success col-sm mx-1"
+            >
+                Akzeptieren
+            </button>
+        </div>
+    </ng-container>
+
+    <ng-template #noResourcesRequired>
+        <p class="card-text">Es werden keine Ressourcen benötigt.</p>
+    </ng-template>
+</ng-container>

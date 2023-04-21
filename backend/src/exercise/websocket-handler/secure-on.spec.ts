@@ -4,9 +4,9 @@ import { createTestEnvironment } from '../../../test/utils';
 describe('secure on', () => {
     const environment = createTestEnvironment();
     it('does not crash in production environment when fed with invalid data', async () => {
-        const originalEnv = process.env.NODE_ENV;
+        const originalEnv = process.env['NODE_ENV'];
         // Errors are only catched in production mode
-        process.env.NODE_ENV = 'production';
+        process.env['NODE_ENV'] = 'production';
         await environment
             .withWebsocket(async (socket) => {
                 socket.insecureEmit('getState', 'any');
@@ -16,7 +16,7 @@ describe('secure on', () => {
                 await environment.httpRequest('get', '/api/health').expect(200);
             })
             .finally(() => {
-                process.env.NODE_ENV = originalEnv;
+                process.env['NODE_ENV'] = originalEnv;
             });
     });
     // TODO: test that it does crash in development environment when fed with invalid data

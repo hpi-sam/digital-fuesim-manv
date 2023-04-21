@@ -8,6 +8,14 @@ import { TickEvent } from './tick';
 import { VehicleArrivedEvent } from './vehicle-arrived';
 import { TreatmentsTimerEvent } from './treatments-timer-event';
 import { TreatmentProgressChangedEvent } from './treatment-progress-changed';
+import { CollectInformationEvent } from './collect';
+import { StartCollectingInformationEvent } from './start-collecting';
+import { ResourceRequiredEvent } from './resources-required';
+import { VehiclesSentEvent } from './vehicles-sent';
+import { TryToDistributeEvent } from './try-to-distribute';
+import { VehicleTransferSuccessfulEvent } from './vehicle-transfer-successful';
+import { TransferConnectionMissingEvent } from './transfer-connection-missing';
+import { SendRequestEvent } from './send-request';
 
 export const simulationEvents = {
     MaterialAvailableEvent,
@@ -17,6 +25,14 @@ export const simulationEvents = {
     TreatmentProgressChangedEvent,
     TreatmentsTimerEvent,
     VehicleArrivedEvent,
+    CollectInformationEvent,
+    StartCollectingInformationEvent,
+    ResourceRequiredEvent,
+    VehiclesSentEvent,
+    TryToDistributeEvent,
+    VehicleTransferSuccessfulEvent,
+    TransferConnectionMissingEvent,
+    SendRequestEvent,
 };
 
 export type ExerciseSimulationEvent = InstanceType<
@@ -36,6 +52,14 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     treatmentProgressChangedEvent: TreatmentProgressChangedEvent,
     treatmentsTimerEvent: TreatmentsTimerEvent,
     vehicleArrivedEvent: VehicleArrivedEvent,
+    collectInformationEvent: CollectInformationEvent,
+    startCollectingInformationEvent: StartCollectingInformationEvent,
+    resourceRequiredEvent: ResourceRequiredEvent,
+    vehiclesSentEvent: VehiclesSentEvent,
+    tryToDistributeEvent: TryToDistributeEvent,
+    vehicleTransferSuccessfulEvent: VehicleTransferSuccessfulEvent,
+    transferConnectionMissingEvent: TransferConnectionMissingEvent,
+    sendRequestEvent: SendRequestEvent,
 };
 
 export const simulationEventTypeOptions: Parameters<typeof Type> = [
