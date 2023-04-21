@@ -61,39 +61,49 @@ export async function migrateInDatabase(
         newIndex: number;
         actionString: string;
     }[] = [];
-    actions.forEach((action, i) => {
-        if (action === null) {
-            indicesToRemove.push(i);
-            return;
-        }
-        actionsToUpdate.push({
-            previousIndex: i,
-            newIndex: patchedActionsIndex++,
-            actionString: JSON.stringify(action),
+    if (actions.length > 0) {
+        actions.forEach((action, i) => {
+            if (action === null) {
+                indicesToRemove.push(i);
+                return;
+            }
+            actionsToUpdate.push({
+                previousIndex: i,
+                newIndex: patchedActionsIndex++,
+                actionString: JSON.stringify(action),
+            });
         });
-    });
-    if (indicesToRemove.length > 0) {
+        if (indicesToRemove.length > 0) {
+            await entityManager
+                .createQueryBuilder()
+                .delete()
+                .from(ActionWrapperEntity)
+                // eslint-disable-next-line unicorn/string-content
+                .where('index IN (:...ids)', { ids: indicesToRemove })
+                .andWhere({ exercise: { id: exerciseId } })
+                .execute();
+        }
+        if (actionsToUpdate.length > 0) {
+            await Promise.all(
+                actionsToUpdate.map(
+                    async ({ previousIndex, newIndex, actionString }) =>
+                        entityManager.update(
+                            ActionWrapperEntity,
+                            {
+                                index: previousIndex,
+                                exercise: { id: exerciseId },
+                            },
+                            { actionString, index: newIndex }
+                        )
+                )
+            );
+        }
+    } else {
         await entityManager
             .createQueryBuilder()
             .delete()
             .from(ActionWrapperEntity)
-            // eslint-disable-next-line unicorn/string-content
-            .where('index IN (:...ids)', { ids: indicesToRemove })
+            .where({ exercise: { id: exerciseId } })
             .execute();
-    }
-    if (actionsToUpdate.length > 0) {
-        await Promise.all(
-            actionsToUpdate.map(
-                async ({ previousIndex, newIndex, actionString }) =>
-                    entityManager.update(
-                        ActionWrapperEntity,
-                        {
-                            index: previousIndex,
-                            exercise: { id: exerciseId },
-                        },
-                        { actionString, index: newIndex }
-                    )
-            )
-        );
     }
 }
