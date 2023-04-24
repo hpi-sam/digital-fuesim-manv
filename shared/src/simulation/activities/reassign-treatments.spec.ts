@@ -14,13 +14,14 @@ import { AssignLeaderBehaviorState } from '../behaviors/assign-leader';
 import { addPatient } from '../../../tests/utils/patients.spec';
 import { addPersonnel } from '../../../tests/utils/personnel.spec';
 import { defaultPersonnelTemplates } from '../../data/default-state/personnel-templates';
-import type { TreatmentProgressChangedEvent } from '../events';
+import { TreatmentProgressChangedEvent } from '../events';
 import { assertCatering } from '../../../tests/utils/catering.spec';
 import { addMaterial } from '../../../tests/utils/materials.spec';
 import {
     reassignTreatmentsActivity,
     ReassignTreatmentsActivityState,
 } from './reassign-treatments';
+import { sendSimulationEvent } from '../events/utils';
 
 const emptyState = ExerciseState.create('123456');
 
@@ -97,17 +98,23 @@ describe('reassign treatment', () => {
     describe.each(['unknown', 'counted', 'triaged', 'secured'] as const)(
         'in %s state',
         (state) => {
-            it('does nothing when there is nothing', () => {
-                const { beforeState, newState, terminate } =
+            it('goes to noTreatment when there is nothing', () => {
+                const { beforeState, newState, simulatedRegion, terminate } =
                     setupStateAndApplyTreatments(
                         ReassignTreatmentsActivityState.create(uuid(), state, 0)
                     );
-                expect(newState).toStrictEqual(beforeState);
+                const shouldState = produce(beforeState, (draftState) => {
+                    sendSimulationEvent(
+                        draftState.simulatedRegions[simulatedRegion!.id]!,
+                        TreatmentProgressChangedEvent.create('noTreatment')
+                    );
+                });
+                expect(newState).toStrictEqual(shouldState);
                 expect(terminate).toBeCalled();
             });
 
-            it('does nothing when there is no personnel', () => {
-                const { beforeState, newState, terminate } =
+            it('goes to noTreatment when there is no personnel', () => {
+                const { beforeState, newState, simulatedRegion, terminate } =
                     setupStateAndApplyTreatments(
                         ReassignTreatmentsActivityState.create(
                             uuid(),
@@ -115,23 +122,27 @@ describe('reassign treatment', () => {
                             0
                         ),
                         undefined,
-                        (draftState, simulatedRegion) => {
+                        (draftState, { id }) => {
                             addPatient(
                                 draftState,
                                 'white',
                                 'red',
-                                SimulatedRegionPosition.create(
-                                    simulatedRegion.id
-                                )
+                                SimulatedRegionPosition.create(id)
                             );
                         }
                     );
-                expect(newState).toStrictEqual(beforeState);
+                const shouldState = produce(beforeState, (draftState) => {
+                    sendSimulationEvent(
+                        draftState.simulatedRegions[simulatedRegion!.id]!,
+                        TreatmentProgressChangedEvent.create('noTreatment')
+                    );
+                });
+                expect(newState).toStrictEqual(shouldState);
                 expect(terminate).toBeCalled();
             });
 
-            it('does nothing when there is no leading personnel', () => {
-                const { beforeState, newState, terminate } =
+            it('goes to noTreatment when there is no leading personnel', () => {
+                const { beforeState, newState, simulatedRegion, terminate } =
                     setupStateAndApplyTreatments(
                         ReassignTreatmentsActivityState.create(
                             uuid(),
@@ -139,14 +150,12 @@ describe('reassign treatment', () => {
                             0
                         ),
                         undefined,
-                        (draftState, simulatedRegion) => {
+                        (draftState, { id }) => {
                             addPatient(
                                 draftState,
                                 'white',
                                 'red',
-                                SimulatedRegionPosition.create(
-                                    simulatedRegion.id
-                                )
+                                SimulatedRegionPosition.create(id)
                             );
 
                             addPersonnel(
@@ -155,14 +164,18 @@ describe('reassign treatment', () => {
                                     defaultPersonnelTemplates.notSan,
                                     uuid(),
                                     '',
-                                    SimulatedRegionPosition.create(
-                                        simulatedRegion.id
-                                    )
+                                    SimulatedRegionPosition.create(id)
                                 )
                             );
                         }
                     );
-                expect(newState).toStrictEqual(beforeState);
+                const shouldState = produce(beforeState, (draftState) => {
+                    sendSimulationEvent(
+                        draftState.simulatedRegions[simulatedRegion!.id]!,
+                        TreatmentProgressChangedEvent.create('noTreatment')
+                    );
+                });
+                expect(newState).toStrictEqual(shouldState);
                 expect(terminate).toBeCalled();
             });
 
