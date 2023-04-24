@@ -194,7 +194,6 @@ export const transferVehiclesActivity: SimulationActivity<TransferVehiclesActivi
                 sendSimulationEvent(
                     simulatedRegion,
                     VehicleTransferSuccessfulEvent.create(
-                        nextUUID(draftState),
                         targetTransferPoint.id,
                         activityState.key,
                         VehicleResource.create(sentVehicles)

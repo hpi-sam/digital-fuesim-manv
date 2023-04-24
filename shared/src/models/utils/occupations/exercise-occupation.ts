@@ -3,10 +3,12 @@ import type { Constructor } from '../../../utils';
 import { IntermediateOccupation } from './intermediate-occupation';
 import { Occupation } from './occupation';
 import { NoOccupation } from './no-occupation';
+import { LoadOccupation } from './load-occupation';
 
 export const occupations = {
     IntermediateOccupation,
     NoOccupation,
+    LoadOccupation,
 };
 
 export type ExerciseOccupation = InstanceType<
@@ -22,6 +24,7 @@ export type ExerciseOccupationType = ExerciseOccupation['type'];
 export const occupationDictionary: ExerciseOccupationDictionary = {
     intermediateOccupation: IntermediateOccupation,
     noOccupation: NoOccupation,
+    loadOccupation: LoadOccupation,
 };
 
 export const occupationTypeOptions: Parameters<typeof Type> = [

@@ -2,11 +2,11 @@ import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import type { SimulationEvent } from './simulation-event';
 import {
     TransferDestination,
     transferDestinationTypeAllowedValues,
-} from './utils';
+} from '../utils/transfer-destination';
+import type { SimulationEvent } from './simulation-event';
 
 export class StartTransferEvent implements SimulationEvent {
     @IsValue('startTransferEvent')

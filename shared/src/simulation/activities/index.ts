@@ -5,3 +5,4 @@ export * from './unload-vehicle';
 export * from './recurring-event';
 export * from './provide-personnel-from-vehicles';
 export * from './transfer-vehicles';
+export * from './load-vehicle';

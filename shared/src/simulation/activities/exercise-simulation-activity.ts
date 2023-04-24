@@ -8,6 +8,7 @@ import { generateReportActivity } from './generate-report';
 import { providePersonnelFromVehiclesActivity } from './provide-personnel-from-vehicles';
 import { transferVehiclesActivity } from './transfer-vehicles';
 import { createRequestActivity } from './create-request';
+import { loadVehicleActivity } from './load-vehicle';
 
 export const simulationActivities = {
     reassignTreatmentsActivity,
@@ -18,6 +19,7 @@ export const simulationActivities = {
     providePersonnelFromVehiclesActivity,
     transferVehiclesActivity,
     createRequestActivity,
+    loadVehicleActivity,
 };
 
 export type ExerciseSimulationActivity =

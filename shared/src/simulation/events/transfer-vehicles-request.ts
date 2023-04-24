@@ -4,11 +4,11 @@ import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import { ResourceDescription } from '../../models/utils/resource-description';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { UUID, uuidValidationOptions } from '../../utils';
-import type { SimulationEvent } from './simulation-event';
 import {
     TransferDestination,
     transferDestinationTypeAllowedValues,
-} from './utils';
+} from '../utils/transfer-destination';
+import type { SimulationEvent } from './simulation-event';
 
 export class TransferVehiclesRequestEvent implements SimulationEvent {
     @IsValue('transferVehiclesRequestEvent')
