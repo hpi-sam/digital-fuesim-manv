@@ -13,17 +13,7 @@
             <app-vehicle-name-editor [vehicleId]="vehicle.id" />
         </div>
         <div class="mb-3">
-            Verfügbare Patientenplätze:
-            <span class="font-monospace">
-                {{
-                    vehicle.patientCapacity -
-                        (vehicle.patientIds | keyvalue).length
-                }}
-            </span>
-            von
-            <span class="font-monospace">
-                {{ vehicle.patientCapacity }}
-            </span>
+            <app-vehicle-available-slots-display [vehicleId]="vehicle.id" />
         </div>
 
         <app-vehicle-load-unload-controls [vehicleId]="vehicle.id" />
