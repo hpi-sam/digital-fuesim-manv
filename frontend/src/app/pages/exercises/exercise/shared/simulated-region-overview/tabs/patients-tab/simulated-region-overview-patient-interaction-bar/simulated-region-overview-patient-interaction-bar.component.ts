@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { MapCoordinates, MapPosition, UUID } from 'digital-fuesim-manv-shared';
+import type { OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { UUID } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import { SelectPatientService } from '../../../select-patient.service';
 
