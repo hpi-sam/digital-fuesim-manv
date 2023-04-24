@@ -11,3 +11,7 @@ export * from './vehicles-sent';
 export * from './try-to-distribute';
 export * from './vehicle-transfer-successful';
 export * from './transfer-connection-missing';
+export * from './material-removed';
+export * from './personnel-removed';
+export * from './patient-removed';
+export * from './vehicle-removed';
