@@ -14,6 +14,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   These templates come with different border colors.
 -   Simulated regions display their names on the map.
 -   Vehicles now have a property to indicate their current occupation.
+-   The "Leitstelle" now has an option to select a different destination for a specified amount of vehicles.
 
 ## [0.4.1] - 2023-04-20
 
