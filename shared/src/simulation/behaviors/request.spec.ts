@@ -26,6 +26,7 @@ import { addActivity } from '../activities/utils';
 import { SendRequestEvent } from '../events/send-request';
 import type { CreateRequestActivityState } from '../activities/create-request';
 import { ResourcePromise } from '../utils/resource-promise';
+import { NoOccupation } from '../../models/utils/occupations/no-occupation';
 import {
     RequestBehaviorState,
     getResourcesToRequest,
@@ -383,7 +384,8 @@ const sendEvent = {
             {},
             0,
             ImageProperties.create('', 0, 0),
-            SimulatedRegionPosition.create(simulatedRegion.id)
+            SimulatedRegionPosition.create(simulatedRegion.id),
+            NoOccupation.create()
         );
         draftState.vehicles[vehicle.id] = cloneDeepMutable(vehicle);
 
