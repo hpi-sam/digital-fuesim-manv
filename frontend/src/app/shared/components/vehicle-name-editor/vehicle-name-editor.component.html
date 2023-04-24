@@ -1,0 +1,13 @@
+<div class="form-group">
+    <label class="form-label">Fahrzeugname</label>
+    <input
+        #nameInput="ngModel"
+        [ngModel]="(vehicle$ | async)?.name"
+        (appSaveOnTyping)="renameVehicle($event)"
+        [maxlength]="16"
+        required
+        type="text"
+        class="form-control"
+    />
+    <app-display-validation [ngModelInput]="nameInput"></app-display-validation>
+</div>

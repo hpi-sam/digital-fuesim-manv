@@ -38,6 +38,8 @@ import { PatientStatusColorPipe } from './pipes/patient-status-color.pipe';
 import { PatientStatusTagsFieldComponent } from './components/patient-status-displayl/patient-status-tags-field/patient-status-tags-field.component';
 import { PatientBehaviorIconPipe } from './pipes/patient-behavior-icon.pipe';
 import { PatientBehaviorDescriptionPipe } from './pipes/patient-behavior-description.pipe';
+import { VehicleNameEditorComponent } from './components/vehicle-name-editor/vehicle-name-editor.component';
+import { VehicleLoadUnloadControlsComponent } from './components/vehicle-load-unload-controls/vehicle-load-unload-controls.component';
 
 @NgModule({
     declarations: [
@@ -72,6 +74,8 @@ import { PatientBehaviorDescriptionPipe } from './pipes/patient-behavior-descrip
         PatientStatusTagsFieldComponent,
         PatientBehaviorIconPipe,
         PatientBehaviorDescriptionPipe,
+        VehicleNameEditorComponent,
+        VehicleLoadUnloadControlsComponent,
     ],
     imports: [
         CommonModule,
@@ -109,6 +113,8 @@ import { PatientBehaviorDescriptionPipe } from './pipes/patient-behavior-descrip
         PatientHealthPointDisplayComponent,
         PatientsDetailsComponent,
         PatientStatusColorPipe,
+        VehicleNameEditorComponent,
+        VehicleLoadUnloadControlsComponent,
     ],
 })
 export class SharedModule {}
