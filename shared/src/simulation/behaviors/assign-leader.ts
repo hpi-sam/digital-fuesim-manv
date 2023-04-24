@@ -87,21 +87,21 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
                             selectNewLeader(
                                 draftState,
                                 simulatedRegion,
-                                behaviorState
+                                behaviorState,
+                                false
                             );
                         }
                     }
                     break;
                 case 'personnelRemovedEvent':
                     {
-                        // if the leader is removed from the region the value is unset and a new leader is selected
-
+                        // if the leader is removed from the region a new leader is selected
                         if (event.personnelId === behaviorState.leaderId) {
-                            behaviorState.leaderId = undefined;
                             selectNewLeader(
                                 draftState,
                                 simulatedRegion,
-                                behaviorState
+                                behaviorState,
+                                true
                             );
                         }
                     }
@@ -242,7 +242,8 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
 function selectNewLeader(
     draftState: Mutable<ExerciseState>,
     simulatedRegion: Mutable<SimulatedRegion>,
-    behaviorState: Mutable<AssignLeaderBehaviorState>
+    behaviorState: Mutable<AssignLeaderBehaviorState>,
+    changeLeaderIfNoLeaderSelected: boolean
 ) {
     const personnel = Object.values(draftState.personnel).filter(
         (pers) =>
@@ -251,6 +252,9 @@ function selectNewLeader(
     );
 
     if (personnel.length === 0) {
+        if (changeLeaderIfNoLeaderSelected) {
+            changeLeader(simulatedRegion, behaviorState, undefined);
+        }
         return;
     }
 
