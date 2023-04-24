@@ -3,6 +3,10 @@ import { UUID } from 'digital-fuesim-manv-shared';
 import type { Patient, PatientStatus } from 'digital-fuesim-manv-shared';
 import { SelectPatientService } from '../select-patient.service';
 
+export type PatientWithVisibleStatus = Patient & {
+    visibleStatus: PatientStatus;
+};
+
 export type Scope = 'simulatedRegion' | 'vehicle';
 
 @Component({
@@ -12,7 +16,7 @@ export type Scope = 'simulatedRegion' | 'vehicle';
 })
 export class SimulatedRegionOverviewPatientsTableComponent {
     @Input()
-    patients!: (Patient & { visibleStatus: PatientStatus })[];
+    patients!: PatientWithVisibleStatus[];
 
     @Input()
     selectedPatientId?: UUID;

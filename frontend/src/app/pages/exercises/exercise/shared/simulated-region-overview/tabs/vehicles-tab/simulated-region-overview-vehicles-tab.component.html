@@ -4,7 +4,11 @@
             *ngIf="(groupedVehicles$ | async)?.length; else noVehicles"
         >
             <table
-                *ngFor="let vehicleGroup of groupedVehicles$ | async"
+                *ngFor="
+                    let vehicleGroup of groupedVehicles$ | async;
+                    trackBy: 'vehicleType'
+                        | appTrackByProperty : (groupedVehicles$ | async)
+                "
                 class="table table-striped table-hover"
             >
                 <thead>
@@ -14,11 +18,15 @@
                 </thead>
                 <tbody>
                     <tr
-                        *ngFor="let vehicle of vehicleGroup.vehicles"
+                        *ngFor="
+                            let vehicle of vehicleGroup.vehicles;
+                            trackBy: 'id'
+                                | appTrackByProperty : vehicleGroup.vehicles
+                        "
                         style="cursor: pointer"
                         (click)="selectVehicle(vehicle.id)"
                         [class.table-primary]="
-                            (selectedVehicle$ | async)?.id === vehicle.id
+                            (selection$ | async)?.vehicle?.id === vehicle.id
                         "
                     >
                         <td>
@@ -37,12 +45,42 @@
     <div class="vr"></div>
     <div class="col overflow-auto" style="max-width: 70%">
         <ng-container
-            *ngIf="
-                selectedVehicle$ | async as selectedVehicle;
-                else noSelectedVehicle
-            "
+            *ngIf="selection$ | async as selection; else noSelectedVehicle"
         >
-            {{ selectedVehicle.name }}
+            <div class="mb-3">
+                <h6>Fahrzeugname</h6>
+                <app-vehicle-name-editor [vehicleId]="selection.vehicle.id" />
+            </div>
+            <div class="mb-3">
+                <h6>Personal</h6>
+                <ul>
+                    <li *ngFor="let personnel of selection.personnel">
+                        {{ personnel.personnelType | personnelName }}
+                        <span
+                            *ngIf="personnel.isInVehicle; else notInVehicle"
+                            class="text-muted"
+                        >
+                            (im Fahrzeug)
+                        </span>
+                        <ng-template #notInVehicle>
+                            <span class="text-muted"> (ausgestiegen) </span>
+                        </ng-template>
+                    </li>
+                </ul>
+                <app-vehicle-load-unload-controls
+                    [vehicleId]="selection.vehicle.id"
+                />
+            </div>
+            <div class="mb-3">
+                <h6>Patienten</h6>
+                <app-vehicle-available-slots-display
+                    [vehicleId]="selection.vehicle.id"
+                />
+                <app-simulated-region-overview-patients-table
+                    [patients]="selection.patients"
+                    scope="vehicle"
+                />
+            </div>
         </ng-container>
         <ng-template #noSelectedVehicle>
             <p class="text-muted">

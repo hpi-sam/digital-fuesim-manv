@@ -2,20 +2,29 @@ import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type {
+    Personnel,
     UUID,
     Vehicle,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
-import { SimulatedRegion } from 'digital-fuesim-manv-shared';
+import {
+    Patient,
+    isInSpecificVehicle,
+    SimulatedRegion,
+} from 'digital-fuesim-manv-shared';
 import { groupBy } from 'lodash-es';
 import type { Observable } from 'rxjs';
 import { combineLatest, map, Subject } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
 import {
     createSelectElementsInSimulatedRegion,
+    selectConfiguration,
+    selectPatients,
+    selectPersonnel,
     selectVehicleTemplates,
     selectVehicles,
 } from 'src/app/state/application/selectors/exercise.selectors';
+import type { PatientWithVisibleStatus } from '../../patients-table/simulated-region-overview-patients-table.component';
 
 @Component({
     selector: 'app-simulated-region-overview-vehicles-tab',
@@ -27,7 +36,12 @@ export class SimulatedRegionOverviewVehiclesTabComponent implements OnInit {
     simulatedRegion!: SimulatedRegion;
 
     selectedVehicleId$ = new Subject<UUID | null>();
-    selectedVehicle$!: Observable<Vehicle | undefined>;
+    selection$!: Observable<{
+        vehicle: Vehicle;
+        personnel: (Personnel & { isInVehicle: boolean })[];
+        patients: PatientWithVisibleStatus[];
+    } | null>;
+    selectedVehiclePersonnel$!: Observable<Personnel[]>;
 
     groupedVehicles$!: Observable<
         { vehicleType: string; vehicles: Vehicle[] }[]
@@ -35,7 +49,9 @@ export class SimulatedRegionOverviewVehiclesTabComponent implements OnInit {
 
     constructor(private readonly store: Store<AppState>) {}
 
-    ngOnInit(): void {
+    ngOnInit() {
+        this.selectedVehicleId$.next(null);
+
         const vehicles$ = this.store.select(
             createSelectElementsInSimulatedRegion(
                 selectVehicles,
@@ -70,12 +86,59 @@ export class SimulatedRegionOverviewVehiclesTabComponent implements OnInit {
             })
         );
 
-        this.selectedVehicle$ = combineLatest([
+        const personnel$ = this.store.select(selectPersonnel);
+        const patients$ = this.store.select(selectPatients);
+        const configuration$ = this.store.select(selectConfiguration);
+
+        this.selection$ = combineLatest([
             vehicles$,
+            personnel$,
+            patients$,
+            configuration$,
             this.selectedVehicleId$,
         ]).pipe(
-            map(([vehicles, selectedId]) =>
-                vehicles.find((vehicle) => vehicle.id === selectedId)
+            map(
+                ([
+                    vehicles,
+                    personnel,
+                    patients,
+                    configuration,
+                    selectedId,
+                ]) => {
+                    const selectedVehicle = vehicles.find(
+                        (vehicle) => vehicle.id === selectedId
+                    );
+
+                    if (!selectedVehicle) return null;
+
+                    const vehiclePersonnel = Object.keys(
+                        selectedVehicle.personnelIds
+                    )
+                        .map((id) => personnel[id]!)
+                        .map((pers) => ({
+                            ...pers,
+                            isInVehicle: isInSpecificVehicle(pers, selectedId!),
+                        }));
+
+                    const vehiclePatients = Object.keys(
+                        selectedVehicle.patientIds
+                    )
+                        .map((id) => patients[id]!)
+                        .map((patient) => ({
+                            ...patient,
+                            visibleStatus: Patient.getVisibleStatus(
+                                patient,
+                                configuration.pretriageEnabled,
+                                configuration.bluePatientsEnabled
+                            ),
+                        }));
+
+                    return {
+                        vehicle: selectedVehicle,
+                        personnel: vehiclePersonnel,
+                        patients: vehiclePatients,
+                    };
+                }
             )
         );
     }
