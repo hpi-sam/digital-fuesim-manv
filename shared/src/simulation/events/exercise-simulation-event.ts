@@ -16,6 +16,7 @@ import { TryToDistributeEvent } from './try-to-distribute';
 import { VehicleTransferSuccessfulEvent } from './vehicle-transfer-successful';
 import { TransferConnectionMissingEvent } from './transfer-connection-missing';
 import { SendRequestEvent } from './send-request';
+import { LeaderChangedEvent } from './leader-changed';
 import { MaterialRemovedEvent } from './material-removed';
 import { PersonnelRemovedEvent } from './personnel-removed';
 import { PatientRemovedEvent } from './patient-removed';
@@ -37,6 +38,7 @@ export const simulationEvents = {
     VehicleTransferSuccessfulEvent,
     TransferConnectionMissingEvent,
     SendRequestEvent,
+    LeaderChangedEvent,
     MaterialRemovedEvent,
     PersonnelRemovedEvent,
     PatientRemovedEvent,
@@ -68,6 +70,7 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     vehicleTransferSuccessfulEvent: VehicleTransferSuccessfulEvent,
     transferConnectionMissingEvent: TransferConnectionMissingEvent,
     sendRequestEvent: SendRequestEvent,
+    leaderChangedEvent: LeaderChangedEvent,
     materialRemovedEvent: MaterialRemovedEvent,
     personnelRemovedEvent: PersonnelRemovedEvent,
     patientRemovedEvent: PatientRemovedEvent,
