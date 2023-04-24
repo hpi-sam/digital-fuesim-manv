@@ -17,11 +17,11 @@ import { defaultPersonnelTemplates } from '../../data/default-state/personnel-te
 import { TreatmentProgressChangedEvent } from '../events';
 import { assertCatering } from '../../../tests/utils/catering.spec';
 import { addMaterial } from '../../../tests/utils/materials.spec';
+import { sendSimulationEvent } from '../events/utils';
 import {
     reassignTreatmentsActivity,
     ReassignTreatmentsActivityState,
 } from './reassign-treatments';
-import { sendSimulationEvent } from '../events/utils';
 
 const emptyState = ExerciseState.create('123456');
 
