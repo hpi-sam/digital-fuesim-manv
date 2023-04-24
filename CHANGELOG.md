@@ -13,6 +13,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   The trainer editor now offers pre-configured templates for different kinds of simulated regions.
     -   These templates come with different border colors.
 -   Simulated regions display their names on the map.
+-   Vehicles now have a property to indicate their current occupation.
 
 ## [0.4.1] - 2023-04-20
 

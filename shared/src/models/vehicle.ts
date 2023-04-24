@@ -6,6 +6,10 @@ import { IsPosition } from '../utils/validators/is-position';
 import { getCreate } from './utils';
 import { ImageProperties } from './utils/image-properties';
 import { Position } from './utils/position/position';
+import {
+    ExerciseOccupation,
+    occupationTypeOptions,
+} from './utils/occupations/exercise-occupation';
 
 export class Vehicle {
     @IsUUID(4, uuidValidationOptions)
@@ -43,6 +47,10 @@ export class Vehicle {
     @IsUUIDSet()
     public readonly patientIds: UUIDSet = {};
 
+    @Type(...occupationTypeOptions)
+    @ValidateNested()
+    public readonly occupation: ExerciseOccupation;
+
     /**
      * @deprecated Use {@link create} instead
      */
@@ -52,7 +60,8 @@ export class Vehicle {
         materialIds: UUIDSet,
         patientCapacity: number,
         image: ImageProperties,
-        position: Position
+        position: Position,
+        occupation: ExerciseOccupation
     ) {
         this.vehicleType = vehicleType;
         this.name = name;
@@ -60,6 +69,7 @@ export class Vehicle {
         this.patientCapacity = patientCapacity;
         this.image = image;
         this.position = position;
+        this.occupation = occupation;
     }
 
     static readonly create = getCreate(this);
