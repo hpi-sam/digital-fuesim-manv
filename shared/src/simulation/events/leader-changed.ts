@@ -1,4 +1,4 @@
-import { IsOptional, IsUUID } from 'class-validator';
+import { IsUUID, ValidateIf } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import type { UUID } from '../../utils';
 import { uuidValidationOptions } from '../../utils';
@@ -9,11 +9,11 @@ export class LeaderChangedEvent implements SimulationEvent {
     @IsValue('leaderChangedEvent')
     readonly type = 'leaderChangedEvent';
 
-    @IsOptional()
+    @ValidateIf((_, value) => value !== null)
     @IsUUID(4, uuidValidationOptions)
     readonly oldLeaderId: UUID | null;
 
-    @IsOptional()
+    @ValidateIf((_, value) => value !== null)
     @IsUUID(4, uuidValidationOptions)
     readonly newLeaderId: UUID | null;
 
