@@ -10,6 +10,16 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Added
 
 -   There are now events for the removal of patients, vehicles, material, and personnel from simulated regions.
+-   The trainer editor now offers pre-configured templates for different kinds of simulated regions.
+    -   These templates come with different border colors.
+-   Simulated regions display their names on the map.
+
+## [0.4.1] - 2023-04-20
+
+### Fixed
+
+-   Added a guard clause to handle exercises with radiogram actions containing incorrect uuids.
+-   Fixed deletion of invalid actions in the database.
 
 ## [0.4.0] - 2023-04-19
 
