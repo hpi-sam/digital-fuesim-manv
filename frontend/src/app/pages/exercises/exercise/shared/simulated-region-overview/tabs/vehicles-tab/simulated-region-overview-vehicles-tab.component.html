@@ -43,43 +43,68 @@
         </ng-template>
     </div>
     <div class="vr"></div>
-    <div class="col overflow-auto" style="max-width: 70%">
+    <div class="col h-100" style="max-width: 70%">
         <ng-container
             *ngIf="selection$ | async as selection; else noSelectedVehicle"
         >
-            <div class="mb-3">
-                <h6>Fahrzeugname</h6>
-                <app-vehicle-name-editor [vehicleId]="selection.vehicle.id" />
-            </div>
-            <div class="mb-3">
-                <h6>Personal</h6>
-                <ul>
-                    <li *ngFor="let personnel of selection.personnel">
-                        {{ personnel.personnelType | personnelName }}
-                        <span
-                            *ngIf="personnel.isInVehicle; else notInVehicle"
-                            class="text-muted"
-                        >
-                            (im Fahrzeug)
-                        </span>
-                        <ng-template #notInVehicle>
-                            <span class="text-muted"> (ausgestiegen) </span>
-                        </ng-template>
-                    </li>
-                </ul>
-                <app-vehicle-load-unload-controls
-                    [vehicleId]="selection.vehicle.id"
-                />
-            </div>
-            <div class="mb-3">
-                <h6>Patienten</h6>
-                <app-vehicle-available-slots-display
-                    [vehicleId]="selection.vehicle.id"
-                />
-                <app-simulated-region-overview-patients-table
-                    [patients]="selection.patients"
-                    scope="vehicle"
-                />
+            <div
+                class="container d-flex flex-column h-100"
+                style="min-height: 0"
+            >
+                <div
+                    class="flex-shrink-1 flex-grow-1 overflow-auto"
+                    style="min-height: 0"
+                >
+                    <div class="mb-3">
+                        <h6>Fahrzeugname</h6>
+                        <app-vehicle-name-editor
+                            [vehicleId]="selection.vehicle.id"
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <h6>Personal</h6>
+                        <ul>
+                            <li *ngFor="let personnel of selection.personnel">
+                                {{ personnel.personnelType | personnelName }}
+                                <span
+                                    *ngIf="
+                                        personnel.isInVehicle;
+                                        else notInVehicle
+                                    "
+                                    class="text-muted"
+                                >
+                                    (im Fahrzeug)
+                                </span>
+                                <ng-template #notInVehicle>
+                                    <span class="text-muted">
+                                        (ausgestiegen)
+                                    </span>
+                                </ng-template>
+                            </li>
+                        </ul>
+                        <app-vehicle-load-unload-controls
+                            [vehicleId]="selection.vehicle.id"
+                        />
+                    </div>
+                    <h6>Patienten</h6>
+                    <app-vehicle-available-slots-display
+                        [vehicleId]="selection.vehicle.id"
+                    />
+                    <app-simulated-region-overview-patients-table
+                        [patients]="selection.patients"
+                        scope="vehicle"
+                    />
+                </div>
+                <div class="d-flex flex-row-reverse">
+                    <button class="btn btn-danger ms-1" type="button">
+                        <span class="bi bi-trash me-1"></span>
+                        Löschen
+                    </button>
+                    <button class="btn btn-outline-secondary" type="button">
+                        <span class="bi bi-box-arrow-right me-1"></span>
+                        Auf Karte holen
+                    </button>
+                </div>
             </div>
         </ng-container>
         <ng-template #noSelectedVehicle>
