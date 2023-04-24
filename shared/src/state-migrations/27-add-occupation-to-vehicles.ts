@@ -1,6 +1,6 @@
 import type { Migration } from './migration-functions';
 
-export const addOccupationToVehicles26: Migration = {
+export const addOccupationToVehicles27: Migration = {
     action: (_intermediaryState, action) => {
         if ((action as { type: string }).type === '[Vehicle] Add vehicle') {
             const typedAction = action as {
