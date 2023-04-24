@@ -1,4 +1,4 @@
-import type { OnInit } from '@angular/core';
+import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { UUID, isInSpecificVehicle } from 'digital-fuesim-manv-shared';
@@ -18,7 +18,7 @@ import {
     templateUrl: './vehicle-load-unload-controls.component.html',
     styleUrls: ['./vehicle-load-unload-controls.component.scss'],
 })
-export class VehicleLoadUnloadControlsComponent implements OnInit {
+export class VehicleLoadUnloadControlsComponent implements OnChanges {
     @Input()
     vehicleId!: UUID;
 
@@ -31,7 +31,7 @@ export class VehicleLoadUnloadControlsComponent implements OnInit {
         private readonly exerciseService: ExerciseService
     ) {}
 
-    ngOnInit(): void {
+    ngOnChanges(): void {
         const vehicle$ = this.store.select(createSelectVehicle(this.vehicleId));
 
         this.vehicleLoadState$ = vehicle$.pipe(

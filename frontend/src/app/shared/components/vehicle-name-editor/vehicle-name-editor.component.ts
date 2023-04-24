@@ -1,4 +1,4 @@
-import type { OnInit } from '@angular/core';
+import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { Vehicle } from 'digital-fuesim-manv-shared';
@@ -13,7 +13,7 @@ import { createSelectVehicle } from 'src/app/state/application/selectors/exercis
     templateUrl: './vehicle-name-editor.component.html',
     styleUrls: ['./vehicle-name-editor.component.scss'],
 })
-export class VehicleNameEditorComponent implements OnInit {
+export class VehicleNameEditorComponent implements OnChanges {
     @Input()
     vehicleId!: UUID;
 
@@ -24,7 +24,7 @@ export class VehicleNameEditorComponent implements OnInit {
         private readonly exerciseService: ExerciseService
     ) {}
 
-    ngOnInit() {
+    ngOnChanges() {
         this.vehicle$ = this.store.select(createSelectVehicle(this.vehicleId));
     }
 
