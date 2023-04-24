@@ -9,6 +9,7 @@ import { VehiclePosition } from '../models/utils/position/vehicle-position';
 import { uuid } from '../utils';
 
 import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
+import { NoOccupation } from '../models/utils/occupations/no-occupation';
 
 /**
  * @returns a vehicle with personnel and materials to be added to the map
@@ -57,6 +58,7 @@ export function createVehicleParameters(
         patientIds: {},
         personnelIds: arrayToUUIDSet(personnel.map((p) => p.id)),
         position: MapPosition.create(vehiclePosition),
+        occupation: NoOccupation.create(),
     };
     return {
         materials,

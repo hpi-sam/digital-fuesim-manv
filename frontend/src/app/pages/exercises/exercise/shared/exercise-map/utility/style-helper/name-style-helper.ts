@@ -37,6 +37,7 @@ export class NameStyleHelper extends StyleHelper<Style, Feature> {
                     color: 'black',
                 }),
                 textBaseline: this.textBaseline,
+                overflow: true,
             }),
         });
     }
