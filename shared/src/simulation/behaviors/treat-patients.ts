@@ -160,6 +160,7 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                 case 'materialAvailableEvent':
                 case 'newPatientEvent':
                 case 'personnelAvailableEvent':
+                case 'personnelRemovedEvent':
                 case 'treatmentsTimerEvent': {
                     if (event.type === 'treatmentProgressChangedEvent') {
                         behaviorState.treatmentProgress = event.newProgress;

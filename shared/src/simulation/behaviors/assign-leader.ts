@@ -110,6 +110,16 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
                         }
                     }
                     break;
+                case 'personnelRemovedEvent':
+                    {
+                        // if the leader is removed from the region the value is unset
+                        // a new leader will be chosen in the next tick
+
+                        if (event.personnelId === behaviorState.leaderId) {
+                            behaviorState.leaderId = undefined;
+                        }
+                    }
+                    break;
                 case 'collectInformationEvent':
                     // This behavior answerers queries for material, personnel and vehicles because the leader typically holds those information
                     {
