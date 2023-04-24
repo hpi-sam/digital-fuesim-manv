@@ -1,5 +1,6 @@
 import { IsOptional, IsUUID } from 'class-validator';
 import { groupBy } from 'lodash-es';
+import type { SimulatedRegion } from '../../models';
 import type {
     MaterialCountRadiogram,
     PersonnelCountRadiogram,
@@ -11,6 +12,8 @@ import { getActivityById, getElement } from '../../store/action-reducers/utils';
 import type { Mutable } from '../../utils';
 import { StrictObject, UUID, uuid, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
+import { LeaderChangedEvent } from '../events/leader-changed';
+import { sendSimulationEvent } from '../events/utils';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -69,7 +72,11 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
                         );
 
                         if (newPersonnel.personnelType === 'gf') {
-                            behaviorState.leaderId = event.personnelId;
+                            changeLeader(
+                                simulatedRegion,
+                                behaviorState,
+                                event.personnelId
+                            );
                         }
                     }
                     break;
@@ -95,8 +102,11 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
                                     personnelPriorities[b.personnelType] -
                                     personnelPriorities[a.personnelType]
                             );
-
-                            behaviorState.leaderId = personnel[0]?.id;
+                            changeLeader(
+                                simulatedRegion,
+                                behaviorState,
+                                personnel[0]?.id
+                            );
                         }
                     }
                     break;
@@ -232,3 +242,18 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
             }
         },
     };
+
+function changeLeader(
+    simulatedRegion: Mutable<SimulatedRegion>,
+    behaviorState: Mutable<AssignLeaderBehaviorState>,
+    newLeaderId: UUID | undefined
+) {
+    sendSimulationEvent(
+        simulatedRegion,
+        LeaderChangedEvent.create(
+            behaviorState.leaderId ?? null,
+            newLeaderId ?? null
+        )
+    );
+    behaviorState.leaderId = newLeaderId;
+}
