@@ -9,6 +9,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Added
 
+-   There are now events for the removal of patients, vehicles, material, and personnel from simulated regions.
 -   The trainer editor now offers pre-configured templates for different kinds of simulated regions.
     -   These templates come with different border colors.
 -   Simulated regions display their names on the map.
