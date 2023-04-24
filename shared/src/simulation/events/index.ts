@@ -11,3 +11,4 @@ export * from './vehicles-sent';
 export * from './try-to-distribute';
 export * from './vehicle-transfer-successful';
 export * from './transfer-connection-missing';
+export * from './leader-changed';

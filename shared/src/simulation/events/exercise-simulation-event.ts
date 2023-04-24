@@ -16,6 +16,7 @@ import { TryToDistributeEvent } from './try-to-distribute';
 import { VehicleTransferSuccessfulEvent } from './vehicle-transfer-successful';
 import { TransferConnectionMissingEvent } from './transfer-connection-missing';
 import { SendRequestEvent } from './send-request';
+import { LeaderChangedEvent } from './leader-changed';
 
 export const simulationEvents = {
     MaterialAvailableEvent,
@@ -33,6 +34,7 @@ export const simulationEvents = {
     VehicleTransferSuccessfulEvent,
     TransferConnectionMissingEvent,
     SendRequestEvent,
+    LeaderChangedEvent,
 };
 
 export type ExerciseSimulationEvent = InstanceType<
@@ -60,6 +62,7 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     vehicleTransferSuccessfulEvent: VehicleTransferSuccessfulEvent,
     transferConnectionMissingEvent: TransferConnectionMissingEvent,
     sendRequestEvent: SendRequestEvent,
+    leaderChangedEvent: LeaderChangedEvent,
 };
 
 export const simulationEventTypeOptions: Parameters<typeof Type> = [
