@@ -185,10 +185,7 @@ export namespace PatientActionReducers {
                 // place the patient on the right hand side of the simulated region
 
                 coordinates.y -= 0.5 * simulatedRegion.size.height;
-                coordinates.x +=
-                    simulatedRegion.size.width < 0
-                        ? 5
-                        : simulatedRegion.size.width + 5;
+                coordinates.x += 5 + Math.max(simulatedRegion.size.width, 0);
 
                 changePositionWithId(
                     patientId,

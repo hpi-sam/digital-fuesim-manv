@@ -12,19 +12,13 @@ import { SelectPatientService } from '../../../select-patient.service';
         './simulated-region-overview-patient-interaction-bar.component.scss',
     ],
 })
-export class SimulatedRegionOverviewPatientInteractionBarComponent
-    implements OnInit
-{
+export class SimulatedRegionOverviewPatientInteractionBarComponent {
     @Input() patientId!: UUID;
 
     constructor(
         private readonly exerciseService: ExerciseService,
         readonly selectPatientService: SelectPatientService
     ) {}
-
-    ngOnInit(): void {
-        throw new Error('Method not implemented.');
-    }
 
     public removeSelectedPatientFromSimulatedRegion() {
         this.exerciseService.proposeAction({
