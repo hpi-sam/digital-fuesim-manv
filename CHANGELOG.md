@@ -13,6 +13,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   The trainer editor now offers pre-configured templates for different kinds of simulated regions.
     -   These templates come with different border colors.
 -   Simulated regions display their names on the map.
+-   There is now a button in the patients tab of a simulated region that removes the patient from the scenario
+-   There is now a button in the patients tab of a simulated region that removes the patient from the simulated region and places the patient on the map next to the simulated region (on the right hand side)
 
 ## [0.4.1] - 2023-04-20
 
