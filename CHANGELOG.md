@@ -7,6 +7,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Added
+
+-   Vehicles can now have a property to indicate their current occupation.
+
 ## [0.4.1] - 2023-04-20
 
 ### Fixed
