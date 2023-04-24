@@ -14,8 +14,8 @@ export class IntermediateOccupation implements Occupation {
     /**
      * @deprecated Use static `create` method instead.
      */
-    constructor(unoccupiedAfter: number) {
-        this.unoccupiedUntil = unoccupiedAfter;
+    constructor(unoccupiedUntil: number) {
+        this.unoccupiedUntil = unoccupiedUntil;
     }
 
     static readonly create = getCreate(this);

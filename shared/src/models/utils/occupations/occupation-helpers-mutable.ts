@@ -17,7 +17,7 @@ export function isUnoccupied(
     return occupied.occupation.type === 'noOccupation';
 }
 
-export function isUnoccupiedOrIntermediaryOccupied(
+export function isUnoccupiedOrIntermediarilyOccupied(
     occupied: Mutable<{ occupation: ExerciseOccupation }>,
     currentTime: number
 ) {
