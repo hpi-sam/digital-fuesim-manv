@@ -25,6 +25,8 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 // We want to remember this
 let targetTransferPointId: UUID | undefined;
+let firstVehiclesToOtherLocationTransferPointId: UUID | undefined;
+let firstVehiclesToOtherLocationCount = 0;
 
 @Component({
     selector: 'app-send-alarm-group-interface',
@@ -67,15 +69,40 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
         targetTransferPointId = value;
     }
 
+    public get firstVehiclesToOtherLocationTransferPointId() {
+        return firstVehiclesToOtherLocationTransferPointId;
+    }
+    public set firstVehiclesToOtherLocationTransferPointId(
+        value: UUID | undefined
+    ) {
+        firstVehiclesToOtherLocationTransferPointId = value;
+    }
+
+    public get firstVehiclesToOtherLocationCount() {
+        return firstVehiclesToOtherLocationCount;
+    }
+    public set firstVehiclesToOtherLocationCount(value: number) {
+        firstVehiclesToOtherLocationCount = value;
+    }
+
     public sendAlarmGroup(alarmGroup: AlarmGroup) {
         const targetTransferPoint = selectStateSnapshot(
             createSelectTransferPoint(this.targetTransferPointId!),
             this.store
         );
+
+        const firstAlarmGroupVehiclesToOtherLocationCount =
+            this.firstVehiclesToOtherLocationCount;
+        this.firstVehiclesToOtherLocationCount = Math.max(
+            0,
+            this.firstVehiclesToOtherLocationCount -
+                Object.keys(alarmGroup.alarmGroupVehicles).length
+        );
+
         // TODO: Refactor this into one action (uuid generation is currently not possible in the reducer)
         Promise.all(
             Object.values(alarmGroup.alarmGroupVehicles).flatMap(
-                (alarmGroupVehicle) => {
+                (alarmGroupVehicle, vehicleIndex) => {
                     const vehicleTemplate = selectStateSnapshot(
                         createSelectVehicleTemplate(
                             alarmGroupVehicle.vehicleTemplateId
@@ -106,6 +133,13 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                         MapCoordinates.create(0, 0)
                     );
 
+                    const vehicleTargetTransferPointId =
+                        vehicleIndex <
+                            firstAlarmGroupVehiclesToOtherLocationCount &&
+                        this.firstVehiclesToOtherLocationTransferPointId
+                            ? this.firstVehiclesToOtherLocationTransferPointId
+                            : this.targetTransferPointId!;
+
                     return [
                         this.exerciseService.proposeAction({
                             type: '[Vehicle] Add vehicle',
@@ -121,7 +155,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
                                 alarmGroup.name,
                                 alarmGroupVehicle.time
                             ),
-                            targetTransferPointId: targetTransferPoint.id,
+                            targetTransferPointId: vehicleTargetTransferPointId,
                         }),
                     ];
                 }
