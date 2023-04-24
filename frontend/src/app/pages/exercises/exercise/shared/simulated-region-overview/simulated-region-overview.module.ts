@@ -46,6 +46,7 @@ import { RadigoramCardContentResourceRequestComponent } from './radiogram-list/r
 import { SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesComponent } from './tabs/behavior-tab/behaviors/automatically-distribute-vehicles/simulated-region-overview-behavior-automatically-distribute-vehicles.component';
 import { RequestVehiclesComponent } from './tabs/behavior-tab/behaviors/request-vehicles/simulated-region-overview-behavior-request-vehicles.component';
 import { SimulatedRegionOverviewVehiclesTabComponent } from './tabs/vehicles-tab/simulated-region-overview-vehicles-tab.component';
+import { SimulatedRegionOverviewPatientsTableComponent } from './patients-table/simulated-region-overview-patients-table.component';
 
 @NgModule({
     declarations: [
@@ -83,6 +84,7 @@ import { SimulatedRegionOverviewVehiclesTabComponent } from './tabs/vehicles-tab
         SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesComponent,
         RequestVehiclesComponent,
         SimulatedRegionOverviewVehiclesTabComponent,
+        SimulatedRegionOverviewPatientsTableComponent,
     ],
     imports: [
         FormsModule,
