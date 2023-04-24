@@ -17,6 +17,10 @@ import { VehicleTransferSuccessfulEvent } from './vehicle-transfer-successful';
 import { TransferConnectionMissingEvent } from './transfer-connection-missing';
 import { SendRequestEvent } from './send-request';
 import { LeaderChangedEvent } from './leader-changed';
+import { MaterialRemovedEvent } from './material-removed';
+import { PersonnelRemovedEvent } from './personnel-removed';
+import { PatientRemovedEvent } from './patient-removed';
+import { VehicleRemovedEvent } from './vehicle-removed';
 
 export const simulationEvents = {
     MaterialAvailableEvent,
@@ -35,6 +39,10 @@ export const simulationEvents = {
     TransferConnectionMissingEvent,
     SendRequestEvent,
     LeaderChangedEvent,
+    MaterialRemovedEvent,
+    PersonnelRemovedEvent,
+    PatientRemovedEvent,
+    VehicleRemovedEvent,
 };
 
 export type ExerciseSimulationEvent = InstanceType<
@@ -63,6 +71,10 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     transferConnectionMissingEvent: TransferConnectionMissingEvent,
     sendRequestEvent: SendRequestEvent,
     leaderChangedEvent: LeaderChangedEvent,
+    materialRemovedEvent: MaterialRemovedEvent,
+    personnelRemovedEvent: PersonnelRemovedEvent,
+    patientRemovedEvent: PatientRemovedEvent,
+    vehicleRemovedEvent: VehicleRemovedEvent,
 };
 
 export const simulationEventTypeOptions: Parameters<typeof Type> = [
