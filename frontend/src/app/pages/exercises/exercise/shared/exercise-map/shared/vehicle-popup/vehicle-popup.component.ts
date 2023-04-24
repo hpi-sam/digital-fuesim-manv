@@ -24,7 +24,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
 
     constructor(private readonly store: Store<AppState>) {}
 
-    async ngOnInit() {
+    ngOnInit() {
         this.vehicle$ = this.store.select(createSelectVehicle(this.vehicleId));
     }
 }
