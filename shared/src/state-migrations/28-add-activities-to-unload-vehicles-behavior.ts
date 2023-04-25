@@ -8,10 +8,16 @@ export const activitiesToUnloadVehiclesBehavior28: Migration = {
         ) {
             const typedAction = action as {
                 behaviorState: {
+                    type: 'unloadArrivingVehiclesBehavior';
                     vehicleActivityMap: { [key in string]: string };
                 };
             };
-            typedAction.behaviorState.vehicleActivityMap = {};
+            if (
+                typedAction.behaviorState.type ===
+                'unloadArrivingVehiclesBehavior'
+            ) {
+                typedAction.behaviorState.vehicleActivityMap = {};
+            }
         }
         return true;
     },
