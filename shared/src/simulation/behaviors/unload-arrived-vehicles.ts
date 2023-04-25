@@ -2,7 +2,6 @@ import { IsInt, IsUUID, Min } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { isUnoccupied } from '../../models/utils/occupations/occupation-helpers-mutable';
 import { UnloadingOccupation } from '../../models/utils/occupations/unloading-occupation';
-import { getElement } from '../../store/action-reducers/utils';
 import {
     cloneDeepMutable,
     StrictObject,
