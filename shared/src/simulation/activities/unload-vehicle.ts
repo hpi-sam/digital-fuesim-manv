@@ -62,7 +62,6 @@ export const unloadVehicleActivity: SimulationActivity<UnloadVehicleActivityStat
                 !isInSpecificSimulatedRegion(vehicle, simulatedRegion.id) ||
                 !(vehicle.occupation.type === 'unloadingOccupation')
             ) {
-                // The vehicle has left the region or was deleted. Cancel unloading.
                 terminate();
             } else if (
                 draftState.currentTime >=
