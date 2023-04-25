@@ -24,6 +24,7 @@ import {
     selectVehicleTemplates,
     selectVehicles,
 } from 'src/app/state/application/selectors/exercise.selectors';
+import { ExerciseService } from 'src/app/core/exercise.service';
 import type { PatientWithVisibleStatus } from '../../patients-table/simulated-region-overview-patients-table.component';
 
 @Component({
@@ -47,7 +48,10 @@ export class SimulatedRegionOverviewVehiclesTabComponent implements OnInit {
         { vehicleType: string; vehicles: Vehicle[] }[]
     >;
 
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(
+        private readonly store: Store<AppState>,
+        private readonly exerciseService: ExerciseService
+    ) {}
 
     ngOnInit() {
         this.selectedVehicleId$.next(null);
@@ -145,6 +149,13 @@ export class SimulatedRegionOverviewVehiclesTabComponent implements OnInit {
 
     selectVehicle(vehicleId: UUID) {
         this.selectedVehicleId$.next(vehicleId);
+    }
+
+    removeVehicle(vehicleId: UUID) {
+        this.exerciseService.proposeAction({
+            type: '[Vehicle] Remove vehicle',
+            vehicleId,
+        });
     }
 
     private indexOfTemplate(

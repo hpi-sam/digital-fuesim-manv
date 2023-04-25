@@ -96,7 +96,12 @@
                     />
                 </div>
                 <div class="d-flex flex-row-reverse">
-                    <button class="btn btn-danger ms-1" type="button">
+                    <button
+                        class="btn btn-danger ms-1"
+                        type="button"
+                        (click)="removeVehicle(selection.vehicle.id)"
+                        ngbTooltip="Personal, Material und ggfs Patienten im Fahrzeug werden ebenfalls gelöscht!"
+                    >
                         <span class="bi bi-trash me-1"></span>
                         Löschen
                     </button>

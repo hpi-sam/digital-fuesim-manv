@@ -4,6 +4,7 @@ import { Material, Personnel, Vehicle } from '../../models';
 import {
     currentCoordinatesOf,
     currentSimulatedRegionIdOf,
+    currentSimulatedRegionOf,
     isInSimulatedRegion,
     isInTransfer,
     isInVehicle,
@@ -32,31 +33,76 @@ import { ReducerError } from '../reducer-error';
 import { sendSimulationEvent } from '../../simulation/events/utils';
 import {
     MaterialAvailableEvent,
+    MaterialRemovedEvent,
     NewPatientEvent,
     PersonnelAvailableEvent,
+    PersonnelRemovedEvent,
+    VehicleRemovedEvent,
 } from '../../simulation';
 import { deletePatient } from './patient';
 import { completelyLoadVehicle as completelyLoadVehicleHelper } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 import { removeElementPosition } from './utils/spatial-elements';
 
+/**
+ * Performs all necessary actions to remove a vehicle from the state.
+ * This includes removing the material, personnel and (if there are some) patients and sending removed events for those elements if the vehicle is in a simulated region.
+ * @param vehicleId The ID of the vehicle to be deleted
+ */
 export function deleteVehicle(
     draftState: Mutable<ExerciseState>,
     vehicleId: UUID
 ) {
     const vehicle = getElement(draftState, 'vehicle', vehicleId);
+
     // Delete related material and personnel
     Object.keys(vehicle.materialIds).forEach((materialId) => {
+        const material = getElement(draftState, 'material', materialId);
+        if (isInSimulatedRegion(material)) {
+            const simulatedRegion = currentSimulatedRegionOf(
+                draftState,
+                material
+            );
+            sendSimulationEvent(
+                simulatedRegion,
+                MaterialRemovedEvent.create(materialId)
+            );
+        }
+
         removeElementPosition(draftState, 'material', materialId);
         delete draftState.materials[materialId];
     });
+
     Object.keys(vehicle.personnelIds).forEach((personnelId) => {
+        const personnel = getElement(draftState, 'personnel', personnelId);
+        if (isInSimulatedRegion(personnel)) {
+            const simulatedRegion = currentSimulatedRegionOf(
+                draftState,
+                personnel
+            );
+            sendSimulationEvent(
+                simulatedRegion,
+                PersonnelRemovedEvent.create(personnelId)
+            );
+        }
+
         removeElementPosition(draftState, 'personnel', personnelId);
         delete draftState.personnel[personnelId];
     });
-    Object.keys(vehicle.patientIds).forEach((patientId) =>
-        deletePatient(draftState, patientId)
-    );
+
+    Object.keys(vehicle.patientIds).forEach((patientId) => {
+        // The PatientRemovedEvent will be sent by the function below, so we don't have to do it here
+        deletePatient(draftState, patientId);
+    });
+
+    if (isInSimulatedRegion(vehicle)) {
+        const simulatedRegion = currentSimulatedRegionOf(draftState, vehicle);
+        sendSimulationEvent(
+            simulatedRegion,
+            VehicleRemovedEvent.create(vehicleId)
+        );
+    }
+
     // Delete the vehicle
     delete draftState.vehicles[vehicleId];
 }
