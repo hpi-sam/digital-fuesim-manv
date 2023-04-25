@@ -9,6 +9,8 @@ import { providePersonnelFromVehiclesActivity } from './provide-personnel-from-v
 import { transferVehiclesActivity } from './transfer-vehicles';
 import { createRequestActivity } from './create-request';
 import { loadVehicleActivity } from './load-vehicle';
+import { sendRemoteEventActivity } from './send-remote-event';
+import { transferVehicleActivity } from './transfer-vehicle';
 
 export const simulationActivities = {
     reassignTreatmentsActivity,
@@ -20,6 +22,8 @@ export const simulationActivities = {
     transferVehiclesActivity,
     createRequestActivity,
     loadVehicleActivity,
+    sendRemoteEventActivity,
+    transferVehicleActivity,
 };
 
 export type ExerciseSimulationActivity =

@@ -169,8 +169,10 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
                     )
                 );
 
-                vehicle.occupation = IntermediateOccupation.create(
-                    draftState.currentTime + tickInterval
+                vehicle.occupation = cloneDeepMutable(
+                    IntermediateOccupation.create(
+                        draftState.currentTime + tickInterval
+                    )
                 );
 
                 terminate();

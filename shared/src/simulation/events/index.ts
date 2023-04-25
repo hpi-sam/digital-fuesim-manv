@@ -22,3 +22,4 @@ export * from './transfer-patients-in-specific-vehicle-request';
 export * from './transfer-patients-request';
 export * from './transfer-specific-vehicle-request';
 export * from './transfer-vehicles-request';
+export * from './do-transfer';

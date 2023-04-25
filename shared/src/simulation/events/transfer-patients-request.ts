@@ -1,7 +1,7 @@
 import { IsString, IsUUID } from 'class-validator';
 import { getCreate } from '../../models/utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import { UUID, uuidValidationOptions } from '../../utils';
+import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
+import { UUID, UUIDSet, uuidValidationOptions } from '../../utils';
 import {
     TransferDestination,
     transferDestinationTypeAllowedValues,
@@ -15,6 +15,9 @@ export class TransferPatientsRequestEvent implements SimulationEvent {
     @IsString()
     readonly vehicleType: string;
 
+    @IsUUIDSet()
+    readonly patientIds: UUIDSet;
+
     @IsLiteralUnion(transferDestinationTypeAllowedValues)
     readonly transferDestinationType: TransferDestination;
 
@@ -26,10 +29,12 @@ export class TransferPatientsRequestEvent implements SimulationEvent {
      */
     constructor(
         vehicleType: string,
+        patientIds: UUIDSet,
         transferDestinationType: TransferDestination,
         transferDestinationId: UUID
     ) {
         this.vehicleType = vehicleType;
+        this.patientIds = patientIds;
         this.transferDestinationType = transferDestinationType;
         this.transferDestinationId = transferDestinationId;
     }

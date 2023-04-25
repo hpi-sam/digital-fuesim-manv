@@ -27,6 +27,7 @@ import { TransferVehiclesRequestEvent } from './transfer-vehicles-request';
 import { TransferPatientsRequestEvent } from './transfer-patients-request';
 import { RequestReceivedEvent } from './request-received';
 import { StartTransferEvent } from './start-transfer';
+import { DoTransferEvent } from './do-transfer';
 
 export const simulationEvents = {
     MaterialAvailableEvent,
@@ -55,6 +56,7 @@ export const simulationEvents = {
     TransferPatientsRequestEvent,
     RequestReceivedEvent,
     StartTransferEvent,
+    DoTransferEvent,
 };
 
 export type ExerciseSimulationEvent = InstanceType<
@@ -94,6 +96,7 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     transferPatientsRequestEvent: TransferPatientsRequestEvent,
     requestReceivedEvent: RequestReceivedEvent,
     startTransferEvent: StartTransferEvent,
+    doTransferEvent: DoTransferEvent,
 };
 
 export const simulationEventTypeOptions: Parameters<typeof Type> = [
