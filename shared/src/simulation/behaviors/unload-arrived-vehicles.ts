@@ -1,6 +1,15 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
 import { getCreate } from '../../models/utils';
-import { StrictObject, UUID, uuid, uuidValidationOptions } from '../../utils';
+import { isUnoccupied } from '../../models/utils/occupations/occupation-helpers-mutable';
+import { UnloadingOccupation } from '../../models/utils/occupations/unloading-occupation';
+import { getElement } from '../../store/action-reducers/utils';
+import {
+    cloneDeepMutable,
+    StrictObject,
+    UUID,
+    uuid,
+    uuidValidationOptions,
+} from '../../utils';
 import { IsValue } from '../../utils/validators';
 import {
     IsUUIDSquaredMap,
@@ -60,18 +69,27 @@ export const unloadArrivingVehiclesBehavior: SimulationBehavior<UnloadArrivingVe
                     break;
                 }
                 case 'vehicleArrivedEvent': {
-                    const activityId = nextUUID(draftState);
-                    behaviorState.vehicleActivityMap[event.vehicleId] =
-                        activityId;
-                    addActivity(
-                        simulatedRegion,
-                        UnloadVehicleActivityState.create(
-                            activityId,
-                            event.vehicleId,
-                            event.arrivalTime,
-                            behaviorState.unloadDelay
-                        )
-                    );
+                    const vehicle = draftState.vehicles[event.vehicleId];
+                    if (
+                        vehicle &&
+                        isUnoccupied(vehicle, draftState.currentTime)
+                    ) {
+                        const activityId = nextUUID(draftState);
+                        behaviorState.vehicleActivityMap[event.vehicleId] =
+                            activityId;
+                        vehicle.occupation = cloneDeepMutable(
+                            UnloadingOccupation.create()
+                        );
+                        addActivity(
+                            simulatedRegion,
+                            UnloadVehicleActivityState.create(
+                                activityId,
+                                event.vehicleId,
+                                event.arrivalTime,
+                                behaviorState.unloadDelay
+                            )
+                        );
+                    }
                     break;
                 }
                 case 'vehicleRemovedEvent': {
