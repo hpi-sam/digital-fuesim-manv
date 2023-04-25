@@ -16,6 +16,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   These templates come with different border colors.
 -   Simulated regions display their names on the map.
 -   Vehicles now have a property to indicate their current occupation.
+-   Treatment falls back to no treatment when a leader is missing in the region.
 
 ## [0.4.1] - 2023-04-20
 
