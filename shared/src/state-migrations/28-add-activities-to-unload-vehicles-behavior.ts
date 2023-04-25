@@ -9,7 +9,7 @@ export const activitiesToUnloadVehiclesBehavior28: Migration = {
             const typedAction = action as {
                 behaviorState: {
                     type: 'unloadArrivingVehiclesBehavior';
-                    vehicleActivityMap: { [key in string]: string };
+                    vehicleActivityMap: { [key: string]: string };
                 };
             };
             if (
@@ -23,12 +23,7 @@ export const activitiesToUnloadVehiclesBehavior28: Migration = {
             '[SimulatedRegion] Add simulated region'
         ) {
             const typedAction = action as {
-                simulatedRegion: {
-                    behaviors: {
-                        type: 'unloadArrivingVehiclesBehavior';
-                        vehicleActivityMap: { [key in string]: string };
-                    }[];
-                };
+                simulatedRegion: RelevantRegionProperties;
             };
             migrateSimulatedRegion(
                 intermediaryState,
@@ -41,22 +36,7 @@ export const activitiesToUnloadVehiclesBehavior28: Migration = {
     state: (state) => {
         const typedState = state as {
             simulatedRegions: {
-                [regionId in string]: {
-                    id: string;
-                    activities: {
-                        [activityId in string]: {
-                            type: 'unloadVehicleActivity';
-                            id: string;
-                            vehicleId: string;
-                        };
-                    };
-                    behaviors: {
-                        [behaviorId in string]: {
-                            type: 'unloadArrivingVehiclesBehavior';
-                            vehicleActivityMap: { [key in string]: string };
-                        };
-                    };
-                };
+                [key: string]: RelevantRegionProperties;
             };
         };
         Object.values(typedState.simulatedRegions).forEach((region) => {
@@ -67,27 +47,12 @@ export const activitiesToUnloadVehiclesBehavior28: Migration = {
 
 function migrateSimulatedRegion(
     state: object,
-    region: {
-        id: string;
-        activities: {
-            [activityId in string]: {
-                type: 'unloadVehicleActivity';
-                id: string;
-                vehicleId: string;
-            };
-        };
-        behaviors: {
-            [behaviorId in string]: {
-                type: 'unloadArrivingVehiclesBehavior';
-                vehicleActivityMap: { [key in string]: string };
-            };
-        };
-    },
+    region: RelevantRegionProperties,
     occupyVehicles: boolean
 ) {
     const typedState = state as {
         vehicles: {
-            [vehicleId in string]: {
+            [key: string]: {
                 position: {
                     type: 'simulatedRegion';
                     simulatedRegionId: string;
@@ -122,4 +87,19 @@ function migrateSimulatedRegion(
                 };
             }
         });
+}
+
+interface RelevantRegionProperties {
+    id: string;
+    activities: {
+        [key: string]: {
+            type: 'unloadVehicleActivity';
+            id: string;
+            vehicleId: string;
+        };
+    };
+    behaviors: {
+        type: 'unloadArrivingVehiclesBehavior';
+        vehicleActivityMap: { [key: string]: string };
+    }[];
 }
