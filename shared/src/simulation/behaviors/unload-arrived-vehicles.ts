@@ -1,9 +1,13 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
 import { getCreate } from '../../models/utils';
-import { UUID, uuid, uuidValidationOptions } from '../../utils';
+import { StrictObject, UUID, uuid, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
+import {
+    IsUUIDSquaredMap,
+    UUIDSquaredMap,
+} from '../../utils/validators/is-uuid-uuid-map';
 import { UnloadVehicleActivityState } from '../activities/unload-vehicle';
-import { addActivity } from '../activities/utils';
+import { addActivity, terminateActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
 import type {
     SimulationBehavior,
@@ -17,17 +21,24 @@ export class UnloadArrivingVehiclesBehaviorState
     readonly type = 'unloadArrivingVehiclesBehavior';
 
     @IsUUID(4, uuidValidationOptions)
-    public readonly id: UUID = uuid();
+    readonly id: UUID = uuid();
 
     @IsInt()
     @Min(0)
-    public readonly unloadDelay: number;
+    readonly unloadDelay: number;
+
+    @IsUUIDSquaredMap()
+    readonly vehicleActivityMap: UUIDSquaredMap;
 
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(unloadDelay: number = 2 * 60 * 1000) {
+    constructor(
+        unloadDelay: number = 2 * 60 * 1000,
+        vehicleActivityMap: UUIDSquaredMap = {}
+    ) {
         this.unloadDelay = unloadDelay;
+        this.vehicleActivityMap = vehicleActivityMap;
     }
 
     static readonly create = getCreate(this);
@@ -37,16 +48,49 @@ export const unloadArrivingVehiclesBehavior: SimulationBehavior<UnloadArrivingVe
     {
         behaviorState: UnloadArrivingVehiclesBehaviorState,
         handleEvent(draftState, simulatedRegion, behaviorState, event) {
-            if (event.type === 'vehicleArrivedEvent') {
-                addActivity(
-                    simulatedRegion,
-                    UnloadVehicleActivityState.create(
-                        nextUUID(draftState),
-                        event.vehicleId,
-                        event.arrivalTime,
-                        behaviorState.unloadDelay
-                    )
-                );
+            switch (event.type) {
+                case 'tickEvent': {
+                    StrictObject.entries(
+                        behaviorState.vehicleActivityMap
+                    ).forEach(([vehicleId, activityId]) => {
+                        if (!simulatedRegion.activities[activityId]) {
+                            delete behaviorState.vehicleActivityMap[vehicleId];
+                        }
+                    });
+                    break;
+                }
+                case 'vehicleArrivedEvent': {
+                    const activityId = nextUUID(draftState);
+                    behaviorState.vehicleActivityMap[event.vehicleId] =
+                        activityId;
+                    addActivity(
+                        simulatedRegion,
+                        UnloadVehicleActivityState.create(
+                            activityId,
+                            event.vehicleId,
+                            event.arrivalTime,
+                            behaviorState.unloadDelay
+                        )
+                    );
+                    break;
+                }
+                case 'vehicleRemovedEvent': {
+                    const activityId =
+                        behaviorState.vehicleActivityMap[event.vehicleId];
+                    if (activityId) {
+                        terminateActivity(
+                            draftState,
+                            simulatedRegion,
+                            activityId
+                        );
+                        delete behaviorState.vehicleActivityMap[
+                            event.vehicleId
+                        ];
+                    }
+                    break;
+                }
+                default:
+                    break;
             }
         },
     };
