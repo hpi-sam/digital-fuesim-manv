@@ -6,6 +6,7 @@ import {
     currentSimulatedRegionIdOf,
     currentSimulatedRegionOf,
     isInSimulatedRegion,
+    isInSpecificSimulatedRegion,
     isInTransfer,
     isInVehicle,
     isOnMap,
@@ -187,6 +188,17 @@ export class CompletelyLoadVehicleAction implements Action {
     public readonly type = '[Vehicle] Completely load vehicle';
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
+}
+
+export class RemoveVehicleFromSimulatedRegionAction implements Action {
+    @IsValue('[Vehicle] Remove from simulated region' as const)
+    public readonly type = '[Vehicle] Remove from simulated region';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly vehicleId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
 }
 
 export namespace VehicleActionReducers {
@@ -514,6 +526,49 @@ export namespace VehicleActionReducers {
             reducer: (draftState, { vehicleId }) => {
                 const vehicle = getElement(draftState, 'vehicle', vehicleId);
                 completelyLoadVehicleHelper(draftState, vehicle);
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const removeVehicleFromSimulatedRegion: ActionReducer<RemoveVehicleFromSimulatedRegionAction> =
+        {
+            action: RemoveVehicleFromSimulatedRegionAction,
+            reducer: (draftState, { vehicleId, simulatedRegionId }) => {
+                const vehicle = getElement(draftState, 'vehicle', vehicleId);
+
+                if (!isInSpecificSimulatedRegion(vehicle, simulatedRegionId)) {
+                    throw new ReducerError(
+                        `Vehicle with id ${vehicleId} has to be in simulated region with id ${simulatedRegionId} to be removed from there.`
+                    );
+                }
+
+                completelyLoadVehicleHelper(draftState, vehicle);
+
+                const simulatedRegion = currentSimulatedRegionOf(
+                    draftState,
+                    vehicle
+                );
+                sendSimulationEvent(
+                    simulatedRegion,
+                    VehicleRemovedEvent.create(vehicleId)
+                );
+
+                const coordinates = cloneDeepMutable(
+                    currentCoordinatesOf(simulatedRegion)
+                );
+
+                // place the vehicle on the right hand side of the simulated region
+                coordinates.y -= 0.5 * simulatedRegion.size.height;
+                coordinates.x += 5 + Math.max(simulatedRegion.size.width, 0);
+
+                changePositionWithId(
+                    vehicleId,
+                    MapPosition.create(coordinates),
+                    'vehicle',
+                    draftState
+                );
 
                 return draftState;
             },

@@ -158,6 +158,14 @@ export class SimulatedRegionOverviewVehiclesTabComponent implements OnInit {
         });
     }
 
+    moveVehicleToMap(vehicleId: UUID) {
+        this.exerciseService.proposeAction({
+            type: '[Vehicle] Remove from simulated region',
+            vehicleId,
+            simulatedRegionId: this.simulatedRegion.id,
+        });
+    }
+
     private indexOfTemplate(
         vehicleTemplates: readonly VehicleTemplate[],
         vehicleType: string
