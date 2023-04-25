@@ -14,6 +14,7 @@ import { StrictObject, UUID, uuid, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { LeaderChangedEvent } from '../events/leader-changed';
 import { sendSimulationEvent } from '../events/utils';
+import type { ExerciseState } from '../../state';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -83,29 +84,24 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
                 case 'tickEvent':
                     {
                         if (!behaviorState.leaderId) {
-                            const personnel = Object.values(
-                                draftState.personnel
-                            ).filter(
-                                (pers) =>
-                                    isInSpecificSimulatedRegion(
-                                        pers,
-                                        simulatedRegion.id
-                                    ) && pers.personnelType !== 'notarzt'
-                            );
-
-                            if (personnel.length === 0) {
-                                return;
-                            }
-
-                            personnel.sort(
-                                (a, b) =>
-                                    personnelPriorities[b.personnelType] -
-                                    personnelPriorities[a.personnelType]
-                            );
-                            changeLeader(
+                            selectNewLeader(
+                                draftState,
                                 simulatedRegion,
                                 behaviorState,
-                                personnel[0]?.id
+                                false
+                            );
+                        }
+                    }
+                    break;
+                case 'personnelRemovedEvent':
+                    {
+                        // if the leader is removed from the region a new leader is selected
+                        if (event.personnelId === behaviorState.leaderId) {
+                            selectNewLeader(
+                                draftState,
+                                simulatedRegion,
+                                behaviorState,
+                                true
                             );
                         }
                     }
@@ -242,6 +238,33 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
             }
         },
     };
+
+function selectNewLeader(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegion>,
+    behaviorState: Mutable<AssignLeaderBehaviorState>,
+    changeLeaderIfNoLeaderSelected: boolean
+) {
+    const personnel = Object.values(draftState.personnel).filter(
+        (pers) =>
+            isInSpecificSimulatedRegion(pers, simulatedRegion.id) &&
+            pers.personnelType !== 'notarzt'
+    );
+
+    if (personnel.length === 0) {
+        if (changeLeaderIfNoLeaderSelected) {
+            changeLeader(simulatedRegion, behaviorState, undefined);
+        }
+        return;
+    }
+
+    personnel.sort(
+        (a, b) =>
+            personnelPriorities[b.personnelType] -
+            personnelPriorities[a.personnelType]
+    );
+    changeLeader(simulatedRegion, behaviorState, personnel[0]?.id);
+}
 
 function changeLeader(
     simulatedRegion: Mutable<SimulatedRegion>,
