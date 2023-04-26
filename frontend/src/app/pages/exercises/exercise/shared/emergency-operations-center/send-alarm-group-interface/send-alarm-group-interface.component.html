@@ -1,6 +1,7 @@
 <div class="card">
-    <h5 class="card-header">
-        Alarmieren
+    <h5 class="card-header">Alarmieren</h5>
+
+    <div *ngIf="alarmGroups$ | async | values as alarmGroups" class="card-body">
         <div
             *appLet="
                 transferPoints$
@@ -8,65 +9,74 @@
                     | values
                     | orderBy : getTransferPointOrderByValue as transferPoints
             "
-            ngbDropdown
-            class="d-inline-block float-end"
+            class="d-flex flex-row justify-content-end"
         >
-            Ziel:
-            <button
-                ngbDropdownToggle
-                type="button"
-                class="btn btn-outline-primary btn-sm ms-3"
-                data-cy="sendAlarmGroupChooseTargetButton"
-                [disabled]="transferPoints.length === 0"
+            <div
+                ngbDropdown
+                class="input-group input-group-sm"
+                style="max-width: 300px; width: unset"
             >
-                <app-transfer-point-name
-                    *ngIf="targetTransferPointId; else noTargetTransferPoint"
-                    [transferPointId]="targetTransferPointId"
-                >
-                </app-transfer-point-name>
-                <ng-template #noTargetTransferPoint>
-                    <span class="text-muted"> Kein Ziel ausgewählt </span>
-                </ng-template>
-            </button>
-            <div ngbDropdownMenu>
-                <button
-                    *ngFor="
-                        let transferPoint of transferPoints;
-                        trackBy: 'id' | appTrackByProperty : transferPoints
+                <span class="input-group-text">Ziel:</span>
+                <app-transfer-target-dropdown
+                    [(selectedTransferPointId)]="targetTransferPointId"
+                />
+            </div>
+            <div
+                ngbDropdown
+                class="input-group input-group-sm ms-2"
+                style="max-width: 500px; width: unset"
+            >
+                <span class="input-group-text">Ziel der ersten</span>
+                <input
+                    [(ngModel)]="firstVehiclesCount"
+                    type="number"
+                    min="0"
+                    step="1"
+                    class="form-control form-control-sm no-validation"
+                    style="width: 75px"
+                />
+                <span class="input-group-text">Fahrzeuge:</span>
+                <app-transfer-target-dropdown
+                    [(selectedTransferPointId)]="
+                        firstVehiclesTargetTransferPointId
                     "
-                    ngbDropdownItem
-                    (click)="targetTransferPointId = transferPoint.id"
-                    type="button"
-                    class="btn btn-primary"
-                    data-cy="sendAlarmGroupChooseTargetSelect"
-                >
-                    <app-transfer-point-name
-                        [transferPointId]="transferPoint.id"
-                    >
-                    </app-transfer-point-name>
-                </button>
+                />
             </div>
         </div>
-    </h5>
 
-    <div *ngIf="alarmGroups$ | async | values as alarmGroups" class="card-body">
-        <div *ngIf="!targetTransferPointId" class="text-danger mb-3">
-            Bitte wählen Sie zuerst ein Ziel aus.
+        <div class="mt-2">
+            <div *ngIf="!targetTransferPointId" class="text-danger">
+                Bitte wählen Sie zuerst ein Ziel aus.
+            </div>
+            <div
+                *ngIf="
+                    targetTransferPointId &&
+                    !firstVehiclesTargetTransferPointId &&
+                    firstVehiclesCount > 0
+                "
+                class="text-warning"
+            >
+                Ohne ein zweites Ziel können die ersten Fahrzeuge kein anderes
+                Ziel anfahren. Sie werden stattdessen das erste Ziel anfahren.
+            </div>
         </div>
-        <button
-            *ngFor="
-                let alarmGroup of alarmGroups;
-                trackBy: 'id' | appTrackByProperty : alarmGroups
-            "
-            [disabled]="!targetTransferPointId"
-            (click)="sendAlarmGroup(alarmGroup)"
-            class="btn btn-primary m-2"
-            data-cy="sendAlarmGroupSendButton"
-        >
-            {{ alarmGroup.name }}
-        </button>
-        <div *ngIf="alarmGroups.length <= 0" class="text-muted">
-            Es sind keine Alarmierungsgruppen vorhanden.
+
+        <div class="mt-2">
+            <button
+                *ngFor="
+                    let alarmGroup of alarmGroups;
+                    trackBy: 'id' | appTrackByProperty : alarmGroups
+                "
+                [disabled]="!targetTransferPointId"
+                (click)="sendAlarmGroup(alarmGroup)"
+                class="btn btn-primary m-2"
+                data-cy="sendAlarmGroupSendButton"
+            >
+                {{ alarmGroup.name }}
+            </button>
+            <div *ngIf="alarmGroups.length <= 0" class="text-muted">
+                Es sind keine Alarmierungsgruppen vorhanden.
+            </div>
         </div>
     </div>
 </div>

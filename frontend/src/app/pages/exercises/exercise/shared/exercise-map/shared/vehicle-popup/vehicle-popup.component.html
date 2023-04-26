@@ -9,61 +9,13 @@
     </h5>
     <div class="popover-body">
         <div *ngIf="(currentRole$ | async) === 'trainer'" class="mb-3">
-            <div class="form-group">
-                <label class="form-label">Fahrzeugname</label>
-                <input
-                    #nameInput="ngModel"
-                    [ngModel]="vehicle.name"
-                    (appSaveOnTyping)="renameVehicle($event)"
-                    [maxlength]="16"
-                    required
-                    type="text"
-                    class="form-control"
-                />
-                <app-display-validation
-                    [ngModelInput]="nameInput"
-                ></app-display-validation>
-            </div>
+            <label class="form-label">Fahrzeugname</label>
+            <app-vehicle-name-editor [vehicleId]="vehicle.id" />
         </div>
         <div class="mb-3">
-            Verfügbare Patientenplätze:
-            <span class="font-monospace">
-                {{
-                    vehicle.patientCapacity -
-                        (vehicle.patientIds | keyvalue).length
-                }}
-            </span>
-            von
-            <span class="font-monospace">
-                {{ vehicle.patientCapacity }}
-            </span>
+            <app-vehicle-available-slots-display [vehicleId]="vehicle.id" />
         </div>
 
-        <div class="btn-group">
-            <button
-                (click)="unloadVehicle()"
-                [disabled]="
-                    (vehicleLoadState$ | async) === 'completelyUnloaded'
-                "
-                class="btn btn-outline-primary"
-                data-cy="vehiclePopupUnloadButton"
-            >
-                <i class="bi-box-arrow-left"></i>
-                Alle aussteigen
-            </button>
-            <button
-                (click)="loadVehicle()"
-                [disabled]="(vehicleLoadState$ | async) === 'completelyLoaded'"
-                class="btn btn-outline-primary"
-            >
-                <i class="bi-box-arrow-in-right"></i>
-                Alle einsteigen
-            </button>
-        </div>
-
-        <p>
-            Personal, das sich gerade im Transfer befindet, kann nicht
-            einsteigen.
-        </p>
+        <app-vehicle-load-unload-controls [vehicleId]="vehicle.id" />
     </div>
 </ng-container>

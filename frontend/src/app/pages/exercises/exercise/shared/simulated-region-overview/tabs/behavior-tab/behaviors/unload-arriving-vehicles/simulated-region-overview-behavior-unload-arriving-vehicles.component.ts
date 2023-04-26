@@ -1,14 +1,17 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type { UnloadArrivingVehiclesBehaviorState } from 'digital-fuesim-manv-shared';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type {
+    UnloadArrivingVehiclesBehaviorState,
+    UnloadVehicleActivityState,
+} from 'digital-fuesim-manv-shared';
+import { StrictObject, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    createSelectActivityStatesByType,
+    createSelectActivityStates,
     createSelectBehaviorState,
     selectCurrentTime,
     selectVehicles,
@@ -40,26 +43,35 @@ export class SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent
     ) {}
 
     ngOnInit(): void {
+        const selectBehavior =
+            createSelectBehaviorState<UnloadArrivingVehiclesBehaviorState>(
+                this.simulatedRegionId,
+                this.behaviorId
+            );
         this.unloadDuration$ = this.store
-            .select(
-                createSelectBehaviorState<UnloadArrivingVehiclesBehaviorState>(
-                    this.simulatedRegionId,
-                    this.behaviorId
-                )
-            )
+            .select(selectBehavior)
             .pipe(map((state) => state?.unloadDelay ?? 0));
 
         const unloadingSelector = createSelector(
-            createSelectActivityStatesByType(
-                this.simulatedRegionId,
-                'unloadVehicleActivity'
-            ),
+            createSelectActivityStates(this.simulatedRegionId),
+            selectBehavior,
             selectVehicles,
-            (activities, vehicles) =>
-                activities.map((activity) => ({
-                    vehicle: vehicles[activity.vehicleId]!,
-                    endTime: activity.startTime + activity.duration,
-                }))
+            (activities, behavior, vehicles) =>
+                StrictObject.values(behavior.vehicleActivityMap)
+                    .map(
+                        (activityId) =>
+                            activities[activityId] as
+                                | UnloadVehicleActivityState
+                                | undefined
+                    )
+                    .filter(
+                        (activity): activity is UnloadVehicleActivityState =>
+                            activity !== undefined
+                    )
+                    .map((activity) => ({
+                        vehicle: vehicles[activity.vehicleId]!,
+                        endTime: activity.startTime + activity.duration,
+                    }))
         );
 
         this.vehiclesStatus$ = this.store.select(
