@@ -27,6 +27,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Changed
 
 -   Loading or unloading a vehicle from its popup does not close the popup automatically.
+-   Patient treatment sorts the patients by their UUID before triaging or assigning treatments in simulated regions. This way, the order of triage does not depend on the order the patients have been added.
 
 ## [0.4.1] - 2023-04-20
 
