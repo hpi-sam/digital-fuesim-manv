@@ -23,6 +23,7 @@ import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-ma
 import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
+import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export function isInViewport(
@@ -70,7 +71,10 @@ export class ViewportFeatureManager
             },
             new PolygonGeometryHelper()
         );
-        this.layer.setStyle(this.style);
+        this.layer.setStyle((feature, resolution) => [
+            this.style,
+            this.nameStyleHelper.getStyle(feature as Feature, resolution),
+        ]);
     }
 
     private readonly style = new Style({
@@ -80,6 +84,22 @@ export class ViewportFeatureManager
             width: 2,
         }),
     });
+
+    private readonly nameStyleHelper = new NameStyleHelper(
+        (feature) => {
+            const viewport = this.getElementFromFeature(feature) as Viewport;
+            const extent = (feature as Feature<Polygon>)
+                .getGeometry()!
+                .getExtent() as [number, number, number, number];
+            return {
+                name: viewport.name,
+                // The offset is based on the center of the viewports, not the viewports position (which refers to a corner), so we have to divide by 2.
+                offsetY: (extent[3] - extent[1]) / 2,
+            };
+        },
+        0.75,
+        'top'
+    );
 
     override createFeature(element: Viewport): Feature<Polygon> {
         const feature = super.createFeature(element);
