@@ -25,6 +25,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   Vehicles can be deleted or moved to the map.
     -   Trainers can see the current occupation of a vehicle and cancel it.
 -   Simulated regions are prefixed with "\[Simuliert\]" in the request target selection for the requests behavior.
+-   The patient, whose popup is open, is now highlighted.
 
 ### Changed
 
