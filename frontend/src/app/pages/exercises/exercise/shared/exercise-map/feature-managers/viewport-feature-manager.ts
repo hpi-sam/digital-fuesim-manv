@@ -88,12 +88,13 @@ export class ViewportFeatureManager
     private readonly nameStyleHelper = new NameStyleHelper(
         (feature) => {
             const viewport = this.getElementFromFeature(feature) as Viewport;
+            const extent = (feature as Feature<Polygon>)
+                .getGeometry()!
+                .getExtent() as [number, number, number, number];
             return {
                 name: viewport.name,
-                // The offset ist based on the center of the viewports, not the viewports position (which refers to a corner), so we have to divide by 2.
-                // The hight can be negative if the corners have been swapped ("inside out"), but the text should always be below the center.
-                // Therefore, we have to use `Math.abs`.
-                offsetY: Math.abs(viewport.size.height) / 2,
+                // The offset is based on the center of the viewports, not the viewports position (which refers to a corner), so we have to divide by 2.
+                offsetY: (extent[3] - extent[1]) / 2,
             };
         },
         0.75,
