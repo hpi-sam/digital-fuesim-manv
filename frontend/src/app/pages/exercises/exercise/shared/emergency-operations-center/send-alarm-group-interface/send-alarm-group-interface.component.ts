@@ -25,8 +25,8 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
 // We want to remember this
 let targetTransferPointId: UUID | undefined;
-let firstVehiclesToOtherLocationTransferPointId: UUID | undefined;
-let firstVehiclesToOtherLocationCount = 0;
+let firstVehiclesTargetTransferPointId: UUID | undefined;
+let firstVehiclesCount = 0;
 
 @Component({
     selector: 'app-send-alarm-group-interface',
@@ -69,110 +69,48 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
         targetTransferPointId = value;
     }
 
-    public get firstVehiclesToOtherLocationTransferPointId() {
-        return firstVehiclesToOtherLocationTransferPointId;
+    public get firstVehiclesTargetTransferPointId() {
+        return firstVehiclesTargetTransferPointId;
     }
-    public set firstVehiclesToOtherLocationTransferPointId(
-        value: UUID | undefined
-    ) {
-        firstVehiclesToOtherLocationTransferPointId = value;
+    public set firstVehiclesTargetTransferPointId(value: UUID | undefined) {
+        firstVehiclesTargetTransferPointId = value;
     }
 
-    public get firstVehiclesToOtherLocationCount() {
-        return firstVehiclesToOtherLocationCount;
+    public get firstVehiclesCount() {
+        return firstVehiclesCount;
     }
-    public set firstVehiclesToOtherLocationCount(value: number) {
-        firstVehiclesToOtherLocationCount = value;
+    public set firstVehiclesCount(value: number) {
+        firstVehiclesCount = value;
     }
 
-    public sendAlarmGroup(alarmGroup: AlarmGroup) {
-        const targetTransferPoint = selectStateSnapshot(
-            createSelectTransferPoint(this.targetTransferPointId!),
-            this.store
+    public async sendAlarmGroup(alarmGroup: AlarmGroup) {
+        if (!this.targetTransferPointId) return;
+
+        const firstVehiclesCount = this.firstVehiclesCount;
+        const firstVehiclesCountReducedBy = Math.min(
+            Object.keys(alarmGroup.alarmGroupVehicles).length,
+            this.firstVehiclesCount
         );
+        this.firstVehiclesCount -= firstVehiclesCountReducedBy;
 
-        const firstAlarmGroupVehiclesToOtherLocationCount =
-            this.firstVehiclesToOtherLocationCount;
-        this.firstVehiclesToOtherLocationCount = Math.max(
-            0,
-            this.firstVehiclesToOtherLocationCount -
-                Object.keys(alarmGroup.alarmGroupVehicles).length
-        );
-
-        // TODO: Refactor this into one action (uuid generation is currently not possible in the reducer)
-        Promise.all(
-            Object.values(alarmGroup.alarmGroupVehicles).flatMap(
-                (alarmGroupVehicle, vehicleIndex) => {
-                    const vehicleTemplate = selectStateSnapshot(
-                        createSelectVehicleTemplate(
-                            alarmGroupVehicle.vehicleTemplateId
-                        ),
-                        this.store
-                    );
-
-                    const vehicleParameters = createVehicleParameters(
-                        {
-                            ...vehicleTemplate,
-                            name: alarmGroupVehicle.name,
-                        },
-                        selectStateSnapshot(
-                            selectMaterialTemplates,
-                            this.store
-                        ),
-                        selectStateSnapshot(
-                            selectPersonnelTemplates,
-                            this.store
-                        ),
-                        // TODO: This position is not correct but needs to be provided.
-                        // Here one should use a Position with the Transfer.
-                        // But this is part of later Refactoring.
-                        // We need the Transfer to be created before the Vehicle is created,
-                        // else we need to provide a Position that is immediately overwritten by the Add to Transfer Action.
-                        // This is done here
-                        // Good Thing is, it is irrelevant, because the correctPosition is set immediately after this is called.
-                        MapCoordinates.create(0, 0)
-                    );
-
-                    const vehicleTargetTransferPointId =
-                        vehicleIndex <
-                            firstAlarmGroupVehiclesToOtherLocationCount &&
-                        this.firstVehiclesToOtherLocationTransferPointId
-                            ? this.firstVehiclesToOtherLocationTransferPointId
-                            : this.targetTransferPointId!;
-
-                    return [
-                        this.exerciseService.proposeAction({
-                            type: '[Vehicle] Add vehicle',
-                            materials: vehicleParameters.materials,
-                            personnel: vehicleParameters.personnel,
-                            vehicle: vehicleParameters.vehicle,
-                        }),
-                        this.exerciseService.proposeAction({
-                            type: '[Transfer] Add to transfer',
-                            elementType: vehicleParameters.vehicle.type,
-                            elementId: vehicleParameters.vehicle.id,
-                            startPoint: AlarmGroupStartPoint.create(
-                                alarmGroup.name,
-                                alarmGroupVehicle.time
-                            ),
-                            targetTransferPointId: vehicleTargetTransferPointId,
-                        }),
-                    ];
-                }
-            )
-        ).then((requests) => {
-            if (requests.every((request) => request.success)) {
-                this.messageService.postMessage({
-                    title: `Alarmgruppe ${alarmGroup.name} alarmiert!`,
-                    color: 'success',
-                });
-            }
-            this.exerciseService.proposeAction({
-                type: '[Emergency Operation Center] Add Log Entry',
-                message: `Alarmgruppe ${alarmGroup.name} wurde alarmiert zu ${targetTransferPoint.externalName}!`,
-                name: selectStateSnapshot(selectOwnClient, this.store)!.name,
-            });
+        const request = await this.exerciseService.proposeAction({
+            type: '[Emergency Operation Center] Send Alarm Group',
+            name: selectStateSnapshot(selectOwnClient, this.store)!.name,
+            alarmGroupId: alarmGroup.id,
+            targetTransferPointId: this.targetTransferPointId,
+            firstVehiclesCount,
+            firstVehiclesTargetTransferPointId:
+                this.firstVehiclesTargetTransferPointId,
         });
+
+        if (request.success) {
+            this.messageService.postMessage({
+                title: `Alarmgruppe ${alarmGroup.name} alarmiert!`,
+                color: 'success',
+            });
+        } else {
+            this.firstVehiclesCount += firstVehiclesCountReducedBy;
+        }
     }
 
     ngOnDestroy(): void {

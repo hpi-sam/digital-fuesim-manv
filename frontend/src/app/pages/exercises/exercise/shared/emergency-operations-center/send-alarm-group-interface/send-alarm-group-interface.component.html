@@ -17,56 +17,9 @@
                 style="max-width: 300px; width: unset"
             >
                 <span class="input-group-text">Ziel:</span>
-                <button
-                    ngbDropdownToggle
-                    type="button"
-                    class="btn btn-outline-primary btn-sm"
-                    data-cy="sendAlarmGroupChooseTargetButton"
-                    [disabled]="transferPoints.length === 0"
-                >
-                    <app-transfer-point-name
-                        *ngIf="
-                            targetTransferPointId;
-                            else noTargetTransferPoint
-                        "
-                        [transferPointId]="targetTransferPointId"
-                    >
-                    </app-transfer-point-name>
-                    <ng-template #noTargetTransferPoint>
-                        <span class="text-muted"> Kein Ziel ausgewählt </span>
-                    </ng-template>
-                </button>
-                <div ngbDropdownMenu>
-                    <button
-                        ngbDropdownItem
-                        (click)="targetTransferPointId = undefined"
-                        type="button"
-                        class="btn btn-primary"
-                        *ngIf="targetTransferPointId !== undefined"
-                    >
-                        Kein Ziel
-                    </button>
-                    <ng-container
-                        *ngFor="
-                            let transferPoint of transferPoints;
-                            trackBy: 'id' | appTrackByProperty : transferPoints
-                        "
-                    >
-                        <button
-                            ngbDropdownItem
-                            (click)="targetTransferPointId = transferPoint.id"
-                            type="button"
-                            class="btn btn-primary"
-                            data-cy="sendAlarmGroupChooseTargetSelect"
-                            *ngIf="targetTransferPointId !== transferPoint.id"
-                        >
-                            <app-transfer-point-name
-                                [transferPointId]="transferPoint.id"
-                            >
-                            </app-transfer-point-name>
-                        </button>
-                    </ng-container>
-                </div>
+                <app-transfer-target-dropdown
+                    [(selectedTransferPointId)]="targetTransferPointId"
+                />
             </div>
             <div
                 ngbDropdown
@@ -75,7 +28,7 @@
             >
                 <span class="input-group-text">Ziel der ersten</span>
                 <input
-                    [(ngModel)]="firstVehiclesToOtherLocationCount"
+                    [(ngModel)]="firstVehiclesCount"
                     type="number"
                     min="0"
                     step="1"
@@ -83,69 +36,11 @@
                     style="width: 75px"
                 />
                 <span class="input-group-text">Fahrzeuge:</span>
-                <button
-                    ngbDropdownToggle
-                    type="button"
-                    class="btn btn-outline-primary btn-sm"
-                    [disabled]="transferPoints.length === 0"
-                >
-                    <app-transfer-point-name
-                        *ngIf="
-                            firstVehiclesToOtherLocationTransferPointId;
-                            else noTargetTransferPoint
-                        "
-                        [transferPointId]="
-                            firstVehiclesToOtherLocationTransferPointId
-                        "
-                    >
-                    </app-transfer-point-name>
-                    <ng-template #noTargetTransferPoint>
-                        <span class="text-muted"> Kein Ziel ausgewählt </span>
-                    </ng-template>
-                </button>
-                <div ngbDropdownMenu>
-                    <button
-                        ngbDropdownItem
-                        (click)="
-                            firstVehiclesToOtherLocationTransferPointId =
-                                undefined
-                        "
-                        type="button"
-                        class="btn btn-primary"
-                        *ngIf="
-                            firstVehiclesToOtherLocationTransferPointId !==
-                            undefined
-                        "
-                    >
-                        Kein Ziel
-                    </button>
-                    <ng-container
-                        *ngFor="
-                            let transferPoint of transferPoints;
-                            trackBy: 'id' | appTrackByProperty : transferPoints
-                        "
-                    >
-                        <button
-                            ngbDropdownItem
-                            (click)="
-                                firstVehiclesToOtherLocationTransferPointId =
-                                    transferPoint.id
-                            "
-                            type="button"
-                            class="btn btn-primary"
-                            *ngIf="
-                                targetTransferPointId !== transferPoint.id &&
-                                firstVehiclesToOtherLocationTransferPointId !==
-                                    transferPoint.id
-                            "
-                        >
-                            <app-transfer-point-name
-                                [transferPointId]="transferPoint.id"
-                            >
-                            </app-transfer-point-name>
-                        </button>
-                    </ng-container>
-                </div>
+                <app-transfer-target-dropdown
+                    [(selectedTransferPointId)]="
+                        firstVehiclesTargetTransferPointId
+                    "
+                />
             </div>
         </div>
 
@@ -156,13 +51,13 @@
             <div
                 *ngIf="
                     targetTransferPointId &&
-                    !firstVehiclesToOtherLocationTransferPointId &&
-                    firstVehiclesToOtherLocationCount > 0
+                    !firstVehiclesTargetTransferPointId &&
+                    firstVehiclesCount > 0
                 "
                 class="text-warning"
             >
                 Ohne ein zweites Ziel können die ersten Fahrzeuge kein anderes
-                Ziel anfahren.
+                Ziel anfahren. Sie werden stattdessen das erste Ziel anfahren.
             </div>
         </div>
 

@@ -8,6 +8,7 @@ import type {
     PatientCategory,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
+import { uuid } from 'digital-fuesim-manv-shared';
 import {
     createVehicleParameters,
     MapImage,
@@ -172,6 +173,7 @@ export class DragElementService {
             case 'vehicle':
                 {
                     const params = createVehicleParameters(
+                        uuid(),
                         this.transferringTemplate.template,
                         selectStateSnapshot(
                             selectMaterialTemplates,
