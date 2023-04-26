@@ -17,6 +17,15 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Simulated regions display their names on the map.
 -   Vehicles now have a property to indicate their current occupation.
 -   Treatment falls back to no treatment when a leader is missing in the region.
+-   All vehicles in a simulated region can be managed with the new vehicles tab.
+    -   All operations from the vehicle popup (change name, load, unload) are available.
+    -   There is a detailed list of the personnel that belongs to the vehicle.
+    -   A list of patients that are in the vehicle is shown and the patients tab opens for details when clicking a patient.
+    -   Vehicles can be deleted or moved to the map.
+
+### Changed
+
+-   Loading or unloading a vehicle from its popup does not close the popup automatically.
 
 ## [0.4.1] - 2023-04-20
 

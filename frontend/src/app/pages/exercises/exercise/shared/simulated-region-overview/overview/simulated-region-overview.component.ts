@@ -17,7 +17,8 @@ type NavIds =
     | 'general'
     | 'hospitalTransfer'
     | 'patients'
-    | 'transferPoint';
+    | 'transferPoint'
+    | 'vehicles';
 
 /**
  * We want to remember the last selected nav item, so the user doesn't have to manually select it again.
