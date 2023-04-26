@@ -6,6 +6,7 @@ import type VectorSource from 'ol/source/Vector';
 import { Subject, takeUntil } from 'rxjs';
 import type OlMap from 'ol/Map';
 import type { UUID } from 'digital-fuesim-manv-shared';
+import { isEqual } from 'lodash-es';
 import type { Positioning } from '../../utility/types/positioning';
 import type { FeatureManager } from './feature-manager';
 import type { PopupService } from './popup.service';
@@ -93,15 +94,18 @@ export class PopupManager {
             return;
         }
 
-        if (
-            options.elementUUID &&
-            this.currentlyOpenPopupOptions?.closingUUIDs.includes(
-                options.elementUUID
-            )
-        ) {
-            // All the openPopup buttons should be toggles
-            this.closePopup();
-            return;
+        if (this.currentlyOpenPopupOptions) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { position: newPosition, ...newOptionsWithoutPosition } =
+                options;
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { position: oldPosition, ...oldOptionsWithoutPosition } =
+                this.currentlyOpenPopupOptions;
+            if (isEqual(newOptionsWithoutPosition, oldOptionsWithoutPosition)) {
+                // All the openPopup buttons should be toggles
+                this.closePopup();
+                return;
+            }
         }
 
         this.openPopup(options);
