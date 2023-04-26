@@ -19,7 +19,7 @@ import {
     uuidValidationOptions,
 } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import { addActivity } from '../activities/utils';
+import { addActivity, terminateActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
 import { getElement } from '../../store/action-reducers/utils';
 import {
@@ -76,9 +76,9 @@ export class TransferBehaviorState implements SimulationBehaviorState {
      * @deprecated Use {@link create} instead
      */
     constructor(
-        loadTimePerPatient: number,
-        personnelLoadTime: number,
-        delayBetweenSends: number
+        loadTimePerPatient: number = 60_000, // 1 minute
+        personnelLoadTime: number = 120_000, // 2 minutes
+        delayBetweenSends: number = 60_000 // 1 minute
     ) {
         this.loadTimePerPatient = loadTimePerPatient;
         this.personnelLoadTime = personnelLoadTime;
@@ -302,7 +302,9 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             nextUUID(draftState),
                             RequestReceivedEvent.create(
                                 sentVehicles,
-                                event.key ?? ''
+                                event.transferDestinationType,
+                                event.transferDestinationId,
+                                event.key
                             ),
                             draftState.currentTime
                         )
@@ -346,7 +348,7 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                 {
                     if (
                         behaviorState.recurringActivityId === undefined &&
-                        behaviorState.startTransferEventQueue.length === 0
+                        behaviorState.startTransferEventQueue.length !== 0
                     ) {
                         behaviorState.recurringActivityId =
                             nextUUID(draftState);
@@ -364,7 +366,15 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                 break;
             case 'doTransferEvent':
                 {
-                    if (behaviorState.startTransferEventQueue.length === 0) {
+                    if (
+                        behaviorState.startTransferEventQueue.length === 0 &&
+                        behaviorState.recurringActivityId
+                    ) {
+                        terminateActivity(
+                            draftState,
+                            simulatedRegion,
+                            behaviorState.recurringActivityId
+                        );
                         behaviorState.recurringActivityId = undefined;
                         return;
                     }

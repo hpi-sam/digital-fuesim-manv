@@ -7,6 +7,7 @@ import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutab
 import {
     getCreate,
     isInSpecificSimulatedRegion,
+    isInSpecificVehicle,
     TransferStartPoint,
 } from '../../models/utils';
 import { VehicleResource } from '../../models/utils/rescue-resource';
@@ -124,6 +125,7 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
                             )
                         )
                     );
+
                     terminate();
                     return;
                 }
@@ -136,21 +138,15 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
                             'material',
                             materialId
                         );
-                        return !isInSpecificSimulatedRegion(
-                            material,
-                            simulatedRegion.id
-                        );
+                        return !isInSpecificVehicle(material, vehicle.id);
                     }) ||
                     Object.keys(vehicle.personnelIds).some((personnelId) => {
-                        const material = getElement(
+                        const personnel = getElement(
                             draftState,
                             'personnel',
                             personnelId
                         );
-                        return !isInSpecificSimulatedRegion(
-                            material,
-                            simulatedRegion.id
-                        );
+                        return !isInSpecificVehicle(personnel, vehicle.id);
                     })
                 ) {
                     terminate();

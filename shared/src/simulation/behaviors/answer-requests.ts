@@ -3,9 +3,10 @@ import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
 import { getElementByPredicate } from '../../store/action-reducers/utils';
 import { UUID, uuid, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import { TransferVehiclesActivityState } from '../activities';
 import { addActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
+import { DelayEventActivityState } from '../activities';
+import { TransferVehiclesRequestEvent } from '../events';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -43,11 +44,15 @@ export const answerRequestsBehavior: SimulationBehavior<AnswerRequestsBehaviorSt
                                 );
                             addActivity(
                                 simulatedRegion,
-                                TransferVehiclesActivityState.create(
+                                DelayEventActivityState.create(
                                     nextUUID(draftState),
-                                    requiringSimulatedRegionTransferPoint.id,
-                                    requiringSimulatedRegionTransferPoint.id,
-                                    event.requiredResource
+                                    TransferVehiclesRequestEvent.create(
+                                        event.requiredResource.vehicleCounts,
+                                        'transferPoint',
+                                        requiringSimulatedRegionTransferPoint.id,
+                                        requiringSimulatedRegionTransferPoint.id
+                                    ),
+                                    draftState.currentTime
                                 )
                             );
                         }
