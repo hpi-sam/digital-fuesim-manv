@@ -1,6 +1,7 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
 import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
-import { UUID, uuidValidationOptions } from '../../utils';
+import { NoOccupation } from '../../models/utils/occupations/no-occupation';
+import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { unloadVehicle } from '../utils/vehicle';
 import type {
@@ -58,9 +59,9 @@ export const unloadVehicleActivity: SimulationActivity<UnloadVehicleActivityStat
             const vehicle = draftState.vehicles[activityState.vehicleId];
             if (
                 !vehicle ||
-                !isInSpecificSimulatedRegion(vehicle, simulatedRegion.id)
+                !isInSpecificSimulatedRegion(vehicle, simulatedRegion.id) ||
+                !(vehicle.occupation.type === 'unloadingOccupation')
             ) {
-                // The vehicle has left the region or was deleted for some reason. Cancel unloading.
                 terminate();
             } else if (
                 draftState.currentTime >=
@@ -68,6 +69,15 @@ export const unloadVehicleActivity: SimulationActivity<UnloadVehicleActivityStat
             ) {
                 unloadVehicle(draftState, simulatedRegion, vehicle);
                 terminate();
+            }
+        },
+        onTerminate(draftState, simulatedRegion, activityId) {
+            const activity = simulatedRegion.activities[
+                activityId
+            ] as UnloadVehicleActivityState;
+            const vehicle = draftState.vehicles[activity.vehicleId];
+            if (vehicle && vehicle.occupation.type === 'unloadingOccupation') {
+                vehicle.occupation = cloneDeepMutable(NoOccupation.create());
             }
         },
     };
