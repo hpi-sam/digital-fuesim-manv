@@ -1,7 +1,7 @@
 <div class="btn-group">
     <button
         (click)="unloadVehicle()"
-        [disabled]="(vehicleLoadState$ | async) === 'completelyUnloaded'"
+        [disabled]="!(vehicleLoadState$ | async)?.unloadable"
         class="btn btn-outline-primary"
         data-cy="vehiclePopupUnloadButton"
     >
@@ -10,7 +10,7 @@
     </button>
     <button
         (click)="loadVehicle()"
-        [disabled]="(vehicleLoadState$ | async) === 'completelyLoaded'"
+        [disabled]="!(vehicleLoadState$ | async)?.loadable"
         class="btn btn-outline-primary"
     >
         <i class="bi-box-arrow-in-right"></i>

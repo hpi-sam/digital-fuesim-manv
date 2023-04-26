@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { UUID, isInSpecificVehicle } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
-import { combineLatest, map, switchMap } from 'rxjs';
+import { combineLatest, map, startWith, switchMap } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
@@ -22,9 +22,7 @@ export class VehicleLoadUnloadControlsComponent implements OnChanges {
     @Input()
     vehicleId!: UUID;
 
-    vehicleLoadState$?: Observable<
-        'completelyLoaded' | 'completelyUnloaded' | 'partiallyLoaded'
-    >;
+    vehicleLoadState$?: Observable<{ loadable: boolean; unloadable: boolean }>;
 
     constructor(
         private readonly store: Store<AppState>,
@@ -35,37 +33,37 @@ export class VehicleLoadUnloadControlsComponent implements OnChanges {
         const vehicle$ = this.store.select(createSelectVehicle(this.vehicleId));
 
         this.vehicleLoadState$ = vehicle$.pipe(
-            switchMap((_vehicle) => {
+            switchMap((vehicle) => {
                 const materialsAreInVehicle$ = Object.keys(
-                    _vehicle.materialIds
+                    vehicle.materialIds
                 ).map((materialId) =>
                     this.store
                         .select(createSelectMaterial(materialId))
                         .pipe(
                             map((material) =>
-                                isInSpecificVehicle(material, _vehicle.id)
+                                isInSpecificVehicle(material, vehicle.id)
                             )
                         )
                 );
                 const personnelAreInVehicle$ = Object.keys(
-                    _vehicle.personnelIds
+                    vehicle.personnelIds
                 ).map((personnelId) =>
                     this.store
                         .select(createSelectPersonnel(personnelId))
                         .pipe(
                             map((personnel) =>
-                                isInSpecificVehicle(personnel, _vehicle.id)
+                                isInSpecificVehicle(personnel, vehicle.id)
                             )
                         )
                 );
                 const patientsAreInVehicle$ = Object.keys(
-                    _vehicle.patientIds
+                    vehicle.patientIds
                 ).map((patientId) =>
                     this.store
                         .select(createSelectPatient(patientId))
                         .pipe(
                             map((patient) =>
-                                isInSpecificVehicle(patient, _vehicle.id)
+                                isInSpecificVehicle(patient, vehicle.id)
                             )
                         )
                 );
@@ -73,19 +71,12 @@ export class VehicleLoadUnloadControlsComponent implements OnChanges {
                     ...materialsAreInVehicle$,
                     ...personnelAreInVehicle$,
                     ...patientsAreInVehicle$,
-                ]);
+                ]).pipe(startWith([]));
             }),
-            map((areInVehicle) => {
-                if (areInVehicle.every((isInAVehicle) => isInAVehicle)) {
-                    return 'completelyLoaded';
-                } else if (
-                    areInVehicle.every((isInAVehicle) => !isInAVehicle)
-                ) {
-                    return 'completelyUnloaded';
-                }
-
-                return 'partiallyLoaded';
-            })
+            map((areInVehicle) => ({
+                loadable: areInVehicle.some((isInVehicle) => !isInVehicle),
+                unloadable: areInVehicle.some((isInVehicle) => isInVehicle),
+            }))
         );
     }
 
