@@ -13,8 +13,10 @@ import type { Mutable } from '../../utils';
 import { StrictObject, UUID, uuid, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { LeaderChangedEvent } from '../events/leader-changed';
-import { sendSimulationEvent } from '../events/utils';
 import type { ExerciseState } from '../../state';
+import { addActivity } from '../activities/utils';
+import { DelayEventActivityState } from '../activities';
+import { nextUUID } from '../utils/randomness';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -74,6 +76,7 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
 
                         if (newPersonnel.personnelType === 'gf') {
                             changeLeader(
+                                draftState,
                                 simulatedRegion,
                                 behaviorState,
                                 event.personnelId
@@ -253,7 +256,7 @@ function selectNewLeader(
 
     if (personnel.length === 0) {
         if (changeLeaderIfNoLeaderSelected) {
-            changeLeader(simulatedRegion, behaviorState, undefined);
+            changeLeader(draftState, simulatedRegion, behaviorState, undefined);
         }
         return;
     }
@@ -263,19 +266,24 @@ function selectNewLeader(
             personnelPriorities[b.personnelType] -
             personnelPriorities[a.personnelType]
     );
-    changeLeader(simulatedRegion, behaviorState, personnel[0]?.id);
+    changeLeader(draftState, simulatedRegion, behaviorState, personnel[0]?.id);
 }
 
 function changeLeader(
+    draftState: Mutable<ExerciseState>,
     simulatedRegion: Mutable<SimulatedRegion>,
     behaviorState: Mutable<AssignLeaderBehaviorState>,
     newLeaderId: UUID | undefined
 ) {
-    sendSimulationEvent(
+    addActivity(
         simulatedRegion,
-        LeaderChangedEvent.create(
-            behaviorState.leaderId ?? null,
-            newLeaderId ?? null
+        DelayEventActivityState.create(
+            nextUUID(draftState),
+            LeaderChangedEvent.create(
+                behaviorState.leaderId ?? null,
+                newLeaderId ?? null
+            ),
+            draftState.currentTime
         )
     );
     behaviorState.leaderId = newLeaderId;
