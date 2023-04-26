@@ -62,6 +62,12 @@
                         />
                     </div>
                     <div class="mb-3">
+                        <h6>Tätigkeit</h6>
+                        <app-vehicle-occupation-editor
+                            [vehicleId]="selection.vehicle.id"
+                        />
+                    </div>
+                    <div class="mb-3">
                         <h6>Personal</h6>
                         <ul>
                             <li *ngFor="let personnel of selection.personnel">

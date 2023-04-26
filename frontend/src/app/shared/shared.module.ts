@@ -41,6 +41,7 @@ import { PatientBehaviorDescriptionPipe } from './pipes/patient-behavior-descrip
 import { VehicleNameEditorComponent } from './components/vehicle-name-editor/vehicle-name-editor.component';
 import { VehicleLoadUnloadControlsComponent } from './components/vehicle-load-unload-controls/vehicle-load-unload-controls.component';
 import { VehicleAvailableSlotsDisplayComponent } from './components/vehicle-available-slots-display/vehicle-available-slots-display.component';
+import { VehicleOccupationEditorComponent } from './components/vehicle-occupation-editor/vehicle-occupation-editor.component';
 
 @NgModule({
     declarations: [
@@ -78,6 +79,7 @@ import { VehicleAvailableSlotsDisplayComponent } from './components/vehicle-avai
         VehicleNameEditorComponent,
         VehicleLoadUnloadControlsComponent,
         VehicleAvailableSlotsDisplayComponent,
+        VehicleOccupationEditorComponent,
     ],
     imports: [
         CommonModule,
@@ -118,6 +120,7 @@ import { VehicleAvailableSlotsDisplayComponent } from './components/vehicle-avai
         VehicleNameEditorComponent,
         VehicleLoadUnloadControlsComponent,
         VehicleAvailableSlotsDisplayComponent,
+        VehicleOccupationEditorComponent,
     ],
 })
 export class SharedModule {}
