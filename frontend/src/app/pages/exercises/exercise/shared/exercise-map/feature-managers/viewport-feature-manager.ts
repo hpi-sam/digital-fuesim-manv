@@ -23,6 +23,7 @@ import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-ma
 import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
 import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
+import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export function isInViewport(
@@ -70,7 +71,10 @@ export class ViewportFeatureManager
             },
             new PolygonGeometryHelper()
         );
-        this.layer.setStyle(this.style);
+        this.layer.setStyle((feature, resolution) => [
+            this.style,
+            this.nameStyleHelper.getStyle(feature as Feature, resolution),
+        ]);
     }
 
     private readonly style = new Style({
@@ -80,6 +84,21 @@ export class ViewportFeatureManager
             width: 2,
         }),
     });
+
+    private readonly nameStyleHelper = new NameStyleHelper(
+        (feature) => {
+            const viewport = this.getElementFromFeature(feature) as Viewport;
+            return {
+                name: viewport.name,
+                // The offset ist based on the center of the viewports, not the viewports position (which refers to a corner), so we have to divide by 2.
+                // The hight can be negative if the corners have been swapped ("inside out"), but the text should always be below the center.
+                // Therefore, we have to use `Math.abs`.
+                offsetY: Math.abs(viewport.size.height) / 2,
+            };
+        },
+        0.75,
+        'top'
+    );
 
     override createFeature(element: Viewport): Feature<Polygon> {
         const feature = super.createFeature(element);
