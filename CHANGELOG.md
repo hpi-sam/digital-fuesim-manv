@@ -10,10 +10,22 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Added
 
 -   There are now events for the removal of patients, vehicles, material, and personnel from simulated regions.
+    -   When personnel, material, or patients are removed the treatments get reassigned
+    -   When the leader is removed, a new one gets selected
 -   The trainer editor now offers pre-configured templates for different kinds of simulated regions.
     -   These templates come with different border colors.
 -   Simulated regions display their names on the map.
 -   Vehicles now have a property to indicate their current occupation.
+-   Treatment falls back to no treatment when a leader is missing in the region.
+-   All vehicles in a simulated region can be managed with the new vehicles tab.
+    -   All operations from the vehicle popup (change name, load, unload) are available.
+    -   There is a detailed list of the personnel that belongs to the vehicle.
+    -   A list of patients that are in the vehicle is shown and the patients tab opens for details when clicking a patient.
+    -   Vehicles can be deleted or moved to the map.
+
+### Changed
+
+-   Loading or unloading a vehicle from its popup does not close the popup automatically.
 
 ## [0.4.1] - 2023-04-20
 

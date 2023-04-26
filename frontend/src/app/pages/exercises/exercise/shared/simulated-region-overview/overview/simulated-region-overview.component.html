@@ -1,8 +1,18 @@
 <ng-container>
     <div class="h-100 d-flex flex-column">
-        <nav #nav="ngbNav" ngbNav [(activeId)]="activeNavId" class="nav-tabs">
+        <nav
+            #nav="ngbNav"
+            ngbNav
+            [(activeId)]="activeNavId"
+            class="nav-tabs simulated-region-overview-nav-tabs"
+        >
             <ng-container ngbNavItem="general">
-                <a ngbNavLink data-cy="transferPointPopupNamesNav">Übersicht</a>
+                <a
+                    ngbNavLink
+                    data-cy="transferPointPopupNamesNav"
+                    ngbTooltip="Übersicht"
+                    >Übersicht</a
+                >
                 <ng-template ngbNavContent>
                     <app-simulated-region-overview-general-tab
                         class="mh-100 d-block h-100"
@@ -11,7 +21,12 @@
                 </ng-template>
             </ng-container>
             <ng-container ngbNavItem="patients">
-                <a ngbNavLink data-cy="transferPointPopupNamesNav">Patienten</a>
+                <a
+                    ngbNavLink
+                    data-cy="transferPointPopupNamesNav"
+                    ngbTooltip="Patienten"
+                    >Patienten</a
+                >
                 <ng-template ngbNavContent>
                     <app-simulated-region-overview-patients-tab
                         class="mh-100 d-block h-100"
@@ -20,8 +35,25 @@
                     />
                 </ng-template>
             </ng-container>
+            <ng-container ngbNavItem="vehicles">
+                <a
+                    ngbNavLink
+                    data-cy="transferPointPopupNamesNav"
+                    ngbTooltip="Fahrzeuge"
+                    >Fahrzeuge</a
+                >
+                <ng-template ngbNavContent>
+                    <app-simulated-region-overview-vehicles-tab
+                        class="mh-100 d-block h-100"
+                        [simulatedRegion]="(simulatedRegion$ | async)!"
+                    />
+                </ng-template>
+            </ng-container>
             <ng-container ngbNavItem="transferPoint">
-                <a ngbNavLink data-cy="transferPointPopupOtherTransferPointsNav"
+                <a
+                    ngbNavLink
+                    data-cy="transferPointPopupOtherTransferPointsNav"
+                    ngbTooltip="Transfer"
                     >Transfer</a
                 >
                 <ng-template ngbNavContent
@@ -33,7 +65,10 @@
                 </ng-template>
             </ng-container>
             <ng-container ngbNavItem="hospitalTransfer">
-                <a ngbNavLink data-cy="transferPointPopupOtherTransferPointsNav"
+                <a
+                    ngbNavLink
+                    data-cy="transferPointPopupOtherTransferPointsNav"
+                    ngbTooltip="Krankenhäuser"
                     >Krankenhäuser</a
                 >
                 <ng-template ngbNavContent
@@ -45,7 +80,10 @@
                 </ng-template>
             </ng-container>
             <ng-container ngbNavItem="behaviors">
-                <a ngbNavLink data-cy="transferPointPopupHospitalNav"
+                <a
+                    ngbNavLink
+                    data-cy="transferPointPopupHospitalNav"
+                    ngbTooltip="Verhaltensweisen"
                     >Verhaltensweisen</a
                 >
                 <ng-template ngbNavContent

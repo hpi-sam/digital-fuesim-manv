@@ -1,5 +1,7 @@
 import type { Vehicle } from '../../../models';
 import {
+    currentSimulatedRegionIdOf,
+    isInSimulatedRegion,
     isInSpecificVehicle,
     isNotInTransfer,
     VehiclePosition,
@@ -8,6 +10,11 @@ import {
     changePosition,
     changePositionWithId,
 } from '../../../models/utils/position/position-helpers-mutable';
+import {
+    MaterialRemovedEvent,
+    PersonnelRemovedEvent,
+} from '../../../simulation/events';
+import { sendSimulationEvent } from '../../../simulation/events/utils';
 import type { ExerciseState } from '../../../state';
 import type { Mutable } from '../../../utils';
 import { getElement } from './get-element';
@@ -55,6 +62,14 @@ export function completelyLoadVehicle(
     draftState: Mutable<ExerciseState>,
     vehicle: Mutable<Vehicle>
 ) {
+    const inSimulation = isInSimulatedRegion(vehicle);
+    const simulatedRegionId = inSimulation
+        ? currentSimulatedRegionIdOf(vehicle)
+        : undefined;
+    const simulatedRegion = inSimulation
+        ? getElement(draftState, 'simulatedRegion', simulatedRegionId!)
+        : undefined;
+
     const vehiclePosition = VehiclePosition.create(vehicle.id);
 
     Object.keys(vehicle.materialIds).forEach((materialId) => {
@@ -64,6 +79,13 @@ export function completelyLoadVehicle(
             'material',
             draftState
         );
+
+        if (inSimulation) {
+            sendSimulationEvent(
+                simulatedRegion!,
+                MaterialRemovedEvent.create(materialId)
+            );
+        }
     });
 
     Object.keys(vehicle.personnelIds).forEach((personnelId) => {
@@ -71,6 +93,13 @@ export function completelyLoadVehicle(
 
         if (isNotInTransfer(personnel)) {
             changePosition(personnel, vehiclePosition, draftState);
+
+            if (inSimulation) {
+                sendSimulationEvent(
+                    simulatedRegion!,
+                    PersonnelRemovedEvent.create(personnelId)
+                );
+            }
         }
     });
 }
