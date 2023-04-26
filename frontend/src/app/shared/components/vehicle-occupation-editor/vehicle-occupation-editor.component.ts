@@ -1,4 +1,4 @@
-import type { OnChanges, OnInit } from '@angular/core';
+import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { UUID, NoOccupation } from 'digital-fuesim-manv-shared';
 import type { ExerciseOccupation } from 'digital-fuesim-manv-shared';
