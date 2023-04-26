@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type {
     ChangeZIndexMapImageAction,
@@ -12,18 +12,16 @@ import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { createSelectMapImage } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
-import type { PopupComponent } from '../../utility/popup-manager';
+import { PopupService } from '../../utility/popup.service';
 
 @Component({
     selector: 'app-map-image-popup',
     templateUrl: './map-image-popup.component.html',
     styleUrls: ['./map-image-popup.component.scss'],
 })
-export class MapImagePopupComponent implements PopupComponent, OnInit {
+export class MapImagePopupComponent implements OnInit {
     // These properties are only set after OnInit
     public mapImageId!: UUID;
-
-    @Output() readonly closePopup = new EventEmitter<void>();
 
     public mapImage$?: Observable<MapImage>;
     public readonly currentRole$ = this.store.select(selectCurrentRole);
@@ -32,7 +30,8 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly exerciseService: ExerciseService
+        private readonly exerciseService: ExerciseService,
+        private readonly popupService: PopupService
     ) {}
 
     async ngOnInit() {
@@ -75,5 +74,9 @@ export class MapImagePopupComponent implements PopupComponent, OnInit {
             mapImageId: this.mapImageId,
             mode,
         });
+    }
+
+    public closePopup() {
+        this.popupService.closePopup();
     }
 }

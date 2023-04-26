@@ -4,8 +4,7 @@ import type { TranslateEvent } from 'ol/interaction/Translate';
 import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
 import type VectorSource from 'ol/source/Vector';
-import type { Observable } from 'rxjs';
-import { Subject } from 'rxjs';
+import type { Observable, Subject } from 'rxjs';
 // eslint-disable-next-line @typescript-eslint/no-shadow
 import type { Element, UUID } from 'digital-fuesim-manv-shared';
 import type { FeatureManager } from '../utility/feature-manager';
@@ -17,7 +16,6 @@ import type {
 } from '../utility/geometry-helper';
 import { MovementAnimator } from '../utility/movement-animator';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
-import type { OpenPopupOptions } from '../utility/popup-manager';
 import { TranslateInteraction } from '../utility/translate-interaction';
 import { ElementManager } from './element-manager';
 
@@ -33,7 +31,6 @@ export abstract class MoveableFeatureManager<
     extends ElementManager<ManagedElement, FeatureType>
     implements FeatureManager<FeatureType>
 {
-    public readonly togglePopup$ = new Subject<OpenPopupOptions<any>>();
     protected movementAnimator: MovementAnimator<FeatureType>;
     public layer: VectorLayer<VectorSource<FeatureType>>;
     constructor(
@@ -134,20 +131,17 @@ export abstract class MoveableFeatureManager<
     }
 
     public abstract register(
-        changePopup$: Subject<OpenPopupOptions<any> | undefined>,
         destroy$: Subject<void>,
         mapInteractionsManager: OlMapInteractionsManager
     ): void;
 
     protected registerFeatureElementManager(
         elementDictionary$: Observable<{ [id: UUID]: ManagedElement }>,
-        changePopup$: Subject<OpenPopupOptions<any> | undefined>,
         destroy$: Subject<void>,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
         this.olMap.addLayer(this.layer);
         mapInteractionsManager.addFeatureLayer(this.layer);
-        this.togglePopup$?.subscribe(changePopup$);
         this.registerChangeHandlers(
             elementDictionary$,
             destroy$,

@@ -1,4 +1,3 @@
-import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { MapBrowserEvent } from 'ol';
 import { Feature } from 'ol';
@@ -16,7 +15,6 @@ import { selectVisibleCateringLines } from 'src/app/state/application/selectors/
 import type { Element } from 'digital-fuesim-manv-shared';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
-import type { OpenPopupOptions } from '../utility/popup-manager';
 import { LineStyleHelper } from '../utility/style-helper/line-style-helper';
 import { ElementManager } from './element-manager';
 
@@ -42,15 +40,12 @@ export class CateringLinesFeatureManager
             this.lineStyleHelper.getStyle(feature as Feature, currentZoom)
         );
     }
-    togglePopup$?: Subject<OpenPopupOptions<any, Type<any>>> | undefined;
     register(
-        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
         this.olMap.addLayer(this.layer);
         mapInteractionsManager.addFeatureLayer(this.layer);
-        this.togglePopup$?.subscribe(changePopup$);
         // Propagate the changes on an element to the featureManager
         this.registerChangeHandlers(
             this.store.select(selectVisibleCateringLines),

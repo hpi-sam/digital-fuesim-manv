@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { isInSpecificVehicle } from 'digital-fuesim-manv-shared';
 import type { Vehicle, UUID } from 'digital-fuesim-manv-shared';
@@ -14,18 +14,16 @@ import {
     createSelectVehicle,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
-import type { PopupComponent } from '../../utility/popup-manager';
+import { PopupService } from '../../utility/popup.service';
 
 @Component({
     selector: 'app-vehicle-popup',
     templateUrl: './vehicle-popup.component.html',
     styleUrls: ['./vehicle-popup.component.scss'],
 })
-export class VehiclePopupComponent implements PopupComponent, OnInit {
+export class VehiclePopupComponent implements OnInit {
     // These properties are only set after OnInit
     public vehicleId!: UUID;
-
-    @Output() readonly closePopup = new EventEmitter<void>();
 
     public vehicle$?: Observable<Vehicle>;
     public vehicleLoadState$?: Observable<
@@ -35,7 +33,8 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly exerciseService: ExerciseService
+        private readonly exerciseService: ExerciseService,
+        private readonly popupService: PopupService
     ) {}
 
     async ngOnInit() {
@@ -108,7 +107,7 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
             type: '[Vehicle] Unload vehicle',
             vehicleId: this.vehicleId,
         });
-        this.closePopup.emit();
+        this.popupService.closePopup();
     }
 
     public loadVehicle() {
@@ -116,6 +115,10 @@ export class VehiclePopupComponent implements PopupComponent, OnInit {
             type: '[Vehicle] Completely load vehicle',
             vehicleId: this.vehicleId,
         });
-        this.closePopup.emit();
+        this.popupService.closePopup();
+    }
+
+    public closePopup() {
+        this.popupService.closePopup();
     }
 }

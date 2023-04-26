@@ -1,4 +1,3 @@
-import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { MapCoordinates, Size, Viewport } from 'digital-fuesim-manv-shared';
@@ -21,8 +20,8 @@ import { calculatePopupPositioning } from '../utility/calculate-popup-positionin
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
-import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
+import type { PopupService } from '../utility/popup.service';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export function isInViewport(
@@ -40,13 +39,11 @@ export class ViewportFeatureManager
     implements FeatureManager<Polygon>
 {
     public register(
-        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisibleViewports),
-            changePopup$,
             destroy$,
             mapInteractionsManager
         );
@@ -57,7 +54,8 @@ export class ViewportFeatureManager
     constructor(
         olMap: OlMap,
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly store: Store<AppState>,
+        private readonly popupService: PopupService
     ) {
         super(
             olMap,
@@ -139,7 +137,8 @@ export class ViewportFeatureManager
         const zoom = this.olMap.getView().getZoom()!;
         const margin = 10 / zoom;
 
-        this.togglePopup$.next({
+        this.popupService.openPopup({
+            elementUUID: feature.getId()?.toString(),
             component: ViewportPopupComponent,
             closingUUIDs: [feature.getId() as UUID],
             context: {
