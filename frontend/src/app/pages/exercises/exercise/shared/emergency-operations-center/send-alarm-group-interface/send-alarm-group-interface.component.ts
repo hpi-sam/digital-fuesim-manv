@@ -2,22 +2,13 @@ import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { AlarmGroup, UUID } from 'digital-fuesim-manv-shared';
-import {
-    MapCoordinates,
-    AlarmGroupStartPoint,
-    createVehicleParameters,
-    TransferPoint,
-} from 'digital-fuesim-manv-shared';
+import { TransferPoint } from 'digital-fuesim-manv-shared';
 import { Subject, takeUntil } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    createSelectTransferPoint,
-    createSelectVehicleTemplate,
     selectAlarmGroups,
-    selectMaterialTemplates,
-    selectPersonnelTemplates,
     selectTransferPoints,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
@@ -86,7 +77,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
     public async sendAlarmGroup(alarmGroup: AlarmGroup) {
         if (!this.targetTransferPointId) return;
 
-        const firstVehiclesCount = this.firstVehiclesCount;
+        const firstVehiclesCountForAction = this.firstVehiclesCount;
         const firstVehiclesCountReducedBy = Math.min(
             Object.keys(alarmGroup.alarmGroupVehicles).length,
             this.firstVehiclesCount
@@ -98,7 +89,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
             name: selectStateSnapshot(selectOwnClient, this.store)!.name,
             alarmGroupId: alarmGroup.id,
             targetTransferPointId: this.targetTransferPointId,
-            firstVehiclesCount,
+            firstVehiclesCount: firstVehiclesCountForAction,
             firstVehiclesTargetTransferPointId:
                 this.firstVehiclesTargetTransferPointId,
         });

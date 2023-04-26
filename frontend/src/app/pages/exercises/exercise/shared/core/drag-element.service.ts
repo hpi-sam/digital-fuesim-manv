@@ -8,8 +8,8 @@ import type {
     PatientCategory,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
-import { uuid } from 'digital-fuesim-manv-shared';
 import {
+    uuid,
     createVehicleParameters,
     MapImage,
     normalZoom,
