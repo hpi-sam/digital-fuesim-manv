@@ -1,0 +1,188 @@
+<div
+    (click)="informationCollapsed = !informationCollapsed"
+    style="cursor: pointer"
+>
+    <div class="col-sm">
+        <h4 class="ps-0 pe-0 text-nowrap">
+            <i
+                *ngIf="informationCollapsed; else informationExpanded"
+                class="bi bi-caret-right-fill"
+            ></i>
+            <ng-template #informationExpanded
+                ><i class="bi bi-caret-down-fill"></i></ng-template
+            >Informationen
+        </h4>
+    </div>
+</div>
+<div #collapse="ngbCollapse" [(ngbCollapse)]="informationCollapsed">
+    <ng-container *ngIf="bufferedTransfers$ | async as bufferedTransfers">
+        <h5>Auf Transfer wartende Fahrzeuge</h5>
+
+        <table
+            *ngIf="bufferedTransfers.length > 0; else noneBuffered"
+            class="table"
+        >
+            <thead>
+                <tr>
+                    <th style="width: 40%">Fahrzeug</th>
+                    <th style="width: 40%">Ziel</th>
+                    <th style="width: 20%">Patienten</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let bufferedTransfer of bufferedTransfers">
+                    <td>
+                        {{ bufferedTransfer.vehicleName }}
+                    </td>
+                    <td>
+                        {{ bufferedTransfer.destination }}
+                    </td>
+                    <td>
+                        {{ bufferedTransfer.numberOfPatients }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <ng-template #noneBuffered>
+            Derzeit werden keine Fahrzeuge für den Transfer
+            beladen.</ng-template
+        >
+    </ng-container>
+
+    <ng-container *ngIf="activeActivities$ | async as activeActivities">
+        <h5>Fahrzeuge, die gerade für den Transfer beladen werden</h5>
+
+        <table
+            *ngIf="activeActivities.length > 0; else noActivities"
+            class="table"
+        >
+            <thead>
+                <tr>
+                    <th style="width: 40%">Fahrzeug</th>
+                    <th style="width: 40%">Ziel</th>
+                    <th style="width: 20%">Patienten</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let activeActivity of activeActivities">
+                    <td>
+                        {{ activeActivity.vehicleName }}
+                    </td>
+                    <td>
+                        {{ activeActivity.destination }}
+                    </td>
+                    <td>
+                        {{ activeActivity.numberOfPatients }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <ng-template #noActivities>
+            Derzeit werden keine Fahrzeuge für den Transfer
+            beladen.</ng-template
+        >
+    </ng-container>
+</div>
+<ng-container *ngIf="transferBehaviorState$ | async as transferBehaviorState">
+    <div
+        (click)="settingsCollapsed = !settingsCollapsed"
+        style="cursor: pointer"
+    >
+        <div class="col-sm">
+            <h4 class="ps-0 pe-0 text-nowrap">
+                <i
+                    *ngIf="settingsCollapsed; else settingsExpanded"
+                    class="bi bi-caret-right-fill"
+                ></i>
+                <ng-template #settingsExpanded
+                    ><i class="bi bi-caret-down-fill"></i></ng-template
+                >Einstellungen
+            </h4>
+        </div>
+    </div>
+    <div #collapse="ngbCollapse" [(ngbCollapse)]="settingsCollapsed">
+        <div class="mt-3">
+            <div class="d-flex row mb-3">
+                <div class="col-sm">
+                    <span>Ladezeit pro Patient</span>
+                </div>
+                <div class="col-sm">
+                    <div
+                        class="input-group input-group-sm"
+                        style="max-width: 250px"
+                    >
+                        <input
+                            type="number"
+                            title="Wie lange ein Patient für das Einladen braucht"
+                            min="0"
+                            step="1"
+                            [ngModel]="
+                                transferBehaviorState.loadTimePerPatient / 1000
+                            "
+                            (appSaveOnTyping)="
+                                updatePatientLoadTime($event * 1000)
+                            "
+                            required
+                            class="form-control form-control-sm d-inline-block no-validation"
+                        />
+                        <span class="input-group-text">Sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex row mb-3">
+                <div class="col-sm">
+                    <span>Ladezeit für Personal</span>
+                </div>
+                <div class="col-sm">
+                    <div
+                        class="input-group input-group-sm"
+                        title="Wie lange das Personal für das Einladen braucht"
+                        style="max-width: 250px"
+                    >
+                        <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            [ngModel]="
+                                transferBehaviorState.personnelLoadTime / 1000
+                            "
+                            (appSaveOnTyping)="
+                                updatePersonnelLoadTime($event * 1000)
+                            "
+                            required
+                            class="form-control form-control-sm d-inline-block no-validation"
+                        />
+                        <span class="input-group-text">Sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex row mb-3">
+                <div class="col-sm">
+                    <span>Zeit zwischen zwei Ausfahrten</span>
+                </div>
+                <div class="col-sm">
+                    <div
+                        class="input-group input-group-sm"
+                        title="Wie viel Zeit zwischen der Ausfahrt von zwei Fahrzeugen mindestens vergehen muss."
+                        style="max-width: 250px"
+                    >
+                        <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            [ngModel]="
+                                transferBehaviorState.delayBetweenSends / 1000
+                            "
+                            (appSaveOnTyping)="updateSendDelay($event * 1000)"
+                            required
+                            class="form-control form-control-sm d-inline-block no-validation"
+                        />
+                        <span class="input-group-text">Sec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>

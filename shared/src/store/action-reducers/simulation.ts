@@ -262,6 +262,51 @@ export class UpdatePromiseInvalidationIntervalAction implements Action {
     public readonly promiseInvalidationInterval!: number;
 }
 
+export class UpdatePatientLoadTimeAction implements Action {
+    @IsValue('[TransferBehavior] Update Patient Load Time')
+    public readonly type = '[TransferBehavior] Update Patient Load Time';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly loadTimePerPatient!: number;
+}
+
+export class UpdatePersonnelLoadTimeAction implements Action {
+    @IsValue('[TransferBehavior] Update Personnel Load Time')
+    public readonly type = '[TransferBehavior] Update Personnel Load Time';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly personnelLoadTime!: number;
+}
+
+export class UpdateDelayBetweenSendsAction implements Action {
+    @IsValue('[TransferBehavior] Update Delay Between Sends')
+    public readonly type = '[TransferBehavior] Update Delay Between Sends';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly delayBetweenSends!: number;
+}
+
 export namespace SimulationActionReducers {
     export const updateTreatPatientsIntervals: ActionReducer<UpdateTreatPatientsIntervalsAction> =
         {
@@ -672,6 +717,82 @@ export namespace SimulationActionReducers {
 
                 behaviorState.vehicleTemplatePriorities =
                     cloneDeepMutable(priorities);
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updatePatientLoadTime: ActionReducer<UpdatePatientLoadTimeAction> =
+        {
+            action: UpdatePatientLoadTimeAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, loadTimePerPatient }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'transferBehavior'
+                );
+
+                behaviorState.loadTimePerPatient = loadTimePerPatient;
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updatePersonnelLoadTime: ActionReducer<UpdatePersonnelLoadTimeAction> =
+        {
+            action: UpdatePersonnelLoadTimeAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, personnelLoadTime }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'transferBehavior'
+                );
+
+                behaviorState.personnelLoadTime = personnelLoadTime;
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateDelayBetweenSends: ActionReducer<UpdateDelayBetweenSendsAction> =
+        {
+            action: UpdateDelayBetweenSendsAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, delayBetweenSends }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'transferBehavior'
+                );
+
+                behaviorState.delayBetweenSends = delayBetweenSends;
+
+                // also update the value inside the activity if one is running already
+
+                if (behaviorState.recurringActivityId) {
+                    const reccuringActivity = getActivityById(
+                        draftState,
+                        simulatedRegionId,
+                        behaviorState.recurringActivityId,
+                        'recurringEventActivity'
+                    );
+                    reccuringActivity.recurrenceIntervalTime =
+                        delayBetweenSends;
+                }
 
                 return draftState;
             },

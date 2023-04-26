@@ -177,5 +177,6 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
 
                 terminate();
             }
+            // TODO: hospital
         },
     };

@@ -148,7 +148,7 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
             }
 
             if (
-                activityState.startTime + activityState.loadDelay >=
+                activityState.startTime + activityState.loadDelay <=
                 draftState.currentTime
             ) {
                 // terminate if the occupation has changed

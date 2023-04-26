@@ -47,6 +47,7 @@ import { SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesComponent
 import { RequestVehiclesComponent } from './tabs/behavior-tab/behaviors/request-vehicles/simulated-region-overview-behavior-request-vehicles.component';
 import { SimulatedRegionOverviewVehiclesTabComponent } from './tabs/vehicles-tab/simulated-region-overview-vehicles-tab.component';
 import { SimulatedRegionOverviewPatientsTableComponent } from './patients-table/simulated-region-overview-patients-table.component';
+import { SimulatedRegionOverviewBehaviorTransferVehiclesComponent } from './tabs/behavior-tab/behaviors/transfer-vehicles/simulated-region-overview-behavior-transfer-vehicles.component';
 
 @NgModule({
     declarations: [
@@ -85,6 +86,7 @@ import { SimulatedRegionOverviewPatientsTableComponent } from './patients-table/
         RequestVehiclesComponent,
         SimulatedRegionOverviewVehiclesTabComponent,
         SimulatedRegionOverviewPatientsTableComponent,
+        SimulatedRegionOverviewBehaviorTransferVehiclesComponent,
     ],
     imports: [
         FormsModule,
