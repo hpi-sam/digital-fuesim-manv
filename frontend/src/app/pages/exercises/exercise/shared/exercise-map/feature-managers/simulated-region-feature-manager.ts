@@ -5,7 +5,7 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     Element,
 } from 'digital-fuesim-manv-shared';
-import { normalZoom, MapCoordinates, Size } from 'digital-fuesim-manv-shared';
+import { MapCoordinates, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Polygon } from 'ol/geom';
 import type { TranslateEvent } from 'ol/interaction/Translate';
@@ -91,11 +91,11 @@ export class SimulatedRegionFeatureManager
             ) as SimulatedRegion;
             return {
                 name: region.name,
-                offsetY: region.size.height / 2 / normalZoom,
-                offsetX: region.size.width / 2 / normalZoom,
+                // The offset ist based on the center of the position, not the regions position (which refers to a corner)
+                offsetY: 0,
             };
         },
-        0.5,
+        0.75,
         'middle'
     );
 
