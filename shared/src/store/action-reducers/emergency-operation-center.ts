@@ -42,17 +42,21 @@ export class AddLogEntryAction implements Action {
 export class SendAlarmGroupAction implements Action {
     @IsValue('[Emergency Operation Center] Send Alarm Group' as const)
     public readonly type = '[Emergency Operation Center] Send Alarm Group';
+
     @IsString()
     @MaxLength(255)
-    public readonly name!: string;
+    public readonly clientName!: string;
+
     @IsUUID(4, uuidValidationOptions)
     public readonly alarmGroupId!: UUID;
+
     @IsUUID(4, uuidValidationOptions)
     public readonly targetTransferPointId!: UUID;
-    @IsOptional()
+
     @IsInt()
     @Min(0)
-    public readonly firstVehiclesCount: number | undefined;
+    public readonly firstVehiclesCount!: number;
+
     @IsOptional()
     @IsUUID(4, uuidValidationOptions)
     public readonly firstVehiclesTargetTransferPointId: UUID | undefined;
@@ -77,7 +81,7 @@ export namespace EmergencyOperationCenterActionReducers {
         reducer: (
             draftState,
             {
-                name,
+                clientName,
                 alarmGroupId,
                 targetTransferPointId,
                 firstVehiclesCount,
@@ -107,11 +111,7 @@ export namespace EmergencyOperationCenterActionReducers {
             );
             let logEntry = `Alarmgruppe ${alarmGroup.name} wurde alarmiert zu ${targetTransferPoint.externalName}!`;
 
-            if (
-                firstVehiclesCount &&
-                firstVehiclesCount > 0 &&
-                firstVehiclesTargetTransferPointId
-            ) {
+            if (firstVehiclesCount > 0 && firstVehiclesTargetTransferPointId) {
                 const firstVehiclesTargetTransferPoint = getElement(
                     draftState,
                     'transferPoint',
@@ -148,7 +148,7 @@ export namespace EmergencyOperationCenterActionReducers {
             addLogEntry.reducer(draftState, {
                 type: '[Emergency Operation Center] Add Log Entry',
                 message: logEntry,
-                name,
+                name: clientName,
             });
             return draftState;
         },

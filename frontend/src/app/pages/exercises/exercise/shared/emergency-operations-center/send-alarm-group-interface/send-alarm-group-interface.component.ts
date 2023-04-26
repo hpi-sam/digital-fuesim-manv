@@ -86,7 +86,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
 
         const request = await this.exerciseService.proposeAction({
             type: '[Emergency Operation Center] Send Alarm Group',
-            name: selectStateSnapshot(selectOwnClient, this.store)!.name,
+            clientName: selectStateSnapshot(selectOwnClient, this.store)!.name,
             alarmGroupId: alarmGroup.id,
             targetTransferPointId: this.targetTransferPointId,
             firstVehiclesCount: firstVehiclesCountForAction,

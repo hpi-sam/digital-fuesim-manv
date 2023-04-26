@@ -9,8 +9,7 @@
         <app-transfer-point-name
             *ngIf="selectedTransferPointId; else noTargetTransferPoint"
             [transferPointId]="selectedTransferPointId"
-        >
-        </app-transfer-point-name>
+        />
         <ng-template #noTargetTransferPoint>
             <span class="text-muted"> Kein Ziel ausgewählt </span>
         </ng-template>
@@ -39,8 +38,7 @@
                 data-cy="sendAlarmGroupChooseTargetSelect"
                 *ngIf="selectedTransferPointId !== transferPoint.id"
             >
-                <app-transfer-point-name [transferPointId]="transferPoint.id">
-                </app-transfer-point-name>
+                <app-transfer-point-name [transferPointId]="transferPoint.id" />
             </button>
         </ng-container>
     </div>
