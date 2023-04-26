@@ -1,4 +1,4 @@
-import type { OnInit } from '@angular/core';
+import type { OnChanges, OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { UUID, NoOccupation } from 'digital-fuesim-manv-shared';
 import type { ExerciseOccupation } from 'digital-fuesim-manv-shared';
@@ -14,7 +14,7 @@ import { createSelectVehicle } from 'src/app/state/application/selectors/exercis
     templateUrl: './vehicle-occupation-editor.component.html',
     styleUrls: ['./vehicle-occupation-editor.component.scss'],
 })
-export class VehicleOccupationEditorComponent implements OnInit {
+export class VehicleOccupationEditorComponent implements OnChanges {
     @Input() vehicleId!: UUID;
     occupation$!: Observable<ExerciseOccupation>;
 
@@ -23,7 +23,7 @@ export class VehicleOccupationEditorComponent implements OnInit {
         private readonly exerciseService: ExerciseService
     ) {}
 
-    ngOnInit() {
+    ngOnChanges() {
         this.occupation$ = this.store
             .select(createSelectVehicle(this.vehicleId))
             .pipe(map((vehicle) => vehicle.occupation));

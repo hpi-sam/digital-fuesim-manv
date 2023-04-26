@@ -9,6 +9,9 @@
         <ng-container *ngSwitchCase="'intermediateOccupation'">
             <span>Das Fahrzeug wird gerade übergeben.</span>
         </ng-container>
+        <ng-container *ngSwitchCase="'unloadingOccupation'">
+            <span>Das Fahrzeug wird gerade ausgeladen.</span>
+        </ng-container>
         <ng-container *ngSwitchDefault>
             <span class="text-muted">Die Tätigkeit ist unbekannt.</span>
         </ng-container>
