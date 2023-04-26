@@ -9,6 +9,7 @@ import type {
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
 import {
+    uuid,
     createVehicleParameters,
     MapImage,
     normalZoom,
@@ -172,6 +173,7 @@ export class DragElementService {
             case 'vehicle':
                 {
                     const params = createVehicleParameters(
+                        uuid(),
                         this.transferringTemplate.template,
                         selectStateSnapshot(
                             selectMaterialTemplates,

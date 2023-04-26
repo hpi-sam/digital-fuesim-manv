@@ -16,6 +16,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   These templates come with different border colors.
 -   Simulated regions display their names on the map.
 -   Vehicles now have a property to indicate their current occupation.
+-   The "Leitstelle" now has an option to select a different destination for a specified amount of vehicles.
 -   Treatment falls back to no treatment when a leader is missing in the region.
 -   All vehicles in a simulated region can be managed with the new vehicles tab.
     -   All operations from the vehicle popup (change name, load, unload) are available.
