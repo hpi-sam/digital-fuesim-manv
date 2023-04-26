@@ -259,24 +259,8 @@ describe('A trainer on the exercise page', () => {
             .should(
                 'have.property',
                 'type',
-                '[Emergency Operation Center] Add Log Entry'
+                '[Emergency Operation Center] Send Alarm Group'
             );
-
-        cy.get('@trainerSocketPerformedActions')
-            .atPosition(-2)
-            .should('have.property', 'type', '[Transfer] Add to transfer');
-
-        cy.get('@trainerSocketPerformedActions')
-            .atPosition(-3)
-            .should('have.property', 'type', '[Vehicle] Add vehicle');
-
-        cy.get('@trainerSocketPerformedActions')
-            .atPosition(-4)
-            .should('have.property', 'type', '[Transfer] Add to transfer');
-
-        cy.get('@trainerSocketPerformedActions')
-            .atPosition(-5)
-            .should('have.property', 'type', '[Vehicle] Add vehicle');
 
         cy.get('[data-cy=closeEmergencyOperationsCenterPopupButton]').click({
             force: true,

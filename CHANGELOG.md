@@ -16,12 +16,14 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   These templates come with different border colors.
 -   Simulated regions display their names on the map.
 -   Vehicles now have a property to indicate their current occupation.
+-   The "Leitstelle" now has an option to select a different destination for a specified amount of vehicles.
 -   Treatment falls back to no treatment when a leader is missing in the region.
 -   All vehicles in a simulated region can be managed with the new vehicles tab.
     -   All operations from the vehicle popup (change name, load, unload) are available.
     -   There is a detailed list of the personnel that belongs to the vehicle.
     -   A list of patients that are in the vehicle is shown and the patients tab opens for details when clicking a patient.
     -   Vehicles can be deleted or moved to the map.
+    -   Trainers can see the current occupation of a vehicle and cancel it.
 -   Simulated regions are prefixed with "\[Simuliert\]" in the request target selection for the requests behavior.
 
 ### Changed
