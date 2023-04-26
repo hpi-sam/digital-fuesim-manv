@@ -86,10 +86,11 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
     {
         activityState: ReassignTreatmentsActivityState,
         tick(draftState, simulatedRegion, activityState, _, terminate) {
-            const patients = Object.values(draftState.patients).filter(
-                (patient) =>
+            const patients = Object.values(draftState.patients)
+                .filter((patient) =>
                     isInSpecificSimulatedRegion(patient, simulatedRegion.id)
-            );
+                )
+                .sort((a, b) => a.id.localeCompare(b.id));
             let personnel = Object.values(draftState.personnel).filter((pers) =>
                 isInSpecificSimulatedRegion(pers, simulatedRegion.id)
             );
