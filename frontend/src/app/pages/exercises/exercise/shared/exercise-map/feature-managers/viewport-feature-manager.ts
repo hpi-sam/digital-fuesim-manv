@@ -1,4 +1,3 @@
-import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { MapCoordinates, Size, Viewport } from 'digital-fuesim-manv-shared';
@@ -21,8 +20,9 @@ import { calculatePopupPositioning } from '../utility/calculate-popup-positionin
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
-import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
+import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
+import type { PopupService } from '../utility/popup.service';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export function isInViewport(
@@ -40,13 +40,11 @@ export class ViewportFeatureManager
     implements FeatureManager<Polygon>
 {
     public register(
-        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisibleViewports),
-            changePopup$,
             destroy$,
             mapInteractionsManager
         );
@@ -57,7 +55,8 @@ export class ViewportFeatureManager
     constructor(
         olMap: OlMap,
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly store: Store<AppState>,
+        private readonly popupService: PopupService
     ) {
         super(
             olMap,
@@ -70,7 +69,10 @@ export class ViewportFeatureManager
             },
             new PolygonGeometryHelper()
         );
-        this.layer.setStyle(this.style);
+        this.layer.setStyle((feature, resolution) => [
+            this.style,
+            this.nameStyleHelper.getStyle(feature as Feature, resolution),
+        ]);
     }
 
     private readonly style = new Style({
@@ -80,6 +82,22 @@ export class ViewportFeatureManager
             width: 2,
         }),
     });
+
+    private readonly nameStyleHelper = new NameStyleHelper(
+        (feature) => {
+            const viewport = this.getElementFromFeature(feature) as Viewport;
+            const extent = (feature as Feature<Polygon>)
+                .getGeometry()!
+                .getExtent() as [number, number, number, number];
+            return {
+                name: viewport.name,
+                // The offset is based on the center of the viewports, not the viewports position (which refers to a corner), so we have to divide by 2.
+                offsetY: (extent[3] - extent[1]) / 2,
+            };
+        },
+        0.75,
+        'top'
+    );
 
     override createFeature(element: Viewport): Feature<Polygon> {
         const feature = super.createFeature(element);
@@ -139,7 +157,8 @@ export class ViewportFeatureManager
         const zoom = this.olMap.getView().getZoom()!;
         const margin = 10 / zoom;
 
-        this.togglePopup$.next({
+        this.popupService.openPopup({
+            elementUUID: feature.getId()?.toString(),
             component: ViewportPopupComponent,
             closingUUIDs: [feature.getId() as UUID],
             context: {

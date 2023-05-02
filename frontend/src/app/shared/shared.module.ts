@@ -38,6 +38,10 @@ import { PatientStatusColorPipe } from './pipes/patient-status-color.pipe';
 import { PatientStatusTagsFieldComponent } from './components/patient-status-displayl/patient-status-tags-field/patient-status-tags-field.component';
 import { PatientBehaviorIconPipe } from './pipes/patient-behavior-icon.pipe';
 import { PatientBehaviorDescriptionPipe } from './pipes/patient-behavior-description.pipe';
+import { VehicleNameEditorComponent } from './components/vehicle-name-editor/vehicle-name-editor.component';
+import { VehicleLoadUnloadControlsComponent } from './components/vehicle-load-unload-controls/vehicle-load-unload-controls.component';
+import { VehicleAvailableSlotsDisplayComponent } from './components/vehicle-available-slots-display/vehicle-available-slots-display.component';
+import { VehicleOccupationEditorComponent } from './components/vehicle-occupation-editor/vehicle-occupation-editor.component';
 
 @NgModule({
     declarations: [
@@ -72,6 +76,10 @@ import { PatientBehaviorDescriptionPipe } from './pipes/patient-behavior-descrip
         PatientStatusTagsFieldComponent,
         PatientBehaviorIconPipe,
         PatientBehaviorDescriptionPipe,
+        VehicleNameEditorComponent,
+        VehicleLoadUnloadControlsComponent,
+        VehicleAvailableSlotsDisplayComponent,
+        VehicleOccupationEditorComponent,
     ],
     imports: [
         CommonModule,
@@ -109,6 +117,10 @@ import { PatientBehaviorDescriptionPipe } from './pipes/patient-behavior-descrip
         PatientHealthPointDisplayComponent,
         PatientsDetailsComponent,
         PatientStatusColorPipe,
+        VehicleNameEditorComponent,
+        VehicleLoadUnloadControlsComponent,
+        VehicleAvailableSlotsDisplayComponent,
+        VehicleOccupationEditorComponent,
     ],
 })
 export class SharedModule {}

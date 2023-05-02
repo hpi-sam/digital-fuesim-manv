@@ -3,47 +3,11 @@
         class="col mh-100 overflow-auto border-end border-secondary pe-1"
         style="max-width: 30%"
     >
-        <table
-            *ngIf="(patients$ | async)?.length; else noPatients"
-            class="table table-striped table-hover"
-        >
-            <thead>
-                <tr>
-                    <th scope="col">SK</th>
-                    <th scope="col">Gesichtet</th>
-                    <th scope="col">Verlauf</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr
-                    *ngFor="let patient of patients$ | async"
-                    (click)="selectPatientService.selectPatient(patient.id)"
-                    [class.table-primary]="selectedPatientId === patient.id"
-                    style="cursor: pointer"
-                >
-                    <td>
-                        <app-patient-status-badge
-                            [status]="patient.realStatus"
-                        />
-                    </td>
-                    <td>
-                        <app-patient-status-badge
-                            [status]="patient.visibleStatus"
-                        />
-                    </td>
-                    <td>
-                        <app-patient-status-display
-                            [patientStatus]="patient.patientStatusCode"
-                        />
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <ng-template #noPatients>
-            <p class="text-muted">
-                Es befinden sich keine Patienten im simulierten Bereich.
-            </p>
-        </ng-template>
+        <app-simulated-region-overview-patients-table
+            [patients]="(patients$ | async) ?? []"
+            [selectedPatientId]="selectedPatientId"
+            scope="simulatedRegion"
+        />
     </div>
     <div class="col overflow-hidden d-flex flex-column" style="max-width: 70%">
         <app-patients-details

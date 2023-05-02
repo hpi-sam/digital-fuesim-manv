@@ -37,6 +37,7 @@ import type { FeatureManager } from './feature-manager';
 import type { PopupManager } from './popup-manager';
 import { OlMapInteractionsManager } from './ol-map-interactions-manager';
 import { SatelliteLayerManager } from './satellite-layer-manager';
+import type { PopupService } from './popup.service';
 
 export class OlMapManager {
     private readonly _olMap: OlMap;
@@ -63,7 +64,8 @@ export class OlMapManager {
         private readonly exerciseService: ExerciseService,
         private readonly openLayersContainer: HTMLDivElement,
         private readonly transferLinesService: TransferLinesService,
-        private readonly popupManager: PopupManager
+        private readonly popupManager: PopupManager,
+        private readonly popupService: PopupService
     ) {
         this._olMap = new OlMap({
             interactions: new Collection<Interaction>(),
@@ -222,11 +224,7 @@ export class OlMapManager {
                 featureManager.layer,
                 featureManager
             );
-            featureManager.register(
-                this.popupManager.changePopup$,
-                this.destroy$,
-                this.mapInteractionsManager
-            );
+            featureManager.register(this.destroy$, this.mapInteractionsManager);
         });
     }
 
@@ -239,32 +237,38 @@ export class OlMapManager {
         const transferPointFeatureManager = new TransferPointFeatureManager(
             this.olMap,
             this.store,
-            this.exerciseService
+            this.exerciseService,
+            this.popupService
         );
         const patientFeatureManager = new PatientFeatureManager(
             this.store,
             this.olMap,
-            this.exerciseService
+            this.exerciseService,
+            this.popupService
         );
         const vehicleFeatureManager = new VehicleFeatureManager(
             this.olMap,
             this.store,
-            this.exerciseService
+            this.exerciseService,
+            this.popupService
         );
         const personnelFeatureManager = new PersonnelFeatureManager(
             this.olMap,
             this.store,
-            this.exerciseService
+            this.exerciseService,
+            this.popupService
         );
         const materialFeatureManager = new MaterialFeatureManager(
             this.olMap,
             this.store,
-            this.exerciseService
+            this.exerciseService,
+            this.popupService
         );
         const mapImageFeatureManager = new MapImageFeatureManager(
             this.olMap,
             this.exerciseService,
-            this.store
+            this.store,
+            this.popupService
         );
         const cateringLinesFeatureManager = new CateringLinesFeatureManager(
             this.store,
@@ -274,12 +278,14 @@ export class OlMapManager {
         const viewportFeatureManager = new ViewportFeatureManager(
             this.olMap,
             this.exerciseService,
-            this.store
+            this.store,
+            this.popupService
         );
         const simulatedRegionFeatureManager = new SimulatedRegionFeatureManager(
             this.olMap,
             this.exerciseService,
-            this.store
+            this.store,
+            this.popupService
         );
 
         const deleteFeatureManager = new DeleteFeatureManager(

@@ -1,4 +1,3 @@
-import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 // eslint-disable-next-line @typescript-eslint/no-shadow
 import type { Element } from 'digital-fuesim-manv-shared';
@@ -20,7 +19,6 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
-import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ElementManager } from './element-manager';
 
 export class TransferLinesFeatureManager
@@ -45,15 +43,12 @@ export class TransferLinesFeatureManager
             })
         );
     }
-    togglePopup$?: Subject<OpenPopupOptions<any, Type<any>>> | undefined;
     register(
-        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
         this.olMap.addLayer(this.layer);
         mapInteractionsManager.addFeatureLayer(this.layer);
-        this.togglePopup$?.subscribe(changePopup$);
         if (selectStateSnapshot(selectCurrentRole, this.store) === 'trainer') {
             this.registerChangeHandlers(
                 this.store.select(selectTransferLines),

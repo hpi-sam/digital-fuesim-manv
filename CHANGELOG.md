@@ -10,12 +10,33 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Added
 
 -   There are now events for the removal of patients, vehicles, material, and personnel from simulated regions.
+    -   When personnel, material, or patients are removed the treatments get reassigned
+    -   When the leader is removed, a new one gets selected
 -   The trainer editor now offers pre-configured templates for different kinds of simulated regions.
     -   These templates come with different border colors.
 -   Simulated regions display their names on the map.
--   There is now a button in the patients tab of a simulated region that removes the patient from the scenario
 -   There is now a button in the patients tab of a simulated region that removes the patient from the simulated region and places the patient on the map next to the simulated region (on the right hand side)
+-   Simulated regions and viewports display their names on the map.
 -   Vehicles now have a property to indicate their current occupation.
+-   The "Leitstelle" now has an option to select a different destination for a specified amount of vehicles.
+-   Treatment falls back to no treatment when a leader is missing in the region.
+-   All vehicles in a simulated region can be managed with the new vehicles tab.
+    -   All operations from the vehicle popup (change name, load, unload) are available.
+    -   There is a detailed list of the personnel that belongs to the vehicle.
+    -   A list of patients that are in the vehicle is shown and the patients tab opens for details when clicking a patient.
+    -   Vehicles can be deleted or moved to the map.
+    -   Trainers can see the current occupation of a vehicle and cancel it.
+-   Simulated regions are prefixed with "\[Simuliert\]" in the request target selection for the requests behavior.
+-   The patient, whose popup is open, is now highlighted.
+
+### Changed
+
+-   Loading or unloading a vehicle from its popup does not close the popup automatically.
+-   Patient treatment sorts the patients by their UUID before triaging or assigning treatments in simulated regions. This way, the order of triage does not depend on the order the patients have been added.
+
+### Fixed
+
+-   For Tragetrupp vehicles, the load and unload buttons are now properly disabled.
 
 ## [0.4.1] - 2023-04-20
 

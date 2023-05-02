@@ -1,10 +1,5 @@
 import type { OnInit } from '@angular/core';
-import {
-    ViewEncapsulation,
-    Component,
-    EventEmitter,
-    Output,
-} from '@angular/core';
+import { ViewEncapsulation, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { UUID, TransferPoint } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
@@ -12,7 +7,7 @@ import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { createSelectTransferPoint } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
-import type { PopupComponent } from '../../utility/popup-manager';
+import { PopupService } from '../../utility/popup.service';
 
 type NavIds = 'hospitals' | 'names' | 'transferPoints';
 /**
@@ -26,11 +21,9 @@ let activeNavId: NavIds = 'names';
     styleUrls: ['./transfer-point-popup.component.scss'],
     encapsulation: ViewEncapsulation.None,
 })
-export class TransferPointPopupComponent implements PopupComponent, OnInit {
+export class TransferPointPopupComponent implements OnInit {
     // These properties are only set after OnInit
     public transferPointId!: UUID;
-
-    @Output() readonly closePopup = new EventEmitter<void>();
 
     public transferPoint$?: Observable<TransferPoint>;
 
@@ -45,7 +38,8 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly store: Store<AppState>,
+        private readonly popupService: PopupService
     ) {}
 
     ngOnInit() {
@@ -67,5 +61,9 @@ export class TransferPointPopupComponent implements PopupComponent, OnInit {
             internalName,
             externalName,
         });
+    }
+
+    public closePopup() {
+        this.popupService.closePopup();
     }
 }

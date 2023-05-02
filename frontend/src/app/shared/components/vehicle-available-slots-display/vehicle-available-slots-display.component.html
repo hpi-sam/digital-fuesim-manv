@@ -1,0 +1,10 @@
+<ng-container *appLet="vehicle$ | async as vehicle">
+    Verfügbare Patientenplätze:
+    <span class="font-monospace">
+        {{ vehicle.patientCapacity - (vehicle.patientIds | keyvalue).length }}
+    </span>
+    von
+    <span class="font-monospace">
+        {{ vehicle.patientCapacity }}
+    </span>
+</ng-container>

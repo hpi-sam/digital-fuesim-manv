@@ -7,18 +7,12 @@ import type { Subject } from 'rxjs';
 // eslint-disable-next-line @typescript-eslint/no-shadow
 import type { Element } from 'digital-fuesim-manv-shared';
 import type { OlMapInteractionsManager } from './ol-map-interactions-manager';
-import type { OpenPopupOptions } from './popup-manager';
 
 /**
  * The Api to interact with a feature
  */
 export interface FeatureManager<T extends Geometry> {
     readonly layer: VectorLayer<VectorSource>;
-
-    /**
-     * When this subject emits, a popup with the specified options should be toggled.
-     */
-    readonly togglePopup$?: Subject<OpenPopupOptions<any>>;
 
     /**
      * This method is called when the user clicks on a feature on this layer.
@@ -48,7 +42,6 @@ export interface FeatureManager<T extends Geometry> {
     ) => boolean;
 
     register: (
-        changePopup$: Subject<OpenPopupOptions<any> | undefined>,
         destroy$: Subject<void>,
         mapInteractionsManager: OlMapInteractionsManager
     ) => void;

@@ -1,4 +1,3 @@
-import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type {
     UUID,
@@ -6,7 +5,7 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     Element,
 } from 'digital-fuesim-manv-shared';
-import { normalZoom, MapCoordinates, Size } from 'digital-fuesim-manv-shared';
+import { MapCoordinates, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Polygon } from 'ol/geom';
 import type { TranslateEvent } from 'ol/interaction/Translate';
@@ -27,9 +26,9 @@ import { calculatePopupPositioning } from '../utility/calculate-popup-positionin
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
-import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
+import type { PopupService } from '../utility/popup.service';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class SimulatedRegionFeatureManager
@@ -37,13 +36,11 @@ export class SimulatedRegionFeatureManager
     implements FeatureManager<Polygon>
 {
     public register(
-        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisibleSimulatedRegions),
-            changePopup$,
             destroy$,
             mapInteractionsManager
         );
@@ -54,7 +51,8 @@ export class SimulatedRegionFeatureManager
     constructor(
         olMap: OlMap,
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly store: Store<AppState>,
+        private readonly popupService: PopupService
     ) {
         super(
             olMap,
@@ -93,11 +91,11 @@ export class SimulatedRegionFeatureManager
             ) as SimulatedRegion;
             return {
                 name: region.name,
-                offsetY: region.size.height / 2 / normalZoom,
-                offsetX: region.size.width / 2 / normalZoom,
+                // The offset ist based on the center of the position, not the regions position (which refers to a corner)
+                offsetY: 0,
             };
         },
-        0.5,
+        0.75,
         'middle'
     );
 
@@ -194,7 +192,8 @@ export class SimulatedRegionFeatureManager
         const zoom = this.olMap.getView().getZoom()!;
         const margin = 10 / zoom;
 
-        this.togglePopup$.next({
+        this.popupService.openPopup({
+            elementUUID: feature.getId()?.toString(),
             component: SimulatedRegionPopupComponent,
             closingUUIDs: [feature.getId() as UUID],
             context: {
