@@ -7,9 +7,10 @@
             <i
                 *ngIf="informationCollapsed; else informationExpanded"
                 class="bi bi-caret-right-fill"
-            ></i>
-            <ng-template #informationExpanded
-                ><i class="bi bi-caret-down-fill"></i></ng-template
+            >
+            </i>
+            <ng-template #informationExpanded>
+                <i class="bi bi-caret-down-fill"> </i> </ng-template
             >Informationen
         </h4>
     </div>
@@ -45,9 +46,10 @@
             </tbody>
         </table>
         <ng-template #noneBuffered>
-            Derzeit werden keine Fahrzeuge für den Transfer
-            beladen.</ng-template
-        >
+            <span class="text-muted">
+                Derzeit warten keine Fahrzeuge auf den Transfer.
+            </span>
+        </ng-template>
     </ng-container>
 
     <ng-container *ngIf="activeActivities$ | async as activeActivities">
@@ -80,9 +82,10 @@
             </tbody>
         </table>
         <ng-template #noActivities>
-            Derzeit werden keine Fahrzeuge für den Transfer
-            beladen.</ng-template
-        >
+            <span class="text-muted">
+                Derzeit werden keine Fahrzeuge für den Transfer beladen.
+            </span>
+        </ng-template>
     </ng-container>
 </div>
 <ng-container *ngIf="transferBehaviorState$ | async as transferBehaviorState">
@@ -127,7 +130,7 @@
                             required
                             class="form-control form-control-sm d-inline-block no-validation"
                         />
-                        <span class="input-group-text">Sec</span>
+                        <span class="input-group-text">Sek</span>
                     </div>
                 </div>
             </div>
@@ -154,7 +157,7 @@
                             required
                             class="form-control form-control-sm d-inline-block no-validation"
                         />
-                        <span class="input-group-text">Sec</span>
+                        <span class="input-group-text">Sek</span>
                     </div>
                 </div>
             </div>
@@ -179,7 +182,7 @@
                             required
                             class="form-control form-control-sm d-inline-block no-validation"
                         />
-                        <span class="input-group-text">Sec</span>
+                        <span class="input-group-text">Sek</span>
                     </div>
                 </div>
             </div>
@@ -269,7 +272,7 @@
         <tbody>
             <tr
                 *ngFor="let patient of patients"
-                (click)="patientClicked(patient)"
+                (click)="togglePatientSelection(patient)"
                 [class.table-primary]="clickedPatients[patient.id]"
                 style="cursor: pointer"
             >

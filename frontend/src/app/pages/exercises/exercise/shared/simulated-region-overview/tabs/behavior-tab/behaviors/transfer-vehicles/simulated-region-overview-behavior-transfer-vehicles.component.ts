@@ -68,7 +68,10 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
     public reachableTransferPoints$!: Observable<TransferPoint[]>;
     public reachableHospitals$!: Observable<Hospital[]>;
 
-    public selectedDestination?: any;
+    public selectedDestination?: {
+        name?: string | undefined;
+        externalName?: string | undefined;
+    } & (Hospital | TransferPoint);
 
     private _informationCollapsed: boolean;
     transferBehaviorState$!: Observable<TransferBehaviorState>;
@@ -273,7 +276,8 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
             reachableHospitalsSelector
         );
 
-        // remove if deleted
+        // remove selected elements if deleted
+
         this.useableVehicles$
             .pipe(takeUntil(this.destroy$))
             .subscribe((useableVehicles) => {
@@ -284,6 +288,25 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
                     this.vehicleToSend = undefined;
                 }
             });
+
+        this.patients$.pipe(takeUntil(this.destroy$)).subscribe((patients) => {
+            Object.entries(this.clickedPatients).forEach(
+                ([patientId, clicked]) => {
+                    if (
+                        !patients
+                            .map((patient) => patient.id)
+                            .includes(patientId)
+                    ) {
+                        if (clicked) {
+                            this.minPatients--;
+                        }
+                        delete this.clickedPatients[patientId];
+                    }
+                }
+            );
+        });
+
+        // TODO: Add removal if vehicle is deleted
     }
 
     ngOnDestroy(): void {
@@ -315,7 +338,7 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
         });
     }
 
-    public patientClicked(patient: Patient) {
+    public togglePatientSelection(patient: Patient) {
         if (
             !this.clickedPatients[patient.id] &&
             this.minPatients + 1 >
@@ -326,7 +349,7 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
         }
         this.clickedPatients[patient.id] = !this.clickedPatients[patient.id];
         this.minPatients = Object.values(this.clickedPatients).filter(
-            (it) => it
+            (clicked) => clicked
         ).length;
     }
 
@@ -337,15 +360,15 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
 
         const patients: UUIDSet = Object.fromEntries(
             Object.entries(this.clickedPatients)
-                .filter(([_, bool]) => bool)
-                .map(([key, _]) => [key, true])
+                .filter(([_patientId, clicked]) => clicked)
+                .map(([patientId, _clicked]) => [patientId, true])
         );
 
         this.exerciseService.proposeAction({
             type: '[TransferBehavior] Send Transfer Request Event',
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.transferBehaviorId,
-            vehicleID: this.vehicleToSend.id,
+            vehicleId: this.vehicleToSend.id,
             destinationType: this.selectedDestination.type,
             destinationId: this.selectedDestination.id,
             patients,

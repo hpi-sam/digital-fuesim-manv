@@ -326,7 +326,7 @@ export class SendTransferRequestEventAction implements Action {
     public readonly behaviorId!: UUID;
 
     @IsUUID(4, uuidValidationOptions)
-    public readonly vehicleID!: UUID;
+    public readonly vehicleId!: UUID;
 
     @IsLiteralUnion(transferDestinationTypeAllowedValues)
     public readonly destinationType!: TransferDestination;
@@ -837,7 +837,7 @@ export namespace SimulationActionReducers {
                 draftState,
                 {
                     simulatedRegionId,
-                    vehicleID,
+                    vehicleId,
                     destinationType,
                     destinationId,
                     patients,
@@ -852,7 +852,7 @@ export namespace SimulationActionReducers {
                 let event: ExerciseSimulationEvent;
                 if (Object.keys(cloneDeepMutable(patients)).length === 0) {
                     event = TransferSpecificVehicleRequestEvent.create(
-                        vehicleID,
+                        vehicleId,
                         destinationType,
                         destinationId
                     );
@@ -860,7 +860,7 @@ export namespace SimulationActionReducers {
                     event =
                         TransferPatientsInSpecificVehicleRequestEvent.create(
                             patients,
-                            vehicleID,
+                            vehicleId,
                             destinationType,
                             destinationId
                         );

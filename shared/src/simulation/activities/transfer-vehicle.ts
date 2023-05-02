@@ -29,6 +29,7 @@ import {
     transferDestinationTypeAllowedValues,
 } from '../utils/transfer-destination';
 import { HospitalActionReducers } from '../../store/action-reducers/hospital';
+import type { ResourceDescription } from '../../models/utils/resource-description';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -164,7 +165,7 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
                     targetTransferPointId: activityState.transferDestinationId,
                 });
 
-                const vehicleResourceDescription: { [key: string]: 1 } = {};
+                const vehicleResourceDescription: ResourceDescription = {};
                 vehicleResourceDescription[vehicle.vehicleType] = 1;
 
                 sendSimulationEvent(
@@ -242,7 +243,7 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
                     }
                 );
 
-                const vehicleResourceDescription: { [key: string]: 1 } = {};
+                const vehicleResourceDescription: ResourceDescription = {};
                 vehicleResourceDescription[vehicle.vehicleType] = 1;
 
                 sendSimulationEvent(

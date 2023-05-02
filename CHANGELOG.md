@@ -29,8 +29,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Simulated regions are prefixed with "\[Simuliert\]" in the request target selection for the requests behavior.
 -   The patient, whose popup is open, is now highlighted.
 -   There is now a behavior that transfers patients. It has configurable load times and delay between transfers.
-    -   Its user interface can be used to transfer specific patients in specific vehicles
-    -   Its user interface displays what vehicles are being loaded and what vehicles are waiting for transfer
+    -   Its user interface can be used to transfer specific patients in specific vehicles.
+    -   Its user interface displays what vehicles are being loaded and what vehicles are waiting for transfer.
 
 ### Changed
 

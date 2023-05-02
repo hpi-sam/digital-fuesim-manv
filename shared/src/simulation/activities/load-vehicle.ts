@@ -6,7 +6,7 @@ import {
     IsUUID,
     Min,
 } from 'class-validator';
-import { getCreate } from '../../models/utils';
+import { VehiclePosition, getCreate } from '../../models/utils';
 import {
     UUID,
     UUIDSet,
@@ -28,6 +28,7 @@ import {
 } from '../events';
 import { completelyLoadVehicle } from '../../store/action-reducers/utils/completely-load-vehicle';
 import { IntermediateOccupation } from '../../models/utils/occupations/intermediate-occupation';
+import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -142,6 +143,15 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
                 vehicle.patientIds = cloneDeepMutable(
                     activityState.patientsToBeLoaded
                 );
+
+                Object.keys(vehicle.patientIds).forEach((patientId) => {
+                    changePositionWithId(
+                        patientId,
+                        VehiclePosition.create(vehicle.id),
+                        'patient',
+                        draftState
+                    );
+                });
 
                 activityState.hasBeenStarted = true;
                 activityState.startTime = draftState.currentTime;
