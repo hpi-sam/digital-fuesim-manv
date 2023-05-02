@@ -1,4 +1,3 @@
-import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { Patient } from 'digital-fuesim-manv-shared';
@@ -6,6 +5,7 @@ import type { Feature, MapBrowserEvent } from 'ol';
 import type OlMap from 'ol/Map';
 import { Fill, Stroke } from 'ol/style';
 import type { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectConfiguration } from 'src/app/state/application/selectors/exercise.selectors';
@@ -15,23 +15,26 @@ import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.com
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
-import type { OpenPopupOptions } from '../utility/popup-manager';
 import { CircleStyleHelper } from '../utility/style-helper/circle-style-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
+import type { PopupService } from '../utility/popup.service';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
     public register(
-        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisiblePatients),
-            changePopup$,
             destroy$,
             mapInteractionsManager
         );
+        this.popupService.currentPopup$
+            .pipe(takeUntil(destroy$))
+            .subscribe(() => {
+                this.layer.changed();
+            });
     }
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
@@ -45,7 +48,7 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
         };
     });
 
-    private readonly circleStyleHelper = new CircleStyleHelper(
+    private readonly visibleStatusCircleStyleHelper = new CircleStyleHelper(
         (feature) => {
             const patient = this.getElementFromFeature(feature) as Patient;
             const configuration = selectStateSnapshot(
@@ -76,10 +79,26 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
                 : [-0.25, 0]
     );
 
+    private readonly openPopupCircleStyleHelper = new CircleStyleHelper(
+        (feature) => ({
+            radius: 75,
+            fill: new Fill({
+                color: '#00000000',
+            }),
+            stroke: new Stroke({
+                color: 'orange',
+                width: 10,
+            }),
+        }),
+        0.025,
+        (feature) => [0, 0]
+    );
+
     constructor(
         private readonly store: Store<AppState>,
         olMap: OlMap,
-        exerciseService: ExerciseService
+        exerciseService: ExerciseService,
+        private readonly popupService: PopupService
     ) {
         super(
             olMap,
@@ -92,10 +111,30 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
             },
             new PointGeometryHelper()
         );
-        this.layer.setStyle((feature, resolution) => [
-            this.imageStyleHelper.getStyle(feature as Feature, resolution),
-            this.circleStyleHelper.getStyle(feature as Feature, resolution),
-        ]);
+        this.layer.setStyle((feature, resolution) => {
+            const styles = [
+                this.imageStyleHelper.getStyle(feature as Feature, resolution),
+                this.visibleStatusCircleStyleHelper.getStyle(
+                    feature as Feature,
+                    resolution
+                ),
+            ];
+
+            if (
+                this.popupService.currentPopup?.closingUUIDs.includes(
+                    feature.getId() as UUID
+                )
+            ) {
+                styles.push(
+                    this.openPopupCircleStyleHelper.getStyle(
+                        feature as Feature,
+                        resolution
+                    )
+                );
+            }
+
+            return styles;
+        });
     }
 
     public override onFeatureClicked(
@@ -104,7 +143,7 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
     ): void {
         super.onFeatureClicked(event, feature);
 
-        this.togglePopup$.next(
+        this.popupService.openPopup(
             this.popupHelper.getPopupOptions(
                 PatientPopupComponent,
                 feature,

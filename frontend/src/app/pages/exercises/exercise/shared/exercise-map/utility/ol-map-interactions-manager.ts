@@ -154,7 +154,7 @@ export class OlMapInteractionsManager {
                 droppedFeature.getId() as UUID
             )
         ) {
-            this.popupManager.closePopup();
+            this.popupManager.togglePopup(undefined);
         }
 
         this.olMap.forEachFeatureAtPixel(pixel, (droppedOnFeature, layer) => {

@@ -1,4 +1,3 @@
-import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { MapBrowserEvent, View } from 'ol';
 import { Feature } from 'ol';
@@ -19,7 +18,6 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { Element } from 'digital-fuesim-manv-shared';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
-import type { OpenPopupOptions } from '../utility/popup-manager';
 
 function calculateTopRightViewPoint(view: View) {
     const extent = getTopRight(view.calculateExtent());
@@ -41,9 +39,7 @@ export class DeleteFeatureManager implements FeatureManager<Point> {
             source: new VectorSource<Point>(),
         });
     }
-    togglePopup$?: Subject<OpenPopupOptions<any, Type<any>>> | undefined;
     register(
-        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
         mapInteractionsManager: OlMapInteractionsManager
     ) {

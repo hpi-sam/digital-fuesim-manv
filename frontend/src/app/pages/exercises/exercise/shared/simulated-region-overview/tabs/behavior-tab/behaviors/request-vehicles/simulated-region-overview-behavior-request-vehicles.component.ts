@@ -58,7 +58,7 @@ export class RequestVehiclesComponent implements OnChanges {
                     const options = Object.entries(simulatedRegions)
                         .map(([id, simulatedRegion]) => [
                             id,
-                            simulatedRegion.name,
+                            `[Simuliert] ${simulatedRegion.name}`,
                         ])
                         .filter(([id, _name]) => id !== this.simulatedRegionId)
                         .sort(([_id1, name1], [_id2, name2]) =>

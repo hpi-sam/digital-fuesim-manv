@@ -5,6 +5,7 @@ import {
     currentCoordinatesOf,
     currentSimulatedRegionIdOf,
     currentSimulatedRegionOf,
+    ExerciseOccupation,
     isInSimulatedRegion,
     isInSpecificSimulatedRegion,
     isInTransfer,
@@ -12,6 +13,7 @@ import {
     isOnMap,
     MapCoordinates,
     MapPosition,
+    occupationTypeOptions,
     SimulatedRegionPosition,
     VehiclePosition,
 } from '../../models/utils';
@@ -201,6 +203,18 @@ export class RemoveVehicleFromSimulatedRegionAction implements Action {
 
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;
+}
+
+export class SetVehicleOccupationAction implements Action {
+    @IsValue('[Vehicle] Set occupation' as const)
+    public readonly type = '[Vehicle] Set occupation';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly vehicleId!: UUID;
+
+    @Type(...occupationTypeOptions)
+    @ValidateNested()
+    public readonly occupation!: ExerciseOccupation;
 }
 
 export namespace VehicleActionReducers {
@@ -572,6 +586,17 @@ export namespace VehicleActionReducers {
                     draftState
                 );
 
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const setVehicleOccupation: ActionReducer<SetVehicleOccupationAction> =
+        {
+            action: SetVehicleOccupationAction,
+            reducer: (draftState, { vehicleId, occupation }) => {
+                const vehicle = getElement(draftState, 'vehicle', vehicleId);
+                vehicle.occupation = cloneDeepMutable(occupation);
                 return draftState;
             },
             rights: 'trainer',
