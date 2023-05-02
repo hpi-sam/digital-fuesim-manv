@@ -7,6 +7,9 @@ import {
     PatientStatus,
     patientStatusAllowedValues,
     MapCoordinates,
+    isNotInSimulatedRegion,
+    currentSimulatedRegionIdOf,
+    currentCoordinatesOf,
     isInSimulatedRegion,
     currentSimulatedRegionOf,
 } from '../../models/utils';
@@ -70,6 +73,14 @@ export class MovePatientAction implements Action {
     @ValidateNested()
     @Type(() => MapCoordinates)
     public readonly targetPosition!: MapCoordinates;
+}
+
+export class RemovePatientFromSimulatedRegionAction implements Action {
+    @IsValue('[Patient] Remove patient from simulated region' as const)
+    public readonly type = '[Patient] Remove patient from simulated region';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly patientId!: UUID;
 }
 
 export class RemovePatientAction implements Action {
@@ -159,9 +170,65 @@ export namespace PatientActionReducers {
         rights: 'participant',
     };
 
+    export const removePatientFromSimulatedRegion: ActionReducer<RemovePatientFromSimulatedRegionAction> =
+        {
+            action: RemovePatientFromSimulatedRegionAction,
+            reducer: (draftState, { patientId }) => {
+                const patient = getElement(draftState, 'patient', patientId);
+
+                if (isNotInSimulatedRegion(patient)) {
+                    throw new ReducerError(
+                        `Patient with Id: ${patientId} was expected to be in simulated region but position was of type: ${patient.position.type}`
+                    );
+                }
+
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    currentSimulatedRegionIdOf(patient)
+                );
+                sendSimulationEvent(
+                    simulatedRegion,
+                    PatientRemovedEvent.create(patientId)
+                );
+
+                const coordinates = cloneDeepMutable(
+                    currentCoordinatesOf(simulatedRegion)
+                );
+
+                // place the patient on the right hand side of the simulated region
+
+                coordinates.y -= 0.5 * simulatedRegion.size.height;
+                coordinates.x += 5 + Math.max(simulatedRegion.size.width, 0);
+
+                changePositionWithId(
+                    patientId,
+                    MapPosition.create(coordinates),
+                    'patient',
+                    draftState
+                );
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
     export const removePatient: ActionReducer<RemovePatientAction> = {
         action: RemovePatientAction,
         reducer: (draftState, { patientId }) => {
+            const patient = getElement(draftState, 'patient', patientId);
+            if (isInSimulatedRegion(patient)) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    currentSimulatedRegionIdOf(patient)
+                );
+                sendSimulationEvent(
+                    simulatedRegion,
+                    PatientRemovedEvent.create(patientId)
+                );
+            }
+
             deletePatient(draftState, patientId);
             return draftState;
         },
