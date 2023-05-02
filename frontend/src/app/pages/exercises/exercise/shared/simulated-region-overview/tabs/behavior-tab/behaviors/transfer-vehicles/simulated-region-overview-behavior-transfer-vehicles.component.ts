@@ -347,7 +347,7 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
             behaviorId: this.transferBehaviorId,
             vehicleID: this.vehicleToSend.id,
             destinationType: this.selectedDestination.type,
-            destinationId: this.selectedDestination.type.id,
+            destinationId: this.selectedDestination.id,
             patients,
         });
 

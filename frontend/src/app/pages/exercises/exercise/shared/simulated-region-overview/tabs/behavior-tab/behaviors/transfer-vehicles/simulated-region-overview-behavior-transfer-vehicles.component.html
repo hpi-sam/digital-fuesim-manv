@@ -199,7 +199,13 @@
         </h4>
     </div>
 </div>
+
 <div #collapse="ngbCollapse" [(ngbCollapse)]="transferCollapsed">
+    <p>
+        Es können nur so viele Patienten ausgewählt werden, wie in das
+        ausgewählte Fahrzeug passen. Das Fahrzeug kann nur zu einem Fahrzeug
+        geändert werden, in welches alle ausgewählten Patienten passen.
+    </p>
     <div
         ngbDropdown
         *ngIf="useableVehicles$ | async as useableVehicles"
@@ -335,7 +341,7 @@
                         >
                         <ng-template #noSelectedDestination>
                             <span class="text-muted">
-                                Kein Fahrzeug ausgewählt
+                                Kein Ziel ausgewählt
                             </span>
                         </ng-template>
                     </button>

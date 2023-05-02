@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
-import { Patient } from '../../models';
+import { Patient } from '../../models/patient';
 import {
     isOnMap,
     MapPosition,
@@ -25,7 +25,7 @@ import {
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
-import { PatientRemovedEvent } from '../../simulation';
+import { PatientRemovedEvent } from '../../simulation/events';
 import { sendSimulationEvent } from '../../simulation/events/utils';
 import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';

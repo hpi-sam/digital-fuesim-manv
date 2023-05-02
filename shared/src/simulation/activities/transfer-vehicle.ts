@@ -28,6 +28,7 @@ import {
     TransferDestination,
     transferDestinationTypeAllowedValues,
 } from '../utils/transfer-destination';
+import { HospitalActionReducers } from '../../store/action-reducers/hospital';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -177,6 +178,83 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
 
                 terminate();
             }
-            // TODO: hospital
+            if (activityState.transferDestinationType === 'hospital') {
+                const ownTransferPoint = getElementByPredicate(
+                    draftState,
+                    'transferPoint',
+                    (transferPoint) =>
+                        isInSpecificSimulatedRegion(
+                            transferPoint,
+                            simulatedRegion.id
+                        )
+                );
+
+                if (
+                    ownTransferPoint.reachableHospitals[
+                        activityState.transferDestinationId
+                    ] === undefined
+                ) {
+                    sendSimulationEvent(
+                        simulatedRegion,
+                        TransferConnectionMissingEvent.create(
+                            nextUUID(draftState),
+                            activityState.transferDestinationId,
+                            activityState.key
+                        )
+                    );
+                    // TODO: Publish Radiogram (The current Radiogram does not support hospitals)
+
+                    terminate();
+                    return;
+                }
+
+                // If the vehicle is not completely loaded terminate
+                if (
+                    Object.keys(vehicle.materialIds).some((materialId) => {
+                        const material = getElement(
+                            draftState,
+                            'material',
+                            materialId
+                        );
+                        return !isInSpecificVehicle(material, vehicle.id);
+                    }) ||
+                    Object.keys(vehicle.personnelIds).some((personnelId) => {
+                        const personnel = getElement(
+                            draftState,
+                            'personnel',
+                            personnelId
+                        );
+                        return !isInSpecificVehicle(personnel, vehicle.id);
+                    })
+                ) {
+                    terminate();
+                    return;
+                }
+
+                // Do transfer and send event
+
+                HospitalActionReducers.transportPatientToHospital.reducer(
+                    draftState,
+                    {
+                        type: '[Hospital] Transport patient to hospital',
+                        vehicleId: vehicle.id,
+                        hospitalId: activityState.transferDestinationId,
+                    }
+                );
+
+                const vehicleResourceDescription: { [key: string]: 1 } = {};
+                vehicleResourceDescription[vehicle.vehicleType] = 1;
+
+                sendSimulationEvent(
+                    simulatedRegion,
+                    VehicleTransferSuccessfulEvent.create(
+                        activityState.transferDestinationId,
+                        activityState.key ?? '',
+                        VehicleResource.create(vehicleResourceDescription)
+                    )
+                );
+
+                terminate();
+            }
         },
     };
