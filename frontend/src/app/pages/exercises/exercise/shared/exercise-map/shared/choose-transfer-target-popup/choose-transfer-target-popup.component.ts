@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core';
-import { EventEmitter, Output, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { Hospital, TransferPoint, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
@@ -8,16 +8,14 @@ import {
     createSelectReachableHospitals,
     createSelectReachableTransferPoints,
 } from 'src/app/state/application/selectors/exercise.selectors';
-import type { PopupComponent } from '../../utility/popup-manager';
+import { PopupService } from '../../utility/popup.service';
 
 @Component({
     selector: 'app-choose-transfer-target-popup',
     templateUrl: './choose-transfer-target-popup.component.html',
     styleUrls: ['./choose-transfer-target-popup.component.scss'],
 })
-export class ChooseTransferTargetPopupComponent
-    implements PopupComponent, OnInit
-{
+export class ChooseTransferTargetPopupComponent implements OnInit {
     // These properties are only set after OnInit
     public transferPointId!: UUID;
     public droppedElementType!: 'personnel' | 'vehicle';
@@ -27,13 +25,14 @@ export class ChooseTransferTargetPopupComponent
         targetType: 'hospital' | 'transferPoint'
     ) => void;
 
-    @Output() readonly closePopup = new EventEmitter<void>();
-
     public reachableTransferPoints$?: Observable<TransferPoint[]>;
 
     public reachableHospitals$?: Observable<Hospital[]>;
 
-    constructor(private readonly store: Store<AppState>) {}
+    constructor(
+        private readonly store: Store<AppState>,
+        private readonly popupService: PopupService
+    ) {}
 
     ngOnInit(): void {
         this.reachableTransferPoints$ = this.store.select(
@@ -46,6 +45,6 @@ export class ChooseTransferTargetPopupComponent
 
     public transferTo(targetId: UUID, type: 'hospital' | 'transferPoint') {
         this.transferToCallback(targetId, type);
-        this.closePopup.emit();
+        this.popupService.closePopup();
     }
 }

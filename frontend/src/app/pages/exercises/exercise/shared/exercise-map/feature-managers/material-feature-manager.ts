@@ -1,4 +1,3 @@
-import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { Material, UUID } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
@@ -12,20 +11,18 @@ import { MaterialPopupComponent } from '../shared/material-popup/material-popup.
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
-import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
+import type { PopupService } from '../utility/popup.service';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
     public register(
-        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisibleMaterials),
-            changePopup$,
             destroy$,
             mapInteractionsManager
         );
@@ -50,7 +47,8 @@ export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
     constructor(
         olMap: OlMap,
         private readonly store: Store<AppState>,
-        exerciseService: ExerciseService
+        exerciseService: ExerciseService,
+        private readonly popupService: PopupService
     ) {
         super(
             olMap,
@@ -75,7 +73,7 @@ export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
     ): void {
         super.onFeatureClicked(event, feature);
 
-        this.togglePopup$.next(
+        this.popupService.openPopup(
             this.popupHelper.getPopupOptions(
                 MaterialPopupComponent,
                 feature,

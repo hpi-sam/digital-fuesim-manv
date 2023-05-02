@@ -19,9 +19,9 @@ import { TransferPointPopupComponent } from '../shared/transfer-point-popup/tran
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
-import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
+import type { PopupService } from '../utility/popup.service';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class TransferPointFeatureManager extends MoveableFeatureManager<TransferPoint> {
@@ -30,7 +30,8 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
     constructor(
         olMap: OlMap,
         private readonly store: Store<AppState>,
-        private readonly exerciseService: ExerciseService
+        private readonly exerciseService: ExerciseService,
+        private readonly popupService: PopupService
     ) {
         super(
             olMap,
@@ -57,13 +58,11 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
     }
 
     public register(
-        changePopup$: Subject<OpenPopupOptions<any> | undefined>,
         destroy$: Subject<void>,
         mapInteractionsManager: OlMapInteractionsManager
     ) {
         super.registerFeatureElementManager(
             this.store.select(selectVisibleTransferPoints),
-            changePopup$,
             destroy$,
             mapInteractionsManager
         );
@@ -108,7 +107,7 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
 
         // Always show the chooseTransferPopup
         // Show a popup to choose the transferPoint or hospital
-        this.togglePopup$.next(
+        this.popupService.openPopup(
             this.popupHelper.getPopupOptions(
                 ChooseTransferTargetPopupComponent,
                 droppedOnFeature,
@@ -159,7 +158,7 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
         if (selectStateSnapshot(selectCurrentRole, this.store) !== 'trainer') {
             return;
         }
-        this.togglePopup$.next(
+        this.popupService.openPopup(
             this.popupHelper.getPopupOptions(
                 TransferPointPopupComponent,
                 feature,
