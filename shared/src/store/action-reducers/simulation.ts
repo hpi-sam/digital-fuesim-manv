@@ -9,10 +9,13 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import type {
+    ExerciseSimulationEvent,
     TreatPatientsBehaviorState,
     UnloadArrivingVehiclesBehaviorState,
 } from '../../simulation';
 import {
+    TransferPatientsInSpecificVehicleRequestEvent,
+    TransferSpecificVehicleRequestEvent,
     updateBehaviorsRequestTarget,
     updateBehaviorsRequestInterval,
     ReportableInformation,
@@ -28,14 +31,19 @@ import {
     uuidValidationOptions,
     cloneDeepMutable,
     uuidArrayValidationOptions,
+    UUIDSet,
 } from '../../utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
+import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
 import {
     requestTargetTypeOptions,
     ExerciseRequestTargetConfiguration,
 } from '../../models';
+import {
+    TransferDestination,
+    transferDestinationTypeAllowedValues,
+} from '../../simulation/utils/transfer-destination';
 import { getActivityById, getBehaviorById, getElement } from './utils';
 
 export class UpdateTreatPatientsIntervalsAction implements Action {
@@ -305,6 +313,29 @@ export class UpdateDelayBetweenSendsAction implements Action {
     @IsInt()
     @Min(0)
     public readonly delayBetweenSends!: number;
+}
+
+export class SendTransferRequestEventAction implements Action {
+    @IsValue('[TransferBehavior] Send Transfer Request Event')
+    public readonly type = '[TransferBehavior] Send Transfer Request Event';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly vehicleID!: UUID;
+
+    @IsLiteralUnion(transferDestinationTypeAllowedValues)
+    public readonly destinationType!: TransferDestination;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly destinationId!: UUID;
+
+    @IsUUIDSet()
+    public readonly patients!: UUIDSet;
 }
 
 export namespace SimulationActionReducers {
@@ -794,6 +825,48 @@ export namespace SimulationActionReducers {
                         delayBetweenSends;
                 }
 
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const sendTransferRequestEvent: ActionReducer<SendTransferRequestEventAction> =
+        {
+            action: SendTransferRequestEventAction,
+            reducer(
+                draftState,
+                {
+                    simulatedRegionId,
+                    vehicleID,
+                    destinationType,
+                    destinationId,
+                    patients,
+                }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+
+                let event: ExerciseSimulationEvent;
+                if (Object.keys(cloneDeepMutable(patients)).length === 0) {
+                    event = TransferSpecificVehicleRequestEvent.create(
+                        vehicleID,
+                        destinationType,
+                        destinationId
+                    );
+                } else {
+                    event =
+                        TransferPatientsInSpecificVehicleRequestEvent.create(
+                            patients,
+                            vehicleID,
+                            destinationType,
+                            destinationId
+                        );
+                }
+
+                sendSimulationEvent(simulatedRegion, event);
                 return draftState;
             },
             rights: 'trainer',
