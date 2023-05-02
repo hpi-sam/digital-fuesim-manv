@@ -17,6 +17,7 @@ import { addPatientStatusTags25 } from './25-add-patient-status-tags';
 import { addSimulatedRegionBorderColor26 } from './26-add-border-color-to-simulated-region';
 import { addOccupationToVehicles27 } from './27-add-occupation-to-vehicles';
 import { activitiesToUnloadVehiclesBehavior28 } from './28-add-activities-to-unload-vehicles-behavior';
+import { removeTransferVehiclesActivity29 } from './29-remove-transfer-vehicles-activity';
 import { updateEocLog3 } from './3-update-eoc-log';
 import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
 import { removeStatistics5 } from './5-remove-statistics';
@@ -79,4 +80,5 @@ export const migrations: {
     26: addSimulatedRegionBorderColor26,
     27: addOccupationToVehicles27,
     28: activitiesToUnloadVehiclesBehavior28,
+    29: removeTransferVehiclesActivity29,
 };
