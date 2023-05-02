@@ -95,12 +95,20 @@ export class PopupManager {
         }
 
         if (this.currentlyOpenPopupOptions) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { position: newPosition, ...newOptionsWithoutPosition } =
-                options;
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { position: oldPosition, ...oldOptionsWithoutPosition } =
-                this.currentlyOpenPopupOptions;
+            const {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                position: newPosition,
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                positioning: newPositioning,
+                ...newOptionsWithoutPosition
+            } = options;
+            const {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                position: oldPosition,
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                positioning: oldPositioning,
+                ...oldOptionsWithoutPosition
+            } = this.currentlyOpenPopupOptions;
             if (isEqual(newOptionsWithoutPosition, oldOptionsWithoutPosition)) {
                 // All the openPopup buttons should be toggles
                 this.closePopup();
