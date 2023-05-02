@@ -45,6 +45,7 @@ import { SimulatedRegionOverviewBehaviorAnswerVehicleRequestsComponent } from '.
 import { RadigoramCardContentResourceRequestComponent } from './radiogram-list/radiogram-card/radigoram-card-content-resource-request/radigoram-card-content-resource-request.component';
 import { SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesComponent } from './tabs/behavior-tab/behaviors/automatically-distribute-vehicles/simulated-region-overview-behavior-automatically-distribute-vehicles.component';
 import { RequestVehiclesComponent } from './tabs/behavior-tab/behaviors/request-vehicles/simulated-region-overview-behavior-request-vehicles.component';
+import { SimulatedRegionOverviewPatientInteractionBarComponent } from './tabs/patients-tab/simulated-region-overview-patient-interaction-bar/simulated-region-overview-patient-interaction-bar.component';
 import { SimulatedRegionOverviewVehiclesTabComponent } from './tabs/vehicles-tab/simulated-region-overview-vehicles-tab.component';
 import { SimulatedRegionOverviewPatientsTableComponent } from './patients-table/simulated-region-overview-patients-table.component';
 
@@ -83,6 +84,7 @@ import { SimulatedRegionOverviewPatientsTableComponent } from './patients-table/
         RadigoramCardContentResourceRequestComponent,
         SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesComponent,
         RequestVehiclesComponent,
+        SimulatedRegionOverviewPatientInteractionBarComponent,
         SimulatedRegionOverviewVehiclesTabComponent,
         SimulatedRegionOverviewPatientsTableComponent,
     ],
