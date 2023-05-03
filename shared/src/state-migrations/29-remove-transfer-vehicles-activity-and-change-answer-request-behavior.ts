@@ -8,15 +8,7 @@ export const removeTransferVehiclesActivityAndChangeAnswerRequestBehavior29: Mig
                 '[SimulatedRegion] Add Behavior'
             ) {
                 const typedAction = action as {
-                    behaviorState:
-                        | {
-                              type: 'answerRequestsBehavior';
-                              receivedEvents: unknown[] | undefined;
-                              requestsHandled: number | undefined;
-                          }
-                        | {
-                              type: Exclude<'answerRequestsBehavior', unknown>;
-                          };
+                    behaviorState: BehaviorStateStub;
                 };
                 if (
                     typedAction.behaviorState.type === 'answerRequestsBehavior'
@@ -56,17 +48,18 @@ interface SimulatedRegionStub {
             type: string | 'transferVehiclesActivity';
         };
     };
-    behaviors: (
-        | {
-              type: 'answerRequestsBehavior';
-              receivedEvents: unknown[] | undefined;
-              requestsHandled: number | undefined;
-          }
-        | {
-              type: Exclude<'answerRequestsBehavior', unknown>;
-          }
-    )[];
+    behaviors: BehaviorStateStub[];
 }
+
+type BehaviorStateStub =
+    | {
+          type: 'answerRequestsBehavior';
+          receivedEvents: unknown[] | undefined;
+          requestsHandled: number | undefined;
+      }
+    | {
+          type: Exclude<'answerRequestsBehavior', unknown>;
+      };
 
 function migrateSimulatedRegion(simulatedRegion: SimulatedRegionStub) {
     Object.keys(simulatedRegion.activities).forEach((key) => {
