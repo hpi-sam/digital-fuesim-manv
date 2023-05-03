@@ -260,8 +260,8 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                 node-version: '18'
-            - name: Setup project like locally
-              run: npm run deployment
+            - name: Setup project
+              run: npm run setup:ci
             - name: Build shared
               run: npm run third-party-license:generate-comparing-file
             - name: Compare files
