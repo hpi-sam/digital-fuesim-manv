@@ -270,6 +270,8 @@ jobs:
               uses: ./.github/actions/cache-build
               with:
                   shared-dist: 'false'
+            - name: Setup project
+              run: npm run setup:ci
             - name: Create THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json
               run: npm run third-party-license:generate
             - name: Commit updated version and changelog
