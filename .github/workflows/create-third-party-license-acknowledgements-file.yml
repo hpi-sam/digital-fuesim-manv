@@ -25,11 +25,10 @@ jobs:
               run: npm run setup
             - name: Create THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json (will overwrite)
               run: npm run third-party-license:generate
-            - name: Commit updated version and changelog
-              id: create-commit
+            - name: Commit and push updated version (if it exists)
               run: |
-                  git add frontend/src/assets/about/THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json
-                  git commit --signoff --message "update-third-party-license-acknowledgments"
-                  echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-            - name: Push THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json
-              run: git push
+                  git diff --exit-code -- frontend/src/assets/about/THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json ||
+                  (git add frontend/src/assets/about/THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json &
+                  git commit --signoff --message "update-third-party-license-acknowledgments" &
+                  echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT" &
+                  git push)
