@@ -70,7 +70,7 @@ export class TransferBehaviorState implements SimulationBehaviorState {
     @ValidateNested()
     public readonly startTransferEventQueue: readonly StartTransferEvent[] = [];
 
-    @IsUUID()
+    @IsUUID(4, uuidValidationOptions)
     @IsOptional()
     public readonly recurringActivityId: UUID | undefined;
 

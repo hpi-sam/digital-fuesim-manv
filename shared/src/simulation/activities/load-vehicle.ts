@@ -27,6 +27,7 @@ import { getElement } from '../../store/action-reducers/utils';
 import { sendSimulationEvent } from '../events/utils';
 import {
     MaterialRemovedEvent,
+    NewPatientEvent,
     PatientRemovedEvent,
     PersonnelRemovedEvent,
     StartTransferEvent,
@@ -188,6 +189,14 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
                         'patient',
                         draftState
                     );
+                    // Inform the region that a new patient has left the vehicle
+                    // (Only if it actually left the vehicle and will not be instantly re-added)
+                    if (!activityState.patientsToBeLoaded[patientId]) {
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            NewPatientEvent.create(patientId)
+                        );
+                    }
                 });
 
                 vehicle.patientIds = cloneDeepMutable(
