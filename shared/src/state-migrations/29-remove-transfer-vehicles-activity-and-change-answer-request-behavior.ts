@@ -29,91 +29,58 @@ export const removeTransferVehiclesActivityAndChangeAnswerRequestBehavior29: Mig
                 '[SimulatedRegion] Add simulated region'
             ) {
                 const typedAction = action as {
-                    simulatedRegion: {
-                        activities: {
-                            [stateId: string]: {
-                                type: string | 'transferVehiclesActivity';
-                            };
-                        };
-                        behaviors: (
-                            | {
-                                  type: 'answerRequestsBehavior';
-                                  receivedEvents: unknown[] | undefined;
-                                  requestsHandled: number | undefined;
-                              }
-                            | {
-                                  type: Exclude<
-                                      'answerRequestsBehavior',
-                                      unknown
-                                  >;
-                              }
-                        )[];
-                    };
+                    simulatedRegion: SimulatedRegionStub;
                 };
-                Object.keys(typedAction.simulatedRegion.activities).forEach(
-                    (key) => {
-                        if (
-                            typedAction.simulatedRegion.activities[key]!
-                                .type === 'transferVehiclesActivity'
-                        ) {
-                            delete typedAction.simulatedRegion.activities[key];
-                        }
-                    }
-                );
-
-                typedAction.simulatedRegion.behaviors.forEach((behavior) => {
-                    if (behavior.type === 'answerRequestsBehavior') {
-                        behavior.receivedEvents = [];
-                        behavior.requestsHandled = 0;
-                    }
-                });
+                migrateSimulatedRegion(typedAction.simulatedRegion);
             }
             return true;
         },
         state: (state) => {
             const typedState = state as {
                 simulatedRegions: {
-                    [key: string]: {
-                        activities: {
-                            [stateId: string]: {
-                                type: string | 'transferVehiclesActivity';
-                            };
-                        };
-                        behaviors: (
-                            | {
-                                  type: 'answerRequestsBehavior';
-                                  receivedEvents: unknown[] | undefined;
-                                  requestsHandled: number | undefined;
-                              }
-                            | {
-                                  type: Exclude<
-                                      'answerRequestsBehavior',
-                                      unknown
-                                  >;
-                              }
-                        )[];
-                    };
+                    [key: string]: SimulatedRegionStub;
                 };
             };
 
             Object.values(typedState.simulatedRegions).forEach(
                 (simulatedRegion) => {
-                    Object.keys(simulatedRegion.activities).forEach((key) => {
-                        if (
-                            simulatedRegion.activities[key]!.type ===
-                            'transferVehiclesActivity'
-                        ) {
-                            delete simulatedRegion.activities[key];
-                        }
-                    });
-
-                    simulatedRegion.behaviors.forEach((behavior) => {
-                        if (behavior.type === 'answerRequestsBehavior') {
-                            behavior.receivedEvents = [];
-                            behavior.requestsHandled = 0;
-                        }
-                    });
+                    migrateSimulatedRegion(simulatedRegion);
                 }
             );
         },
     };
+
+interface SimulatedRegionStub {
+    activities: {
+        [stateId: string]: {
+            type: string | 'transferVehiclesActivity';
+        };
+    };
+    behaviors: (
+        | {
+              type: 'answerRequestsBehavior';
+              receivedEvents: unknown[] | undefined;
+              requestsHandled: number | undefined;
+          }
+        | {
+              type: Exclude<'answerRequestsBehavior', unknown>;
+          }
+    )[];
+}
+
+function migrateSimulatedRegion(simulatedRegion: SimulatedRegionStub) {
+    Object.keys(simulatedRegion.activities).forEach((key) => {
+        if (
+            simulatedRegion.activities[key]!.type === 'transferVehiclesActivity'
+        ) {
+            delete simulatedRegion.activities[key];
+        }
+    });
+
+    simulatedRegion.behaviors.forEach((behavior) => {
+        if (behavior.type === 'answerRequestsBehavior') {
+            behavior.receivedEvents = [];
+            behavior.requestsHandled = 0;
+        }
+    });
+}
