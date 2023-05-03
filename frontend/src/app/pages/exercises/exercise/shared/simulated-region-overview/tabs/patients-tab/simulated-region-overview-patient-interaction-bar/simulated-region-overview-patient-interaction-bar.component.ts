@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { Mutable, UUID, UUIDSet } from 'digital-fuesim-manv-shared';
+import type { Mutable, UUIDSet } from 'digital-fuesim-manv-shared';
+import { UUID } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import { SelectPatientService } from '../../../select-patient.service';
 import { StartTransferService } from '../../../start-transfer.service';
