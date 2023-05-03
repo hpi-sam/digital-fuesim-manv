@@ -251,25 +251,35 @@ jobs:
               with:
                   name: cypress-screenshots-${{ matrix.browser }}
                   path: frontend/cypress/screenshots
-    testing-third-party-license-changes:
-        timeout-minutes: 5
-        runs-on: ubuntu-latest
 
+    update-third-party-license-acknowledgments:
+        runs-on: ubuntu-latest
+        needs: build
+        permissions:
+            contents: write
+        outputs:
+            commit: ${{ steps.create-commit.outputs.commit }}
         steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-node@v3
+            - name: Check out code
+              uses: actions/checkout@v3
+            - name: Initialize git config
+              run: |
+                  git config user.name "GitHub Actions"
+                  git config user.email noreply@github.com
+            - name: Cache node modules and shared/dist
+              uses: ./.github/actions/cache-build
               with:
-                node-version: '18'
-            - name: Setup project
-              run: npm run setup:ci
-            - name: Build shared
-              run: npm run third-party-license:generate-comparing-file
-            - name: Compare files
-              uses: GuillaumeFalourd/diff-action@v1
-              with:
-                first_file_path: frontend/src/assets/about/THIRD-PARTY-LICENSE-ACKNLODGEMENTS.json
-                second_file_path: frontend/src/assets/about/THIRD-PARTY-LICENSE-ACKNLODGEMENTS-COMPARE.json
-                expected_result: PASSED
+                  shared-dist: 'false'
+            - name: Create THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json
+              run: npm run third-party-license:generate
+            - name: Commit updated version and changelog
+              id: create-commit
+              run: |
+                  git add frontend/src/assets/about/THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json
+                  git commit --message "update-third-party-license-acknowledgments"
+                  echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            - name: Push THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json
+              run: git push
 
     # Dummy step to gate until all test are complete
     tests-done:
