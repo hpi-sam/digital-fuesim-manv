@@ -251,6 +251,25 @@ jobs:
               with:
                   name: cypress-screenshots-${{ matrix.browser }}
                   path: frontend/cypress/screenshots
+    testing-third-party-license-changes:
+        timeout-minutes: 5
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                node-version: '18'
+            - name: Setup project like locally
+              run: npm run setup
+            - name: Build shared
+              run: npm run third-party-license:generate-comparing-file
+            - name: Compare files
+              uses: GuillaumeFalourd/diff-action@v1
+              with:
+                first_file_path: frontend/src/assets/about/THIRD-PARTY-LICENSE-ACKNLODGEMENTS.json
+                second_file_path: frontend/src/assets/about/THIRD-PARTY-LICENSE-ACKNLODGEMENTS-COMPARE.json
+                expected_result: PASSED
 
     # Dummy step to gate until all test are complete
     tests-done:
