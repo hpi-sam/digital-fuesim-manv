@@ -26,8 +26,7 @@
         "test": "cd shared && npm run test && cd ../frontend && npm run test && cd ../backend && npm run test",
         "migration:run:prod": "cd backend && npm run migration:run:prod",
         "merge-coverage": "mkdir coverage && cp backend/coverage/coverage-final.json coverage/backend.json && cp frontend/coverage/coverage-final.json coverage/frontend.json && cp shared/coverage/coverage-final.json coverage/shared.json && nyc merge coverage coverage/merged/coverage.json && nyc report -t coverage/merged --report-dir coverage/reports --reporter=html --reporter=cobertura --reporter=text --reporter=text-summary",
-        "third-party-license:generate": "npm-license-crawler --json frontend/src/assets/about/THIRD-PARTY-LICENSE-ACKNLODGEMENTS.json",
-        "third-party-license:generate-comparing-file": "npm-license-crawler --json frontend/src/assets/about/THIRD-PARTY-LICENSE-ACKNLODGEMENTS-COMPARE.json"
+        "third-party-license:generate": "npm-license-crawler --json frontend/src/assets/about/THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json"
     },
     "private": true,
     "engines": {
