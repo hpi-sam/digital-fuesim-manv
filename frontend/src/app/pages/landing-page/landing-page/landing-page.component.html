@@ -70,6 +70,45 @@
                     [disabled]="importingExercise"
                 />
             </label>
+            <div
+                ngbDropdown
+                placement="bottom-end top-end"
+                class="btn-group ms-5"
+            >
+                <button type="button" class="btn btn-outline-primary btn-lg">
+                    Action
+                </button>
+                <button
+                    ngbDropdownToggle
+                    type="button"
+                    class="btn btn-outline-primary btn-lg dropdown-toggle-split"
+                    data-bs-toggle="dropdown"
+                >
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul ngbDropdownMenu class="dropdown-menu">
+                    <li>
+                        <a ngbDropdownItem class="dropdown-item" href="#"
+                            >Action</a
+                        >
+                    </li>
+                    <li>
+                        <a ngbDropdownItem class="dropdown-item" href="#"
+                            >Another action</a
+                        >
+                    </li>
+                    <li>
+                        <a ngbDropdownItem class="dropdown-item" href="#"
+                            >Something else here</a
+                        >
+                    </li>
+                    <li>
+                        <a ngbDropdownItem class="dropdown-item" href="#"
+                            >Separated link</a
+                        >
+                    </li>
+                </ul>
+            </div>
         </div>
 
         <p *ngIf="exerciseHasBeenCreated" class="mb-0">
