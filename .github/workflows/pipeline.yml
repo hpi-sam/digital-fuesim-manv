@@ -261,7 +261,7 @@ jobs:
               with:
                 node-version: '18'
             - name: Setup project like locally
-              run: npm run setup
+              run: npm run deployment
             - name: Build shared
               run: npm run third-party-license:generate-comparing-file
             - name: Compare files
