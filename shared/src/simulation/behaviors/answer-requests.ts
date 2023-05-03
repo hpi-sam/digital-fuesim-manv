@@ -115,7 +115,8 @@ export const answerRequestsBehavior: SimulationBehavior<AnswerRequestsBehaviorSt
                                 }
                             );
                             behaviorState.receivedEvents.splice(
-                                requestEventIndex
+                                requestEventIndex,
+                                1
                             );
                         }
                         if (createEvent) {
