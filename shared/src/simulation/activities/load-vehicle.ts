@@ -6,7 +6,12 @@ import {
     IsUUID,
     Min,
 } from 'class-validator';
-import { VehiclePosition, getCreate } from '../../models/utils';
+import {
+    SimulatedRegionPosition,
+    VehiclePosition,
+    getCreate,
+    isInSpecificSimulatedRegion,
+} from '../../models/utils';
 import {
     UUID,
     UUIDSet,
@@ -114,23 +119,59 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
                 // Send remove events
 
                 Object.keys(vehicle.personnelIds).forEach((personnelId) => {
-                    sendSimulationEvent(
-                        simulatedRegion,
-                        PersonnelRemovedEvent.create(personnelId)
+                    const personnel = getElement(
+                        draftState,
+                        'personnel',
+                        personnelId
                     );
+                    if (
+                        isInSpecificSimulatedRegion(
+                            personnel,
+                            simulatedRegion.id
+                        )
+                    ) {
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            PersonnelRemovedEvent.create(personnelId)
+                        );
+                    }
                 });
                 Object.keys(vehicle.materialIds).forEach((materialId) => {
-                    sendSimulationEvent(
-                        simulatedRegion,
-                        MaterialRemovedEvent.create(materialId)
+                    const material = getElement(
+                        draftState,
+                        'material',
+                        materialId
                     );
+                    if (
+                        isInSpecificSimulatedRegion(
+                            material,
+                            simulatedRegion.id
+                        )
+                    ) {
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            MaterialRemovedEvent.create(materialId)
+                        );
+                    }
                 });
                 Object.keys(activityState.patientsToBeLoaded).forEach(
                     (patientId) => {
-                        sendSimulationEvent(
-                            simulatedRegion,
-                            PatientRemovedEvent.create(patientId)
+                        const patient = getElement(
+                            draftState,
+                            'patient',
+                            patientId
                         );
+                        if (
+                            isInSpecificSimulatedRegion(
+                                patient,
+                                simulatedRegion.id
+                            )
+                        ) {
+                            sendSimulationEvent(
+                                simulatedRegion,
+                                PatientRemovedEvent.create(patientId)
+                            );
+                        }
                     }
                 );
 
@@ -139,6 +180,15 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
                 completelyLoadVehicle(draftState, vehicle);
 
                 // Load patients (and unload patients not to be loaded)
+
+                Object.keys(vehicle.patientIds).forEach((patientId) => {
+                    changePositionWithId(
+                        patientId,
+                        SimulatedRegionPosition.create(simulatedRegion.id),
+                        'patient',
+                        draftState
+                    );
+                });
 
                 vehicle.patientIds = cloneDeepMutable(
                     activityState.patientsToBeLoaded

@@ -9,7 +9,9 @@ import { groupBy } from 'lodash-es';
 import { Type } from 'class-transformer';
 import {
     VehicleResource,
+    currentSimulatedRegionOf,
     getCreate,
+    isInSimulatedRegion,
     isInSpecificSimulatedRegion,
 } from '../../models/utils';
 import {
@@ -107,15 +109,14 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             (vehicle) =>
                                 Object.keys(vehicle.patientIds).length === 0
                         );
-                    const groupedVehicles = groupBy(
-                        vehicles,
-                        (vehicle) => vehicle.vehicleType
+                    const vehiclesOfCorrectType = vehicles.filter(
+                        (vehicle) => vehicle.type === event.vehicleType
                     );
 
                     // sort the unoccupied vehicles by number of loaded resources descending and use the one with the most
 
-                    const vehicleToLoad = groupedVehicles[event.vehicleType]
-                        ?.filter((vehicle) =>
+                    const vehicleToLoad = vehiclesOfCorrectType
+                        .filter((vehicle) =>
                             isUnoccupied(vehicle, draftState.currentTime)
                         )
                         .sort(
@@ -314,13 +315,26 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
 
                     if (
                         event.transferDestinationType === 'transferPoint' &&
-                        draftState.simulatedRegions[event.transferDestinationId]
+                        isInSimulatedRegion(
+                            getElement(
+                                draftState,
+                                'transferPoint',
+                                event.transferDestinationId
+                            )
+                        )
                     ) {
                         addActivity(
                             simulatedRegion,
                             SendRemoteEventActivityState.create(
                                 nextUUID(draftState),
-                                event.transferDestinationId,
+                                currentSimulatedRegionOf(
+                                    draftState,
+                                    getElement(
+                                        draftState,
+                                        'transferPoint',
+                                        event.transferDestinationId
+                                    )
+                                ).id,
                                 VehiclesSentEvent.create(
                                     '',
                                     VehicleResource.create(sentVehicles)
