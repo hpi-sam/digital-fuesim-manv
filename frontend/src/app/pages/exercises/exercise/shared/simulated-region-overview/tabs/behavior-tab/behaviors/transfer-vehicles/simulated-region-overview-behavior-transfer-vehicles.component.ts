@@ -143,19 +143,15 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
                     vehicleName:
                         vehicles[bufferedTransferEvent.vehicleId]?.name ??
                         'Gelöschtes Fahrzeug',
-                    destination: hospitals[
-                        bufferedTransferEvent.transferDestinationId
-                    ]
-                        ? hospitals[
-                              bufferedTransferEvent.transferDestinationId
-                          ]!.name
-                        : transferPoints[
-                              bufferedTransferEvent.transferDestinationId
-                          ]
-                        ? transferPoints[
-                              bufferedTransferEvent.transferDestinationId
-                          ]!.externalName
-                        : 'Gelöschtes Ziel',
+                    destination:
+                        bufferedTransferEvent.transferDestinationType ===
+                        'hospital'
+                            ? hospitals[
+                                  bufferedTransferEvent.transferDestinationId
+                              ]?.name ?? 'Gelöschtes Krankenhaus'
+                            : transferPoints[
+                                  bufferedTransferEvent.transferDestinationId
+                              ]?.externalName ?? 'Gelöschtes Transferziel',
                     numberOfPatients: Object.keys(
                         vehicles[bufferedTransferEvent.vehicleId]?.patientIds ??
                             {}
@@ -178,18 +174,15 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
                     vehicleName:
                         vehicles[activeActivityState.vehicleId]?.name ??
                         'Gelöschtes Fahrzeug',
-                    destination: hospitals[
-                        activeActivityState.transferDestinationId
-                    ]
-                        ? hospitals[activeActivityState.transferDestinationId]!
-                              .name
-                        : transferPoints[
-                              activeActivityState.transferDestinationId
-                          ]
-                        ? transferPoints[
-                              activeActivityState.transferDestinationId
-                          ]!.externalName
-                        : 'Gelöschtes Ziel',
+                    destination:
+                        activeActivityState.transferDestinationType ===
+                        'hospital'
+                            ? hospitals[
+                                  activeActivityState.transferDestinationId
+                              ]?.name ?? 'Gelöschtes Krankenhaus'
+                            : transferPoints[
+                                  activeActivityState.transferDestinationId
+                              ]?.externalName ?? 'Gelöschtes Transferziel',
                     numberOfPatients: Object.keys(
                         activeActivityState.patientsToBeLoaded
                     ).length,
@@ -306,7 +299,27 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
             );
         });
 
-        // TODO: Add removal if vehicle is deleted
+        this.reachableHospitals$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((reachableHospitals) => {
+                if (
+                    this.selectedDestination?.type === 'hospital' &&
+                    !reachableHospitals.includes(this.selectedDestination)
+                ) {
+                    this.selectedDestination = undefined;
+                }
+            });
+
+        this.reachableTransferPoints$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((reachableTransferPoints) => {
+                if (
+                    this.selectedDestination?.type === 'transferPoint' &&
+                    !reachableTransferPoints.includes(this.selectedDestination)
+                ) {
+                    this.selectedDestination = undefined;
+                }
+            });
     }
 
     ngOnDestroy(): void {
