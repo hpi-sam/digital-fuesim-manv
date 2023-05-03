@@ -1,4 +1,4 @@
-import { IsInt, IsUUID, ValidateNested } from 'class-validator';
+import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
     VehicleResource,
@@ -31,6 +31,7 @@ export class AnswerRequestsBehaviorState implements SimulationBehaviorState {
         [];
 
     @IsInt()
+    @Min(0)
     public readonly requestsHandled: number = 0;
 
     static readonly create = getCreate(this);
