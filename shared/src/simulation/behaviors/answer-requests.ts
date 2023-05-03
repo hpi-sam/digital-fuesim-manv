@@ -6,7 +6,12 @@ import {
     isInSpecificSimulatedRegion,
 } from '../../models/utils';
 import { getElementByPredicate } from '../../store/action-reducers/utils';
-import { UUID, uuid, uuidValidationOptions } from '../../utils';
+import {
+    UUID,
+    cloneDeepMutable,
+    uuid,
+    uuidValidationOptions,
+} from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { addActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
@@ -57,17 +62,22 @@ export const answerRequestsBehavior: SimulationBehavior<AnswerRequestsBehaviorSt
                                             event.requiringSimulatedRegionId
                                         )
                                 );
+                            const eventToSend =
+                                TransferVehiclesRequestEvent.create(
+                                    event.requiredResource.vehicleCounts,
+                                    'transferPoint',
+                                    requiringSimulatedRegionTransferPoint.id,
+                                    requiringSimulatedRegionTransferPoint.id +
+                                        behaviorState.requestsHandled
+                                );
+                            behaviorState.receivedEvents.push(
+                                cloneDeepMutable(eventToSend)
+                            );
                             addActivity(
                                 simulatedRegion,
                                 DelayEventActivityState.create(
                                     nextUUID(draftState),
-                                    TransferVehiclesRequestEvent.create(
-                                        event.requiredResource.vehicleCounts,
-                                        'transferPoint',
-                                        requiringSimulatedRegionTransferPoint.id,
-                                        requiringSimulatedRegionTransferPoint.id +
-                                            behaviorState.requestsHandled
-                                    ),
+                                    eventToSend,
                                     draftState.currentTime
                                 )
                             );
@@ -77,9 +87,13 @@ export const answerRequestsBehavior: SimulationBehavior<AnswerRequestsBehaviorSt
                 }
                 case 'requestReceivedEvent':
                     {
-                        const requestEvent = behaviorState.receivedEvents.find(
-                            (receivedEvent) => receivedEvent.key === event.key
-                        );
+                        const requestEventIndex =
+                            behaviorState.receivedEvents.findIndex(
+                                (receivedEvent) =>
+                                    receivedEvent.key === event.key
+                            );
+                        const requestEvent =
+                            behaviorState.receivedEvents[requestEventIndex];
                         let createEvent = false;
                         const vehiclesNotAvailable: ResourceDescription = {};
                         if (requestEvent) {
@@ -99,6 +113,9 @@ export const answerRequestsBehavior: SimulationBehavior<AnswerRequestsBehaviorSt
                                         createEvent = true;
                                     }
                                 }
+                            );
+                            behaviorState.receivedEvents.splice(
+                                requestEventIndex
                             );
                         }
                         if (createEvent) {
