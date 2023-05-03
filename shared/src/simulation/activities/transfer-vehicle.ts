@@ -8,6 +8,7 @@ import {
     getCreate,
     isInSpecificSimulatedRegion,
     isInSpecificVehicle,
+    NoOccupation,
     TransferStartPoint,
 } from '../../models/utils';
 import { VehicleResource } from '../../models/utils/rescue-resource';
@@ -157,6 +158,8 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
 
                 // Do transfer and send event
 
+                vehicle.occupation = cloneDeepMutable(NoOccupation.create());
+
                 TransferActionReducers.addToTransfer.reducer(draftState, {
                     type: '[Transfer] Add to transfer',
                     elementType: 'vehicle',
@@ -233,6 +236,8 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
                 }
 
                 // Do transfer and send event
+
+                vehicle.occupation = cloneDeepMutable(NoOccupation.create());
 
                 HospitalActionReducers.transportPatientToHospital.reducer(
                     draftState,
