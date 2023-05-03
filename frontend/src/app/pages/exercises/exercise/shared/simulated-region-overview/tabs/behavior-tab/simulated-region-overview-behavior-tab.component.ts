@@ -19,6 +19,7 @@ import {
     selectVehicleTemplates,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { TransferOptions } from '../../start-transfer.service';
 
 let globalLastBehaviorType: ExerciseSimulationBehaviorType | undefined;
 
@@ -31,6 +32,8 @@ export class SimulatedRegionOverviewBehaviorTabComponent
     implements OnChanges, OnInit
 {
     @Input() simulatedRegion!: SimulatedRegion;
+    @Input() transferToStart?: TransferOptions;
+
     public behaviorTypesToBeAdded$!: Observable<
         ExerciseSimulationBehaviorType[]
     >;
@@ -41,11 +44,27 @@ export class SimulatedRegionOverviewBehaviorTabComponent
         private readonly store: Store<AppState>
     ) {}
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         if (globalLastBehaviorType !== undefined) {
             this.selectedBehavior = this.simulatedRegion.behaviors.find(
                 (behavior) => behavior.type === globalLastBehaviorType
             );
+        }
+        if (this.transferToStart) {
+            this.selectedBehavior = this.simulatedRegion.behaviors.find(
+                (behavior) => behavior.type === 'assignLeaderBehavior'
+            );
+            if (!this.selectedBehavior) {
+                await this.exerciseService.proposeAction({
+                    type: '[SimulatedRegion] Add Behavior',
+                    simulatedRegionId: this.simulatedRegion.id,
+                    behaviorState:
+                        simulationBehaviorDictionary.assignLeaderBehavior.behaviorState.create(),
+                });
+                this.selectedBehavior = this.simulatedRegion.behaviors.find(
+                    (behavior) => behavior.type === 'assignLeaderBehavior'
+                );
+            }
         }
 
         this.behaviorTypesToBeAdded$ = this.store

@@ -48,6 +48,7 @@ import { RequestVehiclesComponent } from './tabs/behavior-tab/behaviors/request-
 import { SimulatedRegionOverviewPatientInteractionBarComponent } from './tabs/patients-tab/simulated-region-overview-patient-interaction-bar/simulated-region-overview-patient-interaction-bar.component';
 import { SimulatedRegionOverviewVehiclesTabComponent } from './tabs/vehicles-tab/simulated-region-overview-vehicles-tab.component';
 import { SimulatedRegionOverviewPatientsTableComponent } from './patients-table/simulated-region-overview-patients-table.component';
+import { StartTransferService } from './start-transfer.service';
 
 @NgModule({
     declarations: [
@@ -101,6 +102,6 @@ import { SimulatedRegionOverviewPatientsTableComponent } from './patients-table/
         TransferPointOverviewModule,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
-    providers: [SelectPatientService],
+    providers: [SelectPatientService, StartTransferService],
 })
 export class SimulatedRegionOverviewModule {}
