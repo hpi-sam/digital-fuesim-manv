@@ -271,7 +271,7 @@ jobs:
               with:
                   shared-dist: 'false'
             - name: Setup project
-              run: npm run setup:ci
+              run: npm run setup
             - name: Create THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json
               run: npm run third-party-license:generate
             - name: Commit updated version and changelog
