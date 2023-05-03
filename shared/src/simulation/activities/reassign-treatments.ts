@@ -86,10 +86,11 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
     {
         activityState: ReassignTreatmentsActivityState,
         tick(draftState, simulatedRegion, activityState, _, terminate) {
-            const patients = Object.values(draftState.patients).filter(
-                (patient) =>
+            const patients = Object.values(draftState.patients)
+                .filter((patient) =>
                     isInSpecificSimulatedRegion(patient, simulatedRegion.id)
-            );
+                )
+                .sort((a, b) => a.id.localeCompare(b.id));
             let personnel = Object.values(draftState.personnel).filter((pers) =>
                 isInSpecificSimulatedRegion(pers, simulatedRegion.id)
             );
@@ -97,6 +98,7 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 (material) =>
                     isInSpecificSimulatedRegion(material, simulatedRegion.id)
             );
+            const progress = activityState.treatmentProgress;
 
             patients.forEach((patient) =>
                 removeTreatmentsOfElement(draftState, patient)
@@ -115,6 +117,12 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                     (pers) => pers.id === leaderId
                 )) === -1
             ) {
+                // No leader is present in the region.
+                if (progress !== 'noTreatment')
+                    sendSimulationEvent(
+                        simulatedRegion,
+                        TreatmentProgressChangedEvent.create('noTreatment')
+                    );
                 terminate();
                 return;
             }
@@ -133,7 +141,6 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 | ResourceDescription<PersonnelType>
                 | undefined;
 
-            const progress = activityState.treatmentProgress;
             switch (progress) {
                 case 'noTreatment': {
                     // Since we've reached this line, there is a leader and other personnel so treatment can start

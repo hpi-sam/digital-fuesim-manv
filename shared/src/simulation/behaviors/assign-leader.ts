@@ -1,5 +1,6 @@
 import { IsOptional, IsUUID } from 'class-validator';
 import { groupBy } from 'lodash-es';
+import type { SimulatedRegion } from '../../models';
 import type {
     MaterialCountRadiogram,
     PersonnelCountRadiogram,
@@ -11,6 +12,11 @@ import { getActivityById, getElement } from '../../store/action-reducers/utils';
 import type { Mutable } from '../../utils';
 import { StrictObject, UUID, uuid, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
+import { LeaderChangedEvent } from '../events/leader-changed';
+import type { ExerciseState } from '../../state';
+import { addActivity } from '../activities/utils';
+import { DelayEventActivityState } from '../activities';
+import { nextUUID } from '../utils/randomness';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -69,34 +75,37 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
                         );
 
                         if (newPersonnel.personnelType === 'gf') {
-                            behaviorState.leaderId = event.personnelId;
+                            changeLeader(
+                                draftState,
+                                simulatedRegion,
+                                behaviorState,
+                                event.personnelId
+                            );
                         }
                     }
                     break;
                 case 'tickEvent':
                     {
                         if (!behaviorState.leaderId) {
-                            const personnel = Object.values(
-                                draftState.personnel
-                            ).filter(
-                                (pers) =>
-                                    isInSpecificSimulatedRegion(
-                                        pers,
-                                        simulatedRegion.id
-                                    ) && pers.personnelType !== 'notarzt'
+                            selectNewLeader(
+                                draftState,
+                                simulatedRegion,
+                                behaviorState,
+                                false
                             );
-
-                            if (personnel.length === 0) {
-                                return;
-                            }
-
-                            personnel.sort(
-                                (a, b) =>
-                                    personnelPriorities[b.personnelType] -
-                                    personnelPriorities[a.personnelType]
+                        }
+                    }
+                    break;
+                case 'personnelRemovedEvent':
+                    {
+                        // if the leader is removed from the region a new leader is selected
+                        if (event.personnelId === behaviorState.leaderId) {
+                            selectNewLeader(
+                                draftState,
+                                simulatedRegion,
+                                behaviorState,
+                                true
                             );
-
-                            behaviorState.leaderId = personnel[0]?.id;
                         }
                     }
                     break;
@@ -232,3 +241,50 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
             }
         },
     };
+
+function selectNewLeader(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegion>,
+    behaviorState: Mutable<AssignLeaderBehaviorState>,
+    changeLeaderIfNoLeaderSelected: boolean
+) {
+    const personnel = Object.values(draftState.personnel).filter(
+        (pers) =>
+            isInSpecificSimulatedRegion(pers, simulatedRegion.id) &&
+            pers.personnelType !== 'notarzt'
+    );
+
+    if (personnel.length === 0) {
+        if (changeLeaderIfNoLeaderSelected) {
+            changeLeader(draftState, simulatedRegion, behaviorState, undefined);
+        }
+        return;
+    }
+
+    personnel.sort(
+        (a, b) =>
+            personnelPriorities[b.personnelType] -
+            personnelPriorities[a.personnelType]
+    );
+    changeLeader(draftState, simulatedRegion, behaviorState, personnel[0]?.id);
+}
+
+function changeLeader(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegion>,
+    behaviorState: Mutable<AssignLeaderBehaviorState>,
+    newLeaderId: UUID | undefined
+) {
+    addActivity(
+        simulatedRegion,
+        DelayEventActivityState.create(
+            nextUUID(draftState),
+            LeaderChangedEvent.create(
+                behaviorState.leaderId ?? null,
+                newLeaderId ?? null
+            ),
+            draftState.currentTime
+        )
+    );
+    behaviorState.leaderId = newLeaderId;
+}

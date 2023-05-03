@@ -96,6 +96,9 @@
                         style="white-space: nowrap"
                     >
                         <div
+                            *ngFor="
+                                let simulatedRegionTemplate of simulatedRegionTemplates
+                            "
                             class="d-inline-block card text-center"
                             style="width: 10rem; text-overflow: ellipsis"
                             (mousedown)="
@@ -117,7 +120,9 @@
                                     class="card-title text-truncate"
                                     [title]="'Simulierter Bereich'"
                                 >
-                                    Simulierter Bereich
+                                    {{
+                                        simulatedRegionTemplate.stereotype.name
+                                    }}
                                 </h5>
                             </div>
                         </div>

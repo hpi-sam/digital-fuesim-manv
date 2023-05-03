@@ -9,13 +9,13 @@ import type {
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
 import {
+    uuid,
     createVehicleParameters,
     MapImage,
     normalZoom,
     PatientTemplate,
     TransferPoint,
     Viewport,
-    SimulatedRegion,
     SimulatedRegionPosition,
     MapPosition,
 } from 'digital-fuesim-manv-shared';
@@ -27,10 +27,13 @@ import type VectorSource from 'ol/source/Vector';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
+    selectExerciseState,
     selectMaterialTemplates,
     selectPersonnelTemplates,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import type { SimulatedRegionDragTemplate } from '../editor-panel/templates/simulated-region';
+import { reconstituteSimulatedRegionTemplate } from '../editor-panel/templates/simulated-region';
 import type { FeatureManager } from '../exercise-map/utility/feature-manager';
 
 @Injectable({
@@ -170,6 +173,7 @@ export class DragElementService {
             case 'vehicle':
                 {
                     const params = createVehicleParameters(
+                        uuid(),
                         this.transferringTemplate.template,
                         selectStateSnapshot(
                             selectMaterialTemplates,
@@ -278,26 +282,24 @@ export class DragElementService {
                 break;
             case 'simulatedRegion':
                 {
-                    // This ratio has been determined by trial and error
-                    const height = SimulatedRegion.image.height / 23.5;
-                    const width = height * SimulatedRegion.image.aspectRatio;
-                    const simulatedRegion = SimulatedRegion.create(
-                        {
-                            x: position.x - width / 2,
-                            y: position.y + height / 2,
-                        },
-                        {
-                            height,
-                            width,
-                        },
-                        'Einsatzabschnitt ???'
+                    const exerciseState = selectStateSnapshot(
+                        selectExerciseState,
+                        this.store
                     );
+                    const simulatedRegion = reconstituteSimulatedRegionTemplate(
+                        this.transferringTemplate.template.stereotype,
+                        exerciseState
+                    );
+                    simulatedRegion.position = MapPosition.create({
+                        x: position.x - simulatedRegion.size.width / 2,
+                        y: position.y + simulatedRegion.size.height / 2,
+                    });
                     const transferPoint = TransferPoint.create(
                         SimulatedRegionPosition.create(simulatedRegion.id),
                         {},
                         {},
                         '',
-                        '[Simuliert] Einsatzabschnitt ???'
+                        `[Simuliert] ${simulatedRegion.name}`
                     );
                     this.exerciseService.proposeAction(
                         {
@@ -373,9 +375,7 @@ type TransferTemplate =
       }
     | {
           type: 'simulatedRegion';
-          template: {
-              image: ImageProperties;
-          };
+          template: SimulatedRegionDragTemplate;
       }
     | {
           type: 'transferPoint';

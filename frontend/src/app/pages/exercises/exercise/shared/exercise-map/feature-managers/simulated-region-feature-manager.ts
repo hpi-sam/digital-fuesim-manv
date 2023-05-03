@@ -1,4 +1,3 @@
-import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type {
     UUID,
@@ -6,7 +5,6 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     Element,
 } from 'digital-fuesim-manv-shared';
-
 import { MapCoordinates, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
 import type { Polygon } from 'ol/geom';
@@ -28,8 +26,9 @@ import { calculatePopupPositioning } from '../utility/calculate-popup-positionin
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PolygonGeometryHelper } from '../utility/polygon-geometry-helper';
-import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ResizeRectangleInteraction } from '../utility/resize-rectangle-interaction';
+import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
+import type { PopupService } from '../utility/popup.service';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class SimulatedRegionFeatureManager
@@ -37,13 +36,11 @@ export class SimulatedRegionFeatureManager
     implements FeatureManager<Polygon>
 {
     public register(
-        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisibleSimulatedRegions),
-            changePopup$,
             destroy$,
             mapInteractionsManager
         );
@@ -54,7 +51,8 @@ export class SimulatedRegionFeatureManager
     constructor(
         olMap: OlMap,
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly store: Store<AppState>,
+        private readonly popupService: PopupService
     ) {
         super(
             olMap,
@@ -67,18 +65,39 @@ export class SimulatedRegionFeatureManager
             },
             new PolygonGeometryHelper()
         );
-        this.layer.setStyle(this.style);
+        this.layer.setStyle((feature, resolution) => [
+            new Style({
+                fill: this.fill,
+                stroke: new Stroke({
+                    color: (
+                        this.getElementFromFeature(
+                            feature as Feature
+                        ) as SimulatedRegion
+                    ).borderColor,
+                    width: this.strokeWidth,
+                }),
+            }),
+            this.nameStyleHelper.getStyle(feature as Feature, resolution),
+        ]);
     }
 
-    private readonly style = new Style({
-        fill: new Fill({
-            color: '#808080cc',
-        }),
-        stroke: new Stroke({
-            color: '#cccc00',
-            width: 2,
-        }),
-    });
+    private readonly fill = new Fill({ color: '#808080cc' });
+    private readonly strokeWidth = 2;
+
+    private readonly nameStyleHelper = new NameStyleHelper(
+        (feature) => {
+            const region = this.getElementFromFeature(
+                feature
+            ) as SimulatedRegion;
+            return {
+                name: region.name,
+                // The offset ist based on the center of the position, not the regions position (which refers to a corner)
+                offsetY: 0,
+            };
+        },
+        0.75,
+        'middle'
+    );
 
     override createFeature(element: SimulatedRegion): Feature<Polygon> {
         const feature = super.createFeature(element);
@@ -173,7 +192,8 @@ export class SimulatedRegionFeatureManager
         const zoom = this.olMap.getView().getZoom()!;
         const margin = 10 / zoom;
 
-        this.togglePopup$.next({
+        this.popupService.openPopup({
+            elementUUID: feature.getId()?.toString(),
             component: SimulatedRegionPopupComponent,
             closingUUIDs: [feature.getId() as UUID],
             context: {

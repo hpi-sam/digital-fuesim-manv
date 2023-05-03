@@ -1,5 +1,7 @@
 import type { ExerciseState } from '../../../state';
-import type { UUID } from '../../../utils';
+import { getElement } from '../../../store/action-reducers/utils/get-element';
+import type { Mutable, UUID } from '../../../utils';
+import type { SimulatedRegion } from '../../simulated-region';
 import type { Transfer } from '../transfer';
 import { MapCoordinates } from './map-coordinates';
 import type { MapPosition } from './map-position';
@@ -87,6 +89,22 @@ export function currentTransferOf(withPosition: WithPosition): Transfer {
 export function currentSimulatedRegionIdOf(withPosition: WithPosition): UUID {
     if (isInSimulatedRegion(withPosition)) {
         return simulatedRegionIdOfPosition(withPosition.position);
+    }
+    throw new TypeError(
+        `Expected position of object to be in simulatedRegion. Was of type ${withPosition.position.type}.`
+    );
+}
+
+export function currentSimulatedRegionOf(
+    draftState: Mutable<ExerciseState>,
+    withPosition: WithPosition
+): Mutable<SimulatedRegion> {
+    if (isInSimulatedRegion(withPosition)) {
+        return getElement(
+            draftState,
+            'simulatedRegion',
+            simulatedRegionIdOfPosition(withPosition.position)
+        );
     }
     throw new TypeError(
         `Expected position of object to be in simulatedRegion. Was of type ${withPosition.position.type}.`

@@ -7,6 +7,11 @@ import {
     PatientStatus,
     patientStatusAllowedValues,
     MapCoordinates,
+    isNotInSimulatedRegion,
+    currentSimulatedRegionIdOf,
+    currentCoordinatesOf,
+    isInSimulatedRegion,
+    currentSimulatedRegionOf,
 } from '../../models/utils';
 import {
     changePosition,
@@ -23,14 +28,29 @@ import {
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
+import { PatientRemovedEvent } from '../../simulation';
+import { sendSimulationEvent } from '../../simulation/events/utils';
 import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 import { removeElementPosition } from './utils/spatial-elements';
 
+/**
+ * Performs all necessary actions to remove a patient from the state.
+ * This includes deleting all treatments, removing it from the spatial tree and sending a {@link PatientRemovedEvent} if the patient is in a simulated region.
+ * @param patientId The ID of the patient to be deleted
+ */
 export function deletePatient(
     draftState: Mutable<ExerciseState>,
     patientId: UUID
 ) {
+    const patient = getElement(draftState, 'patient', patientId);
+    if (isInSimulatedRegion(patient)) {
+        const simulatedRegion = currentSimulatedRegionOf(draftState, patient);
+        sendSimulationEvent(
+            simulatedRegion,
+            PatientRemovedEvent.create(patientId)
+        );
+    }
     removeElementPosition(draftState, 'patient', patientId);
     delete draftState.patients[patientId];
 }
@@ -53,6 +73,14 @@ export class MovePatientAction implements Action {
     @ValidateNested()
     @Type(() => MapCoordinates)
     public readonly targetPosition!: MapCoordinates;
+}
+
+export class RemovePatientFromSimulatedRegionAction implements Action {
+    @IsValue('[Patient] Remove patient from simulated region' as const)
+    public readonly type = '[Patient] Remove patient from simulated region';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly patientId!: UUID;
 }
 
 export class RemovePatientAction implements Action {
@@ -142,9 +170,65 @@ export namespace PatientActionReducers {
         rights: 'participant',
     };
 
+    export const removePatientFromSimulatedRegion: ActionReducer<RemovePatientFromSimulatedRegionAction> =
+        {
+            action: RemovePatientFromSimulatedRegionAction,
+            reducer: (draftState, { patientId }) => {
+                const patient = getElement(draftState, 'patient', patientId);
+
+                if (isNotInSimulatedRegion(patient)) {
+                    throw new ReducerError(
+                        `Patient with Id: ${patientId} was expected to be in simulated region but position was of type: ${patient.position.type}`
+                    );
+                }
+
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    currentSimulatedRegionIdOf(patient)
+                );
+                sendSimulationEvent(
+                    simulatedRegion,
+                    PatientRemovedEvent.create(patientId)
+                );
+
+                const coordinates = cloneDeepMutable(
+                    currentCoordinatesOf(simulatedRegion)
+                );
+
+                // place the patient on the right hand side of the simulated region
+
+                coordinates.y -= 0.5 * simulatedRegion.size.height;
+                coordinates.x += 5 + Math.max(simulatedRegion.size.width, 0);
+
+                changePositionWithId(
+                    patientId,
+                    MapPosition.create(coordinates),
+                    'patient',
+                    draftState
+                );
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
     export const removePatient: ActionReducer<RemovePatientAction> = {
         action: RemovePatientAction,
         reducer: (draftState, { patientId }) => {
+            const patient = getElement(draftState, 'patient', patientId);
+            if (isInSimulatedRegion(patient)) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    currentSimulatedRegionIdOf(patient)
+                );
+                sendSimulationEvent(
+                    simulatedRegion,
+                    PatientRemovedEvent.create(patientId)
+                );
+            }
+
             deletePatient(draftState, patientId);
             return draftState;
         },
