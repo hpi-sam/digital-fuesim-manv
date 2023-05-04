@@ -6,7 +6,7 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import { Hospital } from '../../models';
+import { Hospital } from '../../models/hospital';
 import { HospitalPatient } from '../../models/hospital-patient';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';

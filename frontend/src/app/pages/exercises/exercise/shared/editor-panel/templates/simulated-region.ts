@@ -5,6 +5,7 @@ import type {
     Mutable,
 } from 'digital-fuesim-manv-shared';
 import {
+    TransferBehaviorState,
     cloneDeepMutable,
     MapPosition,
     SimulatedRegion,
@@ -76,6 +77,7 @@ const stereotypes: SimulatedRegion[] = [
             AutomaticallyDistributeVehiclesBehaviorState.create(),
             AnswerRequestsBehaviorState.create(),
             ReportBehaviorState.create(),
+            TransferBehaviorState.create(),
         ],
         inEvents: [],
         position,
