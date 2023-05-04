@@ -31,6 +31,8 @@ jobs:
               uses: ./.github/actions/update-version
               with:
                   version: ${{ github.event.inputs.versionName }}
+            - name: Include THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json
+              uses: ./.github/actions/include-third-party-license-acknowledgements
             - name: Update changelog
               uses: thomaseizinger/keep-a-changelog-new-release@v1
               with:
@@ -40,7 +42,7 @@ jobs:
             - name: Commit updated version and changelog
               id: create-commit
               run: |
-                  git commit -a --message "Prepare release v${{ github.event.inputs.versionName }}"
+                  git commit -a  --signoff --message "Prepare release v${{ github.event.inputs.versionName }}"
                   echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
             - name: Push new branch
               run: git push origin release/v${{ github.event.inputs.versionName }}

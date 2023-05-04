@@ -23,11 +23,12 @@ COPY ./ $PRODUCTION_PATH
 # set workdir
 WORKDIR $PRODUCTION_PATH
 
-# git archive the whole repository into a zip file, so users can easily download it
-RUN npm run create-source-code-zip
-
 # install for production and cleanup
 RUN npm run deployment
+
+# git archive the whole repository into a zip file, so users can easily download it
+# and update/include THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json
+RUN npm run licensing:all
 
 ####  building done  ####
 #########################

@@ -1,0 +1,12 @@
+name: Update THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json
+description: Updates or creates THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json with the help of npm-license-crawler
+
+runs:
+    using: composite
+    steps:
+        - name: Setup project
+          run: npm run setup:ci
+          shell: bash
+        - name: Update THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json (will overwrite)
+          run: npm run licensing:third-party-licenses
+          shell: bash
