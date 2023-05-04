@@ -27,8 +27,8 @@ jobs:
               run: npm run third-party-license:generate
             - name: Commit and push updated version (if it exists)
               run: |
-                  git diff --exit-code -- frontend/src/assets/about/THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json ||
-                  (git add frontend/src/assets/about/THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json &
+                  git diff --exit-code -- frontend/src/assets/source-code/THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json ||
+                  (git add frontend/src/assets/source-code/THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json &
                   git commit --signoff --message "update-third-party-license-acknowledgments" &
                   echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT" &
                   git push)
