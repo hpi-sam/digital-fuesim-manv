@@ -10,3 +10,6 @@ docker-compose.yml
 benchmark/data
 
 test-scenarios/
+
+# custom html files in about
+frontend/src/assets/about
