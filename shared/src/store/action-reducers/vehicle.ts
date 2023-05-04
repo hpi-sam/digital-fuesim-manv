@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
-import { Material, Personnel, Vehicle } from '../../models';
+import { Material } from '../../models/material';
 import {
     currentCoordinatesOf,
     currentSimulatedRegionIdOf,
@@ -22,7 +22,7 @@ import {
     changePositionWithId,
 } from '../../models/utils/position/position-helpers-mutable';
 import type { ExerciseState } from '../../state';
-import { imageSizeToPosition } from '../../state-helpers';
+import { imageSizeToPosition } from '../../state-helpers/image-size-to-position';
 import type { Mutable } from '../../utils';
 import {
     cloneDeepMutable,
@@ -41,7 +41,9 @@ import {
     PersonnelAvailableEvent,
     PersonnelRemovedEvent,
     VehicleRemovedEvent,
-} from '../../simulation';
+} from '../../simulation/events';
+import { Vehicle } from '../../models/vehicle';
+import { Personnel } from '../../models/personnel';
 import { deletePatient } from './patient';
 import { completelyLoadVehicle as completelyLoadVehicleHelper } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';

@@ -13,6 +13,7 @@ const behaviorTypeToGermanNameDictionary: {
     answerRequestsBehavior: 'Fahrzeuganfragen beantworten',
     automaticallyDistributeVehiclesBehavior: 'Fahrzeuge verteilen',
     requestBehavior: 'Fahrzeuge anfordern',
+    transferBehavior: 'Fahrzeuge versenden',
 };
 @Pipe({
     name: 'behaviorTypeToGermanName',
