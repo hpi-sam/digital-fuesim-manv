@@ -897,7 +897,7 @@
         "licenseUrl": "https://github.com/discoveryjs/json-ext/raw/master/LICENSE",
         "parents": "digital-fuesim-manv-frontend"
     },
-    "@esbuild/win32-x64@0.16.17": {
+    "@esbuild/linux-x64@0.16.17": {
         "licenses": "MIT",
         "repository": "https://github.com/evanw/esbuild",
         "licenseUrl": "https://github.com/evanw/esbuild",
@@ -3235,7 +3235,7 @@
         "licenses": "MIT",
         "repository": "https://github.com/visionmedia/debug",
         "licenseUrl": "https://github.com/visionmedia/debug/raw/master/LICENSE",
-        "parents": "eslint-import-resolver-node:digital-fuesim-manv-shared"
+        "parents": "eslint-module-utils:digital-fuesim-manv-shared"
     },
     "debug@4.3.4": {
         "licenses": "MIT",
