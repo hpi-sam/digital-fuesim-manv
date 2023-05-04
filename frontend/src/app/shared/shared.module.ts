@@ -42,6 +42,7 @@ import { VehicleNameEditorComponent } from './components/vehicle-name-editor/veh
 import { VehicleLoadUnloadControlsComponent } from './components/vehicle-load-unload-controls/vehicle-load-unload-controls.component';
 import { VehicleAvailableSlotsDisplayComponent } from './components/vehicle-available-slots-display/vehicle-available-slots-display.component';
 import { VehicleOccupationEditorComponent } from './components/vehicle-occupation-editor/vehicle-occupation-editor.component';
+import { StartPauseButtonComponent } from './components/start-pause-button/start-pause-button.component';
 
 @NgModule({
     declarations: [
@@ -80,6 +81,7 @@ import { VehicleOccupationEditorComponent } from './components/vehicle-occupatio
         VehicleLoadUnloadControlsComponent,
         VehicleAvailableSlotsDisplayComponent,
         VehicleOccupationEditorComponent,
+        StartPauseButtonComponent,
     ],
     imports: [
         CommonModule,
@@ -121,6 +123,7 @@ import { VehicleOccupationEditorComponent } from './components/vehicle-occupatio
         VehicleLoadUnloadControlsComponent,
         VehicleAvailableSlotsDisplayComponent,
         VehicleOccupationEditorComponent,
+        StartPauseButtonComponent,
     ],
 })
 export class SharedModule {}
