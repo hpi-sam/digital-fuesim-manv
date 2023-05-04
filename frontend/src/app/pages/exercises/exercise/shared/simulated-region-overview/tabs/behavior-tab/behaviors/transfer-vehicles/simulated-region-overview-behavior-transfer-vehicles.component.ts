@@ -24,6 +24,7 @@ import {
     createSelectBehaviorState,
     createSelectElementsInSimulatedRegion,
     selectConfiguration,
+    selectCurrentTime,
     selectHospitals,
     selectPatients,
     selectTransferPoints,
@@ -58,7 +59,12 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
         { vehicleName: string; destination: string; numberOfPatients: number }[]
     >;
     public activeActivities$!: Observable<
-        { vehicleName: string; destination: string; numberOfPatients: number }[]
+        {
+            vehicleName: string;
+            destination: string;
+            numberOfPatients: number;
+            remainingTime: number;
+        }[]
     >;
 
     public vehicleToSend?: Vehicle;
@@ -169,7 +175,14 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
             selectVehicles,
             selectHospitals,
             selectTransferPoints,
-            (activeActivityStates, vehicles, hospitals, transferPoints) =>
+            selectCurrentTime,
+            (
+                activeActivityStates,
+                vehicles,
+                hospitals,
+                transferPoints,
+                currentTime
+            ) =>
                 activeActivityStates.map((activeActivityState) => ({
                     vehicleName:
                         vehicles[activeActivityState.vehicleId]?.name ??
@@ -186,6 +199,10 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
                     numberOfPatients: Object.keys(
                         activeActivityState.patientsToBeLoaded
                     ).length,
+                    remainingTime:
+                        activeActivityState.startTime +
+                        activeActivityState.loadDelay -
+                        currentTime,
                 }))
         );
 

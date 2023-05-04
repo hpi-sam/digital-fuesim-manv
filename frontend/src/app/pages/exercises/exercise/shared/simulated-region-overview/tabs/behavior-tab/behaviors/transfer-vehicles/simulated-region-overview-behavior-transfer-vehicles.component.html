@@ -61,9 +61,10 @@
         >
             <thead>
                 <tr>
-                    <th style="width: 40%">Fahrzeug</th>
-                    <th style="width: 40%">Ziel</th>
+                    <th style="width: 30%">Fahrzeug</th>
+                    <th style="width: 30%">Ziel</th>
                     <th style="width: 20%">Patienten</th>
+                    <th style="width: 20%">Verbleibende Zeit</th>
                 </tr>
             </thead>
 
@@ -77,6 +78,9 @@
                     </td>
                     <td>
                         {{ activeActivity.numberOfPatients }}
+                    </td>
+                    <td>
+                        {{ activeActivity.remainingTime | formatDuration }}
                     </td>
                 </tr>
             </tbody>
