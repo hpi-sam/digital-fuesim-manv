@@ -8,9 +8,9 @@ import type {
 import { Subject } from 'rxjs';
 
 export interface TransferOptions {
-    vehicleToTransfer: Vehicle | undefined;
-    patientsToTransfer: UUIDSet | undefined;
-    transferDestination: Hospital | TransferPoint | undefined;
+    vehicleToTransfer?: Vehicle;
+    patientsToTransfer?: UUIDSet;
+    transferDestination?: Hospital | TransferPoint;
 }
 
 @Injectable()

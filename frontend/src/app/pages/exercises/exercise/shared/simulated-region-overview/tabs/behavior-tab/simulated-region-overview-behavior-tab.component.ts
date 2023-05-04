@@ -32,7 +32,7 @@ export class SimulatedRegionOverviewBehaviorTabComponent
     implements OnChanges, OnInit
 {
     @Input() simulatedRegion!: SimulatedRegion;
-    @Input() transferToStart?: TransferOptions;
+    @Input() initialTransferOptions?: TransferOptions;
 
     public behaviorTypesToBeAdded$!: Observable<
         ExerciseSimulationBehaviorType[]
@@ -44,13 +44,13 @@ export class SimulatedRegionOverviewBehaviorTabComponent
         private readonly store: Store<AppState>
     ) {}
 
-    async ngOnInit(): Promise<void> {
+    async ngOnInit() {
         if (globalLastBehaviorType !== undefined) {
             this.selectedBehavior = this.simulatedRegion.behaviors.find(
                 (behavior) => behavior.type === globalLastBehaviorType
             );
         }
-        if (this.transferToStart) {
+        if (this.initialTransferOptions) {
             this.selectedBehavior = this.simulatedRegion.behaviors.find(
                 (behavior) => behavior.type === 'transferBehavior'
             );

@@ -42,7 +42,7 @@ export class SimulatedRegionOverviewGeneralComponent
 
     selectedPatientId!: UUID;
 
-    transferToStart!: TransferOptions;
+    initialTransferOptions!: TransferOptions;
 
     public transferPointId$!: Observable<UUID>;
 
@@ -88,7 +88,7 @@ export class SimulatedRegionOverviewGeneralComponent
         this.startTransferService.transferOptions
             .pipe(takeUntil(this.destroy$))
             .subscribe((transferOptions) => {
-                this.transferToStart = transferOptions;
+                this.initialTransferOptions = transferOptions;
                 this.activeNavId = 'behaviors';
             });
     }

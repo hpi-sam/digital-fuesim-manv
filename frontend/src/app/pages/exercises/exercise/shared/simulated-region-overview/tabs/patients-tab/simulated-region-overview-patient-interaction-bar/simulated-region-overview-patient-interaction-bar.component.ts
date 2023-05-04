@@ -39,8 +39,9 @@ export class SimulatedRegionOverviewPatientInteractionBarComponent {
     }
 
     public initiatePatientTransfer() {
-        const patientsToTransfer: Mutable<UUIDSet> = {};
-        patientsToTransfer[this.patientId] = true;
+        const patientsToTransfer: Mutable<UUIDSet> = {
+            [this.patientId]: true,
+        };
         this.startTransferService.initiateNewTransferFor({
             vehicleToTransfer: undefined,
             patientsToTransfer,

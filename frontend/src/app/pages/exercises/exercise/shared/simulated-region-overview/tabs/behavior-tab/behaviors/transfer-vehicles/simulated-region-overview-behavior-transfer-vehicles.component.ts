@@ -51,14 +51,14 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
 {
     @Input() simulatedRegionId!: UUID;
     @Input() transferBehaviorId!: UUID;
-    @Input() transferToStart?: TransferOptions;
+    @Input() initialTransferOptions?: TransferOptions;
 
     private readonly destroy$ = new Subject<void>();
     private readonly destroyPatients$ = new Subject<void>();
 
     public minPatients = 0;
 
-    public clickedPatients: { [key: UUID]: boolean } = {};
+    public selectedPatients: { [key: UUID]: boolean } = {};
 
     public bufferedTransfers$!: Observable<
         { vehicleName: string; destination: string; numberOfPatients: number }[]
@@ -67,12 +67,12 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
         { vehicleName: string; destination: string; numberOfPatients: number }[]
     >;
 
-    private _vehicleToSend?: Vehicle | undefined;
-    public get vehicleToSend(): Vehicle | undefined {
-        return this._vehicleToSend;
+    private _selectedVehicle?: Vehicle | undefined;
+    public get selectedVehicle(): Vehicle | undefined {
+        return this._selectedVehicle;
     }
-    public set vehicleToSend(value: Vehicle | undefined) {
-        this._vehicleToSend = value;
+    public set selectedVehicle(value: Vehicle | undefined) {
+        this._selectedVehicle = value;
         this.updatePatientSelection();
     }
 
@@ -132,13 +132,17 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
     }
 
     ngOnInit(): void {
-        if (this.transferToStart) {
+        if (this.initialTransferOptions) {
             this.transferCollapsed = false;
-            this.vehicleToSend = this.transferToStart.vehicleToTransfer;
-            this.selectedDestination = this.transferToStart.transferDestination;
-            this.clickedPatients =
-                cloneDeepMutable(this.transferToStart.patientsToTransfer) ?? {};
-            this.minPatients = Object.values(this.clickedPatients).filter(
+            this.selectedVehicle =
+                this.initialTransferOptions.vehicleToTransfer;
+            this.selectedDestination =
+                this.initialTransferOptions.transferDestination;
+            this.selectedPatients =
+                cloneDeepMutable(
+                    this.initialTransferOptions.patientsToTransfer
+                ) ?? {};
+            this.minPatients = Object.values(this.selectedPatients).filter(
                 (clicked) => clicked
             ).length;
         }
@@ -272,10 +276,10 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
             .pipe(takeUntil(this.destroy$))
             .subscribe((useableVehicles) => {
                 if (
-                    this.vehicleToSend &&
-                    !useableVehicles.includes(this.vehicleToSend)
+                    this.selectedVehicle &&
+                    !useableVehicles.includes(this.selectedVehicle)
                 ) {
-                    this.vehicleToSend = undefined;
+                    this.selectedVehicle = undefined;
                 }
             });
 
@@ -334,27 +338,27 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
 
     public togglePatientSelection(patient: Patient) {
         if (
-            !this.clickedPatients[patient.id] &&
+            !this.selectedPatients[patient.id] &&
             this.minPatients + 1 >
-                (this.vehicleToSend?.patientCapacity ??
+                (this.selectedVehicle?.patientCapacity ??
                     Number.POSITIVE_INFINITY)
         ) {
             return;
         }
 
-        this.clickedPatients[patient.id] = !this.clickedPatients[patient.id];
-        this.minPatients = Object.values(this.clickedPatients).filter(
+        this.selectedPatients[patient.id] = !this.selectedPatients[patient.id];
+        this.minPatients = Object.values(this.selectedPatients).filter(
             (clicked) => clicked
         ).length;
     }
 
     public sendVehicle() {
-        if (!this.vehicleToSend || !this.selectedDestination) {
+        if (!this.selectedVehicle || !this.selectedDestination) {
             return;
         }
 
         const patients: UUIDSet = Object.fromEntries(
-            Object.entries(this.clickedPatients)
+            Object.entries(this.selectedPatients)
                 .filter(([_patientId, clicked]) => clicked)
                 .map(([patientId, _clicked]) => [patientId, true])
         );
@@ -363,14 +367,14 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
             type: '[TransferBehavior] Send Transfer Request Event',
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.transferBehaviorId,
-            vehicleId: this.vehicleToSend.id,
+            vehicleId: this.selectedVehicle.id,
             destinationType: this.selectedDestination.type,
             destinationId: this.selectedDestination.id,
             patients,
         });
 
-        this.clickedPatients = {};
-        this.vehicleToSend = undefined;
+        this.selectedPatients = {};
+        this.selectedVehicle = undefined;
         this.minPatients = 0;
     }
 
@@ -387,7 +391,7 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
             selectPatients,
             (patients) =>
                 Object.values(patients).filter((patient) =>
-                    isInSpecificVehicle(patient, this.vehicleToSend?.id ?? '')
+                    isInSpecificVehicle(patient, this.selectedVehicle?.id ?? '')
                 )
         );
         this.patients$ = this.store.select(
@@ -416,7 +420,7 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
         );
 
         this.patients$.pipe(takeUntil(this.destroy$)).subscribe((patients) => {
-            Object.entries(this.clickedPatients).forEach(
+            Object.entries(this.selectedPatients).forEach(
                 ([patientId, clicked]) => {
                     if (
                         !patients
@@ -426,7 +430,7 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
                         if (clicked) {
                             this.minPatients--;
                         }
-                        delete this.clickedPatients[patientId];
+                        delete this.selectedPatients[patientId];
                     }
                 }
             );

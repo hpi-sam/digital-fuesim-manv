@@ -222,11 +222,11 @@
             class="btn btn-outline-primary"
             [disabled]="
                 useableVehicles.length === 0 ||
-                (useableVehicles.length === 1 && vehicleToSend)
+                (useableVehicles.length === 1 && selectedVehicle)
             "
         >
-            <span *ngIf="vehicleToSend; else noVehicleToSend">{{
-                vehicleToSend.name
+            <span *ngIf="selectedVehicle; else noVehicleToSend">{{
+                selectedVehicle.name
             }}</span>
             <ng-template #noVehicleToSend>
                 <span class="text-muted"> Kein Fahrzeug ausgewählt </span>
@@ -235,7 +235,7 @@
         <div
             *ngIf="
                 useableVehicles.length &&
-                (useableVehicles.length !== 1 || !vehicleToSend)
+                (useableVehicles.length !== 1 || !selectedVehicle)
             "
             ngbDropdownMenu
         >
@@ -243,10 +243,10 @@
                 <ng-container
                     *ngIf="useableVehicle.patientCapacity >= minPatients"
                 >
-                    <ng-container *ngIf="useableVehicle !== vehicleToSend">
+                    <ng-container *ngIf="useableVehicle !== selectedVehicle">
                         <button
                             ngbDropdownItem
-                            (click)="vehicleToSend = useableVehicle"
+                            (click)="selectedVehicle = useableVehicle"
                             class="dropdown-item"
                         >
                             <span class="bi-plus me-1"></span>
@@ -273,7 +273,7 @@
             <tr
                 *ngFor="let patient of patients"
                 (click)="togglePatientSelection(patient)"
-                [class.table-primary]="clickedPatients[patient.id]"
+                [class.table-primary]="selectedPatients[patient.id]"
                 style="cursor: pointer"
             >
                 <td>
@@ -292,7 +292,7 @@
                 <td>
                     <i
                         class="bi bi-check-lg"
-                        [hidden]="!clickedPatients[patient.id]"
+                        [hidden]="!selectedPatients[patient.id]"
                     ></i>
                 </td>
             </tr>
@@ -423,7 +423,7 @@
                     type="button"
                     class="btn btn-primary"
                     (click)="sendVehicle()"
-                    [disabled]="!vehicleToSend || !selectedDestination"
+                    [disabled]="!selectedVehicle || !selectedDestination"
                 >
                     Fahrzeug versenden
                 </button>
