@@ -85,6 +85,10 @@ jobs:
         services:
             postgres:
                 image: postgres:14
+                env:
+                    POSTGRES_DB: ${{ env.POSTGRES_DB }}
+                    POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+                    POSTGRES_USER: ${{ env.POSTGRES_USER }}
                 ports:
                     - 5432:5432
                 # Set health checks to wait until postgres has started
@@ -138,6 +142,10 @@ jobs:
         services:
             postgres:
                 image: postgres:14
+                env:
+                    POSTGRES_DB: ${{ env.POSTGRES_DB }}
+                    POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+                    POSTGRES_USER: ${{ env.POSTGRES_USER }}
                 ports:
                     - 5432:5432
                 # Set health checks to wait until postgres has started
@@ -179,6 +187,10 @@ jobs:
         services:
             postgres:
                 image: postgres:14
+                env:
+                    POSTGRES_DB: ${{ env.POSTGRES_DB }}
+                    POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+                    POSTGRES_USER: ${{ env.POSTGRES_USER }}
                 ports:
                     - 5432:5432
                 # Set health checks to wait until postgres has started
