@@ -10,21 +10,21 @@ ARG DEBIAN_FRONTEND=noninteractive
 # needed to use PRODUCTION_PATH before the first FROM
 ARG PRODUCTION_PATH
 
-# install zip
+# install git and zip
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install --no-install-recommends \
         zip \
         git -y
 
-# git archive the whole repository into a zip file, so users can easily download it
-RUN npm run create-source-code-zip
-
 # add the source code to app
 COPY ./ $PRODUCTION_PATH
 
 # set workdir
 WORKDIR $PRODUCTION_PATH
+
+# git archive the whole repository into a zip file, so users can easily download it
+RUN npm run create-source-code-zip
 
 # install for production and cleanup
 RUN npm run deployment
