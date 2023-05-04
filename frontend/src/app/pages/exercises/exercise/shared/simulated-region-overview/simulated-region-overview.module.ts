@@ -48,6 +48,7 @@ import { RequestVehiclesComponent } from './tabs/behavior-tab/behaviors/request-
 import { SimulatedRegionOverviewPatientInteractionBarComponent } from './tabs/patients-tab/simulated-region-overview-patient-interaction-bar/simulated-region-overview-patient-interaction-bar.component';
 import { SimulatedRegionOverviewVehiclesTabComponent } from './tabs/vehicles-tab/simulated-region-overview-vehicles-tab.component';
 import { SimulatedRegionOverviewPatientsTableComponent } from './patients-table/simulated-region-overview-patients-table.component';
+import { SimulatedRegionOverviewBehaviorTransferVehiclesComponent } from './tabs/behavior-tab/behaviors/transfer-vehicles/simulated-region-overview-behavior-transfer-vehicles.component';
 
 @NgModule({
     declarations: [
@@ -87,6 +88,7 @@ import { SimulatedRegionOverviewPatientsTableComponent } from './patients-table/
         SimulatedRegionOverviewPatientInteractionBarComponent,
         SimulatedRegionOverviewVehiclesTabComponent,
         SimulatedRegionOverviewPatientsTableComponent,
+        SimulatedRegionOverviewBehaviorTransferVehiclesComponent,
     ],
     imports: [
         FormsModule,

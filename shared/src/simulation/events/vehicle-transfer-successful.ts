@@ -10,9 +10,6 @@ export class VehicleTransferSuccessfulEvent implements SimulationEvent {
     readonly type = 'vehicleTransferSuccessfulEvent';
 
     @IsUUID(4, uuidValidationOptions)
-    public readonly id: UUID;
-
-    @IsUUID(4, uuidValidationOptions)
     public readonly targetId: UUID;
 
     @IsString()
@@ -25,13 +22,7 @@ export class VehicleTransferSuccessfulEvent implements SimulationEvent {
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(
-        id: UUID,
-        targetId: UUID,
-        key: string,
-        vehiclesSent: VehicleResource
-    ) {
-        this.id = id;
+    constructor(targetId: UUID, key: string, vehiclesSent: VehicleResource) {
         this.targetId = targetId;
         this.key = key;
         this.vehiclesSent = vehiclesSent;

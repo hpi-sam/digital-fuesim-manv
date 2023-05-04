@@ -1,16 +1,18 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
-import { getCreate, VehicleResource } from '../../models/utils';
+import { cloneDeep } from 'lodash-es';
+import { getCreate } from '../../models/utils';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuid, UUIDSet } from '../../utils';
 import { IsUUIDSet, IsUUIDSetMap, IsValue } from '../../utils/validators';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import {
+    DelayEventActivityState,
     RecurringEventActivityState,
-    TransferVehiclesActivityState,
 } from '../activities';
 import { addActivity } from '../activities/utils';
 import { TryToDistributeEvent } from '../events/try-to-distribute';
 import { nextUUID } from '../utils/randomness';
+import { TransferVehiclesRequestEvent } from '../events';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -44,7 +46,7 @@ export class AutomaticallyDistributeVehiclesBehaviorState
     @IsInt()
     @Min(1)
     /*
-     * This *MUST* be greater that the tick Duration to Ensure that we can wait for a response in the next tick
+     * This *MUST* be greater than about 10 tick durations to Ensure that we can wait for a response
      */
     public readonly distributionDelay: number = 60_000; // 1 minute
 
@@ -180,15 +182,15 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                             }
                             addActivity(
                                 simulatedRegion,
-                                TransferVehiclesActivityState.create(
+                                DelayEventActivityState.create(
                                     nextUUID(draftState),
-                                    region,
-                                    'automatic-distribution',
-                                    VehicleResource.create(
-                                        cloneDeepMutable(
-                                            vehiclesToBeSent[region]!
-                                        )
-                                    )
+                                    TransferVehiclesRequestEvent.create(
+                                        cloneDeep(vehiclesToBeSent[region]!),
+                                        'transferPoint',
+                                        region,
+                                        'automatic-distribution'
+                                    ),
+                                    draftState.currentTime
                                 )
                             );
                         });
@@ -213,33 +215,39 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                         );
                     }
                     break;
-                case 'vehicleTransferSuccessfulEvent':
+                case 'requestReceivedEvent':
                     {
                         if (event.key !== 'automatic-distribution') {
                             return;
                         }
 
-                        Object.entries(
-                            event.vehiclesSent.vehicleCounts
-                        ).forEach(([vehicleType, vehicleAmount]) => {
-                            if (vehicleAmount === 0) {
-                                return;
-                            }
-                            if (
-                                !behaviorState.distributedLastRound[vehicleType]
-                            ) {
+                        Object.entries(event.availableVehicles).forEach(
+                            ([vehicleType, vehicleAmount]) => {
+                                if (vehicleAmount === 0) {
+                                    return;
+                                }
+                                if (
+                                    !behaviorState.distributedLastRound[
+                                        vehicleType
+                                    ]
+                                ) {
+                                    behaviorState.distributedLastRound[
+                                        vehicleType
+                                    ] = 0;
+                                }
                                 behaviorState.distributedLastRound[
                                     vehicleType
-                                ] = 0;
-                            }
-                            behaviorState.distributedLastRound[vehicleType]++;
+                                ]++;
 
-                            if (behaviorState.remainingInNeed[vehicleType]) {
-                                delete behaviorState.remainingInNeed[
-                                    vehicleType
-                                ]![event.targetId];
+                                if (
+                                    behaviorState.remainingInNeed[vehicleType]
+                                ) {
+                                    delete behaviorState.remainingInNeed[
+                                        vehicleType
+                                    ]![event.transferDestinationId];
+                                }
                             }
-                        });
+                        );
                     }
                     break;
 

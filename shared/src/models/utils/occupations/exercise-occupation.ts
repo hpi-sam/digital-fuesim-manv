@@ -3,11 +3,15 @@ import type { Constructor } from '../../../utils';
 import { IntermediateOccupation } from './intermediate-occupation';
 import { Occupation } from './occupation';
 import { NoOccupation } from './no-occupation';
+import { LoadOccupation } from './load-occupation';
+import { WaitForTransferOccupation } from './wait-for-transfer-occupation';
 import { UnloadingOccupation } from './unloading-occupation';
 
 export const occupations = {
     IntermediateOccupation,
     NoOccupation,
+    LoadOccupation,
+    WaitForTransferOccupation,
     UnloadingOccupation,
 };
 
@@ -24,6 +28,8 @@ export type ExerciseOccupationType = ExerciseOccupation['type'];
 export const occupationDictionary: ExerciseOccupationDictionary = {
     intermediateOccupation: IntermediateOccupation,
     noOccupation: NoOccupation,
+    loadOccupation: LoadOccupation,
+    waitForTransferOccupation: WaitForTransferOccupation,
     unloadingOccupation: UnloadingOccupation,
 };
 
