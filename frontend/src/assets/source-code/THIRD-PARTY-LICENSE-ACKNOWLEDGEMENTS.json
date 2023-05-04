@@ -3533,7 +3533,7 @@
         "licenseUrl": "https://github.com/socketio/engine.io-parser/raw/master/LICENSE",
         "parents": "digital-fuesim-manv-frontend"
     },
-    "engine.io@6.2.1": {
+    "engine.io@6.4.2": {
         "licenses": "MIT",
         "repository": "https://github.com/socketio/engine.io",
         "licenseUrl": "https://github.com/socketio/engine.io/raw/master/LICENSE",
@@ -7161,7 +7161,7 @@
         "licenseUrl": "https://github.com/JoshGlazebrook/smart-buffer/raw/master/LICENSE",
         "parents": "digital-fuesim-manv-frontend"
     },
-    "socket.io-adapter@2.4.0": {
+    "socket.io-adapter@2.5.2": {
         "licenses": "MIT",
         "repository": "https://github.com/socketio/socket.io-adapter",
         "licenseUrl": "https://github.com/socketio/socket.io-adapter/raw/master/LICENSE",
@@ -7179,7 +7179,7 @@
         "licenseUrl": "https://github.com/socketio/socket.io-parser/raw/master/LICENSE",
         "parents": "digital-fuesim-manv-frontend"
     },
-    "socket.io@4.5.4": {
+    "socket.io@4.6.1": {
         "licenses": "MIT",
         "repository": "https://github.com/socketio/socket.io",
         "licenseUrl": "https://github.com/socketio/socket.io/raw/master/LICENSE",
@@ -8072,6 +8072,12 @@
         "repository": "https://github.com/npm/write-file-atomic",
         "licenseUrl": "https://github.com/npm/write-file-atomic/raw/master/LICENSE.md",
         "parents": "digital-fuesim-manv-shared"
+    },
+    "ws@8.11.0": {
+        "licenses": "MIT",
+        "repository": "https://github.com/websockets/ws",
+        "licenseUrl": "https://github.com/websockets/ws/raw/master/LICENSE",
+        "parents": "engine.io:digital-fuesim-manv-backend"
     },
     "ws@8.12.0": {
         "licenses": "MIT",
