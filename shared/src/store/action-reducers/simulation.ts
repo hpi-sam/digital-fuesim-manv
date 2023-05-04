@@ -1,4 +1,5 @@
 import {
+    IsBoolean,
     IsInt,
     IsNumber,
     IsOptional,
@@ -127,6 +128,21 @@ export class CreateReportAction implements Action {
 
     @IsLiteralUnion(reportableInformationAllowedValues)
     public readonly informationType!: ReportableInformation;
+}
+
+export class UpdateReportTreatmentStatusChangesAction implements Action {
+    @IsValue('[ReportBehavior] Update report treatment status changes')
+    public readonly type =
+        '[ReportBehavior] Update report treatment status changes';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsBoolean()
+    public readonly reportTreatmentProgressChanges!: boolean;
 }
 
 export class CreateRecurringReportsAction implements Action {
@@ -432,6 +448,32 @@ export namespace SimulationActionReducers {
         rights: 'trainer',
     };
 
+    export const updateReportTreatmentStatusChanges: ActionReducer<UpdateReportTreatmentStatusChangesAction> =
+        {
+            action: UpdateReportTreatmentStatusChangesAction,
+            reducer(
+                draftState,
+                {
+                    simulatedRegionId,
+                    behaviorId,
+                    reportTreatmentProgressChanges,
+                }
+            ) {
+                const reportBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'reportBehavior'
+                );
+
+                reportBehaviorState.reportTreatmentProgressChanges =
+                    reportTreatmentProgressChanges;
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
     export const createRecurringReports: ActionReducer<CreateRecurringReportsAction> =
         {
             action: CreateRecurringReportsAction,
@@ -450,11 +492,6 @@ export namespace SimulationActionReducers {
                     behaviorId,
                     'reportBehavior'
                 );
-                if (!reportBehaviorState) {
-                    throw new ReducerError(
-                        `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}.`
-                    );
-                }
 
                 if (reportBehaviorState.activityIds[informationType]) {
                     throw new ExpectedReducerError(
