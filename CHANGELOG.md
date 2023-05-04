@@ -32,6 +32,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   Its user interface can be used to transfer specific patients in specific vehicles.
     -   Its user interface displays what vehicles are being loaded and what vehicles are waiting for transfer.
 -   Exercises can be started and paused trough a new button in the simulated regions modal, so the modal does not have to be closed to access the button in the toolbar.
+-   The waiting times for vehicles that are getting loaded or are waiting for transfer are shown.
 
 ### Changed
 
