@@ -7,3 +7,4 @@ export * from './provide-personnel-from-vehicles';
 export * from './load-vehicle';
 export * from './send-remote-event';
 export * from './transfer-vehicle';
+export * from './publish-radiogram';

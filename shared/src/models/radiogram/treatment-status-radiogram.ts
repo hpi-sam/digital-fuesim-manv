@@ -34,6 +34,9 @@ export class TreatmentStatusRadiogram implements Radiogram {
     @IsLiteralUnion(treatmentProgressAllowedValues)
     readonly treatmentStatus: TreatmentProgress;
 
+    @IsBoolean()
+    readonly treatmentStatusChanged: boolean = false;
+
     /**
      * @deprecated Use {@link create} instead
      */
