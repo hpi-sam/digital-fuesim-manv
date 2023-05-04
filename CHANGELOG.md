@@ -41,6 +41,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Fixed
 
 -   For Tragetrupp vehicles, the load and unload buttons are now properly disabled.
+-   The patient status display now updates the pregnancy indicator properly.
 
 ## [0.4.1] - 2023-04-20
 
