@@ -11,7 +11,10 @@
     </thead>
     <tbody>
         <tr
-            *ngFor="let patient of patients"
+            *ngFor="
+                let patient of patients;
+                trackBy: 'id' | appTrackByProperty : patients
+            "
             (click)="selectPatientService.selectPatient(patient.id)"
             [class.table-primary]="selectedPatientId === patient.id"
             style="cursor: pointer"

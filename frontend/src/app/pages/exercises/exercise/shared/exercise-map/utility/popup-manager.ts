@@ -7,7 +7,7 @@ import { Subject, takeUntil } from 'rxjs';
 import type OlMap from 'ol/Map';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { isEqual } from 'lodash-es';
-import type { Positioning } from '../../utility/types/positioning';
+import type { Positioning } from '../../utils/types/positioning';
 import type { FeatureManager } from './feature-manager';
 import type { PopupService } from './popup.service';
 

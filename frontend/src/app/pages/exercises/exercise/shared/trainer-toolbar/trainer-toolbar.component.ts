@@ -10,7 +10,6 @@ import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectExerciseId } from 'src/app/state/application/selectors/application.selectors';
 import { selectExerciseStatus } from 'src/app/state/application/selectors/exercise.selectors';
-import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { openAlarmGroupOverviewModal } from '../alarm-group-overview/open-alarm-group-overview-modal';
 import { openClientOverviewModal } from '../client-overview/open-client-overview-modal';
@@ -70,58 +69,6 @@ export class TrainerToolbarComponent {
 
     public openSimulatedRegions() {
         openSimulatedRegionsModal(this.modalService);
-    }
-
-    public async pauseExercise() {
-        const response = await this.exerciseService.proposeAction({
-            type: '[Exercise] Pause',
-        });
-        if (response.success) {
-            this.sendLogAction(
-                `Übung wurde pausiert. (${this.getCurrentDate()})`
-            );
-        }
-    }
-
-    public async startExercise() {
-        if (
-            selectStateSnapshot(selectExerciseStatus, this.store) ===
-            'notStarted'
-        ) {
-            const confirmStart = await this.confirmationModalService.confirm({
-                title: 'Übung starten',
-                description: 'Möchten Sie die Übung wirklich starten?',
-            });
-            if (!confirmStart) {
-                return;
-            }
-        }
-        const response = await this.exerciseService.proposeAction({
-            type: '[Exercise] Start',
-        });
-        if (response.success) {
-            this.sendLogAction(
-                `Übung wurde gestartet. (${this.getCurrentDate()})`
-            );
-        }
-    }
-
-    private sendLogAction(message: string) {
-        this.exerciseService.proposeAction({
-            type: '[Emergency Operation Center] Add Log Entry',
-            name: selectStateSnapshot(selectOwnClient, this.store)!.name,
-            message,
-        });
-    }
-
-    private getCurrentDate(): string {
-        return new Date().toLocaleDateString('de-De', {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
     }
 
     public async deleteExercise() {
