@@ -58,6 +58,7 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
     public bufferedTransfers$!: Observable<
         { vehicleName: string; destination: string; numberOfPatients: number }[]
     >;
+    public bufferDelay$!: Observable<number>;
     public activeActivities$!: Observable<
         {
             vehicleName: string;
@@ -163,6 +164,42 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
                             {}
                     ).length,
                 }))
+        );
+
+        const activeRecurringEventActivityStatesSelector =
+            createSelectActivityStatesByType(
+                this.simulatedRegionId,
+                'recurringEventActivity'
+            );
+
+        const bufferDelaySelector = createSelector(
+            transferBehaviorStateSelector,
+            activeRecurringEventActivityStatesSelector,
+            selectCurrentTime,
+            (
+                transferBehaviorState,
+                activeRecurringEventActivityStates,
+                currentTime
+            ) => {
+                if (transferBehaviorState.recurringActivityId) {
+                    const recurringEventActivity =
+                        activeRecurringEventActivityStates.find(
+                            (activity) =>
+                                activity.id ===
+                                transferBehaviorState.recurringActivityId
+                        );
+
+                    if (recurringEventActivity) {
+                        return (
+                            recurringEventActivity.lastOccurrenceTime +
+                            recurringEventActivity.recurrenceIntervalTime -
+                            currentTime
+                        );
+                    }
+                }
+
+                return 0;
+            }
         );
 
         const activeActivityStatesSelector = createSelectActivityStatesByType(
@@ -271,6 +308,7 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
             )
         );
         this.bufferedTransfers$ = this.store.select(bufferedTransfersSelector);
+        this.bufferDelay$ = this.store.select(bufferDelaySelector);
         this.activeActivities$ = this.store.select(activeActivitiesSelector);
         this.transferBehaviorState$ = this.store.select(
             transferBehaviorStateSelector
