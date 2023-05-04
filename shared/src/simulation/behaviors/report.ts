@@ -37,7 +37,7 @@ export class ReportBehaviorState implements SimulationBehaviorState {
     public readonly activityIds: { [key in ReportableInformation]?: UUID } = {};
 
     @IsBoolean()
-    public readonly reportTreatmentProgressChanges = true;
+    public readonly reportTreatmentProgressChanges: boolean = true;
 
     static readonly create = getCreate(this);
 }
