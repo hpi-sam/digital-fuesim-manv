@@ -9,7 +9,6 @@ import {
     selectConfiguration,
     selectPatients,
 } from 'src/app/state/application/selectors/exercise.selectors';
-import { SelectPatientService } from '../../../select-patient.service';
 import { comparePatientsByVisibleStatus } from '../../compare-patients';
 import type { PatientWithVisibleStatus } from '../../../patients-table/simulated-region-overview-patients-table.component';
 
@@ -24,10 +23,7 @@ export class SimulatedRegionOverviewPatientsTabComponent implements OnInit {
 
     patients$!: Observable<PatientWithVisibleStatus[]>;
 
-    constructor(
-        private readonly store: Store<AppState>,
-        readonly selectPatientService: SelectPatientService
-    ) {}
+    constructor(private readonly store: Store<AppState>) {}
 
     ngOnInit(): void {
         this.patients$ = this.store.select(
