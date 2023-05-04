@@ -1,4 +1,4 @@
-import type { OnInit } from '@angular/core';
+import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Tags } from 'digital-fuesim-manv-shared';
 
@@ -7,10 +7,11 @@ import { Tags } from 'digital-fuesim-manv-shared';
     templateUrl: './patient-status-tags-field.component.html',
     styleUrls: ['./patient-status-tags-field.component.scss'],
 })
-export class PatientStatusTagsFieldComponent implements OnInit {
+export class PatientStatusTagsFieldComponent implements OnChanges {
     @Input() patientStatusTagsField!: Tags;
     isPregnant!: boolean;
-    ngOnInit(): void {
+
+    ngOnChanges(): void {
         this.isPregnant = this.patientStatusTagsField.includes('P');
     }
 }
