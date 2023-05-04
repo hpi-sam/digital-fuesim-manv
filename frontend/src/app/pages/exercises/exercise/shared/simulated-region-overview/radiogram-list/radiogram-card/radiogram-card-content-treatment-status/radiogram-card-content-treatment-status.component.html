@@ -1,6 +1,17 @@
 <h5 class="card-title">Behandlungsphase</h5>
+<span *ngIf="(radiogram$ | async)?.treatmentStatusChanged">
+    Der Behandlungsfortschritt hat sich geändert.
+</span>
 <div class="card-text row align-items-center">
-    <span class="col-sm">Derzeitige Phase:</span>
+    <span
+        *ngIf="(radiogram$ | async)?.treatmentStatusChanged; else notChanged"
+        class="col-sm"
+    >
+        Neue Phase:
+    </span>
+    <ng-template #notChanged>
+        <span class="col-sm">Derzeitige Phase:</span>
+    </ng-template>
     <div class="col-sm">
         <app-treatment-status-badge
             [treatmentProgress]="

@@ -10,6 +10,7 @@ import { createRequestActivity } from './create-request';
 import { loadVehicleActivity } from './load-vehicle';
 import { sendRemoteEventActivity } from './send-remote-event';
 import { transferVehicleActivity } from './transfer-vehicle';
+import { publishRadiogramActivity } from './publish-radiogram';
 
 export const simulationActivities = {
     reassignTreatmentsActivity,
@@ -22,6 +23,7 @@ export const simulationActivities = {
     loadVehicleActivity,
     sendRemoteEventActivity,
     transferVehicleActivity,
+    publishRadiogramActivity,
 };
 
 export type ExerciseSimulationActivity =

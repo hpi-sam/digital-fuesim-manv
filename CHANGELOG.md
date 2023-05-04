@@ -32,13 +32,15 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   Its user interface can be used to transfer specific patients in specific vehicles.
     -   Its user interface displays what vehicles are being loaded and what vehicles are waiting for transfer.
 -   Exercises can be started and paused trough a new button in the simulated regions modal, so the modal does not have to be closed to access the button in the toolbar.
-- this software has now a license (with some exceptions), see LICENSE-README.md
+-   Changes of the treatment progress can now be reported automatically.
+-   this software has now a license (with some exceptions), see LICENSE-README.md
+
 ### Changed
 
 -   Loading or unloading a vehicle from its popup does not close the popup automatically.
 -   Patient treatment sorts the patients by their UUID before triaging or assigning treatments in simulated regions. This way, the order of triage does not depend on the order the patients have been added.
-- the software includes a file with third party acknoledgments, a license.html and the docker container will include a git archive of the source code downloadable in zip format
-- new npm run commands for licensing (third party acknowledgements) and creating source code archive
+-   the software includes a file with third party acknoledgments, a license.html and the docker container will include a git archive of the source code downloadable in zip format
+-   new npm run commands for licensing (third party acknowledgements) and creating source code archive
 
 ### Fixed
 
