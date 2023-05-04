@@ -31,6 +31,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   There is now a behavior that transfers patients. It has configurable load times and delay between transfers.
     -   Its user interface can be used to transfer specific patients in specific vehicles.
     -   Its user interface displays what vehicles are being loaded and what vehicles are waiting for transfer.
+-   Exercises can be started and paused trough a new button in the simulated regions modal, so the modal does not have to be closed to access the button in the toolbar.
 
 ### Changed
 
@@ -40,6 +41,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Fixed
 
 -   For Tragetrupp vehicles, the load and unload buttons are now properly disabled.
+-   The patient status display now updates the pregnancy indicator properly.
 
 ## [0.4.1] - 2023-04-20
 
