@@ -52,17 +52,17 @@ export class SimulatedRegionOverviewBehaviorTabComponent
         }
         if (this.transferToStart) {
             this.selectedBehavior = this.simulatedRegion.behaviors.find(
-                (behavior) => behavior.type === 'assignLeaderBehavior'
+                (behavior) => behavior.type === 'transferBehavior'
             );
             if (!this.selectedBehavior) {
                 await this.exerciseService.proposeAction({
                     type: '[SimulatedRegion] Add Behavior',
                     simulatedRegionId: this.simulatedRegion.id,
                     behaviorState:
-                        simulationBehaviorDictionary.assignLeaderBehavior.behaviorState.create(),
+                        simulationBehaviorDictionary.transferBehavior.behaviorState.create(),
                 });
                 this.selectedBehavior = this.simulatedRegion.behaviors.find(
-                    (behavior) => behavior.type === 'assignLeaderBehavior'
+                    (behavior) => behavior.type === 'transferBehavior'
                 );
             }
         }

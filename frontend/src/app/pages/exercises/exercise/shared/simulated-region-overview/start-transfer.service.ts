@@ -2,16 +2,16 @@ import { Injectable } from '@angular/core';
 import type {
     Hospital,
     TransferPoint,
-    UUID,
     UUIDSet,
+    Vehicle,
 } from 'digital-fuesim-manv-shared';
 import { Subject } from 'rxjs';
 
-export type TransferOptions = [
-    UUID | undefined,
-    UUIDSet | undefined,
-    Hospital | TransferPoint | undefined
-];
+export interface TransferOptions {
+    vehicleToTransfer: Vehicle | undefined;
+    patientsToTransfer: UUIDSet | undefined;
+    transferDestination: Hospital | TransferPoint | undefined;
+}
 
 @Injectable()
 export class StartTransferService {

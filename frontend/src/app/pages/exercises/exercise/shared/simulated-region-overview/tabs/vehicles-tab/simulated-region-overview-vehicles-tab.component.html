@@ -103,7 +103,7 @@
                 </div>
                 <div class="d-flex flex-row-reverse">
                     <button
-                        class="btn btn-danger ms-1"
+                        class="btn btn-outline-danger ms-1"
                         type="button"
                         (click)="removeVehicle(selection.vehicle.id)"
                         ngbTooltip="Personal, Material und ggfs Patienten des Fahrzeug werden ebenfalls gelöscht!"
@@ -124,7 +124,7 @@
                         class="btn btn-outline-secondary"
                         type="button"
                         (click)="initiateVehicleTransfer(selection.vehicle)"
-                        ngbTooltip="Dies fügt, wenn noch nicht vorhanden, dem Bereich das Transfer Verhalten hinzu."
+                        ngbTooltip="Dies fügt, wenn noch nicht vorhanden, dem Bereich das Fahrzeuge Versenden Verhalten hinzu. Personal und Material im Fahrzeug werden ebenfalls transferiert. Patienten im Fahrzeug werden automatisch vorausgewählt."
                     >
                         <span class="bi bi-sign-turn-slight-right me-1"></span>
                         Transferieren

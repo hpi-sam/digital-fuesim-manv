@@ -304,118 +304,130 @@
         </p>
     </ng-template>
 
-    <div class="col-sm">
-        <ng-container
-            *ngIf="reachableTransferPoints$ | async as reachableTransferPoints"
-        >
+    <div class="row align-items-end justify-content-between flex-shrink-1 mt-3">
+        <div class="col-sm mh-100">
             <ng-container
-                *ngIf="reachableHospitals$ | async as reachableHospitals"
+                *ngIf="
+                    reachableTransferPoints$ | async as reachableTransferPoints
+                "
             >
-                <div
-                    ngbDropdown
-                    placement="bottom-start"
-                    autoClose="outside"
-                    class="d-inline-block overflow-visible text-center m-3"
+                <ng-container
+                    *ngIf="reachableHospitals$ | async as reachableHospitals"
                 >
-                    <button
-                        ngbDropdownToggle
-                        type="button"
-                        class="btn btn-outline-primary"
-                        [disabled]="
-                            reachableTransferPoints.length +
-                                reachableHospitals.length ===
-                                0 ||
-                            (reachableTransferPoints.length +
-                                reachableHospitals.length ===
-                                1 &&
-                                selectedDestination)
-                        "
-                    >
-                        <span
-                            *ngIf="
-                                selectedDestination;
-                                else noSelectedDestination
-                            "
-                            >{{
-                                selectedDestination.name
-                                    ? selectedDestination.name
-                                    : selectedDestination.externalName
-                            }}</span
-                        >
-                        <ng-template #noSelectedDestination>
-                            <span class="text-muted">
-                                Kein Ziel ausgewählt
-                            </span>
-                        </ng-template>
-                    </button>
                     <div
-                        *ngIf="
-                            reachableTransferPoints.length +
-                                reachableHospitals.length &&
-                            (reachableTransferPoints.length +
-                                reachableHospitals.length !==
-                                1 ||
-                                !selectedDestination)
-                        "
-                        ngbDropdownMenu
+                        ngbDropdown
+                        placement="bottom-start"
+                        autoClose="outside"
+                        class="d-inline-block overflow-visible text-center c"
                     >
-                        <ng-container
-                            *ngFor="
-                                let reachableTransferPoint of reachableTransferPoints
+                        <button
+                            ngbDropdownToggle
+                            type="button"
+                            class="btn btn-outline-primary"
+                            [disabled]="
+                                reachableTransferPoints.length +
+                                    reachableHospitals.length ===
+                                    0 ||
+                                (reachableTransferPoints.length +
+                                    reachableHospitals.length ===
+                                    1 &&
+                                    selectedDestination)
                             "
                         >
-                            <ng-container
+                            <span
                                 *ngIf="
-                                    reachableTransferPoint !==
-                                    selectedDestination
+                                    selectedDestination;
+                                    else noSelectedDestination
                                 "
+                                >{{
+                                    selectedDestination.name
+                                        ? selectedDestination.name
+                                        : selectedDestination.externalName
+                                }}</span
                             >
-                                <button
-                                    ngbDropdownItem
-                                    (click)="
-                                        selectedDestination =
-                                            reachableTransferPoint
-                                    "
-                                    class="dropdown-item"
-                                >
-                                    <span class="bi-plus me-1"></span>
-                                    {{ reachableTransferPoint.externalName }}
-                                </button>
-                            </ng-container>
-                        </ng-container>
-                        <ng-container
-                            *ngFor="let reachableHospital of reachableHospitals"
+                            <ng-template #noSelectedDestination>
+                                <span class="text-muted">
+                                    Kein Ziel ausgewählt
+                                </span>
+                            </ng-template>
+                        </button>
+                        <div
+                            *ngIf="
+                                reachableTransferPoints.length +
+                                    reachableHospitals.length &&
+                                (reachableTransferPoints.length +
+                                    reachableHospitals.length !==
+                                    1 ||
+                                    !selectedDestination)
+                            "
+                            ngbDropdownMenu
                         >
                             <ng-container
-                                *ngIf="
-                                    reachableHospital !== selectedDestination
+                                *ngFor="
+                                    let reachableTransferPoint of reachableTransferPoints
                                 "
                             >
-                                <button
-                                    ngbDropdownItem
-                                    (click)="
-                                        selectedDestination = reachableHospital
+                                <ng-container
+                                    *ngIf="
+                                        reachableTransferPoint !==
+                                        selectedDestination
                                     "
-                                    class="dropdown-item"
                                 >
-                                    <span class="bi-plus me-1"></span>
-                                    {{ reachableHospital.name }}
-                                </button>
+                                    <button
+                                        ngbDropdownItem
+                                        (click)="
+                                            selectedDestination =
+                                                reachableTransferPoint
+                                        "
+                                        class="dropdown-item"
+                                    >
+                                        <span class="bi-plus me-1"></span>
+                                        {{
+                                            reachableTransferPoint.externalName
+                                        }}
+                                    </button>
+                                </ng-container>
                             </ng-container>
-                        </ng-container>
+                            <ng-container
+                                *ngFor="
+                                    let reachableHospital of reachableHospitals
+                                "
+                            >
+                                <ng-container
+                                    *ngIf="
+                                        reachableHospital !==
+                                        selectedDestination
+                                    "
+                                >
+                                    <button
+                                        ngbDropdownItem
+                                        (click)="
+                                            selectedDestination =
+                                                reachableHospital
+                                        "
+                                        class="dropdown-item"
+                                    >
+                                        <span class="bi-plus me-1"></span>
+                                        {{ reachableHospital.name }}
+                                    </button>
+                                </ng-container>
+                            </ng-container>
+                        </div>
                     </div>
-                </div>
+                </ng-container>
             </ng-container>
-        </ng-container>
-        <div class="d-inline-block float-end">
-            <button
-                type="button"
-                class="btn btn-primary"
-                (click)="sendVehicle()"
-                [disabled]="!vehicleToSend || !selectedDestination"
-            >
-                Fahrzeug versenden
-            </button>
+        </div>
+        <div class="col-sm">
+            <div class="d-inline-block float-end">
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    (click)="sendVehicle()"
+                    [disabled]="!vehicleToSend || !selectedDestination"
+                >
+                    Fahrzeug versenden
+                </button>
+            </div>
         </div>
     </div>
 </div>

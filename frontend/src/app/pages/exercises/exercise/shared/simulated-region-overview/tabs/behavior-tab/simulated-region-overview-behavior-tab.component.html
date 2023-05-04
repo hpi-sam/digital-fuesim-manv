@@ -71,6 +71,7 @@
                     *ngSwitchCase="'transferBehavior'"
                     [simulatedRegionId]="simulatedRegion.id"
                     [transferBehaviorId]="selectedBehavior!.id"
+                    [transferToStart]="transferToStart"
                 ></app-simulated-region-overview-behavior-transfer-vehicles>
                 <p *ngSwitchDefault class="text-muted font-bold">
                     Es ist noch keine Verhaltensweise ausgewählt.

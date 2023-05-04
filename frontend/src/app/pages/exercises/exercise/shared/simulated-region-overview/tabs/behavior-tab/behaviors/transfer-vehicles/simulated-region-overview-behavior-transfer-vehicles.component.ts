@@ -11,6 +11,8 @@ import type {
     Vehicle,
 } from 'digital-fuesim-manv-shared';
 import {
+    cloneDeepMutable,
+    isInSpecificVehicle,
     isInSpecificSimulatedRegion,
     Patient,
     UUID,
@@ -30,6 +32,7 @@ import {
     selectVehicles,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { comparePatientsByVisibleStatus } from '../../../compare-patients';
+import { TransferOptions } from '../../../../start-transfer.service';
 
 let globalLastInformationCollapsed = true;
 let globalLastSettingsCollapsed = true;
@@ -48,8 +51,11 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
 {
     @Input() simulatedRegionId!: UUID;
     @Input() transferBehaviorId!: UUID;
+    @Input() transferToStart?: TransferOptions;
 
     private readonly destroy$ = new Subject<void>();
+    private readonly destroyPatients$ = new Subject<void>();
+
     public minPatients = 0;
 
     public clickedPatients: { [key: UUID]: boolean } = {};
@@ -61,7 +67,14 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
         { vehicleName: string; destination: string; numberOfPatients: number }[]
     >;
 
-    public vehicleToSend?: Vehicle;
+    private _vehicleToSend?: Vehicle | undefined;
+    public get vehicleToSend(): Vehicle | undefined {
+        return this._vehicleToSend;
+    }
+    public set vehicleToSend(value: Vehicle | undefined) {
+        this._vehicleToSend = value;
+        this.updatePatientSelection();
+    }
 
     public useableVehicles$!: Observable<Vehicle[]>;
 
@@ -119,6 +132,17 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
     }
 
     ngOnInit(): void {
+        if (this.transferToStart) {
+            this.transferCollapsed = false;
+            this.vehicleToSend = this.transferToStart.vehicleToTransfer;
+            this.selectedDestination = this.transferToStart.transferDestination;
+            this.clickedPatients =
+                cloneDeepMutable(this.transferToStart.patientsToTransfer) ?? {};
+            this.minPatients = Object.values(this.clickedPatients).filter(
+                (clicked) => clicked
+            ).length;
+        }
+
         const transferBehaviorStateSelector: MemoizedSelector<
             AppState,
             TransferBehaviorState
@@ -206,12 +230,6 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
                 this.simulatedRegionId
             );
 
-        const patientsInSimulatedRegionSelector =
-            createSelectElementsInSimulatedRegion(
-                selectPatients,
-                this.simulatedRegionId
-            );
-
         const reachableTransferPointsSelector = createSelector(
             selectTransferPoints,
             ownTransferPointSelector,
@@ -230,29 +248,6 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
                 )
         );
 
-        this.patients$ = this.store.select(
-            createSelector(
-                patientsInSimulatedRegionSelector,
-                selectConfiguration,
-                (patients, configuration) =>
-                    patients
-                        .sort((patientA, patientB) =>
-                            comparePatientsByVisibleStatus(
-                                patientA,
-                                patientB,
-                                configuration
-                            )
-                        )
-                        .map((patient) => ({
-                            visibleStatus: Patient.getVisibleStatus(
-                                patient,
-                                configuration.pretriageEnabled,
-                                configuration.bluePatientsEnabled
-                            ),
-                            ...patient,
-                        }))
-            )
-        );
         this.bufferedTransfers$ = this.store.select(bufferedTransfersSelector);
         this.activeActivities$ = this.store.select(activeActivitiesSelector);
         this.transferBehaviorState$ = this.store.select(
@@ -269,6 +264,8 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
             reachableHospitalsSelector
         );
 
+        this.updatePatientSelection();
+
         // remove selected elements if deleted
 
         this.useableVehicles$
@@ -281,23 +278,6 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
                     this.vehicleToSend = undefined;
                 }
             });
-
-        this.patients$.pipe(takeUntil(this.destroy$)).subscribe((patients) => {
-            Object.entries(this.clickedPatients).forEach(
-                ([patientId, clicked]) => {
-                    if (
-                        !patients
-                            .map((patient) => patient.id)
-                            .includes(patientId)
-                    ) {
-                        if (clicked) {
-                            this.minPatients--;
-                        }
-                        delete this.clickedPatients[patientId];
-                    }
-                }
-            );
-        });
 
         this.reachableHospitals$
             .pipe(takeUntil(this.destroy$))
@@ -324,6 +304,7 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
 
     ngOnDestroy(): void {
         this.destroy$.next();
+        this.destroyPatients$.next();
     }
 
     public updatePatientLoadTime(loadTimePerPatient: number) {
@@ -360,6 +341,7 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
         ) {
             return;
         }
+
         this.clickedPatients[patient.id] = !this.clickedPatients[patient.id];
         this.minPatients = Object.values(this.clickedPatients).filter(
             (clicked) => clicked
@@ -390,5 +372,64 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
         this.clickedPatients = {};
         this.vehicleToSend = undefined;
         this.minPatients = 0;
+    }
+
+    private updatePatientSelection() {
+        this.destroyPatients$.next();
+
+        const patientsInSimulatedRegionSelector =
+            createSelectElementsInSimulatedRegion(
+                selectPatients,
+                this.simulatedRegionId
+            );
+
+        const patientsInSelectedVehicleSelector = createSelector(
+            selectPatients,
+            (patients) =>
+                Object.values(patients).filter((patient) =>
+                    isInSpecificVehicle(patient, this.vehicleToSend?.id ?? '')
+                )
+        );
+        this.patients$ = this.store.select(
+            createSelector(
+                patientsInSimulatedRegionSelector,
+                patientsInSelectedVehicleSelector,
+                selectConfiguration,
+                (patientsInRegion, patientsInVehicle, configuration) =>
+                    [...patientsInRegion, ...patientsInVehicle]
+                        .sort((patientA, patientB) =>
+                            comparePatientsByVisibleStatus(
+                                patientA,
+                                patientB,
+                                configuration
+                            )
+                        )
+                        .map((patient) => ({
+                            visibleStatus: Patient.getVisibleStatus(
+                                patient,
+                                configuration.pretriageEnabled,
+                                configuration.bluePatientsEnabled
+                            ),
+                            ...patient,
+                        }))
+            )
+        );
+
+        this.patients$.pipe(takeUntil(this.destroy$)).subscribe((patients) => {
+            Object.entries(this.clickedPatients).forEach(
+                ([patientId, clicked]) => {
+                    if (
+                        !patients
+                            .map((patient) => patient.id)
+                            .includes(patientId)
+                    ) {
+                        if (clicked) {
+                            this.minPatients--;
+                        }
+                        delete this.clickedPatients[patientId];
+                    }
+                }
+            );
+        });
     }
 }

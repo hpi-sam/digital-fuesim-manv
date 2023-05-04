@@ -179,10 +179,10 @@ export class SimulatedRegionOverviewVehiclesTabComponent implements OnInit {
     }
 
     public initiateVehicleTransfer(vehicle: Vehicle) {
-        this.startTransferService.initiateNewTransferFor([
-            vehicle.id,
-            vehicle.patientIds,
-            undefined,
-        ]);
+        this.startTransferService.initiateNewTransferFor({
+            vehicleToTransfer: vehicle,
+            patientsToTransfer: vehicle.patientIds,
+            transferDestination: undefined,
+        });
     }
 }
