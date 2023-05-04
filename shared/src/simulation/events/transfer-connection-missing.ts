@@ -1,4 +1,4 @@
-import { IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
@@ -14,12 +14,17 @@ export class TransferConnectionMissingEvent implements SimulationEvent {
     @IsUUID(4, uuidValidationOptions)
     public readonly transferPointId: UUID;
 
+    @IsOptional()
+    @IsString()
+    public readonly key?: string;
+
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(id: UUID, transferPointId: UUID) {
+    constructor(id: UUID, transferPointId: UUID, key?: string) {
         this.id = id;
         this.transferPointId = transferPointId;
+        this.key = key;
     }
 
     static readonly create = getCreate(this);

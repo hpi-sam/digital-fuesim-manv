@@ -6,8 +6,10 @@ import { unloadVehicleActivity } from './unload-vehicle';
 import { recurringEventActivity } from './recurring-event';
 import { generateReportActivity } from './generate-report';
 import { providePersonnelFromVehiclesActivity } from './provide-personnel-from-vehicles';
-import { transferVehiclesActivity } from './transfer-vehicles';
 import { createRequestActivity } from './create-request';
+import { loadVehicleActivity } from './load-vehicle';
+import { sendRemoteEventActivity } from './send-remote-event';
+import { transferVehicleActivity } from './transfer-vehicle';
 
 export const simulationActivities = {
     reassignTreatmentsActivity,
@@ -16,8 +18,10 @@ export const simulationActivities = {
     recurringEventActivity,
     generateReportActivity,
     providePersonnelFromVehiclesActivity,
-    transferVehiclesActivity,
     createRequestActivity,
+    loadVehicleActivity,
+    sendRemoteEventActivity,
+    transferVehicleActivity,
 };
 
 export type ExerciseSimulationActivity =

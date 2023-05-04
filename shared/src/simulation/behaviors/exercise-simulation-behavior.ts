@@ -8,6 +8,7 @@ import { automaticallyDistributeVehiclesBehavior } from './automatically-distrib
 import { providePersonnelBehavior } from './provide-personnel';
 import { answerRequestsBehavior } from './answer-requests';
 import { requestBehavior } from './request';
+import { transferBehavior } from './transfer';
 
 export const simulationBehaviors = {
     automaticallyDistributeVehiclesBehavior,
@@ -18,6 +19,7 @@ export const simulationBehaviors = {
     providePersonnelBehavior,
     answerRequestsBehavior,
     requestBehavior,
+    transferBehavior,
 };
 
 export type ExerciseSimulationBehavior =

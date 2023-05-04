@@ -38,6 +38,20 @@ export class SimulatedRegion {
     @IsString()
     public readonly borderColor: string;
 
+    @Type(...simulationEventTypeOptions)
+    @ValidateNested()
+    public readonly inEvents: readonly ExerciseSimulationEvent[] = [];
+
+    @Type(...simulationBehaviorTypeOptions)
+    @ValidateNested()
+    public readonly behaviors: readonly ExerciseSimulationBehaviorState[] = [];
+
+    @IsMultiTypedIdMap(getSimulationActivityConstructor)
+    @ValidateNested()
+    public readonly activities: {
+        readonly [stateId: UUID]: ExerciseSimulationActivityState;
+    } = {};
+
     /**
      * @param position top-left position
      * @deprecated Use {@link create} instead
@@ -53,20 +67,6 @@ export class SimulatedRegion {
         this.name = name;
         this.borderColor = borderColor;
     }
-
-    @Type(...simulationEventTypeOptions)
-    @ValidateNested()
-    public readonly inEvents: readonly ExerciseSimulationEvent[] = [];
-
-    @Type(...simulationBehaviorTypeOptions)
-    @ValidateNested()
-    public readonly behaviors: readonly ExerciseSimulationBehaviorState[] = [];
-
-    @IsMultiTypedIdMap(getSimulationActivityConstructor)
-    @ValidateNested()
-    public readonly activities: {
-        readonly [stateId: UUID]: ExerciseSimulationActivityState;
-    } = {};
 
     static readonly create = getCreate(this);
 
