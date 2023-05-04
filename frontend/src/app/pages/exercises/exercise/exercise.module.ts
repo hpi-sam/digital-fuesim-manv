@@ -20,6 +20,7 @@ import { TimeTravelComponent } from './shared/time-travel/time-travel.component'
 import { TrainerMapEditorComponent } from './shared/trainer-map-editor/trainer-map-editor.component';
 import { TrainerToolbarComponent } from './shared/trainer-toolbar/trainer-toolbar.component';
 import { TransferOverviewModule } from './shared/transfer-overview/transfer-overview.module';
+import { StartPauseButtonComponent } from './shared/start-pause-button/start-pause-button.component';
 
 @NgModule({
     declarations: [
@@ -32,6 +33,7 @@ import { TransferOverviewModule } from './shared/transfer-overview/transfer-over
         CreateImageTemplateModalComponent,
         EditImageTemplateModalComponent,
         ImageTemplateFormComponent,
+        StartPauseButtonComponent,
     ],
     imports: [
         CommonModule,
