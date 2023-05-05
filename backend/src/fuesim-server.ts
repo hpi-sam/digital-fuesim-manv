@@ -71,6 +71,34 @@ export class FuesimServer {
         this.saveTickInterval
     );
 
+    // 1 month in minutes
+    private readonly keepExerciseTime = 43_800;
+
+    private readonly cleanupTick = async () => {
+        exerciseMap.forEach((exercise, key) => {
+            // Only use exercises referenced by their trainer id (8 characters) to not choose the same exercise twice
+            // TODO: maybe put this `8` for the length of trainerId in some config file
+            if (key.length !== 8) {
+                return;
+            }
+            if (
+                exercise.ExerciseIsWithoutClients() &&
+                Math.floor(
+                    (Date.now() - exercise.sinceExerciseWithoutClients) / 60_000
+                ) > this.keepExerciseTime
+            ) {
+                exercise.deleteExercise();
+            }
+        });
+    };
+
+    private readonly cleanupTickInterval = 10_000;
+
+    private readonly cleanupHandler = new PeriodicEventHandler(
+        this.cleanupTick,
+        this.cleanupTickInterval
+    );
+
     constructor(private readonly databaseService: DatabaseService) {
         const app = express();
         this._websocketServer = new ExerciseWebsocketServer(app);
@@ -78,6 +106,13 @@ export class FuesimServer {
         if (Config.useDb) {
             this.saveHandler.start();
         }
+        // TODO: create ENV for useCleanup, where the time in minutes/hours is saved
+        // 0 would be "disabled"
+        // set a viable default value, maybe something like 1 month
+        // if(Config.useCleanup > 0) {
+
+        // }
+        this.cleanupHandler.start();
     }
 
     public get websocketServer(): ExerciseWebsocketServer {
@@ -92,6 +127,7 @@ export class FuesimServer {
         this.httpServer.close();
         this.websocketServer.close();
         this.saveHandler.pause();
+        this.cleanupHandler.pause();
         // Save all remaining instances, if it's still possible
         if (this.databaseService.isInitialized) {
             await this.saveTick();

@@ -17,6 +17,7 @@ import {
 } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import { LessThan } from 'typeorm';
+import { IsInt, Min } from 'class-validator';
 import { Config } from '../config';
 import type { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
 import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
@@ -194,6 +195,17 @@ export class ExerciseWrapper extends NormalType<
     tickCounter = 0;
 
     /**
+     * Saves the unix time after the last client disconnected.
+     * Only gets updated in this case.
+     * So the size of clients connected has to be checked first.
+     * This way it can be cleaned up, if not accessed for a while
+     * TODO: (can be set via ENV).
+     */
+    @IsInt()
+    @Min(0)
+    public sinceExerciseWithoutClients = Date.now();
+
+    /**
      * The server always uses `null` as their emitter id.
      */
     private readonly emitterId = null;
@@ -235,6 +247,10 @@ export class ExerciseWrapper extends NormalType<
     );
 
     private readonly clients = new Set<ClientWrapper>();
+
+    public ExerciseIsWithoutClients(): boolean {
+        return this.clients.size === 0;
+    }
 
     public readonly incrementIdGenerator = new IncrementIdGenerator();
 
@@ -505,17 +521,17 @@ export class ExerciseWrapper extends NormalType<
             clientWrapper.disconnect();
             this.clients.delete(clientWrapper);
         });
-        if (
-            this.clients.size === 0 &&
-            this.currentState.currentStatus === 'running'
-        ) {
-            // Pause the exercise
-            this.applyAction(
-                {
-                    type: '[Exercise] Pause',
-                },
-                null
-            );
+        if (this.clients.size === 0) {
+            if (this.currentState.currentStatus === 'running') {
+                // Pause the exercise
+                this.applyAction(
+                    {
+                        type: '[Exercise] Pause',
+                    },
+                    null
+                );
+            }
+            this.sinceExerciseWithoutClients = Date.now();
         }
     }
 
