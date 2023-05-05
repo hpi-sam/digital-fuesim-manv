@@ -33,6 +33,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   Its user interface displays what vehicles are being loaded and what vehicles are waiting for transfer.
 -   Exercises can be started and paused trough a new button in the simulated regions modal, so the modal does not have to be closed to access the button in the toolbar.
 -   Changes of the treatment progress can now be reported automatically.
+-   The waiting times for vehicles that are getting loaded or are waiting for transfer are shown.
 -   this software has now a license (with some exceptions), see LICENSE-README.md
 
 ### Changed

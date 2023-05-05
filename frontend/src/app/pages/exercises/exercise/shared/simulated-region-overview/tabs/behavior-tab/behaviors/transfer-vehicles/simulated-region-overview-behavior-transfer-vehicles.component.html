@@ -19,32 +19,36 @@
     <ng-container *ngIf="bufferedTransfers$ | async as bufferedTransfers">
         <h5>Auf Transfer wartende Fahrzeuge</h5>
 
-        <table
-            *ngIf="bufferedTransfers.length > 0; else noneBuffered"
-            class="table table-striped"
-        >
-            <thead>
-                <tr>
-                    <th style="width: 40%">Fahrzeug</th>
-                    <th style="width: 40%">Ziel</th>
-                    <th style="width: 20%">Patienten</th>
-                </tr>
-            </thead>
+        <ng-container *ngIf="bufferedTransfers.length > 0; else noneBuffered">
+            <span
+                >Nächste Ausfahrt möglich in
+                {{ (bufferDelay$ | async) ?? 0 | formatDuration }}</span
+            >
 
-            <tbody>
-                <tr *ngFor="let bufferedTransfer of bufferedTransfers">
-                    <td>
-                        {{ bufferedTransfer.vehicleName }}
-                    </td>
-                    <td>
-                        {{ bufferedTransfer.destination }}
-                    </td>
-                    <td>
-                        {{ bufferedTransfer.numberOfPatients }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th style="width: 40%">Fahrzeug</th>
+                        <th style="width: 40%">Ziel</th>
+                        <th style="width: 20%">Patienten</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let bufferedTransfer of bufferedTransfers">
+                        <td>
+                            {{ bufferedTransfer.vehicleName }}
+                        </td>
+                        <td>
+                            {{ bufferedTransfer.destination }}
+                        </td>
+                        <td>
+                            {{ bufferedTransfer.numberOfPatients }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </ng-container>
         <ng-template #noneBuffered>
             <span class="text-muted">
                 Derzeit warten keine Fahrzeuge auf den Transfer.
@@ -61,9 +65,10 @@
         >
             <thead>
                 <tr>
-                    <th style="width: 40%">Fahrzeug</th>
-                    <th style="width: 40%">Ziel</th>
+                    <th style="width: 30%">Fahrzeug</th>
+                    <th style="width: 30%">Ziel</th>
                     <th style="width: 20%">Patienten</th>
+                    <th style="width: 20%">Verbleibende Zeit</th>
                 </tr>
             </thead>
 
@@ -77,6 +82,9 @@
                     </td>
                     <td>
                         {{ activeActivity.numberOfPatients }}
+                    </td>
+                    <td>
+                        {{ activeActivity.remainingTime | formatDuration }}
                     </td>
                 </tr>
             </tbody>
