@@ -517,6 +517,9 @@ export class ExerciseWrapper extends NormalType<
             type: '[Client] Remove client',
             clientId: client.id,
         };
+        if (this.clients.size < 2) {
+            this.sinceExerciseWithoutClients = Date.now();
+        }
         this.applyAction(removeClientAction, client.id, () => {
             clientWrapper.disconnect();
             this.clients.delete(clientWrapper);
@@ -531,7 +534,6 @@ export class ExerciseWrapper extends NormalType<
                     null
                 );
             }
-            this.sinceExerciseWithoutClients = Date.now();
         }
     }
 
