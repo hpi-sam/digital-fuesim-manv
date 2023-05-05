@@ -242,7 +242,7 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
 
                 // Calculate loading time based on the patients and personnel to be loaded
                 // Do not do the calculation if the time is already set (which could occur if an instance of this activity was imported from an older state version)
-                if (activityState.loadDelay !== 0) {
+                if (activityState.loadDelay === 0) {
                     activityState.loadDelay =
                         patientMovementsCount *
                             activityState.loadTimePerPatient +
