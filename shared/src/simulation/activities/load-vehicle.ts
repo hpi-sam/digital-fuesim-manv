@@ -62,7 +62,8 @@ export class LoadVehicleActivityState implements SimulationActivityState {
 
     @IsInt()
     @Min(0)
-    public readonly loadDelay: number = 0;
+    @IsOptional()
+    public readonly loadDelay: number | undefined = undefined;
 
     @IsInt()
     @Min(0)
@@ -242,7 +243,7 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
 
                 // Calculate loading time based on the patients and personnel to be loaded
                 // Do not do the calculation if the time is already set (which could occur if an instance of this activity was imported from an older state version)
-                if (activityState.loadDelay === 0) {
+                if (activityState.loadDelay === undefined) {
                     activityState.loadDelay =
                         patientMovementsCount *
                             activityState.loadTimePerPatient +
@@ -256,8 +257,9 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
             }
 
             if (
+                activityState.loadDelay !== undefined &&
                 activityState.startTime + activityState.loadDelay <=
-                draftState.currentTime
+                    draftState.currentTime
             ) {
                 // terminate if the occupation has changed
                 if (
