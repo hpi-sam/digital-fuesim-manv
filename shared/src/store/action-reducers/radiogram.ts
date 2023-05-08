@@ -7,7 +7,6 @@ import {
 import { VehicleResource } from '../../models/utils/rescue-resource';
 import { VehiclesSentEvent } from '../../simulation';
 import { sendSimulationEvent } from '../../simulation/events/utils';
-import { nextUUID } from '../../simulation/utils/randomness';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -76,10 +75,7 @@ export namespace RadiogramActionReducers {
                 sendSimulationEvent(
                     simulatedRegion,
                     cloneDeepMutable(
-                        VehiclesSentEvent.create(
-                            nextUUID(draftState),
-                            VehicleResource.create({})
-                        )
+                        VehiclesSentEvent.create(VehicleResource.create({}))
                     )
                 );
             }
@@ -109,10 +105,7 @@ export namespace RadiogramActionReducers {
                 sendSimulationEvent(
                     simulatedRegion,
                     cloneDeepMutable(
-                        VehiclesSentEvent.create(
-                            nextUUID(draftState),
-                            radiogram.requiredResource
-                        )
+                        VehiclesSentEvent.create(radiogram.requiredResource)
                     )
                 );
 
@@ -141,10 +134,7 @@ export namespace RadiogramActionReducers {
                 sendSimulationEvent(
                     simulatedRegion,
                     cloneDeepMutable(
-                        VehiclesSentEvent.create(
-                            nextUUID(draftState),
-                            VehicleResource.create({})
-                        )
+                        VehiclesSentEvent.create(VehicleResource.create({}))
                     )
                 );
 
