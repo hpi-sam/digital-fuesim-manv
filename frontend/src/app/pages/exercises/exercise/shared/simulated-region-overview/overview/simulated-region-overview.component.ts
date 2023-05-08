@@ -11,6 +11,8 @@ import {
     createSelectSimulatedRegion,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { SelectPatientService } from '../select-patient.service';
+import type { TransferOptions } from '../start-transfer.service';
+import { StartTransferService } from '../start-transfer.service';
 
 type NavIds =
     | 'behaviors'
@@ -40,6 +42,8 @@ export class SimulatedRegionOverviewGeneralComponent
 
     selectedPatientId!: UUID;
 
+    initialTransferOptions!: TransferOptions;
+
     public transferPointId$!: Observable<UUID>;
 
     public get activeNavId() {
@@ -53,7 +57,8 @@ export class SimulatedRegionOverviewGeneralComponent
 
     constructor(
         private readonly store: Store<AppState>,
-        readonly selectPatientService: SelectPatientService
+        readonly selectPatientService: SelectPatientService,
+        readonly startTransferService: StartTransferService
     ) {}
 
     ngOnInit(): void {
@@ -78,6 +83,13 @@ export class SimulatedRegionOverviewGeneralComponent
             .subscribe((newId) => {
                 this.selectedPatientId = newId;
                 this.activeNavId = 'patients';
+            });
+
+        this.startTransferService.transferOptions
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((transferOptions) => {
+                this.initialTransferOptions = transferOptions;
+                this.activeNavId = 'behaviors';
             });
     }
 

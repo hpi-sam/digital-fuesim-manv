@@ -34,6 +34,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Exercises can be started and paused trough a new button in the simulated regions modal, so the modal does not have to be closed to access the button in the toolbar.
 -   Changes of the treatment progress can now be reported automatically.
 -   The waiting times for vehicles that are getting loaded or are waiting for transfer are shown.
+-   There are now buttons in the patients and vehicles tabs that create and lead to a transfer behavior that is pre filled with the patient or vehicle
 
 ### Changed
 
