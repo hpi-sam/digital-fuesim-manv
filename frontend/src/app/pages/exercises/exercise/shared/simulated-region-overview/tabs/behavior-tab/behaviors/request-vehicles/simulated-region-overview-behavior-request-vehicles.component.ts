@@ -58,10 +58,10 @@ export class RequestVehiclesComponent implements OnChanges {
                     const options = Object.entries(simulatedRegions)
                         .map(([id, simulatedRegion]) => [
                             id,
-                            simulatedRegion.name,
+                            `[Simuliert] ${simulatedRegion.name}`,
                         ])
                         .filter(([id, _name]) => id !== this.simulatedRegionId)
-                        .sort(([id1, name1], [id2, name2]) =>
+                        .sort(([_id1, name1], [_id2, name2]) =>
                             name1 === name2 ? 0 : name1! < name2! ? -1 : 1
                         );
                     options.unshift(['trainees', 'Die Trainierenden']);

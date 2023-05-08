@@ -1,4 +1,4 @@
-import { isUUID, IsUUID } from 'class-validator';
+import { IsBoolean, isUUID, IsUUID } from 'class-validator';
 import { RadiogramUnpublishedStatus } from '../../models/radiogram/status/radiogram-unpublished-status';
 import { getCreate } from '../../models/utils';
 import {
@@ -12,6 +12,9 @@ import { IsLiteralUnionMap, IsValue } from '../../utils/validators';
 import { GenerateReportActivityState } from '../activities/generate-report';
 import { CollectInformationEvent } from '../events/collect';
 import { nextUUID } from '../utils/randomness';
+import { TreatmentStatusRadiogram } from '../../models/radiogram';
+import { addActivity } from '../activities/utils';
+import { PublishRadiogramActivityState } from '../activities';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -33,17 +36,21 @@ export class ReportBehaviorState implements SimulationBehaviorState {
         isUUID(value, 4)) as (value: unknown) => value is UUID)
     public readonly activityIds: { [key in ReportableInformation]?: UUID } = {};
 
+    @IsBoolean()
+    public readonly reportTreatmentProgressChanges: boolean = true;
+
     static readonly create = getCreate(this);
 }
 
 export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
     behaviorState: ReportBehaviorState,
-    handleEvent: (draftState, simulatedRegion, _behaviorState, event) => {
+    handleEvent: (draftState, simulatedRegion, behaviorState, event) => {
         switch (event.type) {
             case 'startCollectingInformationEvent': {
                 const activityId = nextUUID(draftState);
 
-                simulatedRegion.activities[activityId] = cloneDeepMutable(
+                addActivity(
+                    simulatedRegion,
                     GenerateReportActivityState.create(
                         activityId,
                         createRadiogramMap[event.informationType](
@@ -55,6 +62,29 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
                             activityId,
                             event.informationType
                         )
+                    )
+                );
+                break;
+            }
+            case 'treatmentProgressChangedEvent': {
+                if (!behaviorState.reportTreatmentProgressChanges) return;
+
+                const radiogram = cloneDeepMutable(
+                    TreatmentStatusRadiogram.create(
+                        nextUUID(draftState),
+                        simulatedRegion.id,
+                        RadiogramUnpublishedStatus.create()
+                    )
+                );
+                radiogram.treatmentStatus = event.newProgress;
+                radiogram.treatmentStatusChanged = true;
+                radiogram.informationAvailable = true;
+
+                addActivity(
+                    simulatedRegion,
+                    PublishRadiogramActivityState.create(
+                        nextUUID(draftState),
+                        radiogram
                     )
                 );
                 break;

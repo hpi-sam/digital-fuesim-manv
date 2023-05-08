@@ -1,10 +1,4 @@
-import type {
-    ComponentRef,
-    EventEmitter,
-    Type,
-    ViewContainerRef,
-} from '@angular/core';
-import { isEqual } from 'lodash-es';
+import type { Type, ViewContainerRef } from '@angular/core';
 import type { Feature } from 'ol';
 import { Overlay } from 'ol';
 import type VectorLayer from 'ol/layer/Vector';
@@ -12,25 +6,19 @@ import type VectorSource from 'ol/source/Vector';
 import { Subject, takeUntil } from 'rxjs';
 import type OlMap from 'ol/Map';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import type { Positioning } from '../../utility/types/positioning';
+import { isEqual } from 'lodash-es';
+import type { Positioning } from '../../utils/types/positioning';
 import type { FeatureManager } from './feature-manager';
+import type { PopupService } from './popup.service';
 
 /**
  * A class that manages the creation and destruction of a single popup with freely customizable content
  * that should appear on the {@link popupOverlay}.
  */
 export class PopupManager {
-    /**
-     * If this subject emits options, the specified popup should be toggled.
-     * If it emits undefined, the currently open popup should be closed.
-     */
-    public readonly changePopup$ = new Subject<
-        OpenPopupOptions<any> | undefined
-    >();
-
     public readonly popupOverlay: Overlay;
     private readonly destroy$ = new Subject<void>();
-    private currentlyOpenPopupOptions?: OpenPopupOptions<any>;
+    private currentlyOpenPopupOptions?: OpenPopupOptions;
     private popupsEnabled = true;
     public get currentClosingIds(): UUID[] {
         if (this.currentlyOpenPopupOptions === undefined) {
@@ -41,17 +29,23 @@ export class PopupManager {
 
     constructor(
         private readonly popoverContent: ViewContainerRef,
-        private readonly popoverContainer: HTMLDivElement
+        private readonly popoverContainer: HTMLDivElement,
+        private readonly popupService: PopupService
     ) {
         this.popupOverlay = new Overlay({
             element: this.popoverContainer,
         });
+        this.popupService.proposePopup$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((options) => {
+                this.togglePopup(options);
+            });
     }
     public setPopupsEnabled(enabled: boolean) {
         this.popupsEnabled = enabled;
         if (!enabled) {
             // Close all open popups
-            this.changePopup$.next(undefined);
+            this.closePopup();
         }
     }
 
@@ -83,36 +77,55 @@ export class PopupManager {
                 { hitTolerance: 10 }
             );
             if (!hasBeenHandled) {
-                this.changePopup$.next(undefined);
+                this.closePopup();
             }
         });
 
         openLayersContainer.addEventListener('keydown', (event) => {
             if ((event as KeyboardEvent).key === 'Escape') {
-                this.changePopup$.next(undefined);
+                this.closePopup();
             }
         });
     }
 
-    /**
-     * Toggles the popup with the given options.
-     * If a popup is already open, it will be closed.
-     * If the given options are different from the currently open popup, the new popup will be opened.
-     * If the given options are the same as the currently open popup, the popup will be closed.
-     * @param options The options to use for the popup.
-     */
-    public togglePopup<Component extends PopupComponent>(
-        options: OpenPopupOptions<Component>
-    ) {
-        if (isEqual(this.currentlyOpenPopupOptions, options)) {
-            // All the openPopup buttons should be toggles
+    public togglePopup(options: OpenPopupOptions | undefined) {
+        if (!options) {
             this.closePopup();
             return;
         }
+
+        if (this.currentlyOpenPopupOptions) {
+            const {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                position: newPosition,
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                positioning: newPositioning,
+                ...newOptionsWithoutPosition
+            } = options;
+            const {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                position: oldPosition,
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                positioning: oldPositioning,
+                ...oldOptionsWithoutPosition
+            } = this.currentlyOpenPopupOptions;
+            if (isEqual(newOptionsWithoutPosition, oldOptionsWithoutPosition)) {
+                // All the openPopup buttons should be toggles
+                this.closePopup();
+                return;
+            }
+        }
+
+        this.openPopup(options);
+    }
+
+    private openPopup(options: OpenPopupOptions) {
         this.currentlyOpenPopupOptions = options;
+        this.popupService.popupOpened(options);
         this.popoverContent.clear();
-        const componentRef: ComponentRef<PopupComponent> =
-            this.popoverContent.createComponent(options.component);
+        const componentRef = this.popoverContent.createComponent(
+            options.component
+        );
         if (options.context) {
             for (const key of Object.keys(options.context)) {
                 (componentRef.instance as any)[key] = (options.context as any)[
@@ -120,41 +133,32 @@ export class PopupManager {
                 ];
             }
         }
-        componentRef.instance.closePopup
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => this.closePopup());
         componentRef.changeDetectorRef.detectChanges();
         this.popupOverlay.setPosition(options.position);
         this.popupOverlay.setPositioning(options.positioning);
     }
 
-    public closePopup() {
+    private closePopup() {
+        this.popupService.popupOpened(undefined);
         this.currentlyOpenPopupOptions = undefined;
         this.popoverContent.clear();
         this.popupOverlay.setPosition(undefined);
     }
 
     public destroy() {
+        this.closePopup();
         this.destroy$.next();
-        this.popoverContent.clear();
-        this.popupOverlay.setPosition(undefined);
     }
 }
 
 /**
  * {@link closingUUIDs} is an array containing the UUIDs of elements that when clicked shall close the pop-up
  */
-export interface OpenPopupOptions<
-    Component extends PopupComponent,
-    ComponentClass extends Type<Component> = Type<Component>
-> {
+export interface OpenPopupOptions<Component = unknown> {
+    elementUUID: UUID | undefined;
     position: number[];
     positioning: Positioning;
-    component: ComponentClass;
+    component: Type<Component>;
     closingUUIDs: UUID[];
     context?: Partial<Component>;
-}
-
-export interface PopupComponent {
-    readonly closePopup: EventEmitter<void>;
 }

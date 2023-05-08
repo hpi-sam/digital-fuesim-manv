@@ -1,4 +1,5 @@
 import {
+    IsBoolean,
     IsInt,
     IsNumber,
     IsOptional,
@@ -9,10 +10,13 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import type {
+    ExerciseSimulationEvent,
     TreatPatientsBehaviorState,
     UnloadArrivingVehiclesBehaviorState,
 } from '../../simulation';
 import {
+    TransferPatientsInSpecificVehicleRequestEvent,
+    TransferSpecificVehicleRequestEvent,
     updateBehaviorsRequestTarget,
     updateBehaviorsRequestInterval,
     ReportableInformation,
@@ -28,14 +32,19 @@ import {
     uuidValidationOptions,
     cloneDeepMutable,
     uuidArrayValidationOptions,
+    UUIDSet,
 } from '../../utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
+import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
 import {
     requestTargetTypeOptions,
     ExerciseRequestTargetConfiguration,
 } from '../../models';
+import {
+    TransferDestination,
+    transferDestinationTypeAllowedValues,
+} from '../../simulation/utils/transfer-destination';
 import { getActivityById, getBehaviorById, getElement } from './utils';
 
 export class UpdateTreatPatientsIntervalsAction implements Action {
@@ -119,6 +128,21 @@ export class CreateReportAction implements Action {
 
     @IsLiteralUnion(reportableInformationAllowedValues)
     public readonly informationType!: ReportableInformation;
+}
+
+export class UpdateReportTreatmentStatusChangesAction implements Action {
+    @IsValue('[ReportBehavior] Update report treatment status changes')
+    public readonly type =
+        '[ReportBehavior] Update report treatment status changes';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsBoolean()
+    public readonly reportTreatmentProgressChanges!: boolean;
 }
 
 export class CreateRecurringReportsAction implements Action {
@@ -262,6 +286,74 @@ export class UpdatePromiseInvalidationIntervalAction implements Action {
     public readonly promiseInvalidationInterval!: number;
 }
 
+export class UpdatePatientLoadTimeAction implements Action {
+    @IsValue('[TransferBehavior] Update Patient Load Time')
+    public readonly type = '[TransferBehavior] Update Patient Load Time';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly loadTimePerPatient!: number;
+}
+
+export class UpdatePersonnelLoadTimeAction implements Action {
+    @IsValue('[TransferBehavior] Update Personnel Load Time')
+    public readonly type = '[TransferBehavior] Update Personnel Load Time';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly personnelLoadTime!: number;
+}
+
+export class UpdateDelayBetweenSendsAction implements Action {
+    @IsValue('[TransferBehavior] Update Delay Between Sends')
+    public readonly type = '[TransferBehavior] Update Delay Between Sends';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly delayBetweenSends!: number;
+}
+
+export class SendTransferRequestEventAction implements Action {
+    @IsValue('[TransferBehavior] Send Transfer Request Event')
+    public readonly type = '[TransferBehavior] Send Transfer Request Event';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly vehicleId!: UUID;
+
+    @IsLiteralUnion(transferDestinationTypeAllowedValues)
+    public readonly destinationType!: TransferDestination;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly destinationId!: UUID;
+
+    @IsUUIDSet()
+    public readonly patients!: UUIDSet;
+}
+
 export namespace SimulationActionReducers {
     export const updateTreatPatientsIntervals: ActionReducer<UpdateTreatPatientsIntervalsAction> =
         {
@@ -356,6 +448,32 @@ export namespace SimulationActionReducers {
         rights: 'trainer',
     };
 
+    export const updateReportTreatmentStatusChanges: ActionReducer<UpdateReportTreatmentStatusChangesAction> =
+        {
+            action: UpdateReportTreatmentStatusChangesAction,
+            reducer(
+                draftState,
+                {
+                    simulatedRegionId,
+                    behaviorId,
+                    reportTreatmentProgressChanges,
+                }
+            ) {
+                const reportBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'reportBehavior'
+                );
+
+                reportBehaviorState.reportTreatmentProgressChanges =
+                    reportTreatmentProgressChanges;
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
     export const createRecurringReports: ActionReducer<CreateRecurringReportsAction> =
         {
             action: CreateRecurringReportsAction,
@@ -374,11 +492,6 @@ export namespace SimulationActionReducers {
                     behaviorId,
                     'reportBehavior'
                 );
-                if (!reportBehaviorState) {
-                    throw new ReducerError(
-                        `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}.`
-                    );
-                }
 
                 if (reportBehaviorState.activityIds[informationType]) {
                     throw new ExpectedReducerError(
@@ -673,6 +786,124 @@ export namespace SimulationActionReducers {
                 behaviorState.vehicleTemplatePriorities =
                     cloneDeepMutable(priorities);
 
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updatePatientLoadTime: ActionReducer<UpdatePatientLoadTimeAction> =
+        {
+            action: UpdatePatientLoadTimeAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, loadTimePerPatient }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'transferBehavior'
+                );
+
+                behaviorState.loadTimePerPatient = loadTimePerPatient;
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updatePersonnelLoadTime: ActionReducer<UpdatePersonnelLoadTimeAction> =
+        {
+            action: UpdatePersonnelLoadTimeAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, personnelLoadTime }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'transferBehavior'
+                );
+
+                behaviorState.personnelLoadTime = personnelLoadTime;
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateDelayBetweenSends: ActionReducer<UpdateDelayBetweenSendsAction> =
+        {
+            action: UpdateDelayBetweenSendsAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, delayBetweenSends }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'transferBehavior'
+                );
+
+                behaviorState.delayBetweenSends = delayBetweenSends;
+
+                // also update the value inside the activity if one is running already
+
+                if (behaviorState.recurringActivityId) {
+                    const reccuringActivity = getActivityById(
+                        draftState,
+                        simulatedRegionId,
+                        behaviorState.recurringActivityId,
+                        'recurringEventActivity'
+                    );
+                    reccuringActivity.recurrenceIntervalTime =
+                        delayBetweenSends;
+                }
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const sendTransferRequestEvent: ActionReducer<SendTransferRequestEventAction> =
+        {
+            action: SendTransferRequestEventAction,
+            reducer(
+                draftState,
+                {
+                    simulatedRegionId,
+                    vehicleId,
+                    destinationType,
+                    destinationId,
+                    patients,
+                }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+
+                let event: ExerciseSimulationEvent;
+                if (Object.keys(cloneDeepMutable(patients)).length === 0) {
+                    event = TransferSpecificVehicleRequestEvent.create(
+                        vehicleId,
+                        destinationType,
+                        destinationId
+                    );
+                } else {
+                    event =
+                        TransferPatientsInSpecificVehicleRequestEvent.create(
+                            patients,
+                            vehicleId,
+                            destinationType,
+                            destinationId
+                        );
+                }
+
+                sendSimulationEvent(simulatedRegion, event);
                 return draftState;
             },
             rights: 'trainer',

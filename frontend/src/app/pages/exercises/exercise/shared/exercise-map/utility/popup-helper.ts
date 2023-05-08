@@ -6,7 +6,7 @@ import type Layer from 'ol/layer/Layer';
 import type OlMap from 'ol/Map';
 import type { Pixel } from 'ol/pixel';
 import { calculatePopupPositioning } from './calculate-popup-positioning';
-import type { OpenPopupOptions, PopupComponent } from './popup-manager';
+import type { OpenPopupOptions } from './popup-manager';
 
 /**
  * Images in OpenLayers are {@link Point}s that have an icon style.
@@ -19,12 +19,12 @@ export class ImagePopupHelper {
     /**
      * @param feature the feature in {@link layer} next to which the popup should be opened
      */
-    public getPopupOptions<PopupComponentType extends PopupComponent>(
-        component: Type<PopupComponentType>,
+    public getPopupOptions<Component>(
+        component: Type<Component>,
         feature: Feature<Point>,
         closingUUIDs: UUID[],
-        context: Partial<InstanceType<Type<PopupComponentType>>>
-    ): OpenPopupOptions<any> {
+        context: Partial<Component>
+    ): OpenPopupOptions<Component> {
         const featureCenter = feature.getGeometry()!.getCoordinates();
         const view = this.olMap.getView();
         const { position, positioning } = calculatePopupPositioning(
@@ -33,6 +33,7 @@ export class ImagePopupHelper {
             view.getCenter()!
         );
         return {
+            elementUUID: feature.getId()?.toString(),
             position,
             positioning,
             component,

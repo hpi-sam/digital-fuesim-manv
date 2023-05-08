@@ -1,4 +1,3 @@
-import type { Type } from '@angular/core';
 import type { Store } from '@ngrx/store';
 import type { MapImage, UUID } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
@@ -16,19 +15,17 @@ import { MapImagePopupComponent } from '../shared/map-image-popup/map-image-popu
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
-import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
+import type { PopupService } from '../utility/popup.service';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
     public register(
-        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
         destroy$: Subject<void>,
         mapInteractionsManager: OlMapInteractionsManager
     ): void {
         super.registerFeatureElementManager(
             this.store.select(selectVisibleMapImages),
-            changePopup$,
             destroy$,
             mapInteractionsManager
         );
@@ -41,7 +38,8 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
     constructor(
         olMap: OlMap,
         exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly store: Store<AppState>,
+        private readonly popupService: PopupService
     ) {
         super(
             olMap,
@@ -77,7 +75,7 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
         if (selectStateSnapshot(selectCurrentRole, this.store) !== 'trainer') {
             return;
         }
-        this.togglePopup$.next(
+        this.popupService.openPopup(
             this.popupHelper.getPopupOptions(
                 MapImagePopupComponent,
                 feature,

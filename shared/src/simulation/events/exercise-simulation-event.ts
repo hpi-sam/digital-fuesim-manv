@@ -16,6 +16,18 @@ import { TryToDistributeEvent } from './try-to-distribute';
 import { VehicleTransferSuccessfulEvent } from './vehicle-transfer-successful';
 import { TransferConnectionMissingEvent } from './transfer-connection-missing';
 import { SendRequestEvent } from './send-request';
+import { LeaderChangedEvent } from './leader-changed';
+import { MaterialRemovedEvent } from './material-removed';
+import { PersonnelRemovedEvent } from './personnel-removed';
+import { PatientRemovedEvent } from './patient-removed';
+import { VehicleRemovedEvent } from './vehicle-removed';
+import { TransferPatientsInSpecificVehicleRequestEvent } from './transfer-patients-in-specific-vehicle-request';
+import { TransferSpecificVehicleRequestEvent } from './transfer-specific-vehicle-request';
+import { TransferVehiclesRequestEvent } from './transfer-vehicles-request';
+import { TransferPatientsRequestEvent } from './transfer-patients-request';
+import { RequestReceivedEvent } from './request-received';
+import { StartTransferEvent } from './start-transfer';
+import { DoTransferEvent } from './do-transfer';
 
 export const simulationEvents = {
     MaterialAvailableEvent,
@@ -33,6 +45,18 @@ export const simulationEvents = {
     VehicleTransferSuccessfulEvent,
     TransferConnectionMissingEvent,
     SendRequestEvent,
+    LeaderChangedEvent,
+    MaterialRemovedEvent,
+    PersonnelRemovedEvent,
+    PatientRemovedEvent,
+    VehicleRemovedEvent,
+    TransferPatientsInSpecificVehicleRequestEvent,
+    TransferSpecificVehicleRequestEvent,
+    TransferVehiclesRequestEvent,
+    TransferPatientsRequestEvent,
+    RequestReceivedEvent,
+    StartTransferEvent,
+    DoTransferEvent,
 };
 
 export type ExerciseSimulationEvent = InstanceType<
@@ -60,6 +84,19 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     vehicleTransferSuccessfulEvent: VehicleTransferSuccessfulEvent,
     transferConnectionMissingEvent: TransferConnectionMissingEvent,
     sendRequestEvent: SendRequestEvent,
+    leaderChangedEvent: LeaderChangedEvent,
+    materialRemovedEvent: MaterialRemovedEvent,
+    personnelRemovedEvent: PersonnelRemovedEvent,
+    patientRemovedEvent: PatientRemovedEvent,
+    vehicleRemovedEvent: VehicleRemovedEvent,
+    transferPatientsInSpecificVehicleRequestEvent:
+        TransferPatientsInSpecificVehicleRequestEvent,
+    transferSpecificVehicleRequestEvent: TransferSpecificVehicleRequestEvent,
+    transferVehiclesRequestEvent: TransferVehiclesRequestEvent,
+    transferPatientsRequestEvent: TransferPatientsRequestEvent,
+    requestReceivedEvent: RequestReceivedEvent,
+    startTransferEvent: StartTransferEvent,
+    doTransferEvent: DoTransferEvent,
 };
 
 export const simulationEventTypeOptions: Parameters<typeof Type> = [

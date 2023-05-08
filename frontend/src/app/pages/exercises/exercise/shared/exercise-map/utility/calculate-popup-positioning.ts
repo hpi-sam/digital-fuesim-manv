@@ -1,5 +1,5 @@
 import type { Coordinate } from 'ol/coordinate';
-import type { Positioning } from '../../utility/types/positioning';
+import type { Positioning } from '../../utils/types/positioning';
 
 /**
  *

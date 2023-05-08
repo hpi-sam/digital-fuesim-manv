@@ -26,6 +26,8 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
     @Input() simulatedRegionId!: UUID;
     @Input() reportBehaviorId!: UUID;
 
+    reportBehaviorState$!: Observable<ReportBehaviorState>;
+
     recurringActivities$!: Observable<{
         [key in ReportableInformation]?: RecurringEventActivityState;
     }>;
@@ -53,7 +55,7 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        const reportBehaviorState$ = this.store.select(
+        this.reportBehaviorState$ = this.store.select(
             createSelectBehaviorState<ReportBehaviorState>(
                 this.simulatedRegionId,
                 this.reportBehaviorId
@@ -65,7 +67,7 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
         );
 
         this.recurringActivities$ = combineLatest([
-            reportBehaviorState$,
+            this.reportBehaviorState$,
             activities$,
         ]).pipe(
             map(([reportBehaviorState, activities]) =>
@@ -84,6 +86,15 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
         );
 
         this.currentTime$ = this.store.select(selectCurrentTime);
+    }
+
+    updateReportTreatmentProgressChanges(reportsEnabled: boolean) {
+        this.exerciseService.proposeAction({
+            type: '[ReportBehavior] Update report treatment status changes',
+            simulatedRegionId: this.simulatedRegionId,
+            behaviorId: this.reportBehaviorId,
+            reportTreatmentProgressChanges: reportsEnabled,
+        });
     }
 
     updateInterval(informationType: ReportableInformation, interval: string) {

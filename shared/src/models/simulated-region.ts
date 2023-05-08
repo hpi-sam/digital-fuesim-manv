@@ -35,15 +35,8 @@ export class SimulatedRegion {
     @IsString()
     public readonly name: string;
 
-    /**
-     * @param position top-left position
-     * @deprecated Use {@link create} instead
-     */
-    constructor(position: MapCoordinates, size: Size, name: string) {
-        this.position = MapPosition.create(position);
-        this.size = size;
-        this.name = name;
-    }
+    @IsString()
+    public readonly borderColor: string;
 
     @Type(...simulationEventTypeOptions)
     @ValidateNested()
@@ -58,6 +51,22 @@ export class SimulatedRegion {
     public readonly activities: {
         readonly [stateId: UUID]: ExerciseSimulationActivityState;
     } = {};
+
+    /**
+     * @param position top-left position
+     * @deprecated Use {@link create} instead
+     */
+    constructor(
+        position: MapCoordinates,
+        size: Size,
+        name: string,
+        borderColor: string = '#cccc00'
+    ) {
+        this.position = MapPosition.create(position);
+        this.size = size;
+        this.name = name;
+        this.borderColor = borderColor;
+    }
 
     static readonly create = getCreate(this);
 

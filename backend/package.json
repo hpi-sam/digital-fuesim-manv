@@ -1,6 +1,6 @@
 {
     "name": "digital-fuesim-manv-backend",
-    "version": "0.4.1",
+    "version": "0.5.0",
     "type": "module",
     "scripts": {
         "start:once:linux-macos": "NODE_ENV=production node --experimental-specifier-resolution=node dist/src/index.js",
@@ -44,7 +44,7 @@
         "express": "^4.18.2",
         "lodash-es": "4.17.21",
         "pg": "^8.8.0",
-        "socket.io": "^4.5.4",
+        "socket.io": "^4.6.1",
         "supertest": "^6.3.3",
         "typeorm": "^0.3.11"
     },
