@@ -193,6 +193,12 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                     break;
                 }
                 case 'collectInformationEvent': {
+                    if (behaviorState.treatmentProgress === 'noTreatment') {
+                        // noTreatment indicated that there is no leader
+                        // Therefore, queries should not be answered
+                        return;
+                    }
+
                     const collectInformationEvent = event;
 
                     const radiogram = getActivityById(
@@ -206,6 +212,7 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                         // This behavior answerers this query because the treating personnel has the knowledge of how many patients are in a given category
                         case 'patientCount': {
                             if (behaviorState.treatmentProgress === 'unknown') {
+                                // The patients haven't been counted yet
                                 return;
                             }
 

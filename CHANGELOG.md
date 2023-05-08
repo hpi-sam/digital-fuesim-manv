@@ -7,6 +7,11 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Fixed
+
+-   Queries for the current number of patients and the current treatment progress won't be answered by the treat patients behavior if there is no leader of the requested simulated region.
+-   The frontend for the treat patients behavior hides the "assigned personnel" column not only in the `unknown` but also the `noTreatment` phase.
+
 ## [0.5.0] - 2023-05-08
 
 ### Added
