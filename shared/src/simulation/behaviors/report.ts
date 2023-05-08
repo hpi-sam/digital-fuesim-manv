@@ -69,6 +69,12 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
             case 'treatmentProgressChangedEvent': {
                 if (!behaviorState.reportTreatmentProgressChanges) return;
 
+                if (event.newProgress === 'noTreatment') {
+                    // No treatment indicates that there is no leader
+                    // Therefore, the radiogram can't be sent
+                    return;
+                }
+
                 const radiogram = cloneDeepMutable(
                     TreatmentStatusRadiogram.create(
                         nextUUID(draftState),
