@@ -7,19 +7,21 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [0.5.0] - 2023-05-08
+
 ### Added
 
 -   There are now events for the removal of patients, vehicles, material, and personnel from simulated regions.
-    -   When personnel, material, or patients are removed the treatments get reassigned
-    -   When the leader is removed, a new one gets selected
+    -   When personnel, material, or patients are removed, the treatments get reassigned.
+    -   When the leader is removed, a new one gets selected.
 -   The trainer editor now offers pre-configured templates for different kinds of simulated regions.
     -   These templates come with different border colors.
 -   Simulated regions display their names on the map.
--   There is now a button in the patients tab of a simulated region that removes the patient from the simulated region and places the patient on the map next to the simulated region (on the right hand side)
+-   There is now a button in the patients tab of a simulated region that removes the patient from the simulated region and places the patient on the map next to the simulated region (on the right hand side).
 -   Simulated regions and viewports display their names on the map.
 -   Vehicles now have a property to indicate their current occupation.
--   The "Leitstelle" now has an option to select a different destination for a specified amount of vehicles.
--   Treatment falls back to no treatment when a leader is missing in the region.
+-   The emergency operations center ("Leitstelle") now has an option to select a different destination for a specified amount of vehicles.
+-   Treatment progress falls back to no treatment when a leader is missing in the region.
 -   All vehicles in a simulated region can be managed with the new vehicles tab.
     -   All operations from the vehicle popup (change name, load, unload) are available.
     -   There is a detailed list of the personnel that belongs to the vehicle.
@@ -34,13 +36,13 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Exercises can be started and paused trough a new button in the simulated regions modal, so the modal does not have to be closed to access the button in the toolbar.
 -   Changes of the treatment progress can now be reported automatically.
 -   The waiting times for vehicles that are getting loaded or are waiting for transfer are shown.
--   There are now buttons in the patients and vehicles tabs that create and lead to a transfer behavior that is pre filled with the patient or vehicle
+-   There are now buttons in the patients and vehicles tabs that create and lead to a transfer behavior that is pre filled with the patient or vehicle.
 
 ### Changed
 
 -   Loading or unloading a vehicle from its popup does not close the popup automatically.
 -   Patient treatment sorts the patients by their UUID before triaging or assigning treatments in simulated regions. This way, the order of triage does not depend on the order the patients have been added.
--   The load all into vehicle button in the vehicle popup is now only visible to trainers
+-   The load all into vehicle button in the vehicle popup is now visible to trainers only.
 
 ### Fixed
 
@@ -191,7 +193,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...0.4.0
 [0.3.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.0...v0.2.1
