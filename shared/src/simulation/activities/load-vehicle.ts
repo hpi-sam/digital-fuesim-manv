@@ -63,7 +63,7 @@ export class LoadVehicleActivityState implements SimulationActivityState {
     @IsInt()
     @Min(0)
     @IsOptional()
-    public readonly loadDelay: number | undefined = undefined;
+    public readonly loadDelay?: number = undefined;
 
     @IsInt()
     @Min(0)
