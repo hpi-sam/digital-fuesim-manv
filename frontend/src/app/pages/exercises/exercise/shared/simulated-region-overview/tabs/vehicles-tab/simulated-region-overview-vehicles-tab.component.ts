@@ -26,6 +26,7 @@ import {
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { PatientWithVisibleStatus } from '../../patients-table/simulated-region-overview-patients-table.component';
+import { StartTransferService } from '../../start-transfer.service';
 
 @Component({
     selector: 'app-simulated-region-overview-vehicles-tab',
@@ -50,7 +51,8 @@ export class SimulatedRegionOverviewVehiclesTabComponent implements OnInit {
 
     constructor(
         private readonly store: Store<AppState>,
-        private readonly exerciseService: ExerciseService
+        private readonly exerciseService: ExerciseService,
+        readonly startTransferService: StartTransferService
     ) {}
 
     ngOnInit() {
@@ -174,5 +176,12 @@ export class SimulatedRegionOverviewVehiclesTabComponent implements OnInit {
             (template) => template.vehicleType === vehicleType
         );
         return index === -1 ? vehicleTemplates.length : index;
+    }
+
+    public initiateVehicleTransfer(vehicle: Vehicle) {
+        this.startTransferService.initiateNewTransferFor({
+            vehicleToTransfer: vehicle,
+            patientsToTransfer: vehicle.patientIds,
+        });
     }
 }
