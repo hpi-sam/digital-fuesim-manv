@@ -43,9 +43,7 @@ export class SimulatedRegionOverviewPatientInteractionBarComponent {
             [this.patientId]: true,
         };
         this.startTransferService.initiateNewTransferFor({
-            vehicleToTransfer: undefined,
             patientsToTransfer,
-            transferDestination: undefined,
         });
     }
 }
