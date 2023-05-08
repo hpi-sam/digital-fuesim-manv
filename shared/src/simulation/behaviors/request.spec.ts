@@ -341,7 +341,6 @@ const sendEvent = {
         sendSimulationEvent(
             simulatedRegion,
             ResourceRequiredEvent.create(
-                uuid(),
                 simulatedRegion.id,
                 VehicleResource.create({ KTW: 1 }),
                 'new-request-key'
@@ -356,7 +355,6 @@ const sendEvent = {
         sendSimulationEvent(
             simulatedRegion,
             ResourceRequiredEvent.create(
-                uuid(),
                 simulatedRegion.id,
                 VehicleResource.create({ KTW: 1 }),
                 requestKey
@@ -370,7 +368,7 @@ const sendEvent = {
     ) => {
         sendSimulationEvent(
             simulatedRegion,
-            VehiclesSentEvent.create(uuid(), VehicleResource.create({ KTW: 1 }))
+            VehiclesSentEvent.create(VehicleResource.create({ KTW: 1 }))
         );
     },
     ktwVehicleArrivedEvent: (
