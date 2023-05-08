@@ -266,7 +266,7 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
                     ).length,
                     remainingTime:
                         activeActivityState.startTime +
-                        activeActivityState.loadDelay -
+                        (activeActivityState.loadDelay ?? 0) -
                         currentTime,
                 }))
         );
