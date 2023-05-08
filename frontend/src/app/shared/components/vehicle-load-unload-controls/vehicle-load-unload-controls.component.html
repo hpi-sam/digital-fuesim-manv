@@ -9,6 +9,7 @@
         Alle aussteigen
     </button>
     <button
+        *ngIf="(currentRole$ | async) === 'trainer'"
         (click)="loadVehicle()"
         [disabled]="!(vehicleLoadState$ | async)?.loadable"
         class="btn btn-outline-primary"
