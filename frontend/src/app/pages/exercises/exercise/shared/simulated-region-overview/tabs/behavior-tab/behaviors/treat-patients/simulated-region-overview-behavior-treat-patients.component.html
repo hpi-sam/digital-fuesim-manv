@@ -86,7 +86,11 @@
             <h6 class="text-center">Verlauf</h6>
         </div>
         <div
-            *ngIf="treatPatientsBehaviorState.treatmentProgress !== 'unknown'"
+            *ngIf="
+                treatPatientsBehaviorState.treatmentProgress !==
+                    'noTreatment' &&
+                treatPatientsBehaviorState.treatmentProgress !== 'unknown'
+            "
             class="col-sm justify-content-center"
         >
             <h6 class="text-center">Zugeteiltes Personal</h6>
@@ -102,6 +106,8 @@
             <app-simulated-region-overview-behavior-treat-patients-patient-details
                 [patientId]="patientId"
                 [cateringsActive]="
+                    treatPatientsBehaviorState.treatmentProgress !==
+                        'noTreatment' &&
                     treatPatientsBehaviorState.treatmentProgress !== 'unknown'
                 "
                 (click)="selectPatientService.selectPatient(patientId)"
