@@ -7,6 +7,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [0.5.0] - 2023-05-08
+
 ### Added
 
 -   There are now events for the removal of patients, vehicles, material, and personnel from simulated regions.
@@ -26,7 +28,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   A list of patients that are in the vehicle is shown and the patients tab opens for details when clicking a patient.
     -   Vehicles can be deleted or moved to the map.
     -   Trainers can see the current occupation of a vehicle and cancel it.
--   Simulated regions are prefixed with "\[Simuliert\]" in the request target selection for the requests behavior.
+-   Simulated regions are prefixed with "\[Simuliert]" in the request target selection for the requests behavior.
 -   The patient, whose popup is open, is now highlighted.
 -   There is now a behavior that transfers patients. It has configurable load times and delay between transfers.
     -   Its user interface can be used to transfer specific patients in specific vehicles.
@@ -191,7 +193,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/0.5.0...HEAD
+[0.5.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/0.4.0...0.5.0
 [0.4.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...0.4.0
 [0.3.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.0...v0.2.1
