@@ -7,6 +7,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Changed
+
+-   Add behaviors button now opens towards the top.
+
 ## [0.5.1] - 2023-05-09
 
 ### Fixed
