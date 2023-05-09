@@ -7,6 +7,14 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [0.5.1] - 2023-05-09
+
+### Fixed
+
+-   Queries for the current number of patients and the current treatment progress won't be answered by the treat patients behavior if there is no leader of the requested simulated region.
+-   The frontend for the treat patients behavior hides the "assigned personnel" column not only in the `unknown` but also the `noTreatment` phase.
+-   The diff link in the changelog for v0.4.0 now refers to the correct tags.
+
 ## [0.5.0] - 2023-05-08
 
 ### Added
@@ -28,7 +36,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   A list of patients that are in the vehicle is shown and the patients tab opens for details when clicking a patient.
     -   Vehicles can be deleted or moved to the map.
     -   Trainers can see the current occupation of a vehicle and cancel it.
--   Simulated regions are prefixed with "\[Simuliert\]" in the request target selection for the requests behavior.
+-   Simulated regions are prefixed with "\[Simuliert]" in the request target selection for the requests behavior.
 -   The patient, whose popup is open, is now highlighted.
 -   There is now a behavior that transfers patients. It has configurable load times and delay between transfers.
     -   Its user interface can be used to transfer specific patients in specific vehicles.
@@ -193,9 +201,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.4.0...v0.5.0
-[0.4.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...0.4.0
+[0.4.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.1.0...v0.2.0
