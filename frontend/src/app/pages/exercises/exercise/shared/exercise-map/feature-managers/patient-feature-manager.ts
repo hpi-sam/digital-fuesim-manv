@@ -5,11 +5,13 @@ import type { Feature, MapBrowserEvent } from 'ol';
 import type OlMap from 'ol/Map';
 import { Fill, Stroke } from 'ol/style';
 import type { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectConfiguration } from 'src/app/state/application/selectors/exercise.selectors';
-import { selectVisiblePatients } from 'src/app/state/application/selectors/shared.selectors';
+import {
+    selectCurrentRole,
+    selectVisiblePatients,
+} from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
@@ -30,11 +32,6 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
             destroy$,
             mapInteractionsManager
         );
-        this.popupService.currentPopup$
-            .pipe(takeUntil(destroy$))
-            .subscribe(() => {
-                this.layer.changed();
-            });
     }
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
@@ -121,9 +118,23 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
             ];
 
             if (
-                this.popupService.currentPopup?.closingUUIDs.includes(
+                this.popupService.currentPopup?.markedForTrainerUUIDs.includes(
                     feature.getId() as UUID
-                )
+                ) &&
+                selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
+            ) {
+                styles.push(
+                    this.openPopupCircleStyleHelper.getStyle(
+                        feature as Feature,
+                        resolution
+                    )
+                );
+            } else if (
+                this.popupService.currentPopup?.markedForParticipantUUIDs.includes(
+                    feature.getId() as UUID
+                ) &&
+                selectStateSnapshot(selectCurrentRole, this.store) ===
+                    'participant'
             ) {
                 styles.push(
                     this.openPopupCircleStyleHelper.getStyle(
@@ -148,6 +159,9 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
                 PatientPopupComponent,
                 feature,
                 [feature.getId() as UUID],
+                [feature.getId() as UUID],
+                [feature.getId() as UUID],
+                ['patient'],
                 {
                     patientId: feature.getId() as UUID,
                 }
