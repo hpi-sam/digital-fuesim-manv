@@ -13,6 +13,14 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   When material or personnel is selected, the corresponding vehicle is highlighted as well.
     -   When a vehicle is selected, the corresponding material and personnel are highlighted as well.
 
+### Changed
+
+-   Add behaviors button now opens towards the top.
+
+### Fixed
+
+-   Removed the id property of events.
+
 ## [0.5.1] - 2023-05-09
 
 ### Fixed

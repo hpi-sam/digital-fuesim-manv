@@ -23,7 +23,6 @@ import { IsValue } from '../../utils/validators';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { ResourceRequiredEvent } from '../events';
 import { sendSimulationEvent } from '../events/utils';
-import { nextUUID } from '../utils/randomness';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -137,7 +136,6 @@ export const providePersonnelFromVehiclesActivity: SimulationActivity<ProvidePer
             }
 
             const event = ResourceRequiredEvent.create(
-                nextUUID(draftState),
                 simulatedRegion.id,
                 VehicleResource.create(missingVehicleCounts),
                 activityState.key
