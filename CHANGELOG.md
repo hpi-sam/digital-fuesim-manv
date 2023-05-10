@@ -7,9 +7,11 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
-### Changed
+### Added
 
--   The load all into vehicle button in the vehicle popup is now visible to trainers only.
+-   Selected material, personnel and vehicles are now highlighted on the map.
+    -   When material or personnel is selected, the corresponding vehicle is highlighted as well.
+    -   When a vehicle is selected, the corresponding material and personnel are highlighted as well.
 
 ## [0.5.1] - 2023-05-09
 
@@ -54,6 +56,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 -   Loading or unloading a vehicle from its popup does not close the popup automatically.
 -   Patient treatment sorts the patients by their UUID before triaging or assigning treatments in simulated regions. This way, the order of triage does not depend on the order the patients have been added.
+-   The load all into vehicle button in the vehicle popup is now visible to trainers only.
 
 ### Fixed
 
