@@ -25,7 +25,6 @@ import {
 } from '../events';
 import { sendSimulationEvent } from '../events/utils';
 import type { AssignLeaderBehaviorState } from '../behaviors/assign-leader';
-import { nextUUID } from '../utils/randomness';
 import { defaultPersonnelTemplates } from '../../data/default-state/personnel-templates';
 import { StrictObject } from '../../utils/strict-object';
 import { cloneDeepMutable } from '../../utils/clone-deep';
@@ -215,7 +214,6 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 sendSimulationEvent(
                     simulatedRegion,
                     ResourceRequiredEvent.create(
-                        nextUUID(draftState),
                         simulatedRegion.id,
                         missingResource,
                         'reassignTreatmentsActivity'

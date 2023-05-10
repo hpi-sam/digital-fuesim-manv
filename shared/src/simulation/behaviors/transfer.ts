@@ -141,11 +141,8 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                 event.transferDestinationType,
                                 event.transferDestinationId,
                                 event.patientIds,
-                                Math.max(
-                                    Object.keys(event.patientIds).length *
-                                        behaviorState.loadTimePerPatient,
-                                    behaviorState.personnelLoadTime
-                                )
+                                behaviorState.loadTimePerPatient,
+                                behaviorState.personnelLoadTime
                             )
                         );
                         vehicleToLoad.occupation = cloneDeepMutable(
@@ -175,11 +172,8 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             event.transferDestinationType,
                             event.transferDestinationId,
                             event.patientIds,
-                            Math.max(
-                                Object.keys(event.patientIds).length *
-                                    behaviorState.loadTimePerPatient,
-                                behaviorState.personnelLoadTime
-                            )
+                            behaviorState.loadTimePerPatient,
+                            behaviorState.personnelLoadTime
                         )
                     );
                     vehicle.occupation = cloneDeepMutable(
@@ -208,6 +202,7 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             event.transferDestinationType,
                             event.transferDestinationId,
                             {},
+                            behaviorState.loadTimePerPatient,
                             behaviorState.personnelLoadTime
                         )
                     );
@@ -283,6 +278,7 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                         event.transferDestinationType,
                                         event.transferDestinationId,
                                         {},
+                                        behaviorState.loadTimePerPatient,
                                         behaviorState.personnelLoadTime
                                     )
                                 );
@@ -336,7 +332,6 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                     )
                                 ).id,
                                 VehiclesSentEvent.create(
-                                    '',
                                     VehicleResource.create(sentVehicles)
                                 )
                             )

@@ -1,6 +1,6 @@
 {
     "name": "digital-fuesim-manv-frontend",
-    "version": "0.4.1",
+    "version": "0.5.1",
     "type": "module",
     "scripts": {
         "cy:open": "cypress open",
