@@ -53,6 +53,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Changes of the treatment progress can now be reported automatically.
 -   The waiting times for vehicles that are getting loaded or are waiting for transfer are shown.
 -   There are now buttons in the patients and vehicles tabs that create and lead to a transfer behavior that is pre filled with the patient or vehicle.
+-   A cleanup job is implemented, from now on (enabled by default) exercises that no client has been connected for a specific amount of time (default is 4 weeks) are automatically deleted (with or without database).
 
 ### Changed
 
