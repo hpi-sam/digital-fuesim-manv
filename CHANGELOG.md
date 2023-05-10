@@ -7,6 +7,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Added
+
+-   2 new events related to patient transport have been added to the simulation.
+
 ### Changed
 
 -   Add behaviors button now opens towards the top.
