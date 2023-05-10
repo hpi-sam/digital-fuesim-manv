@@ -112,7 +112,6 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
                     sendSimulationEvent(
                         simulatedRegion,
                         TransferConnectionMissingEvent.create(
-                            nextUUID(draftState),
                             activityState.transferDestinationId,
                             activityState.key
                         )
@@ -201,7 +200,6 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
                     sendSimulationEvent(
                         simulatedRegion,
                         TransferConnectionMissingEvent.create(
-                            nextUUID(draftState),
                             activityState.transferDestinationId,
                             activityState.key
                         )
