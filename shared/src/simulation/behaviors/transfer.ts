@@ -332,7 +332,6 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                     )
                                 ).id,
                                 VehiclesSentEvent.create(
-                                    '',
                                     VehicleResource.create(sentVehicles)
                                 )
                             )

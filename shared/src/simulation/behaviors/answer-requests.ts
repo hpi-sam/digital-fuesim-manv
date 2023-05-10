@@ -125,7 +125,6 @@ export const answerRequestsBehavior: SimulationBehavior<AnswerRequestsBehaviorSt
                                 DelayEventActivityState.create(
                                     nextUUID(draftState),
                                     ResourceRequiredEvent.create(
-                                        '',
                                         simulatedRegion.id,
                                         VehicleResource.create(
                                             vehiclesNotAvailable

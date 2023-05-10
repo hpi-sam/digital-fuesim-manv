@@ -9,9 +9,6 @@ export class TransferConnectionMissingEvent implements SimulationEvent {
     readonly type = 'transferConnectionMissingEvent';
 
     @IsUUID(4, uuidValidationOptions)
-    public readonly id: UUID;
-
-    @IsUUID(4, uuidValidationOptions)
     public readonly transferPointId: UUID;
 
     @IsOptional()
@@ -21,8 +18,7 @@ export class TransferConnectionMissingEvent implements SimulationEvent {
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(id: UUID, transferPointId: UUID, key?: string) {
-        this.id = id;
+    constructor(transferPointId: UUID, key?: string) {
         this.transferPointId = transferPointId;
         this.key = key;
     }
