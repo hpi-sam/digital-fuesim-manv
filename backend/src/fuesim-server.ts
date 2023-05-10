@@ -71,9 +71,6 @@ export class FuesimServer {
         this.saveTickInterval
     );
 
-    // 1 month in minutes
-    private readonly keepExerciseTime = 43_800;
-
     private readonly cleanupTick = async () => {
         exerciseMap.forEach((exercise, key) => {
             // Only use exercises referenced by their trainer id (8 characters) to not choose the same exercise twice
@@ -85,7 +82,7 @@ export class FuesimServer {
                 exercise.ExerciseIsWithoutClients() &&
                 Math.floor(
                     (Date.now() - exercise.sinceExerciseWithoutClients) / 60_000
-                ) > this.keepExerciseTime
+                ) > Config.cleanupTime
             ) {
                 exercise.deleteExercise();
             }
@@ -106,13 +103,9 @@ export class FuesimServer {
         if (Config.useDb) {
             this.saveHandler.start();
         }
-        // TODO: create ENV for useCleanup, where the time in minutes/hours is saved
-        // 0 would be "disabled"
-        // set a viable default value, maybe something like 1 month
-        // if(Config.useCleanup > 0) {
-
-        // }
-        this.cleanupHandler.start();
+        if (Config.cleanupEnabled) {
+            this.cleanupHandler.start();
+        }
     }
 
     public get websocketServer(): ExerciseWebsocketServer {

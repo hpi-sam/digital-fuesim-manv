@@ -23,6 +23,10 @@ export class Config {
 
     private static _dbPort?: number;
 
+    private static _cleanupEnabled?: boolean;
+
+    private static _cleanupTime: number;
+
     public static get websocketPort(): number {
         this.throwIfNotInitialized();
         return this._websocketPort!;
@@ -71,6 +75,16 @@ export class Config {
     public static get dbPort(): number {
         this.throwIfNotInitialized();
         return this._dbPort!;
+    }
+
+    public static get cleanupEnabled(): boolean {
+        this.throwIfNotInitialized();
+        return this._cleanupEnabled!;
+    }
+
+    public static get cleanupTime(): number {
+        this.throwIfNotInitialized();
+        return this._cleanupTime!;
     }
 
     private static createTCPPortValidator() {
@@ -126,6 +140,15 @@ export class Config {
             DFM_DB_HOST_TESTING: str({ default: '127.0.0.1' }),
             DFM_DB_PORT: tcpPortValidator({ default: 5432 }),
             DFM_DB_PORT_TESTING: tcpPortValidator({ default: 5432 }),
+            DFM_CLEANUP_ENABLED: bool({ default: true }),
+            DFM_CLEANUP_ENABLED_TESTING: bool({ default: undefined }),
+            DFM_CLEANUP_TIME: num(
+                // Require this variable only when the cleanup is used.
+                this.isTrue(process.env['DFM_CLEANUP_ENABLED'])
+                    ? {}
+                    : { default: 40_320 }
+            ),
+            DFM_CLEANUP_TIME_TESTING: num({ default: 1 }),
         });
     }
 
@@ -174,6 +197,14 @@ export class Config {
                 : env.DFM_DB_LOG;
         this._dbHost = testing ? env.DFM_DB_HOST_TESTING : env.DFM_DB_HOST;
         this._dbPort = testing ? env.DFM_DB_PORT_TESTING : env.DFM_DB_PORT;
+        this._cleanupEnabled =
+            testing && env.DFM_CLEANUP_ENABLED_TESTING
+                ? env.DFM_CLEANUP_ENABLED
+                : env.DFM_CLEANUP_ENABLED_TESTING;
+        this._cleanupTime =
+            testing && env.DFM_CLEANUP_TIME_TESTING
+                ? env.DFM_CLEANUP_TIME
+                : env.DFM_CLEANUP_TIME_TESTING;
         this.isInitialized = true;
     }
 }
