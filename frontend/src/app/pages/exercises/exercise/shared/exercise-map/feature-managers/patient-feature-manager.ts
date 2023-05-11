@@ -8,10 +8,7 @@ import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectConfiguration } from 'src/app/state/application/selectors/exercise.selectors';
-import {
-    selectCurrentRole,
-    selectVisiblePatients,
-} from 'src/app/state/application/selectors/shared.selectors';
+import { selectVisiblePatients } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { PatientPopupComponent } from '../shared/patient-popup/patient-popup.component';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
@@ -77,7 +74,7 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
     );
 
     private readonly openPopupCircleStyleHelper = new CircleStyleHelper(
-        (feature) => ({
+        (_) => ({
             radius: 75,
             fill: new Fill({
                 color: '#00000000',
@@ -88,7 +85,7 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
             }),
         }),
         0.025,
-        (feature) => [0, 0]
+        (_) => [0, 0]
     );
 
     constructor(
@@ -117,32 +114,16 @@ export class PatientFeatureManager extends MoveableFeatureManager<Patient> {
                 ),
             ];
 
-            if (
-                this.popupService.currentPopup?.markedForTrainerUUIDs.includes(
-                    feature.getId() as UUID
-                ) &&
-                selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
-            ) {
-                styles.push(
-                    this.openPopupCircleStyleHelper.getStyle(
-                        feature as Feature,
-                        resolution
-                    )
-                );
-            } else if (
-                this.popupService.currentPopup?.markedForParticipantUUIDs.includes(
-                    feature.getId() as UUID
-                ) &&
-                selectStateSnapshot(selectCurrentRole, this.store) ===
-                    'participant'
-            ) {
-                styles.push(
-                    this.openPopupCircleStyleHelper.getStyle(
-                        feature as Feature,
-                        resolution
-                    )
-                );
-            }
+            this.addMarking(
+                feature,
+                styles,
+                this.popupService,
+                this.store,
+                this.openPopupCircleStyleHelper.getStyle(
+                    feature as Feature,
+                    resolution
+                )
+            );
 
             return styles;
         });

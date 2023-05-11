@@ -6,13 +6,9 @@ import type OlMap from 'ol/Map';
 import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import {
-    selectCurrentRole,
-    selectVisibleMaterials,
-} from 'src/app/state/application/selectors/shared.selectors';
+import { selectVisibleMaterials } from 'src/app/state/application/selectors/shared.selectors';
 import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { MaterialPopupComponent } from '../shared/material-popup/material-popup.component';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
@@ -52,7 +48,7 @@ export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
     private readonly openPopupCircleStyleHelper = new CircleStyleHelper(
-        (feature) => ({
+        (_) => ({
             radius: 75,
             fill: new Fill({
                 color: '#00000000',
@@ -63,7 +59,7 @@ export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
             }),
         }),
         0.025,
-        (feature) => [0, 0]
+        (_) => [0, 0]
     );
 
     constructor(
@@ -88,32 +84,16 @@ export class MaterialFeatureManager extends MoveableFeatureManager<Material> {
                 this.nameStyleHelper.getStyle(feature as Feature, resolution),
                 this.imageStyleHelper.getStyle(feature as Feature, resolution),
             ];
-            if (
-                this.popupService.currentPopup?.markedForTrainerUUIDs.includes(
-                    feature.getId() as UUID
-                ) &&
-                selectStateSnapshot(selectCurrentRole, this.store) === 'trainer'
-            ) {
-                styles.push(
-                    this.openPopupCircleStyleHelper.getStyle(
-                        feature as Feature,
-                        resolution
-                    )
-                );
-            } else if (
-                this.popupService.currentPopup?.markedForParticipantUUIDs.includes(
-                    feature.getId() as UUID
-                ) &&
-                selectStateSnapshot(selectCurrentRole, this.store) ===
-                    'participant'
-            ) {
-                styles.push(
-                    this.openPopupCircleStyleHelper.getStyle(
-                        feature as Feature,
-                        resolution
-                    )
-                );
-            }
+            this.addMarking(
+                feature,
+                styles,
+                this.popupService,
+                this.store,
+                this.openPopupCircleStyleHelper.getStyle(
+                    feature as Feature,
+                    resolution
+                )
+            );
             return styles;
         });
     }

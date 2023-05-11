@@ -333,5 +333,29 @@ export class OlMapManager {
             'material',
             materialFeatureManager
         );
+        this.featureNameFeatureManagerDictionary.set(
+            'transferLine',
+            transferLinesFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'transferPoint',
+            transferPointFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'mapImage',
+            mapImageFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'cateringLine',
+            cateringLinesFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'viewport',
+            viewportFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'delete',
+            deleteFeatureManager
+        );
     }
 }
