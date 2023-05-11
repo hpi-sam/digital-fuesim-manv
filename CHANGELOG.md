@@ -10,6 +10,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Changed
 
 -   Add behaviors button now opens towards the top.
+-   Simulated regions can now send patients to any hospital. The hospitals tab was removed.
 
 ### Fixed
 
