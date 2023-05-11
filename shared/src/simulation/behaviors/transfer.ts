@@ -203,7 +203,9 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             event.transferDestinationId,
                             {},
                             behaviorState.loadTimePerPatient,
-                            behaviorState.personnelLoadTime
+                            behaviorState.personnelLoadTime,
+                            undefined,
+                            event.successorOccupation
                         )
                     );
                     vehicle.occupation = cloneDeepMutable(
