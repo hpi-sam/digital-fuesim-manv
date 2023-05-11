@@ -80,6 +80,9 @@ export class MapImageFeatureManager extends MoveableFeatureManager<MapImage> {
                 MapImagePopupComponent,
                 feature,
                 [feature.getId() as UUID],
+                [],
+                [],
+                [],
                 {
                     mapImageId: feature.getId() as UUID,
                 }

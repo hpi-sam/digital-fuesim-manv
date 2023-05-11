@@ -59,6 +59,11 @@ export class OlMapManager {
         FeatureManager<any>
     >();
 
+    public readonly featureNameFeatureManagerDictionary = new Map<
+        string,
+        FeatureManager<any>
+    >();
+
     constructor(
         private readonly store: Store<AppState>,
         private readonly exerciseService: ExerciseService,
@@ -114,7 +119,8 @@ export class OlMapManager {
         popupManager.registerPopupTriggers(
             this.olMap,
             openLayersContainer,
-            this.layerFeatureManagerDictionary
+            this.layerFeatureManagerDictionary,
+            this.featureNameFeatureManagerDictionary
         );
     }
 
@@ -310,5 +316,46 @@ export class OlMapManager {
             materialFeatureManager,
             viewportFeatureManager,
         ];
+
+        this.featureNameFeatureManagerDictionary.set(
+            'vehicle',
+            vehicleFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'patient',
+            patientFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'personnel',
+            personnelFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'material',
+            materialFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'transferLine',
+            transferLinesFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'transferPoint',
+            transferPointFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'mapImage',
+            mapImageFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'cateringLine',
+            cateringLinesFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'viewport',
+            viewportFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'delete',
+            deleteFeatureManager
+        );
     }
 }

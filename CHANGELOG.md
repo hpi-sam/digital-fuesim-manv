@@ -7,6 +7,12 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Added
+
+-   Selected material, personnel and vehicles are now highlighted on the map.
+    -   When material or personnel is selected, the corresponding vehicle is highlighted as well.
+    -   When a vehicle is selected, the corresponding material and personnel are highlighted as well.
+
 ### Changed
 
 -   Add behaviors button now opens towards the top.

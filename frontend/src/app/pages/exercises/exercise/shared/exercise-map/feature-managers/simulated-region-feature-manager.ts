@@ -196,6 +196,9 @@ export class SimulatedRegionFeatureManager
             elementUUID: feature.getId()?.toString(),
             component: SimulatedRegionPopupComponent,
             closingUUIDs: [feature.getId() as UUID],
+            markedForParticipantUUIDs: [],
+            markedForTrainerUUIDs: [],
+            changedLayers: [],
             context: {
                 simulatedRegionId: feature.getId() as UUID,
             },

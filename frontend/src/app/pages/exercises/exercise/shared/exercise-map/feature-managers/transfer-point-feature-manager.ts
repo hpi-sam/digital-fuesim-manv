@@ -112,6 +112,9 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
                 ChooseTransferTargetPopupComponent,
                 droppedOnFeature,
                 [droppedOnTransferPoint.id, droppedElement.id],
+                [],
+                [],
+                [],
                 {
                     transferPointId: droppedOnTransferPoint.id,
                     droppedElementType: droppedElement.type,
@@ -163,6 +166,9 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
                 TransferPointPopupComponent,
                 feature,
                 [feature.getId() as UUID],
+                [],
+                [],
+                [],
                 {
                     transferPointId: feature.getId() as UUID,
                 }

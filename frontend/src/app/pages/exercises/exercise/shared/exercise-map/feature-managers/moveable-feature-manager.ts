@@ -7,6 +7,10 @@ import type VectorSource from 'ol/source/Vector';
 import type { Observable, Subject } from 'rxjs';
 // eslint-disable-next-line @typescript-eslint/no-shadow
 import type { Element, UUID } from 'digital-fuesim-manv-shared';
+import type { FeatureLike } from 'ol/Feature';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { selectCurrentRole } from 'src/app/state/application/selectors/shared.selectors';
+import type Style from 'ol/style/Style';
 import type { FeatureManager } from '../utility/feature-manager';
 import type {
     GeometryHelper,
@@ -111,6 +115,27 @@ export abstract class MoveableFeatureManager<
                 .getFeatureById(element.id) as Feature<FeatureType> | null) ??
             undefined
         );
+    }
+
+    protected addMarking(
+        feature: FeatureLike,
+        styles: Style[],
+        popupService: any,
+        store: any,
+        markingStyle: any
+    ) {
+        if (
+            (popupService.currentPopup?.markedForTrainerUUIDs.includes(
+                feature.getId() as UUID
+            ) &&
+                selectStateSnapshot(selectCurrentRole, store) === 'trainer') ||
+            (popupService.currentPopup?.markedForParticipantUUIDs.includes(
+                feature.getId() as UUID
+            ) &&
+                selectStateSnapshot(selectCurrentRole, store) === 'participant')
+        ) {
+            styles.push(markingStyle);
+        }
     }
 
     public onFeatureClicked(
