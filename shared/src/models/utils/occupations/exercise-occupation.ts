@@ -6,6 +6,7 @@ import { NoOccupation } from './no-occupation';
 import { LoadOccupation } from './load-occupation';
 import { WaitForTransferOccupation } from './wait-for-transfer-occupation';
 import { UnloadingOccupation } from './unloading-occupation';
+import { PatientTransferOccupation } from './patient-transfer-occupation';
 
 export const occupations = {
     IntermediateOccupation,
@@ -13,6 +14,7 @@ export const occupations = {
     LoadOccupation,
     WaitForTransferOccupation,
     UnloadingOccupation,
+    PatientTransferOccupation,
 };
 
 export type ExerciseOccupation = InstanceType<
@@ -31,6 +33,7 @@ export const occupationDictionary: ExerciseOccupationDictionary = {
     loadOccupation: LoadOccupation,
     waitForTransferOccupation: WaitForTransferOccupation,
     unloadingOccupation: UnloadingOccupation,
+    patientTransferOccupation: PatientTransferOccupation,
 };
 
 export const occupationTypeOptions: Parameters<typeof Type> = [
