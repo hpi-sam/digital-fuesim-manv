@@ -182,34 +182,6 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
                 terminate();
             }
             if (activityState.transferDestinationType === 'hospital') {
-                const ownTransferPoint = getElementByPredicate(
-                    draftState,
-                    'transferPoint',
-                    (transferPoint) =>
-                        isInSpecificSimulatedRegion(
-                            transferPoint,
-                            simulatedRegion.id
-                        )
-                );
-
-                if (
-                    ownTransferPoint.reachableHospitals[
-                        activityState.transferDestinationId
-                    ] === undefined
-                ) {
-                    sendSimulationEvent(
-                        simulatedRegion,
-                        TransferConnectionMissingEvent.create(
-                            activityState.transferDestinationId,
-                            activityState.key
-                        )
-                    );
-                    // TODO: Publish Radiogram (The current Radiogram does not support hospitals)
-
-                    terminate();
-                    return;
-                }
-
                 // If the vehicle is not completely loaded terminate
                 if (
                     Object.keys(vehicle.materialIds).some((materialId) => {
