@@ -43,6 +43,7 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
         personnelCount: 'Anzahl an Rettungskräften',
         materialCount: 'Anzahl an Material',
         treatmentStatus: 'Behandlungsstatus',
+        transferCounts: 'Anzahl der ins Krankenhaus transportierten Patienten',
     };
 
     createReportCollapsed = true;
