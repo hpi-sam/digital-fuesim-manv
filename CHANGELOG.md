@@ -7,6 +7,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Added
+
+-   The reports behavior can generate reports on the counts of transferred patients per triage category.
+
 ### Changed
 
 -   Add behaviors button now opens towards the top.
