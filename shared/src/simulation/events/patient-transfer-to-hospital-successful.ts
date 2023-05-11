@@ -1,11 +1,11 @@
 import { IsUUID } from 'class-validator';
-import { getCreate } from '../../models/utils';
+import {
+    PatientStatus,
+    getCreate,
+    patientStatusAllowedValues,
+} from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import {
-    RelevantForHospitalTransportPatientCategory,
-    relevantForHospitalTransportPatientCategoryAllowedValues,
-} from '../utils/relevant-for-hospital-transport-patient-category';
 import type { SimulationEvent } from './simulation-event';
 
 export class PatientTransferToHospitalSuccessfulEvent
@@ -14,8 +14,8 @@ export class PatientTransferToHospitalSuccessfulEvent
     @IsValue('patientTransferToHospitalSuccessfulEvent')
     readonly type = 'patientTransferToHospitalSuccessfulEvent';
 
-    @IsLiteralUnion(relevantForHospitalTransportPatientCategoryAllowedValues)
-    readonly patientCategory: RelevantForHospitalTransportPatientCategory;
+    @IsLiteralUnion(patientStatusAllowedValues)
+    readonly patientCategory: PatientStatus;
 
     @IsUUID(4, uuidValidationOptions)
     readonly patientOriginSimulatedRegion: UUID;
@@ -24,7 +24,7 @@ export class PatientTransferToHospitalSuccessfulEvent
      * @deprecated Use {@link create} instead
      */
     constructor(
-        patientCategory: RelevantForHospitalTransportPatientCategory,
+        patientCategory: PatientStatus,
         patienrOriginSimulatedRegion: UUID
     ) {
         this.patientCategory = patientCategory;

@@ -1,10 +1,10 @@
 import { IsBoolean } from 'class-validator';
-import { getCreate } from '../../models/utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import {
-    RelevantForHospitalTransportPatientCategory,
-    relevantForHospitalTransportPatientCategoryAllowedValues,
-} from '../utils/relevant-for-hospital-transport-patient-category';
+    PatientStatus,
+    getCreate,
+    patientStatusAllowedValues,
+} from '../../models/utils';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { SimulationEvent } from './simulation-event';
 
 export class PatientCategoryTransferToHospitalFinishedEvent
@@ -13,8 +13,8 @@ export class PatientCategoryTransferToHospitalFinishedEvent
     @IsValue('patientCategoryTransferToHospitalFinishedEvent')
     readonly type = 'patientCategoryTransferToHospitalFinishedEvent';
 
-    @IsLiteralUnion(relevantForHospitalTransportPatientCategoryAllowedValues)
-    readonly patientCategory: RelevantForHospitalTransportPatientCategory;
+    @IsLiteralUnion(patientStatusAllowedValues)
+    readonly patientCategory: PatientStatus;
 
     /**
      * This is true, if this refers to its own one single region.
@@ -27,7 +27,7 @@ export class PatientCategoryTransferToHospitalFinishedEvent
      * @deprecated Use {@link create} instead
      */
     constructor(
-        patientCategory: RelevantForHospitalTransportPatientCategory,
+        patientCategory: PatientStatus,
         isRelatedOnlyToOwnRegion: boolean
     ) {
         this.patientCategory = patientCategory;
