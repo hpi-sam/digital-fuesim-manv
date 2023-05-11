@@ -7,11 +7,14 @@ import {
     Min,
 } from 'class-validator';
 import { difference } from 'lodash-es';
+import { Type } from 'class-transformer';
 import {
+    ExerciseOccupation,
     SimulatedRegionPosition,
     VehiclePosition,
     getCreate,
     isInSpecificSimulatedRegion,
+    occupationTypeOptions,
 } from '../../models/utils';
 import {
     UUID,
@@ -84,6 +87,10 @@ export class LoadVehicleActivityState implements SimulationActivityState {
     @Min(0)
     public readonly startTime: number = 0;
 
+    @IsOptional()
+    @Type(...occupationTypeOptions)
+    readonly successorOccupation?: ExerciseOccupation;
+
     /**
      * @deprecated Use {@link create} instead
      */
@@ -95,7 +102,8 @@ export class LoadVehicleActivityState implements SimulationActivityState {
         patientsToBeLoaded: UUIDSet,
         loadTimePerPatient: number,
         personnelLoadTime: number,
-        key?: string
+        key?: string,
+        successorOccupation?: ExerciseOccupation
     ) {
         this.id = id;
         this.vehicleId = vehicleId;
@@ -105,6 +113,7 @@ export class LoadVehicleActivityState implements SimulationActivityState {
         this.loadTimePerPatient = loadTimePerPatient;
         this.personnelLoadTime = personnelLoadTime;
         this.key = key;
+        this.successorOccupation = successorOccupation;
     }
 
     static readonly create = getCreate(this);
@@ -275,7 +284,8 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
                         activityState.vehicleId,
                         activityState.transferDestinationType,
                         activityState.transferDestinationId,
-                        activityState.key
+                        activityState.key,
+                        cloneDeepMutable(activityState.successorOccupation)
                     )
                 );
 
