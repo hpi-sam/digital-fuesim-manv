@@ -13,6 +13,8 @@ import { createSelectRadiogram } from 'src/app/state/application/selectors/exerc
     styleUrls: ['./radiogram-card-content-transfer-counts.component.scss'],
 })
 export class RadiogramCardContentTransferCountsComponent implements OnInit {
+    readonly categories = ['red', 'yellow', 'green'] as const;
+
     @Input() radiogramId!: UUID;
 
     radiogram$!: Observable<TransferCountsRadiogram>;

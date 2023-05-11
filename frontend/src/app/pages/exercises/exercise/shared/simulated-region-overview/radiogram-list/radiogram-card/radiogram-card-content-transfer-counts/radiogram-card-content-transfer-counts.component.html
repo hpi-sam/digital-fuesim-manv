@@ -1,1 +1,31 @@
-<p>radiogram-card-content-transfer-counts works!</p>
+<h5>Transportstatus</h5>
+
+<ng-container *appLet="radiogram$ | async as radiogram">
+    <p *ngIf="radiogram.scope === 'singleRegion'">Für diese Patientenablage.</p>
+    <p *ngIf="radiogram.scope === 'transportManagement'">
+        Für alle von dieser Transportorganisation verwalteten Patientenablagen.
+    </p>
+
+    <table class="table table-sm w-100">
+        <thead>
+            <tr>
+                <th>SK</th>
+                <th>Transportiert</th>
+                <th>Verbleibend</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let category of categories">
+                <td>
+                    <app-patient-status-badge [status]="category" />
+                </td>
+                <td>
+                    {{ radiogram.transferredPatientsCounts[category] }}
+                </td>
+                <td>
+                    {{ radiogram.remainingPatientsCounts[category] }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</ng-container>
