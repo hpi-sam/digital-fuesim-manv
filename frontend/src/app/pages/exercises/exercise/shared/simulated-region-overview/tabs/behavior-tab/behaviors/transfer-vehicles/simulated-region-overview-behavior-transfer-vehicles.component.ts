@@ -299,11 +299,7 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
 
         const reachableHospitalsSelector = createSelector(
             selectHospitals,
-            ownTransferPointSelector,
-            (hospitals, transferPoint) =>
-                Object.keys(transferPoint.reachableHospitals).map(
-                    (id) => hospitals[id]!
-                )
+            Object.values
         );
 
         this.bufferedTransfers$ = this.store.select(bufferedTransfersSelector);
