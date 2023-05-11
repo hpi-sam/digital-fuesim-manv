@@ -8,8 +8,7 @@ import { ResourceDescription } from '../utils/resource-description';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
-
-type Scope = 'singleRegion' | 'transportManagement';
+import { Scope, scopeAllowedValues } from './utils/scope';
 
 export class TransferCountsRadiogram implements Radiogram {
     @IsUUID(4, uuidValidationOptions)
@@ -58,7 +57,7 @@ export class TransferCountsRadiogram implements Radiogram {
      * * `transportManagement`: The patient counts refer to all simulated regions
      *   that are managed by the transport management behavior of the simulated region that sent the radiogram
      */
-    @IsLiteralUnion({ singleRegion: true, transportManagement: true })
+    @IsLiteralUnion(scopeAllowedValues)
     readonly scope: Scope = 'singleRegion';
 
     /**
