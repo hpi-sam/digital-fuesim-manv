@@ -26,6 +26,10 @@ export class PopupManager {
         }
         return this.currentlyOpenPopupOptions.closingUUIDs;
     }
+    private featureNameFeatureManagerDictionary!: Map<
+        string,
+        FeatureManager<any>
+    >;
 
     constructor(
         private readonly popoverContent: ViewContainerRef,
@@ -39,6 +43,21 @@ export class PopupManager {
             .pipe(takeUntil(this.destroy$))
             .subscribe((options) => {
                 this.togglePopup(options);
+            });
+        this.popupService.currentPopup$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((popupOptions) => {
+                popupOptions.previousPopup?.changedLayers.forEach(
+                    (featureName) =>
+                        this.featureNameFeatureManagerDictionary
+                            .get(featureName)
+                            ?.layer.changed()
+                );
+                popupOptions.nextPopup?.changedLayers.forEach((featureName) =>
+                    this.featureNameFeatureManagerDictionary
+                        .get(featureName)
+                        ?.layer.changed()
+                );
             });
     }
     public setPopupsEnabled(enabled: boolean) {
@@ -55,12 +74,16 @@ export class PopupManager {
         layerFeatureManagerDictionary: Map<
             VectorLayer<VectorSource>,
             FeatureManager<any>
-        >
+        >,
+        featureNameFeatureManagerDictionary: Map<string, FeatureManager<any>>
     ) {
+        this.featureNameFeatureManagerDictionary =
+            featureNameFeatureManagerDictionary;
         olMap.on('singleclick', (event) => {
             if (!this.popupsEnabled) {
                 return;
             }
+
             const hasBeenHandled = olMap.forEachFeatureAtPixel(
                 event.pixel,
                 (feature, layer) => {
@@ -153,6 +176,9 @@ export class PopupManager {
 
 /**
  * {@link closingUUIDs} is an array containing the UUIDs of elements that when clicked shall close the pop-up
+ * {@link markedForParticipantUUIDs} is an array containing the UUIDs of elements that are to be marked while the pop-up is open and in participant mode
+ * {@link markedForTrainerUUIDs}  is an array containing the UUIDs of elements that are to be marked while the pop-up is open and in trainer mode
+ * {@link changedLayers} is an array of feature types of which the corresponding layers are to be marked as changed upon pop-up opening and closing
  */
 export interface OpenPopupOptions<Component = unknown> {
     elementUUID: UUID | undefined;
@@ -160,5 +186,8 @@ export interface OpenPopupOptions<Component = unknown> {
     positioning: Positioning;
     component: Type<Component>;
     closingUUIDs: UUID[];
+    markedForParticipantUUIDs: UUID[];
+    markedForTrainerUUIDs: UUID[];
+    changedLayers: string[];
     context?: Partial<Component>;
 }
