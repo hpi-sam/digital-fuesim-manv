@@ -17,7 +17,6 @@ import { StartTransferService } from '../start-transfer.service';
 type NavIds =
     | 'behaviors'
     | 'general'
-    | 'hospitalTransfer'
     | 'patients'
     | 'transferPoint'
     | 'vehicles';
