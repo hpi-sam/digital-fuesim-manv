@@ -13,7 +13,24 @@ import { createSelectRadiogram } from 'src/app/state/application/selectors/exerc
     styleUrls: ['./radiogram-card-content-transfer-counts.component.scss'],
 })
 export class RadiogramCardContentTransferCountsComponent implements OnInit {
-    readonly categories = ['red', 'yellow', 'green'] as const;
+    /**
+     * Categories that should always be listed in the table.
+     */
+    readonly alwaysShowCategories = ['red', 'yellow', 'green'] as const;
+
+    /**
+     * Categories that should be listed in the table if patients of these categories have been transferred and/or are remaining.
+     */
+    readonly showIfTransferredOrRemainingCategories = [
+        'blue',
+        'white',
+    ] as const;
+
+    /**
+     * Categories that should only be listed in the table if patients of these categories have been transferred.
+     * (Black patients should usually never be transferred, so its okay to not show their remaining number.)
+     */
+    readonly showIfTransferredCategories = ['black'] as const;
 
     @Input() radiogramId!: UUID;
 

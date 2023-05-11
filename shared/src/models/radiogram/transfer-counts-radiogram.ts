@@ -11,11 +11,6 @@ import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 
 type Scope = 'singleRegion' | 'transportManagement';
 
-type TransferablePatientStatus = Exclude<
-    PatientStatus,
-    'black' | 'blue' | 'white'
->;
-
 export class TransferCountsRadiogram implements Radiogram {
     @IsUUID(4, uuidValidationOptions)
     readonly id: UUID;
@@ -38,12 +33,24 @@ export class TransferCountsRadiogram implements Radiogram {
     readonly informationAvailable: boolean = false;
 
     @IsResourceDescription()
-    readonly transferredPatientsCounts: ResourceDescription<TransferablePatientStatus> =
-        { red: 0, yellow: 0, green: 0 };
+    readonly transferredPatientsCounts: ResourceDescription<PatientStatus> = {
+        red: 0,
+        yellow: 0,
+        green: 0,
+        blue: 0,
+        black: 0,
+        white: 0,
+    };
 
     @IsResourceDescription()
-    readonly remainingPatientsCounts: ResourceDescription<TransferablePatientStatus> =
-        { red: 0, yellow: 0, green: 0 };
+    readonly remainingPatientsCounts: ResourceDescription<PatientStatus> = {
+        red: 0,
+        yellow: 0,
+        green: 0,
+        blue: 0,
+        black: 0,
+        white: 0,
+    };
 
     /**
      * Defines the scope of the counts reported with this radiogram.
