@@ -23,6 +23,9 @@ export class ImagePopupHelper {
         component: Type<Component>,
         feature: Feature<Point>,
         closingUUIDs: UUID[],
+        markedForTrainerUUIDs: UUID[],
+        markedForParticipantUUIDs: UUID[],
+        changedLayers: string[],
         context: Partial<Component>
     ): OpenPopupOptions<Component> {
         const featureCenter = feature.getGeometry()!.getCoordinates();
@@ -38,6 +41,9 @@ export class ImagePopupHelper {
             positioning,
             component,
             closingUUIDs,
+            markedForTrainerUUIDs,
+            markedForParticipantUUIDs,
+            changedLayers,
             context,
         };
     }
