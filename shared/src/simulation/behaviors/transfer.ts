@@ -203,7 +203,9 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             event.transferDestinationId,
                             {},
                             behaviorState.loadTimePerPatient,
-                            behaviorState.personnelLoadTime
+                            behaviorState.personnelLoadTime,
+                            undefined,
+                            event.successorOccupation
                         )
                     );
                     vehicle.occupation = cloneDeepMutable(
@@ -279,7 +281,11 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                         event.transferDestinationId,
                                         {},
                                         behaviorState.loadTimePerPatient,
-                                        behaviorState.personnelLoadTime
+                                        behaviorState.personnelLoadTime,
+                                        undefined,
+                                        cloneDeepMutable(
+                                            event.successorOccupation
+                                        )
                                     )
                                 );
                                 loadableVehicles![index]!.occupation =
@@ -404,7 +410,8 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             vehicle.id,
                             transferEvent!.transferDestinationType,
                             transferEvent!.transferDestinationId,
-                            transferEvent!.key
+                            transferEvent!.key,
+                            cloneDeepMutable(transferEvent!.successorOccupation)
                         )
                     );
                 }
