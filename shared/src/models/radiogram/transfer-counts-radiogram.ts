@@ -11,6 +11,11 @@ import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 
 type Scope = 'singleRegion' | 'transportManagement';
 
+type TransferablePatientStatus = Exclude<
+    PatientStatus,
+    'black' | 'blue' | 'white'
+>;
+
 export class TransferCountsRadiogram implements Radiogram {
     @IsUUID(4, uuidValidationOptions)
     readonly id: UUID;
@@ -33,10 +38,12 @@ export class TransferCountsRadiogram implements Radiogram {
     readonly informationAvailable: boolean = false;
 
     @IsResourceDescription()
-    readonly transferredPatientsCounts!: ResourceDescription<PatientStatus>;
+    readonly transferredPatientsCounts: ResourceDescription<TransferablePatientStatus> =
+        { red: 0, yellow: 0, green: 0 };
 
     @IsResourceDescription()
-    readonly remainingPatientsCounts!: ResourceDescription<PatientStatus>;
+    readonly remainingPatientsCounts: ResourceDescription<TransferablePatientStatus> =
+        { red: 0, yellow: 0, green: 0 };
 
     /**
      * Defines the scope of the counts reported with this radiogram.
@@ -45,7 +52,7 @@ export class TransferCountsRadiogram implements Radiogram {
      *   that are managed by the transport management behavior of the simulated region that sent the radiogram
      */
     @IsLiteralUnion({ singleRegion: true, transportManagement: true })
-    readonly scope!: Scope;
+    readonly scope: Scope = 'singleRegion';
 
     /**
      * @deprecated Use {@link create} instead
@@ -53,17 +60,11 @@ export class TransferCountsRadiogram implements Radiogram {
     constructor(
         id: UUID,
         simulatedRegionId: UUID,
-        status: ExerciseRadiogramStatus,
-        transferredPatientsCounts: ResourceDescription<PatientStatus>,
-        remainingPatientsCounts: ResourceDescription<PatientStatus>,
-        scope: Scope
+        status: ExerciseRadiogramStatus
     ) {
         this.id = id;
         this.simulatedRegionId = simulatedRegionId;
         this.status = status;
-        this.transferredPatientsCounts = transferredPatientsCounts;
-        this.remainingPatientsCounts = remainingPatientsCounts;
-        this.scope = scope;
     }
 
     static readonly create = getCreate(this);
