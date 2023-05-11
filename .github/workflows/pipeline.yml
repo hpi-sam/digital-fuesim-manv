@@ -238,7 +238,7 @@ jobs:
                   working-directory: frontend
                   browser: ${{ matrix.browser }}
                   wait-on: 'http://127.0.0.1:4200/, http://127.0.0.1:3201/api/health'
-                  wait-on-timeout: 250
+                  wait-on-timeout: 1
                   command-prefix: '--' # So cypress is using our node version: https://github.com/cypress-io/github-action/issues/489#issuecomment-1021379037
               env:
                   CYPRESS_RESPONSE_TIMEOUT: 500
