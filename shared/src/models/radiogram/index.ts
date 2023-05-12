@@ -9,4 +9,5 @@ export * from './vehicle-count-radiogram';
 export * from './resource-request-radiogram';
 export * from './status';
 export * from './transfer-counts-radiogram';
+export * from './transfer-category-completed-radiogram';
 export * from './utils';

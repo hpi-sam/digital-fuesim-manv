@@ -8,7 +8,7 @@ import { ResourceDescription } from '../utils/resource-description';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
-import { Scope, scopeAllowedValues } from './utils/scope';
+import { Scope, scopeAllowedValues } from './utils/transfer-progress-scope';
 
 export class TransferCountsRadiogram implements Radiogram {
     @IsUUID(4, uuidValidationOptions)
