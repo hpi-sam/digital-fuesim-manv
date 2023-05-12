@@ -99,7 +99,7 @@ export namespace HospitalActionReducers {
         reducer: (draftState, { hospitalId }) => {
             if (hospitalId === catchAllHospitalId) {
                 throw new ExpectedReducerError(
-                    'Dieses Krankenhaus darf aus techischen Gründen nicht gelöscht werden.'
+                    'Dieses Krankenhaus darf aus technischen Gründen nicht gelöscht werden.'
                 );
             }
 
