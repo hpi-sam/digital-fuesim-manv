@@ -7,3 +7,4 @@ export * from './occupation-helpers';
 export * from './patient-transfer-occupation';
 export * from './unloading-occupation';
 export * from './wait-for-transfer-occupation';
+export * from './is-leader-occupation';

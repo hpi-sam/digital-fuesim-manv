@@ -24,6 +24,9 @@
                 reserviert.
             </span>
         </ng-container>
+        <ng-container *ngSwitchCase="'isLeaderOccupation'">
+            <span>Das Fahrzeug führt diese Region</span>
+        </ng-container>
         <ng-container *ngSwitchDefault>
             <span class="text-muted">Die Tätigkeit ist unbekannt.</span>
         </ng-container>

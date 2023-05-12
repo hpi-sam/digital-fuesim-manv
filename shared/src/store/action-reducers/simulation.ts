@@ -392,6 +392,35 @@ export class SendTransferRequestEventAction implements Action {
     public readonly patients!: UUIDSet;
 }
 
+export class AddLeadershipVehicleTypeAction implements Action {
+    @IsValue('[AssignLeaderBehavior] Add Leadership Vehicle Type')
+    public readonly type = '[AssignLeaderBehavior] Add Leadership Vehicle Type';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsString()
+    public readonly vehicleType!: string;
+}
+
+export class RemoveLeadershipVehicleTypeAction implements Action {
+    @IsValue('[AssignLeaderBehavior] Remove Leadership Vehicle Type')
+    public readonly type =
+        '[AssignLeaderBehavior] Remove Leadership Vehicle Type';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsString()
+    public readonly vehicleType!: string;
+}
+
 export namespace SimulationActionReducers {
     export const updateTreatPatientsIntervals: ActionReducer<UpdateTreatPatientsIntervalsAction> =
         {
@@ -986,6 +1015,51 @@ export namespace SimulationActionReducers {
                 }
 
                 sendSimulationEvent(simulatedRegion, event);
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const addLeadershipVehicleType: ActionReducer<AddLeadershipVehicleTypeAction> =
+        {
+            action: AddLeadershipVehicleTypeAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, vehicleType }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'assignLeaderBehavior'
+                );
+                behaviorState.leadershipVehicleTypes[vehicleType] = true;
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const removeLeadershipVehicleType: ActionReducer<RemoveLeadershipVehicleTypeAction> =
+        {
+            action: RemoveLeadershipVehicleTypeAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, vehicleType }
+            ) {
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'assignLeaderBehavior'
+                );
+                if (!behaviorState.leadershipVehicleTypes[vehicleType]) {
+                    throw new ReducerError(
+                        `Tried to remove ${vehicleType} from leadership vehicle types, but it was not present`
+                    );
+                }
+                delete behaviorState.leadershipVehicleTypes[vehicleType];
+
                 return draftState;
             },
             rights: 'trainer',

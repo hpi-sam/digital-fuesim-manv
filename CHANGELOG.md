@@ -22,6 +22,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 -   Add behaviors button now opens towards the top.
 -   Simulated regions can now send patients to any hospital. The hospitals tab was removed.
+-   The assign leader behavior now prioritized vehicles instead of gfs. Custom command vehicles can be set in the frontend.
 
 ### Fixed
 

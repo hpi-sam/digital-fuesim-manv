@@ -1,9 +1,64 @@
-<h6>Aktuell zugewiesene Führungskraft</h6>
+<h5>Aktuell zugewiesene Führungskraft</h5>
 
-<p *ngIf="currentLeader; else noLeader">
-    {{ (currentLeader | async)?.personnelType | personnelName }}
+<p *ngIf="currentLeader$ | async as currentLeader; else noLeader">
+    {{ currentLeader.personnelType | personnelName }}
+    <ng-container
+        *ngIf="vehicleOfCurrentLeader$ | async as vehicleOfCurrentLeader"
+        >aus Fahrzeug {{ vehicleOfCurrentLeader.name }}</ng-container
+    >
 </p>
 
 <ng-template #noLeader>
     <p>Keine Führungskraft zugewiesen.</p>
 </ng-template>
+
+<h6>Mögliche Kommandofahrzeuge</h6>
+
+<ul class="list-group" *ngIf="behaviorState$ | async as behaviorState">
+    <li
+        *ngFor="
+            let leadershipVehicleType of behaviorState.leadershipVehicleTypes
+                | keys
+        "
+        class="list-group-item d-flex flex-row justify-content-between align-items-center"
+    >
+        <span>{{ leadershipVehicleType }}</span>
+        <button
+            class="btn btn-outline-danger"
+            type="button"
+            (click)="removeVehicleType(leadershipVehicleType)"
+        >
+            <span class="bi-trash"></span>
+        </button>
+    </li>
+</ul>
+
+<div
+    ngbDropdown
+    *ngIf="vehicleTypesToAdd$ | async as vehicleTypesToAdd"
+    placement="bottom-start"
+    autoClose="outside"
+    class="d-inline-block overflow-visible text-center mb-3"
+>
+    <button
+        ngbDropdownToggle
+        type="button"
+        class="btn btn-outline-primary"
+        [disabled]="vehicleTypesToAdd.length === 0"
+    >
+        <span class="bi-plus me-1"></span>
+        Weiteren Kommandofahrzeugtyp hinzufügen
+    </button>
+    <div *ngIf="vehicleTypesToAdd.length > 0" ngbDropdownMenu>
+        <button
+            *ngFor="let vehicleType of vehicleTypesToAdd"
+            ngbDropdownItem
+            class="dropdown-item"
+            type="button"
+            (click)="addVehicleType(vehicleType)"
+        >
+            <span class="bi-plus me-1"></span>
+            {{ vehicleType }}
+        </button>
+    </div>
+</div>
