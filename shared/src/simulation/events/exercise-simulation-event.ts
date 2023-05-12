@@ -33,6 +33,7 @@ import { PatientCategoryTransferToHospitalFinishedEvent } from './patient-catego
 import { RetryToSendToHospitalEvent } from './retry-to-send-to-hospital';
 import { TryToSendToHospitalEvent } from './try-to-send-to-hospital';
 import { AskForPatientDataEvent } from './ask-for-patient-data-event';
+import { PatientsCountedEvent } from './patients-counted';
 
 export const simulationEvents = {
     MaterialAvailableEvent,
@@ -67,6 +68,7 @@ export const simulationEvents = {
     TryToSendToHospitalEvent,
     RetryToSendToHospitalEvent,
     AskForPatientDataEvent,
+    PatientsCountedEvent,
 };
 
 export type ExerciseSimulationEvent = InstanceType<
@@ -114,6 +116,7 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     tryToSendToHospitalEvent: TryToSendToHospitalEvent,
     retryToSendToHospitalEvent: RetryToSendToHospitalEvent,
     askForPatientDataEvent: AskForPatientDataEvent,
+    patientsCountedEvent: PatientsCountedEvent,
 };
 
 export const simulationEventTypeOptions: Parameters<typeof Type> = [

@@ -28,3 +28,4 @@ export * from './patient-transfer-to-hospital-successful';
 export * from './try-to-send-to-hospital';
 export * from './retry-to-send-to-hospital';
 export * from './ask-for-patient-data-event';
+export * from './patients-counted';

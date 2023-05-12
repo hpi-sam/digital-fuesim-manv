@@ -35,6 +35,7 @@ import { RadiogramUnpublishedStatus } from '../../models/radiogram';
 import { IsPatientsPerUUID } from '../../utils/validators/is-patients-per-uuid';
 import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutable';
 import { NewPatientDataRequestedRadiogram } from '../../models/radiogram/new-patient-data-requested';
+import { CountPatientsActivityState } from '../activities/count-patients';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -299,6 +300,21 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                             break;
                         }
 
+                        // if it manages its own simulated region initiate a patient count
+
+                        if (
+                            behaviorState.simulatedRegionsToManage[
+                                simulatedRegion.id
+                            ]
+                        ) {
+                            addActivity(
+                                simulatedRegion,
+                                CountPatientsActivityState.create(
+                                    nextUUID(draftState)
+                                )
+                            );
+                        }
+
                         publishRadiogram(
                             draftState,
                             cloneDeepMutable(
@@ -308,6 +324,16 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                                     RadiogramUnpublishedStatus.create()
                                 )
                             )
+                        );
+                    }
+                    break;
+
+                case 'patientsCountedEvent':
+                    {
+                        reCalculatePatientsInSimulatedRegion(
+                            behaviorState,
+                            simulatedRegion.id,
+                            event.patientCount
                         );
                     }
                     break;
