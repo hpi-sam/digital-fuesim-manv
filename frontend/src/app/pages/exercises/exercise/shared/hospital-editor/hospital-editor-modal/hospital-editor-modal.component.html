@@ -74,7 +74,7 @@
                         (click)="removeHospital(hospital.id)"
                         class="btn btn-outline-danger float-end"
                         data-cy="hospitalDeleteButton"
-                        [disabled]="hospital.id === catchAllHospitalId"
+                        *ngIf="hospital.id !== catchAllHospitalId"
                     >
                         <i class="bi bi-trash"></i> Löschen
                     </button>
