@@ -22,6 +22,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 -   Add behaviors button now opens towards the top.
 -   Simulated regions can now send patients to any hospital. The hospitals tab was removed.
+-   Resource request radiograms now store, if they have been accepted or denied. This is also displayed in the frontend
 
 ### Fixed
 
