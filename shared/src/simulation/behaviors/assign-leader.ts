@@ -1,22 +1,35 @@
 import { IsOptional, IsUUID } from 'class-validator';
 import { groupBy } from 'lodash-es';
-import type { SimulatedRegion } from '../../models';
+import type { SimulatedRegion, Vehicle } from '../../models';
 import type {
     MaterialCountRadiogram,
     PersonnelCountRadiogram,
     VehicleCountRadiogram,
 } from '../../models/radiogram';
 import type { PersonnelType } from '../../models/utils';
-import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
-import { getActivityById, getElement } from '../../store/action-reducers/utils';
+import {
+    IsLeaderOccupation,
+    NoOccupation,
+    isUnoccupied,
+    getCreate,
+    isInSpecificSimulatedRegion,
+} from '../../models/utils';
+import { getActivityById } from '../../store/action-reducers/utils';
 import type { Mutable } from '../../utils';
-import { StrictObject, UUID, uuid, uuidValidationOptions } from '../../utils';
+import {
+    StrictObject,
+    cloneDeepMutable,
+    UUID,
+    uuid,
+    uuidValidationOptions,
+} from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { LeaderChangedEvent } from '../events/leader-changed';
 import type { ExerciseState } from '../../state';
 import { addActivity } from '../activities/utils';
 import { DelayEventActivityState } from '../activities';
 import { nextUUID } from '../utils/randomness';
+import { IsStringSet } from '../../utils/validators/is-string-set';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -32,6 +45,11 @@ export class AssignLeaderBehaviorState implements SimulationBehaviorState {
     @IsOptional()
     @IsUUID(4, uuidValidationOptions)
     public readonly leaderId: UUID | undefined;
+
+    @IsStringSet()
+    public readonly leadershipVehicleTypes: { [key: string]: true } = {
+        'GW-San': true,
+    };
 
     static readonly create = getCreate(this);
 }
@@ -49,63 +67,84 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
         behaviorState: AssignLeaderBehaviorState,
         handleEvent(draftState, simulatedRegion, behaviorState, event) {
             switch (event.type) {
-                case 'personnelAvailableEvent':
+                case 'tickEvent':
                     {
-                        // If a gf (group leader of GW San) enters the region, we want to assign them as leader, since a gf can't treat patients
-                        // A gf has the highest priority, so they would be chosen by the logic for the tick event anyways
-                        // Therefore, this branch only serves the purpose to switch the leader
-                        if (!behaviorState.leaderId) {
-                            return;
-                        }
+                        const leader = behaviorState.leaderId
+                            ? draftState.personnel[behaviorState.leaderId]
+                            : undefined;
 
-                        const currentLeader = getElement(
-                            draftState,
-                            'personnel',
-                            behaviorState.leaderId
-                        );
+                        const vehicleOfLeader = leader
+                            ? draftState.vehicles[leader.vehicleId]
+                            : undefined;
 
-                        if (currentLeader.personnelType === 'gf') {
-                            return;
-                        }
-
-                        const newPersonnel = getElement(
-                            draftState,
-                            'personnel',
-                            event.personnelId
-                        );
-
-                        if (newPersonnel.personnelType === 'gf') {
+                        if (
+                            behaviorState.leaderId &&
+                            (!leader ||
+                                !vehicleOfLeader ||
+                                !isInSpecificSimulatedRegion(
+                                    vehicleOfLeader,
+                                    simulatedRegion.id
+                                ) ||
+                                vehicleOfLeader.occupation.type !==
+                                    'isLeaderOccupation' ||
+                                vehicleOfLeader.occupation.simulatedRegionId !==
+                                    simulatedRegion.id)
+                        ) {
                             changeLeader(
                                 draftState,
                                 simulatedRegion,
                                 behaviorState,
-                                event.personnelId
+                                vehicleOfLeader,
+                                undefined
                             );
                         }
-                    }
-                    break;
-                case 'tickEvent':
-                    {
+
+                        const vehicles = Object.values(
+                            draftState.vehicles
+                        ).filter(
+                            (vehicle) =>
+                                isInSpecificSimulatedRegion(
+                                    vehicle,
+                                    simulatedRegion.id
+                                ) &&
+                                isUnoccupied(vehicle, draftState.currentTime)
+                        );
+
+                        if (
+                            !behaviorState.leaderId ||
+                            !vehicleOfLeader ||
+                            !behaviorState.leadershipVehicleTypes[
+                                vehicleOfLeader.vehicleType
+                            ]
+                        ) {
+                            const leadershipVehicles = vehicles.filter(
+                                (vehicle) =>
+                                    behaviorState.leadershipVehicleTypes[
+                                        vehicle.vehicleType
+                                    ]
+                            );
+
+                            if (leadershipVehicles.length > 0) {
+                                changeLeader(
+                                    draftState,
+                                    simulatedRegion,
+                                    behaviorState,
+                                    vehicleOfLeader,
+                                    leadershipVehicles[0]!
+                                );
+                            }
+                        }
+
                         if (!behaviorState.leaderId) {
-                            selectNewLeader(
-                                draftState,
-                                simulatedRegion,
-                                behaviorState,
-                                false
-                            );
-                        }
-                    }
-                    break;
-                case 'personnelRemovedEvent':
-                    {
-                        // if the leader is removed from the region a new leader is selected
-                        if (event.personnelId === behaviorState.leaderId) {
-                            selectNewLeader(
-                                draftState,
-                                simulatedRegion,
-                                behaviorState,
-                                true
-                            );
+                            if (vehicles.length > 0) {
+                                changeLeader(
+                                    draftState,
+                                    simulatedRegion,
+                                    behaviorState,
+                                    vehicleOfLeader,
+                                    vehicles[0]!
+                                );
+                            }
                         }
                     }
                     break;
@@ -242,39 +281,32 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
         },
     };
 
-function selectNewLeader(
-    draftState: Mutable<ExerciseState>,
-    simulatedRegion: Mutable<SimulatedRegion>,
-    behaviorState: Mutable<AssignLeaderBehaviorState>,
-    changeLeaderIfNoLeaderSelected: boolean
-) {
-    const personnel = Object.values(draftState.personnel).filter(
-        (pers) =>
-            isInSpecificSimulatedRegion(pers, simulatedRegion.id) &&
-            pers.personnelType !== 'notarzt'
-    );
-
-    if (personnel.length === 0) {
-        if (changeLeaderIfNoLeaderSelected) {
-            changeLeader(draftState, simulatedRegion, behaviorState, undefined);
-        }
-        return;
-    }
-
-    personnel.sort(
-        (a, b) =>
-            personnelPriorities[b.personnelType] -
-            personnelPriorities[a.personnelType]
-    );
-    changeLeader(draftState, simulatedRegion, behaviorState, personnel[0]?.id);
-}
-
 function changeLeader(
     draftState: Mutable<ExerciseState>,
     simulatedRegion: Mutable<SimulatedRegion>,
     behaviorState: Mutable<AssignLeaderBehaviorState>,
-    newLeaderId: UUID | undefined
+    currentVehicle: Mutable<Vehicle> | undefined,
+    newVehicle: Mutable<Vehicle> | undefined
 ) {
+    if (currentVehicle) {
+        currentVehicle.occupation = cloneDeepMutable(NoOccupation.create());
+    }
+    if (newVehicle) {
+        newVehicle.occupation = cloneDeepMutable(
+            IsLeaderOccupation.create(simulatedRegion.id)
+        );
+    }
+
+    const newLeaderId = newVehicle
+        ? Object.values(draftState.personnel)
+              .filter((personnel) => newVehicle.personnelIds[personnel.id])
+              .sort(
+                  (a, b) =>
+                      personnelPriorities[b.personnelType] -
+                      personnelPriorities[a.personnelType]
+              )[0]?.id
+        : undefined;
+
     addActivity(
         simulatedRegion,
         DelayEventActivityState.create(
