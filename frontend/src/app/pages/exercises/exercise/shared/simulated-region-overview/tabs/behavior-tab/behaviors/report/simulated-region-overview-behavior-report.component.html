@@ -118,8 +118,7 @@
     <h5 class="mt-3">Ereignisbasierte Berichte</h5>
 
     <div class="row align-items-center m-3">
-        <div class="col-sm">Wenn sich die Behandlungsphase ändert</div>
-        <div class="col-sm">
+        <div class="col-auto">
             <input
                 #timeInput="ngModel"
                 [ngModel]="
@@ -130,6 +129,51 @@
                 type="checkbox"
                 class="form-check-input no-validation"
             />
+        </div>
+        <div class="col-sm">Wenn sich die Behandlungsphase ändert</div>
+    </div>
+    <div class="row align-items-center m-3">
+        <div class="col-auto">
+            <input
+                #timeInput="ngModel"
+                [ngModel]="
+                    (reportBehaviorState$ | async)
+                        ?.reportTransferOfCategoryInSingleRegionCompleted
+                "
+                (appSaveOnTyping)="
+                    updateReportTransferOfCategoryInSingleRegionCompleted(
+                        $event
+                    )
+                "
+                type="checkbox"
+                class="form-check-input no-validation"
+            />
+        </div>
+        <div class="col-sm">
+            Wenn in dieser Patientenablage alle Patienten einer SK
+            abtransportiert wurden
+        </div>
+    </div>
+    <div class="row align-items-center m-3">
+        <div class="col-auto">
+            <input
+                #timeInput="ngModel"
+                [ngModel]="
+                    (reportBehaviorState$ | async)
+                        ?.reportTransferOfCategoryInMultipleRegionsCompleted
+                "
+                (appSaveOnTyping)="
+                    updateReportTransferOfCategoryInMultipleRegionsCompleted(
+                        $event
+                    )
+                "
+                type="checkbox"
+                class="form-check-input no-validation"
+            />
+        </div>
+        <div class="col-sm">
+            Wenn in allen Patientenablagen dieser Transportorganisation alle
+            Patienten einer SK abtransportiert wurden
         </div>
     </div>
 
