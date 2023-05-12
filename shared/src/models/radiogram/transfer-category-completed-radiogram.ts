@@ -32,7 +32,7 @@ export class TransferCategoryCompletedRadiogram implements Radiogram {
     readonly informationAvailable: boolean = false;
 
     @IsLiteralUnion(patientStatusAllowedValues)
-    readonly transferredPatientsCounts: PatientStatus = 'white';
+    readonly completedCategory: PatientStatus = 'white';
 
     @IsLiteralUnion(scopeAllowedValues)
     readonly scope: TransferProgressScope = 'singleRegion';
