@@ -15,6 +15,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   When material or personnel is selected, the corresponding vehicle is highlighted as well.
     -   When a vehicle is selected, the corresponding material and personnel are highlighted as well.
 -   The reports behavior can generate reports on the counts of transferred patients per triage category.
+-   The reports behavior can generate event-based reports when the last patient of a triage category has been transferred to a hospital.
 
 ### Changed
 
