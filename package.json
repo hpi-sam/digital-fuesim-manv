@@ -13,7 +13,7 @@
         "setup": "npm i && cd shared && npm i && npm run build && cd .. && concurrently \"cd frontend && npm i \" \"cd backend && npm i \" \"cd benchmark && npm i \"",
         "setup:package-lock-only": "npm i --package-lock-only && cd shared && npm i --package-lock-only && cd ../frontend && npm i --package-lock-only && cd ../backend && npm i --package-lock-only && cd ../benchmark && npm i --package-lock-only",
         "prune": "npm prune && cd shared && npm prune && cd ../frontend && npm prune && cd ../backend && npm prune",
-        "prune:deployment": "npm prune --production && cd shared && npm prune --production && cd ../backend && npm prune --production",
+        "prune:deployment": "npm prune --omit=dev && cd shared && npm prune --omit=dev && cd ../backend && npm prune --omit=dev",
         "deployment": "npm run setup:ci && npm run build:deployment && npm run prune:deployment",
         "setup:ci": "npm ci && cd shared && npm ci && npm run build && cd ../frontend && npm ci && cd ../backend && npm ci",
         "prettier": "cat .gitignore .prettierignore > .prettierignore-ci && prettier --ignore-path .prettierignore-ci --loglevel warn --write \"**/*\" --ignore-unknown",
