@@ -78,6 +78,7 @@ export namespace RadiogramActionReducers {
                         VehiclesSentEvent.create(VehicleResource.create({}))
                     )
                 );
+                radiogram.resourcesPromised = false;
             }
 
             markRadiogramDone(draftState, radiogramId);
@@ -109,6 +110,8 @@ export namespace RadiogramActionReducers {
                     )
                 );
 
+                radiogram.resourcesPromised = true;
+
                 markRadiogramDone(draftState, radiogramId);
 
                 return draftState;
@@ -137,6 +140,8 @@ export namespace RadiogramActionReducers {
                         VehiclesSentEvent.create(VehicleResource.create({}))
                     )
                 );
+
+                radiogram.resourcesPromised = false;
 
                 markRadiogramDone(draftState, radiogramId);
 

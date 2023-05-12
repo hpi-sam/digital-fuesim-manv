@@ -1,10 +1,7 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type {
-    ResourceRequestRadiogram,
-    VehicleResource,
-} from 'digital-fuesim-manv-shared';
+import type { ResourceRequestRadiogram } from 'digital-fuesim-manv-shared';
 import { UUID, isAccepted } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -19,7 +16,7 @@ import { createSelectRadiogram } from 'src/app/state/application/selectors/exerc
 export class RadigoramCardContentResourceRequestComponent implements OnInit {
     @Input() radiogramId!: UUID;
 
-    requiredResource$!: Observable<VehicleResource>;
+    radiogram$!: Observable<ResourceRequestRadiogram>;
     enableActionButtons$!: Observable<boolean>;
 
     constructor(
@@ -45,12 +42,7 @@ export class RadigoramCardContentResourceRequestComponent implements OnInit {
         const selectRadiogram = createSelectRadiogram<ResourceRequestRadiogram>(
             this.radiogramId
         );
-        this.requiredResource$ = this.store.select(
-            createSelector(
-                selectRadiogram,
-                (radiogram) => radiogram.requiredResource
-            )
-        );
+        this.radiogram$ = this.store.select(selectRadiogram);
         this.enableActionButtons$ = this.store.select(
             createSelector(selectRadiogram, (radiogram) =>
                 isAccepted(radiogram)
