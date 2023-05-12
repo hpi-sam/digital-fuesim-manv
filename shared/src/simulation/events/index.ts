@@ -25,3 +25,6 @@ export * from './transfer-vehicles-request';
 export * from './do-transfer';
 export * from './patient-category-transfer-to-hospital-finished';
 export * from './patient-transfer-to-hospital-successful';
+export * from './try-to-send-to-hospital';
+export * from './retry-to-send-to-hospital';
+export * from './ask-for-patient-data-event';

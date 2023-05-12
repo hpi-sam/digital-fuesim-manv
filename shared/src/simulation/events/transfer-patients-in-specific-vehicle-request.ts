@@ -20,6 +20,9 @@ export class TransferPatientsInSpecificVehicleRequestEvent
     @IsUUID(4, uuidValidationOptions)
     readonly vehicleId: UUID;
 
+    @IsUUID(4, uuidValidationOptions)
+    readonly transferInitiatingRegionId?: UUID;
+
     @IsLiteralUnion(transferDestinationTypeAllowedValues)
     readonly transferDestinationType: TransferDestination;
 
@@ -32,11 +35,13 @@ export class TransferPatientsInSpecificVehicleRequestEvent
     constructor(
         patientIds: UUIDSet,
         vehicleId: UUID,
+        transferInitiatingRegionId: UUID | undefined,
         transferDestinationType: TransferDestination,
         transferDestinationId: UUID
     ) {
         this.patientIds = patientIds;
         this.vehicleId = vehicleId;
+        this.transferInitiatingRegionId = transferInitiatingRegionId;
         this.transferDestinationType = transferDestinationType;
         this.transferDestinationId = transferDestinationId;
     }

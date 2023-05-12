@@ -890,6 +890,7 @@ export namespace SimulationActionReducers {
                 if (Object.keys(cloneDeepMutable(patients)).length === 0) {
                     event = TransferSpecificVehicleRequestEvent.create(
                         vehicleId,
+                        destinationId,
                         destinationType,
                         destinationId
                     );
@@ -898,6 +899,7 @@ export namespace SimulationActionReducers {
                         TransferPatientsInSpecificVehicleRequestEvent.create(
                             patients,
                             vehicleId,
+                            destinationId,
                             destinationType,
                             destinationId
                         );

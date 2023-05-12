@@ -11,6 +11,6 @@
         "sourceMap": true
     },
     "references": [],
-    "include": ["src/**/*", "tests/**/*"],
+    "include": ["src/**/*", "tests/**/*", "src/models/radiogram/.ts"],
     "exclude": ["node_modules"]
 }

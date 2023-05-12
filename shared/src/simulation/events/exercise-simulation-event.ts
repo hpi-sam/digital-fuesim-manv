@@ -30,6 +30,9 @@ import { StartTransferEvent } from './start-transfer';
 import { DoTransferEvent } from './do-transfer';
 import { PatientTransferToHospitalSuccessfulEvent } from './patient-transfer-to-hospital-successful';
 import { PatientCategoryTransferToHospitalFinishedEvent } from './patient-category-transfer-to-hospital-finished';
+import { RetryToSendToHospitalEvent } from './retry-to-send-to-hospital';
+import { TryToSendToHospitalEvent } from './try-to-send-to-hospital';
+import { AskForPatientDataEvent } from './ask-for-patient-data-event';
 
 export const simulationEvents = {
     MaterialAvailableEvent,
@@ -61,6 +64,9 @@ export const simulationEvents = {
     DoTransferEvent,
     PatientCategoryTransferToHospitalFinishedEvent,
     PatientTransferToHospitalSuccessfulEvent,
+    TryToSendToHospitalEvent,
+    RetryToSendToHospitalEvent,
+    AskForPatientDataEvent,
 };
 
 export type ExerciseSimulationEvent = InstanceType<
@@ -105,6 +111,9 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
         PatientCategoryTransferToHospitalFinishedEvent,
     patientTransferToHospitalSuccessfulEvent:
         PatientTransferToHospitalSuccessfulEvent,
+    tryToSendToHospitalEvent: TryToSendToHospitalEvent,
+    retryToSendToHospitalEvent: RetryToSendToHospitalEvent,
+    askForPatientDataEvent: AskForPatientDataEvent,
 };
 
 export const simulationEventTypeOptions: Parameters<typeof Type> = [

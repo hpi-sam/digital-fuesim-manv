@@ -186,6 +186,7 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                                     nextUUID(draftState),
                                     TransferVehiclesRequestEvent.create(
                                         cloneDeep(vehiclesToBeSent[region]!),
+                                        region,
                                         'transferPoint',
                                         region,
                                         'automatic-distribution'

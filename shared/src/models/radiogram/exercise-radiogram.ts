@@ -8,6 +8,7 @@ import { Radiogram } from './radiogram';
 import { TreatmentStatusRadiogram } from './treatment-status-radiogram';
 import { VehicleCountRadiogram } from './vehicle-count-radiogram';
 import { ResourceRequestRadiogram } from './resource-request-radiogram';
+import { NewPatientDataRequestedRadiogram } from './new-patient-data-requested';
 
 export const radiograms = {
     MaterialCountRadiogram,
@@ -17,6 +18,7 @@ export const radiograms = {
     ResourceRequestRadiogram,
     TreatmentStatusRadiogram,
     VehicleCountRadiogram,
+    NewPatientDataRequestedRadiogram,
 };
 
 export type ExerciseRadiogram = InstanceType<
@@ -35,6 +37,7 @@ export const radiogramDictionary: ExerciseRadiogramDictionary = {
     resourceRequestRadiogram: ResourceRequestRadiogram,
     treatmentStatusRadiogram: TreatmentStatusRadiogram,
     vehicleCountRadiogram: VehicleCountRadiogram,
+    newPatientDataRequestedRadiogram: NewPatientDataRequestedRadiogram,
 };
 
 export function getRadiogramConstructor(radiogram: ExerciseRadiogram) {

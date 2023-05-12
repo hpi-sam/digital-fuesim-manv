@@ -75,7 +75,10 @@ export namespace RadiogramActionReducers {
                 sendSimulationEvent(
                     simulatedRegion,
                     cloneDeepMutable(
-                        VehiclesSentEvent.create(VehicleResource.create({}))
+                        VehiclesSentEvent.create(
+                            VehicleResource.create({}),
+                            simulatedRegion.id
+                        )
                     )
                 );
             }
@@ -105,7 +108,10 @@ export namespace RadiogramActionReducers {
                 sendSimulationEvent(
                     simulatedRegion,
                     cloneDeepMutable(
-                        VehiclesSentEvent.create(radiogram.requiredResource)
+                        VehiclesSentEvent.create(
+                            radiogram.requiredResource,
+                            simulatedRegion.id
+                        )
                     )
                 );
 
@@ -134,7 +140,10 @@ export namespace RadiogramActionReducers {
                 sendSimulationEvent(
                     simulatedRegion,
                     cloneDeepMutable(
-                        VehiclesSentEvent.create(VehicleResource.create({}))
+                        VehiclesSentEvent.create(
+                            VehicleResource.create({}),
+                            simulatedRegion.id
+                        )
                     )
                 );
 

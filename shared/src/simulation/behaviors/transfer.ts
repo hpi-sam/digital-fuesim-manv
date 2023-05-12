@@ -9,9 +9,7 @@ import { groupBy } from 'lodash-es';
 import { Type } from 'class-transformer';
 import {
     VehicleResource,
-    currentSimulatedRegionOf,
     getCreate,
-    isInSimulatedRegion,
     isInSpecificSimulatedRegion,
 } from '../../models/utils';
 import {
@@ -313,32 +311,18 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                         )
                     );
 
-                    // Send event to destination if it is a simulated region
+                    // Send event to transfer initiating region
 
-                    if (
-                        event.transferDestinationType === 'transferPoint' &&
-                        isInSimulatedRegion(
-                            getElement(
-                                draftState,
-                                'transferPoint',
-                                event.transferDestinationId
-                            )
-                        )
-                    ) {
+                    if (event.transferInitiatingRegionId) {
                         addActivity(
                             simulatedRegion,
                             SendRemoteEventActivityState.create(
                                 nextUUID(draftState),
-                                currentSimulatedRegionOf(
-                                    draftState,
-                                    getElement(
-                                        draftState,
-                                        'transferPoint',
-                                        event.transferDestinationId
-                                    )
-                                ).id,
+                                event.transferInitiatingRegionId,
                                 VehiclesSentEvent.create(
-                                    VehicleResource.create(sentVehicles)
+                                    VehicleResource.create(sentVehicles),
+                                    event.transferDestinationId,
+                                    event.key
                                 )
                             )
                         );
