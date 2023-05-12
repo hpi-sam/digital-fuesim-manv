@@ -9,10 +9,13 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Added
 
+-   Added a new favicon.
+-   2 new events related to patient transport have been added to the simulation.
 -   Selected material, personnel and vehicles are now highlighted on the map.
     -   When material or personnel is selected, the corresponding vehicle is highlighted as well.
     -   When a vehicle is selected, the corresponding material and personnel are highlighted as well.
 -   A generic catch-all hospital is present in every exercise and cannot be deleted.
+-   The reports behavior can generate reports on the counts of transferred patients per triage category.
 
 ### Changed
 

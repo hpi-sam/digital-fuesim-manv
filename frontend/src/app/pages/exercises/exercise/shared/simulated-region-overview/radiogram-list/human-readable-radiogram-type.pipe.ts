@@ -10,6 +10,7 @@ const map: { [Key in ExerciseRadiogram['type']]: string } = {
     treatmentStatusRadiogram: 'Behandlungsstatus',
     vehicleCountRadiogram: 'Anzahl an Fahrzeugen',
     resourceRequestRadiogram: 'Anfrage nach Fahrzeugen',
+    transferCountsRadiogram: 'Anzahl abtransportierter Patienten',
 };
 
 @Pipe({

@@ -1,3 +1,4 @@
+import { TransferCountsRadiogram } from '../../models/radiogram';
 import type { ExerciseRadiogram } from '../../models/radiogram/exercise-radiogram';
 import { MaterialCountRadiogram } from '../../models/radiogram/material-count-radiogram';
 import { PatientCountRadiogram } from '../../models/radiogram/patient-count-radiogram';
@@ -14,6 +15,7 @@ export const reportableInformationAllowedValues: AllowedValues<ReportableInforma
         patientCount: true,
         personnelCount: true,
         vehicleCount: true,
+        transferCounts: true,
         treatmentStatus: true,
         materialCount: true,
     };
@@ -26,6 +28,7 @@ export type ReportableInformation =
     | 'materialCount'
     | 'patientCount'
     | 'personnelCount'
+    | 'transferCounts'
     | 'treatmentStatus'
     | 'vehicleCount';
 
@@ -39,6 +42,7 @@ export const createRadiogramMap: {
     patientCount: PatientCountRadiogram.create,
     personnelCount: PersonnelCountRadiogram.create,
     vehicleCount: VehicleCountRadiogram.create,
+    transferCounts: TransferCountsRadiogram.create,
     treatmentStatus: TreatmentStatusRadiogram.create,
     materialCount: MaterialCountRadiogram.create,
 };

@@ -50,6 +50,7 @@ import { SimulatedRegionOverviewVehiclesTabComponent } from './tabs/vehicles-tab
 import { SimulatedRegionOverviewPatientsTableComponent } from './patients-table/simulated-region-overview-patients-table.component';
 import { StartTransferService } from './start-transfer.service';
 import { SimulatedRegionOverviewBehaviorTransferVehiclesComponent } from './tabs/behavior-tab/behaviors/transfer-vehicles/simulated-region-overview-behavior-transfer-vehicles.component';
+import { RadiogramCardContentTransferCountsComponent } from './radiogram-list/radiogram-card/radiogram-card-content-transfer-counts/radiogram-card-content-transfer-counts.component';
 
 @NgModule({
     declarations: [
@@ -90,6 +91,7 @@ import { SimulatedRegionOverviewBehaviorTransferVehiclesComponent } from './tabs
         SimulatedRegionOverviewVehiclesTabComponent,
         SimulatedRegionOverviewPatientsTableComponent,
         SimulatedRegionOverviewBehaviorTransferVehiclesComponent,
+        RadiogramCardContentTransferCountsComponent,
     ],
     imports: [
         FormsModule,
