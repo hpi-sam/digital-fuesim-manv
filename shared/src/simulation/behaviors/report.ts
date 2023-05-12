@@ -44,7 +44,7 @@ export class ReportBehaviorState implements SimulationBehaviorState {
 
     @IsBoolean()
     public readonly reportTransferOfCategoryInSingleRegionCompleted: boolean =
-        true;
+        false;
 
     @IsBoolean()
     public readonly reportTransferOfCategoryInMultipleRegionsCompleted: boolean =
