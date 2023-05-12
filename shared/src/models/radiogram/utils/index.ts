@@ -1,1 +1,1 @@
-export * from './scope';
+export * from './transfer-progress-scope';

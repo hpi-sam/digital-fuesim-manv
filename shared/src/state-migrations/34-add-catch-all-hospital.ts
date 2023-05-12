@@ -1,6 +1,6 @@
 import type { Migration } from './migration-functions';
 
-export const addCatchAllHospital33: Migration = {
+export const addCatchAllHospital34: Migration = {
     action: null,
     state: (state) => {
         const typedState = state as {
