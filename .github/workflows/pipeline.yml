@@ -323,10 +323,6 @@ jobs:
             contents: write
         steps:
             - uses: actions/checkout@v3
-            - name: Initialize mandatory git config
-              run: |
-                  git config user.name "GitHub Actions"
-                  git config user.email noreply@github.com
             - uses: ./.github/actions/extract-version
             - name: Extract release notes
               id: extract_release_notes
@@ -338,4 +334,5 @@ jobs:
               with:
                   tag_name: v${{ env.VERSION_NAME }}
                   name: v${{ env.VERSION_NAME }}
+                  target_commitish: main
                   body: ${{ steps.extract_release_notes.outputs.release_notes }}
