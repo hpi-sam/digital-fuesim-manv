@@ -473,7 +473,7 @@ describe('reassign treatment', () => {
             ).toBeEmptyObject();
         });
 
-        it('does not send an event if nothing changed', () => {
+        it('does not send an event or update the counter if nothing changed', () => {
             const { beforeState, afterState } = setupStateAndInteract(
                 (_, simulatedRegion) => {
                     simulatedRegion.inEvents.push(
@@ -555,6 +555,36 @@ describe('reassign treatment', () => {
 
             // Event would be sent trough an DelayEventActivity
             expect(afterSimulatedRegion.activities).toBeEmpty();
+        });
+
+        it('updates the counter of transferred patients', () => {
+            const { beforeBehaviorState, afterBehaviorState } =
+                setupStateAndInteract(
+                    (state, simulatedRegion, behaviorState) => {
+                        const selectedUUID = uuid();
+
+                        addPatient(
+                            state,
+                            'red',
+                            'red',
+                            SimulatedRegionPosition.create(simulatedRegion.id),
+                            selectedUUID
+                        );
+
+                        behaviorState.patientIdsSelectedForTransfer[
+                            selectedUUID
+                        ] = true;
+
+                        simulatedRegion.inEvents.push(
+                            cloneDeepMutable(TickEvent.create(1_000))
+                        );
+                    }
+                );
+
+            expect(afterBehaviorState.transferredPatientsCount).toStrictEqual({
+                ...beforeBehaviorState.transferredPatientsCount,
+                red: beforeBehaviorState.transferredPatientsCount.red + 1,
+            });
         });
     });
 });

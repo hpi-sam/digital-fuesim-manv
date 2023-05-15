@@ -1,5 +1,5 @@
 import { IsUUID } from 'class-validator';
-import { groupBy } from 'lodash-es';
+import { difference, groupBy } from 'lodash-es';
 import { IsValue } from '../../utils/validators/is-value';
 import type { Mutable } from '../../utils';
 import {
@@ -9,6 +9,7 @@ import {
     uuidValidationOptions,
     UUIDSet,
 } from '../../utils';
+import type { PatientStatus } from '../../models/utils';
 import {
     getCreate,
     isInSpecificSimulatedRegion,
@@ -23,6 +24,8 @@ import { PatientCategoryTransferToHospitalFinishedEvent } from '../events';
 import { getElement } from '../../store/action-reducers/utils';
 import { IsUUIDSet } from '../../utils/validators';
 import { TransferPatientToHospitalActivityState } from '../activities/transfer-patient-to-hospital';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description';
+import { ResourceDescription } from '../../models/utils/resource-description';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -39,6 +42,17 @@ export class TransferToHospitalBehaviorState
 
     @IsUUIDSet()
     public readonly patientIdsSelectedForTransfer: UUIDSet = {};
+
+    @IsResourceDescription()
+    public readonly transferredPatientsCount: ResourceDescription<PatientStatus> =
+        {
+            black: 0,
+            blue: 0,
+            green: 0,
+            red: 0,
+            white: 0,
+            yellow: 0,
+        };
 
     static readonly create = getCreate(this);
 }
@@ -121,11 +135,14 @@ export const transferToHospitalBehavior: SimulationBehavior<TransferToHospitalBe
                         draftState,
                         simulatedRegion.id
                     );
-                    const remainingPatients = patients.filter(
-                        (patient) =>
-                            !Object.keys(
-                                behaviorState.patientIdsSelectedForTransfer
-                            ).includes(patient.id)
+                    const selectedPatients = patients.filter((patient) =>
+                        Object.keys(
+                            behaviorState.patientIdsSelectedForTransfer
+                        ).includes(patient.id)
+                    );
+                    const remainingPatients = difference(
+                        patients,
+                        selectedPatients
                     );
 
                     const groupedPatients = groupBy(patients, (patient) =>
@@ -164,6 +181,12 @@ export const transferToHospitalBehavior: SimulationBehavior<TransferToHospitalBe
                             }
                         }
                     );
+
+                    selectedPatients.forEach((patient) => {
+                        behaviorState.transferredPatientsCount[
+                            getVisiblePatientStatus(patient, draftState)
+                        ]++;
+                    });
 
                     // The tick event itself is the last event per tick
                     // Therefore, we can reset our state here
