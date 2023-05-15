@@ -105,8 +105,7 @@ export const transferToHospitalBehavior: SimulationBehavior<TransferToHospitalBe
                         }
 
                         const patientToTransfer =
-                            groupedPatients[mostUrgentStatus]![0]!;
-                        groupedPatients[mostUrgentStatus]?.splice(0, 1);
+                            groupedPatients[mostUrgentStatus]!.shift()!;
 
                         patientsToTransfer[patientToTransfer.id] = true;
                         behaviorState.patientIdsSelectedForTransfer[
