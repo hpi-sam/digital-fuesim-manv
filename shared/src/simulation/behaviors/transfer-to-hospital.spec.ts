@@ -105,7 +105,7 @@ function removeEvents(state: ExerciseState) {
     return newState;
 }
 
-describe('reassign treatment', () => {
+describe('transfer to hospital behavior', () => {
     describe('on arriving vehicle', () => {
         describe.each([
             ['no', NoOccupation.create()],
