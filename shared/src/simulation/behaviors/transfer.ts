@@ -9,7 +9,9 @@ import { groupBy } from 'lodash-es';
 import { Type } from 'class-transformer';
 import {
     VehicleResource,
+    currentSimulatedRegionOf,
     getCreate,
+    isInSimulatedRegion,
     isInSpecificSimulatedRegion,
 } from '../../models/utils';
 import {
@@ -326,6 +328,46 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                 )
                             )
                         );
+                    }
+
+                    // Send event to destination if it is a simulated region and not the initiating region
+                    if (event.transferDestinationType === 'transferPoint') {
+                        const transferPoint = getElement(
+                            draftState,
+                            'transferPoint',
+                            event.transferDestinationId
+                        );
+
+                        if (isInSimulatedRegion(transferPoint)) {
+                            const targetSimulatedRegion =
+                                currentSimulatedRegionOf(
+                                    draftState,
+                                    getElement(
+                                        draftState,
+                                        'transferPoint',
+                                        event.transferDestinationId
+                                    )
+                                );
+
+                            if (
+                                targetSimulatedRegion.id !==
+                                event.transferInitiatingRegionId
+                            ) {
+                                addActivity(
+                                    simulatedRegion,
+                                    SendRemoteEventActivityState.create(
+                                        nextUUID(draftState),
+                                        targetSimulatedRegion.id,
+                                        VehiclesSentEvent.create(
+                                            VehicleResource.create(
+                                                sentVehicles
+                                            ),
+                                            transferPoint.id
+                                        )
+                                    )
+                                );
+                            }
+                        }
                     }
                 }
                 break;

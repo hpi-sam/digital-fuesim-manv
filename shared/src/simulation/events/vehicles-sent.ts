@@ -15,7 +15,7 @@ export class VehiclesSentEvent implements SimulationEvent {
     readonly vehiclesSent: VehicleResource;
 
     @IsUUID(4, uuidValidationOptions)
-    readonly transferDestinationId: UUID;
+    readonly transferPointDestinationId: UUID;
 
     @IsOptional()
     @IsString()
@@ -26,11 +26,11 @@ export class VehiclesSentEvent implements SimulationEvent {
      */
     constructor(
         vehiclesSent: VehicleResource,
-        transferDestinationId: UUID,
+        transferPointDestinationId: UUID,
         key?: string
     ) {
         this.vehiclesSent = vehiclesSent;
-        this.transferDestinationId = transferDestinationId;
+        this.transferPointDestinationId = transferPointDestinationId;
         this.key = key;
     }
 

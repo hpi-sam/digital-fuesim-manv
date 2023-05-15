@@ -39,4 +39,15 @@ export namespace StrictObject {
     ): (keyof T)[] {
         return Object.keys(object);
     }
+
+    /**
+     * {@link Object.fromEntries} with stricter typings
+     * See {@link StrictObject}
+     * @returns an object from an array of key/value pairs
+     */
+    export function fromEntries<K extends string, V>(
+        objectEntries: [K, V][]
+    ): { [key in K]: V } {
+        return Object.fromEntries(objectEntries) as { [key in K]: V};
+    }
 }

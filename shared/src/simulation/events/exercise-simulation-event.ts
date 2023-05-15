@@ -30,7 +30,6 @@ import { StartTransferEvent } from './start-transfer';
 import { DoTransferEvent } from './do-transfer';
 import { PatientTransferToHospitalSuccessfulEvent } from './patient-transfer-to-hospital-successful';
 import { PatientCategoryTransferToHospitalFinishedEvent } from './patient-category-transfer-to-hospital-finished';
-import { RetryToSendToHospitalEvent } from './retry-to-send-to-hospital';
 import { TryToSendToHospitalEvent } from './try-to-send-to-hospital';
 import { AskForPatientDataEvent } from './ask-for-patient-data-event';
 import { PatientsCountedEvent } from './patients-counted';
@@ -66,7 +65,6 @@ export const simulationEvents = {
     PatientCategoryTransferToHospitalFinishedEvent,
     PatientTransferToHospitalSuccessfulEvent,
     TryToSendToHospitalEvent,
-    RetryToSendToHospitalEvent,
     AskForPatientDataEvent,
     PatientsCountedEvent,
 };
@@ -114,7 +112,6 @@ export const simulationEventDictionary: ExerciseSimulationEventDictionary = {
     patientTransferToHospitalSuccessfulEvent:
         PatientTransferToHospitalSuccessfulEvent,
     tryToSendToHospitalEvent: TryToSendToHospitalEvent,
-    retryToSendToHospitalEvent: RetryToSendToHospitalEvent,
     askForPatientDataEvent: AskForPatientDataEvent,
     patientsCountedEvent: PatientsCountedEvent,
 };
