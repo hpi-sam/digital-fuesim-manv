@@ -78,20 +78,20 @@ export const transferToHospitalBehavior: SimulationBehavior<TransferToHospitalBe
 
                     const patientsToTransfer: Mutable<UUIDSet> = {};
 
-                    for (let i = 0; i < vehicle.patientCapacity; i++) {
-                        const groupedPatients = groupBy(
-                            getOwnPatients(draftState, simulatedRegion.id)
-                                .filter(
-                                    (patient) =>
-                                        !Object.keys(
-                                            behaviorState.patientIdsSelectedForTransfer
-                                        ).includes(patient.id)
-                                )
-                                .sort((a, b) => a.id.localeCompare(b.id)),
-                            (patient) =>
-                                getVisiblePatientStatus(patient, draftState)
-                        );
+                    const groupedPatients = groupBy(
+                        getOwnPatients(draftState, simulatedRegion.id)
+                            .filter(
+                                (patient) =>
+                                    !Object.keys(
+                                        behaviorState.patientIdsSelectedForTransfer
+                                    ).includes(patient.id)
+                            )
+                            .sort((a, b) => a.id.localeCompare(b.id)),
+                        (patient) =>
+                            getVisiblePatientStatus(patient, draftState)
+                    );
 
+                    for (let i = 0; i < vehicle.patientCapacity; i++) {
                         const mostUrgentStatus = (
                             ['red', 'yellow', 'green', 'white', 'blue'] as const
                         ).find(
@@ -106,6 +106,7 @@ export const transferToHospitalBehavior: SimulationBehavior<TransferToHospitalBe
 
                         const patientToTransfer =
                             groupedPatients[mostUrgentStatus]![0]!;
+                        groupedPatients[mostUrgentStatus]?.splice(0, 1);
 
                         patientsToTransfer[patientToTransfer.id] = true;
                         behaviorState.patientIdsSelectedForTransfer[
