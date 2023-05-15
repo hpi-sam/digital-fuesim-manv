@@ -21,11 +21,12 @@ import { addActivity } from '../activities/utils';
 import { DelayEventActivityState } from '../activities';
 import { nextUUID } from '../utils/randomness';
 import { PatientCategoryTransferToHospitalFinishedEvent } from '../events';
-import { getElement } from '../../store/action-reducers/utils';
+import { getActivityById, getElement } from '../../store/action-reducers/utils';
 import { IsUUIDSet } from '../../utils/validators';
 import { TransferPatientToHospitalActivityState } from '../activities/transfer-patient-to-hospital';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { ResourceDescription } from '../../models/utils/resource-description';
+import type { TransferCountsRadiogram } from '../../models/radiogram';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -191,6 +192,43 @@ export const transferToHospitalBehavior: SimulationBehavior<TransferToHospitalBe
                     // The tick event itself is the last event per tick
                     // Therefore, we can reset our state here
                     behaviorState.patientIdsSelectedForTransfer = {};
+
+                    break;
+                }
+                case 'collectInformationEvent': {
+                    if (event.informationType !== 'singleRegionTransferCounts')
+                        break;
+
+                    const radiogram = getActivityById(
+                        draftState,
+                        simulatedRegion.id,
+                        event.generateReportActivityId,
+                        'generateReportActivity'
+                    ).radiogram as Mutable<TransferCountsRadiogram>;
+
+                    const remainingPatients = Object.fromEntries(
+                        Object.entries(
+                            groupBy(
+                                getOwnPatients(draftState, simulatedRegion.id),
+                                (patient) =>
+                                    getVisiblePatientStatus(patient, draftState)
+                            )
+                        ).map(([key, value]) => [key, value.length])
+                    ) as Partial<ResourceDescription<PatientStatus>>;
+
+                    radiogram.scope = 'singleRegion';
+                    radiogram.transferredPatientsCounts =
+                        behaviorState.transferredPatientsCount;
+                    radiogram.remainingPatientsCounts = {
+                        black: 0,
+                        blue: 0,
+                        green: 0,
+                        red: 0,
+                        white: 0,
+                        yellow: 0,
+                        ...remainingPatients,
+                    };
+                    radiogram.informationAvailable = true;
 
                     break;
                 }
