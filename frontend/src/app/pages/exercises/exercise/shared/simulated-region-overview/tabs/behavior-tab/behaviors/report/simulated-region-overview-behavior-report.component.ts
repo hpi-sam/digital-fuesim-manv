@@ -46,7 +46,7 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
         singleRegionTransferCounts:
             'Anzahl aus diesem Bereich in Krankenhäuser abtransportierter Patienten',
         transportManagementTransferCounts:
-            'Anzahl unter dieser Transportorganisation in Krankenhäuser abtransportierter Patienten'',
+            'Anzahl unter dieser Transportorganisation in Krankenhäuser abtransportierter Patienten',
     };
 
     createReportCollapsed = true;
