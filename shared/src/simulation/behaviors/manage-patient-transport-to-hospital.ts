@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
-    PatientStatus,
+    PatientStatusForTransport,
     PatientTransferOccupation,
     currentSimulatedRegionOf,
     getCreate,
@@ -44,7 +44,6 @@ import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutab
 import { NewPatientDataRequestedRadiogram } from '../../models/radiogram/new-patient-data-requested';
 import { CountPatientsActivityState } from '../activities/count-patients';
 import type { ExerciseState } from '../../state';
-import type { SimulatedRegion } from '../../models';
 import {
     getActivityById,
     getElement,
@@ -135,7 +134,7 @@ export class ManagePatientTransportToHospitalBehaviorState
     public readonly promiseInvalidationInterval: number = 0;
 
     @IsLiteralUnion(patientStatusAllowedValues)
-    public readonly maximumCategoryToTransport!: PatientStatus;
+    public readonly maximumCategoryToTransport!: PatientStatusForTransport;
 
     @IsOptional()
     @IsUUID()
@@ -411,18 +410,15 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
         },
     };
 
-const orderedPatientCategories: PatientStatus[] = [
+const orderedPatientCategories: PatientStatusForTransport[] = [
     'red',
     'yellow',
     'green',
-    'white',
-    'blue',
-    'black',
 ];
 
 export function updateRequestVehiclesDelay(
     draftState: Mutable<ExerciseState>,
-    simulatedRegion: Mutable<SimulatedRegion>,
+    simulatedRegionId: UUID,
     behaviorState: Mutable<ManagePatientTransportToHospitalBehaviorState>,
     newDelay: number
 ) {
@@ -430,7 +426,7 @@ export function updateRequestVehiclesDelay(
     if (behaviorState.recurringSendToHospitalActivity) {
         const activity = getActivityById(
             draftState,
-            simulatedRegion.id,
+            simulatedRegionId,
             behaviorState.recurringSendToHospitalActivity,
             'recurringEventActivity'
         );
@@ -440,7 +436,7 @@ export function updateRequestVehiclesDelay(
 
 export function updateRequestPatientCountsDelay(
     draftState: Mutable<ExerciseState>,
-    simulatedRegion: Mutable<SimulatedRegion>,
+    simulatedRegionId: UUID,
     behaviorState: Mutable<ManagePatientTransportToHospitalBehaviorState>,
     newDelay: number
 ) {
@@ -448,7 +444,7 @@ export function updateRequestPatientCountsDelay(
     if (behaviorState.recurringPatientDataRequestActivity) {
         const activity = getActivityById(
             draftState,
-            simulatedRegion.id,
+            simulatedRegionId,
             behaviorState.recurringPatientDataRequestActivity,
             'recurringEventActivity'
         );
@@ -497,16 +493,8 @@ function patientsExpectedInRegionsAfterTransports(
 
 function getNextVehicleForPatientStatus(
     behaviorState: Mutable<ManagePatientTransportToHospitalBehaviorState>,
-    patientStatus: PatientStatus
+    patientStatus: PatientStatusForTransport
 ) {
-    if (
-        patientStatus !== 'red' &&
-        patientStatus !== 'yellow' &&
-        patientStatus !== 'green'
-    ) {
-        return undefined;
-    }
-
     behaviorState.vehiclesForPatients[`${patientStatus}Index`]++;
     if (
         behaviorState.vehiclesForPatients[`${patientStatus}Index`] >=

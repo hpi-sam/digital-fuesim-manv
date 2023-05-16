@@ -369,7 +369,10 @@ const sendEvent = {
         const transferPoint = Object.values(draftState.transferPoints)[0]!;
         sendSimulationEvent(
             simulatedRegion,
-            VehiclesSentEvent.create(VehicleResource.create({ KTW: 1 }), transferPoint.id)
+            VehiclesSentEvent.create(
+                VehicleResource.create({ KTW: 1 }),
+                transferPoint.id
+            )
         );
     },
     ktwVehicleArrivedEvent: (
