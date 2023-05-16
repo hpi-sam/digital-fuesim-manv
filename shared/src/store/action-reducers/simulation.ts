@@ -594,6 +594,30 @@ export class UpdateMaximumCategoryToTransportAction implements Action {
     public readonly maximumCategoryToTransport!: PatientStatusForTransport;
 }
 
+export class StartTransportAction implements Action {
+    @IsValue('[ManagePatientsTransportToHospitalBehavior] Start Transport')
+    public readonly type =
+        '[ManagePatientsTransportToHospitalBehavior] Start Transport';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+}
+
+export class StopTransportAction implements Action {
+    @IsValue('[ManagePatientsTransportToHospitalBehavior] Stop Transport')
+    public readonly type =
+        '[ManagePatientsTransportToHospitalBehavior] Stop Transport';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+}
+
 export namespace SimulationActionReducers {
     export const updateTreatPatientsIntervals: ActionReducer<UpdateTreatPatientsIntervalsAction> =
         {
@@ -1480,4 +1504,36 @@ export namespace SimulationActionReducers {
             },
             rights: 'trainer',
         };
+
+    export const startTransport: ActionReducer<StartTransportAction> = {
+        action: StartTransportAction,
+        reducer(draftState, { simulatedRegionId, behaviorId }) {
+            const behaviorState = getBehaviorById(
+                draftState,
+                simulatedRegionId,
+                behaviorId,
+                'managePatientTransportToHospitalBehavior'
+            );
+
+            behaviorState.transportStarted = true;
+            return draftState;
+        },
+        rights: 'trainer',
+    };
+
+    export const stopTransport: ActionReducer<StopTransportAction> = {
+        action: StopTransportAction,
+        reducer(draftState, { simulatedRegionId, behaviorId }) {
+            const behaviorState = getBehaviorById(
+                draftState,
+                simulatedRegionId,
+                behaviorId,
+                'managePatientTransportToHospitalBehavior'
+            );
+
+            behaviorState.transportStarted = false;
+            return draftState;
+        },
+        rights: 'trainer',
+    };
 }

@@ -1,4 +1,5 @@
 import {
+    IsBoolean,
     IsInt,
     IsOptional,
     IsString,
@@ -97,14 +98,15 @@ export class ManagePatientTransportToHospitalBehaviorState
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID = uuid();
 
+    @IsOptional()
     @IsUUID(4, uuidValidationOptions)
-    public readonly requestTargetId!: UUID;
+    public readonly requestTargetId?: UUID;
 
     @IsUUIDSet()
     public readonly simulatedRegionsToManage: UUIDSet = {};
 
     @IsPatientsPerUUID()
-    public readonly patientsExpectedInRegions!: PatientsPerRegion;
+    public readonly patientsExpectedInRegions: PatientsPerRegion = {};
 
     @Type(() => PatientsTransportPromise)
     @ValidateNested()
@@ -135,7 +137,11 @@ export class ManagePatientTransportToHospitalBehaviorState
     public readonly promiseInvalidationInterval: number = 30 * 60 * 1000;
 
     @IsLiteralUnion(patientStatusAllowedValues)
-    public readonly maximumCategoryToTransport!: PatientStatusForTransport;
+    public readonly maximumCategoryToTransport: PatientStatusForTransport =
+        'red';
+
+    @IsBoolean()
+    public readonly transportStarted: boolean = false;
 
     @IsOptional()
     @IsUUID(4, uuidValidationOptions)
@@ -189,7 +195,11 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                 }
                 case 'tryToSendToHospitalEvent': {
                     // only react if this event is meant for this behavior
-                    if (event.behaviorId !== behaviorState.id) {
+                    if (
+                        event.behaviorId !== behaviorState.id ||
+                        !behaviorState.requestTargetId ||
+                        !behaviorState.transportStarted
+                    ) {
                         break;
                     }
 

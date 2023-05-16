@@ -227,4 +227,20 @@ export class SimulatedRegionOverviewBehaviorManagePatientTransportToHospitalComp
             maximumCategoryToTransport,
         });
     }
+
+    startTransport() {
+        this.exerciseService.proposeAction({
+            type: '[ManagePatientsTransportToHospitalBehavior] Start Transport',
+            simulatedRegionId: this.simulatedRegionId,
+            behaviorId: this.behaviorId,
+        });
+    }
+
+    stopTransport() {
+        this.exerciseService.proposeAction({
+            type: '[ManagePatientsTransportToHospitalBehavior] Stop Transport',
+            simulatedRegionId: this.simulatedRegionId,
+            behaviorId: this.behaviorId,
+        });
+    }
 }
