@@ -411,8 +411,9 @@ export class ChangeTransportRequestTargetAction implements Action {
     @IsUUID(4, uuidValidationOptions)
     public readonly behaviorId!: UUID;
 
+    @IsOptional()
     @IsUUID(4, uuidValidationOptions)
-    public readonly requestTargetId!: UUID;
+    public readonly requestTargetId!: UUID | undefined;
 }
 
 export class AddSimulatedRegionToManageForTransportAction implements Action {

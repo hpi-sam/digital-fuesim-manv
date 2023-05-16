@@ -1,6 +1,9 @@
 <div *ngIf="behaviorState$ | async as behaviorState">
     <!-- Request target -->
-    <div *ngIf="possibleRequestTargets$ | async as possibleRequestTargets" class="mb-3">
+    <div
+        *ngIf="possibleRequestTargets$ | async as possibleRequestTargets"
+        class="mb-3"
+    >
         <h6>Ziel für Fahrzeuganfragen</h6>
 
         <select
@@ -9,6 +12,7 @@
             [ngModel]="behaviorState.requestTargetId"
             (change)="changeRequestTarget(requestTargetSelect.value)"
         >
+            <option [value]="undefined">Kein Ziel</option>
             <option
                 *ngFor="let option of possibleRequestTargets"
                 [value]="option.id"
@@ -32,9 +36,7 @@
                         <th scope="col">Name</th>
                         <th
                             scope="col"
-                            *ngFor="
-                                let patientStatus of patientStatusOptions
-                            "
+                            *ngFor="let patientStatus of patientStatusOptions"
                         >
                             <app-patient-status-badge
                                 [status]="patientStatus"
@@ -51,19 +53,47 @@
                     >
                         <th scope="row">{{ managedSimulatedRegion.name }}</th>
                         <td
-                            *ngFor="
-                                let patientStatus of patientStatusOptions
-                            "
-                            class="text-center"
+                            *ngFor="let patientStatus of patientStatusOptions"
+                            class="text-center p-0"
                         >
-                                {{ behaviorState.patientsExpectedInRegions[managedSimulatedRegion.id]?.[patientStatus] ?? 0
+                            <span
+                                *ngIf="
+                                    selectedSimulatedRegionId !==
+                                        managedSimulatedRegion.id;
+                                    else editPatientCount
+                                "
+                            >
+                                {{ behaviorState.patientsExpectedInRegions[managedSimulatedRegion.id]?.[patientStatus]
+                                ?? 0
                                 }}
+                            </span>
+                            <ng-template #editPatientCount>
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    min="0"
+                                    [ngModel]="behaviorState.patientsExpectedInRegions[managedSimulatedRegion.id]?.[patientStatus] ?? 0"
+                                    (appSaveOnTyping)="
+                                        updatePatientsExpectedInRegion(
+                                            managedSimulatedRegion.id,
+                                            $event,
+                                            patientStatus
+                                        )
+                                    "
+                                    class="form-control form-control-sm d-inline-block no-validation"
+                                    style="max-width: 75px"
+                                />
+                            </ng-template>
                         </td>
                         <td>
                             <button
                                 class="btn btn-outline-secondary me-1"
                                 type="button"
-                                (click)="toggleSelectedRegion(managedSimulatedRegion.id)"
+                                (click)="
+                                    toggleSelectedRegion(
+                                        managedSimulatedRegion.id
+                                    )
+                                "
                             >
                                 <span class="bi-pencil"></span>
                             </button>
@@ -123,6 +153,80 @@
                     <span class="bi-plus me-1"></span>
                     {{ possibleNewSimulatedRegionsToManage.name }}
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vehicles for categories -->
+    <div *ngIf="possibleNewVehicleTypesForTransport$ | async as possibleNewVehicleTypesForTransport">
+
+        
+    </div>
+
+    <!-- Settings -->
+    <div>
+        <div class="d-flex row mb-1">
+            <span class="col-sm"> Interval der Fahrzeuganfragen </span>
+            <div
+                class="input-group input-group-sm col-sm"
+                style="max-width: 250px"
+            >
+                <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    [ngModel]="behaviorState.requestVehiclesDelay / 1000 / 60"
+                    (appSaveOnTyping)="
+                        updateRequestVehicleDelay($event * 1000 * 60)
+                    "
+                    class="form-control form-control-sm d-inline-block no-validation"
+                />
+                <span class="input-group-text">Min</span>
+            </div>
+        </div>
+        <div class="d-flex row mb-1">
+            <span class="col-sm"> Interval der Patientenzahlenanfragen </span>
+            <div
+                class="input-group input-group-sm col-sm"
+                style="max-width: 250px"
+            >
+                <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    [ngModel]="
+                        behaviorState.requestPatientCountsDelay / 1000 / 60
+                    "
+                    (appSaveOnTyping)="
+                        updateRequestPatientCountDelay($event * 1000 * 60)
+                    "
+                    class="form-control form-control-sm d-inline-block no-validation"
+                />
+                <span class="input-group-text">Min</span>
+            </div>
+        </div>
+        <div class="d-flex row mb-1 justify-content-between">
+            <span class="col-sm">
+                Dauer, nach der ein losgefahrenes Fahrzeug, das nicht angekommen
+                ist, als vermisst zählen soll
+            </span>
+            <div
+                class="input-group input-group-sm col-sm"
+                style="max-width: 250px"
+            >
+                <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    [ngModel]="
+                        behaviorState.promiseInvalidationInterval / 1000 / 60
+                    "
+                    (appSaveOnTyping)="
+                        updatePromiseInvalidationInterval($event * 1000 * 60)
+                    "
+                    class="form-control form-control-sm d-inline-block no-validation"
+                />
+                <span class="input-group-text">Min</span>
             </div>
         </div>
     </div>

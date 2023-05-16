@@ -144,14 +144,14 @@ export class SimulatedRegionOverviewBehaviorManagePatientTransportToHospitalComp
         this.patientStatusOptions$ = configuration$.pipe(
             map((configuration) => {
                 if (configuration.bluePatientsEnabled) {
-                    return ['green', 'yellow', 'red', 'blue', 'black', 'white'];
+                    return ['red' , 'yellow', 'green', 'blue', 'black', 'white'];
                 }
-                return ['green', 'yellow', 'red', 'black', 'white'];
+                return ['red' , 'yellow', 'green', 'black', 'white'];
             })
         );
     }
 
-    changeRequestTarget(requestTargetId: UUID) {
+    changeRequestTarget(requestTargetId: UUID | undefined) {
         this.exerciseService.proposeAction({
             type: '[ManagePatientsTransportToHospitalBehavior] Change Transport Request Target',
             simulatedRegionId: this.simulatedRegionId,
