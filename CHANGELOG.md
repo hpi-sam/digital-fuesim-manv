@@ -27,6 +27,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Fixed
 
 -   Removed the id property of events.
+-   Dissolved a livelock in treatment assignment.
 
 ## [0.5.1] - 2023-05-09
 
