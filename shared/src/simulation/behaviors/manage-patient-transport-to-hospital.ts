@@ -198,71 +198,74 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                             break;
                         }
 
-                        const patientsInRegions =
+                        const patientsExpectedInRegions =
                             patientsExpectedInRegionsAfterTransports(
                                 draftState,
                                 behaviorState
                             );
-                        const simulatedRegions = cloneDeepMutable(
-                            behaviorState.simulatedRegionsToManage
-                        );
-                        orderedPatientCategories
-                            .slice(
-                                0,
+
+                        const highestCategoryThatIsNeeded =
+                            orderedPatientCategories.find((category) =>
+                                Object.values(patientsExpectedInRegions).some(
+                                    (patientCounts) =>
+                                        patientCounts[category] > 0
+                                )
+                            );
+
+                        if (
+                            !highestCategoryThatIsNeeded ||
+                            orderedPatientCategories.indexOf(
+                                highestCategoryThatIsNeeded
+                            ) >
                                 orderedPatientCategories.indexOf(
                                     behaviorState.maximumCategoryToTransport
-                                ) + 1
-                            )
-                            .forEach((category) => {
-                                Object.keys(simulatedRegions)
-                                    .filter(
-                                        (simulatedRegionId) =>
-                                            (patientsInRegions[
-                                                simulatedRegionId
-                                            ]?.[category] ?? 0) > 0
+                                )
+                        ) {
+                            break;
+                        }
+
+                        const simulatedRegionIdWithBiggestNeed = Object.entries(
+                            patientsExpectedInRegions
+                        ).sort(
+                            ([, patientCountsA], [, patientCountsB]) =>
+                                patientCountsB[highestCategoryThatIsNeeded] -
+                                patientCountsA[highestCategoryThatIsNeeded]
+                        )[0]![0];
+
+                        const vehicleType = getNextVehicleForPatientStatus(
+                            behaviorState,
+                            highestCategoryThatIsNeeded
+                        );
+
+                        const targetTransferPoint = getElementByPredicate(
+                            draftState,
+                            'transferPoint',
+                            (transferPoint) =>
+                                isInSpecificSimulatedRegion(
+                                    transferPoint,
+                                    simulatedRegionIdWithBiggestNeed
+                                )
+                        );
+
+                        if (vehicleType) {
+                            addActivity(
+                                simulatedRegion,
+                                SendRemoteEventActivityState.create(
+                                    nextUUID(draftState),
+                                    behaviorState.requestTargetId,
+                                    TransferVehiclesRequestEvent.create(
+                                        { vehicleType: 1 },
+                                        'transferPoint',
+                                        targetTransferPoint.id,
+                                        simulatedRegion.id,
+                                        undefined,
+                                        PatientTransferOccupation.create(
+                                            simulatedRegion.id
+                                        )
                                     )
-                                    .forEach((simulatedRegionId) => {
-                                        delete simulatedRegions[
-                                            simulatedRegionId
-                                        ];
-
-                                        const vehicleType =
-                                            getNextVehicleForPatientStatus(
-                                                behaviorState,
-                                                category
-                                            );
-                                        if (vehicleType) {
-                                            const targetTransferPoint =
-                                                getElementByPredicate(
-                                                    draftState,
-                                                    'transferPoint',
-                                                    (transferPoint) =>
-                                                        isInSpecificSimulatedRegion(
-                                                            transferPoint,
-                                                            simulatedRegionId
-                                                        )
-                                                );
-
-                                            addActivity(
-                                                simulatedRegion,
-                                                SendRemoteEventActivityState.create(
-                                                    nextUUID(draftState),
-                                                    behaviorState.requestTargetId,
-                                                    TransferVehiclesRequestEvent.create(
-                                                        { vehicleType: 1 },
-                                                        'transferPoint',
-                                                        targetTransferPoint.id,
-                                                        simulatedRegion.id,
-                                                        undefined,
-                                                        PatientTransferOccupation.create(
-                                                            simulatedRegion.id
-                                                        )
-                                                    )
-                                                )
-                                            );
-                                        }
-                                    });
-                            });
+                                )
+                            );
+                        }
                     }
                     break;
 
