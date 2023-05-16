@@ -4,15 +4,14 @@ import { IsValue } from '../../utils/validators/is-value';
 import { StrictObject, UUID, uuidValidationOptions } from '../../utils';
 import { getCreate } from '../../models/utils/get-create';
 import { isInSpecificSimulatedRegion } from '../../models/utils/position/position-helpers';
-import type { PatientCount } from '../../models/radiogram/patient-count-radiogram';
 import { Patient } from '../../models/patient';
 import { sendSimulationEvent } from '../events/utils';
 import { PatientsCountedEvent } from '../events/patients-counted';
+import type { PatientStatus } from '../../models/utils/patient-status';
 import type {
     SimulationActivity,
     SimulationActivityState,
 } from './simulation-activity';
-import { PatientStatus } from '../../models/utils/patient-status';
 
 export class CountPatientsActivityState implements SimulationActivityState {
     @IsValue('countPatientsActivity' as const)
@@ -54,9 +53,9 @@ export const countPatientsActivity: SimulationActivity<CountPatientsActivityStat
                             draftState.configuration.bluePatientsEnabled
                         )
                     )
-                ).map(([visibleStatus, patients]) => [
+                ).map(([visibleStatus, patientsOfStatus]) => [
                     visibleStatus as PatientStatus,
-                    patients.length,
+                    patientsOfStatus.length,
                 ])
             );
 

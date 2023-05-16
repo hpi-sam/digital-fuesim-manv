@@ -8,11 +8,6 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import {
-    defaultMapImagesTemplates,
-    defaultPatientCategories,
-    defaultVehicleTemplates,
-} from './data';
 import { defaultMaterialTemplates } from './data/default-state/material-templates';
 import { defaultPersonnelTemplates } from './data/default-state/personnel-templates';
 import {
@@ -51,6 +46,9 @@ import type { SpatialElementPlural } from './store/action-reducers/utils/spatial
 import type { UUID } from './utils';
 import { uuid, uuidValidationOptions } from './utils';
 import { IsIdMap, IsLiteralUnion, IsMultiTypedIdMap } from './utils/validators';
+import { defaultPatientCategories } from './data/default-state/patient-templates';
+import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
+import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)

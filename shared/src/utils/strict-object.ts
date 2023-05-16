@@ -48,6 +48,6 @@ export namespace StrictObject {
     export function fromEntries<K extends string, V>(
         objectEntries: [K, V][]
     ): { [key in K]: V } {
-        return Object.fromEntries(objectEntries) as { [key in K]: V};
+        return Object.fromEntries(objectEntries) as { [key in K]: V };
     }
 }
