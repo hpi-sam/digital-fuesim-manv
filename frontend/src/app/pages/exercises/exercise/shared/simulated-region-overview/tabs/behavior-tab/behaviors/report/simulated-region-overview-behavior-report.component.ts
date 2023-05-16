@@ -44,9 +44,9 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
         materialCount: 'Anzahl an Material',
         treatmentStatus: 'Behandlungsstatus',
         singleRegionTransferCounts:
-            'Anzahl abtransportierter Patienten einer PA',
+            'Anzahl aus diesem Bereich in Krankenhäuser abtransportierter Patienten',
         transportManagementTransferCounts:
-            'Anzahl abtransportierter Patienten aller PAs einer Transportorganisation',
+            'Anzahl unter dieser Transportorganisation in Krankenhäuser abtransportierter Patienten'',
     };
 
     createReportCollapsed = true;
