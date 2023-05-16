@@ -39,8 +39,8 @@ import {
 import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
-import type { PatientStatus } from '../../models';
 import {
+    PatientStatus,
     requestTargetTypeOptions,
     ExerciseRequestTargetConfiguration,
     patientStatusForTransportAllowedValues,
@@ -51,8 +51,6 @@ import {
     TransferDestination,
     transferDestinationTypeAllowedValues,
 } from '../../simulation/utils/transfer-destination';
-import { ResourceDescription } from '../../models/utils/resource-description';
-import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { getActivityById, getBehaviorById, getElement } from './utils';
 
 export class UpdateTreatPatientsIntervalsAction implements Action {
@@ -434,12 +432,14 @@ export class AddSimulatedRegionToManageForTransportAction implements Action {
     public readonly managedSimulatedRegionId!: UUID;
 }
 
-export class RemoveSimulatedRegionToManageForTransportAction implements Action {
+export class RemoveSimulatedRegionToManageFromTransportAction
+    implements Action
+{
     @IsValue(
-        '[ManagePatientsTransportToHospitalBehavior] Remove Simulated Region To Manage For Transport'
+        '[ManagePatientsTransportToHospitalBehavior] Remove Simulated Region To Manage From Transport'
     )
     public readonly type =
-        '[ManagePatientsTransportToHospitalBehavior] Remove Simulated Region To Manage For Transport';
+        '[ManagePatientsTransportToHospitalBehavior] Remove Simulated Region To Manage From Transport';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;
@@ -469,8 +469,12 @@ export class UpdatePatientsExpectedInRegionForTransportAction
     @IsUUID(4, uuidValidationOptions)
     public readonly managedSimulatedRegionId!: UUID;
 
-    @IsResourceDescription(patientStatusAllowedValues)
-    public readonly patientsExpected!: ResourceDescription<PatientStatus>;
+    @IsInt()
+    @Min(0)
+    public readonly patientsExpected!: number;
+
+    @IsLiteralUnion(patientStatusAllowedValues)
+    public readonly patientStatus!: PatientStatus;
 }
 
 export class AddVehicleTypeForPatientTransportAction implements Action {
@@ -1249,9 +1253,9 @@ export namespace SimulationActionReducers {
             rights: 'trainer',
         };
 
-    export const removeSimulatedRegionToManageForTransport: ActionReducer<RemoveSimulatedRegionToManageForTransportAction> =
+    export const removeSimulatedRegionToManageForTransport: ActionReducer<RemoveSimulatedRegionToManageFromTransportAction> =
         {
-            action: RemoveSimulatedRegionToManageForTransportAction,
+            action: RemoveSimulatedRegionToManageFromTransportAction,
             reducer(
                 draftState,
                 { simulatedRegionId, behaviorId, managedSimulatedRegionId }
@@ -1280,6 +1284,7 @@ export namespace SimulationActionReducers {
                     behaviorId,
                     managedSimulatedRegionId,
                     patientsExpected,
+                    patientStatus,
                 }
             ) {
                 const behaviorState = getBehaviorById(
@@ -1301,7 +1306,7 @@ export namespace SimulationActionReducers {
 
                 behaviorState.patientsExpectedInRegions[
                     managedSimulatedRegionId
-                ] = patientsExpected;
+                ]![patientStatus] = patientsExpected;
                 return draftState;
             },
             rights: 'trainer',

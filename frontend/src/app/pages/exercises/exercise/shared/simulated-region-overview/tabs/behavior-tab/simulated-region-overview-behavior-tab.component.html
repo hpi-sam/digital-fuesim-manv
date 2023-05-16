@@ -76,6 +76,11 @@
                 <app-simulated-region-overview-behavior-transfer-to-hospital
                     *ngSwitchCase="'transferToHospitalBehavior'"
                 />
+                <app-simulated-region-overview-behavior-manage-patient-transport-to-hospital
+                    *ngSwitchCase="'managePatientTransportToHospitalBehavior'"
+                    [simulatedRegionId]="simulatedRegion.id"
+                    [behaviorId]="selectedBehavior!.id"
+                />
                 <p *ngSwitchDefault class="text-muted font-bold">
                     Es ist noch keine Verhaltensweise ausgewählt.
                 </p>
