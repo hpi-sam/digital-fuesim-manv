@@ -7,6 +7,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import type { PatientStatus } from '../../models/utils';
 import {
     PatientStatusForTransport,
     PatientTransferOccupation,
@@ -37,7 +38,6 @@ import {
     TransferVehiclesRequestEvent,
     TryToSendToHospitalEvent,
 } from '../events';
-import type { PatientCount } from '../../models/radiogram';
 import { RadiogramUnpublishedStatus } from '../../models/radiogram';
 import { IsPatientsPerUUID } from '../../utils/validators/is-patients-per-uuid';
 import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutable';
@@ -50,13 +50,14 @@ import {
     getElementByPredicate,
 } from '../../store/action-reducers/utils';
 import { PatientsTransportPromise } from '../utils/patients-transported-promise';
+import type { ResourceDescription } from '../../models/utils/resource-description';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
 } from './simulation-behavior';
 
 interface PatientsPerRegion {
-    [simulatedRegionId: UUID]: PatientCount;
+    [simulatedRegionId: UUID]: ResourceDescription<PatientStatus>;
 }
 
 class VehiclesForPatients {

@@ -39,18 +39,20 @@ import {
 import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
+import type { PatientStatus } from '../../models';
 import {
     requestTargetTypeOptions,
     ExerciseRequestTargetConfiguration,
     patientStatusForTransportAllowedValues,
     PatientStatusForTransport,
+    patientStatusAllowedValues,
 } from '../../models';
 import {
     TransferDestination,
     transferDestinationTypeAllowedValues,
 } from '../../simulation/utils/transfer-destination';
-import { PatientCount } from '../../models/radiogram';
-import { IsPatientCount } from '../../utils/validators/is-patient-count';
+import { ResourceDescription } from '../../models/utils/resource-description';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { getActivityById, getBehaviorById, getElement } from './utils';
 
 export class UpdateTreatPatientsIntervalsAction implements Action {
@@ -467,8 +469,8 @@ export class UpdatePatientsExpectedInRegionForTransportAction
     @IsUUID(4, uuidValidationOptions)
     public readonly managedSimulatedRegionId!: UUID;
 
-    @IsPatientCount()
-    public readonly patientsExpected!: PatientCount;
+    @IsResourceDescription(patientStatusAllowedValues)
+    public readonly patientsExpected!: ResourceDescription<PatientStatus>;
 }
 
 export class AddVehicleTypeForPatientTransportAction implements Action {
