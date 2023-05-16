@@ -320,7 +320,9 @@ const minimumRequiredPersonnel: {
     },
     green: {
         gf: 0,
-        san: 1 / (capacities.san.green + capacities.san.yellow + capacities.san.red),
+        san:
+            1 /
+            (capacities.san.green + capacities.san.yellow + capacities.san.red),
         rettSan: 0,
         notSan: 0,
         notarzt: 0,
