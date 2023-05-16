@@ -9,4 +9,5 @@ export * from './provide-personnel';
 export * from './utils';
 export * from './request';
 export * from './transfer';
+export * from './transfer-to-hospital';
 export * from './manage-patient-transport-to-hospital';

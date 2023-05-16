@@ -46,6 +46,10 @@ import type { SpatialElementPlural } from './store/action-reducers/utils/spatial
 import type { UUID } from './utils';
 import { uuid, uuidValidationOptions } from './utils';
 import { IsIdMap, IsLiteralUnion, IsMultiTypedIdMap } from './utils/validators';
+import {
+    createCatchAllHospital,
+    catchAllHospitalId,
+} from './data/default-state/catch-all-hospital';
 import { defaultPatientCategories } from './data/default-state/patient-templates';
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
@@ -90,7 +94,9 @@ export class ExerciseState {
     public readonly transferPoints: { readonly [key: UUID]: TransferPoint } =
         {};
     @IsIdMap(Hospital)
-    public readonly hospitals: { readonly [key: UUID]: Hospital } = {};
+    public readonly hospitals: { readonly [key: UUID]: Hospital } = {
+        [catchAllHospitalId]: createCatchAllHospital(),
+    };
     @IsIdMap(HospitalPatient, (hospitalPatient) => hospitalPatient.patientId)
     public readonly hospitalPatients: {
         readonly [key: UUID]: HospitalPatient;
@@ -158,5 +164,5 @@ export class ExerciseState {
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 32;
+    static readonly currentStateVersion = 34;
 }

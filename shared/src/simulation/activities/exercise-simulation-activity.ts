@@ -11,6 +11,7 @@ import { loadVehicleActivity } from './load-vehicle';
 import { sendRemoteEventActivity } from './send-remote-event';
 import { transferVehicleActivity } from './transfer-vehicle';
 import { publishRadiogramActivity } from './publish-radiogram';
+import { transferPatientToHospitalActivity } from './transfer-patient-to-hospital';
 import { countPatientsActivity } from './count-patients';
 
 export const simulationActivities = {
@@ -25,6 +26,7 @@ export const simulationActivities = {
     sendRemoteEventActivity,
     transferVehicleActivity,
     publishRadiogramActivity,
+    transferPatientToHospitalActivity,
     countPatientsActivity,
 };
 

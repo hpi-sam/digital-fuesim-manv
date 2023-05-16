@@ -145,6 +145,44 @@ export class UpdateReportTreatmentStatusChangesAction implements Action {
     public readonly reportTreatmentProgressChanges!: boolean;
 }
 
+export class UpdateReportTransferOfCategoryInSingleRegionCompletedAction
+    implements Action
+{
+    @IsValue(
+        '[ReportBehavior] Update report transfer of category in single region completed'
+    )
+    public readonly type =
+        '[ReportBehavior] Update report transfer of category in single region completed';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsBoolean()
+    public readonly reportChanges!: boolean;
+}
+
+export class UpdateReportTransferOfCategoryInMultipleRegionsCompletedAction
+    implements Action
+{
+    @IsValue(
+        '[ReportBehavior] Update report transfer of category in multiple regions completed'
+    )
+    public readonly type =
+        '[ReportBehavior] Update report transfer of category in multiple regions completed';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsBoolean()
+    public readonly reportChanges!: boolean;
+}
+
 export class CreateRecurringReportsAction implements Action {
     @IsValue('[ReportBehavior] Create Recurring Report')
     public readonly type = '[ReportBehavior] Create Recurring Report';
@@ -468,6 +506,50 @@ export namespace SimulationActionReducers {
 
                 reportBehaviorState.reportTreatmentProgressChanges =
                     reportTreatmentProgressChanges;
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateReportTransferOfCategoryInSingleRegionCompleted: ActionReducer<UpdateReportTransferOfCategoryInSingleRegionCompletedAction> =
+        {
+            action: UpdateReportTransferOfCategoryInSingleRegionCompletedAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, reportChanges }
+            ) {
+                const reportBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'reportBehavior'
+                );
+
+                reportBehaviorState.reportTransferOfCategoryInSingleRegionCompleted =
+                    reportChanges;
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateReportTransferOfCategoryInMultipleRegionsCompleted: ActionReducer<UpdateReportTransferOfCategoryInMultipleRegionsCompletedAction> =
+        {
+            action: UpdateReportTransferOfCategoryInMultipleRegionsCompletedAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, reportChanges }
+            ) {
+                const reportBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'reportBehavior'
+                );
+
+                reportBehaviorState.reportTransferOfCategoryInMultipleRegionsCompleted =
+                    reportChanges;
 
                 return draftState;
             },

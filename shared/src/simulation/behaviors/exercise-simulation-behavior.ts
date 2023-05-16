@@ -9,6 +9,7 @@ import { providePersonnelBehavior } from './provide-personnel';
 import { answerRequestsBehavior } from './answer-requests';
 import { requestBehavior } from './request';
 import { transferBehavior } from './transfer';
+import { transferToHospitalBehavior } from './transfer-to-hospital';
 import { managePatientTransportToHospitalBehavior } from './manage-patient-transport-to-hospital';
 
 export const simulationBehaviors = {
@@ -21,6 +22,7 @@ export const simulationBehaviors = {
     answerRequestsBehavior,
     requestBehavior,
     transferBehavior,
+    transferToHospitalBehavior,
     managePatientTransportToHospitalBehavior,
 };
 

@@ -8,6 +8,8 @@ import { Radiogram } from './radiogram';
 import { TreatmentStatusRadiogram } from './treatment-status-radiogram';
 import { VehicleCountRadiogram } from './vehicle-count-radiogram';
 import { ResourceRequestRadiogram } from './resource-request-radiogram';
+import { TransferCountsRadiogram } from './transfer-counts-radiogram';
+import { TransferCategoryCompletedRadiogram } from './transfer-category-completed-radiogram';
 import { NewPatientDataRequestedRadiogram } from './new-patient-data-requested';
 
 export const radiograms = {
@@ -16,6 +18,8 @@ export const radiograms = {
     PatientCountRadiogram,
     PersonnelCountRadiogram,
     ResourceRequestRadiogram,
+    TransferCategoryCompletedRadiogram,
+    TransferCountsRadiogram,
     TreatmentStatusRadiogram,
     VehicleCountRadiogram,
     NewPatientDataRequestedRadiogram,
@@ -35,6 +39,8 @@ export const radiogramDictionary: ExerciseRadiogramDictionary = {
     patientCountRadiogram: PatientCountRadiogram,
     personnelCountRadiogram: PersonnelCountRadiogram,
     resourceRequestRadiogram: ResourceRequestRadiogram,
+    transferCategoryCompletedRadiogram: TransferCategoryCompletedRadiogram,
+    transferCountsRadiogram: TransferCountsRadiogram,
     treatmentStatusRadiogram: TreatmentStatusRadiogram,
     vehicleCountRadiogram: VehicleCountRadiogram,
     newPatientDataRequestedRadiogram: NewPatientDataRequestedRadiogram,

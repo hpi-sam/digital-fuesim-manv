@@ -12,6 +12,7 @@ import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError } from '../reducer-error';
+import { catchAllHospitalId } from '../../data/default-state/catch-all-hospital';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 import { deleteVehicle } from './vehicle';
@@ -96,6 +97,12 @@ export namespace HospitalActionReducers {
     export const removeHospital: ActionReducer<RemoveHospitalAction> = {
         action: RemoveHospitalAction,
         reducer: (draftState, { hospitalId }) => {
+            if (hospitalId === catchAllHospitalId) {
+                throw new ExpectedReducerError(
+                    'Dieses Krankenhaus darf aus technischen Gründen nicht gelöscht werden.'
+                );
+            }
+
             const hospital = getElement(draftState, 'hospital', hospitalId);
             // TODO: maybe make a hospital undeletable (if at least one patient is in it)
             for (const patientId of Object.keys(hospital.patientIds)) {
