@@ -1,4 +1,129 @@
-<p>
-    simulated-region-overview-behavior-manage-patient-transport-to-hospital
-    works!
-</p>
+<div *ngIf="behaviorState$ | async as behaviorState">
+    <!-- Request target -->
+    <div *ngIf="possibleRequestTargets$ | async as possibleRequestTargets" class="mb-3">
+        <h6>Ziel für Fahrzeuganfragen</h6>
+
+        <select
+            #requestTargetSelect
+            class="form-select no-validation"
+            [ngModel]="behaviorState.requestTargetId"
+            (change)="changeRequestTarget(requestTargetSelect.value)"
+        >
+            <option
+                *ngFor="let option of possibleRequestTargets"
+                [value]="option.id"
+            >
+                {{ option.name }}
+            </option>
+        </select>
+    </div>
+
+    <!-- ManagedSimulatedRegions -->
+    <div *ngIf="patientStatusOptions$ | async as patientStatusOptions">
+        <h6>Verwaltete simulierte Bereiche</h6>
+
+        <ul
+            class="list-group"
+            *ngIf="managedSimulatedRegions$ | async as managedSimulatedRegions"
+        >
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th
+                            scope="col"
+                            *ngFor="
+                                let patientStatus of patientStatusOptions
+                            "
+                        >
+                            <app-patient-status-badge
+                                [status]="patientStatus"
+                            />
+                        </th>
+                        <th scope="col">Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr
+                        *ngFor="
+                            let managedSimulatedRegion of managedSimulatedRegions
+                        "
+                    >
+                        <th scope="row">{{ managedSimulatedRegion.name }}</th>
+                        <td
+                            *ngFor="
+                                let patientStatus of patientStatusOptions
+                            "
+                            class="text-center"
+                        >
+                                {{ behaviorState.patientsExpectedInRegions[managedSimulatedRegion.id]?.[patientStatus] ?? 0
+                                }}
+                        </td>
+                        <td>
+                            <button
+                                class="btn btn-outline-secondary me-1"
+                                type="button"
+                                (click)="toggleSelectedRegion(managedSimulatedRegion.id)"
+                            >
+                                <span class="bi-pencil"></span>
+                            </button>
+                            <button
+                                class="btn btn-outline-danger"
+                                type="button"
+                                (click)="
+                                    removeSimulatedRegionToManage(
+                                        managedSimulatedRegion.id
+                                    )
+                                "
+                            >
+                                <span class="bi-x"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </ul>
+
+        <div
+            *ngIf="
+                possibleNewSimulatedRegionsToManage$
+                    | async as possibleNewSimulatedRegionsToManage
+            "
+            ngbDropdown
+            placement="bottom-start"
+            autoClose="outside"
+            class="d-inline-block overflow-visible text-center mb-3"
+        >
+            <button
+                ngbDropdownToggle
+                type="button"
+                class="btn btn-outline-primary"
+                [disabled]="possibleNewSimulatedRegionsToManage.length === 0"
+            >
+                <span class="bi-plus me-1"></span>
+                Weiteren simulierten Bereich hinzufügen
+            </button>
+            <div
+                *ngIf="possibleNewSimulatedRegionsToManage.length > 0"
+                ngbDropdownMenu
+            >
+                <button
+                    *ngFor="
+                        let possibleNewSimulatedRegionsToManage of possibleNewSimulatedRegionsToManage
+                    "
+                    ngbDropdownItem
+                    class="dropdown-item"
+                    type="button"
+                    (click)="
+                        addSimulatedRegionToManage(
+                            possibleNewSimulatedRegionsToManage.id
+                        )
+                    "
+                >
+                    <span class="bi-plus me-1"></span>
+                    {{ possibleNewSimulatedRegionsToManage.name }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

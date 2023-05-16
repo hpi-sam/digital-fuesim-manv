@@ -17,6 +17,7 @@ import type { Observable } from 'rxjs';
 import { combineLatest, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
+import { selectConfiguration } from 'src/app/state/application/selectors/exercise.selectors';
 import {
     createSelectBehaviorState,
     selectSimulatedRegions,
@@ -40,19 +41,29 @@ export class SimulatedRegionOverviewBehaviorManagePatientTransportToHospitalComp
 
     public behaviorState$!: Observable<ManagePatientTransportToHospitalBehaviorState>;
     public possibleRequestTargets$!: Observable<SimulatedRegion[]>;
-    public possibleSimulatedRegionsToManage$!: Observable<SimulatedRegion[]>;
-    public possibleVehicleTypesForTransport$!: Observable<{
+    public managedSimulatedRegions$!: Observable<SimulatedRegion[]>;
+    public possibleNewSimulatedRegionsToManage$!: Observable<SimulatedRegion[]>;
+    public possibleNewVehicleTypesForTransport$!: Observable<{
         [key in PatientStatusForTransport]: string[];
     }>;
+    public patientStatusOptions$!: Observable<PatientStatus[]>;
 
-    public patientStatusAllowedValues = patientStatusAllowedValues;
-    public patientStatusForTransportAllowedValues =
-        patientStatusForTransportAllowedValues;
+    public patientStatusForTransport = ['red', 'yellow', 'green'];
+
+    public selectedSimulatedRegionId?: UUID;
 
     constructor(
         private readonly store: Store<AppState>,
         private readonly exerciseService: ExerciseService
     ) {}
+
+    toggleSelectedRegion(simulatedRegionId: UUID) {
+        if (this.selectedSimulatedRegionId === simulatedRegionId) {
+            this.selectedSimulatedRegionId = undefined;
+        } else {
+            this.selectedSimulatedRegionId = simulatedRegionId;
+        }
+    }
 
     ngOnChanges() {
         this.behaviorState$ = this.store.select(
@@ -64,19 +75,26 @@ export class SimulatedRegionOverviewBehaviorManagePatientTransportToHospitalComp
 
         const simulatedRegions$ = this.store.select(selectSimulatedRegions);
 
-        this.possibleRequestTargets$ = combineLatest([
-            this.behaviorState$,
-            simulatedRegions$,
-        ]).pipe(
-            map(([behaviorState, simulatedRegions]) =>
-                Object.values(simulatedRegions).filter(
-                    (simulatedRegion) =>
-                        simulatedRegion.id !== behaviorState.requestTargetId
+        this.possibleRequestTargets$ = simulatedRegions$.pipe(
+            map((simulatedRegions) =>
+                Object.values(simulatedRegions).sort((a, b) =>
+                    a.name.localeCompare(b.name)
                 )
             )
         );
 
-        this.possibleSimulatedRegionsToManage$ = combineLatest([
+        this.managedSimulatedRegions$ = combineLatest([
+            this.behaviorState$,
+            simulatedRegions$,
+        ]).pipe(
+            map(([behaviorState, simulatedRegions]) =>
+                Object.keys(behaviorState.simulatedRegionsToManage).map(
+                    (simulatedRegionId) => simulatedRegions[simulatedRegionId]!
+                )
+            )
+        );
+
+        this.possibleNewSimulatedRegionsToManage$ = combineLatest([
             this.behaviorState$,
             simulatedRegions$,
         ]).pipe(
@@ -100,7 +118,7 @@ export class SimulatedRegionOverviewBehaviorManagePatientTransportToHospitalComp
                 )
             );
 
-        this.possibleVehicleTypesForTransport$ = combineLatest([
+        this.possibleNewVehicleTypesForTransport$ = combineLatest([
             this.behaviorState$,
             vehicleTypes$,
         ]).pipe(
@@ -119,6 +137,17 @@ export class SimulatedRegionOverviewBehaviorManagePatientTransportToHospitalComp
                     ])
                 )
             )
+        );
+
+        const configuration$ = this.store.select(selectConfiguration);
+
+        this.patientStatusOptions$ = configuration$.pipe(
+            map((configuration) => {
+                if (configuration.bluePatientsEnabled) {
+                    return ['green', 'yellow', 'red', 'blue', 'black', 'white'];
+                }
+                return ['green', 'yellow', 'red', 'black', 'white'];
+            })
         );
     }
 
