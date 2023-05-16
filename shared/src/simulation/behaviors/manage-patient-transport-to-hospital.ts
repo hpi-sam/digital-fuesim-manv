@@ -29,6 +29,7 @@ import { addActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
 import {
     DelayEventActivityState,
+    PublishRadiogramActivityState,
     RecurringEventActivityState,
     SendRemoteEventActivityState,
 } from '../activities';
@@ -40,7 +41,6 @@ import {
 } from '../events';
 import { RadiogramUnpublishedStatus } from '../../models/radiogram';
 import { IsPatientsPerUUID } from '../../utils/validators/is-patients-per-uuid';
-import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutable';
 import { NewPatientDataRequestedRadiogram } from '../../models/radiogram/new-patient-data-requested-radiogram';
 import { CountPatientsActivityState } from '../activities/count-patients';
 import type { ExerciseState } from '../../state';
@@ -121,29 +121,29 @@ export class ManagePatientTransportToHospitalBehaviorState
      */
     @IsInt()
     @Min(0)
-    public readonly requestVehiclesDelay: number = 0;
+    public readonly requestVehiclesDelay: number = 60 * 1000;
 
     /**
      * @deprecated Use {@link updateRequestPatientCountsDelay} instead
      */
     @IsInt()
     @Min(0)
-    public readonly requestPatientCountsDelay: number = 0;
+    public readonly requestPatientCountsDelay: number = 15 * 60 * 1000;
 
     @IsInt()
     @Min(0)
-    public readonly promiseInvalidationInterval: number = 0;
+    public readonly promiseInvalidationInterval: number = 30 * 60 * 1000;
 
     @IsLiteralUnion(patientStatusAllowedValues)
     public readonly maximumCategoryToTransport!: PatientStatusForTransport;
 
     @IsOptional()
-    @IsUUID()
-    readonly recurringPatientDataRequestActivity?: UUID;
+    @IsUUID(4, uuidValidationOptions)
+    readonly recurringPatientDataRequestActivityId?: UUID;
 
     @IsOptional()
-    @IsUUID()
-    readonly recurringSendToHospitalActivity?: UUID;
+    @IsUUID(4, uuidValidationOptions)
+    readonly recurringSendToHospitalActivityId?: UUID;
 
     static readonly create = getCreate(this);
 }
@@ -153,261 +153,248 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
         behaviorState: ManagePatientTransportToHospitalBehaviorState,
         handleEvent: (draftState, simulatedRegion, behaviorState, event) => {
             switch (event.type) {
-                case 'tickEvent':
-                    {
-                        // initialize recurring activities if needed
+                case 'tickEvent': {
+                    // initialize recurring activities if needed
 
-                        if (
-                            !behaviorState.recurringPatientDataRequestActivity
-                        ) {
-                            behaviorState.recurringPatientDataRequestActivity =
-                                nextUUID(draftState);
-                            addActivity(
-                                simulatedRegion,
-                                RecurringEventActivityState.create(
-                                    behaviorState.recurringPatientDataRequestActivity,
-                                    AskForPatientDataEvent.create(
-                                        behaviorState.id
-                                    ),
-                                    draftState.currentTime,
-                                    behaviorState.requestPatientCountsDelay
-                                )
-                            );
-                        }
+                    if (!behaviorState.recurringPatientDataRequestActivityId) {
+                        behaviorState.recurringPatientDataRequestActivityId =
+                            nextUUID(draftState);
+                        addActivity(
+                            simulatedRegion,
+                            RecurringEventActivityState.create(
+                                behaviorState.recurringPatientDataRequestActivityId,
+                                AskForPatientDataEvent.create(behaviorState.id),
+                                draftState.currentTime,
+                                behaviorState.requestPatientCountsDelay
+                            )
+                        );
+                    }
 
-                        if (!behaviorState.recurringSendToHospitalActivity) {
-                            behaviorState.recurringSendToHospitalActivity =
-                                nextUUID(draftState);
-                            addActivity(
-                                simulatedRegion,
-                                RecurringEventActivityState.create(
-                                    behaviorState.recurringSendToHospitalActivity,
-                                    TryToSendToHospitalEvent.create(
-                                        behaviorState.id
-                                    ),
-                                    draftState.currentTime,
-                                    behaviorState.requestVehiclesDelay
-                                )
-                            );
-                        }
+                    if (!behaviorState.recurringSendToHospitalActivityId) {
+                        behaviorState.recurringSendToHospitalActivityId =
+                            nextUUID(draftState);
+                        addActivity(
+                            simulatedRegion,
+                            RecurringEventActivityState.create(
+                                behaviorState.recurringSendToHospitalActivityId,
+                                TryToSendToHospitalEvent.create(
+                                    behaviorState.id
+                                ),
+                                draftState.currentTime,
+                                behaviorState.requestVehiclesDelay
+                            )
+                        );
                     }
                     break;
-                case 'tryToSendToHospitalEvent':
-                    {
-                        // only react if this event is meant for this behavior
-                        if (event.behaviorId !== behaviorState.id) {
-                            break;
-                        }
+                }
+                case 'tryToSendToHospitalEvent': {
+                    // only react if this event is meant for this behavior
+                    if (event.behaviorId !== behaviorState.id) {
+                        break;
+                    }
 
-                        const patientsExpectedInRegions =
-                            patientsExpectedInRegionsAfterTransports(
-                                draftState,
-                                behaviorState
-                            );
+                    const patientsExpectedInRegions =
+                        patientsExpectedInRegionsAfterTransports(
+                            draftState,
+                            behaviorState
+                        );
 
-                        const highestCategoryThatIsNeeded =
-                            orderedPatientCategories.find((category) =>
-                                Object.values(patientsExpectedInRegions).some(
-                                    (patientCounts) =>
-                                        patientCounts[category] > 0
-                                )
-                            );
+                    const highestCategoryThatIsNeeded =
+                        orderedPatientCategories.find((category) =>
+                            Object.values(patientsExpectedInRegions).some(
+                                (patientCounts) => patientCounts[category] > 0
+                            )
+                        );
 
-                        if (
-                            !highestCategoryThatIsNeeded ||
-                            orderedPatientCategories.indexOf(
-                                highestCategoryThatIsNeeded
-                            ) >
-                                orderedPatientCategories.indexOf(
-                                    behaviorState.maximumCategoryToTransport
-                                )
-                        ) {
-                            break;
-                        }
-
-                        const simulatedRegionIdWithBiggestNeed = Object.entries(
-                            patientsExpectedInRegions
-                        ).sort(
-                            ([, patientCountsA], [, patientCountsB]) =>
-                                patientCountsB[highestCategoryThatIsNeeded] -
-                                patientCountsA[highestCategoryThatIsNeeded]
-                        )[0]![0];
-
-                        const vehicleType = getNextVehicleForPatientStatus(
-                            behaviorState,
+                    if (
+                        !highestCategoryThatIsNeeded ||
+                        orderedPatientCategories.indexOf(
                             highestCategoryThatIsNeeded
-                        );
-
-                        const targetTransferPoint = getElementByPredicate(
-                            draftState,
-                            'transferPoint',
-                            (transferPoint) =>
-                                isInSpecificSimulatedRegion(
-                                    transferPoint,
-                                    simulatedRegionIdWithBiggestNeed
-                                )
-                        );
-
-                        if (vehicleType) {
-                            addActivity(
-                                simulatedRegion,
-                                SendRemoteEventActivityState.create(
-                                    nextUUID(draftState),
-                                    behaviorState.requestTargetId,
-                                    TransferVehiclesRequestEvent.create(
-                                        { vehicleType: 1 },
-                                        'transferPoint',
-                                        targetTransferPoint.id,
-                                        simulatedRegion.id,
-                                        undefined,
-                                        PatientTransferOccupation.create(
-                                            simulatedRegion.id
-                                        )
-                                    )
-                                )
-                            );
-                        }
-                    }
-                    break;
-
-                case 'patientTransferToHospitalSuccessfulEvent':
-                    {
-                        if (
-                            behaviorState.patientsExpectedInRegions[
-                                event.patientOriginSimulatedRegion
-                            ]
-                        ) {
-                            behaviorState.patientsExpectedInRegions[
-                                event.patientOriginSimulatedRegion
-                            ]![event.patientCategory]--;
-
-                            const promiseForThisRegion =
-                                behaviorState.patientsExpectedToStillBeTransportedByRegion.find(
-                                    (promise) =>
-                                        promise.targetSimulatedRegionId ===
-                                            event.patientOriginSimulatedRegion &&
-                                        promise.patientCount > 0
-                                );
-
-                            if (promiseForThisRegion) {
-                                promiseForThisRegion.patientCount--;
-                            }
-
-                            if (
-                                Object.values(
-                                    behaviorState.patientsExpectedInRegions
-                                ).every(
-                                    (patientCount) =>
-                                        patientCount[event.patientCategory] ===
-                                        0
-                                )
-                            ) {
-                                addActivity(
-                                    simulatedRegion,
-                                    DelayEventActivityState.create(
-                                        nextUUID(draftState),
-                                        PatientCategoryTransferToHospitalFinishedEvent.create(
-                                            event.patientCategory,
-                                            false
-                                        ),
-                                        draftState.currentTime
-                                    )
-                                );
-                            }
-                        }
-                    }
-                    break;
-
-                case 'askForPatientDataEvent':
-                    {
-                        // only react if this event is meant for this behavior
-
-                        if (event.behaviorId !== behaviorState.id) {
-                            break;
-                        }
-
-                        // if it manages its own simulated region initiate a patient count
-
-                        if (
-                            behaviorState.simulatedRegionsToManage[
-                                simulatedRegion.id
-                            ]
-                        ) {
-                            addActivity(
-                                simulatedRegion,
-                                CountPatientsActivityState.create(
-                                    nextUUID(draftState)
-                                )
-                            );
-                        }
-
-                        if (
-                            Object.keys(
-                                behaviorState.simulatedRegionsToManage
-                            ).some(
-                                (simulatedRegionId) =>
-                                    simulatedRegionId !== simulatedRegion.id
+                        ) >
+                            orderedPatientCategories.indexOf(
+                                behaviorState.maximumCategoryToTransport
                             )
-                        ) {
-                            publishRadiogram(
-                                draftState,
-                                cloneDeepMutable(
-                                    NewPatientDataRequestedRadiogram.create(
-                                        nextUUID(draftState),
-                                        simulatedRegion.id,
-                                        RadiogramUnpublishedStatus.create()
+                    ) {
+                        break;
+                    }
+
+                    const simulatedRegionIdWithBiggestNeed = Object.entries(
+                        patientsExpectedInRegions
+                    ).sort(
+                        ([, patientCountsA], [, patientCountsB]) =>
+                            patientCountsB[highestCategoryThatIsNeeded] -
+                            patientCountsA[highestCategoryThatIsNeeded]
+                    )[0]![0];
+
+                    const vehicleType = getNextVehicleForPatientStatus(
+                        behaviorState,
+                        highestCategoryThatIsNeeded
+                    );
+
+                    const targetTransferPoint = getElementByPredicate(
+                        draftState,
+                        'transferPoint',
+                        (transferPoint) =>
+                            isInSpecificSimulatedRegion(
+                                transferPoint,
+                                simulatedRegionIdWithBiggestNeed
+                            )
+                    );
+
+                    if (vehicleType) {
+                        addActivity(
+                            simulatedRegion,
+                            SendRemoteEventActivityState.create(
+                                nextUUID(draftState),
+                                behaviorState.requestTargetId,
+                                TransferVehiclesRequestEvent.create(
+                                    { [vehicleType]: 1 },
+                                    'transferPoint',
+                                    targetTransferPoint.id,
+                                    simulatedRegion.id,
+                                    undefined,
+                                    PatientTransferOccupation.create(
+                                        simulatedRegion.id
                                     )
                                 )
-                            );
-                        }
+                            )
+                        );
                     }
                     break;
+                }
 
-                case 'patientsCountedEvent':
-                    {
+                case 'patientTransferToHospitalSuccessfulEvent': {
+                    if (
                         behaviorState.patientsExpectedInRegions[
-                            simulatedRegion.id
-                        ] = event.patientCount;
+                            event.patientOriginSimulatedRegion
+                        ]
+                    ) {
+                        behaviorState.patientsExpectedInRegions[
+                            event.patientOriginSimulatedRegion
+                        ]![event.patientCategory]--;
+
+                        const promiseForThisRegion =
+                            behaviorState.patientsExpectedToStillBeTransportedByRegion.find(
+                                (promise) =>
+                                    promise.targetSimulatedRegionId ===
+                                        event.patientOriginSimulatedRegion &&
+                                    promise.patientCount > 0
+                            );
+
+                        if (promiseForThisRegion) {
+                            promiseForThisRegion.patientCount--;
+                        }
+
+                        if (
+                            Object.values(
+                                behaviorState.patientsExpectedInRegions
+                            ).every(
+                                (patientCount) =>
+                                    patientCount[event.patientCategory] === 0
+                            )
+                        ) {
+                            addActivity(
+                                simulatedRegion,
+                                DelayEventActivityState.create(
+                                    nextUUID(draftState),
+                                    PatientCategoryTransferToHospitalFinishedEvent.create(
+                                        event.patientCategory,
+                                        false
+                                    ),
+                                    draftState.currentTime
+                                )
+                            );
+                        }
                     }
                     break;
+                }
 
-                case 'vehiclesSentEvent':
-                    {
-                        const transferPoint = getElement(
-                            draftState,
-                            'transferPoint',
-                            event.destinationTransferPointId
+                case 'askForPatientDataEvent': {
+                    // only react if this event is meant for this behavior
+
+                    if (event.behaviorId !== behaviorState.id) {
+                        break;
+                    }
+
+                    // if it manages its own simulated region initiate a patient count
+
+                    if (
+                        behaviorState.simulatedRegionsToManage[
+                            simulatedRegion.id
+                        ]
+                    ) {
+                        addActivity(
+                            simulatedRegion,
+                            CountPatientsActivityState.create(
+                                nextUUID(draftState)
+                            )
                         );
-                        const sendSimulatedRegion = currentSimulatedRegionOf(
-                            draftState,
-                            transferPoint
-                        );
+                    }
 
-                        const numberOfPatients = Object.entries(
-                            event.vehiclesSent.vehicleCounts
-                        ).reduce((sum, [type, count]) => {
-                            const vehicleTemplate =
-                                draftState.vehicleTemplates.find(
-                                    (template) => template.vehicleType === type
-                                );
-
-                            return (
-                                sum +
-                                (vehicleTemplate?.patientCapacity ?? 0) * count
-                            );
-                        }, 0);
-
-                        behaviorState.patientsExpectedToStillBeTransportedByRegion.push(
-                            cloneDeepMutable(
-                                PatientsTransportPromise.create(
-                                    draftState.currentTime,
-                                    numberOfPatients,
-                                    sendSimulatedRegion.id
+                    if (
+                        Object.keys(
+                            behaviorState.simulatedRegionsToManage
+                        ).some(
+                            (simulatedRegionId) =>
+                                simulatedRegionId !== simulatedRegion.id
+                        )
+                    ) {
+                        addActivity(
+                            simulatedRegion,
+                            PublishRadiogramActivityState.create(
+                                nextUUID(draftState),
+                                NewPatientDataRequestedRadiogram.create(
+                                    nextUUID(draftState),
+                                    simulatedRegion.id,
+                                    RadiogramUnpublishedStatus.create()
                                 )
                             )
                         );
                     }
                     break;
+                }
+                case 'patientsCountedEvent': {
+                    behaviorState.patientsExpectedInRegions[
+                        simulatedRegion.id
+                    ] = event.patientCount;
+                    break;
+                }
+                case 'vehiclesSentEvent': {
+                    const transferPoint = getElement(
+                        draftState,
+                        'transferPoint',
+                        event.destinationTransferPointId
+                    );
+                    const destinationSimulatedRegion = currentSimulatedRegionOf(
+                        draftState,
+                        transferPoint
+                    );
+
+                    const numberOfPatients = Object.entries(
+                        event.vehiclesSent.vehicleCounts
+                    ).reduce((sum, [type, count]) => {
+                        const vehicleTemplate =
+                            draftState.vehicleTemplates.find(
+                                (template) => template.vehicleType === type
+                            );
+
+                        return (
+                            sum +
+                            (vehicleTemplate?.patientCapacity ?? 0) * count
+                        );
+                    }, 0);
+
+                    behaviorState.patientsExpectedToStillBeTransportedByRegion.push(
+                        cloneDeepMutable(
+                            PatientsTransportPromise.create(
+                                draftState.currentTime,
+                                numberOfPatients,
+                                destinationSimulatedRegion.id
+                            )
+                        )
+                    );
+                    break;
+                }
                 default:
                 // Ignore event
             }
@@ -427,11 +414,11 @@ export function updateRequestVehiclesDelay(
     newDelay: number
 ) {
     behaviorState.requestVehiclesDelay = newDelay;
-    if (behaviorState.recurringSendToHospitalActivity) {
+    if (behaviorState.recurringSendToHospitalActivityId) {
         const activity = getActivityById(
             draftState,
             simulatedRegionId,
-            behaviorState.recurringSendToHospitalActivity,
+            behaviorState.recurringSendToHospitalActivityId,
             'recurringEventActivity'
         );
         activity.recurrenceIntervalTime = newDelay;
@@ -445,11 +432,11 @@ export function updateRequestPatientCountsDelay(
     newDelay: number
 ) {
     behaviorState.requestPatientCountsDelay = newDelay;
-    if (behaviorState.recurringPatientDataRequestActivity) {
+    if (behaviorState.recurringPatientDataRequestActivityId) {
         const activity = getActivityById(
             draftState,
             simulatedRegionId,
-            behaviorState.recurringPatientDataRequestActivity,
+            behaviorState.recurringPatientDataRequestActivityId,
             'recurringEventActivity'
         );
         activity.recurrenceIntervalTime = newDelay;
