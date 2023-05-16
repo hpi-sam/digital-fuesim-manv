@@ -65,21 +65,21 @@ class VehiclesForPatients {
     readonly type = 'vehiclesForPatients';
 
     @IsString({ each: true })
-    readonly red: string[] = ['RTW'];
+    readonly red: readonly string[] = ['RTW'];
 
     @IsInt()
     @Min(0)
     readonly redIndex: number = 0;
 
     @IsString({ each: true })
-    readonly yellow: string[] = ['RTW'];
+    readonly yellow: readonly string[] = ['RTW'];
 
     @IsInt()
     @Min(0)
     readonly yellowIndex: number = 0;
 
     @IsString({ each: true })
-    readonly green: string[] = ['RTW', 'KTW'];
+    readonly green: readonly string[] = ['RTW', 'KTW'];
 
     @IsInt()
     @Min(0)
@@ -108,7 +108,7 @@ export class ManagePatientTransportToHospitalBehaviorState
 
     @Type(() => PatientsTransportPromise)
     @ValidateNested()
-    public readonly patientsExpectedToStillBeTransportedByRegion: PatientsTransportPromise[] =
+    public readonly patientsExpectedToStillBeTransportedByRegion: readonly PatientsTransportPromise[] =
         [];
 
     @Type(() => VehiclesForPatients)
