@@ -91,9 +91,9 @@ export const transferPatientToHospitalActivity: SimulationActivity<TransferPatie
                 TransferPatientsInSpecificVehicleRequestEvent.create(
                     activityState.patientIds,
                     activityState.vehicleId,
-                    simulatedRegion.id,
                     'hospital',
-                    catchAllHospitalId
+                    catchAllHospitalId,
+                    simulatedRegion.id
                 )
             );
 

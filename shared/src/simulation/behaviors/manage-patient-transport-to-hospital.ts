@@ -41,7 +41,7 @@ import type { PatientCount } from '../../models/radiogram';
 import { RadiogramUnpublishedStatus } from '../../models/radiogram';
 import { IsPatientsPerUUID } from '../../utils/validators/is-patients-per-uuid';
 import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutable';
-import { NewPatientDataRequestedRadiogram } from '../../models/radiogram/new-patient-data-requested';
+import { NewPatientDataRequestedRadiogram } from '../../models/radiogram/new-patient-data-requested-radiogram';
 import { CountPatientsActivityState } from '../activities/count-patients';
 import type { ExerciseState } from '../../state';
 import {
@@ -250,9 +250,9 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                                                     behaviorState.requestTargetId,
                                                     TransferVehiclesRequestEvent.create(
                                                         { vehicleType: 1 },
-                                                        simulatedRegion.id,
                                                         'transferPoint',
                                                         targetTransferPoint.id,
+                                                        simulatedRegion.id,
                                                         undefined,
                                                         PatientTransferOccupation.create(
                                                             simulatedRegion.id
@@ -372,7 +372,7 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                         const transferPoint = getElement(
                             draftState,
                             'transferPoint',
-                            event.transferPointDestinationId
+                            event.destinationTransferPointId
                         );
                         const sendSimulatedRegion = currentSimulatedRegionOf(
                             draftState,

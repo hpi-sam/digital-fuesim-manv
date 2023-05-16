@@ -4,8 +4,8 @@ import { getCreate } from '../../models/utils/get-create';
 import { UUID, uuidValidationOptions } from '../../utils';
 
 export class PatientsTransportPromise {
-    @IsValue('patientsTransportedPromise')
-    readonly type = 'patientsTransportedPromise';
+    @IsValue('patientsTransportPromise')
+    readonly type = 'patientsTransportPromise';
 
     @IsInt()
     @Min(0)

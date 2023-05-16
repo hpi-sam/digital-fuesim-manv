@@ -10,7 +10,7 @@ import { VehicleCountRadiogram } from './vehicle-count-radiogram';
 import { ResourceRequestRadiogram } from './resource-request-radiogram';
 import { TransferCountsRadiogram } from './transfer-counts-radiogram';
 import { TransferCategoryCompletedRadiogram } from './transfer-category-completed-radiogram';
-import { NewPatientDataRequestedRadiogram } from './new-patient-data-requested';
+import { NewPatientDataRequestedRadiogram } from './new-patient-data-requested-radiogram';
 
 export const radiograms = {
     MaterialCountRadiogram,

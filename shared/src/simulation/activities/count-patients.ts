@@ -8,6 +8,8 @@ import { Patient } from '../../models/patient';
 import { sendSimulationEvent } from '../events/utils';
 import { PatientsCountedEvent } from '../events/patients-counted';
 import type { PatientStatus } from '../../models/utils/patient-status';
+import { patientStatusAllowedValues } from '../../models/utils/patient-status';
+import type { ResourceDescription } from '../../models/utils/resource-description';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -59,9 +61,18 @@ export const countPatientsActivity: SimulationActivity<CountPatientsActivityStat
                 ])
             );
 
+            StrictObject.keys(patientStatusAllowedValues).forEach(
+                (patientStatus) => {
+                    if (patientCount[patientStatus] === undefined)
+                        patientCount[patientStatus] = 0;
+                }
+            );
+
             sendSimulationEvent(
                 simulatedRegion,
-                PatientsCountedEvent.create(patientCount)
+                PatientsCountedEvent.create(
+                    patientCount as ResourceDescription<PatientStatus>
+                )
             );
 
             terminate();

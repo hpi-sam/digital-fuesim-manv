@@ -45,9 +45,7 @@ export namespace StrictObject {
      * See {@link StrictObject}
      * @returns an object from an array of key/value pairs
      */
-    export function fromEntries<K extends string, V>(
-        objectEntries: [K, V][]
-    ): { [key in K]: V } {
-        return Object.fromEntries(objectEntries) as { [key in K]: V };
+    export function fromEntries<K extends string, V>(objectEntries: [K, V][]) {
+        return Object.fromEntries(objectEntries) as { [key in K]?: V };
     }
 }

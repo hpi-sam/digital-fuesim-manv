@@ -33,9 +33,9 @@ export class TransferPatientsRequestEvent implements SimulationEvent {
     constructor(
         vehicleType: string,
         patientIds: UUIDSet,
-        transferInitiatingRegionId: UUID | undefined,
         transferDestinationType: TransferDestination,
-        transferDestinationId: UUID
+        transferDestinationId: UUID,
+        transferInitiatingRegionId?: UUID
     ) {
         this.vehicleType = vehicleType;
         this.patientIds = patientIds;

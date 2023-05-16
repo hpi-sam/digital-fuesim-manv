@@ -35,9 +35,9 @@ export class TransferPatientsInSpecificVehicleRequestEvent
     constructor(
         patientIds: UUIDSet,
         vehicleId: UUID,
-        transferInitiatingRegionId: UUID | undefined,
         transferDestinationType: TransferDestination,
-        transferDestinationId: UUID
+        transferDestinationId: UUID,
+        transferInitiatingRegionId?: UUID
     ) {
         this.patientIds = patientIds;
         this.vehicleId = vehicleId;

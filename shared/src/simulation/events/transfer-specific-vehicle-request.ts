@@ -38,9 +38,9 @@ export class TransferSpecificVehicleRequestEvent implements SimulationEvent {
      */
     constructor(
         vehicleId: UUID,
-        transferInitiatingRegionId: UUID | undefined,
         transferDestinationType: TransferDestination,
         transferDestinationId: UUID,
+        transferInitiatingRegionId?: UUID,
         successorOccupation?: ExerciseOccupation
     ) {
         this.vehicleId = vehicleId;

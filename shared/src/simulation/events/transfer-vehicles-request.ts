@@ -44,9 +44,9 @@ export class TransferVehiclesRequestEvent implements SimulationEvent {
      */
     constructor(
         requestedVehicles: ResourceDescription,
-        transferInitiatingRegionId: UUID | undefined,
         transferDestinationType: TransferDestination,
         transferDestinationId: UUID,
+        transferInitiatingRegionId?: UUID,
         key?: string,
         successorOccupation?: ExerciseOccupation
     ) {

@@ -65,9 +65,9 @@ export const answerRequestsBehavior: SimulationBehavior<AnswerRequestsBehaviorSt
                             const eventToSend =
                                 TransferVehiclesRequestEvent.create(
                                     event.requiredResource.vehicleCounts,
-                                    event.requiringSimulatedRegionId,
                                     'transferPoint',
                                     requiringSimulatedRegionTransferPoint.id,
+                                    event.requiringSimulatedRegionId,
                                     requiringSimulatedRegionTransferPoint.id +
                                         behaviorState.requestsHandled
                                 );

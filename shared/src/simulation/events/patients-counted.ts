@@ -1,20 +1,21 @@
-import { PatientCount } from '../../models/radiogram';
-import { getCreate } from '../../models/utils';
+import type { PatientStatus } from '../../models/utils';
+import { getCreate, patientStatusAllowedValues } from '../../models/utils';
+import { ResourceDescription } from '../../models/utils/resource-description';
 import { IsValue } from '../../utils/validators';
-import { IsPatientCount } from '../../utils/validators/is-patient-count';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import type { SimulationEvent } from './simulation-event';
 
 export class PatientsCountedEvent implements SimulationEvent {
     @IsValue('patientsCountedEvent')
     readonly type = 'patientsCountedEvent';
 
-    @IsPatientCount()
-    readonly patientCount: PatientCount;
+    @IsResourceDescription(patientStatusAllowedValues)
+    readonly patientCount: ResourceDescription<PatientStatus>;
 
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(patientCount: PatientCount) {
+    constructor(patientCount: ResourceDescription<PatientStatus>) {
         this.patientCount = patientCount;
     }
 

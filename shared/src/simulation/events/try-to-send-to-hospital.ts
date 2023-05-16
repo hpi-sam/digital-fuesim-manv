@@ -1,6 +1,6 @@
 import { IsUUID } from 'class-validator';
 import { getCreate } from '../../models/utils';
-import { UUID } from '../../utils';
+import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { SimulationEvent } from './simulation-event';
 
@@ -8,7 +8,7 @@ export class TryToSendToHospitalEvent implements SimulationEvent {
     @IsValue('tryToSendToHospitalEvent')
     readonly type = 'tryToSendToHospitalEvent';
 
-    @IsUUID()
+    @IsUUID(4, uuidValidationOptions)
     public readonly behaviorId: UUID;
 
     /**

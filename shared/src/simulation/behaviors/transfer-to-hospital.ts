@@ -44,7 +44,7 @@ export class TransferToHospitalBehaviorState
     @IsUUIDSet()
     public readonly patientIdsSelectedForTransfer: UUIDSet = {};
 
-    @IsResourceDescription()
+    @IsResourceDescription(patientStatusAllowedValues)
     public readonly transferredPatientsCount: ResourceDescription<PatientStatus> =
         {
             black: 0,
