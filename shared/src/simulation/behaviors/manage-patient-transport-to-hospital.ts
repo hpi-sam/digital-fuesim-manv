@@ -622,6 +622,7 @@ function removeActivities(
             simulatedRegion,
             behaviorState.recurringPatientDataRequestActivityId
         );
+        behaviorState.recurringPatientDataRequestActivityId = undefined;
     }
 
     if (behaviorState.recurringSendToHospitalActivityId) {
@@ -630,5 +631,6 @@ function removeActivities(
             simulatedRegion,
             behaviorState.recurringSendToHospitalActivityId
         );
+        behaviorState.recurringSendToHospitalActivityId = undefined;
     }
 }
