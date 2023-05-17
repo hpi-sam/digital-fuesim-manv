@@ -2,9 +2,10 @@
     <div class="d-flex justify-content-between align-items-center">
         <div class="mb-1">
             Die Transportorganisation ist aktuell
-            <span *ngIf="behaviorState.transportStarted; else transportStopped"
-                >gestartet</span
-            ><ng-template #transportStopped>gestoppt</ng-template>.
+            <span *ngIf="behaviorState.transportStarted; else transportStopped">
+                gestartet
+            </span>
+            <ng-template #transportStopped>gestoppt</ng-template>.
         </div>
 
         <button
