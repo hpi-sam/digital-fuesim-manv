@@ -54,6 +54,7 @@ import { RadiogramCardContentTransferCountsComponent } from './radiogram-list/ra
 import { RadiogramCardContentTransferCategoryCompletedComponent } from './radiogram-list/radiogram-card/radiogram-card-content-transfer-category-completed/radiogram-card-content-transfer-category-completed.component';
 import { SimulatedRegionOverviewBehaviorTransferToHospitalComponent } from './tabs/behavior-tab/behaviors/transfer-to-hospital/simulated-region-overview-behavior-transfer-to-hospital.component';
 import { SimulatedRegionOverviewBehaviorManagePatientTransportToHospitalComponent } from './tabs/behavior-tab/behaviors/manage-patient-transport-to-hospital/simulated-region-overview-behavior-manage-patient-transport-to-hospital.component';
+import { RadiogramCardContentTransportPatientCountRequestComponent } from './radiogram-list/radiogram-card/radiogram-card-content-transport-patient-count-request/radiogram-card-content-transport-patient-count-request.component';
 import { ManagePatientTransportToHospitalMaximumCategoryEditorComponent } from './tabs/behavior-tab/behaviors/manage-patient-transport-to-hospital/shared/manage-patient-transport-to-hospital-maximum-category-editor/manage-patient-transport-to-hospital-maximum-category-editor.component';
 import { ManagePatientTransportToHospitalStatusEditorComponent } from './tabs/behavior-tab/behaviors/manage-patient-transport-to-hospital/shared/manage-patient-transport-to-hospital-status-editor/manage-patient-transport-to-hospital-status-editor.component';
 import { ManagePatientTransportToHospitalRequestTargetEditorComponent } from './tabs/behavior-tab/behaviors/manage-patient-transport-to-hospital/shared/manage-patient-transport-to-hospital-request-target-editor/manage-patient-transport-to-hospital-request-target-editor.component';
@@ -104,6 +105,7 @@ import { ManagePatientTransportToHospitalSettingsEditorComponent } from './tabs/
         RadiogramCardContentTransferCategoryCompletedComponent,
         SimulatedRegionOverviewBehaviorTransferToHospitalComponent,
         SimulatedRegionOverviewBehaviorManagePatientTransportToHospitalComponent,
+        RadiogramCardContentTransportPatientCountRequestComponent,
         ManagePatientTransportToHospitalMaximumCategoryEditorComponent,
         ManagePatientTransportToHospitalStatusEditorComponent,
         ManagePatientTransportToHospitalRequestTargetEditorComponent,

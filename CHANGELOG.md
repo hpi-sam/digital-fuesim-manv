@@ -16,14 +16,17 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   When a vehicle is selected, the corresponding material and personnel are highlighted as well.
 -   A generic catch-all hospital is present in every exercise and cannot be deleted.
 -   The reports behavior can generate reports on the counts of transferred patients per triage category.
+    -   These reports either cover a single region or all that are managed by the same transport management.
 -   The reports behavior can generate event-based reports when the last patient of a triage category has been transferred to a hospital.
 -   A new transfer to hospital behavior uses arriving vehicles that are reserved for transport by an occupation and transfer the most urgent patient to a hospital.
+-   A new simulated region preset for transport management is available in the frontend.
 -   A new manage patient transfer to hospitals behavior is responsible for distributing vehicles to multiple simulated regions to transfer patients to hospitals.
 
 ### Changed
 
 -   Add behaviors button now opens towards the top.
 -   Simulated regions can now send patients to any hospital. The hospitals tab was removed.
+-   The default order of behaviors is now vaguely chronological.
 
 ### Fixed
 

@@ -30,7 +30,10 @@ import {
     RecurringEventActivityState,
     SendRemoteEventActivityState,
 } from '../activities';
-import { isUnoccupied } from '../../models/utils/occupations/occupation-helpers-mutable';
+import {
+    isUnoccupied,
+    isUnoccupiedOrIntermediarilyOccupied,
+} from '../../models/utils/occupations/occupation-helpers-mutable';
 import { amountOfResourcesInVehicle } from '../../models/utils/amount-of-resources-in-vehicle';
 import type { ResourceDescription } from '../../models/utils/resource-description';
 import {
@@ -159,7 +162,12 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                         event.vehicleId
                     );
                     // Don't do anything if vehicle is occupied
-                    if (!isUnoccupied(vehicle, draftState.currentTime)) {
+                    if (
+                        !isUnoccupiedOrIntermediarilyOccupied(
+                            vehicle,
+                            draftState.currentTime
+                        )
+                    ) {
                         return;
                     }
 
