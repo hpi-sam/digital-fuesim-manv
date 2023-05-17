@@ -50,9 +50,7 @@ export class RadigoramCardContentResourceRequestComponent implements OnInit {
             )
         );
         this.showAnswer$ = this.store.select(
-            createSelector(selectRadiogram, (radiogram) =>
-                isDone(radiogram)
-            )
+            createSelector(selectRadiogram, (radiogram) => isDone(radiogram))
         );
     }
 }
