@@ -50,6 +50,17 @@ import { SimulatedRegionOverviewVehiclesTabComponent } from './tabs/vehicles-tab
 import { SimulatedRegionOverviewPatientsTableComponent } from './patients-table/simulated-region-overview-patients-table.component';
 import { StartTransferService } from './start-transfer.service';
 import { SimulatedRegionOverviewBehaviorTransferVehiclesComponent } from './tabs/behavior-tab/behaviors/transfer-vehicles/simulated-region-overview-behavior-transfer-vehicles.component';
+import { RadiogramCardContentTransferCountsComponent } from './radiogram-list/radiogram-card/radiogram-card-content-transfer-counts/radiogram-card-content-transfer-counts.component';
+import { RadiogramCardContentTransferCategoryCompletedComponent } from './radiogram-list/radiogram-card/radiogram-card-content-transfer-category-completed/radiogram-card-content-transfer-category-completed.component';
+import { SimulatedRegionOverviewBehaviorTransferToHospitalComponent } from './tabs/behavior-tab/behaviors/transfer-to-hospital/simulated-region-overview-behavior-transfer-to-hospital.component';
+import { SimulatedRegionOverviewBehaviorManagePatientTransportToHospitalComponent } from './tabs/behavior-tab/behaviors/manage-patient-transport-to-hospital/simulated-region-overview-behavior-manage-patient-transport-to-hospital.component';
+import { RadiogramCardContentTransportPatientCountRequestComponent } from './radiogram-list/radiogram-card/radiogram-card-content-transport-patient-count-request/radiogram-card-content-transport-patient-count-request.component';
+import { ManagePatientTransportToHospitalMaximumCategoryEditorComponent } from './tabs/behavior-tab/behaviors/manage-patient-transport-to-hospital/shared/manage-patient-transport-to-hospital-maximum-category-editor/manage-patient-transport-to-hospital-maximum-category-editor.component';
+import { ManagePatientTransportToHospitalStatusEditorComponent } from './tabs/behavior-tab/behaviors/manage-patient-transport-to-hospital/shared/manage-patient-transport-to-hospital-status-editor/manage-patient-transport-to-hospital-status-editor.component';
+import { ManagePatientTransportToHospitalRequestTargetEditorComponent } from './tabs/behavior-tab/behaviors/manage-patient-transport-to-hospital/shared/manage-patient-transport-to-hospital-request-target-editor/manage-patient-transport-to-hospital-request-target-editor.component';
+import { ManagePatientTransportToHospitalManagedRegionsTableComponent } from './tabs/behavior-tab/behaviors/manage-patient-transport-to-hospital/shared/manage-patient-transport-to-hospital-managed-regions-table/manage-patient-transport-to-hospital-managed-regions-table.component';
+import { ManagePatientTransportToHospitalVehiclesForCategoriesEditorComponent } from './tabs/behavior-tab/behaviors/manage-patient-transport-to-hospital/shared/manage-patient-transport-to-hospital-vehicles-for-categories-editor/manage-patient-transport-to-hospital-vehicles-for-categories-editor.component';
+import { ManagePatientTransportToHospitalSettingsEditorComponent } from './tabs/behavior-tab/behaviors/manage-patient-transport-to-hospital/shared/manage-patient-transport-to-hospital-settings-editor/manage-patient-transport-to-hospital-settings-editor.component';
 
 @NgModule({
     declarations: [
@@ -90,6 +101,17 @@ import { SimulatedRegionOverviewBehaviorTransferVehiclesComponent } from './tabs
         SimulatedRegionOverviewVehiclesTabComponent,
         SimulatedRegionOverviewPatientsTableComponent,
         SimulatedRegionOverviewBehaviorTransferVehiclesComponent,
+        RadiogramCardContentTransferCountsComponent,
+        RadiogramCardContentTransferCategoryCompletedComponent,
+        SimulatedRegionOverviewBehaviorTransferToHospitalComponent,
+        SimulatedRegionOverviewBehaviorManagePatientTransportToHospitalComponent,
+        RadiogramCardContentTransportPatientCountRequestComponent,
+        ManagePatientTransportToHospitalMaximumCategoryEditorComponent,
+        ManagePatientTransportToHospitalStatusEditorComponent,
+        ManagePatientTransportToHospitalRequestTargetEditorComponent,
+        ManagePatientTransportToHospitalManagedRegionsTableComponent,
+        ManagePatientTransportToHospitalVehiclesForCategoriesEditorComponent,
+        ManagePatientTransportToHospitalSettingsEditorComponent,
     ],
     imports: [
         FormsModule,

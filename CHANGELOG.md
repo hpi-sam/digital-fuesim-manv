@@ -7,6 +7,35 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [0.6.0] - 2023-05-17
+
+### Added
+
+-   Added a new favicon.
+-   2 new events related to patient transport have been added to the simulation.
+-   Selected material, personnel and vehicles are now highlighted on the map.
+    -   When material or personnel is selected, the corresponding vehicle is highlighted as well.
+    -   When a vehicle is selected, the corresponding material and personnel are highlighted as well.
+-   A generic catch-all hospital is present in every exercise and cannot be deleted.
+-   The reports behavior can generate reports on the counts of transferred patients per triage category.
+    -   These reports either cover a single region or all that are managed by the same transport management.
+-   The reports behavior can generate event-based reports when the last patient of a triage category has been transferred to a hospital.
+-   A new transfer to hospital behavior uses arriving vehicles that are reserved for transport by an occupation and transfer the most urgent patient to a hospital.
+-   A new simulated region preset for transport management is available in the frontend.
+-   A new manage patient transfer to hospitals behavior is responsible for distributing vehicles to multiple simulated regions to transfer patients to hospitals.
+
+### Changed
+
+-   Add behaviors button now opens towards the top.
+-   Simulated regions can now send patients to any hospital. The hospitals tab was removed.
+-   The default order of behaviors is now vaguely chronological.
+-   Resource request radiograms now store whether they have been accepted or denied. This is also displayed in the frontend.
+
+### Fixed
+
+-   Removed the id property of events.
+-   Dissolved a livelock in treatment assignment.
+
 ## [0.5.1] - 2023-05-09
 
 ### Fixed
@@ -201,7 +230,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...v0.4.0

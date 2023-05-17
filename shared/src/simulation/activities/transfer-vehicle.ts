@@ -1,14 +1,17 @@
 import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
 import {
     MissingTransferConnectionRadiogram,
     RadiogramUnpublishedStatus,
 } from '../../models/radiogram';
 import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutable';
 import {
+    ExerciseOccupation,
     getCreate,
     isInSpecificSimulatedRegion,
     isInSpecificVehicle,
     NoOccupation,
+    occupationTypeOptions,
     TransferStartPoint,
 } from '../../models/utils';
 import { VehicleResource } from '../../models/utils/rescue-resource';
@@ -53,6 +56,10 @@ export class TransferVehicleActivityState implements SimulationActivityState {
     readonly transferDestinationId: UUID;
 
     @IsOptional()
+    @Type(...occupationTypeOptions)
+    readonly successorOccupation?: ExerciseOccupation;
+
+    @IsOptional()
     @IsString()
     readonly key?: string;
 
@@ -64,7 +71,8 @@ export class TransferVehicleActivityState implements SimulationActivityState {
         vehicleId: UUID,
         transferDestinationType: TransferDestination,
         transferDestinationId: UUID,
-        key?: string
+        key?: string,
+        successorOccupation?: ExerciseOccupation
     ) {
         this.id = id;
         this.vehicleId = vehicleId;
@@ -72,6 +80,7 @@ export class TransferVehicleActivityState implements SimulationActivityState {
         this.transferDestinationType = transferDestinationType;
         this.transferDestinationId = transferDestinationId;
         this.key = key;
+        this.successorOccupation = successorOccupation;
     }
 
     static readonly create = getCreate(this);
@@ -112,7 +121,6 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
                     sendSimulationEvent(
                         simulatedRegion,
                         TransferConnectionMissingEvent.create(
-                            nextUUID(draftState),
                             activityState.transferDestinationId,
                             activityState.key
                         )
@@ -158,7 +166,9 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
 
                 // Do transfer and send event
 
-                vehicle.occupation = cloneDeepMutable(NoOccupation.create());
+                vehicle.occupation = cloneDeepMutable(
+                    activityState.successorOccupation ?? NoOccupation.create()
+                );
 
                 TransferActionReducers.addToTransfer.reducer(draftState, {
                     type: '[Transfer] Add to transfer',
@@ -183,35 +193,6 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
                 terminate();
             }
             if (activityState.transferDestinationType === 'hospital') {
-                const ownTransferPoint = getElementByPredicate(
-                    draftState,
-                    'transferPoint',
-                    (transferPoint) =>
-                        isInSpecificSimulatedRegion(
-                            transferPoint,
-                            simulatedRegion.id
-                        )
-                );
-
-                if (
-                    ownTransferPoint.reachableHospitals[
-                        activityState.transferDestinationId
-                    ] === undefined
-                ) {
-                    sendSimulationEvent(
-                        simulatedRegion,
-                        TransferConnectionMissingEvent.create(
-                            nextUUID(draftState),
-                            activityState.transferDestinationId,
-                            activityState.key
-                        )
-                    );
-                    // TODO: Publish Radiogram (The current Radiogram does not support hospitals)
-
-                    terminate();
-                    return;
-                }
-
                 // If the vehicle is not completely loaded terminate
                 if (
                     Object.keys(vehicle.materialIds).some((materialId) => {
@@ -237,7 +218,9 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
 
                 // Do transfer and send event
 
-                vehicle.occupation = cloneDeepMutable(NoOccupation.create());
+                vehicle.occupation = cloneDeepMutable(
+                    activityState.successorOccupation ?? NoOccupation.create()
+                );
 
                 HospitalActionReducers.transportPatientToHospital.reducer(
                     draftState,

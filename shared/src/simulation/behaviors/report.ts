@@ -12,7 +12,10 @@ import { IsLiteralUnionMap, IsValue } from '../../utils/validators';
 import { GenerateReportActivityState } from '../activities/generate-report';
 import { CollectInformationEvent } from '../events/collect';
 import { nextUUID } from '../utils/randomness';
-import { TreatmentStatusRadiogram } from '../../models/radiogram';
+import {
+    TransferCategoryCompletedRadiogram,
+    TreatmentStatusRadiogram,
+} from '../../models/radiogram';
 import { addActivity } from '../activities/utils';
 import { PublishRadiogramActivityState } from '../activities';
 import type {
@@ -38,6 +41,14 @@ export class ReportBehaviorState implements SimulationBehaviorState {
 
     @IsBoolean()
     public readonly reportTreatmentProgressChanges: boolean = true;
+
+    @IsBoolean()
+    public readonly reportTransferOfCategoryInSingleRegionCompleted: boolean =
+        false;
+
+    @IsBoolean()
+    public readonly reportTransferOfCategoryInMultipleRegionsCompleted: boolean =
+        true;
 
     static readonly create = getCreate(this);
 }
@@ -93,6 +104,37 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
                         radiogram
                     )
                 );
+                break;
+            }
+            case 'patientCategoryTransferToHospitalFinishedEvent': {
+                if (
+                    (event.isRelatedOnlyToOwnRegion &&
+                        behaviorState.reportTransferOfCategoryInSingleRegionCompleted) ||
+                    (!event.isRelatedOnlyToOwnRegion &&
+                        behaviorState.reportTransferOfCategoryInMultipleRegionsCompleted)
+                ) {
+                    const radiogram = cloneDeepMutable(
+                        TransferCategoryCompletedRadiogram.create(
+                            nextUUID(draftState),
+                            simulatedRegion.id,
+                            RadiogramUnpublishedStatus.create()
+                        )
+                    );
+                    radiogram.completedCategory = event.patientCategory;
+                    radiogram.scope = event.isRelatedOnlyToOwnRegion
+                        ? 'singleRegion'
+                        : 'transportManagement';
+                    radiogram.informationAvailable = true;
+
+                    addActivity(
+                        simulatedRegion,
+                        PublishRadiogramActivityState.create(
+                            nextUUID(draftState),
+                            radiogram
+                        )
+                    );
+                }
+
                 break;
             }
             default:

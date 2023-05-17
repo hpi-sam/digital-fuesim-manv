@@ -1,5 +1,10 @@
-import { IsUUID } from 'class-validator';
-import { getCreate } from '../../models/utils';
+import { IsOptional, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+    ExerciseOccupation,
+    getCreate,
+    occupationTypeOptions,
+} from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import {
@@ -15,11 +20,18 @@ export class TransferSpecificVehicleRequestEvent implements SimulationEvent {
     @IsUUID(4, uuidValidationOptions)
     readonly vehicleId: UUID;
 
+    @IsUUID(4, uuidValidationOptions)
+    readonly transferInitiatingRegionId?: UUID;
+
     @IsLiteralUnion(transferDestinationTypeAllowedValues)
     readonly transferDestinationType: TransferDestination;
 
     @IsUUID(4, uuidValidationOptions)
     readonly transferDestinationId: UUID;
+
+    @IsOptional()
+    @Type(...occupationTypeOptions)
+    readonly successorOccupation?: ExerciseOccupation;
 
     /**
      * @deprecated Use {@link create} instead
@@ -27,11 +39,15 @@ export class TransferSpecificVehicleRequestEvent implements SimulationEvent {
     constructor(
         vehicleId: UUID,
         transferDestinationType: TransferDestination,
-        transferDestinationId: UUID
+        transferDestinationId: UUID,
+        transferInitiatingRegionId?: UUID,
+        successorOccupation?: ExerciseOccupation
     ) {
         this.vehicleId = vehicleId;
+        this.transferInitiatingRegionId = transferInitiatingRegionId;
         this.transferDestinationType = transferDestinationType;
         this.transferDestinationId = transferDestinationId;
+        this.successorOccupation = successorOccupation;
     }
 
     static readonly create = getCreate(this);

@@ -34,7 +34,7 @@ jobs:
             - name: Update changelog
               uses: thomaseizinger/keep-a-changelog-new-release@v1
               with:
-                  tag: ${{ github.event.inputs.versionName }}
+                  tag: v${{ github.event.inputs.versionName }}
             - name: Format changelog
               run: npm run prettier
             - name: Commit updated version and changelog

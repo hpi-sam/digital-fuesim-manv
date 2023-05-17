@@ -14,9 +14,6 @@ export class ResourceRequiredEvent implements SimulationEvent {
     readonly type = 'resourceRequiredEvent';
 
     @IsUUID(4, uuidValidationOptions)
-    public readonly id!: UUID;
-
-    @IsUUID(4, uuidValidationOptions)
     readonly requiringSimulatedRegionId: UUID;
 
     @ValidateNested()
@@ -33,12 +30,10 @@ export class ResourceRequiredEvent implements SimulationEvent {
      * @deprecated Use {@link create} instead
      */
     constructor(
-        id: UUID,
         requiringSimulatedRegionId: UUID,
         requiredResource: ExerciseRescueResource,
         key: string
     ) {
-        this.id = id;
         this.requiringSimulatedRegionId = requiringSimulatedRegionId;
         this.requiredResource = requiredResource;
         this.key = key;

@@ -25,7 +25,6 @@ import {
 } from '../events';
 import { sendSimulationEvent } from '../events/utils';
 import type { AssignLeaderBehaviorState } from '../behaviors/assign-leader';
-import { nextUUID } from '../utils/randomness';
 import { defaultPersonnelTemplates } from '../../data/default-state/personnel-templates';
 import { StrictObject } from '../../utils/strict-object';
 import { cloneDeepMutable } from '../../utils/clone-deep';
@@ -215,7 +214,6 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 sendSimulationEvent(
                     simulatedRegion,
                     ResourceRequiredEvent.create(
-                        nextUUID(draftState),
                         simulatedRegion.id,
                         missingResource,
                         'reassignTreatmentsActivity'
@@ -318,11 +316,13 @@ const minimumRequiredPersonnel: {
         san: 0,
         rettSan: 1,
         notSan: 0,
-        notarzt: 1 / capacities.notarzt.yellow,
+        notarzt: 1 / (capacities.notarzt.yellow + capacities.notarzt.red),
     },
     green: {
         gf: 0,
-        san: 1 / capacities.san.green,
+        san:
+            1 /
+            (capacities.san.green + capacities.san.yellow + capacities.san.red),
         rettSan: 0,
         notSan: 0,
         notarzt: 0,

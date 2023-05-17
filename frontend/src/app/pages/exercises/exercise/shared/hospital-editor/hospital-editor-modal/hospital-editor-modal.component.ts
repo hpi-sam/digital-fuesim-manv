@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { Hospital } from 'digital-fuesim-manv-shared';
+import { Hospital, catchAllHospitalId } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectHospitals } from 'src/app/state/application/selectors/exercise.selectors';
@@ -14,6 +14,7 @@ import { selectHospitals } from 'src/app/state/application/selectors/exercise.se
 })
 export class HospitalEditorModalComponent {
     public hospitals$ = this.store.select(selectHospitals);
+    public catchAllHospitalId = catchAllHospitalId;
 
     constructor(
         private readonly store: Store<AppState>,

@@ -1,15 +1,12 @@
 import { IsUUID } from 'class-validator';
 import { getCreate } from '../../models/utils';
-import { uuid, UUID, uuidValidationOptions } from '../../utils';
+import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { SimulationEvent } from './simulation-event';
 
 export class NewPatientEvent implements SimulationEvent {
     @IsValue('newPatientEvent')
     readonly type = 'newPatientEvent';
-
-    @IsUUID(4, uuidValidationOptions)
-    public readonly id: UUID = uuid();
 
     @IsUUID(4, uuidValidationOptions)
     readonly patientId: UUID;

@@ -188,6 +188,7 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                                         cloneDeep(vehiclesToBeSent[region]!),
                                         'transferPoint',
                                         region,
+                                        simulatedRegion.id,
                                         'automatic-distribution'
                                     ),
                                     draftState.currentTime
