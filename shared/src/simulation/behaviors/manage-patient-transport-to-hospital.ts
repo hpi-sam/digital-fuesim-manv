@@ -129,7 +129,15 @@ export class ManagePatientTransportToHospitalBehaviorState
         [];
 
     @IsResourceDescription(patientStatusAllowedValues)
-    public readonly transferredPatientCounts: ResourceDescription<PatientStatus>;
+    public readonly transferredPatientCounts: ResourceDescription<PatientStatus> =
+        {
+            red: 0,
+            yellow: 0,
+            green: 0,
+            blue: 0,
+            black: 0,
+            white: 0,
+        };
 
     @Type(() => VehiclesForPatients)
     @ValidateNested()
@@ -168,20 +176,6 @@ export class ManagePatientTransportToHospitalBehaviorState
     @IsOptional()
     @IsUUID(4, uuidValidationOptions)
     readonly recurringSendToHospitalActivityId?: UUID;
-
-    /**
-     * @deprecated Use {@link create} instead
-     */
-    constructor() {
-        this.transferredPatientCounts = {
-            red: 0,
-            yellow: 0,
-            green: 0,
-            blue: 0,
-            black: 0,
-            white: 0,
-        };
-    }
 
     static readonly create = getCreate(this);
 }
@@ -433,9 +427,6 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                 case 'collectInformationEvent': {
                     switch (event.informationType) {
                         case 'transportManagementTransferCounts': {
-                            if (!behaviorState.transportStarted) {
-                                break;
-                            }
                             const radiogram = getActivityById(
                                 draftState,
                                 simulatedRegion.id,
