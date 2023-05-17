@@ -1,8 +1,11 @@
-<ng-container *ngIf="requiredResource$ | async as requiredResource">
+<ng-container *ngIf="radiogram$ | async as radiogram">
     <h5>Anfrage von Ressourcen</h5>
 
     <ng-container
-        *ngIf="(requiredResource | keys).length > 0; else noResourcesRequired"
+        *ngIf="
+            (radiogram.requiredResource | keys).length > 0;
+            else noResourcesRequired
+        "
     >
         <table class="table card-text">
             <thead>
@@ -14,31 +17,65 @@
             <tbody>
                 <tr
                     *ngFor="
-                        let vehicleType of requiredResource.vehicleCounts | keys
+                        let vehicleType of radiogram.requiredResource
+                            .vehicleCounts | keys
                     "
                 >
                     <td>{{ vehicleType }}</td>
-                    <td>{{ requiredResource.vehicleCounts[vehicleType] }}</td>
+                    <td>
+                        {{
+                            radiogram.requiredResource.vehicleCounts[
+                                vehicleType
+                            ]
+                        }}
+                    </td>
                 </tr>
             </tbody>
         </table>
         <div class="d-flex row my-1">
-            <button
-                type="button"
-                [disabled]="(enableActionButtons$ | async) === false"
-                (click)="denyRequest()"
-                class="btn btn-danger col-sm mx-1"
-            >
-                Ablehnen
-            </button>
-            <button
-                type="button"
-                [disabled]="(enableActionButtons$ | async) === false"
-                (click)="acceptRequest()"
-                class="btn btn-success col-sm mx-1"
-            >
-                Akzeptieren
-            </button>
+            <ng-container *ngIf="showAnswer$ | async; else actionButtons">
+                <p class="card-text">
+                    <ng-container
+                        *ngIf="
+                            radiogram.resourcesPromised !== undefined;
+                            else noAnswer
+                        "
+                    >
+                        Die Resource wurde
+                        <ng-container *ngIf="!radiogram.resourcesPromised">
+                            nicht
+                        </ng-container>
+                        zugesagt.
+                    </ng-container>
+                    <ng-template #noAnswer>
+                        Es ist keine Antwort zu dieser Anfrage bekannt
+                    </ng-template>
+                </p>
+            </ng-container>
+            <ng-template #actionButtons>
+                <ng-container
+                    *ngIf="{
+                        value: enableActionButtons$ | async
+                    } as enableActionButtons"
+                >
+                    <button
+                        type="button"
+                        [disabled]="!enableActionButtons.value"
+                        (click)="denyRequest()"
+                        class="btn btn-danger col-sm mx-1"
+                    >
+                        Ablehnen
+                    </button>
+                    <button
+                        type="button"
+                        [disabled]="!enableActionButtons.value"
+                        (click)="acceptRequest()"
+                        class="btn btn-success col-sm mx-1"
+                    >
+                        Akzeptieren
+                    </button>
+                </ng-container>
+            </ng-template>
         </div>
     </ng-container>
 

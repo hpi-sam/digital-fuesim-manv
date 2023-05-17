@@ -91,6 +91,7 @@ export namespace RadiogramActionReducers {
                         )
                     )
                 );
+                radiogram.resourcesPromised = false;
             }
 
             markRadiogramDone(draftState, radiogramId);
@@ -134,6 +135,8 @@ export namespace RadiogramActionReducers {
                     )
                 );
 
+                radiogram.resourcesPromised = true;
+
                 markRadiogramDone(draftState, radiogramId);
 
                 return draftState;
@@ -174,6 +177,8 @@ export namespace RadiogramActionReducers {
                         )
                     )
                 );
+
+                radiogram.resourcesPromised = false;
 
                 markRadiogramDone(draftState, radiogramId);
 
