@@ -18,6 +18,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   The reports behavior can generate reports on the counts of transferred patients per triage category.
 -   The reports behavior can generate event-based reports when the last patient of a triage category has been transferred to a hospital.
 -   A new transfer to hospital behavior uses arriving vehicles that are reserved for transport by an occupation and transfer the most urgent patient to a hospital.
+-   A new manage patient transfer to hospitals behavior is responsible for distributing vehicles to multiple simulated regions to transfer patients to hospitals.
 
 ### Changed
 
