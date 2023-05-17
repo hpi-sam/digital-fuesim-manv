@@ -26,7 +26,7 @@ import {
     uuidValidationOptions,
 } from '../../utils';
 import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
-import { addActivity } from '../activities/utils';
+import { addActivity, terminateActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
 import {
     DelayEventActivityState,
@@ -52,6 +52,7 @@ import {
 } from '../../store/action-reducers/utils';
 import { PatientsTransportPromise } from '../utils/patients-transported-promise';
 import type { ResourceDescription } from '../../models/utils/resource-description';
+import type { SimulatedRegion } from '../../models/simulated-region';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -105,6 +106,14 @@ export class ManagePatientTransportToHospitalBehaviorState
     @IsUUIDSet()
     public readonly simulatedRegionsToManage: UUIDSet = {};
 
+    /**
+     * Stores the amount of patients expected in some regions.
+     * Regions are NOT removed from this, if they are not managed anymore,
+     * as the behavior should still have its knowledge about how many patients
+     * are in this region. Therefore, to find the amount of patients in managed
+     * regions, one must filter this object to only contain keys that are also
+     * in {@link simulatedRegionsToManage}
+     */
     @IsPatientsPerUUID()
     public readonly patientsExpectedInRegions: PatientsPerRegion = {};
 
@@ -160,54 +169,44 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
         handleEvent: (draftState, simulatedRegion, behaviorState, event) => {
             switch (event.type) {
                 case 'tickEvent': {
-                    // initialize recurring activities if needed
-
-                    if (!behaviorState.recurringPatientDataRequestActivityId) {
-                        behaviorState.recurringPatientDataRequestActivityId =
-                            nextUUID(draftState);
-                        addActivity(
+                    if (behaviorState.transportStarted) {
+                        addActivities(
+                            draftState,
                             simulatedRegion,
-                            RecurringEventActivityState.create(
-                                behaviorState.recurringPatientDataRequestActivityId,
-                                AskForPatientDataEvent.create(behaviorState.id),
-                                draftState.currentTime,
-                                behaviorState.requestPatientCountsDelay
-                            )
+                            behaviorState
+                        );
+                    } else {
+                        removeActivities(
+                            draftState,
+                            simulatedRegion,
+                            behaviorState
                         );
                     }
 
-                    if (!behaviorState.recurringSendToHospitalActivityId) {
-                        behaviorState.recurringSendToHospitalActivityId =
-                            nextUUID(draftState);
-                        addActivity(
-                            simulatedRegion,
-                            RecurringEventActivityState.create(
-                                behaviorState.recurringSendToHospitalActivityId,
-                                TryToSendToHospitalEvent.create(
-                                    behaviorState.id
-                                ),
-                                draftState.currentTime,
-                                behaviorState.requestVehiclesDelay
-                            )
-                        );
-                    }
                     break;
                 }
                 case 'tryToSendToHospitalEvent': {
                     // only react if this event is meant for this behavior
                     if (
                         event.behaviorId !== behaviorState.id ||
-                        !behaviorState.requestTargetId ||
-                        !behaviorState.transportStarted
+                        !behaviorState.requestTargetId
                     ) {
                         break;
                     }
 
-                    const patientsExpectedInRegions =
-                        patientsExpectedInRegionsAfterTransports(
-                            draftState,
-                            behaviorState
-                        );
+                    const patientsExpectedInRegions = Object.fromEntries(
+                        Object.entries(
+                            patientsExpectedInRegionsAfterTransports(
+                                draftState,
+                                behaviorState
+                            )
+                        ).filter(
+                            ([simulatedRegionId, _]) =>
+                                behaviorState.simulatedRegionsToManage[
+                                    simulatedRegionId
+                                ]
+                        )
+                    );
 
                     const highestCategoryThatIsNeeded =
                         orderedPatientCategories.find((category) =>
@@ -409,6 +408,9 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                 // Ignore event
             }
         },
+        onRemove(draftState, simulatedRegion, behaviorState) {
+            removeActivities(draftState, simulatedRegion, behaviorState);
+        },
     };
 
 const orderedPatientCategories: PatientStatusForTransport[] = [
@@ -507,4 +509,59 @@ function getNextVehicleForPatientStatus(
     return behaviorState.vehiclesForPatients[patientStatus][
         behaviorState.vehiclesForPatients[`${patientStatus}Index`]
     ];
+}
+
+function addActivities(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegion>,
+    behaviorState: Mutable<ManagePatientTransportToHospitalBehaviorState>
+) {
+    if (!behaviorState.recurringPatientDataRequestActivityId) {
+        behaviorState.recurringPatientDataRequestActivityId =
+            nextUUID(draftState);
+        addActivity(
+            simulatedRegion,
+            RecurringEventActivityState.create(
+                behaviorState.recurringPatientDataRequestActivityId,
+                AskForPatientDataEvent.create(behaviorState.id),
+                draftState.currentTime,
+                behaviorState.requestPatientCountsDelay
+            )
+        );
+    }
+
+    if (!behaviorState.recurringSendToHospitalActivityId) {
+        behaviorState.recurringSendToHospitalActivityId = nextUUID(draftState);
+        addActivity(
+            simulatedRegion,
+            RecurringEventActivityState.create(
+                behaviorState.recurringSendToHospitalActivityId,
+                TryToSendToHospitalEvent.create(behaviorState.id),
+                draftState.currentTime,
+                behaviorState.requestVehiclesDelay
+            )
+        );
+    }
+}
+
+function removeActivities(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegion>,
+    behaviorState: Mutable<ManagePatientTransportToHospitalBehaviorState>
+) {
+    if (behaviorState.recurringPatientDataRequestActivityId) {
+        terminateActivity(
+            draftState,
+            simulatedRegion,
+            behaviorState.recurringPatientDataRequestActivityId
+        );
+    }
+
+    if (behaviorState.recurringSendToHospitalActivityId) {
+        terminateActivity(
+            draftState,
+            simulatedRegion,
+            behaviorState.recurringSendToHospitalActivityId
+        );
+    }
 }

@@ -106,7 +106,7 @@
                                     )
                                 "
                             >
-                                <span class="bi-x"></span>
+                                <span class="bi-trash"></span>
                             </button>
                         </td>
                     </tr>
@@ -158,10 +158,12 @@
     </div>
 
     <!-- Vehicles for categories -->
-    <div *ngIf="possibleNewVehicleTypesForTransport$ | async as possibleNewVehicleTypesForTransport">
-
-        
-    </div>
+    <div
+        *ngIf="
+            possibleNewVehicleTypesForTransport$
+                | async as possibleNewVehicleTypesForTransport
+        "
+    ></div>
 
     <!-- Settings -->
     <div>

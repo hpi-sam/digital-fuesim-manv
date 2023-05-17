@@ -17,8 +17,8 @@ import type { Observable } from 'rxjs';
 import { combineLatest, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
-import { selectConfiguration } from 'src/app/state/application/selectors/exercise.selectors';
 import {
+    selectConfiguration,
     createSelectBehaviorState,
     selectSimulatedRegions,
     selectVehicleTemplates,
@@ -144,9 +144,9 @@ export class SimulatedRegionOverviewBehaviorManagePatientTransportToHospitalComp
         this.patientStatusOptions$ = configuration$.pipe(
             map((configuration) => {
                 if (configuration.bluePatientsEnabled) {
-                    return ['red' , 'yellow', 'green', 'blue', 'black', 'white'];
+                    return ['red', 'yellow', 'green', 'blue', 'black', 'white'];
                 }
-                return ['red' , 'yellow', 'green', 'black', 'white'];
+                return ['red', 'yellow', 'green', 'black', 'white'];
             })
         );
     }
