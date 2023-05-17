@@ -1,5 +1,6 @@
 import { IsString, IsUUID } from 'class-validator';
 import type { SimulatedRegion } from '../../models';
+import { personnelTypeAllowedValues } from '../../models/utils/personnel-type';
 import type { PersonnelType } from '../../models/utils';
 import {
     PersonnelResource,
@@ -38,7 +39,7 @@ export class ProvidePersonnelFromVehiclesActivityState
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID;
 
-    @IsResourceDescription()
+    @IsResourceDescription(personnelTypeAllowedValues)
     public readonly requiredPersonnelCounts: ResourceDescription<PersonnelType>;
 
     @IsUUID(4, uuidArrayValidationOptions)

@@ -9,3 +9,4 @@ export * from './send-remote-event';
 export * from './transfer-vehicle';
 export * from './publish-radiogram';
 export * from './transfer-patient-to-hospital';
+export * from './count-patients';

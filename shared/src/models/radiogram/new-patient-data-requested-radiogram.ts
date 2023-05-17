@@ -2,19 +2,16 @@ import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
-import type { PatientStatus } from '../utils';
-import { getCreate, patientStatusAllowedValues } from '../utils';
-import { ResourceDescription } from '../utils/resource-description';
-import { IsResourceDescription } from '../../utils/validators/is-resource-description';
+import { getCreate } from '../utils';
 import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 
-export class PatientCountRadiogram implements Radiogram {
+export class NewPatientDataRequestedRadiogram implements Radiogram {
     @IsUUID(4, uuidValidationOptions)
     readonly id: UUID;
 
-    @IsValue('patientCountRadiogram')
-    readonly type = 'patientCountRadiogram';
+    @IsValue('newPatientDataRequestedRadiogram')
+    readonly type = 'newPatientDataRequestedRadiogram';
 
     @IsUUID(4, uuidValidationOptions)
     readonly simulatedRegionId: UUID;
@@ -28,10 +25,7 @@ export class PatientCountRadiogram implements Radiogram {
     readonly status: ExerciseRadiogramStatus;
 
     @IsBoolean()
-    readonly informationAvailable: boolean = false;
-
-    @IsResourceDescription(patientStatusAllowedValues)
-    readonly patientCount: ResourceDescription<PatientStatus>;
+    readonly informationAvailable: boolean = true;
 
     /**
      * @deprecated Use {@link create} instead
@@ -44,14 +38,6 @@ export class PatientCountRadiogram implements Radiogram {
         this.id = id;
         this.simulatedRegionId = simulatedRegionId;
         this.status = status;
-        this.patientCount = {
-            red: 0,
-            yellow: 0,
-            green: 0,
-            blue: 0,
-            black: 0,
-            white: 0,
-        };
     }
 
     static readonly create = getCreate(this);

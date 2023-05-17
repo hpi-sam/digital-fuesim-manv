@@ -92,7 +92,8 @@ export const transferPatientToHospitalActivity: SimulationActivity<TransferPatie
                     activityState.patientIds,
                     activityState.vehicleId,
                     'hospital',
-                    catchAllHospitalId
+                    catchAllHospitalId,
+                    simulatedRegion.id
                 )
             );
 

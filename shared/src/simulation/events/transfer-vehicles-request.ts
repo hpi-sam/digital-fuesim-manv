@@ -22,6 +22,9 @@ export class TransferVehiclesRequestEvent implements SimulationEvent {
     @IsResourceDescription()
     readonly requestedVehicles: ResourceDescription;
 
+    @IsUUID(4, uuidValidationOptions)
+    readonly transferInitiatingRegionId?: UUID;
+
     @IsLiteralUnion(transferDestinationTypeAllowedValues)
     readonly transferDestinationType: TransferDestination;
 
@@ -43,10 +46,12 @@ export class TransferVehiclesRequestEvent implements SimulationEvent {
         requestedVehicles: ResourceDescription,
         transferDestinationType: TransferDestination,
         transferDestinationId: UUID,
+        transferInitiatingRegionId?: UUID,
         key?: string,
         successorOccupation?: ExerciseOccupation
     ) {
         this.requestedVehicles = requestedVehicles;
+        this.transferInitiatingRegionId = transferInitiatingRegionId;
         this.transferDestinationType = transferDestinationType;
         this.transferDestinationId = transferDestinationId;
         this.key = key;

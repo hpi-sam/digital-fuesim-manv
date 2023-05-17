@@ -53,6 +53,7 @@ import { SimulatedRegionOverviewBehaviorTransferVehiclesComponent } from './tabs
 import { RadiogramCardContentTransferCountsComponent } from './radiogram-list/radiogram-card/radiogram-card-content-transfer-counts/radiogram-card-content-transfer-counts.component';
 import { RadiogramCardContentTransferCategoryCompletedComponent } from './radiogram-list/radiogram-card/radiogram-card-content-transfer-category-completed/radiogram-card-content-transfer-category-completed.component';
 import { SimulatedRegionOverviewBehaviorTransferToHospitalComponent } from './tabs/behavior-tab/behaviors/transfer-to-hospital/simulated-region-overview-behavior-transfer-to-hospital.component';
+import { SimulatedRegionOverviewBehaviorManagePatientTransportToHospitalComponent } from './tabs/behavior-tab/behaviors/manage-patient-transport-to-hospital/simulated-region-overview-behavior-manage-patient-transport-to-hospital.component';
 
 @NgModule({
     declarations: [
@@ -96,6 +97,7 @@ import { SimulatedRegionOverviewBehaviorTransferToHospitalComponent } from './ta
         RadiogramCardContentTransferCountsComponent,
         RadiogramCardContentTransferCategoryCompletedComponent,
         SimulatedRegionOverviewBehaviorTransferToHospitalComponent,
+        SimulatedRegionOverviewBehaviorManagePatientTransportToHospitalComponent,
     ],
     imports: [
         FormsModule,

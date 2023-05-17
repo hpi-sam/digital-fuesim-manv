@@ -1,8 +1,9 @@
 import { Type } from 'class-transformer';
-import { ValidateNested } from 'class-validator';
+import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { VehicleResource } from '../../models/utils/rescue-resource';
 import { IsValue } from '../../utils/validators';
+import { UUID, uuidValidationOptions } from '../../utils';
 import type { SimulationEvent } from './simulation-event';
 
 export class VehiclesSentEvent implements SimulationEvent {
@@ -13,11 +14,24 @@ export class VehiclesSentEvent implements SimulationEvent {
     @ValidateNested()
     readonly vehiclesSent: VehicleResource;
 
+    @IsUUID(4, uuidValidationOptions)
+    readonly destinationTransferPointId: UUID;
+
+    @IsOptional()
+    @IsString()
+    readonly key?: string;
+
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(vehiclesSent: VehicleResource) {
+    constructor(
+        vehiclesSent: VehicleResource,
+        transferPointDestinationId: UUID,
+        key?: string
+    ) {
         this.vehiclesSent = vehiclesSent;
+        this.destinationTransferPointId = transferPointDestinationId;
+        this.key = key;
     }
 
     static readonly create = getCreate(this);
