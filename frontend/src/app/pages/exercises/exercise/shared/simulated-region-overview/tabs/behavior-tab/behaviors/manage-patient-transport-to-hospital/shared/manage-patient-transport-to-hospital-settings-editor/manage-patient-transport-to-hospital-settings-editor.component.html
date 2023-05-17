@@ -1,0 +1,55 @@
+<ng-container *ngIf="behaviorState$ | async as behaviorState">
+    <div class="d-flex row mb-1">
+        <span class="col-sm"> Interval der Fahrzeuganfragen </span>
+        <div class="input-group input-group-sm col-sm" style="max-width: 250px">
+            <input
+                type="number"
+                min="0"
+                step="0.1"
+                [ngModel]="behaviorState.requestVehiclesDelay / 1000 / 60"
+                (appSaveOnTyping)="
+                    updateRequestVehicleDelay($event * 1000 * 60)
+                "
+                class="form-control form-control-sm d-inline-block no-validation"
+            />
+            <span class="input-group-text">Min</span>
+        </div>
+    </div>
+    <div class="d-flex row mb-1">
+        <span class="col-sm"> Interval der Patientenzahlenanfragen </span>
+        <div class="input-group input-group-sm col-sm" style="max-width: 250px">
+            <input
+                type="number"
+                min="0"
+                step="0.1"
+                [ngModel]="behaviorState.requestPatientCountsDelay / 1000 / 60"
+                (appSaveOnTyping)="
+                    updateRequestPatientCountDelay($event * 1000 * 60)
+                "
+                class="form-control form-control-sm d-inline-block no-validation"
+            />
+            <span class="input-group-text">Min</span>
+        </div>
+    </div>
+    <div class="d-flex row mb-1 justify-content-between">
+        <span class="col-sm">
+            Dauer, nach der ein losgefahrenes Fahrzeug, das nicht angekommen
+            ist, als vermisst zählen soll
+        </span>
+        <div class="input-group input-group-sm col-sm" style="max-width: 250px">
+            <input
+                type="number"
+                min="0"
+                step="0.1"
+                [ngModel]="
+                    behaviorState.promiseInvalidationInterval / 1000 / 60
+                "
+                (appSaveOnTyping)="
+                    updatePromiseInvalidationInterval($event * 1000 * 60)
+                "
+                class="form-control form-control-sm d-inline-block no-validation"
+            />
+            <span class="input-group-text">Min</span>
+        </div>
+    </div>
+</ng-container>

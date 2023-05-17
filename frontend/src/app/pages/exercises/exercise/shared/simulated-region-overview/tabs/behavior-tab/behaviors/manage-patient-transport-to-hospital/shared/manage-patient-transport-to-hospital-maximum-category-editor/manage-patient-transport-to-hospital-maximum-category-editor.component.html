@@ -1,0 +1,19 @@
+<ng-container *ngIf="behaviorState$ | async as behaviorState">
+    <select
+        #maximumCategoryToTransportSelect
+        class="form-select no-validation"
+        [ngModel]="behaviorState.maximumCategoryToTransport"
+        (change)="
+            updateMaximumCategoryToTransport(
+                maximumCategoryToTransportSelect.value
+            )
+        "
+    >
+        <option
+            *ngFor="let status of patientStatusForTransport"
+            [value]="status"
+        >
+            <app-patient-status-badge [status]="status" />
+        </option>
+    </select>
+</ng-container>

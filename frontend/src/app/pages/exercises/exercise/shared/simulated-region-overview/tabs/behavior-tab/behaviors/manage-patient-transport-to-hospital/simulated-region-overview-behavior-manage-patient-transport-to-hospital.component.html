@@ -1,235 +1,49 @@
-<div *ngIf="behaviorState$ | async as behaviorState">
-    <!-- Request target -->
-    <div
-        *ngIf="possibleRequestTargets$ | async as possibleRequestTargets"
-        class="mb-3"
-    >
-        <h6>Ziel für Fahrzeuganfragen</h6>
+<div class="mb-3">
+    <h5>Status</h5>
+    <app-manage-patient-transport-to-hospital-status-editor
+        [simulatedRegionId]="simulatedRegionId"
+        [behaviorId]="behaviorId"
+    />
+</div>
 
-        <select
-            #requestTargetSelect
-            class="form-select no-validation"
-            [ngModel]="behaviorState.requestTargetId"
-            (change)="changeRequestTarget(requestTargetSelect.value)"
-        >
-            <option [value]="undefined">Kein Ziel</option>
-            <option
-                *ngFor="let option of possibleRequestTargets"
-                [value]="option.id"
-            >
-                {{ option.name }}
-            </option>
-        </select>
-    </div>
+<div class="mb-3">
+    <h5>Ziel für Fahrzeuganfragen</h5>
+    <app-manage-patient-transport-to-hospital-request-target-editor
+        [simulatedRegionId]="simulatedRegionId"
+        [behaviorId]="behaviorId"
+    />
+</div>
 
-    <!-- ManagedSimulatedRegions -->
-    <div *ngIf="patientStatusOptions$ | async as patientStatusOptions">
-        <h6>Verwaltete simulierte Bereiche</h6>
+<div class="mb-3">
+    <h5>Abtransport bis</h5>
 
-        <ul
-            class="list-group"
-            *ngIf="managedSimulatedRegions$ | async as managedSimulatedRegions"
-        >
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th
-                            scope="col"
-                            *ngFor="let patientStatus of patientStatusOptions"
-                        >
-                            <app-patient-status-badge
-                                [status]="patientStatus"
-                            />
-                        </th>
-                        <th scope="col">Aktionen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr
-                        *ngFor="
-                            let managedSimulatedRegion of managedSimulatedRegions
-                        "
-                    >
-                        <th scope="row">{{ managedSimulatedRegion.name }}</th>
-                        <td
-                            *ngFor="let patientStatus of patientStatusOptions"
-                            class="text-center p-0"
-                        >
-                            <span
-                                *ngIf="
-                                    selectedSimulatedRegionId !==
-                                        managedSimulatedRegion.id;
-                                    else editPatientCount
-                                "
-                            >
-                                {{ behaviorState.patientsExpectedInRegions[managedSimulatedRegion.id]?.[patientStatus]
-                                ?? 0
-                                }}
-                            </span>
-                            <ng-template #editPatientCount>
-                                <input
-                                    type="number"
-                                    class="form-control"
-                                    min="0"
-                                    [ngModel]="behaviorState.patientsExpectedInRegions[managedSimulatedRegion.id]?.[patientStatus] ?? 0"
-                                    (appSaveOnTyping)="
-                                        updatePatientsExpectedInRegion(
-                                            managedSimulatedRegion.id,
-                                            $event,
-                                            patientStatus
-                                        )
-                                    "
-                                    class="form-control form-control-sm d-inline-block no-validation"
-                                    style="max-width: 75px"
-                                />
-                            </ng-template>
-                        </td>
-                        <td>
-                            <button
-                                class="btn btn-outline-secondary me-1"
-                                type="button"
-                                (click)="
-                                    toggleSelectedRegion(
-                                        managedSimulatedRegion.id
-                                    )
-                                "
-                            >
-                                <span class="bi-pencil"></span>
-                            </button>
-                            <button
-                                class="btn btn-outline-danger"
-                                type="button"
-                                (click)="
-                                    removeSimulatedRegionToManage(
-                                        managedSimulatedRegion.id
-                                    )
-                                "
-                            >
-                                <span class="bi-trash"></span>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </ul>
+    <app-manage-patient-transport-to-hospital-maximum-category-editor
+        [simulatedRegionId]="simulatedRegionId"
+        [behaviorId]="behaviorId"
+    />
+</div>
 
-        <div
-            *ngIf="
-                possibleNewSimulatedRegionsToManage$
-                    | async as possibleNewSimulatedRegionsToManage
-            "
-            ngbDropdown
-            placement="bottom-start"
-            autoClose="outside"
-            class="d-inline-block overflow-visible text-center mb-3"
-        >
-            <button
-                ngbDropdownToggle
-                type="button"
-                class="btn btn-outline-primary"
-                [disabled]="possibleNewSimulatedRegionsToManage.length === 0"
-            >
-                <span class="bi-plus me-1"></span>
-                Weiteren simulierten Bereich hinzufügen
-            </button>
-            <div
-                *ngIf="possibleNewSimulatedRegionsToManage.length > 0"
-                ngbDropdownMenu
-            >
-                <button
-                    *ngFor="
-                        let possibleNewSimulatedRegionsToManage of possibleNewSimulatedRegionsToManage
-                    "
-                    ngbDropdownItem
-                    class="dropdown-item"
-                    type="button"
-                    (click)="
-                        addSimulatedRegionToManage(
-                            possibleNewSimulatedRegionsToManage.id
-                        )
-                    "
-                >
-                    <span class="bi-plus me-1"></span>
-                    {{ possibleNewSimulatedRegionsToManage.name }}
-                </button>
-            </div>
-        </div>
-    </div>
+<div class="mb-3">
+    <h5>Verwaltete simulierte Bereiche</h5>
 
-    <!-- Vehicles for categories -->
-    <div
-        *ngIf="
-            possibleNewVehicleTypesForTransport$
-                | async as possibleNewVehicleTypesForTransport
-        "
-    ></div>
+    <app-manage-patient-transport-to-hospital-managed-regions-table
+        [simulatedRegionId]="simulatedRegionId"
+        [behaviorId]="behaviorId"
+    />
+</div>
 
-    <!-- Settings -->
-    <div>
-        <div class="d-flex row mb-1">
-            <span class="col-sm"> Interval der Fahrzeuganfragen </span>
-            <div
-                class="input-group input-group-sm col-sm"
-                style="max-width: 250px"
-            >
-                <input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    [ngModel]="behaviorState.requestVehiclesDelay / 1000 / 60"
-                    (appSaveOnTyping)="
-                        updateRequestVehicleDelay($event * 1000 * 60)
-                    "
-                    class="form-control form-control-sm d-inline-block no-validation"
-                />
-                <span class="input-group-text">Min</span>
-            </div>
-        </div>
-        <div class="d-flex row mb-1">
-            <span class="col-sm"> Interval der Patientenzahlenanfragen </span>
-            <div
-                class="input-group input-group-sm col-sm"
-                style="max-width: 250px"
-            >
-                <input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    [ngModel]="
-                        behaviorState.requestPatientCountsDelay / 1000 / 60
-                    "
-                    (appSaveOnTyping)="
-                        updateRequestPatientCountDelay($event * 1000 * 60)
-                    "
-                    class="form-control form-control-sm d-inline-block no-validation"
-                />
-                <span class="input-group-text">Min</span>
-            </div>
-        </div>
-        <div class="d-flex row mb-1 justify-content-between">
-            <span class="col-sm">
-                Dauer, nach der ein losgefahrenes Fahrzeug, das nicht angekommen
-                ist, als vermisst zählen soll
-            </span>
-            <div
-                class="input-group input-group-sm col-sm"
-                style="max-width: 250px"
-            >
-                <input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    [ngModel]="
-                        behaviorState.promiseInvalidationInterval / 1000 / 60
-                    "
-                    (appSaveOnTyping)="
-                        updatePromiseInvalidationInterval($event * 1000 * 60)
-                    "
-                    class="form-control form-control-sm d-inline-block no-validation"
-                />
-                <span class="input-group-text">Min</span>
-            </div>
-        </div>
-    </div>
+<div class="mb-3">
+    <h5>Fahrzeuge für den Patiententransport</h5>
+    <app-manage-patient-transport-to-hospital-vehicles-for-categories-editor
+        [simulatedRegionId]="simulatedRegionId"
+        [behaviorId]="behaviorId"
+    />
+</div>
+
+<div>
+    <h5>Einstellungen</h5>
+    <app-manage-patient-transport-to-hospital-settings-editor
+        [simulatedRegionId]="simulatedRegionId"
+        [behaviorId]="behaviorId"
+    />
 </div>
