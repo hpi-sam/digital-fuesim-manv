@@ -3,9 +3,9 @@
         <div class="mb-1">
             Die Transportorganisation ist aktuell
             <span *ngIf="behaviorState.transportStarted; else transportStopped">
-                gestartet
+                gestartet.
             </span>
-            <ng-template #transportStopped>gestoppt</ng-template>.
+            <ng-template #transportStopped>gestoppt.</ng-template>
         </div>
 
         <button
