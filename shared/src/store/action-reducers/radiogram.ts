@@ -10,7 +10,8 @@ import { sendSimulationEvent } from '../../simulation/events/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { getElement, getRadiogramById } from './utils';
+import { isInSpecificSimulatedRegion } from '../../models';
+import { getElement, getElementByPredicate, getRadiogramById } from './utils';
 
 export class AcceptRadiogramAction implements Action {
     @IsValue('[Radiogram] Accept radiogram' as const)
@@ -72,10 +73,22 @@ export namespace RadiogramActionReducers {
                     'simulatedRegion',
                     radiogram.simulatedRegionId
                 );
+                const transferPoint = getElementByPredicate(
+                    draftState,
+                    'transferPoint',
+                    (tp) =>
+                        isInSpecificSimulatedRegion(
+                            tp,
+                            radiogram.simulatedRegionId
+                        )
+                );
                 sendSimulationEvent(
                     simulatedRegion,
                     cloneDeepMutable(
-                        VehiclesSentEvent.create(VehicleResource.create({}))
+                        VehiclesSentEvent.create(
+                            VehicleResource.create({}),
+                            transferPoint.id
+                        )
                     )
                 );
                 radiogram.resourcesPromised = false;
@@ -102,11 +115,23 @@ export namespace RadiogramActionReducers {
                     'simulatedRegion',
                     radiogram.simulatedRegionId
                 );
+                const transferPoint = getElementByPredicate(
+                    draftState,
+                    'transferPoint',
+                    (tp) =>
+                        isInSpecificSimulatedRegion(
+                            tp,
+                            radiogram.simulatedRegionId
+                        )
+                );
 
                 sendSimulationEvent(
                     simulatedRegion,
                     cloneDeepMutable(
-                        VehiclesSentEvent.create(radiogram.requiredResource)
+                        VehiclesSentEvent.create(
+                            radiogram.requiredResource,
+                            transferPoint.id
+                        )
                     )
                 );
 
@@ -133,11 +158,23 @@ export namespace RadiogramActionReducers {
                     'simulatedRegion',
                     radiogram.simulatedRegionId
                 );
+                const transferPoint = getElementByPredicate(
+                    draftState,
+                    'transferPoint',
+                    (tp) =>
+                        isInSpecificSimulatedRegion(
+                            tp,
+                            radiogram.simulatedRegionId
+                        )
+                );
 
                 sendSimulationEvent(
                     simulatedRegion,
                     cloneDeepMutable(
-                        VehiclesSentEvent.create(VehicleResource.create({}))
+                        VehiclesSentEvent.create(
+                            VehicleResource.create({}),
+                            transferPoint.id
+                        )
                     )
                 );
 

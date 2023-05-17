@@ -38,6 +38,9 @@
         *ngSwitchCase="'transferCategoryCompletedRadiogram'"
         [radiogramId]="radiogram.id"
     />
+    <app-radiogram-card-content-transport-patient-count-request
+        *ngSwitchCase="'newPatientDataRequestedRadiogram'"
+    />
     <app-radiogram-card-content-fallback
         *ngSwitchDefault
         [radiogramType]="radiogram.type"

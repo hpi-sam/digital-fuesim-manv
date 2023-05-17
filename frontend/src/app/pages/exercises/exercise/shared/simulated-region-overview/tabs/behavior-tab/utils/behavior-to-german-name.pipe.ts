@@ -14,6 +14,8 @@ const behaviorTypeToGermanNameDictionary: {
     automaticallyDistributeVehiclesBehavior: 'Fahrzeuge verteilen',
     requestBehavior: 'Fahrzeuge anfordern',
     transferBehavior: 'Fahrzeuge versenden',
+    transferToHospitalBehavior: 'Patienten abtransportieren',
+    managePatientTransportToHospitalBehavior: 'Transportorganisation',
 };
 @Pipe({
     name: 'behaviorTypeToGermanName',

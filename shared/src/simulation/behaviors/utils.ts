@@ -15,7 +15,8 @@ export const reportableInformationAllowedValues: AllowedValues<ReportableInforma
         patientCount: true,
         personnelCount: true,
         vehicleCount: true,
-        transferCounts: true,
+        singleRegionTransferCounts: true,
+        transportManagementTransferCounts: true,
         treatmentStatus: true,
         materialCount: true,
     };
@@ -28,7 +29,8 @@ export type ReportableInformation =
     | 'materialCount'
     | 'patientCount'
     | 'personnelCount'
-    | 'transferCounts'
+    | 'singleRegionTransferCounts'
+    | 'transportManagementTransferCounts'
     | 'treatmentStatus'
     | 'vehicleCount';
 
@@ -42,7 +44,8 @@ export const createRadiogramMap: {
     patientCount: PatientCountRadiogram.create,
     personnelCount: PersonnelCountRadiogram.create,
     vehicleCount: VehicleCountRadiogram.create,
-    transferCounts: TransferCountsRadiogram.create,
+    singleRegionTransferCounts: TransferCountsRadiogram.create,
+    transportManagementTransferCounts: TransferCountsRadiogram.create,
     treatmentStatus: TreatmentStatusRadiogram.create,
     materialCount: MaterialCountRadiogram.create,
 };

@@ -67,6 +67,7 @@ export const answerRequestsBehavior: SimulationBehavior<AnswerRequestsBehaviorSt
                                     event.requiredResource.vehicleCounts,
                                     'transferPoint',
                                     requiringSimulatedRegionTransferPoint.id,
+                                    event.requiringSimulatedRegionId,
                                     requiringSimulatedRegionTransferPoint.id +
                                         behaviorState.requestsHandled
                                 );

@@ -4,6 +4,7 @@ import { IsValue } from '../../utils/validators';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { getCreate } from './get-create';
 import type { PersonnelType } from './personnel-type';
+import { personnelTypeAllowedValues } from './personnel-type';
 import { ResourceDescription } from './resource-description';
 
 class RescueResource {
@@ -31,7 +32,7 @@ export class PersonnelResource {
     @IsValue('personnelResource' as const)
     public readonly type = 'personnelResource';
 
-    @IsResourceDescription()
+    @IsResourceDescription(personnelTypeAllowedValues)
     public readonly personnelCounts!: ResourceDescription<PersonnelType>;
 
     /**

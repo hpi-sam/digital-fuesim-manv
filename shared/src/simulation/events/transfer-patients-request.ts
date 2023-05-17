@@ -18,6 +18,9 @@ export class TransferPatientsRequestEvent implements SimulationEvent {
     @IsUUIDSet()
     readonly patientIds: UUIDSet;
 
+    @IsUUID(4, uuidValidationOptions)
+    readonly transferInitiatingRegionId?: UUID;
+
     @IsLiteralUnion(transferDestinationTypeAllowedValues)
     readonly transferDestinationType: TransferDestination;
 
@@ -31,10 +34,12 @@ export class TransferPatientsRequestEvent implements SimulationEvent {
         vehicleType: string,
         patientIds: UUIDSet,
         transferDestinationType: TransferDestination,
-        transferDestinationId: UUID
+        transferDestinationId: UUID,
+        transferInitiatingRegionId?: UUID
     ) {
         this.vehicleType = vehicleType;
         this.patientIds = patientIds;
+        this.transferInitiatingRegionId = transferInitiatingRegionId;
         this.transferDestinationType = transferDestinationType;
         this.transferDestinationId = transferDestinationId;
     }

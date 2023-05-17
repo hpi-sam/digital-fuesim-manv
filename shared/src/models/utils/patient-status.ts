@@ -27,3 +27,12 @@ export const patientStatusAllowedValues: AllowedValues<PatientStatus> = {
     white: true,
     yellow: true,
 };
+
+export type PatientStatusForTransport = 'green' | 'red' | 'yellow';
+
+export const patientStatusForTransportAllowedValues: AllowedValues<PatientStatusForTransport> =
+    {
+        green: true,
+        red: true,
+        yellow: true,
+    };
