@@ -19,6 +19,7 @@ import {
 } from '../../models/utils';
 import type { Mutable } from '../../utils';
 import {
+    StrictObject,
     UUID,
     UUIDSet,
     cloneDeepMutable,
@@ -40,6 +41,7 @@ import {
     TransferVehiclesRequestEvent,
     TryToSendToHospitalEvent,
 } from '../events';
+import type { TransferCountsRadiogram } from '../../models/radiogram';
 import { RadiogramUnpublishedStatus } from '../../models/radiogram';
 import { IsPatientsPerUUID } from '../../utils/validators/is-patients-per-uuid';
 import { NewPatientDataRequestedRadiogram } from '../../models/radiogram/new-patient-data-requested-radiogram';
@@ -51,8 +53,12 @@ import {
     getElementByPredicate,
 } from '../../store/action-reducers/utils';
 import { PatientsTransportPromise } from '../utils/patients-transported-promise';
-import type { ResourceDescription } from '../../models/utils/resource-description';
+import {
+    ResourceDescription,
+    addResourceDescription,
+} from '../../models/utils/resource-description';
 import type { SimulatedRegion } from '../../models/simulated-region';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -122,6 +128,9 @@ export class ManagePatientTransportToHospitalBehaviorState
     public readonly patientsExpectedToStillBeTransportedByRegion: readonly PatientsTransportPromise[] =
         [];
 
+    @IsResourceDescription(patientStatusAllowedValues)
+    public readonly transferredPatientCounts: ResourceDescription<PatientStatus>;
+
     @Type(() => VehiclesForPatients)
     @ValidateNested()
     public readonly vehiclesForPatients: VehiclesForPatients =
@@ -159,6 +168,20 @@ export class ManagePatientTransportToHospitalBehaviorState
     @IsOptional()
     @IsUUID(4, uuidValidationOptions)
     readonly recurringSendToHospitalActivityId?: UUID;
+
+    /**
+     * @deprecated Use {@link create} instead
+     */
+    constructor() {
+        this.transferredPatientCounts = {
+            red: 0,
+            yellow: 0,
+            green: 0,
+            blue: 0,
+            black: 0,
+            white: 0,
+        };
+    }
 
     static readonly create = getCreate(this);
 }
@@ -281,6 +304,9 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                         behaviorState.patientsExpectedInRegions[
                             event.patientOriginSimulatedRegion
                         ]![event.patientCategory]--;
+                        behaviorState.transferredPatientCounts[
+                            event.patientCategory
+                        ]++;
 
                         const promiseForThisRegion =
                             behaviorState.patientsExpectedToStillBeTransportedByRegion.find(
@@ -402,6 +428,47 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                             )
                         )
                     );
+                    break;
+                }
+                case 'collectInformationEvent': {
+                    switch (event.informationType) {
+                        case 'transportManagementTransferCounts': {
+                            if (!behaviorState.transportStarted) {
+                                break;
+                            }
+                            const radiogram = getActivityById(
+                                draftState,
+                                simulatedRegion.id,
+                                event.generateReportActivityId,
+                                'generateReportActivity'
+                            ).radiogram as Mutable<TransferCountsRadiogram>;
+
+                            const expectedPatientsPerRegion =
+                                Object.fromEntries(
+                                    StrictObject.entries(
+                                        behaviorState.patientsExpectedInRegions
+                                    ).filter(
+                                        ([regionId]) =>
+                                            behaviorState
+                                                .simulatedRegionsToManage[
+                                                regionId
+                                            ]
+                                    )
+                                );
+                            const expectedManagedPatients = Object.values(
+                                expectedPatientsPerRegion
+                            ).reduce(addResourceDescription);
+
+                            radiogram.transferredPatientsCounts =
+                                behaviorState.transferredPatientCounts;
+                            radiogram.remainingPatientsCounts =
+                                expectedManagedPatients;
+                            radiogram.scope = 'transportManagement';
+                            radiogram.informationAvailable = true;
+                            break;
+                        }
+                        default:
+                    }
                     break;
                 }
                 default:
