@@ -12,7 +12,7 @@ export class PatientsTransportPromise {
     readonly promisedTime: number;
 
     @IsInt()
-    @Min(1)
+    @Min(0)
     readonly patientCount: number;
 
     @IsUUID(4, uuidValidationOptions)
