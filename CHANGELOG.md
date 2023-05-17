@@ -19,11 +19,13 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   These reports either cover a single region or all that are managed by the same transport management.
 -   The reports behavior can generate event-based reports when the last patient of a triage category has been transferred to a hospital.
 -   A new transfer to hospital behavior uses arriving vehicles that are reserved for transport by an occupation and transfer the most urgent patient to a hospital.
+-   A new simulated region preset for transport management is available in the frontend.
 
 ### Changed
 
 -   Add behaviors button now opens towards the top.
 -   Simulated regions can now send patients to any hospital. The hospitals tab was removed.
+-   The default order of behaviors is now vaguely chronological.
 
 ### Fixed
 
