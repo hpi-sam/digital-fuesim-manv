@@ -33,27 +33,7 @@
             </tbody>
         </table>
         <div class="d-flex row my-1">
-            <ng-container
-                *ngIf="(showAnswer$ | async) === false; else requestAnswered"
-            >
-                <button
-                    type="button"
-                    [disabled]="(enableActionButtons$ | async) === false"
-                    (click)="denyRequest()"
-                    class="btn btn-danger col-sm mx-1"
-                >
-                    Ablehnen
-                </button>
-                <button
-                    type="button"
-                    [disabled]="(enableActionButtons$ | async) === false"
-                    (click)="acceptRequest()"
-                    class="btn btn-success col-sm mx-1"
-                >
-                    Akzeptieren
-                </button>
-            </ng-container>
-            <ng-template #requestAnswered>
+            <ng-container *ngIf="showAnswer$ | async; else actionButtons">
                 <p class="card-text">
                     <ng-container
                         *ngIf="
@@ -62,9 +42,7 @@
                         "
                     >
                         Die Resource wurde
-                        <ng-container
-                            *ngIf="radiogram.resourcesPromised === false"
-                        >
+                        <ng-container *ngIf="!radiogram.resourcesPromised">
                             nicht
                         </ng-container>
                         zugesagt.
@@ -73,6 +51,30 @@
                         Es ist keine Antwort zu dieser Anfrage bekannt
                     </ng-template>
                 </p>
+            </ng-container>
+            <ng-template #actionButtons>
+                <ng-container
+                    *ngIf="{
+                        value: enableActionButtons$ | async
+                    } as enableActionButtons"
+                >
+                    <button
+                        type="button"
+                        [disabled]="!enableActionButtons.value"
+                        (click)="denyRequest()"
+                        class="btn btn-danger col-sm mx-1"
+                    >
+                        Ablehnen
+                    </button>
+                    <button
+                        type="button"
+                        [disabled]="!enableActionButtons.value"
+                        (click)="acceptRequest()"
+                        class="btn btn-success col-sm mx-1"
+                    >
+                        Akzeptieren
+                    </button>
+                </ng-container>
             </ng-template>
         </div>
     </ng-container>
