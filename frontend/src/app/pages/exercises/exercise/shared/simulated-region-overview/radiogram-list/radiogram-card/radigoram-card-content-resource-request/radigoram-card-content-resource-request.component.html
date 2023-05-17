@@ -34,10 +34,7 @@
         </table>
         <div class="d-flex row my-1">
             <ng-container
-                *ngIf="
-                    radiogram.resourcesPromised === undefined;
-                    else requestAnswered
-                "
+                *ngIf="(showAnswer$ | async) === false; else requestAnswered"
             >
                 <button
                     type="button"
@@ -58,11 +55,23 @@
             </ng-container>
             <ng-template #requestAnswered>
                 <p class="card-text">
-                    Die Resource wurde
-                    <ng-container *ngIf="radiogram.resourcesPromised === false"
-                        >nicht</ng-container
+                    <ng-container
+                        *ngIf="
+                            radiogram.resourcesPromised !== undefined;
+                            else noAnswer
+                        "
                     >
-                    zugesagt.
+                        Die Resource wurde
+                        <ng-container
+                            *ngIf="radiogram.resourcesPromised === false"
+                        >
+                            nicht
+                        </ng-container>
+                        zugesagt.
+                    </ng-container>
+                    <ng-template #noAnswer>
+                        Es ist keine Antwort zu dieser Anfrage bekannt
+                    </ng-template>
                 </p>
             </ng-template>
         </div>

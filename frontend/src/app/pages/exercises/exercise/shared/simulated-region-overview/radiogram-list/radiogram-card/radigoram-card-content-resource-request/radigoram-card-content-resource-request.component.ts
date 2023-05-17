@@ -2,7 +2,7 @@ import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
 import type { ResourceRequestRadiogram } from 'digital-fuesim-manv-shared';
-import { UUID, isAccepted } from 'digital-fuesim-manv-shared';
+import { UUID, isAccepted, isDone } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -18,6 +18,7 @@ export class RadigoramCardContentResourceRequestComponent implements OnInit {
 
     radiogram$!: Observable<ResourceRequestRadiogram>;
     enableActionButtons$!: Observable<boolean>;
+    showAnswer$!: Observable<boolean>;
 
     constructor(
         private readonly store: Store<AppState>,
@@ -46,6 +47,11 @@ export class RadigoramCardContentResourceRequestComponent implements OnInit {
         this.enableActionButtons$ = this.store.select(
             createSelector(selectRadiogram, (radiogram) =>
                 isAccepted(radiogram)
+            )
+        );
+        this.showAnswer$ = this.store.select(
+            createSelector(selectRadiogram, (radiogram) =>
+                isDone(radiogram)
             )
         );
     }
