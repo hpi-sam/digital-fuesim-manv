@@ -53,6 +53,7 @@ import {
 import { defaultPatientCategories } from './data/default-state/patient-templates';
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
+import { LogEntry } from './models/log-entry';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -149,6 +150,8 @@ export class ExerciseState {
     @ValidateNested()
     @Type(() => ExerciseConfiguration)
     public readonly configuration = ExerciseConfiguration.create();
+
+    public logEntries?: LogEntry[];
 
     /**
      * @deprecated Use {@link create} instead.
