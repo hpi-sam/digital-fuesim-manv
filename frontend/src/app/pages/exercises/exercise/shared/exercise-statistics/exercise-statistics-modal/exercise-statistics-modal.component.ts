@@ -1,7 +1,12 @@
+import type { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import type { PatientStatus, PersonnelType } from 'digital-fuesim-manv-shared';
+import type {
+    PatientStatus,
+    PersonnelType,
+    UUID,
+} from 'digital-fuesim-manv-shared';
 import { statusNames } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
@@ -12,7 +17,10 @@ import {
 } from 'src/app/shared/functions/colors';
 import { formatDuration } from 'src/app/shared/functions/format-duration';
 import type { AppState } from 'src/app/state/app.state';
-import { selectViewports } from 'src/app/state/application/selectors/exercise.selectors';
+import {
+    selectSimulatedRegions,
+    selectViewports,
+} from 'src/app/state/application/selectors/exercise.selectors';
 import { StatisticsService } from '../../core/statistics/statistics.service';
 import { AreaStatisticsService } from '../area-statistics.service';
 import type { StackedBarChartStatistics } from '../stacked-bar-chart/stacked-bar-chart.component';
@@ -23,8 +31,9 @@ import { StackedBarChart } from '../stacked-bar-chart/time-line-area-chart';
     templateUrl: './exercise-statistics-modal.component.html',
     styleUrls: ['./exercise-statistics-modal.component.scss'],
 })
-export class ExerciseStatisticsModalComponent {
-    public viewports$ = this.store.select(selectViewports);
+export class ExerciseStatisticsModalComponent implements OnInit {
+    public viewportIds$!: Observable<UUID[]>;
+    public simRegIds$!: Observable<UUID[]>;
 
     constructor(
         public activeModal: NgbActiveModal,
@@ -33,6 +42,14 @@ export class ExerciseStatisticsModalComponent {
         public readonly areaStatisticsService: AreaStatisticsService
     ) {
         this.statisticsService.updateStatistics();
+    }
+    ngOnInit(): void {
+        this.viewportIds$ = this.store
+            .select(selectViewports)
+            .pipe(map(Object.keys));
+        this.simRegIds$ = this.store
+            .select(selectSimulatedRegions)
+            .pipe(map(Object.keys));
     }
 
     public close() {
