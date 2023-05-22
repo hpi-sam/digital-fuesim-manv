@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+    Equals,
     IsArray,
     IsInt,
     IsObject,
@@ -151,6 +152,7 @@ export class ExerciseState {
     @Type(() => ExerciseConfiguration)
     public readonly configuration = ExerciseConfiguration.create();
 
+    @Equals(undefined)
     public logEntries?: LogEntry[];
 
     /**
