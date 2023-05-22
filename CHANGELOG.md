@@ -11,6 +11,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 -   Statistics can now also be restricted to simulated regions.
 -   Add functionality to create logs for statistics.
+-   Log entries are now displayed on the statistics page.
 
 ## [0.6.0] - 2023-05-17
 
