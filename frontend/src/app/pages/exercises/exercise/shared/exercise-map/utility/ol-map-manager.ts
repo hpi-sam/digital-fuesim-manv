@@ -15,8 +15,12 @@ import {
     selectSimulatedRegions,
     selectViewports,
 } from 'src/app/state/application/selectors/exercise.selectors';
-import { selectRestrictedViewport } from 'src/app/state/application/selectors/shared.selectors';
+import {
+    selectCurrentRole,
+    selectRestrictedViewport,
+} from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { fromLonLat } from 'ol/proj';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
@@ -205,6 +209,26 @@ export class OlMapManager {
             padding: [padding, padding, padding, padding],
             duration: animate ? 1000 : undefined,
         });
+    }
+
+    public getCoordinates() {
+        return this.olMap.getView().getCenter();
+    }
+
+    public tryGoToCoordinates(latitude: number, longitude: number) {
+        if (
+            selectStateSnapshot(selectCurrentRole, this.store) ===
+                'participant' &&
+            selectStateSnapshot(selectRestrictedViewport, this.store) !==
+                undefined
+        ) {
+            // Participants or people restricted to viewports may not go to arbitrary coordinates
+            return;
+        }
+
+        const view = this.olMap.getView();
+        view.setCenter(fromLonLat([longitude, latitude]));
+        view.setZoom(OlMapManager.defaultZoom);
     }
 
     public changeZoom(mode: 'zoomIn' | 'zoomOut') {

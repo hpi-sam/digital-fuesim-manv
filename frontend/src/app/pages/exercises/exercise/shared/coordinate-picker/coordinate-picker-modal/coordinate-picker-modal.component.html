@@ -1,0 +1,44 @@
+<div class="modal-header">
+    <h4 class="modal-title">Koordinaten-Auswahl</h4>
+    <button type="button" class="btn-close" (click)="close()"></button>
+</div>
+<div class="modal-body">
+    <p>Bitte geben Sie die Koordinaten im Format <code>XX.XXXXXX</code> an.</p>
+
+    <div class="form-group mb-3">
+        <label class="form-label">Breitengrad:</label>
+        <input
+            class="form-control"
+            type="text"
+            [(ngModel)]="latitude"
+            required
+            appGeographicCoordinateValidator
+            #latInput="ngModel"
+        />
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="form-label">Längengrad:</label>
+        <input
+            class="form-control"
+            type="text"
+            [(ngModel)]="longitude"
+            required
+            appGeographicCoordinateValidator
+            #lonInput="ngModel"
+        />
+    </div>
+
+    <button
+        (click)="goToCoordinates()"
+        class="btn btn-primary me-1"
+        type="button"
+        [disabled]="latInput.invalid || lonInput.invalid"
+    >
+        Übernehmen
+    </button>
+
+    <button (click)="close()" class="btn btn-secondary" type="button">
+        Abbrechen
+    </button>
+</div>
