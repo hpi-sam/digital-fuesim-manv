@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+    Equals,
     IsArray,
     IsInt,
     IsObject,
@@ -53,6 +54,7 @@ import {
 import { defaultPatientCategories } from './data/default-state/patient-templates';
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
+import type { LogEntry } from './models/log-entry';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -149,6 +151,14 @@ export class ExerciseState {
     @ValidateNested()
     @Type(() => ExerciseConfiguration)
     public readonly configuration = ExerciseConfiguration.create();
+
+    /**
+     * The log entries generated for the statistics.
+     * This must not be defined on a normal state,
+     * unless the statistics are currently being generated.
+     */
+    @Equals(undefined)
+    public logEntries?: LogEntry[];
 
     /**
      * @deprecated Use {@link create} instead.

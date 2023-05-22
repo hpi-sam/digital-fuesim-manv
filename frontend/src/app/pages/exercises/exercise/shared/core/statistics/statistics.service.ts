@@ -58,6 +58,8 @@ export class StatisticsService {
         const { initialState, actionsWrappers } =
             await this.apiService.exerciseHistory();
 
+        initialState.logEntries = [];
+
         const minimumExerciseTime = initialState.currentTime;
 
         const generateStatisticsInterval = Math.max(
