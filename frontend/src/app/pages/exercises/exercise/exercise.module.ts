@@ -20,6 +20,7 @@ import { TimeTravelComponent } from './shared/time-travel/time-travel.component'
 import { TrainerMapEditorComponent } from './shared/trainer-map-editor/trainer-map-editor.component';
 import { TrainerToolbarComponent } from './shared/trainer-toolbar/trainer-toolbar.component';
 import { TransferOverviewModule } from './shared/transfer-overview/transfer-overview.module';
+import { CoordinatePickerModule } from './shared/coordinate-picker/coordinate-picker.module';
 
 @NgModule({
     declarations: [
@@ -46,6 +47,7 @@ import { TransferOverviewModule } from './shared/transfer-overview/transfer-over
         AlarmGroupOverviewModule,
         HospitalEditorModule,
         EmergencyOperationsCenterModule,
+        CoordinatePickerModule,
     ],
     exports: [ExerciseComponent],
 })

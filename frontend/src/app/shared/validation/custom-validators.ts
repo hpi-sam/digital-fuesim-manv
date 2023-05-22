@@ -27,4 +27,10 @@ export namespace CustomValidators {
                 ? null
                 : { joinId: true as const };
     }
+    export function geographicCoordinateValidator() {
+        return (control: AbstractControl) =>
+            /^-?\d{1,3}(.\d+)?$/u.test(control.value)
+                ? null
+                : { geographicCoordinate: true as const };
+    }
 }
