@@ -33,7 +33,7 @@ import { StackedBarChart } from '../stacked-bar-chart/time-line-area-chart';
 })
 export class ExerciseStatisticsModalComponent implements OnInit {
     public viewportIds$!: Observable<UUID[]>;
-    public simRegIds$!: Observable<UUID[]>;
+    public simulatedRegionIds$!: Observable<UUID[]>;
 
     constructor(
         public activeModal: NgbActiveModal,
@@ -47,7 +47,7 @@ export class ExerciseStatisticsModalComponent implements OnInit {
         this.viewportIds$ = this.store
             .select(selectViewports)
             .pipe(map(Object.keys));
-        this.simRegIds$ = this.store
+        this.simulatedRegionIds$ = this.store
             .select(selectSimulatedRegions)
             .pipe(map(Object.keys));
     }

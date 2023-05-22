@@ -117,7 +117,8 @@ export class StatisticsService {
         const simulatedRegionsStatistics = this.generateFilteredAreaStatistics(
             draftState,
             draftState.simulatedRegions,
-            (simReg, element) => isInSpecificSimulatedRegion(element, simReg.id)
+            (simulatedRegion, element) =>
+                isInSpecificSimulatedRegion(element, simulatedRegion.id)
         );
         return {
             id: uuid(),
@@ -135,26 +136,24 @@ export class StatisticsService {
         clients = false
     ) {
         return Object.fromEntries(
-            Object.entries(areas).map(([id, area]) => [
-                id,
-                this.generateAreaStatistics(
-                    clients
-                        ? Object.values(draftState.clients).filter(
-                              (client) =>
-                                  client.viewRestrictedToViewportId === id
-                          )
-                        : [],
-                    Object.values(draftState.patients).filter((e) =>
-                        isInArea(area, e)
+            Object.entries(areas).map(([id, area]) => {
+                const isInThisArea = (element: WithPosition) =>
+                    isInArea(area, element);
+                return [
+                    id,
+                    this.generateAreaStatistics(
+                        clients
+                            ? Object.values(draftState.clients).filter(
+                                  (client) =>
+                                      client.viewRestrictedToViewportId === id
+                              )
+                            : [],
+                        Object.values(draftState.patients).filter(isInThisArea),
+                        Object.values(draftState.vehicles).filter(isInThisArea),
+                        Object.values(draftState.personnel).filter(isInThisArea)
                     ),
-                    Object.values(draftState.vehicles).filter((e) =>
-                        isInArea(area, e)
-                    ),
-                    Object.values(draftState.personnel).filter((e) =>
-                        isInArea(area, e)
-                    )
-                ),
-            ])
+                ];
+            })
         );
     }
 

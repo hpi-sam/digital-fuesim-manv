@@ -55,17 +55,20 @@
                             ></app-viewport-name>
                         </button>
                         <button
-                            *ngFor="let simRegId of simRegIds$ | async"
+                            *ngFor="
+                                let simulatedRegionId of simulatedRegionIds$
+                                    | async
+                            "
                             ngbDropdownItem
                             (click)="
                                 areaStatisticsService.setArea({
                                     type: 'simulatedRegion',
-                                    id: simRegId
+                                    id: simulatedRegionId
                                 })
                             "
                         >
                             <app-simulated-region-name
-                                [simulatedRegionId]="simRegId"
+                                [simulatedRegionId]="simulatedRegionId"
                             ></app-simulated-region-name>
                         </button>
                     </div>
