@@ -53,7 +53,7 @@ import {
 import { defaultPatientCategories } from './data/default-state/patient-templates';
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
-import { LogEntry } from './models/log-entry';
+import type { LogEntry } from './models/log-entry';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)

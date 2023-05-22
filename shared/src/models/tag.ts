@@ -11,7 +11,12 @@ export class Tag {
 
     public specifier: string;
 
-    constructor(category: string, color: string, name: string, specifier: string) {
+    constructor(
+        category: string,
+        color: string,
+        name: string,
+        specifier: string
+    ) {
         this.category = category;
         this.color = color;
         this.name = name;

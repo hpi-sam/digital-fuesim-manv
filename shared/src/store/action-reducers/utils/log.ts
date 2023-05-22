@@ -11,7 +11,7 @@ import { getElement } from '.';
 
 export function logPatient(
     state: Mutable<ExerciseState>,
-    additionalTags: Tag [],
+    additionalTags: Tag[],
     description: string,
     patientId: UUID
 ) {
