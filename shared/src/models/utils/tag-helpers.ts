@@ -4,10 +4,18 @@
  * and they should figure out the color and name for the tag by themselves.
  */
 
+import type { TreatmentProgress } from '../../simulation';
+import { treatmentProgressToGermanNameDictionary } from '../../simulation/utils/treatment';
 import type { ExerciseState } from '../../state';
-import { getElement } from '../../store/action-reducers/utils/get-element';
+import {
+    getElement,
+    getExerciseRadiogramById,
+} from '../../store/action-reducers/utils/get-element';
 import type { UUID } from '../../utils';
 import type { Mutable } from '../../utils/immutability';
+import { radiogramTypeToGermanDictionary } from '../radiogram/exercise-radiogram';
+import type { ExerciseRadiogramStatus } from '../radiogram/status/exercise-radiogram-status';
+import { radiogramStatusTypeToGermanDictionary } from '../radiogram/status/exercise-radiogram-status';
 import { Tag } from '../tag';
 import { statusNames } from './patient-status';
 import type { PatientStatus } from './patient-status';
@@ -36,5 +44,111 @@ export function createPatientTag(
         'black',
         patient.personalInformation.name,
         patientId
+    );
+}
+
+export function createRadiogramTypeTag(
+    draftState: Mutable<ExerciseState>,
+    radiogramId: UUID
+): Tag {
+    const radiogram = getExerciseRadiogramById(draftState, radiogramId);
+    if (!radiogram) {
+        throw new Error(
+            `Expected to find radiogram with id ${radiogramId} while creating logs, but did not find it.`
+        );
+    }
+
+    return new Tag(
+        'Funkspruchtyp',
+        'green',
+        'white',
+        radiogramTypeToGermanDictionary[radiogram.type],
+        radiogram.type
+    );
+}
+
+export function createRadiogramActionTag(
+    _draftState: Mutable<ExerciseState>,
+    radiogramStatus:
+        | ExerciseRadiogramStatus['type']
+        | 'resourcesPromised'
+        | 'resourcesRejected'
+): Tag {
+    let name;
+    if (radiogramStatus === 'resourcesPromised') {
+        name = 'Ressourcen versprochen';
+    } else if (radiogramStatus === 'resourcesRejected') {
+        name = 'Ressourcen abgelehnt';
+    } else {
+        name = radiogramStatusTypeToGermanDictionary[radiogramStatus];
+    }
+    return new Tag(
+        'Funkspruchaktion',
+        'lightgreen',
+        'black',
+        name,
+        radiogramStatus
+    );
+}
+
+export function createResourceRequestAnswerTag(
+    _draftState: Mutable<ExerciseState>,
+    answer: 'accepted' | 'rejected'
+): Tag {
+    return new Tag(
+        'Ressourcenanfrage',
+        'lightgrey',
+        'black',
+        answer === 'accepted' ? 'Angenommen' : 'Abgelehnt',
+        answer
+    );
+}
+
+export function createSimulatedRegionTag(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegionId: UUID
+): Tag {
+    const simulatedRegion = getElement(
+        draftState,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+    return new Tag(
+        'Simulierter Bereich',
+        'lightblue',
+        'black',
+        simulatedRegion.name,
+        simulatedRegion.id
+    );
+}
+
+export function createTransferPointTag(
+    draftState: Mutable<ExerciseState>,
+    transferPointId: UUID
+): Tag {
+    const transferPoint = getElement(
+        draftState,
+        'transferPoint',
+        transferPointId
+    );
+    return new Tag(
+        'Transferpunkt',
+        'lightgreen',
+        'black',
+        transferPoint.externalName,
+        transferPoint.id
+    );
+}
+
+export function createTreatmentProgressTag(
+    draftState: Mutable<ExerciseState>,
+    treatmentProgress: TreatmentProgress
+): Tag {
+    return new Tag(
+        'Behandlungsfortschritt',
+        'orange',
+        'white',
+        treatmentProgressToGermanNameDictionary[treatmentProgress],
+        treatmentProgress
     );
 }

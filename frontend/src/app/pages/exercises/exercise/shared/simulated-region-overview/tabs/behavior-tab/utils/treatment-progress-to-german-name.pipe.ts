@@ -1,15 +1,7 @@
 import type { PipeTransform } from '@angular/core';
 import { Pipe } from '@angular/core';
 import type { TreatmentProgress } from 'digital-fuesim-manv-shared';
-const treatmentProgressToGermanNameDictionary: {
-    [Key in TreatmentProgress]: string;
-} = {
-    counted: 'Vorsichten',
-    noTreatment: 'Keine Behandlung',
-    secured: 'Erstversorgung sichergestellt',
-    triaged: 'Behandeln, Personal fehlt',
-    unknown: 'Erkunden',
-};
+import { treatmentProgressToGermanNameDictionary } from 'digital-fuesim-manv-shared';
 
 @Pipe({
     name: 'treatmentProgressToGermanName',

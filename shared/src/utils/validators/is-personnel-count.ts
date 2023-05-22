@@ -2,7 +2,7 @@ import type { ValidationArguments, ValidationOptions } from 'class-validator';
 import { isNumber, min } from 'class-validator';
 import type { PersonnelCount } from '../../models/radiogram/personnel-count-radiogram';
 import type { PersonnelType } from '../../models/utils';
-import { personnelTypeAllowedValues } from '../../models/utils';
+import { personnelTypeAllowedValues } from '../../models/utils/personnel-type';
 import { createMapValidator } from './create-map-validator';
 import type { GenericPropertyDecorator } from './generic-property-decorator';
 import { isLiteralUnion } from './is-literal-union';
