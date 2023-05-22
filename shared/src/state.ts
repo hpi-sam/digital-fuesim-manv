@@ -153,7 +153,7 @@ export class ExerciseState {
     public readonly configuration = ExerciseConfiguration.create();
 
     /**
-     * The log entries generated for the statistic.
+     * The log entries generated for the statistics.
      * This must not be defined on a normal state,
      * unless the statistics are currently being generated.
      */
