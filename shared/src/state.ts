@@ -152,6 +152,11 @@ export class ExerciseState {
     @Type(() => ExerciseConfiguration)
     public readonly configuration = ExerciseConfiguration.create();
 
+    /**
+     * The log entries generated for the statistic.
+     * This must not be defined on a normal state,
+     * unless the statistics are currently being generated.
+     */
     @Equals(undefined)
     public logEntries?: LogEntry[];
 

@@ -31,7 +31,7 @@ export function createPatientTag(
     const patient = getElement(draftState, 'patient', specifier);
     return new Tag(
         'Patient',
-        'blue-200',
+        'cyan',
         patient.personalInformation.name,
         specifier
     );

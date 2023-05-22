@@ -4,7 +4,12 @@
 export class Tag {
     public category: string;
 
-    // This should be a color from https://getbootstrap.com/docs/5.2/customize/color/
+    /**
+     * The color of the tag.
+     * This should be a valid value
+     * for the css color property
+     * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/color}
+     */
     public color: string;
 
     public name: string;
