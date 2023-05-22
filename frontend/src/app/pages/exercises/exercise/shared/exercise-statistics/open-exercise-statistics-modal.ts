@@ -3,6 +3,6 @@ import { ExerciseStatisticsModalComponent } from './exercise-statistics-modal/ex
 
 export function openExerciseStatisticsModal(ngbModalService: NgbModal) {
     ngbModalService.open(ExerciseStatisticsModalComponent, {
-        size: 'xl',
+        size: 'xxl',
     });
 }

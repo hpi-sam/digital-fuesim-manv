@@ -9,6 +9,7 @@ import {
     Viewport,
     isNotInTransfer,
     isInSpecificSimulatedRegion,
+    cloneDeepMutable,
 } from 'digital-fuesim-manv-shared';
 import type {
     Personnel,
@@ -18,6 +19,7 @@ import type {
     Vehicle,
     WithPosition,
     UUID,
+    LogEntry,
 } from 'digital-fuesim-manv-shared';
 import { countBy } from 'lodash-es';
 import { ReplaySubject } from 'rxjs';
@@ -43,6 +45,8 @@ export class StatisticsService {
         1
     );
 
+    public readonly logEntries$ = new ReplaySubject<readonly LogEntry[]>(1);
+
     // TODO: Already calculated statistics could be cached
     // TODO: Maybe calculate this in a webworker to not block the main thread
     // a short test showed that the calculating in the webworker (excluding communication, structuredClone etc.)
@@ -55,8 +59,9 @@ export class StatisticsService {
             selectCurrentTime,
             this.store
         );
-        const { initialState, actionsWrappers } =
-            await this.apiService.exerciseHistory();
+        const { initialState, actionsWrappers } = cloneDeepMutable(
+            await this.apiService.exerciseHistory()
+        );
 
         initialState.logEntries = [];
 
@@ -94,6 +99,7 @@ export class StatisticsService {
             }
         );
         this.statistics$.next(statistics);
+        this.logEntries$.next(initialState.logEntries);
         this.updatingStatistics = false;
         return statistics;
     }

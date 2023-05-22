@@ -5,7 +5,7 @@
  */
 
 import type { ExerciseState } from '../../state';
-import { getElement } from '../../store/action-reducers/utils';
+import { getElement } from '../../store/action-reducers/utils/get-element';
 import type { UUID } from '../../utils';
 import type { Mutable } from '../../utils/immutability';
 import { Tag } from '../tag';
@@ -14,25 +14,27 @@ import type { PatientStatus } from './patient-status';
 
 export function createPatientStatusTag(
     _draftState: Mutable<ExerciseState>,
-    specifier: PatientStatus
+    patientStatus: PatientStatus
 ): Tag {
     return new Tag(
         'Sichtungskategorie',
-        specifier,
-        statusNames[specifier],
-        specifier
+        patientStatus,
+        patientStatus === 'yellow' ? 'black' : 'white',
+        statusNames[patientStatus],
+        patientStatus
     );
 }
 
 export function createPatientTag(
     draftState: Mutable<ExerciseState>,
-    specifier: UUID
+    patientId: UUID
 ): Tag {
-    const patient = getElement(draftState, 'patient', specifier);
+    const patient = getElement(draftState, 'patient', patientId);
     return new Tag(
         'Patient',
         'cyan',
+        'black',
         patient.personalInformation.name,
-        specifier
+        patientId
     );
 }

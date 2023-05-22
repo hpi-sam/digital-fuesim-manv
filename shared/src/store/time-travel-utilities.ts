@@ -1,6 +1,7 @@
 import produce from 'immer';
 import type { ExerciseState } from '../state';
-import { cloneDeepMutable, sleep } from '../utils';
+import type { Mutable } from '../utils';
+import { sleep } from '../utils';
 import type { ExerciseAction } from './action-reducers';
 import { applyAction } from './reduce-exercise-state';
 
@@ -10,11 +11,10 @@ import { applyAction } from './reduce-exercise-state';
  * This function is asynchronous to not block the main thread. You should therefore always await it, if you want to make use of side-effects from {@link callback}.
  */
 export async function loopTroughTime(
-    initialState: ExerciseState,
+    currentState: Mutable<ExerciseState>,
     actions: readonly ExerciseAction[],
     callback: (stateAtTime: ExerciseState) => boolean
 ) {
-    const currentState = cloneDeepMutable(initialState);
     for (const [i, action] of actions.entries()) {
         applyAction(currentState, action);
         const nextAction = actions[i + 1];

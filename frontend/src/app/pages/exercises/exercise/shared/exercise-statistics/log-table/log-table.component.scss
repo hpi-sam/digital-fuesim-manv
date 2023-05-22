@@ -1,0 +1,7 @@
+ul.list-group-striped li:nth-of-type(even) {
+    background: #f2f2f2;
+}
+
+ul.list-group-striped li:nth-of-type(odd) {
+    background: white;
+}

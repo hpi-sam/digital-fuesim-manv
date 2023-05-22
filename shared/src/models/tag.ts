@@ -10,6 +10,14 @@ export class Tag {
      * for the css color property
      * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/color}
      */
+    public backgroundColor: string;
+
+    /**
+     * The text color of the tag.
+     * This should be a valid value
+     * for the css color property
+     * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/color}
+     */
     public color: string;
 
     public name: string;
@@ -18,11 +26,13 @@ export class Tag {
 
     constructor(
         category: string,
+        backgroundColor: string,
         color: string,
         name: string,
         specifier: string
     ) {
         this.category = category;
+        this.backgroundColor = backgroundColor;
         this.color = color;
         this.name = name;
         this.specifier = specifier;
