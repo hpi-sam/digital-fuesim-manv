@@ -8,6 +8,7 @@ import {
     uuid,
     Viewport,
     isNotInTransfer,
+    isInSpecificSimulatedRegion,
 } from 'digital-fuesim-manv-shared';
 import type {
     Personnel,
@@ -15,6 +16,8 @@ import type {
     ExerciseState,
     Patient,
     Vehicle,
+    WithPosition,
+    UUID,
 } from 'digital-fuesim-manv-shared';
 import { countBy } from 'lodash-es';
 import { ReplaySubject } from 'rxjs';
@@ -105,46 +108,55 @@ export class StatisticsService {
             Object.values(draftState.personnel)
         );
 
-        const viewportStatistics = Object.fromEntries(
-            Object.entries(draftState.viewports).map(([id, viewport]) => [
-                id,
-                this.generateAreaStatistics(
-                    Object.values(draftState.clients).filter(
-                        (client) => client.viewRestrictedToViewportId === id
-                    ),
-                    Object.values(draftState.patients).filter(
-                        (patient) =>
-                            isOnMap(patient) &&
-                            Viewport.isInViewport(
-                                viewport,
-                                currentCoordinatesOf(patient)
-                            )
-                    ),
-                    Object.values(draftState.vehicles).filter(
-                        (vehicle) =>
-                            isOnMap(vehicle) &&
-                            Viewport.isInViewport(
-                                viewport,
-                                currentCoordinatesOf(vehicle)
-                            )
-                    ),
-                    Object.values(draftState.personnel).filter(
-                        (personnel) =>
-                            isOnMap(personnel) &&
-                            Viewport.isInViewport(
-                                viewport,
-                                currentCoordinatesOf(personnel)
-                            )
-                    )
-                ),
-            ])
+        const viewportStatistics = this.generateFilteredAreaStatistics(
+            draftState,
+            draftState.viewports,
+            (viewport, element) =>
+                isOnMap(element) &&
+                Viewport.isInViewport(viewport, currentCoordinatesOf(element)),
+            true
+        );
+        const simulatedRegionsStatistics = this.generateFilteredAreaStatistics(
+            draftState,
+            draftState.simulatedRegions,
+            (simulatedRegion, element) =>
+                isInSpecificSimulatedRegion(element, simulatedRegion.id)
         );
         return {
             id: uuid(),
             exercise: exerciseStatistics,
             viewports: viewportStatistics,
+            simulatedRegions: simulatedRegionsStatistics,
             exerciseTime: draftState.currentTime,
         };
+    }
+
+    private generateFilteredAreaStatistics<T>(
+        draftState: ExerciseState,
+        areas: { readonly [key: UUID]: T },
+        isInArea: (area: T, element: WithPosition) => boolean,
+        clients = false
+    ) {
+        return Object.fromEntries(
+            Object.entries(areas).map(([id, area]) => {
+                const isInThisArea = (element: WithPosition) =>
+                    isInArea(area, element);
+                return [
+                    id,
+                    this.generateAreaStatistics(
+                        clients
+                            ? Object.values(draftState.clients).filter(
+                                  (client) =>
+                                      client.viewRestrictedToViewportId === id
+                              )
+                            : [],
+                        Object.values(draftState.patients).filter(isInThisArea),
+                        Object.values(draftState.vehicles).filter(isInThisArea),
+                        Object.values(draftState.personnel).filter(isInThisArea)
+                    ),
+                ];
+            })
+        );
     }
 
     private generateAreaStatistics(
