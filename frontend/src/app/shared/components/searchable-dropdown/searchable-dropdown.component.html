@@ -1,0 +1,17 @@
+<input
+    [(ngModel)]="filter"
+    type="search"
+    class="form-control w-100 mb-2 no-validation"
+/>
+<div
+    class="list-group list-group-flush"
+    style="max-height: 300px; overflow: auto"
+>
+    <button
+        *ngFor="let option of filteredOptions"
+        (click)="selected.emit(option)"
+        class="list-group-item list-group-item-action"
+    >
+        {{ option }}
+    </button>
+</div>

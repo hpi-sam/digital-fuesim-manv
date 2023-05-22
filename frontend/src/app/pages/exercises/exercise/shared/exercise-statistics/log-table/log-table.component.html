@@ -1,3 +1,89 @@
+<div class="mb-3">
+    <h5>
+        Filter
+
+        <button
+            class="btn btn-primary btn-sm ms-2"
+            [ngbPopover]="addCategoryTemplate"
+            #addCategoryPopover="ngbPopover"
+            placement="bottom"
+            autoClose="outside"
+        >
+            <i class="bi bi-plus-lg me-1"></i>
+            Kategorie hinzufügen
+        </button>
+        <button
+            (click)="clearFilters()"
+            class="btn btn-outline-danger btn-sm ms-1"
+        >
+            <i class="bi bi-trash me-1"></i>
+            Alle Filter löschen
+        </button>
+    </h5>
+
+    <ng-template #addCategoryTemplate>
+        <app-searchable-dropdown
+            [options]="['AAA', 'BBB']"
+            (selected)="addCategory($event); addCategoryPopover.close()"
+        />
+    </ng-template>
+
+    <ul class="list-group list-group-flush">
+        <li
+            *ngFor="let filter of filters"
+            class="list-group-item d-flex justify-content-between align-items-center"
+        >
+            <div>
+                <span class="fw-bold">{{ filter.category }}</span>
+                <span class="text-muted"> hat Wert </span>
+                <ng-container
+                    *ngFor="
+                        let specifier of filter.specifiers;
+                        index as i;
+                        last as isLast
+                    "
+                >
+                    <span
+                        class="badge rounded-pill"
+                        [style.color]="specifier.color"
+                        [style.backgroundColor]="specifier.backgroundColor"
+                    >
+                        {{ specifier.name }}
+                        <span
+                            *ngIf="specifier.specifier !== specifier.name"
+                            class="fw-light fst-italic"
+                            >({{ specifier.specifier }})</span
+                        >
+                        <i
+                            (click)="
+                                removeSpecifierFromCategory(
+                                    specifier.specifier,
+                                    filter.category
+                                )
+                            "
+                            class="bi bi-x ms-1 py-1"
+                            style="cursor: pointer"
+                        ></i>
+                    </span>
+
+                    <span *ngIf="!isLast" class="text-muted"> oder </span>
+                </ng-container>
+            </div>
+            <div>
+                <button class="btn btn-outline-primary btn-sm me-1">
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+                <button
+                    (click)="removeCategory(filter.category)"
+                    class="btn btn-outline-danger btn-sm"
+                >
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </li>
+    </ul>
+</div>
+
 <ul class="list-group list-group-striped m-1">
     <li class="list-group-item" *ngFor="let logEntry of logEntries">
         <app-log-entry [logEntry]="logEntry" />
