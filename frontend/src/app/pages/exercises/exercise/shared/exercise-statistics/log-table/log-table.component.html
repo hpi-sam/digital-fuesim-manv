@@ -1,0 +1,5 @@
+<ul class="list-group list-group-striped m-1">
+    <li class="list-group-item" *ngFor="let logEntry of logEntries">
+        <app-log-entry [logEntry]="logEntry" />
+    </li>
+</ul>

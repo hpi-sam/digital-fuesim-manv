@@ -1,11 +1,12 @@
 import type { OnInit } from '@angular/core';
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import type {
     PatientStatus,
     PersonnelType,
     UUID,
+    LogEntry,
 } from 'digital-fuesim-manv-shared';
 import { statusNames } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
@@ -30,6 +31,7 @@ import { StackedBarChart } from '../stacked-bar-chart/time-line-area-chart';
     selector: 'app-exercise-statistics-modal',
     templateUrl: './exercise-statistics-modal.component.html',
     styleUrls: ['./exercise-statistics-modal.component.scss'],
+    encapsulation: ViewEncapsulation.None,
 })
 export class ExerciseStatisticsModalComponent implements OnInit {
     public viewportIds$!: Observable<UUID[]>;
@@ -184,4 +186,7 @@ export class ExerciseStatisticsModalComponent implements OnInit {
                 ),
             }))
         );
+
+    public logEntries$: Observable<readonly LogEntry[]> =
+        this.statisticsService.logEntries$;
 }

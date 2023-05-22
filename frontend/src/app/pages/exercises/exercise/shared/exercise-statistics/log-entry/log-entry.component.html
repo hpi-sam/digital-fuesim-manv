@@ -1,0 +1,9 @@
+<div class="d-flex flex-row justify-content-between align-items-center">
+    <div>
+        <span class="me-2">{{ logEntry.description }}</span>
+        <app-tag *ngFor="let tag of logEntry.tags" [tag]="tag" />
+    </div>
+    <div>
+        <span>{{ logEntry.timestamp | date : 'mm:ss' }}</span>
+    </div>
+</div>

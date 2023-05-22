@@ -19,3 +19,5 @@ export { SimulatedRegion } from './simulated-region';
 export { Element } from './element';
 export { ExerciseConfiguration } from './exercise-configuration';
 export * from './utils';
+export * from './log-entry';
+export * from './tag';
