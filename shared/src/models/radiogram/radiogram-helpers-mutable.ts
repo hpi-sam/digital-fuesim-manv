@@ -1,7 +1,6 @@
 import type { ExerciseState } from '../../state';
 import { getExerciseRadiogramById } from '../../store/action-reducers/utils/get-element';
 import { logRadiogram } from '../../store/action-reducers/utils/log';
-import { ReducerError } from '../../store/reducer-error';
 import type { Mutable, UUID } from '../../utils';
 import { createRadiogramActionTag } from '../utils/tag-helpers';
 import type { ExerciseRadiogram } from './exercise-radiogram';
@@ -30,11 +29,6 @@ export function acceptRadiogram(
     clientId: UUID
 ) {
     const radiogram = getExerciseRadiogramById(draftState, radiogramId);
-    if (!radiogram) {
-        throw new ReducerError(
-            `Expected to find radiogram with id ${radiogramId}, but there was none`
-        );
-    }
     radiogram.status = {
         type: 'acceptedRadiogramStatus',
         publishTime: publishTimeOf(radiogram),
@@ -43,7 +37,7 @@ export function acceptRadiogram(
     logRadiogram(
         draftState,
         [createRadiogramActionTag(draftState, radiogram.status.type)],
-        'Der Funkspruch wird durchgesagt',
+        'Der Funkspruch wurde zur Durchsage angenommen',
         radiogram.id
     );
 }
@@ -53,11 +47,6 @@ export function markRadiogramDone(
     radiogramId: UUID
 ) {
     const radiogram = getExerciseRadiogramById(draftState, radiogramId);
-    if (!radiogram) {
-        throw new ReducerError(
-            `Expected to find radiogram with id ${radiogramId}, but there was none`
-        );
-    }
     radiogram.status = {
         type: 'doneRadiogramStatus',
         publishTime: publishTimeOf(radiogram),

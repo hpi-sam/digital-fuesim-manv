@@ -52,11 +52,6 @@ export function createRadiogramTypeTag(
     radiogramId: UUID
 ): Tag {
     const radiogram = getExerciseRadiogramById(draftState, radiogramId);
-    if (!radiogram) {
-        throw new Error(
-            `Expected to find radiogram with id ${radiogramId} while creating logs, but did not find it.`
-        );
-    }
 
     return new Tag(
         'Funkspruchtyp',
@@ -88,19 +83,6 @@ export function createRadiogramActionTag(
         'black',
         name,
         radiogramStatus
-    );
-}
-
-export function createResourceRequestAnswerTag(
-    _draftState: Mutable<ExerciseState>,
-    answer: 'accepted' | 'rejected'
-): Tag {
-    return new Tag(
-        'Ressourcenanfrage',
-        'lightgrey',
-        'black',
-        answer === 'accepted' ? 'Angenommen' : 'Abgelehnt',
-        answer
     );
 }
 

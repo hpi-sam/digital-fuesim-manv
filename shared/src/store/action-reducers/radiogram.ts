@@ -76,7 +76,7 @@ export namespace RadiogramActionReducers {
         action: MarkDoneRadiogramAction,
         reducer: (draftState, { radiogramId }) => {
             const radiogram = getExerciseRadiogramById(draftState, radiogramId);
-            if (radiogram?.type === 'resourceRequestRadiogram') {
+            if (radiogram.type === 'resourceRequestRadiogram') {
                 const simulatedRegion = getElement(
                     draftState,
                     'simulatedRegion',
