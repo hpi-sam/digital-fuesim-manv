@@ -30,14 +30,25 @@
         />
     </ng-template>
 
-    <ul class="list-group list-group-flush">
+    <ul
+        *ngIf="filters.length > 0; else noFilters"
+        class="list-group list-group-flush"
+    >
         <li
             *ngFor="let filter of filters"
             class="list-group-item d-flex justify-content-between align-items-center"
         >
             <div>
                 <span class="fw-bold">{{ filter.category }}</span>
-                <span class="text-muted"> hat Wert </span>
+                <span
+                    *ngIf="filter.specifiers.length > 0; else isSet"
+                    class="text-muted"
+                >
+                    hat Wert
+                </span>
+                <ng-template #isSet>
+                    <span class="text-muted"> ist gesetzt</span>
+                </ng-template>
                 <ng-container
                     *ngFor="
                         let specifier of filter.specifiers;
@@ -99,10 +110,27 @@
             </ng-template>
         </li>
     </ul>
+    <ng-template #noFilters>
+        <span class="text-muted">
+            Keine Filter vorhanden. Sie können einen neuen Filter über den
+            Button hinzufügen.
+        </span>
+    </ng-template>
 </div>
 
+<h5>
+    <span *ngIf="filters.length === 0; else filteredEntriesText">
+        Alle Einträge
+    </span>
+    <ng-template #filteredEntriesText>
+        <span>Gefilterte Einträge</span>
+    </ng-template>
+
+    <span class="fw-light"> ({{ filteredLogEntries.length }})</span>
+</h5>
+
 <ul class="list-group list-group-striped m-1">
-    <li class="list-group-item" *ngFor="let logEntry of logEntries">
+    <li class="list-group-item" *ngFor="let logEntry of filteredLogEntries">
         <app-log-entry [logEntry]="logEntry" />
     </li>
 </ul>

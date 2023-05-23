@@ -85,6 +85,27 @@ export class LogTableComponent implements OnChanges {
         );
     }
 
+    public get filteredLogEntries() {
+        const predicate = (logEntry: LogEntry) =>
+            this.filters.every((filter) => {
+                if (filter.specifiers.length === 0) {
+                    return logEntry.tags.some(
+                        (tag) => tag.category === filter.category
+                    );
+                }
+
+                return filter.specifiers.some((specifier) =>
+                    logEntry.tags.some(
+                        (tag) =>
+                            tag.category === filter.category &&
+                            tag.specifier === specifier.specifier
+                    )
+                );
+            });
+
+        return this.logEntries.filter(predicate);
+    }
+
     ngOnChanges(changes: SimpleChanges): void {
         if (!('logEntries' in changes)) return;
 
