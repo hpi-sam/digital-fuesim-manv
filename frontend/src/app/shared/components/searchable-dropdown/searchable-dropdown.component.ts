@@ -8,6 +8,13 @@ import {
     ViewChild,
 } from '@angular/core';
 
+interface Option {
+    name: string;
+    identifier: string;
+    color?: string;
+    backgroundColor?: string;
+}
+
 @Component({
     selector: 'app-searchable-dropdown',
     templateUrl: './searchable-dropdown.component.html',
@@ -15,14 +22,14 @@ import {
 })
 export class SearchableDropdownComponent implements AfterViewInit {
     @Input()
-    public options: string[] = [];
+    public options: Option[] = [];
 
     public filter = '';
     public selectedIndex = -1;
 
     public get filteredOptions() {
         return this.options.filter((option) =>
-            option.toLowerCase().includes(this.filter.toLowerCase())
+            option.name.toLowerCase().includes(this.filter.toLowerCase())
         );
     }
 
@@ -58,7 +65,9 @@ export class SearchableDropdownComponent implements AfterViewInit {
             this.selectedIndex > -1 &&
             this.selectedIndex < this.filteredOptions.length
         ) {
-            this.selected.emit(this.filteredOptions[this.selectedIndex]);
+            this.selected.emit(
+                this.filteredOptions[this.selectedIndex]!.identifier
+            );
         }
     }
 }
