@@ -1,136 +1,142 @@
-<div class="mb-3">
-    <h5>
-        Filter
+<div class="d-flex flex-column h-100 mh-100">
+    <h3>Log</h3>
 
-        <button
-            class="btn btn-primary btn-sm ms-2"
-            [ngbPopover]="addCategoryTemplate"
-            #addCategoryPopover="ngbPopover"
-            placement="bottom"
-            autoClose="outside"
-            [disabled]="availableCategories.length === 0"
+    <div class="mb-3">
+        <h5>
+            Filter
+
+            <button
+                class="btn btn-primary btn-sm ms-2"
+                [ngbPopover]="addCategoryTemplate"
+                #addCategoryPopover="ngbPopover"
+                placement="bottom"
+                autoClose="outside"
+                [disabled]="availableCategories.length === 0"
+            >
+                <i class="bi bi-plus-lg me-1"></i>
+                Kategorie hinzufügen
+            </button>
+            <button
+                (click)="clearFilters()"
+                class="btn btn-outline-danger btn-sm ms-1"
+                [disabled]="filters.length === 0"
+            >
+                <i class="bi bi-trash me-1"></i>
+                Alle Filter löschen
+            </button>
+        </h5>
+
+        <ng-template #addCategoryTemplate>
+            <app-searchable-dropdown
+                [options]="availableCategories"
+                (selected)="addCategory($event); addCategoryPopover.close()"
+            />
+        </ng-template>
+
+        <ul
+            *ngIf="filters.length > 0; else noFilters"
+            class="list-group list-group-flush"
         >
-            <i class="bi bi-plus-lg me-1"></i>
-            Kategorie hinzufügen
-        </button>
-        <button
-            (click)="clearFilters()"
-            class="btn btn-outline-danger btn-sm ms-1"
-            [disabled]="filters.length === 0"
-        >
-            <i class="bi bi-trash me-1"></i>
-            Alle Filter löschen
-        </button>
+            <li
+                *ngFor="let filter of filters"
+                class="list-group-item d-flex justify-content-between align-items-center"
+            >
+                <div>
+                    <span class="fw-bold">{{ filter.category }}</span>
+                    <span
+                        *ngIf="filter.specifiers.length > 0; else isSet"
+                        class="text-muted"
+                    >
+                        hat Wert
+                    </span>
+                    <ng-template #isSet>
+                        <span class="text-muted"> ist gesetzt</span>
+                    </ng-template>
+                    <ng-container
+                        *ngFor="
+                            let specifier of filter.specifiers;
+                            index as i;
+                            last as isLast
+                        "
+                    >
+                        <span
+                            class="badge"
+                            [style.color]="specifier.color"
+                            [style.backgroundColor]="specifier.backgroundColor"
+                        >
+                            {{ specifier.name }}
+                            <i
+                                (click)="
+                                    removeSpecifierFromCategory(
+                                        specifier.specifier,
+                                        filter.category
+                                    )
+                                "
+                                class="bi bi-x ms-1 py-1"
+                                style="cursor: pointer"
+                            ></i>
+                        </span>
+
+                        <span *ngIf="!isLast" class="text-muted"> oder </span>
+                    </ng-container>
+                </div>
+                <div>
+                    <button
+                        class="btn btn-outline-primary btn-sm me-1"
+                        [ngbPopover]="addSpecifierTemplate"
+                        #addSpecifierPopover="ngbPopover"
+                        placement="left"
+                        autoClose="outside"
+                        [disabled]="
+                            availableSpecifiersPerCategory[filter.category]!
+                                .length === 0
+                        "
+                    >
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                    <button
+                        (click)="removeCategory(filter.category)"
+                        class="btn btn-outline-danger btn-sm"
+                    >
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+
+                <ng-template #addSpecifierTemplate>
+                    <app-searchable-dropdown
+                        [options]="
+                            availableSpecifiersPerCategory[filter.category]!
+                        "
+                        (selected)="
+                            addSpecifierToCategory($event, filter.category);
+                            addSpecifierPopover.close()
+                        "
+                    />
+                </ng-template>
+            </li>
+        </ul>
+        <ng-template #noFilters>
+            <span class="text-muted">
+                Keine Filter vorhanden. Sie können einen neuen Filter über den
+                Button hinzufügen.
+            </span>
+        </ng-template>
+    </div>
+
+    <h5>
+        <span *ngIf="filters.length === 0; else filteredEntriesText">
+            Alle Einträge
+        </span>
+        <ng-template #filteredEntriesText>
+            <span>Gefilterte Einträge</span>
+        </ng-template>
+
+        <span class="fw-light"> ({{ filteredLogEntries.length }})</span>
     </h5>
 
-    <ng-template #addCategoryTemplate>
-        <app-searchable-dropdown
-            [options]="availableCategories"
-            (selected)="addCategory($event); addCategoryPopover.close()"
-        />
-    </ng-template>
-
-    <ul
-        *ngIf="filters.length > 0; else noFilters"
-        class="list-group list-group-flush"
-    >
-        <li
-            *ngFor="let filter of filters"
-            class="list-group-item d-flex justify-content-between align-items-center"
-        >
-            <div>
-                <span class="fw-bold">{{ filter.category }}</span>
-                <span
-                    *ngIf="filter.specifiers.length > 0; else isSet"
-                    class="text-muted"
-                >
-                    hat Wert
-                </span>
-                <ng-template #isSet>
-                    <span class="text-muted"> ist gesetzt</span>
-                </ng-template>
-                <ng-container
-                    *ngFor="
-                        let specifier of filter.specifiers;
-                        index as i;
-                        last as isLast
-                    "
-                >
-                    <span
-                        class="badge"
-                        [style.color]="specifier.color"
-                        [style.backgroundColor]="specifier.backgroundColor"
-                    >
-                        {{ specifier.name }}
-                        <i
-                            (click)="
-                                removeSpecifierFromCategory(
-                                    specifier.specifier,
-                                    filter.category
-                                )
-                            "
-                            class="bi bi-x ms-1 py-1"
-                            style="cursor: pointer"
-                        ></i>
-                    </span>
-
-                    <span *ngIf="!isLast" class="text-muted"> oder </span>
-                </ng-container>
-            </div>
-            <div>
-                <button
-                    class="btn btn-outline-primary btn-sm me-1"
-                    [ngbPopover]="addSpecifierTemplate"
-                    #addSpecifierPopover="ngbPopover"
-                    placement="left"
-                    autoClose="outside"
-                    [disabled]="
-                        availableSpecifiersPerCategory[filter.category]!
-                            .length === 0
-                    "
-                >
-                    <i class="bi bi-plus-lg"></i>
-                </button>
-                <button
-                    (click)="removeCategory(filter.category)"
-                    class="btn btn-outline-danger btn-sm"
-                >
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-
-            <ng-template #addSpecifierTemplate>
-                <app-searchable-dropdown
-                    [options]="availableSpecifiersPerCategory[filter.category]!"
-                    (selected)="
-                        addSpecifierToCategory($event, filter.category);
-                        addSpecifierPopover.close()
-                    "
-                />
-            </ng-template>
+    <ul class="list-group list-group-striped m-1 overflow-auto">
+        <li class="list-group-item" *ngFor="let logEntry of filteredLogEntries">
+            <app-log-entry [logEntry]="logEntry" />
         </li>
     </ul>
-    <ng-template #noFilters>
-        <span class="text-muted">
-            Keine Filter vorhanden. Sie können einen neuen Filter über den
-            Button hinzufügen.
-        </span>
-    </ng-template>
 </div>
-
-<h5>
-    <span *ngIf="filters.length === 0; else filteredEntriesText">
-        Alle Einträge
-    </span>
-    <ng-template #filteredEntriesText>
-        <span>Gefilterte Einträge</span>
-    </ng-template>
-
-    <span class="fw-light"> ({{ filteredLogEntries.length }})</span>
-</h5>
-
-<ul class="list-group list-group-striped m-1">
-    <li class="list-group-item" *ngFor="let logEntry of filteredLogEntries">
-        <app-log-entry [logEntry]="logEntry" />
-    </li>
-</ul>

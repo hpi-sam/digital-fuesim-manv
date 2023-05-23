@@ -140,14 +140,11 @@
             ></div>
         </div>
         <div class="vr"></div>
-        <div class="w-50 mw-50 mh-100 overflow-auto">
-            <div class="ms-3">
-                <h3>Log</h3>
-                <app-log-table
-                    *ngIf="logEntries$ | async as logEntries"
-                    [logEntries]="logEntries"
-                />
-            </div>
+        <div class="w-50 mw-50 h-100 mh-100 ps-3">
+            <app-log-table
+                *ngIf="logEntries$ | async as logEntries"
+                [logEntries]="logEntries"
+            />
         </div>
     </div>
 </div>
