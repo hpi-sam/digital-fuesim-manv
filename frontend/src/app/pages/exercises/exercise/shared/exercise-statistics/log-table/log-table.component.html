@@ -8,6 +8,7 @@
             #addCategoryPopover="ngbPopover"
             placement="bottom"
             autoClose="outside"
+            [disabled]="availableCategories.length === 0"
         >
             <i class="bi bi-plus-lg me-1"></i>
             Kategorie hinzufügen
@@ -15,6 +16,7 @@
         <button
             (click)="clearFilters()"
             class="btn btn-outline-danger btn-sm ms-1"
+            [disabled]="filters.length === 0"
         >
             <i class="bi bi-trash me-1"></i>
             Alle Filter löschen
@@ -23,7 +25,7 @@
 
     <ng-template #addCategoryTemplate>
         <app-searchable-dropdown
-            [options]="['AAA', 'BBB']"
+            [options]="availableCategories"
             (selected)="addCategory($event); addCategoryPopover.close()"
         />
     </ng-template>
@@ -44,16 +46,11 @@
                     "
                 >
                     <span
-                        class="badge rounded-pill"
+                        class="badge"
                         [style.color]="specifier.color"
                         [style.backgroundColor]="specifier.backgroundColor"
                     >
                         {{ specifier.name }}
-                        <span
-                            *ngIf="specifier.specifier !== specifier.name"
-                            class="fw-light fst-italic"
-                            >({{ specifier.specifier }})</span
-                        >
                         <i
                             (click)="
                                 removeSpecifierFromCategory(
@@ -70,7 +67,17 @@
                 </ng-container>
             </div>
             <div>
-                <button class="btn btn-outline-primary btn-sm me-1">
+                <button
+                    class="btn btn-outline-primary btn-sm me-1"
+                    [ngbPopover]="addSpecifierTemplate"
+                    #addSpecifierPopover="ngbPopover"
+                    placement="left"
+                    autoClose="outside"
+                    [disabled]="
+                        availableSpecifiersPerCategory[filter.category]!
+                            .length === 0
+                    "
+                >
                     <i class="bi bi-plus-lg"></i>
                 </button>
                 <button
@@ -80,6 +87,16 @@
                     <i class="bi bi-trash"></i>
                 </button>
             </div>
+
+            <ng-template #addSpecifierTemplate>
+                <app-searchable-dropdown
+                    [options]="availableSpecifiersPerCategory[filter.category]!"
+                    (selected)="
+                        addSpecifierToCategory($event, filter.category);
+                        addSpecifierPopover.close()
+                    "
+                />
+            </ng-template>
         </li>
     </ul>
 </div>

@@ -1,6 +1,8 @@
 import type { OnChanges, SimpleChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import type { LogEntry, Tag } from 'digital-fuesim-manv-shared';
+import { StrictObject } from 'digital-fuesim-manv-shared';
+import { difference } from 'lodash-es';
 
 type KnownSpecifier = Omit<Tag, 'category'>;
 
@@ -39,8 +41,49 @@ export class LogTableComponent implements OnChanges {
                 },
             ],
         },
-        // { category: 'patient', specifiers: ['123', '456'] },
     ];
+
+    public get availableCategories() {
+        const knownCategoryNames = Object.keys(this.knownCategories);
+        const categoriesInUse = this.filters.map((filter) => filter.category);
+
+        return difference(knownCategoryNames, categoriesInUse)
+            .sort((a, b) => a.localeCompare(b))
+            .map((categoryName) => ({
+                name: categoryName,
+                identifier: categoryName,
+            }));
+    }
+
+    public get availableSpecifiersPerCategory() {
+        return StrictObject.fromEntries(
+            StrictObject.entries(this.knownCategories).map(
+                ([knownCategory, knownSpecifiers]) => [
+                    knownCategory,
+                    Object.entries(knownSpecifiers)
+                        .filter(
+                            ([knownSpecifier]) =>
+                                this.filters
+                                    .find(
+                                        (filter) =>
+                                            filter.category === knownCategory
+                                    )
+                                    ?.specifiers.every(
+                                        (specifierInUse) =>
+                                            specifierInUse.specifier !==
+                                            knownSpecifier
+                                    ) ?? true
+                        )
+                        .map(([, availableSpecifier]) => ({
+                            name: availableSpecifier.name,
+                            identifier: availableSpecifier.specifier,
+                            color: availableSpecifier.color,
+                            backgroundColor: availableSpecifier.backgroundColor,
+                        })),
+                ]
+            )
+        );
+    }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (!('logEntries' in changes)) return;
@@ -86,6 +129,24 @@ export class LogTableComponent implements OnChanges {
 
     clearFilters() {
         this.filters = [];
+    }
+
+    addSpecifierToCategory(specifier: string, category: string) {
+        const categoryFilter = this.filters.find(
+            (filter) => filter.category === category
+        );
+
+        if (!categoryFilter) return;
+
+        const specifierIndex = categoryFilter.specifiers.findIndex(
+            (filter) => filter.specifier === specifier
+        );
+
+        if (specifierIndex === -1) {
+            categoryFilter.specifiers.push(
+                this.knownCategories[category]![specifier]!
+            );
+        }
     }
 
     removeSpecifierFromCategory(specifier: string, category: string) {
