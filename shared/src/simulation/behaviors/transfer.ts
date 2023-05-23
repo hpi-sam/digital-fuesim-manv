@@ -30,7 +30,10 @@ import {
     RecurringEventActivityState,
     SendRemoteEventActivityState,
 } from '../activities';
-import { isUnoccupied } from '../../models/utils/occupations/occupation-helpers-mutable';
+import {
+    isUnoccupied,
+    isUnoccupiedOrIntermediarilyOccupied,
+} from '../../models/utils/occupations/occupation-helpers-mutable';
 import { amountOfResourcesInVehicle } from '../../models/utils/amount-of-resources-in-vehicle';
 import type { ResourceDescription } from '../../models/utils/resource-description';
 import {
@@ -141,11 +144,8 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                 event.transferDestinationType,
                                 event.transferDestinationId,
                                 event.patientIds,
-                                Math.max(
-                                    Object.keys(event.patientIds).length *
-                                        behaviorState.loadTimePerPatient,
-                                    behaviorState.personnelLoadTime
-                                )
+                                behaviorState.loadTimePerPatient,
+                                behaviorState.personnelLoadTime
                             )
                         );
                         vehicleToLoad.occupation = cloneDeepMutable(
@@ -162,7 +162,12 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                         event.vehicleId
                     );
                     // Don't do anything if vehicle is occupied
-                    if (!isUnoccupied(vehicle, draftState.currentTime)) {
+                    if (
+                        !isUnoccupiedOrIntermediarilyOccupied(
+                            vehicle,
+                            draftState.currentTime
+                        )
+                    ) {
                         return;
                     }
 
@@ -175,11 +180,8 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             event.transferDestinationType,
                             event.transferDestinationId,
                             event.patientIds,
-                            Math.max(
-                                Object.keys(event.patientIds).length *
-                                    behaviorState.loadTimePerPatient,
-                                behaviorState.personnelLoadTime
-                            )
+                            behaviorState.loadTimePerPatient,
+                            behaviorState.personnelLoadTime
                         )
                     );
                     vehicle.occupation = cloneDeepMutable(
@@ -208,7 +210,10 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             event.transferDestinationType,
                             event.transferDestinationId,
                             {},
-                            behaviorState.personnelLoadTime
+                            behaviorState.loadTimePerPatient,
+                            behaviorState.personnelLoadTime,
+                            undefined,
+                            event.successorOccupation
                         )
                     );
                     vehicle.occupation = cloneDeepMutable(
@@ -283,7 +288,12 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                         event.transferDestinationType,
                                         event.transferDestinationId,
                                         {},
-                                        behaviorState.personnelLoadTime
+                                        behaviorState.loadTimePerPatient,
+                                        behaviorState.personnelLoadTime,
+                                        undefined,
+                                        cloneDeepMutable(
+                                            event.successorOccupation
+                                        )
                                     )
                                 );
                                 loadableVehicles![index]!.occupation =
@@ -311,22 +321,33 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                         )
                     );
 
-                    // Send event to destination if it is a simulated region
+                    // Send event to transfer initiating region
 
-                    if (
-                        event.transferDestinationType === 'transferPoint' &&
-                        isInSimulatedRegion(
-                            getElement(
-                                draftState,
-                                'transferPoint',
-                                event.transferDestinationId
-                            )
-                        )
-                    ) {
+                    if (event.transferInitiatingRegionId) {
                         addActivity(
                             simulatedRegion,
                             SendRemoteEventActivityState.create(
                                 nextUUID(draftState),
+                                event.transferInitiatingRegionId,
+                                VehiclesSentEvent.create(
+                                    VehicleResource.create(sentVehicles),
+                                    event.transferDestinationId,
+                                    event.key
+                                )
+                            )
+                        );
+                    }
+
+                    // Send event to destination if it is a simulated region and not the initiating region
+                    if (event.transferDestinationType === 'transferPoint') {
+                        const transferPoint = getElement(
+                            draftState,
+                            'transferPoint',
+                            event.transferDestinationId
+                        );
+
+                        if (isInSimulatedRegion(transferPoint)) {
+                            const targetSimulatedRegion =
                                 currentSimulatedRegionOf(
                                     draftState,
                                     getElement(
@@ -334,13 +355,27 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                         'transferPoint',
                                         event.transferDestinationId
                                     )
-                                ).id,
-                                VehiclesSentEvent.create(
-                                    '',
-                                    VehicleResource.create(sentVehicles)
-                                )
-                            )
-                        );
+                                );
+
+                            if (
+                                targetSimulatedRegion.id !==
+                                event.transferInitiatingRegionId
+                            ) {
+                                addActivity(
+                                    simulatedRegion,
+                                    SendRemoteEventActivityState.create(
+                                        nextUUID(draftState),
+                                        targetSimulatedRegion.id,
+                                        VehiclesSentEvent.create(
+                                            VehicleResource.create(
+                                                sentVehicles
+                                            ),
+                                            transferPoint.id
+                                        )
+                                    )
+                                );
+                            }
+                        }
                     }
                 }
                 break;
@@ -409,7 +444,8 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             vehicle.id,
                             transferEvent!.transferDestinationType,
                             transferEvent!.transferDestinationId,
-                            transferEvent!.key
+                            transferEvent!.key,
+                            cloneDeepMutable(transferEvent!.successorOccupation)
                         )
                     );
                 }

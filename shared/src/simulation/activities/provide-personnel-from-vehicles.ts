@@ -1,5 +1,6 @@
 import { IsString, IsUUID } from 'class-validator';
 import type { SimulatedRegion } from '../../models';
+import { personnelTypeAllowedValues } from '../../models/utils/personnel-type';
 import type { PersonnelType } from '../../models/utils';
 import {
     PersonnelResource,
@@ -23,7 +24,6 @@ import { IsValue } from '../../utils/validators';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { ResourceRequiredEvent } from '../events';
 import { sendSimulationEvent } from '../events/utils';
-import { nextUUID } from '../utils/randomness';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -39,7 +39,7 @@ export class ProvidePersonnelFromVehiclesActivityState
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID;
 
-    @IsResourceDescription()
+    @IsResourceDescription(personnelTypeAllowedValues)
     public readonly requiredPersonnelCounts: ResourceDescription<PersonnelType>;
 
     @IsUUID(4, uuidArrayValidationOptions)
@@ -137,7 +137,6 @@ export const providePersonnelFromVehiclesActivity: SimulationActivity<ProvidePer
             }
 
             const event = ResourceRequiredEvent.create(
-                nextUUID(draftState),
                 simulatedRegion.id,
                 VehicleResource.create(missingVehicleCounts),
                 activityState.key

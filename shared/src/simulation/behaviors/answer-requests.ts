@@ -67,6 +67,7 @@ export const answerRequestsBehavior: SimulationBehavior<AnswerRequestsBehaviorSt
                                     event.requiredResource.vehicleCounts,
                                     'transferPoint',
                                     requiringSimulatedRegionTransferPoint.id,
+                                    event.requiringSimulatedRegionId,
                                     requiringSimulatedRegionTransferPoint.id +
                                         behaviorState.requestsHandled
                                 );
@@ -125,7 +126,6 @@ export const answerRequestsBehavior: SimulationBehavior<AnswerRequestsBehaviorSt
                                 DelayEventActivityState.create(
                                     nextUUID(draftState),
                                     ResourceRequiredEvent.create(
-                                        '',
                                         simulatedRegion.id,
                                         VehicleResource.create(
                                             vehiclesNotAvailable

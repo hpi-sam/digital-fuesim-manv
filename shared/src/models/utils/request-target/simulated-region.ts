@@ -5,7 +5,6 @@ import { getCreate } from '../../../models/utils/get-create';
 import { getElement } from '../../../store/action-reducers/utils/get-element';
 import { sendSimulationEvent } from '../../../simulation/events/utils';
 import { ResourceRequiredEvent } from '../../../simulation/events/resources-required';
-import { nextUUID } from '../../../simulation/utils/randomness';
 import type {
     RequestTarget,
     RequestTargetConfiguration,
@@ -47,7 +46,6 @@ export const simulatedRegionRequestTarget: RequestTarget<SimulatedRegionRequestT
                     configuration.targetSimulatedRegionId
                 ),
                 ResourceRequiredEvent.create(
-                    nextUUID(draftState),
                     requestingSimulatedRegionId,
                     requestedResource,
                     key

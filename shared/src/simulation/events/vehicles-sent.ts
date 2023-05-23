@@ -1,29 +1,37 @@
 import { Type } from 'class-transformer';
-import { IsString, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { getCreate } from '../../models/utils';
 import { VehicleResource } from '../../models/utils/rescue-resource';
-import { UUID } from '../../utils';
 import { IsValue } from '../../utils/validators';
+import { UUID, uuidValidationOptions } from '../../utils';
 import type { SimulationEvent } from './simulation-event';
 
 export class VehiclesSentEvent implements SimulationEvent {
     @IsValue('vehiclesSentEvent')
     readonly type = 'vehiclesSentEvent';
 
-    // I want to use '' here because this id should not exist and is never used but if we insert `IsUUID()` this is forbidden
-    @IsString()
-    public readonly id: UUID;
-
     @Type(() => VehicleResource)
     @ValidateNested()
     readonly vehiclesSent: VehicleResource;
 
+    @IsUUID(4, uuidValidationOptions)
+    readonly destinationTransferPointId: UUID;
+
+    @IsOptional()
+    @IsString()
+    readonly key?: string;
+
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(id: UUID, vehiclesSent: VehicleResource) {
-        this.id = id;
+    constructor(
+        vehiclesSent: VehicleResource,
+        transferPointDestinationId: UUID,
+        key?: string
+    ) {
         this.vehiclesSent = vehiclesSent;
+        this.destinationTransferPointId = transferPointDestinationId;
+        this.key = key;
     }
 
     static readonly create = getCreate(this);

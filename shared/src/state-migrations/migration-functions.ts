@@ -20,6 +20,11 @@ import { activitiesToUnloadVehiclesBehavior28 } from './28-add-activities-to-unl
 import { removeTransferVehiclesActivityAndChangeAnswerRequestBehavior29 } from './29-remove-transfer-vehicles-activity-and-change-answer-request-behavior';
 import { updateEocLog3 } from './3-update-eoc-log';
 import { reportTreatmentStatusChanges30 } from './30-report-treatment-status-changes';
+import { improveLoadVehicleActivity31 } from './31-improve-load-vehicle-activity';
+import { removeIdFromEvents32 } from './32-remove-id-from-events';
+import { reportTransferCategoryCompleted33 } from './33-report-transfer-category-completed';
+import { addCatchAllHospital34 } from './34-add-catch-all-hospital';
+import { addTransferInitiatingRegionToRequestEvents35 } from './35-add-transfer-initiating-region-to-request-events';
 import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action';
 import { removeStatistics5 } from './5-remove-statistics';
 import { removeStateHistory6 } from './6-remove-state-history';
@@ -83,4 +88,9 @@ export const migrations: {
     28: activitiesToUnloadVehiclesBehavior28,
     29: removeTransferVehiclesActivityAndChangeAnswerRequestBehavior29,
     30: reportTreatmentStatusChanges30,
+    31: improveLoadVehicleActivity31,
+    32: removeIdFromEvents32,
+    33: reportTransferCategoryCompleted33,
+    34: addCatchAllHospital34,
+    35: addTransferInitiatingRegionToRequestEvents35,
 };

@@ -1,19 +1,27 @@
-<div class="d-inline-block float-end m-1 bottom-0">
+<div class="d-flex flex-row-reverse">
     <button
+        class="btn btn-outline-danger ms-1"
         type="button"
-        class="btn btn-outline-danger"
         (click)="deleteSelectedPatient()"
     >
-        <span class="bi-trash me-1"></span>
-        Entfernen
+        <span class="bi bi-trash me-1"></span>
+        Löschen
     </button>
-</div>
-<div class="d-inline-block float-end m-1 bottom-0">
     <button
+        class="btn btn-outline-secondary ms-1"
         type="button"
-        class="btn btn-outline-primary"
         (click)="removeSelectedPatientFromSimulatedRegion()"
     >
-        Auf die Karte verschieben
+        <span class="bi bi-box-arrow-right me-1"></span>
+        Auf die Karte holen
+    </button>
+    <button
+        class="btn btn-outline-secondary"
+        type="button"
+        (click)="initiatePatientTransfer()"
+        ngbTooltip="Dies fügt, wenn noch nicht vorhanden, dem Bereich das Fahrzeuge Versenden Verhalten hinzu."
+    >
+        <span class="bi bi-sign-turn-slight-right me-1"></span>
+        Transferieren
     </button>
 </div>

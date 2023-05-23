@@ -7,6 +7,8 @@ import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectVisiblePersonnel } from 'src/app/state/application/selectors/shared.selectors';
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
 import { PersonnelPopupComponent } from '../shared/personnel-popup/personnel-popup.component';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 import { PointGeometryHelper } from '../utility/point-geometry-helper';
@@ -14,6 +16,7 @@ import { ImagePopupHelper } from '../utility/popup-helper';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
 import type { PopupService } from '../utility/popup.service';
+import { CircleStyleHelper } from '../utility/style-helper/circle-style-helper';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class PersonnelFeatureManager extends MoveableFeatureManager<Personnel> {
@@ -44,6 +47,21 @@ export class PersonnelFeatureManager extends MoveableFeatureManager<Personnel> {
 
     private readonly popupHelper = new ImagePopupHelper(this.olMap, this.layer);
 
+    private readonly openPopupCircleStyleHelper = new CircleStyleHelper(
+        (_) => ({
+            radius: 75,
+            fill: new Fill({
+                color: '#00000000',
+            }),
+            stroke: new Stroke({
+                color: 'orange',
+                width: 10,
+            }),
+        }),
+        0.025,
+        (_) => [0, 0]
+    );
+
     constructor(
         olMap: OlMap,
         private readonly store: Store<AppState>,
@@ -62,10 +80,23 @@ export class PersonnelFeatureManager extends MoveableFeatureManager<Personnel> {
             new PointGeometryHelper()
         );
 
-        this.layer.setStyle((feature, resolution) => [
-            this.nameStyleHelper.getStyle(feature as Feature, resolution),
-            this.imageStyleHelper.getStyle(feature as Feature, resolution),
-        ]);
+        this.layer.setStyle((feature, resolution) => {
+            const styles = [
+                this.nameStyleHelper.getStyle(feature as Feature, resolution),
+                this.imageStyleHelper.getStyle(feature as Feature, resolution),
+            ];
+            this.addMarking(
+                feature,
+                styles,
+                this.popupService,
+                this.store,
+                this.openPopupCircleStyleHelper.getStyle(
+                    feature as Feature,
+                    resolution
+                )
+            );
+            return styles;
+        });
     }
 
     public override onFeatureClicked(
@@ -79,6 +110,13 @@ export class PersonnelFeatureManager extends MoveableFeatureManager<Personnel> {
                 PersonnelPopupComponent,
                 feature,
                 [feature.getId() as UUID],
+                [
+                    feature.getId() as UUID,
+                    (this.getElementFromFeature(feature) as Personnel)
+                        .vehicleId,
+                ],
+                [feature.getId() as UUID],
+                ['personnel', 'vehicle'],
                 {
                     personnelId: feature.getId() as UUID,
                 }

@@ -1,7 +1,9 @@
 import { Component, Input } from '@angular/core';
+import type { Mutable, UUIDSet } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import { SelectPatientService } from '../../../select-patient.service';
+import { StartTransferService } from '../../../start-transfer.service';
 
 @Component({
     selector: 'app-simulated-region-overview-patient-interaction-bar',
@@ -16,7 +18,8 @@ export class SimulatedRegionOverviewPatientInteractionBarComponent {
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        readonly selectPatientService: SelectPatientService
+        readonly selectPatientService: SelectPatientService,
+        readonly startTransferService: StartTransferService
     ) {}
 
     public removeSelectedPatientFromSimulatedRegion() {
@@ -33,5 +36,14 @@ export class SimulatedRegionOverviewPatientInteractionBarComponent {
             patientId: this.patientId,
         });
         this.selectPatientService.selectPatient('');
+    }
+
+    public initiatePatientTransfer() {
+        const patientsToTransfer: Mutable<UUIDSet> = {
+            [this.patientId]: true,
+        };
+        this.startTransferService.initiateNewTransferFor({
+            patientsToTransfer,
+        });
     }
 }

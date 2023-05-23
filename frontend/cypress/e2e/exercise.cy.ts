@@ -341,8 +341,12 @@ describe('A trainer on the exercise page', () => {
 
         cy.log('add a hospital').get('[data-cy="hospitalAddButton"]').click();
         cy.get('@trainerSocketPerformedActions')
-            .lastElement()
+            .firstElement()
             .should('have.property', 'type', '[Hospital] Add hospital');
+        cy.get('@trainerSocketPerformedActions')
+            .firstElement()
+            .its('hospital')
+            .as('createdHospital');
 
         cy.getState()
             .its('exerciseState')
@@ -351,7 +355,7 @@ describe('A trainer on the exercise page', () => {
 
         cy.log('update a hospitals transport time')
             .get('[data-cy="hospitalUpdateTransportTimeInput"]')
-            .first()
+            .last()
             .clear()
             .type('30');
 
@@ -367,7 +371,7 @@ describe('A trainer on the exercise page', () => {
             .its('exerciseState')
             .its('hospitals')
             .itsValues()
-            .firstElement()
+            .lastElement()
             .should('have.property', 'transportDuration', 1800000);
 
         cy.get('[data-cy=hospitalClosePopupButton]').click({ force: true });
@@ -377,7 +381,7 @@ describe('A trainer on the exercise page', () => {
         cy.get('[data-cy=transferPointPopupHospitalNav]').click();
         cy.get('[data-cy=transferPointPopupAddHospitalButton]').click();
         cy.get('[data-cy=transferPointPopupAddHospitalDropdownButton]')
-            .first()
+            .last()
             .click({ force: true });
 
         cy.get('@trainerSocketPerformedActions')
@@ -392,7 +396,7 @@ describe('A trainer on the exercise page', () => {
             .its('exerciseState')
             .its('transferPoints')
             .itsValues()
-            .firstElement()
+            .lastElement()
             .its('reachableHospitals')
             .should('not.be.empty');
 
@@ -416,7 +420,7 @@ describe('A trainer on the exercise page', () => {
             .its('exerciseState')
             .its('hospitals')
             .itsValues()
-            .firstElement()
+            .lastElement()
             .its('patientIds')
             .should('not.be.empty');
 
@@ -437,7 +441,7 @@ describe('A trainer on the exercise page', () => {
             .its('exerciseState')
             .its('transferPoints')
             .itsValues()
-            .firstElement()
+            .lastElement()
             .its('reachableHospitals')
             .should('be.empty');
 
@@ -451,7 +455,12 @@ describe('A trainer on the exercise page', () => {
             .lastElement()
             .should('have.property', 'type', '[Hospital] Remove hospital');
 
-        cy.getState().its('exerciseState').its('hospitals').should('be.empty');
+        cy.get('@createdHospital').then((hospital: any) => {
+            cy.getState()
+                .its('exerciseState')
+                .its('hospitals')
+                .should('not.have.keys', hospital.id);
+        });
     });
 
     it('can manage transfer points (within simulated regions) and transfer vehicles', () => {
