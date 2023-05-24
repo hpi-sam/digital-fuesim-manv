@@ -146,7 +146,10 @@ function createRadiogramDescription(
             } abtransportiert: ${generateCountString(
                 radiogram.transferredPatientsCounts,
                 (status) => statusNames[status]
-            )}.`;
+            )}. Nun verbleiben noch die folgenden Patienten: ${generateCountString(
+                radiogram.remainingPatientsCounts,
+                (status) => statusNames[status]
+            )}`;
         }
         case 'vehicleCountRadiogram': {
             return `In dieser Region gibt es die folgenden Fahrzeuge: ${generateCountString(

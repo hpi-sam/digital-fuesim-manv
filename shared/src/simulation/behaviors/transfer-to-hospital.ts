@@ -220,12 +220,12 @@ export const transferToHospitalBehavior: SimulationBehavior<TransferToHospitalBe
                     radiogram.transferredPatientsCounts =
                         behaviorState.transferredPatientsCount;
                     radiogram.remainingPatientsCounts = {
-                        black: 0,
-                        blue: 0,
-                        green: 0,
                         red: 0,
-                        white: 0,
                         yellow: 0,
+                        green: 0,
+                        blue: 0,
+                        black: 0,
+                        white: 0,
                         ...remainingPatients,
                     };
                     radiogram.informationAvailable = true;
