@@ -42,9 +42,9 @@ export class LogTableComponent implements OnChanges {
             StrictObject.entries(this.knownCategories).map(
                 ([knownCategory, knownSpecifiers]) => [
                     knownCategory,
-                    Object.entries(knownSpecifiers)
+                    Object.values(knownSpecifiers)
                         .filter(
-                            ([knownSpecifier]) =>
+                            (knownSpecifier) =>
                                 this.filters
                                     .find(
                                         (filter) =>
@@ -53,10 +53,10 @@ export class LogTableComponent implements OnChanges {
                                     ?.specifiers.every(
                                         (specifierInUse) =>
                                             specifierInUse.specifier !==
-                                            knownSpecifier
+                                            knownSpecifier.specifier
                                     ) ?? true
                         )
-                        .map(([, availableSpecifier]) => ({
+                        .map((availableSpecifier) => ({
                             name: availableSpecifier.name,
                             identifier: availableSpecifier.specifier,
                             color: availableSpecifier.color,
