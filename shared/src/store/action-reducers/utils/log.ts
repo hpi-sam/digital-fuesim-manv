@@ -131,19 +131,19 @@ function createRadiogramDescription(
             return `Es wurden die folgenden Resourcen angefragt: ${generateCountString(
                 radiogram.requiredResource.vehicleCounts,
                 (vehicleType) => vehicleType
-            )}`;
+            )}.`;
         }
         case 'transferCategoryCompletedRadiogram': {
             return `Der Transport der Kategorie ${
                 statusNames[radiogram.completedCategory]
-            } wurde abgeshlossen`;
+            } wurde abgeshlossen.`;
         }
         case 'transferCountsRadiogram': {
             return `Es wurden die folgenden Patientenzahlen ${
                 radiogram.scope === 'singleRegion'
                     ? 'in dieser Region'
                     : 'in den Regionen'
-            } gezählt: ${generateCountString(
+            } abtransportiert: ${generateCountString(
                 radiogram.transferredPatientsCounts,
                 (status) => statusNames[status]
             )}.`;

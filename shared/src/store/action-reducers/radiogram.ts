@@ -104,7 +104,7 @@ export namespace RadiogramActionReducers {
                 logRadiogram(
                     draftState,
                     [createRadiogramActionTag(draftState, 'resourcesRejected')],
-                    'Die Ressourcen der Anfrage wurden verweigert',
+                    'Die Ressourcen der Anfrage wurden verweigert.',
                     radiogramId
                 );
             }
@@ -154,7 +154,7 @@ export namespace RadiogramActionReducers {
                 logRadiogram(
                     draftState,
                     [createRadiogramActionTag(draftState, 'resourcesPromised')],
-                    'Die Ressourcen der Anfrage wurden versprochen',
+                    'Die Ressourcen der Anfrage wurden versprochen.',
                     radiogramId
                 );
 
@@ -203,7 +203,7 @@ export namespace RadiogramActionReducers {
                 logRadiogram(
                     draftState,
                     [createRadiogramActionTag(draftState, 'resourcesRejected')],
-                    'Die Ressourcen der Anfrage wurden verweigert',
+                    'Die Ressourcen der Anfrage wurden verweigert.',
                     radiogramId
                 );
 

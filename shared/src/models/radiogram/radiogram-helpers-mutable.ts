@@ -18,7 +18,7 @@ export function publishRadiogram(
     logRadiogram(
         draftState,
         [createRadiogramActionTag(draftState, radiogram.status.type)],
-        'Der Funkspruch wurde veröffentlicht',
+        'Der Funkspruch wurde veröffentlicht.',
         radiogram.id
     );
 }
@@ -37,7 +37,7 @@ export function acceptRadiogram(
     logRadiogram(
         draftState,
         [createRadiogramActionTag(draftState, radiogram.status.type)],
-        'Der Funkspruch wurde zur Durchsage angenommen',
+        'Der Funkspruch wurde zur Durchsage angenommen.',
         radiogram.id
     );
 }
@@ -54,7 +54,7 @@ export function markRadiogramDone(
     logRadiogram(
         draftState,
         [createRadiogramActionTag(draftState, radiogram.status.type)],
-        'Der Funkspruch wurde durchgesagt',
+        'Der Funkspruch wurde durchgesagt.',
         radiogram.id
     );
 }
