@@ -17,6 +17,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   Publishing, accepting and marking radiograms as done.
     -   Accepting or denying resource request radiograms.
     -   Vehicle transfer, loading, unloading and occupation changes.
+-   By clicking on a log entry or a chart, a marker will be shown in the chart at that time. The log entry list scrolls to that time.
 
 ## [0.6.0] - 2023-05-17
 

@@ -135,8 +135,11 @@
     </h5>
 
     <ul class="list-group list-group-striped m-1 overflow-auto">
-        <li class="list-group-item" *ngFor="let logEntry of filteredLogEntries">
-            <app-log-entry [logEntry]="logEntry" />
+        <li
+            class="list-group-item"
+            *ngFor="let logEntry of filteredLogEntries; index as index"
+        >
+            <app-log-entry [logEntry]="logEntry" [id]="'log-entry-' + index" />
         </li>
     </ul>
 </div>
