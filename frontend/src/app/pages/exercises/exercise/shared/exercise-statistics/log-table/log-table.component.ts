@@ -141,11 +141,11 @@ export class LogTableComponent implements OnChanges {
 
         if (!categoryFilter) return;
 
-        const specifierIndex = categoryFilter.specifiers.findIndex(
+        const specifierPresent = categoryFilter.specifiers.some(
             (filter) => filter.specifier === specifier
         );
 
-        if (specifierIndex === -1) {
+        if (!specifierPresent) {
             categoryFilter.specifiers.push(
                 this.knownCategories[category]![specifier]!
             );
