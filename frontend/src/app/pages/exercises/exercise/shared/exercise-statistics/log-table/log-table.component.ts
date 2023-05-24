@@ -23,25 +23,7 @@ export class LogTableComponent implements OnChanges {
         [category: string]: { [specifier: string]: KnownSpecifier };
     } = {};
 
-    public filters: Filter[] = [
-        {
-            category: 'patient',
-            specifiers: [
-                {
-                    specifier: '123',
-                    name: '123',
-                    color: 'black',
-                    backgroundColor: 'lime',
-                },
-                {
-                    specifier: '456',
-                    name: '654',
-                    color: 'black',
-                    backgroundColor: 'lime',
-                },
-            ],
-        },
-    ];
+    public filters: Filter[] = [];
 
     public get availableCategories() {
         const knownCategoryNames = Object.keys(this.knownCategories);
