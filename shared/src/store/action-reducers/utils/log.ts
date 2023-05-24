@@ -11,6 +11,7 @@ import {
     createTransferPointTag,
     createTreatmentProgressTag,
     createVehicleTag,
+    createVehicleTypeTag,
 } from '../../../models/utils/tag-helpers';
 import { treatmentProgressToGermanNameDictionary } from '../../../simulation/utils/treatment';
 import type { ExerciseState } from '../../../state';
@@ -79,7 +80,11 @@ export function logVehicle(
     state.logEntries!.push(
         new LogEntry(
             description,
-            [...additionalTags, createVehicleTag(state, vehicle.id)],
+            [
+                ...additionalTags,
+                createVehicleTag(state, vehicle.id),
+                createVehicleTypeTag(state, vehicle.id),
+            ],
             state.currentTime
         )
     );

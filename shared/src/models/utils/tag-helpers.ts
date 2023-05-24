@@ -142,7 +142,21 @@ export function createVehicleTag(
     vehicleId: UUID
 ): Tag {
     const vehicle = getElement(draftState, 'vehicle', vehicleId);
-    return new Tag('Fahrzeug', 'grey', 'white', vehicle.vehicleType, vehicleId);
+    return new Tag('Fahrzeug', 'grey', 'white', vehicle.name, vehicleId);
+}
+
+export function createVehicleTypeTag(
+    draftState: Mutable<ExerciseState>,
+    vehicleId: UUID
+): Tag {
+    const vehicle = getElement(draftState, 'vehicle', vehicleId);
+    return new Tag(
+        'Fahrzeugtyp',
+        'grey',
+        'white',
+        vehicle.vehicleType,
+        vehicle.vehicleType
+    );
 }
 
 export function createOccupationTag(
@@ -194,7 +208,7 @@ export function createHospitalTag(
     return new Tag(
         'Krankenhaus',
         'firebrick',
-        'black',
+        'white',
         hospital.name,
         hospitalId
     );
