@@ -27,6 +27,7 @@ import { TransferPatientToHospitalActivityState } from '../activities/transfer-p
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { ResourceDescription } from '../../models/utils/resource-description';
 import type { TransferCountsRadiogram } from '../../models/radiogram';
+import { logLastPatientTransportedInSimulatedRegion } from '../../store/action-reducers/utils/log';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -177,6 +178,11 @@ export const transferToHospitalBehavior: SimulationBehavior<TransferToHospitalBe
                                             ),
                                             draftState.currentTime
                                         )
+                                    );
+                                    logLastPatientTransportedInSimulatedRegion(
+                                        draftState,
+                                        status,
+                                        simulatedRegion.id
                                     );
                                 }
                             }

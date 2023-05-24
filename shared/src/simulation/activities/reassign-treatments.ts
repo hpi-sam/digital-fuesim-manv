@@ -39,6 +39,7 @@ import {
     scaleResourceDescription,
     subtractResourceDescription,
 } from '../../models/utils/resource-description';
+import { logTreatmentStatusChangedInSimulatedRegion } from '../../store/action-reducers/utils/log';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -117,11 +118,17 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 )) === -1
             ) {
                 // No leader is present in the region.
-                if (progress !== 'noTreatment')
+                if (progress !== 'noTreatment') {
                     sendSimulationEvent(
                         simulatedRegion,
                         TreatmentProgressChangedEvent.create('noTreatment')
                     );
+                    logTreatmentStatusChangedInSimulatedRegion(
+                        draftState,
+                        'noTreatment',
+                        simulatedRegion.id
+                    );
+                }
                 terminate();
                 return;
             }
@@ -147,6 +154,11 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                         simulatedRegion,
                         TreatmentProgressChangedEvent.create('unknown')
                     );
+                    logTreatmentStatusChangedInSimulatedRegion(
+                        draftState,
+                        'unknown',
+                        simulatedRegion.id
+                    );
                     break;
                 }
                 case 'unknown': {
@@ -155,6 +167,11 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                         sendSimulationEvent(
                             simulatedRegion,
                             TreatmentProgressChangedEvent.create('counted')
+                        );
+                        logTreatmentStatusChangedInSimulatedRegion(
+                            draftState,
+                            'counted',
+                            simulatedRegion.id
                         );
                     }
                     allowTerminate = finished;
@@ -177,6 +194,11 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                                 simulatedRegion,
                                 TreatmentProgressChangedEvent.create('counted')
                             );
+                            logTreatmentStatusChangedInSimulatedRegion(
+                                draftState,
+                                'counted',
+                                simulatedRegion.id
+                            );
                         }
                         break;
                     }
@@ -194,12 +216,22 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                             simulatedRegion,
                             TreatmentProgressChangedEvent.create('secured')
                         );
+                        logTreatmentStatusChangedInSimulatedRegion(
+                            draftState,
+                            'secured',
+                            simulatedRegion.id
+                        );
                         break;
                     }
                     if (!secured && progress !== 'triaged') {
                         sendSimulationEvent(
                             simulatedRegion,
                             TreatmentProgressChangedEvent.create('triaged')
+                        );
+                        logTreatmentStatusChangedInSimulatedRegion(
+                            draftState,
+                            'triaged',
+                            simulatedRegion.id
                         );
                         break;
                     }
