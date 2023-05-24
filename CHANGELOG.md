@@ -16,6 +16,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Log entries are being generated for the following actions.
     -   Publishing, accepting and marking radiograms as done.
     -   Accepting or denying resource request radiograms.
+    -   Vehicle transfer, loading, unloading and occupation changes.
 
 ## [0.6.0] - 2023-05-17
 
