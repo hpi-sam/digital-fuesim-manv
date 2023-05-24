@@ -47,11 +47,11 @@ export class StackedBarChart {
         if (this.markedTime === undefined) {
             this.lineMarkerIndex = undefined;
         } else {
-            const index = this.chart.data.labels?.findIndex(
-                (label) => this.markedTime! <= (label as number)
-            ) ?? -1;
-            this.lineMarkerIndex =
-                index < 0 ? undefined : index;
+            const index =
+                this.chart.data.labels?.findIndex(
+                    (label) => this.markedTime! <= (label as number)
+                ) ?? -1;
+            this.lineMarkerIndex = index < 0 ? undefined : index;
         }
     }
 

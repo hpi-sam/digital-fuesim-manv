@@ -15,7 +15,6 @@ export class StackedBarChartComponent
     implements AfterViewInit, OnChanges, OnDestroy
 {
     @Input() statistics!: StackedBarChartStatistics;
-    @Input() onIndexClick!: (index: number) => void;
 
     @ViewChild('chart', { static: true })
     chartCanvas!: ElementRef<HTMLCanvasElement>;
