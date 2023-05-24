@@ -3,7 +3,7 @@ import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
 import { IsVehicleCount } from '../../utils/validators/is-vehicle-count';
-import { getCreate } from '../utils';
+import { getCreate } from '../utils/get-create';
 import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 

@@ -55,6 +55,19 @@ export function getElementByPredicate<
     return element;
 }
 
+export function getExerciseRadiogramById(
+    state: Mutable<ExerciseState>,
+    radiogramId: UUID
+) {
+    const radiogram = state.radiograms[radiogramId];
+    if (!radiogram) {
+        throw new ReducerError(
+            `Radiogram with id ${radiogramId} does not exist`
+        );
+    }
+    return radiogram;
+}
+
 export function getRadiogramById<R extends ExerciseRadiogram>(
     state: Mutable<ExerciseState>,
     radiogramId: UUID,
