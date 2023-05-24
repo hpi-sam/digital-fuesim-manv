@@ -45,6 +45,7 @@ import { VehicleOccupationEditorComponent } from './components/vehicle-occupatio
 import { StartPauseButtonComponent } from './components/start-pause-button/start-pause-button.component';
 import { GeographicCoordinateDirective } from './validation/geographic-coordinate-validator.directive';
 import { SimulatedRegionNameComponent } from './components/simulated-region-name/simulated-region-name.component';
+import { SearchableDropdownComponent } from './components/searchable-dropdown/searchable-dropdown.component';
 
 @NgModule({
     declarations: [
@@ -86,6 +87,7 @@ import { SimulatedRegionNameComponent } from './components/simulated-region-name
         StartPauseButtonComponent,
         SimulatedRegionNameComponent,
         GeographicCoordinateDirective,
+        SearchableDropdownComponent,
     ],
     imports: [
         CommonModule,
@@ -130,6 +132,7 @@ import { SimulatedRegionNameComponent } from './components/simulated-region-name
         StartPauseButtonComponent,
         SimulatedRegionNameComponent,
         GeographicCoordinateDirective,
+        SearchableDropdownComponent,
     ],
 })
 export class SharedModule {}
