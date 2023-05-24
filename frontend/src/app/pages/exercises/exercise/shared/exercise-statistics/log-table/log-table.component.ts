@@ -1,8 +1,15 @@
-import type { OnChanges, SimpleChanges } from '@angular/core';
+import type {
+    OnChanges,
+    OnDestroy,
+    SimpleChanges,
+    AfterViewInit,
+} from '@angular/core';
 import { Component, Input } from '@angular/core';
 import type { LogEntry, Tag } from 'digital-fuesim-manv-shared';
 import { StrictObject } from 'digital-fuesim-manv-shared';
 import { difference } from 'lodash-es';
+import { Subject, takeUntil } from 'rxjs';
+import { StatisticsTimeSelectionService } from '../statistics-time-selection.service';
 
 type KnownSpecifier = Omit<Tag, 'category'>;
 
@@ -16,7 +23,7 @@ interface Filter {
     templateUrl: './log-table.component.html',
     styleUrls: ['./log-table.component.scss'],
 })
-export class LogTableComponent implements OnChanges {
+export class LogTableComponent implements OnChanges, OnDestroy, AfterViewInit {
     @Input() public logEntries!: readonly LogEntry[];
 
     public knownCategories: {
@@ -24,6 +31,11 @@ export class LogTableComponent implements OnChanges {
     } = {};
 
     public filters: Filter[] = [];
+    private readonly destroy$ = new Subject<void>();
+
+    constructor(
+        private readonly statisticsTimeSelectionService: StatisticsTimeSelectionService
+    ) {}
 
     public get availableCategories() {
         const knownCategoryNames = Object.keys(this.knownCategories);
@@ -86,6 +98,29 @@ export class LogTableComponent implements OnChanges {
             });
 
         return this.logEntries.filter(predicate);
+    }
+
+    ngAfterViewInit(): void {
+        this.statisticsTimeSelectionService.selectedTime$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((update) => {
+                if (update !== undefined) {
+                    const { time, cause } = update;
+                    if (cause === 'log') return;
+                    const index = this.filteredLogEntries.findIndex(
+                        (entry) => entry.timestamp >= time
+                    );
+                    document
+                        .querySelector(
+                            `#log-entry-${
+                                index === -1
+                                    ? this.filteredLogEntries.length - 1
+                                    : index
+                            }`
+                        )
+                        ?.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -166,5 +201,9 @@ export class LogTableComponent implements OnChanges {
         if (specifierIndex !== -1) {
             categoryFilter.specifiers.splice(specifierIndex, 1);
         }
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
     }
 }
