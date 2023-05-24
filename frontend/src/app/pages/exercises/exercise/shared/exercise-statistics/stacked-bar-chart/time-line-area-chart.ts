@@ -49,9 +49,9 @@ export class StackedBarChart {
         } else {
             const index = this.chart.data.labels?.findIndex(
                 (label) => this.markedTime! <= (label as number)
-            );
+            ) ?? -1;
             this.lineMarkerIndex =
-                index === undefined || index < 0 ? undefined : index;
+                index < 0 ? undefined : index;
         }
     }
 
@@ -106,7 +106,7 @@ export class StackedBarChart {
                             `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue}`,
                         title(tooltipItems) {
                             return formatDuration(
-                                tooltipItems[0]!.label as unknown as number
+                                Number(tooltipItems[0]!.label)
                             );
                         },
                     },
