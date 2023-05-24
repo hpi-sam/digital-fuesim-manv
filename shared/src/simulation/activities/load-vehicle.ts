@@ -12,6 +12,10 @@ import {
     ExerciseOccupation,
     SimulatedRegionPosition,
     VehiclePosition,
+    changeOccupation,
+    createPatientStatusTag,
+    createPatientTag,
+    createVehicleActionTag,
     getCreate,
     isInSpecificSimulatedRegion,
     occupationTypeOptions,
@@ -39,6 +43,7 @@ import {
 import { completelyLoadVehicle } from '../../store/action-reducers/utils/completely-load-vehicle';
 import { IntermediateOccupation } from '../../models/utils/occupations/intermediate-occupation';
 import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
+import { logVehicle } from '../../store/action-reducers/utils/log';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -289,7 +294,34 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
                     )
                 );
 
-                vehicle.occupation = cloneDeepMutable(
+                logVehicle(
+                    draftState,
+                    [
+                        createVehicleActionTag(draftState, 'load'),
+                        ...Object.keys(vehicle.patientIds).flatMap(
+                            (patientId: UUID) => {
+                                const patient = getElement(
+                                    draftState,
+                                    'patient',
+                                    patientId
+                                );
+                                return [
+                                    createPatientTag(draftState, patientId),
+                                    createPatientStatusTag(
+                                        draftState,
+                                        patient.realStatus
+                                    ),
+                                ];
+                            }
+                        ),
+                    ],
+                    'Ein Fahrzeug wurde automatisch beladen',
+                    vehicle.id
+                );
+
+                changeOccupation(
+                    draftState,
+                    vehicle,
                     IntermediateOccupation.create(
                         draftState.currentTime + tickInterval
                     )

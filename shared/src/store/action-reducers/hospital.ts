@@ -13,9 +13,11 @@ import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError } from '../reducer-error';
 import { catchAllHospitalId } from '../../data/default-state/catch-all-hospital';
+import { createHospitalTag } from '../../models/utils/tag-helpers';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 import { deleteVehicle } from './vehicle';
+import { logVehicle } from './utils/log';
 
 export class AddHospitalAction implements Action {
     @IsValue('[Hospital] Add hospital' as const)
@@ -131,6 +133,13 @@ export namespace HospitalActionReducers {
                         'Das Fahrzeug kann nur ein Krankenhaus anfahren, wenn Personal und Material eingestiegen sind.'
                     );
                 }
+
+                logVehicle(
+                    draftState,
+                    [createHospitalTag(draftState, hospitalId)],
+                    'Ein Fahrzeug hat ein Krankenhaus angefahren',
+                    vehicleId
+                );
 
                 for (const patientId of Object.keys(vehicle.patientIds)) {
                     const patient = getElement(

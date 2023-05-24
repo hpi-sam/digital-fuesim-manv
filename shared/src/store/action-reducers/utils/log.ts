@@ -10,6 +10,7 @@ import {
     createSimulatedRegionTag,
     createTransferPointTag,
     createTreatmentProgressTag,
+    createVehicleTag,
 } from '../../../models/utils/tag-helpers';
 import { treatmentProgressToGermanNameDictionary } from '../../../simulation/utils/treatment';
 import type { ExerciseState } from '../../../state';
@@ -60,6 +61,25 @@ export function logRadiogram(
                 createRadiogramTypeTag(state, radiogramId),
                 createSimulatedRegionTag(state, radiogram.simulatedRegionId),
             ],
+            state.currentTime
+        )
+    );
+}
+
+export function logVehicle(
+    state: Mutable<ExerciseState>,
+    additionalTags: Tag[],
+    description: string,
+    vehicleId: UUID
+) {
+    if (!logActive(state)) return;
+
+    const vehicle = getElement(state, 'vehicle', vehicleId);
+
+    state.logEntries!.push(
+        new LogEntry(
+            description,
+            [...additionalTags, createVehicleTag(state, vehicle.id)],
             state.currentTime
         )
     );

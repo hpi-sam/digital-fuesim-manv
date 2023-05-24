@@ -1,6 +1,10 @@
 import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { UUID, NoOccupation } from 'digital-fuesim-manv-shared';
+import {
+    UUID,
+    NoOccupation,
+    occupationToGermanDictionary,
+} from 'digital-fuesim-manv-shared';
 import type { ExerciseOccupation } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
@@ -17,6 +21,7 @@ import { createSelectVehicle } from 'src/app/state/application/selectors/exercis
 export class VehicleOccupationEditorComponent implements OnChanges {
     @Input() vehicleId!: UUID;
     occupation$!: Observable<ExerciseOccupation>;
+    public occupationToGermanDictionary = occupationToGermanDictionary;
 
     constructor(
         private readonly store: Store<AppState>,

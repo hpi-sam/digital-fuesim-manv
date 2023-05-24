@@ -17,6 +17,8 @@ import { radiogramTypeToGermanDictionary } from '../radiogram/exercise-radiogram
 import type { ExerciseRadiogramStatus } from '../radiogram/status/exercise-radiogram-status';
 import { radiogramStatusTypeToGermanDictionary } from '../radiogram/status/exercise-radiogram-status';
 import { Tag } from '../tag';
+import type { ExerciseOccupation } from './occupations';
+import { occupationToGermanDictionary } from './occupations/exercise-occupation';
 import { statusNames } from './patient-status';
 import type { PatientStatus } from './patient-status';
 
@@ -132,5 +134,68 @@ export function createTreatmentProgressTag(
         'white',
         treatmentProgressToGermanNameDictionary[treatmentProgress],
         treatmentProgress
+    );
+}
+
+export function createVehicleTag(
+    draftState: Mutable<ExerciseState>,
+    vehicleId: UUID
+): Tag {
+    const vehicle = getElement(draftState, 'vehicle', vehicleId);
+    return new Tag('Fahrzeug', 'grey', 'white', vehicle.vehicleType, vehicleId);
+}
+
+export function createOccupationTag(
+    _draftState: Mutable<ExerciseState>,
+    occupation: ExerciseOccupation
+): Tag {
+    return new Tag(
+        'Tätigkeit',
+        'white',
+        'black',
+        occupationToGermanDictionary[occupation.type],
+        occupation.type
+    );
+}
+
+export function createVehicleActionTag(
+    _draftState: Mutable<ExerciseState>,
+    vehicleAction: 'arrived' | 'departed' | 'load' | 'unload'
+): Tag {
+    let vehicleActionName;
+    switch (vehicleAction) {
+        case 'arrived':
+            vehicleActionName = 'Angekommen';
+            break;
+        case 'departed':
+            vehicleActionName = 'Losgefahren';
+            break;
+        case 'load':
+            vehicleActionName = 'Beladen';
+            break;
+        case 'unload':
+            vehicleActionName = 'Entladen';
+            break;
+    }
+    return new Tag(
+        'Fahrzeugaktion',
+        'purple',
+        'white',
+        vehicleActionName,
+        vehicleAction
+    );
+}
+
+export function createHospitalTag(
+    draftState: Mutable<ExerciseState>,
+    hospitalId: UUID
+): Tag {
+    const hospital = getElement(draftState, 'hospital', hospitalId);
+    return new Tag(
+        'Krankenhaus',
+        'firebrick',
+        'black',
+        hospital.name,
+        hospitalId
     );
 }

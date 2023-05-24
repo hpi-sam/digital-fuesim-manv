@@ -10,6 +10,7 @@ import {
     startPointTypeOptions,
     isPositionInSimulatedRegion,
     simulatedRegionIdOfPosition,
+    createVehicleActionTag,
 } from '../../models/utils';
 import type { MapPosition } from '../../models/utils';
 import {
@@ -29,6 +30,7 @@ import { PersonnelAvailableEvent } from '../../simulation/events/personnel-avail
 import { VehicleArrivedEvent } from '../../simulation/events/vehicle-arrived';
 import { imageSizeToPosition } from '../../state-helpers/image-size-to-position';
 import { getElement } from './utils';
+import { logVehicle } from './utils/log';
 
 export type TransferableElementType = 'personnel' | 'vehicle';
 const transferableElementTypeAllowedValues: AllowedValues<TransferableElementType> =
@@ -80,6 +82,15 @@ export function letElementArrive(
             );
         }
     }
+    if (elementType === 'vehicle') {
+        logVehicle(
+            draftState,
+            [createVehicleActionTag(draftState, 'arrived')],
+            'Ein Fahrzeug ist angekommen',
+            elementId
+        );
+    }
+
     changePosition(element, newPosition, draftState);
 }
 

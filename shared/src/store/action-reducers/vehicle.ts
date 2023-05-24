@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material } from '../../models/material';
 import {
+    changeOccupation,
     currentCoordinatesOf,
     currentSimulatedRegionIdOf,
     currentSimulatedRegionOf,
@@ -596,7 +597,7 @@ export namespace VehicleActionReducers {
             action: SetVehicleOccupationAction,
             reducer: (draftState, { vehicleId, occupation }) => {
                 const vehicle = getElement(draftState, 'vehicle', vehicleId);
-                vehicle.occupation = cloneDeepMutable(occupation);
+                changeOccupation(draftState, vehicle, occupation);
                 return draftState;
             },
             rights: 'trainer',

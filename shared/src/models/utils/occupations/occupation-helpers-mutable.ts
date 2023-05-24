@@ -1,28 +1,46 @@
+import type { ExerciseState } from '../../../state';
+import { logVehicle } from '../../../store/action-reducers/utils/log';
 import type { Mutable } from '../../../utils';
 import { cloneDeepMutable } from '../../../utils';
+import type { Vehicle } from '../../vehicle';
+import { createOccupationTag } from '../tag-helpers';
 import type { ExerciseOccupation } from './exercise-occupation';
 import { NoOccupation } from './no-occupation';
 
 export function isUnoccupied(
-    occupied: Mutable<{ occupation: ExerciseOccupation }>,
-    currentTime: number
+    draftState: Mutable<ExerciseState>,
+    occupied: Mutable<Vehicle>
 ) {
     if (
         occupied.occupation.type === 'intermediateOccupation' &&
-        occupied.occupation.unoccupiedUntil < currentTime
+        occupied.occupation.unoccupiedUntil < draftState.currentTime
     ) {
-        occupied.occupation = cloneDeepMutable(NoOccupation.create());
+        changeOccupation(draftState, occupied, NoOccupation.create());
     }
 
     return occupied.occupation.type === 'noOccupation';
 }
 
 export function isUnoccupiedOrIntermediarilyOccupied(
-    occupied: Mutable<{ occupation: ExerciseOccupation }>,
-    currentTime: number
+    draftState: Mutable<ExerciseState>,
+    occupied: Mutable<Vehicle>
 ) {
     return (
-        isUnoccupied(occupied, currentTime) ||
+        isUnoccupied(draftState, occupied) ||
         occupied.occupation.type === 'intermediateOccupation'
     );
+}
+
+export function changeOccupation(
+    draftState: Mutable<ExerciseState>,
+    occupied: Mutable<Vehicle>,
+    occupation: ExerciseOccupation
+) {
+    logVehicle(
+        draftState,
+        [createOccupationTag(draftState, occupation)],
+        'Die Tätigkeit eines Fahrzeugs hat sich geändert.',
+        occupied.id
+    );
+    occupied.occupation = cloneDeepMutable(occupation);
 }
