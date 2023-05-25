@@ -1,19 +1,18 @@
 import type { Vehicle } from '../../vehicle';
-import type { ExerciseOccupation } from './exercise-occupation';
 
-export function isUnoccupiedImmutable(occupied: Vehicle, currentTime: number) {
+export function isUnoccupiedImmutable(vehicle: Vehicle, currentTime: number) {
     return (
-        occupied.occupation.type === 'noOccupation' ||
-        (occupied.occupation.type === 'intermediateOccupation' &&
-            occupied.occupation.unoccupiedUntil < currentTime)
+        vehicle.occupation.type === 'noOccupation' ||
+        (vehicle.occupation.type === 'intermediateOccupation' &&
+            vehicle.occupation.unoccupiedUntil < currentTime)
     );
 }
 
-export function isUnoccupiedOrIntermediarilyOccupiedImmutable(occupied: {
-    occupation: ExerciseOccupation;
-}) {
+export function isUnoccupiedOrIntermediarilyOccupiedImmutable(
+    vehicle: Vehicle
+) {
     return (
-        occupied.occupation.type === 'noOccupation' ||
-        occupied.occupation.type === 'intermediateOccupation'
+        vehicle.occupation.type === 'noOccupation' ||
+        vehicle.occupation.type === 'intermediateOccupation'
     );
 }

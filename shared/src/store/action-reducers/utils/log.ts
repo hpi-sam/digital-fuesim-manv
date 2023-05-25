@@ -4,10 +4,9 @@ import type { Tag } from '../../../models/tag';
 import { personnelTypeNames } from '../../../models/utils/personnel-type';
 import { statusNames } from '../../../models/utils/patient-status';
 import {
-    createPatientStatusTag,
-    createPatientTag,
     createRadiogramTypeTag,
     createSimulatedRegionTag,
+    createTagsForAPatient,
     createTransferPointTag,
     createTreatmentProgressTag,
     createVehicleTag,
@@ -18,6 +17,10 @@ import type { ExerciseState } from '../../../state';
 import type { UUID } from '../../../utils';
 import { StrictObject } from '../../../utils';
 import type { Mutable } from '../../../utils/immutability';
+import {
+    currentSimulatedRegionIdOf,
+    isInSimulatedRegion,
+} from '../../../models/utils/position/position-helpers';
 import { getElement, getExerciseRadiogramById } from './get-element';
 
 export function logPatient(
@@ -28,16 +31,10 @@ export function logPatient(
 ) {
     if (!logActive(state)) return;
 
-    const patient = getElement(state, 'patient', patientId);
-
     state.logEntries!.push(
         new LogEntry(
             description,
-            [
-                ...additionalTags,
-                createPatientTag(state, patient.id),
-                createPatientStatusTag(state, patient.pretriageStatus),
-            ],
+            [...additionalTags, ...createTagsForAPatient(state, patientId)],
             state.currentTime
         )
     );
@@ -85,6 +82,14 @@ export function logVehicle(
                 ...createPatientTags(state, Object.keys(vehicle.patientIds)),
                 createVehicleTag(state, vehicle.id),
                 createVehicleTypeTag(state, vehicle.id),
+                ...(isInSimulatedRegion(vehicle)
+                    ? [
+                          createSimulatedRegionTag(
+                              state,
+                              currentSimulatedRegionIdOf(vehicle)
+                          ),
+                      ]
+                    : []),
             ],
             state.currentTime
         )
@@ -95,13 +100,9 @@ function createPatientTags(
     state: Mutable<ExerciseState>,
     patientIds: UUID[]
 ): Tag[] {
-    return patientIds.flatMap((patientId) => {
-        const patient = getElement(state, 'patient', patientId);
-        return [
-            createPatientStatusTag(state, patient.pretriageStatus),
-            createPatientTag(state, patient.id),
-        ];
-    });
+    return patientIds.flatMap((patientId) =>
+        createTagsForAPatient(state, patientId)
+    );
 }
 
 function createTagsForRadiogramType(

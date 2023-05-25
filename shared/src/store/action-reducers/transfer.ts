@@ -11,6 +11,7 @@ import {
     isPositionInSimulatedRegion,
     simulatedRegionIdOfPosition,
     createVehicleActionTag,
+    createTransferPointTag,
 } from '../../models/utils';
 import type { MapPosition } from '../../models/utils';
 import {
@@ -82,16 +83,18 @@ export function letElementArrive(
             );
         }
     }
+    changePosition(element, newPosition, draftState);
     if (elementType === 'vehicle') {
         logVehicle(
             draftState,
-            [createVehicleActionTag(draftState, 'arrived')],
-            'Ein Fahrzeug ist angekommen',
+            [
+                createVehicleActionTag(draftState, 'arrived'),
+                createTransferPointTag(draftState, targetTransferPoint.id),
+            ],
+            `Ein Fahrzeug ist an ${targetTransferPoint.externalName} angekommen`,
             elementId
         );
     }
-
-    changePosition(element, newPosition, draftState);
 }
 
 export class AddToTransferAction implements Action {

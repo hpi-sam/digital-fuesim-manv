@@ -13,6 +13,7 @@ import {
 } from '../../store/action-reducers/utils/get-element';
 import type { UUID } from '../../utils';
 import type { Mutable } from '../../utils/immutability';
+import { Patient } from '../patient';
 import { radiogramTypeToGermanDictionary } from '../radiogram/exercise-radiogram';
 import type { ExerciseRadiogramStatus } from '../radiogram/status/exercise-radiogram-status';
 import { radiogramStatusTypeToGermanDictionary } from '../radiogram/status/exercise-radiogram-status';
@@ -47,6 +48,24 @@ export function createPatientTag(
         patient.personalInformation.name,
         patientId
     );
+}
+
+export function createTagsForAPatient(
+    draftState: Mutable<ExerciseState>,
+    patientId: UUID
+): Tag[] {
+    const patient = getElement(draftState, 'patient', patientId);
+    return [
+        createPatientStatusTag(
+            draftState,
+            Patient.getVisibleStatus(
+                patient,
+                draftState.configuration.pretriageEnabled,
+                draftState.configuration.bluePatientsEnabled
+            )
+        ),
+        createPatientTag(draftState, patientId),
+    ];
 }
 
 export function createRadiogramTypeTag(
@@ -165,8 +184,8 @@ export function createOccupationTag(
 ): Tag {
     return new Tag(
         'Tätigkeit',
-        'white',
         'black',
+        'white',
         occupationToGermanDictionary[occupation.type],
         occupation.type
     );
@@ -174,7 +193,7 @@ export function createOccupationTag(
 
 export function createVehicleActionTag(
     _draftState: Mutable<ExerciseState>,
-    vehicleAction: 'arrived' | 'departed' | 'load' | 'unload'
+    vehicleAction: 'arrived' | 'departed' | 'loaded' | 'unloaded'
 ): Tag {
     let vehicleActionName;
     switch (vehicleAction) {
@@ -184,10 +203,10 @@ export function createVehicleActionTag(
         case 'departed':
             vehicleActionName = 'Losgefahren';
             break;
-        case 'load':
+        case 'loaded':
             vehicleActionName = 'Beladen';
             break;
-        case 'unload':
+        case 'unloaded':
             vehicleActionName = 'Entladen';
             break;
     }

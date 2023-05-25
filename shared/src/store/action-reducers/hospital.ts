@@ -137,7 +137,7 @@ export namespace HospitalActionReducers {
                 logVehicle(
                     draftState,
                     [createHospitalTag(draftState, hospitalId)],
-                    'Ein Fahrzeug hat ein Krankenhaus angefahren',
+                    `${vehicle.name} hat ein Krankenhaus angefahren`,
                     vehicleId
                 );
 

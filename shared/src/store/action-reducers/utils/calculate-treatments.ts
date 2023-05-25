@@ -4,7 +4,7 @@ import {
     currentCoordinatesOf,
     isNotOnMap,
     isInSimulatedRegion,
-} from '../../../models/utils';
+} from '../../../models/utils/position/position-helpers';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import { maxTreatmentRange } from '../../../state-helpers/max-treatment-range';

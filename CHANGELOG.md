@@ -13,7 +13,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Add functionality to create logs for statistics.
 -   Add a button that allows trainers to move the map to any coordinates of their choice.
 -   Log entries are now displayed on the statistics page and can be filtered.
--   Log entries are being generated for the following actions.
+-   Log entries are being generated for the following actions:
     -   Publishing, accepting and marking radiograms as done.
     -   Accepting or denying resource request radiograms.
     -   Vehicle transfer, loading, unloading and occupation changes.
