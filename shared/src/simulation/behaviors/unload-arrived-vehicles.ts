@@ -1,14 +1,11 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
 import { getCreate } from '../../models/utils';
-import { isUnoccupied } from '../../models/utils/occupations/occupation-helpers-mutable';
-import { UnloadingOccupation } from '../../models/utils/occupations/unloading-occupation';
 import {
-    cloneDeepMutable,
-    StrictObject,
-    UUID,
-    uuid,
-    uuidValidationOptions,
-} from '../../utils';
+    changeOccupation,
+    isUnoccupied,
+} from '../../models/utils/occupations/occupation-helpers-mutable';
+import { UnloadingOccupation } from '../../models/utils/occupations/unloading-occupation';
+import { StrictObject, UUID, uuid, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import {
     IsUUIDSquaredMap,
@@ -69,14 +66,13 @@ export const unloadArrivingVehiclesBehavior: SimulationBehavior<UnloadArrivingVe
                 }
                 case 'vehicleArrivedEvent': {
                     const vehicle = draftState.vehicles[event.vehicleId];
-                    if (
-                        vehicle &&
-                        isUnoccupied(vehicle, draftState.currentTime)
-                    ) {
+                    if (vehicle && isUnoccupied(draftState, vehicle)) {
                         const activityId = nextUUID(draftState);
                         behaviorState.vehicleActivityMap[event.vehicleId] =
                             activityId;
-                        vehicle.occupation = cloneDeepMutable(
+                        changeOccupation(
+                            draftState,
+                            vehicle,
                             UnloadingOccupation.create()
                         );
                         addActivity(

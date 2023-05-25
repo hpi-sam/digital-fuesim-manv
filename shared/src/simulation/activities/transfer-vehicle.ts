@@ -6,6 +6,7 @@ import {
 } from '../../models/radiogram';
 import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutable';
 import {
+    changeOccupation,
     ExerciseOccupation,
     getCreate,
     isInSpecificSimulatedRegion,
@@ -166,7 +167,9 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
 
                 // Do transfer and send event
 
-                vehicle.occupation = cloneDeepMutable(
+                changeOccupation(
+                    draftState,
+                    vehicle,
                     activityState.successorOccupation ?? NoOccupation.create()
                 );
 
@@ -218,7 +221,9 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
 
                 // Do transfer and send event
 
-                vehicle.occupation = cloneDeepMutable(
+                changeOccupation(
+                    draftState,
+                    vehicle,
                     activityState.successorOccupation ?? NoOccupation.create()
                 );
 
