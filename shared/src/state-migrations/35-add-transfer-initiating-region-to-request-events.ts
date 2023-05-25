@@ -91,6 +91,8 @@ export const addTransferInitiatingRegionToRequestEvents35: Migration = {
                             typedState.transferPoints
                         ).find(
                             (transferPoint) =>
+                                // Disabled due to incomplete typings in the migration
+                                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                                 transferPoint.position.type ===
                                     'simulatedRegion' &&
                                 transferPoint.position.simulatedRegionId ===

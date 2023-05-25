@@ -106,7 +106,7 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
             const leaderId = (
                 simulatedRegion.behaviors.find(
                     (behavior) => behavior.type === 'assignLeaderBehavior'
-                ) as AssignLeaderBehaviorState
+                ) as AssignLeaderBehaviorState | undefined
             )?.leaderId;
 
             let leaderIndex: number;

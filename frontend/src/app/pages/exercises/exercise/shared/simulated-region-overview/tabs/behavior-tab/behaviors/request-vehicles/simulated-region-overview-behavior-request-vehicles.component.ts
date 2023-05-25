@@ -105,7 +105,7 @@ export class RequestVehiclesComponent implements OnChanges {
                     return undefined;
                 const recurringEventActivityState = activities[
                     requestBehaviorState.recurringEventActivityId
-                ] as RecurringEventActivityState;
+                ] as RecurringEventActivityState | undefined;
                 if (!recurringEventActivityState) return undefined;
 
                 return Math.max(

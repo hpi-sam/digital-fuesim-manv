@@ -27,27 +27,16 @@ export function comparePatientsByVisibleStatus(
     patientB: Patient,
     configuration: ExerciseConfiguration
 ): number {
-    let statusA!: PatientStatus;
-    let statusB!: PatientStatus;
-
-    if (patientA === undefined) {
-        statusA = 'white';
-    } else {
-        statusA = Patient.getVisibleStatus(
-            patientA,
-            configuration.pretriageEnabled,
-            configuration.bluePatientsEnabled
-        );
-    }
-    if (patientB === undefined) {
-        statusB = 'white';
-    } else {
-        statusB = Patient.getVisibleStatus(
-            patientB,
-            configuration.pretriageEnabled,
-            configuration.bluePatientsEnabled
-        );
-    }
+    const statusA = Patient.getVisibleStatus(
+        patientA,
+        configuration.pretriageEnabled,
+        configuration.bluePatientsEnabled
+    );
+    const statusB = Patient.getVisibleStatus(
+        patientB,
+        configuration.pretriageEnabled,
+        configuration.bluePatientsEnabled
+    );
 
     const valueA = patientCategoryOrderDictionary[statusA];
     const valueB = patientCategoryOrderDictionary[statusB];

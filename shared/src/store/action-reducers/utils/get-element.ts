@@ -23,9 +23,9 @@ export function getElement<
     elementType: ElementType,
     elementId: UUID
 ): State[ElementTypePluralMap[ElementType]][UUID] {
-    const element = state[elementTypePluralMap[elementType]][
-        elementId
-    ] as State[ElementTypePluralMap[ElementType]][UUID];
+    const element = state[elementTypePluralMap[elementType]][elementId] as
+        | State[ElementTypePluralMap[ElementType]][UUID]
+        | undefined;
     if (!element) {
         throw new ReducerError(
             `Element of type ${elementType} with id ${elementId} does not exist`

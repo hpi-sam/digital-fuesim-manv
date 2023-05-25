@@ -5,7 +5,7 @@ import type { Migration } from './migration-functions';
 export const addSimulationProperties20: Migration = {
     action: (_intermediaryState, action) => {
         if (
-            (action as { type: string } | null)?.type ===
+            (action as { type: string }).type ===
             '[SimulatedRegion] Add simulated region'
         ) {
             const typedAction = action as {

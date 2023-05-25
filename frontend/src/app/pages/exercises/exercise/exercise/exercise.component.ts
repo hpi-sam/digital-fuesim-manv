@@ -55,6 +55,8 @@ export class ExerciseComponent implements OnDestroy {
             this.store
         );
         const url = `${location.origin}/exercises/${id}`;
+        // Could be unavailable in insecure contexts
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (navigator.share) {
             navigator.share({ url }).catch((error) => {
                 if (error.name === 'AbortError') {
