@@ -339,10 +339,7 @@ export class DragElementService {
             // We stop propagating the event as soon as the onFeatureDropped function returns true
             return this.layerFeatureManagerDictionary
                 .get(layer as VectorLayer<VectorSource>)!
-                .onFeatureDrop(
-                    createdElement as Element,
-                    droppedOnFeature as Feature
-                );
+                .onFeatureDrop(createdElement, droppedOnFeature as Feature);
         });
     }
 

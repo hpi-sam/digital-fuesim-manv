@@ -105,7 +105,7 @@ export class PopupManager {
         });
 
         openLayersContainer.addEventListener('keydown', (event) => {
-            if ((event as KeyboardEvent).key === 'Escape') {
+            if (event.key === 'Escape') {
                 this.closePopup();
             }
         });
