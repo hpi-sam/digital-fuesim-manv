@@ -30,7 +30,7 @@ export function unloadVehicle(
     logVehicle(
         draftState,
         [createVehicleActionTag(draftState, 'unloaded')],
-        'Ein Fahrzeug wurde automatisch entladen',
+        `${vehicle.name} wurde automatisch entladen`,
         vehicle.id
     );
 

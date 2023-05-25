@@ -39,7 +39,7 @@ export function changeOccupation(
     logVehicle(
         draftState,
         [createOccupationTag(draftState, occupation)],
-        'Die Tätigkeit eines Fahrzeugs hat sich geändert.',
+        `Die Tätigkeit des ${vehicle.name} hat sich geändert.`,
         vehicle.id
     );
     vehicle.occupation = cloneDeepMutable(occupation);

@@ -295,7 +295,7 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
                 logVehicle(
                     draftState,
                     [createVehicleActionTag(draftState, 'loaded')],
-                    'Ein Fahrzeug wurde automatisch beladen',
+                    `${vehicle.name} wurde automatisch beladen`,
                     vehicle.id
                 );
 

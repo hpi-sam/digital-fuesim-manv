@@ -6,7 +6,7 @@ import { statusNames } from '../../../models/utils/patient-status';
 import {
     createRadiogramTypeTag,
     createSimulatedRegionTag,
-    createTagsForAPatient,
+    createTagsForSinglePatient,
     createTransferPointTag,
     createTreatmentProgressTag,
     createVehicleTag,
@@ -34,7 +34,10 @@ export function logPatient(
     state.logEntries!.push(
         new LogEntry(
             description,
-            [...additionalTags, ...createTagsForAPatient(state, patientId)],
+            [
+                ...additionalTags,
+                ...createTagsForSinglePatient(state, patientId),
+            ],
             state.currentTime
         )
     );
@@ -101,7 +104,7 @@ function createPatientTags(
     patientIds: UUID[]
 ): Tag[] {
     return patientIds.flatMap((patientId) =>
-        createTagsForAPatient(state, patientId)
+        createTagsForSinglePatient(state, patientId)
     );
 }
 

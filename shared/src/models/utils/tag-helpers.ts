@@ -50,7 +50,7 @@ export function createPatientTag(
     );
 }
 
-export function createTagsForAPatient(
+export function createTagsForSinglePatient(
     draftState: Mutable<ExerciseState>,
     patientId: UUID
 ): Tag[] {

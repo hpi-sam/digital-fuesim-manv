@@ -30,6 +30,7 @@ import { TransferPoint } from '../../models/transfer-point';
 import { PersonnelAvailableEvent } from '../../simulation/events/personnel-available';
 import { VehicleArrivedEvent } from '../../simulation/events/vehicle-arrived';
 import { imageSizeToPosition } from '../../state-helpers/image-size-to-position';
+import type { Vehicle } from '../../models/vehicle';
 import { getElement } from './utils';
 import { logVehicle } from './utils/log';
 
@@ -91,7 +92,9 @@ export function letElementArrive(
                 createVehicleActionTag(draftState, 'arrived'),
                 createTransferPointTag(draftState, targetTransferPoint.id),
             ],
-            `Ein Fahrzeug ist an ${targetTransferPoint.externalName} angekommen`,
+            `${(element as Mutable<Vehicle>).name} ist an ${
+                targetTransferPoint.externalName
+            } angekommen`,
             elementId
         );
     }
