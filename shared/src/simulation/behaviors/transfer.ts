@@ -31,6 +31,7 @@ import {
     SendRemoteEventActivityState,
 } from '../activities';
 import {
+    changeOccupation,
     isUnoccupied,
     isUnoccupiedOrIntermediarilyOccupied,
 } from '../../models/utils/occupations/occupation-helpers-mutable';
@@ -119,9 +120,7 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                     // sort the unoccupied vehicles by number of loaded resources descending and use the one with the most
 
                     const vehicleToLoad = vehiclesOfCorrectType
-                        .filter((vehicle) =>
-                            isUnoccupied(vehicle, draftState.currentTime)
-                        )
+                        .filter((vehicle) => isUnoccupied(draftState, vehicle))
                         .sort(
                             (vehicle1, vehicle2) =>
                                 amountOfResourcesInVehicle(
@@ -148,7 +147,9 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                 behaviorState.personnelLoadTime
                             )
                         );
-                        vehicleToLoad.occupation = cloneDeepMutable(
+                        changeOccupation(
+                            draftState,
+                            vehicleToLoad,
                             LoadOccupation.create(activityId)
                         );
                     }
@@ -164,8 +165,8 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                     // Don't do anything if vehicle is occupied
                     if (
                         !isUnoccupiedOrIntermediarilyOccupied(
-                            vehicle,
-                            draftState.currentTime
+                            draftState,
+                            vehicle
                         )
                     ) {
                         return;
@@ -184,7 +185,9 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             behaviorState.personnelLoadTime
                         )
                     );
-                    vehicle.occupation = cloneDeepMutable(
+                    changeOccupation(
+                        draftState,
+                        vehicle,
                         LoadOccupation.create(activityId)
                     );
                 }
@@ -197,7 +200,7 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                         event.vehicleId
                     );
                     // Don't do anything if vehicle is occupied
-                    if (!isUnoccupied(vehicle, draftState.currentTime)) {
+                    if (!isUnoccupied(draftState, vehicle)) {
                         return;
                     }
 
@@ -216,7 +219,9 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             event.successorOccupation
                         )
                     );
-                    vehicle.occupation = cloneDeepMutable(
+                    changeOccupation(
+                        draftState,
+                        vehicle,
                         LoadOccupation.create(activityId)
                     );
                 }
@@ -251,10 +256,7 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                 vehicleType
                             ]
                                 ?.filter((vehicle) =>
-                                    isUnoccupied(
-                                        vehicle,
-                                        draftState.currentTime
-                                    )
+                                    isUnoccupied(draftState, vehicle)
                                 )
                                 .sort(
                                     (vehicle1, vehicle2) =>
@@ -296,10 +298,11 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                         )
                                     )
                                 );
-                                loadableVehicles![index]!.occupation =
-                                    cloneDeepMutable(
-                                        LoadOccupation.create(activityId)
-                                    );
+                                changeOccupation(
+                                    draftState,
+                                    loadableVehicles![index]!,
+                                    LoadOccupation.create(activityId)
+                                );
                                 sentVehicles[vehicleType]++;
                             }
                         }
@@ -386,7 +389,9 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                         'vehicle',
                         event.vehicleId
                     );
-                    vehicle.occupation = cloneDeepMutable(
+                    changeOccupation(
+                        draftState,
+                        vehicle,
                         WaitForTransferOccupation.create()
                     );
 

@@ -1,7 +1,11 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
-import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
+import {
+    changeOccupation,
+    getCreate,
+    isInSpecificSimulatedRegion,
+} from '../../models/utils';
 import { NoOccupation } from '../../models/utils/occupations/no-occupation';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { unloadVehicle } from '../utils/vehicle';
 import type {
@@ -77,7 +81,7 @@ export const unloadVehicleActivity: SimulationActivity<UnloadVehicleActivityStat
             ] as UnloadVehicleActivityState;
             const vehicle = draftState.vehicles[activity.vehicleId];
             if (vehicle && vehicle.occupation.type === 'unloadingOccupation') {
-                vehicle.occupation = cloneDeepMutable(NoOccupation.create());
+                changeOccupation(draftState, vehicle, NoOccupation.create());
             }
         },
     };

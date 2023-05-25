@@ -12,6 +12,8 @@ import {
     ExerciseOccupation,
     SimulatedRegionPosition,
     VehiclePosition,
+    changeOccupation,
+    createVehicleActionTag,
     getCreate,
     isInSpecificSimulatedRegion,
     occupationTypeOptions,
@@ -39,6 +41,7 @@ import {
 import { completelyLoadVehicle } from '../../store/action-reducers/utils/completely-load-vehicle';
 import { IntermediateOccupation } from '../../models/utils/occupations/intermediate-occupation';
 import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
+import { logVehicle } from '../../store/action-reducers/utils/log';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -289,7 +292,16 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
                     )
                 );
 
-                vehicle.occupation = cloneDeepMutable(
+                logVehicle(
+                    draftState,
+                    [createVehicleActionTag(draftState, 'loaded')],
+                    `${vehicle.name} wurde automatisch beladen`,
+                    vehicle.id
+                );
+
+                changeOccupation(
+                    draftState,
+                    vehicle,
                     IntermediateOccupation.create(
                         draftState.currentTime + tickInterval
                     )

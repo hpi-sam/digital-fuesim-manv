@@ -10,6 +10,8 @@ import {
     startPointTypeOptions,
     isPositionInSimulatedRegion,
     simulatedRegionIdOfPosition,
+    createVehicleActionTag,
+    createTransferPointTag,
 } from '../../models/utils';
 import type { MapPosition } from '../../models/utils';
 import {
@@ -28,7 +30,9 @@ import { TransferPoint } from '../../models/transfer-point';
 import { PersonnelAvailableEvent } from '../../simulation/events/personnel-available';
 import { VehicleArrivedEvent } from '../../simulation/events/vehicle-arrived';
 import { imageSizeToPosition } from '../../state-helpers/image-size-to-position';
+import type { Vehicle } from '../../models/vehicle';
 import { getElement } from './utils';
+import { logVehicle } from './utils/log';
 
 export type TransferableElementType = 'personnel' | 'vehicle';
 const transferableElementTypeAllowedValues: AllowedValues<TransferableElementType> =
@@ -81,6 +85,19 @@ export function letElementArrive(
         }
     }
     changePosition(element, newPosition, draftState);
+    if (elementType === 'vehicle') {
+        logVehicle(
+            draftState,
+            [
+                createVehicleActionTag(draftState, 'arrived'),
+                createTransferPointTag(draftState, targetTransferPoint.id),
+            ],
+            `${(element as Mutable<Vehicle>).name} ist an ${
+                targetTransferPoint.externalName
+            } angekommen`,
+            elementId
+        );
+    }
 }
 
 export class AddToTransferAction implements Action {
