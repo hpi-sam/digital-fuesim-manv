@@ -55,7 +55,7 @@ import { defaultPatientCategories } from './data/default-state/patient-templates
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
 import type { LogEntry } from './models/log-entry';
-import { TreatmentAssignment } from './store/action-reducer';
+import { TreatmentAssignment } from './store/action-reducers/exercise';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
