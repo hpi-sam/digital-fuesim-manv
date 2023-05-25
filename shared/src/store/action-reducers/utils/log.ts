@@ -16,6 +16,7 @@ import type { ExerciseState } from '../../../state';
 import type { UUID } from '../../../utils';
 import { StrictObject } from '../../../utils';
 import type { Mutable } from '../../../utils/immutability';
+import { Patient } from '../../../models/patient';
 import { getElement, getExerciseRadiogramById } from './get-element';
 
 export function logPatient(
@@ -34,7 +35,14 @@ export function logPatient(
             [
                 ...additionalTags,
                 createPatientTag(state, patient.id),
-                createPatientStatusTag(state, patient.pretriageStatus),
+                createPatientStatusTag(
+                    state,
+                    Patient.getVisibleStatus(
+                        patient,
+                        state.configuration.pretriageEnabled,
+                        state.configuration.bluePatientsEnabled
+                    )
+                ),
             ],
             state.currentTime
         )
@@ -171,6 +179,6 @@ function generateCountString<K extends string>(
         .join(', ');
 }
 
-function logActive(state: Mutable<ExerciseState>): boolean {
+export function logActive(state: Mutable<ExerciseState>): boolean {
     return !!state.logEntries;
 }
