@@ -9,7 +9,7 @@ export class VehicleArrivedEvent implements SimulationEvent {
     readonly type = 'vehicleArrivedEvent';
 
     @IsUUID(4, uuidValidationOptions)
-    readonly vehicleId!: UUID;
+    readonly vehicleId: UUID;
 
     @IsInt()
     @Min(0)

@@ -9,7 +9,7 @@ export class MaterialRemovedEvent implements SimulationEvent {
     readonly type = 'materialRemovedEvent';
 
     @IsUUID(4, uuidValidationOptions)
-    readonly materialId!: UUID;
+    readonly materialId: UUID;
 
     /**
      * @deprecated Use {@link create} instead

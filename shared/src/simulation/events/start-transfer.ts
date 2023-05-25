@@ -18,7 +18,7 @@ export class StartTransferEvent implements SimulationEvent {
     readonly type = 'startTransferEvent';
 
     @IsUUID(4, uuidValidationOptions)
-    readonly vehicleId!: UUID;
+    readonly vehicleId: UUID;
 
     @IsLiteralUnion(transferDestinationTypeAllowedValues)
     readonly transferDestinationType: TransferDestination;
