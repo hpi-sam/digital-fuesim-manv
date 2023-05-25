@@ -1,9 +1,5 @@
 import type { SimulatedRegion, Vehicle } from '../../models';
-import {
-    createPatientStatusTag,
-    createPatientTag,
-    createVehicleActionTag,
-} from '../../models/utils/tag-helpers';
+import { createVehicleActionTag } from '../../models/utils/tag-helpers';
 import {
     isInSpecificSimulatedRegion,
     isInSpecificVehicle,
@@ -13,7 +9,7 @@ import { changePositionWithId } from '../../models/utils/position/position-helpe
 import type { ExerciseState } from '../../state';
 import { getElement } from '../../store/action-reducers/utils';
 import { logVehicle } from '../../store/action-reducers/utils/log';
-import type { Mutable, UUID } from '../../utils';
+import type { Mutable } from '../../utils';
 import { NewPatientEvent } from '../events';
 import { MaterialAvailableEvent } from '../events/material-available';
 import { PersonnelAvailableEvent } from '../events/personnel-available';
@@ -30,6 +26,13 @@ export function unloadVehicle(
         );
         return;
     }
+
+    logVehicle(
+        draftState,
+        [createVehicleActionTag(draftState, 'unload')],
+        'Ein Fahrzeug wurde automatisch entladen',
+        vehicle.id
+    );
 
     const loadedElements = [
         { uuidSet: vehicle.materialIds, elementType: 'material' },
@@ -72,20 +75,4 @@ export function unloadVehicle(
         }
     }
     vehicle.patientIds = {};
-
-    logVehicle(
-        draftState,
-        [
-            createVehicleActionTag(draftState, 'unload'),
-            ...Object.keys(vehicle.patientIds).flatMap((patientId: UUID) => {
-                const patient = getElement(draftState, 'patient', patientId);
-                return [
-                    createPatientTag(draftState, patientId),
-                    createPatientStatusTag(draftState, patient.realStatus),
-                ];
-            }),
-        ],
-        'Ein Fahrzeug wurde automatisch entladen',
-        vehicle.id
-    );
 }

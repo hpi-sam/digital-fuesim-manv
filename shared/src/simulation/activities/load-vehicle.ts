@@ -13,8 +13,6 @@ import {
     SimulatedRegionPosition,
     VehiclePosition,
     changeOccupation,
-    createPatientStatusTag,
-    createPatientTag,
     createVehicleActionTag,
     getCreate,
     isInSpecificSimulatedRegion,
@@ -296,25 +294,7 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
 
                 logVehicle(
                     draftState,
-                    [
-                        createVehicleActionTag(draftState, 'load'),
-                        ...Object.keys(vehicle.patientIds).flatMap(
-                            (patientId: UUID) => {
-                                const patient = getElement(
-                                    draftState,
-                                    'patient',
-                                    patientId
-                                );
-                                return [
-                                    createPatientTag(draftState, patientId),
-                                    createPatientStatusTag(
-                                        draftState,
-                                        patient.realStatus
-                                    ),
-                                ];
-                            }
-                        ),
-                    ],
+                    [createVehicleActionTag(draftState, 'load')],
                     'Ein Fahrzeug wurde automatisch beladen',
                     vehicle.id
                 );

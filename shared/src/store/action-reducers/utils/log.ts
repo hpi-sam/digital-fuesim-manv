@@ -82,12 +82,26 @@ export function logVehicle(
             description,
             [
                 ...additionalTags,
+                ...createPatientTags(state, Object.keys(vehicle.patientIds)),
                 createVehicleTag(state, vehicle.id),
                 createVehicleTypeTag(state, vehicle.id),
             ],
             state.currentTime
         )
     );
+}
+
+function createPatientTags(
+    state: Mutable<ExerciseState>,
+    patientIds: UUID[]
+): Tag[] {
+    return patientIds.flatMap((patientId) => {
+        const patient = getElement(state, 'patient', patientId);
+        return [
+            createPatientStatusTag(state, patient.pretriageStatus),
+            createPatientTag(state, patient.id),
+        ];
+    });
 }
 
 function createTagsForRadiogramType(
