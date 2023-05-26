@@ -25,6 +25,8 @@ export const reportTransferCategoryCompleted33: Migration = {
             const typedAction = action as {
                 behaviorState: BehaviorStateStub;
             };
+            // Disabled due to incomplete typings in the migration
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (typedAction.behaviorState.type === 'reportBehavior') {
                 migrateReportBehavior(typedAction.behaviorState);
             }
@@ -57,6 +59,8 @@ export const reportTransferCategoryCompleted33: Migration = {
 function migrateSimulatedRegion(simulatedRegion: SimulatedRegionStub) {
     simulatedRegion.behaviors.forEach((behavior) => {
         {
+            // Disabled due to incomplete typings in the migration
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (behavior.type === 'reportBehavior') {
                 migrateReportBehavior(behavior);
             }

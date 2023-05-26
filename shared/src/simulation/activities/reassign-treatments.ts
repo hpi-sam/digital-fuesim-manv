@@ -106,7 +106,7 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
             const leaderId = (
                 simulatedRegion.behaviors.find(
                     (behavior) => behavior.type === 'assignLeaderBehavior'
-                ) as AssignLeaderBehaviorState
+                ) as AssignLeaderBehaviorState | undefined
             )?.leaderId;
 
             let leaderIndex: number;
@@ -994,7 +994,7 @@ function applySubstitutions(
             );
             if (substitutionIndex === -1) break;
             const substitution = substitutions.splice(substitutionIndex, 1)[0]!;
-            stillMissing[substitution!.to] -= 1;
+            stillMissing[substitution.to] -= 1;
 
             stillMissing = addResourceDescription(
                 stillMissing,

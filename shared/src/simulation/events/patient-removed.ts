@@ -9,7 +9,7 @@ export class PatientRemovedEvent implements SimulationEvent {
     readonly type = 'patientRemovedEvent';
 
     @IsUUID(4, uuidValidationOptions)
-    readonly patientId!: UUID;
+    readonly patientId: UUID;
 
     /**
      * @deprecated Use {@link create} instead

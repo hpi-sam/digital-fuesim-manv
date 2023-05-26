@@ -9,7 +9,7 @@ export class VehicleRemovedEvent implements SimulationEvent {
     readonly type = 'vehicleRemovedEvent';
 
     @IsUUID(4, uuidValidationOptions)
-    readonly vehicleId!: UUID;
+    readonly vehicleId: UUID;
 
     /**
      * @deprecated Use {@link create} instead

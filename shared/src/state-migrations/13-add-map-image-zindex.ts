@@ -4,7 +4,7 @@ import type { Migration } from './migration-functions';
 
 export const addMapImageZIndex13: Migration = {
     action: (_intermediaryState, action) => {
-        if ((action as Action | null)?.type === '[MapImage] Add MapImage') {
+        if ((action as Action).type === '[MapImage] Add MapImage') {
             (action as { mapImage: { zIndex: number } }).mapImage.zIndex = 0;
         }
         return true;

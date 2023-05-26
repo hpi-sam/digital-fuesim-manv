@@ -3,7 +3,7 @@ import type { Migration } from './migration-functions';
 
 export const removeStateHistory6: Migration = {
     action: (_intermediaryState, action) => {
-        const actionType = (action as Action | null)?.type;
+        const actionType = (action as Action).type;
         if (
             actionType === '[Exercise] Pause' ||
             actionType === '[Exercise] Start'

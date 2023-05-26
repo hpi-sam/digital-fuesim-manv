@@ -159,6 +159,8 @@ export class OlMapInteractionsManager {
 
         this.olMap.forEachFeatureAtPixel(pixel, (droppedOnFeature, layer) => {
             // Skip layer when unset
+            // OpenLayers type definitions are incorrect, layer may be `null`
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (layer === null) {
                 return;
             }

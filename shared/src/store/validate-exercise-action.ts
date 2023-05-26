@@ -24,8 +24,12 @@ export function validateExerciseAction(
     if (typeof action.type !== 'string') {
         return ['Action type is not a string.'];
     }
+    // Defensive, see comment above
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const actionClass = getExerciseActionTypeDictionary()[action.type]?.action;
     // if the action.type is not a valid action type, the actionClass is undefined.
+    // Defensive, see comment above
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!actionClass) {
         return [`Unknown action type: ${action.type}`];
     }
