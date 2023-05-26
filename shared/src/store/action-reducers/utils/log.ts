@@ -21,7 +21,6 @@ import {
     currentSimulatedRegionIdOf,
     isInSimulatedRegion,
 } from '../../../models/utils/position/position-helpers';
-import { Patient } from '../../../models/patient';
 import { getElement, getExerciseRadiogramById } from './get-element';
 
 export function logPatient(
