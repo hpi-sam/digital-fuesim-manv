@@ -27,6 +27,7 @@ import { nextUUID } from '../../simulation/utils/randomness';
 import { getElement } from './utils';
 import { VehicleActionReducers } from './vehicle';
 import { TransferActionReducers } from './transfer';
+import { logAlarmGroupSent } from './utils/log';
 
 export class AddLogEntryAction implements Action {
     @IsValue('[Emergency Operation Center] Add Log Entry' as const)
@@ -129,6 +130,7 @@ export namespace EmergencyOperationCenterActionReducers {
                         draftState,
                         alarmGroupVehicles.shift()!,
                         vehicleTemplatesById,
+                        alarmGroup.id,
                         alarmGroup.name,
                         firstVehiclesTargetTransferPointId
                     );
@@ -140,6 +142,7 @@ export namespace EmergencyOperationCenterActionReducers {
                     draftState,
                     alarmGroupVehicle,
                     vehicleTemplatesById,
+                    alarmGroup.id,
                     alarmGroup.name,
                     targetTransferPointId
                 );
@@ -150,6 +153,9 @@ export namespace EmergencyOperationCenterActionReducers {
                 message: logEntry,
                 name: clientName,
             });
+
+            logAlarmGroupSent(draftState, alarmGroupId);
+
             return draftState;
         },
         rights: 'trainer',
@@ -160,6 +166,7 @@ function sendAlarmGroupVehicle(
     draftState: Mutable<ExerciseState>,
     alarmGroupVehicle: Mutable<AlarmGroupVehicle>,
     vehicleTemplatesById: { [key in UUID]: VehicleTemplate },
+    alarmGroupId: UUID,
     alarmGroupName: string,
     targetTransferPointId: UUID
 ) {
@@ -192,7 +199,11 @@ function sendAlarmGroupVehicle(
         elementType: vehicleParameters.vehicle.type,
         elementId: vehicleParameters.vehicle.id,
         startPoint: cloneDeepMutable(
-            AlarmGroupStartPoint.create(alarmGroupName, alarmGroupVehicle.time)
+            AlarmGroupStartPoint.create(
+                alarmGroupId,
+                alarmGroupName,
+                alarmGroupVehicle.time
+            )
         ),
         targetTransferPointId,
     });

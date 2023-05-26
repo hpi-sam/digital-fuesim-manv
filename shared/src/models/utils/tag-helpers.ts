@@ -95,12 +95,24 @@ export function createSimulatedRegionTag(
         'simulatedRegion',
         simulatedRegionId
     );
+    return createSimulatedRegionTagWithName(
+        draftState,
+        simulatedRegionId,
+        simulatedRegion.name
+    );
+}
+
+export function createSimulatedRegionTagWithName(
+    _draftState: Mutable<ExerciseState>,
+    simulatedRegionId: UUID,
+    name: string
+): Tag {
     return new Tag(
         'Simulierter Bereich',
         'lightblue',
         'black',
-        simulatedRegion.name,
-        simulatedRegion.id
+        name,
+        simulatedRegionId
     );
 }
 
@@ -132,5 +144,55 @@ export function createTreatmentProgressTag(
         'white',
         treatmentProgressToGermanNameDictionary[treatmentProgress],
         treatmentProgress
+    );
+}
+
+export function createAlarmGroupTag(
+    draftState: Mutable<ExerciseState>,
+    alarmGroupId: UUID
+): Tag {
+    const alarmGroup = getElement(draftState, 'alarmGroup', alarmGroupId);
+    return new Tag(
+        'Alarm Gruppe',
+        'lightgreen',
+        'black',
+        alarmGroup.name,
+        alarmGroup.id
+    );
+}
+
+export function createHospitalTag(
+    draftState: Mutable<ExerciseState>,
+    hospitalId: UUID
+): Tag {
+    const hospital = getElement(draftState, 'hospital', hospitalId);
+    return new Tag(
+        'Krankenhaus',
+        'lightgreen',
+        'black',
+        hospital.name,
+        hospitalId
+    );
+}
+
+export function createBehaviorTag(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegionId: UUID,
+    behaviorId: UUID
+): Tag {
+    const simulatedRegion = getElement(
+        draftState,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+    const behavior = simulatedRegion.behaviors.find(
+        (behaviorState) => behaviorId === behaviorState.id
+    )!;
+    return new Tag(
+        'Verhalten',
+        'lightgreen',
+        'black',
+        `${simulatedRegion.name}: ${behavior.type}`,
+        behavior.id
     );
 }

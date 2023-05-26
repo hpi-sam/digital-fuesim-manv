@@ -29,6 +29,12 @@ import { PersonnelAvailableEvent } from '../../simulation/events/personnel-avail
 import { VehicleArrivedEvent } from '../../simulation/events/vehicle-arrived';
 import { imageSizeToPosition } from '../../state-helpers/image-size-to-position';
 import { getElement } from './utils';
+import {
+    logElementAddedToTransfer,
+    logTransferEdited,
+    logTransferFinished,
+    logTransferPause,
+} from './utils/log';
 
 export type TransferableElementType = 'personnel' | 'vehicle';
 const transferableElementTypeAllowedValues: AllowedValues<TransferableElementType> =
@@ -200,6 +206,20 @@ export namespace TransferActionReducers {
                 }),
                 draftState
             );
+            logElementAddedToTransfer(
+                draftState,
+                startPoint.type === 'alarmGroupStartPoint'
+                    ? startPoint.alarmGroupId
+                    : startPoint.transferPointId,
+                startPoint.type === 'alarmGroupStartPoint'
+                    ? 'alarmGroup'
+                    : 'transferPoint',
+                elementId,
+                elementType,
+                currentTransferOf(element).targetTransferPointId,
+                'transferPoint',
+                duration
+            );
 
             return draftState;
         },
@@ -230,6 +250,16 @@ export namespace TransferActionReducers {
                     newTransfer.endTimeStamp + timeToAdd
                 );
             }
+            logTransferEdited(
+                draftState,
+                elementId,
+                elementType,
+                currentTransferOf(element).targetTransferPointId,
+                newTransfer.targetTransferPointId,
+                currentTransferOf(element).endTimeStamp -
+                    draftState.currentTime,
+                newTransfer.endTimeStamp - draftState.currentTime
+            );
             changePosition(
                 element,
                 TransferPosition.create(newTransfer),
@@ -252,6 +282,12 @@ export namespace TransferActionReducers {
             if (isNotInTransfer(element)) {
                 throw getNotInTransferError(element.id);
             }
+            logTransferFinished(
+                draftState,
+                elementId,
+                elementType,
+                currentTransferOf(element).targetTransferPointId
+            );
             letElementArrive(draftState, elementType, elementId);
             return draftState;
         },
@@ -270,6 +306,13 @@ export namespace TransferActionReducers {
                     currentTransferOf(element)
                 );
                 newTransfer.isPaused = !newTransfer.isPaused;
+                logTransferPause(
+                    draftState,
+                    elementId,
+                    elementType,
+                    newTransfer.targetTransferPointId,
+                    newTransfer.isPaused
+                );
                 changePosition(
                     element,
                     TransferPosition.create(newTransfer),

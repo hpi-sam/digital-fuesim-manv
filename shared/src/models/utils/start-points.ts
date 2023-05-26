@@ -30,6 +30,9 @@ export class AlarmGroupStartPoint {
     @IsString()
     public readonly alarmGroupName: string;
 
+    @IsUUID(4, uuidValidationOptions)
+    public readonly alarmGroupId: UUID;
+
     @IsNumber()
     @Min(0)
     public readonly duration: number;
@@ -37,7 +40,8 @@ export class AlarmGroupStartPoint {
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(alarmGroupName: string, duration: number) {
+    constructor(alarmGroupId: UUID, alarmGroupName: string, duration: number) {
+        this.alarmGroupId = alarmGroupId;
         this.alarmGroupName = alarmGroupName;
         this.duration = duration;
     }

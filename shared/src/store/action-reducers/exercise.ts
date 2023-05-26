@@ -28,6 +28,7 @@ import type { TransferableElementType } from './transfer';
 import { letElementArrive } from './transfer';
 import { updateTreatments } from './utils/calculate-treatments';
 import { PatientUpdate } from './utils/patient-updates';
+import { logPatientVisibleStatusChanged } from './utils/log';
 
 export class PauseExerciseAction implements Action {
     @IsValue('[Exercise] Pause' as const)
@@ -125,6 +126,10 @@ export namespace ExerciseActionReducers {
                     currentPatient.visibleStatusChanged
                 ) {
                     updateTreatments(draftState, currentPatient);
+                    logPatientVisibleStatusChanged(
+                        draftState,
+                        currentPatient.id
+                    );
                 }
             });
 

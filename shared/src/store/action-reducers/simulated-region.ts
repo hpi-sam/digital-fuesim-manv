@@ -29,6 +29,11 @@ import { ExpectedReducerError, ReducerError } from '../reducer-error';
 import { TransferPointActionReducers } from './transfer-point';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement, getElementByPredicate } from './utils/get-element';
+import {
+    logBehaviorAdded,
+    logBehaviorRemoved,
+    logSimulatedRegionNameChange,
+} from './utils/log';
 
 export class AddSimulatedRegionAction implements Action {
     @IsValue('[SimulatedRegion] Add simulated region' as const)
@@ -232,6 +237,11 @@ export namespace SimulatedRegionActionReducers {
                         externalName: `[Simuliert] ${newName}`,
                     }
                 );
+                logSimulatedRegionNameChange(
+                    draftState,
+                    simulatedRegionId,
+                    newName
+                );
                 simulatedRegion.name = newName;
                 return draftState;
             },
@@ -317,6 +327,12 @@ export namespace SimulatedRegionActionReducers {
                 );
                 simulatedRegion.behaviors.push(cloneDeepMutable(behaviorState));
 
+                logBehaviorAdded(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorState.id
+                );
+
                 return draftState;
             },
             rights: 'participant',
@@ -340,6 +356,8 @@ export namespace SimulatedRegionActionReducers {
                         `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}. Therefore it could not be removed.`
                     );
                 }
+
+                logBehaviorRemoved(draftState, simulatedRegionId, behaviorId);
 
                 const behaviorState = simulatedRegion.behaviors[index]!;
                 if (simulationBehaviorDictionary[behaviorState.type].onRemove) {
