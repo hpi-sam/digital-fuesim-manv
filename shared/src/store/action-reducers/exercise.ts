@@ -134,7 +134,7 @@ export namespace ExerciseActionReducers {
                     logPatient(
                         draftState,
                         [],
-                        `Die Sichtungskategorie von ${currentPatient.personalInformation.name} hat sich geändert.`,
+                        `Die Sichtungskategorie des Patienten hat sich geändert.`,
                         currentPatient.id
                     );
                 }
@@ -252,17 +252,17 @@ function evaluateTreatmentReassignment(
                     .map(([personnelType]) =>
                         createPersonnelTypeTag(draftState, personnelType)
                     ),
-                `Die Einsatzkräfte zu diesem Patienten wurden neu zugeteilt. Er hat nun die folgenden Einsatzkräfte: ${StrictObject.entries(
-                    newTreatmentAssignment[patientId]!
-                )!
-                    .filter(([, count]) => count > 0)
-                    .map(
-                        ([personnelType, count]) =>
-                            `${count.toPrecision(2)} ${
-                                personnelTypeNames[personnelType]
-                            }`
-                    )
-                    .join(', ')}.`,
+                `Diese Einsatzkräfte wurden dem Patienten neu zugeteilt: ${
+                    StrictObject.entries(newTreatmentAssignment[patientId]!)!
+                        .filter(([, count]) => count > 0)
+                        .map(
+                            ([personnelType, count]) =>
+                                `${+count.toFixed(2)} ${
+                                    personnelTypeNames[personnelType]
+                                }`
+                        )
+                        .join(', ') ?? 'Keine Einsatzkräfte'
+                }.`,
                 patientId
             );
         });
