@@ -20,6 +20,7 @@ import { TransferActionReducers } from '../../store/action-reducers/transfer';
 import {
     getElement,
     getElementByPredicate,
+    tryGetElement,
 } from '../../store/action-reducers/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
@@ -97,158 +98,130 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
             _tickInterval,
             terminate
         ) {
-            const vehicle = getElement(
+            const vehicle = tryGetElement(
                 draftState,
                 'vehicle',
                 activityState.vehicleId
             );
 
-            if (activityState.transferDestinationType === 'transferPoint') {
-                const ownTransferPoint = getElementByPredicate(
-                    draftState,
-                    'transferPoint',
-                    (transferPoint) =>
-                        isInSpecificSimulatedRegion(
-                            transferPoint,
-                            simulatedRegion.id
-                        )
-                );
-
-                if (
-                    ownTransferPoint.reachableTransferPoints[
-                        activityState.transferDestinationId
-                    ] === undefined
-                ) {
-                    sendSimulationEvent(
-                        simulatedRegion,
-                        TransferConnectionMissingEvent.create(
-                            activityState.transferDestinationId,
-                            activityState.key
-                        )
-                    );
-                    publishRadiogram(
+            if (
+                vehicle === undefined ||
+                vehicle.occupation.type !== 'waitForTransferOccupation' ||
+                !isInSpecificSimulatedRegion(vehicle, simulatedRegion.id)
+            ) {
+                terminate();
+                return;
+            }
+            if (
+                Object.keys(vehicle.materialIds).some((materialId) => {
+                    const material = getElement(
                         draftState,
-                        cloneDeepMutable(
-                            MissingTransferConnectionRadiogram.create(
-                                nextUUID(draftState),
-                                simulatedRegion.id,
-                                RadiogramUnpublishedStatus.create(),
-                                activityState.transferDestinationId
+                        'material',
+                        materialId
+                    );
+                    return !isInSpecificVehicle(material, vehicle.id);
+                }) ||
+                Object.keys(vehicle.personnelIds).some((personnelId) => {
+                    const personnel = getElement(
+                        draftState,
+                        'personnel',
+                        personnelId
+                    );
+                    return !isInSpecificVehicle(personnel, vehicle.id);
+                })
+            ) {
+                // If the vehicle is not completely loaded terminate
+                terminate();
+                return;
+            }
+
+            changeOccupation(
+                draftState,
+                vehicle,
+                activityState.successorOccupation ?? NoOccupation.create()
+            );
+
+            switch (activityState.transferDestinationType) {
+                case 'transferPoint': {
+                    const ownTransferPoint = getElementByPredicate(
+                        draftState,
+                        'transferPoint',
+                        (transferPoint) =>
+                            isInSpecificSimulatedRegion(
+                                transferPoint,
+                                simulatedRegion.id
                             )
-                        )
                     );
 
-                    terminate();
-                    return;
-                }
-
-                // If the vehicle is not completely loaded terminate
-                if (
-                    Object.keys(vehicle.materialIds).some((materialId) => {
-                        const material = getElement(
-                            draftState,
-                            'material',
-                            materialId
+                    if (
+                        ownTransferPoint.reachableTransferPoints[
+                            activityState.transferDestinationId
+                        ] === undefined
+                    ) {
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            TransferConnectionMissingEvent.create(
+                                activityState.transferDestinationId,
+                                activityState.key
+                            )
                         );
-                        return !isInSpecificVehicle(material, vehicle.id);
-                    }) ||
-                    Object.keys(vehicle.personnelIds).some((personnelId) => {
-                        const personnel = getElement(
+                        publishRadiogram(
                             draftState,
-                            'personnel',
-                            personnelId
+                            cloneDeepMutable(
+                                MissingTransferConnectionRadiogram.create(
+                                    nextUUID(draftState),
+                                    simulatedRegion.id,
+                                    RadiogramUnpublishedStatus.create(),
+                                    activityState.transferDestinationId
+                                )
+                            )
                         );
-                        return !isInSpecificVehicle(personnel, vehicle.id);
-                    })
-                ) {
-                    terminate();
-                    return;
-                }
 
-                // Do transfer and send event
-
-                changeOccupation(
-                    draftState,
-                    vehicle,
-                    activityState.successorOccupation ?? NoOccupation.create()
-                );
-
-                TransferActionReducers.addToTransfer.reducer(draftState, {
-                    type: '[Transfer] Add to transfer',
-                    elementType: 'vehicle',
-                    elementId: activityState.vehicleId,
-                    startPoint: TransferStartPoint.create(ownTransferPoint.id),
-                    targetTransferPointId: activityState.transferDestinationId,
-                });
-
-                const vehicleResourceDescription: ResourceDescription = {};
-                vehicleResourceDescription[vehicle.vehicleType] = 1;
-
-                sendSimulationEvent(
-                    simulatedRegion,
-                    VehicleTransferSuccessfulEvent.create(
-                        activityState.transferDestinationId,
-                        activityState.key ?? '',
-                        VehicleResource.create(vehicleResourceDescription)
-                    )
-                );
-
-                terminate();
-            }
-            if (activityState.transferDestinationType === 'hospital') {
-                // If the vehicle is not completely loaded terminate
-                if (
-                    Object.keys(vehicle.materialIds).some((materialId) => {
-                        const material = getElement(
-                            draftState,
-                            'material',
-                            materialId
-                        );
-                        return !isInSpecificVehicle(material, vehicle.id);
-                    }) ||
-                    Object.keys(vehicle.personnelIds).some((personnelId) => {
-                        const personnel = getElement(
-                            draftState,
-                            'personnel',
-                            personnelId
-                        );
-                        return !isInSpecificVehicle(personnel, vehicle.id);
-                    })
-                ) {
-                    terminate();
-                    return;
-                }
-
-                // Do transfer and send event
-
-                changeOccupation(
-                    draftState,
-                    vehicle,
-                    activityState.successorOccupation ?? NoOccupation.create()
-                );
-
-                HospitalActionReducers.transportPatientToHospital.reducer(
-                    draftState,
-                    {
-                        type: '[Hospital] Transport patient to hospital',
-                        vehicleId: vehicle.id,
-                        hospitalId: activityState.transferDestinationId,
+                        terminate();
+                        return;
                     }
-                );
 
-                const vehicleResourceDescription: ResourceDescription = {};
-                vehicleResourceDescription[vehicle.vehicleType] = 1;
+                    TransferActionReducers.addToTransfer.reducer(draftState, {
+                        type: '[Transfer] Add to transfer',
+                        elementType: 'vehicle',
+                        elementId: activityState.vehicleId,
+                        startPoint: TransferStartPoint.create(
+                            ownTransferPoint.id
+                        ),
+                        targetTransferPointId:
+                            activityState.transferDestinationId,
+                    });
 
-                sendSimulationEvent(
-                    simulatedRegion,
-                    VehicleTransferSuccessfulEvent.create(
-                        activityState.transferDestinationId,
-                        activityState.key ?? '',
-                        VehicleResource.create(vehicleResourceDescription)
-                    )
-                );
+                    terminate();
+                    break;
+                }
+                case 'hospital': {
+                    HospitalActionReducers.transportPatientToHospital.reducer(
+                        draftState,
+                        {
+                            type: '[Hospital] Transport patient to hospital',
+                            vehicleId: vehicle.id,
+                            hospitalId: activityState.transferDestinationId,
+                        }
+                    );
 
-                terminate();
+                    break;
+                }
             }
+
+            const vehicleResourceDescription: ResourceDescription = {
+                [vehicle.vehicleType]: 1,
+            };
+
+            sendSimulationEvent(
+                simulatedRegion,
+                VehicleTransferSuccessfulEvent.create(
+                    activityState.transferDestinationId,
+                    activityState.key ?? '',
+                    VehicleResource.create(vehicleResourceDescription)
+                )
+            );
+
+            terminate();
         },
     };

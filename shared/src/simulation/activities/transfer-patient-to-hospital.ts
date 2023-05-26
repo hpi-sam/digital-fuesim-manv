@@ -12,7 +12,7 @@ import {
     TransferPatientsInSpecificVehicleRequestEvent,
 } from '../events';
 import { catchAllHospitalId } from '../../data/default-state/catch-all-hospital';
-import { getElement } from '../../store/action-reducers/utils';
+import { getElement, tryGetElement } from '../../store/action-reducers/utils';
 import { Patient } from '../../models/patient';
 import type {
     SimulationActivity,
@@ -65,15 +65,23 @@ export const transferPatientToHospitalActivity: SimulationActivity<TransferPatie
             tickInterval,
             terminate
         ) {
-            const vehicle = getElement(
+            const vehicle = tryGetElement(
                 draftState,
                 'vehicle',
                 activityState.vehicleId
             );
+            if (
+                vehicle === undefined ||
+                vehicle.occupation.type !== 'patientTransferOccupation'
+            ) {
+                terminate();
+                return;
+            }
+
             const patients = Object.keys(activityState.patientIds).map(
                 (patientId) => getElement(draftState, 'patient', patientId)
             );
-            const transferManagementRegion = getElement(
+            const transferManagementRegion = tryGetElement(
                 draftState,
                 'simulatedRegion',
                 activityState.transferManagementRegionId
@@ -98,19 +106,21 @@ export const transferPatientToHospitalActivity: SimulationActivity<TransferPatie
                 )
             );
 
-            patients.forEach((patient) => {
-                sendSimulationEvent(
-                    transferManagementRegion,
-                    PatientTransferToHospitalSuccessfulEvent.create(
-                        Patient.getVisibleStatus(
-                            patient,
-                            draftState.configuration.pretriageEnabled,
-                            draftState.configuration.bluePatientsEnabled
-                        ),
-                        simulatedRegion.id
-                    )
-                );
-            });
+            if (transferManagementRegion !== undefined) {
+                patients.forEach((patient) => {
+                    sendSimulationEvent(
+                        transferManagementRegion,
+                        PatientTransferToHospitalSuccessfulEvent.create(
+                            Patient.getVisibleStatus(
+                                patient,
+                                draftState.configuration.pretriageEnabled,
+                                draftState.configuration.bluePatientsEnabled
+                            ),
+                            simulatedRegion.id
+                        )
+                    );
+                });
+            }
 
             terminate();
         },

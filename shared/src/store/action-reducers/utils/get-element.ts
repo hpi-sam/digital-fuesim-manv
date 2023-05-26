@@ -18,20 +18,26 @@ import { ReducerError } from '../../reducer-error';
 export function getElement<
     ElementType extends keyof ElementTypePluralMap,
     State extends ExerciseState | Mutable<ExerciseState>
->(
-    state: State,
-    elementType: ElementType,
-    elementId: UUID
-): State[ElementTypePluralMap[ElementType]][UUID] {
-    const element = state[elementTypePluralMap[elementType]][elementId] as
-        | State[ElementTypePluralMap[ElementType]][UUID]
-        | undefined;
+>(state: State, elementType: ElementType, elementId: UUID) {
+    const element = tryGetElement(state, elementType, elementId);
     if (!element) {
         throw new ReducerError(
             `Element of type ${elementType} with id ${elementId} does not exist`
         );
     }
     return element;
+}
+
+/**
+ * @returns The element with the given id, or undefined if it does not exist
+ */
+export function tryGetElement<
+    ElementType extends keyof ElementTypePluralMap,
+    State extends ExerciseState | Mutable<ExerciseState>
+>(state: State, elementType: ElementType, elementId: UUID) {
+    return state[elementTypePluralMap[elementType]][elementId] as
+        | State[ElementTypePluralMap[ElementType]][UUID]
+        | undefined;
 }
 
 export function getElementByPredicate<
