@@ -314,7 +314,6 @@ module.exports = {
         '@typescript-eslint/no-base-to-string': 'warn',
         '@typescript-eslint/no-confusing-non-null-assertion': 'warn',
         '@typescript-eslint/no-namespace': 'off',
-        // '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
         '@typescript-eslint/non-nullable-type-assertion-style': 'warn',
         '@typescript-eslint/sort-type-union-intersection-members': 'warn',
         '@typescript-eslint/no-confusing-void-expression': [
