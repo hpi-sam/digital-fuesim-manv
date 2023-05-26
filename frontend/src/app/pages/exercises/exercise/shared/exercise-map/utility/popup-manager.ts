@@ -88,6 +88,8 @@ export class PopupManager {
                 event.pixel,
                 (feature, layer) => {
                     // Skip layer when unset
+                    // OpenLayers type definitions are incorrect, layer may be `null`
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     if (layer === null) {
                         return false;
                     }
@@ -105,7 +107,7 @@ export class PopupManager {
         });
 
         openLayersContainer.addEventListener('keydown', (event) => {
-            if ((event as KeyboardEvent).key === 'Escape') {
+            if (event.key === 'Escape') {
                 this.closePopup();
             }
         });

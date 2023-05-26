@@ -49,7 +49,7 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
                     selectPersonnel,
                     patientSelector,
                     (personnel, patient) =>
-                        Object.keys(patient?.assignedPersonnelIds ?? {})
+                        Object.keys(patient.assignedPersonnelIds)
                             .map((personnelId) => personnel[personnelId])
                             .filter((person) => person !== undefined)
                             .map((person) => ({
@@ -82,16 +82,12 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
             createSelector(
                 patientSelector,
                 selectConfiguration,
-                (patient, configuration) => {
-                    if (patient === undefined) {
-                        return 'white';
-                    }
-                    return Patient.getVisibleStatus(
+                (patient, configuration) =>
+                    Patient.getVisibleStatus(
                         patient,
                         configuration.pretriageEnabled,
                         configuration.bluePatientsEnabled
-                    );
-                }
+                    )
             )
         );
     }

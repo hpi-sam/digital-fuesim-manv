@@ -45,6 +45,7 @@ export class StackedBarChartComponent
     }
 
     ngOnChanges(changes: SimpleChangesGeneric<this>) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (changes.statistics) {
             this.updateChartData();
         }

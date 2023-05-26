@@ -4,8 +4,7 @@ import type { Migration } from './migration-functions';
 export const renameStartPointTypes19: Migration = {
     action: (_intermediaryState, action) => {
         if (
-            (action as { type: string } | null)?.type ===
-            '[Transfer] Add to transfer'
+            (action as { type: string }).type === '[Transfer] Add to transfer'
         ) {
             const typedAction = action as {
                 startPoint: {
@@ -77,6 +76,8 @@ export const renameStartPointTypes19: Migration = {
         };
 
         Object.values(typedState.materials).forEach((material) => {
+            // Disabled due to incomplete typings in the migration
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (material.position.type === 'transfer') {
                 if (
                     material.position.transfer.startPoint.type === 'alarmGroup'
@@ -94,6 +95,8 @@ export const renameStartPointTypes19: Migration = {
         });
 
         Object.values(typedState.vehicles).forEach((vehicle) => {
+            // Disabled due to incomplete typings in the migration
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (vehicle.position.type === 'transfer') {
                 if (
                     vehicle.position.transfer.startPoint.type === 'alarmGroup'
@@ -111,6 +114,8 @@ export const renameStartPointTypes19: Migration = {
         });
 
         Object.values(typedState.personnel).forEach((personnel) => {
+            // Disabled due to incomplete typings in the migration
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (personnel.position.type === 'transfer') {
                 if (
                     personnel.position.transfer.startPoint.type === 'alarmGroup'

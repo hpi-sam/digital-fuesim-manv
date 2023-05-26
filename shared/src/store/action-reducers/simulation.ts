@@ -682,7 +682,7 @@ export namespace SimulationActionReducers {
                 );
                 const behaviorState = simulatedRegion.behaviors.find(
                     (behavior) => behavior.id === behaviorId
-                ) as Mutable<UnloadArrivingVehiclesBehaviorState>;
+                ) as Mutable<UnloadArrivingVehiclesBehaviorState> | undefined;
                 if (behaviorState) {
                     behaviorState.unloadDelay = unloadDelay;
                 } else {

@@ -16,7 +16,7 @@ export class VehicleResource {
     public readonly type = 'vehicleResource';
 
     @IsResourceDescription()
-    public readonly vehicleCounts!: ResourceDescription;
+    public readonly vehicleCounts: ResourceDescription;
 
     /**
      * @deprecated Use {@link create} instead
@@ -33,7 +33,7 @@ export class PersonnelResource {
     public readonly type = 'personnelResource';
 
     @IsResourceDescription(personnelTypeAllowedValues)
-    public readonly personnelCounts!: ResourceDescription<PersonnelType>;
+    public readonly personnelCounts: ResourceDescription<PersonnelType>;
 
     /**
      * @deprecated Use {@link create} instead
