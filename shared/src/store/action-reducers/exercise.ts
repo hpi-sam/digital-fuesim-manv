@@ -6,8 +6,13 @@ import {
     IsPositive,
     ValidateNested,
 } from 'class-validator';
-import type { Personnel, Vehicle } from '../../models';
-import { Patient } from '../../models';
+import type { Personnel, PersonnelType, Vehicle } from '../../models';
+import {
+    createPersonnelTypeTag,
+    personnelTypeAllowedValues,
+    personnelTypeNames,
+    Patient,
+} from '../../models';
 import {
     getStatus,
     isNotInTransfer,
@@ -17,8 +22,8 @@ import {
 import { changePosition } from '../../models/utils/position/position-helpers-mutable';
 import { simulateAllRegions } from '../../simulation/utils/simulation';
 import type { ExerciseState } from '../../state';
-import type { Mutable } from '../../utils';
-import { cloneDeepMutable } from '../../utils';
+import type { Mutable, UUID } from '../../utils';
+import { cloneDeepMutable, StrictObject } from '../../utils';
 import type { ElementTypePluralMap } from '../../utils/element-type-plural-map';
 import { elementTypePluralMap } from '../../utils/element-type-plural-map';
 import { IsValue } from '../../utils/validators';
@@ -28,6 +33,7 @@ import type { TransferableElementType } from './transfer';
 import { letElementArrive } from './transfer';
 import { updateTreatments } from './utils/calculate-treatments';
 import { PatientUpdate } from './utils/patient-updates';
+import { logActive, logPatient } from './utils/log';
 
 export class PauseExerciseAction implements Action {
     @IsValue('[Exercise] Pause' as const)
@@ -125,6 +131,12 @@ export namespace ExerciseActionReducers {
                     currentPatient.visibleStatusChanged
                 ) {
                     updateTreatments(draftState, currentPatient);
+                    logPatient(
+                        draftState,
+                        [],
+                        `Die Sichtungskategorie des Patienten hat sich geändert.`,
+                        currentPatient.id
+                    );
                 }
             });
 
@@ -133,6 +145,17 @@ export namespace ExerciseActionReducers {
             refreshTransfer(draftState, 'personnel', tickInterval);
 
             simulateAllRegions(draftState, tickInterval);
+
+            if (logActive(draftState)) {
+                const newTreatmentAssignment =
+                    calculateTreatmentAssignment(draftState);
+                evaluateTreatmentReassignment(
+                    draftState,
+                    newTreatmentAssignment
+                );
+                draftState.previousTreatmentAssignment = newTreatmentAssignment;
+            }
+
             return draftState;
         },
         rights: 'server',
@@ -170,4 +193,77 @@ function refreshTransfer(
         }
         letElementArrive(draftState, type, element.id);
     });
+}
+
+export interface TreatmentAssignment {
+    [patientId: UUID]: { [personnelType in PersonnelType]: number };
+}
+
+function calculateTreatmentAssignment(
+    draftState: Mutable<ExerciseState>
+): TreatmentAssignment {
+    const treatmentAssignment = StrictObject.fromEntries(
+        Object.keys(draftState.patients).map((patientId) => [
+            patientId,
+            StrictObject.fromEntries(
+                StrictObject.keys(personnelTypeAllowedValues).map(
+                    (personnelType) => [personnelType, 0]
+                )
+            ),
+        ])
+    ) as TreatmentAssignment;
+
+    StrictObject.values(draftState.personnel).forEach((personnel) => {
+        const assignedPatientCount = StrictObject.keys(
+            personnel.assignedPatientIds
+        ).length;
+        StrictObject.keys(personnel.assignedPatientIds)
+            .filter((patientId) => treatmentAssignment[patientId])
+            .forEach((patientId) => {
+                treatmentAssignment[patientId]![personnel.personnelType]! +=
+                    1 / assignedPatientCount;
+            });
+    });
+
+    return treatmentAssignment;
+}
+
+function evaluateTreatmentReassignment(
+    draftState: Mutable<ExerciseState>,
+    newTreatmentAssignment: TreatmentAssignment
+) {
+    if (!draftState.previousTreatmentAssignment) return;
+
+    Object.keys(newTreatmentAssignment)
+        .filter((patientId) =>
+            StrictObject.keys(personnelTypeAllowedValues).some(
+                (personnelType) =>
+                    newTreatmentAssignment[patientId]![personnelType] !==
+                    draftState.previousTreatmentAssignment![patientId]?.[
+                        personnelType
+                    ]
+            )
+        )
+        .forEach((patientId) => {
+            logPatient(
+                draftState,
+                StrictObject.entries(newTreatmentAssignment[patientId]!)
+                    .filter(([, count]) => count > 0)
+                    .map(([personnelType]) =>
+                        createPersonnelTypeTag(draftState, personnelType)
+                    ),
+                `Diese Einsatzkräfte wurden dem Patienten neu zugeteilt: ${
+                    StrictObject.entries(newTreatmentAssignment[patientId]!)!
+                        .filter(([, count]) => count > 0)
+                        .map(
+                            ([personnelType, count]) =>
+                                `${+count.toFixed(2)} ${
+                                    personnelTypeNames[personnelType]
+                                }`
+                        )
+                        .join(', ') || 'Keine Einsatzkräfte'
+                }.`,
+                patientId
+            );
+        });
 }

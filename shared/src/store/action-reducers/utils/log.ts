@@ -214,6 +214,6 @@ function generateCountString<K extends string>(
         .join(', ');
 }
 
-function logActive(state: Mutable<ExerciseState>): boolean {
+export function logActive(state: Mutable<ExerciseState>): boolean {
     return !!state.logEntries;
 }

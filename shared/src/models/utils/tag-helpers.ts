@@ -22,6 +22,12 @@ import type { ExerciseOccupation } from './occupations';
 import { occupationToGermanDictionary } from './occupations/exercise-occupation';
 import { statusNames } from './patient-status';
 import type { PatientStatus } from './patient-status';
+import type { PersonnelType } from './personnel-type';
+import { personnelTypeNames } from './personnel-type';
+import {
+    currentSimulatedRegionIdOf,
+    isInSimulatedRegion,
+} from './position/position-helpers';
 
 export function createPatientStatusTag(
     _draftState: Mutable<ExerciseState>,
@@ -30,7 +36,9 @@ export function createPatientStatusTag(
     return new Tag(
         'Sichtungskategorie',
         patientStatus,
-        patientStatus === 'yellow' ? 'black' : 'white',
+        patientStatus === 'yellow' || patientStatus === 'white'
+            ? 'black'
+            : 'white',
         statusNames[patientStatus],
         patientStatus
     );
@@ -65,6 +73,14 @@ export function createTagsForSinglePatient(
             )
         ),
         createPatientTag(draftState, patientId),
+        ...(isInSimulatedRegion(patient)
+            ? [
+                  createSimulatedRegionTag(
+                      draftState,
+                      currentSimulatedRegionIdOf(patient)
+                  ),
+              ]
+            : []),
     ];
 }
 
@@ -230,5 +246,18 @@ export function createHospitalTag(
         'white',
         hospital.name,
         hospitalId
+    );
+}
+
+export function createPersonnelTypeTag(
+    _draftState: Mutable<ExerciseState>,
+    personnelType: PersonnelType
+): Tag {
+    return new Tag(
+        'Personaltyp',
+        'chocolate',
+        'white',
+        personnelTypeNames[personnelType],
+        personnelType
     );
 }
