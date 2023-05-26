@@ -24,6 +24,10 @@ import { statusNames } from './patient-status';
 import type { PatientStatus } from './patient-status';
 import type { PersonnelType } from './personnel-type';
 import { personnelTypeNames } from './personnel-type';
+import {
+    currentSimulatedRegionIdOf,
+    isInSimulatedRegion,
+} from './position/position-helpers';
 
 export function createPatientStatusTag(
     _draftState: Mutable<ExerciseState>,
@@ -69,6 +73,14 @@ export function createTagsForSinglePatient(
             )
         ),
         createPatientTag(draftState, patientId),
+        ...(isInSimulatedRegion(patient)
+            ? [
+                  createSimulatedRegionTag(
+                      draftState,
+                      currentSimulatedRegionIdOf(patient)
+                  ),
+              ]
+            : []),
     ];
 }
 
