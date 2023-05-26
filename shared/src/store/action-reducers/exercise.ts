@@ -134,7 +134,7 @@ export namespace ExerciseActionReducers {
                     logPatient(
                         draftState,
                         [],
-                        'Der Behandlungsstatus des Patienten hat sich geändert.',
+                        `Die Sichtungskategorie von ${currentPatient.personalInformation.name} hat sich geändert.`,
                         currentPatient.id
                     );
                 }
@@ -248,7 +248,7 @@ function evaluateTreatmentReassignment(
             logPatient(
                 draftState,
                 StrictObject.entries(newTreatmentAssignment[patientId]!)
-                    .filter(([personnelType, count]) => count > 0)
+                    .filter(([, count]) => count > 0)
                     .map(([personnelType]) =>
                         createPersonnelTypeTag(draftState, personnelType)
                     ),
