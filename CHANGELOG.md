@@ -19,6 +19,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   Vehicle transfer, loading, unloading and occupation changes.
 -   By clicking on a log entry or a chart, a marker will be shown in the chart at that time. The log entry list scrolls to that time.
 
+### Fixed
+
+-   Errors in reduction of the tick actions no longer crash the backend.
+
 ## [0.6.0] - 2023-05-17
 
 ### Added
