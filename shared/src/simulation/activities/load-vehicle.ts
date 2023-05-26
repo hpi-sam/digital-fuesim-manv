@@ -29,7 +29,7 @@ import {
     TransferDestination,
     transferDestinationTypeAllowedValues,
 } from '../utils/transfer-destination';
-import { getElement } from '../../store/action-reducers/utils';
+import { getElement, tryGetElement } from '../../store/action-reducers/utils';
 import { sendSimulationEvent } from '../events/utils';
 import {
     MaterialRemovedEvent,
@@ -132,19 +132,26 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
             tickInterval,
             terminate
         ) {
-            const vehicle = getElement(
+            const vehicle = tryGetElement(
                 draftState,
                 'vehicle',
                 activityState.vehicleId
             );
+            if (
+                vehicle === undefined ||
+                !isInSpecificSimulatedRegion(vehicle, simulatedRegion.id) ||
+                vehicle.occupation.type !== 'loadOccupation' ||
+                vehicle.occupation.loadingActivityId !== activityState.id
+            ) {
+                terminate();
+                return;
+            }
 
             // Start load process only once
-
             if (!activityState.hasBeenStarted) {
                 // Send remove events
 
                 let personnelToLoadCount = 0;
-
                 Object.keys(vehicle.personnelIds).forEach((personnelId) => {
                     const personnel = getElement(
                         draftState,
@@ -273,14 +280,6 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
                 activityState.startTime + activityState.loadDelay <=
                     draftState.currentTime
             ) {
-                // terminate if the occupation has changed
-                if (
-                    vehicle.occupation.type !== 'loadOccupation' ||
-                    vehicle.occupation.loadingActivityId !== activityState.id
-                ) {
-                    terminate();
-                    return;
-                }
                 sendSimulationEvent(
                     simulatedRegion,
                     StartTransferEvent.create(

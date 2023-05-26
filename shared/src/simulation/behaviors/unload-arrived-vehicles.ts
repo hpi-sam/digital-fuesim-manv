@@ -14,6 +14,7 @@ import {
 import { UnloadVehicleActivityState } from '../activities/unload-vehicle';
 import { addActivity, terminateActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
+import { tryGetElement } from '../../store/action-reducers/utils';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -65,7 +66,11 @@ export const unloadArrivingVehiclesBehavior: SimulationBehavior<UnloadArrivingVe
                     break;
                 }
                 case 'vehicleArrivedEvent': {
-                    const vehicle = draftState.vehicles[event.vehicleId];
+                    const vehicle = tryGetElement(
+                        draftState,
+                        'vehicle',
+                        event.vehicleId
+                    );
                     if (vehicle && isUnoccupied(draftState, vehicle)) {
                         const activityId = nextUUID(draftState);
                         behaviorState.vehicleActivityMap[event.vehicleId] =

@@ -1,7 +1,7 @@
 import type { Client } from '../models';
 import type { ExerciseState } from '../state';
 import type { ExerciseAction } from './action-reducers';
-import { getExerciseActionTypeDictionary } from './action-reducers';
+import { getExerciseActionTypeDictionary } from './action-reducers/action-reducers';
 
 const exerciseActionTypeDictionary = getExerciseActionTypeDictionary();
 
