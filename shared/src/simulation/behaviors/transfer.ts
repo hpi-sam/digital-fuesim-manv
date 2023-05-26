@@ -456,11 +456,11 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             TransferVehicleActivityState.create(
                                 nextUUID(draftState),
                                 vehicle.id,
-                                transferEvent!.transferDestinationType,
-                                transferEvent!.transferDestinationId,
-                                transferEvent!.key,
+                                transferEvent.transferDestinationType,
+                                transferEvent.transferDestinationId,
+                                transferEvent.key,
                                 cloneDeepMutable(
-                                    transferEvent!.successorOccupation
+                                    transferEvent.successorOccupation
                                 )
                             )
                         );
