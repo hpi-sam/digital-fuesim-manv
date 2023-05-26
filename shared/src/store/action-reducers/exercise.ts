@@ -261,7 +261,7 @@ function evaluateTreatmentReassignment(
                                     personnelTypeNames[personnelType]
                                 }`
                         )
-                        .join(', ') ?? 'Keine Einsatzkräfte'
+                        .join(', ') || 'Keine Einsatzkräfte'
                 }.`,
                 patientId
             );
