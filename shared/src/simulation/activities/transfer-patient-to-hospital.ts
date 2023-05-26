@@ -1,11 +1,10 @@
 import { IsUUID } from 'class-validator';
-import { IntermediateOccupation, getCreate } from '../../models/utils';
 import {
-    UUID,
-    UUIDSet,
-    cloneDeepMutable,
-    uuidValidationOptions,
-} from '../../utils';
+    IntermediateOccupation,
+    changeOccupation,
+    getCreate,
+} from '../../models/utils';
+import { UUID, UUIDSet, uuidValidationOptions } from '../../utils';
 import { IsUUIDSet, IsValue } from '../../utils/validators';
 import { sendSimulationEvent } from '../events/utils';
 import {
@@ -80,7 +79,9 @@ export const transferPatientToHospitalActivity: SimulationActivity<TransferPatie
                 activityState.transferManagementRegionId
             );
 
-            vehicle.occupation = cloneDeepMutable(
+            changeOccupation(
+                draftState,
+                vehicle,
                 IntermediateOccupation.create(
                     draftState.currentTime + tickInterval
                 )

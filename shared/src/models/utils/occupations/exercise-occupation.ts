@@ -48,3 +48,15 @@ export const occupationTypeOptions: Parameters<typeof Type> = [
         },
     },
 ];
+
+export const occupationToGermanDictionary: {
+    [key in ExerciseOccupationType]: string;
+} = {
+    noOccupation: 'Nicht genutzt',
+    intermediateOccupation: 'Wird übergeben',
+    unloadingOccupation: 'Wird ausgeladen',
+    loadOccupation: 'Wird beladen',
+    waitForTransferOccupation: 'Wartet auf Transfer',
+    patientTransferOccupation:
+        'Wird einen Patienten zum Krankenhaus transportieren',
+};
