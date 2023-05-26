@@ -25,6 +25,7 @@ export class ImageTemplateFormComponent implements OnChanges {
     constructor(private readonly messageService: MessageService) {}
 
     ngOnChanges(changes: SimpleChangesGeneric<this>): void {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (!changes.initialValues) {
             return;
         }

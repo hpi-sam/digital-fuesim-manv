@@ -8,20 +8,20 @@ export function amountOfResourcesInVehicle(
     vehicleId: UUID
 ) {
     const vehicle = getElement(state, 'vehicle', vehicleId);
-    const amountOfPersonnel =
-        Object.keys(vehicle.personnelIds).filter((personnelId) =>
+    const amountOfPersonnel = Object.keys(vehicle.personnelIds).filter(
+        (personnelId) =>
             isInSpecificVehicle(
                 getElement(state, 'personnel', personnelId),
                 vehicleId
             )
-        )?.length ?? 0;
-    const amountOfMaterial =
-        Object.keys(vehicle.materialIds).filter((materialId) =>
+    ).length;
+    const amountOfMaterial = Object.keys(vehicle.materialIds).filter(
+        (materialId) =>
             isInSpecificVehicle(
                 getElement(state, 'material', materialId),
                 vehicleId
             )
-        )?.length ?? 0;
+    ).length;
 
     return amountOfPersonnel + amountOfMaterial;
 }

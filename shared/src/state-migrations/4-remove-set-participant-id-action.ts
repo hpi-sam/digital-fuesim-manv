@@ -3,9 +3,6 @@ import type { Migration } from './migration-functions';
 
 export const removeSetParticipantIdAction4: Migration = {
     action: (_intermediaryState, action) =>
-        !(
-            action !== null &&
-            (action as Action).type === '[Exercise] Set Participant Id'
-        ),
+        (action as Action).type !== '[Exercise] Set Participant Id',
     state: null,
 };

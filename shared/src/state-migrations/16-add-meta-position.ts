@@ -3,10 +3,7 @@ import type { Migration } from './migration-functions';
 
 export const addMetaPosition16: Migration = {
     action: (_intermediaryState, action) => {
-        if (
-            (action as { type: string } | null)?.type ===
-            '[Patient] Add patient'
-        ) {
+        if ((action as { type: string }).type === '[Patient] Add patient') {
             const typedAction = action as {
                 patient: {
                     position?: { x: number; y: number };
@@ -29,10 +26,7 @@ export const addMetaPosition16: Migration = {
                 };
             }
         }
-        if (
-            (action as { type: string } | null)?.type ===
-            '[Vehicle] Add vehicle'
-        ) {
+        if ((action as { type: string }).type === '[Vehicle] Add vehicle') {
             const typedAction = action as {
                 vehicle: {
                     position?: { x: number; y: number };

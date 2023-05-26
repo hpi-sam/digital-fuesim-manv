@@ -31,6 +31,8 @@ export const improveLoadVehicleActivity31: Migration = {
             (simulatedRegion) => {
                 Object.values(simulatedRegion.activities).forEach(
                     (activityState) => {
+                        // Disabled due to incomplete typings in the migration
+                        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                         if (activityState.type === 'loadVehicleActivity') {
                             // The loadTimePerPatient and personnelLoadTime must be set for the validation to pass
                             // However, the activity will still use the old loadDelay if it is set

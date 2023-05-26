@@ -33,6 +33,6 @@ export function createMapValidator<K extends number | string | symbol, V>({
                 keyValidator(key) &&
                 valueValidator(value) &&
                 (consistencyValidator === undefined ||
-                    consistencyValidator(key, value as V))
+                    consistencyValidator(key, value))
         );
 }

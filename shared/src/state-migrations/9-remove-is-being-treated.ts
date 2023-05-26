@@ -4,7 +4,7 @@ import type { Migration } from './migration-functions';
 
 export const removeIsBeingTreated9: Migration = {
     action: (_intermediaryState, action) => {
-        if ((action as Action | null)?.type === '[Patient] Add patient') {
+        if ((action as Action).type === '[Patient] Add patient') {
             delete (action as { patient: { isBeingTreated?: boolean } }).patient
                 .isBeingTreated;
         }
