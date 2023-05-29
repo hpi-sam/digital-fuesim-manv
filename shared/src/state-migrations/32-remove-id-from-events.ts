@@ -114,6 +114,8 @@ function tryMigrateEvent(event: EventStub) {
         event.type === 'resourceRequiredEvent' ||
         event.type === 'transferConnectionMissingEvent' ||
         event.type === 'treatmentsTimerEvent' ||
+        // Disabled due to incomplete typings in the migration
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         event.type === 'vehiclesSentEvent'
     ) {
         delete event.id;

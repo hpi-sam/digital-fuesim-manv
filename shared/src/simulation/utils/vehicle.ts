@@ -1,4 +1,5 @@
 import type { SimulatedRegion, Vehicle } from '../../models';
+import { createVehicleActionTag } from '../../models/utils/tag-helpers';
 import {
     isInSpecificSimulatedRegion,
     isInSpecificVehicle,
@@ -7,6 +8,7 @@ import {
 import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import { getElement } from '../../store/action-reducers/utils';
+import { logVehicle } from '../../store/action-reducers/utils/log';
 import type { Mutable } from '../../utils';
 import { NewPatientEvent } from '../events';
 import { MaterialAvailableEvent } from '../events/material-available';
@@ -24,6 +26,13 @@ export function unloadVehicle(
         );
         return;
     }
+
+    logVehicle(
+        draftState,
+        [createVehicleActionTag(draftState, 'unloaded')],
+        `${vehicle.name} wurde automatisch entladen`,
+        vehicle.id
+    );
 
     const loadedElements = [
         { uuidSet: vehicle.materialIds, elementType: 'material' },

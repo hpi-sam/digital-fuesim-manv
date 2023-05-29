@@ -1,9 +1,14 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
-import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
+import {
+    changeOccupation,
+    getCreate,
+    isInSpecificSimulatedRegion,
+} from '../../models/utils';
 import { NoOccupation } from '../../models/utils/occupations/no-occupation';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { unloadVehicle } from '../utils/vehicle';
+import { tryGetElement } from '../../store/action-reducers/utils';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -56,7 +61,11 @@ export const unloadVehicleActivity: SimulationActivity<UnloadVehicleActivityStat
             _tickInterval,
             terminate
         ) {
-            const vehicle = draftState.vehicles[activityState.vehicleId];
+            const vehicle = tryGetElement(
+                draftState,
+                'vehicle',
+                activityState.vehicleId
+            );
             if (
                 !vehicle ||
                 !isInSpecificSimulatedRegion(vehicle, simulatedRegion.id) ||
@@ -75,9 +84,13 @@ export const unloadVehicleActivity: SimulationActivity<UnloadVehicleActivityStat
             const activity = simulatedRegion.activities[
                 activityId
             ] as UnloadVehicleActivityState;
-            const vehicle = draftState.vehicles[activity.vehicleId];
+            const vehicle = tryGetElement(
+                draftState,
+                'vehicle',
+                activity.vehicleId
+            );
             if (vehicle && vehicle.occupation.type === 'unloadingOccupation') {
-                vehicle.occupation = cloneDeepMutable(NoOccupation.create());
+                changeOccupation(draftState, vehicle, NoOccupation.create());
             }
         },
     };

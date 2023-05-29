@@ -4,7 +4,7 @@ import type { Migration } from './migration-functions';
 
 export const treatmentSystemImprovements8: Migration = {
     action: (_intermediaryState, action: any) => {
-        switch (action?.type) {
+        switch (action.type) {
             case '[Vehicle] Add vehicle':
                 for (const material of action.materials) {
                     migrateMaterial(material);

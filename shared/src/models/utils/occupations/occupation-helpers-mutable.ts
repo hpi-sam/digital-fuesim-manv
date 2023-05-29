@@ -1,28 +1,46 @@
+import type { ExerciseState } from '../../../state';
+import { logVehicle } from '../../../store/action-reducers/utils/log';
 import type { Mutable } from '../../../utils';
 import { cloneDeepMutable } from '../../../utils';
+import type { Vehicle } from '../../vehicle';
+import { createOccupationTag } from '../tag-helpers';
 import type { ExerciseOccupation } from './exercise-occupation';
 import { NoOccupation } from './no-occupation';
 
 export function isUnoccupied(
-    occupied: Mutable<{ occupation: ExerciseOccupation }>,
-    currentTime: number
+    draftState: Mutable<ExerciseState>,
+    vehicle: Mutable<Vehicle>
 ) {
     if (
-        occupied.occupation.type === 'intermediateOccupation' &&
-        occupied.occupation.unoccupiedUntil < currentTime
+        vehicle.occupation.type === 'intermediateOccupation' &&
+        vehicle.occupation.unoccupiedUntil < draftState.currentTime
     ) {
-        occupied.occupation = cloneDeepMutable(NoOccupation.create());
+        changeOccupation(draftState, vehicle, NoOccupation.create());
     }
 
-    return occupied.occupation.type === 'noOccupation';
+    return vehicle.occupation.type === 'noOccupation';
 }
 
 export function isUnoccupiedOrIntermediarilyOccupied(
-    occupied: Mutable<{ occupation: ExerciseOccupation }>,
-    currentTime: number
+    draftState: Mutable<ExerciseState>,
+    vehicle: Mutable<Vehicle>
 ) {
     return (
-        isUnoccupied(occupied, currentTime) ||
-        occupied.occupation.type === 'intermediateOccupation'
+        isUnoccupied(draftState, vehicle) ||
+        vehicle.occupation.type === 'intermediateOccupation'
     );
+}
+
+export function changeOccupation(
+    draftState: Mutable<ExerciseState>,
+    vehicle: Mutable<Vehicle>,
+    occupation: ExerciseOccupation
+) {
+    logVehicle(
+        draftState,
+        [createOccupationTag(draftState, occupation)],
+        `Die Tätigkeit des ${vehicle.name} hat sich geändert.`,
+        vehicle.id
+    );
+    vehicle.occupation = cloneDeepMutable(occupation);
 }

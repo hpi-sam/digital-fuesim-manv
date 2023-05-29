@@ -19,7 +19,6 @@ import {
 } from '../utils/validators';
 import { IsPosition } from '../utils/validators/is-position';
 import { PatientHealthState } from './patient-health-state';
-
 import { Position } from './utils/position/position';
 import { PersonalInformation } from './utils/personal-information';
 import { PretriageInformation } from './utils/pretriage-information';

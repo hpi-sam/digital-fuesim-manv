@@ -720,16 +720,17 @@ export namespace SimulationActionReducers {
                 );
                 const behaviorState = simulatedRegion.behaviors.find(
                     (behavior) => behavior.id === behaviorId
-                ) as Mutable<UnloadArrivingVehiclesBehaviorState>;
-                logBehavior(
-                    draftState,
-                    [],
-                    `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} benötigt ${unloadDelay}ms, um Fahrzeuge zu entladen.`,
-                    simulatedRegionId,
-                    behaviorId
-                );
+                ) as Mutable<UnloadArrivingVehiclesBehaviorState> | undefined;
+
                 if (behaviorState) {
                     behaviorState.unloadDelay = unloadDelay;
+                    logBehavior(
+                        draftState,
+                        [],
+                        `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} benötigt ${unloadDelay}ms, um Fahrzeuge zu entladen.`,
+                        simulatedRegionId,
+                        behaviorId
+                    );
                 } else {
                     throw new ReducerError(
                         `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}.`

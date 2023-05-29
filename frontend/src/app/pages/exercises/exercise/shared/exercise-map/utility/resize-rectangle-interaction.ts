@@ -33,6 +33,8 @@ export class ResizeRectangleInteraction extends PointerInteraction {
         const mouseCoordinate = event.coordinate;
         const feature =
             this.source.getClosestFeatureToCoordinate(mouseCoordinate);
+        // OpenLayers type definitions are incorrect, feature may be `null`
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (!feature) {
             return false;
         }
@@ -77,8 +79,8 @@ export class ResizeRectangleInteraction extends PointerInteraction {
         this.currentResizeValues.feature
             .getGeometry()!
             .scale(
-                newXScale / this.currentResizeValues.currentScale!.x,
-                newYScale / this.currentResizeValues.currentScale!.y,
+                newXScale / this.currentResizeValues.currentScale.x,
+                newYScale / this.currentResizeValues.currentScale.y,
                 this.currentResizeValues.originCorner
             );
         this.currentResizeValues.currentScale = { x: newXScale, y: newYScale };

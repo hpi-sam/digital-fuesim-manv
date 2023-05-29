@@ -333,16 +333,15 @@ export class DragElementService {
         }
         this.olMap.forEachFeatureAtPixel(pixel, (droppedOnFeature, layer) => {
             // Skip layer when unset
+            // OpenLayers type definitions are incorrect, layer may be `null`
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (layer === null || !this.layerFeatureManagerDictionary) {
                 return;
             }
             // We stop propagating the event as soon as the onFeatureDropped function returns true
             return this.layerFeatureManagerDictionary
                 .get(layer as VectorLayer<VectorSource>)!
-                .onFeatureDrop(
-                    createdElement as Element,
-                    droppedOnFeature as Feature
-                );
+                .onFeatureDrop(createdElement, droppedOnFeature as Feature);
         });
     }
 
