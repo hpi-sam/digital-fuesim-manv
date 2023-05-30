@@ -66,3 +66,17 @@ export const behaviorTypeToGermanNameDictionary: {
     transferToHospitalBehavior: 'Patienten abtransportieren',
     managePatientTransportToHospitalBehavior: 'Transportorganisation',
 };
+
+export const reportableInformationTypeToGermanNameDictionary: {
+    [Key in ReportableInformation]: string;
+} = {
+    materialCount: 'Anzahl von Material',
+    patientCount: 'Anzahl von Patienten',
+    personnelCount: 'Anzahl von Personal',
+    singleRegionTransferCounts:
+        'Abtransportierte Patienten aus der eigenen Region',
+    transportManagementTransferCounts:
+        'Abtransportierte Patienten aus verwalteten Regionen',
+    treatmentStatus: 'Behandlungsstatus',
+    vehicleCount: 'Anzahl von Fahrzeugen',
+};

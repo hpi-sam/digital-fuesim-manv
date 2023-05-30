@@ -15,6 +15,7 @@ import type {
     UnloadArrivingVehiclesBehaviorState,
 } from '../../simulation';
 import {
+    reportableInformationTypeToGermanNameDictionary,
     behaviorTypeToGermanNameDictionary,
     updateRequestPatientCountsDelay,
     updateRequestVehiclesDelay,
@@ -970,7 +971,7 @@ export namespace SimulationActionReducers {
 
                 if (reportBehaviorState.activityIds[informationType]) {
                     throw new ExpectedReducerError(
-                        `The behavior with id ${behaviorId} already has a recurring report for information type ${informationType}.`
+                        `The behavior with id ${behaviorId} already has a recurring report for information type ${reportableInformationTypeToGermanNameDictionary[informationType]}.`
                     );
                 }
 
@@ -983,9 +984,11 @@ export namespace SimulationActionReducers {
                         ]
                     } Verhalten im Bereich ${
                         simulatedRegion.name
-                    } wird Informationen vom Typ ${informationType} alle ${formatDuration(
-                        interval
-                    )} melden.`,
+                    } wird Informationen vom Typ ${
+                        reportableInformationTypeToGermanNameDictionary[
+                            informationType
+                        ]
+                    } alle ${formatDuration(interval)} melden.`,
                     simulatedRegionId,
                     behaviorId
                 );
@@ -1028,7 +1031,7 @@ export namespace SimulationActionReducers {
                     reportBehaviorState.activityIds[informationType];
                 if (!activityId) {
                     throw new ReducerError(
-                        `The behavior with id ${behaviorId} has no recurring report for information type ${informationType}.`
+                        `The behavior with id ${behaviorId} has no recurring report for information type ${reportableInformationTypeToGermanNameDictionary[informationType]}.`
                     );
                 }
                 const recurringActivityState = getActivityById(
@@ -1047,9 +1050,11 @@ export namespace SimulationActionReducers {
                         ]
                     } Verhalten im Bereich ${
                         simulatedRegion.name
-                    } wird Informationen vom Typ ${informationType} alle ${formatDuration(
-                        interval
-                    )} melden.`,
+                    } wird Informationen vom Typ ${
+                        reportableInformationTypeToGermanNameDictionary[
+                            informationType
+                        ]
+                    } alle ${formatDuration(interval)} melden.`,
                     simulatedRegionId,
                     behaviorId
                 );
@@ -1083,7 +1088,7 @@ export namespace SimulationActionReducers {
                     reportBehaviorState.activityIds[informationType];
                 if (!activityId) {
                     throw new ReducerError(
-                        `The behavior with id ${behaviorId} has no recurring report for information type ${informationType}.`
+                        `The behavior with id ${behaviorId} has no recurring report for information type ${reportableInformationTypeToGermanNameDictionary[informationType]}.`
                     );
                 }
                 getActivityById(
@@ -1101,7 +1106,11 @@ export namespace SimulationActionReducers {
                         ]
                     } Verhalten im Bereich ${
                         simulatedRegion.name
-                    } wird Informationen vom Typ ${informationType} nicht melden.`,
+                    } wird Informationen vom Typ ${
+                        reportableInformationTypeToGermanNameDictionary[
+                            informationType
+                        ]
+                    } nicht melden.`,
                     simulatedRegionId,
                     behaviorId
                 );
