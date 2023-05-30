@@ -93,23 +93,18 @@ export function logTreatmentStatusChangedInSimulatedRegion(
     );
 }
 
-export function logLastPatientTransportedInSimulatedRegion(
+export function logLastPatientTransported(
     state: Mutable<ExerciseState>,
     patientStatus: PatientStatus,
     simulatedRegionId: UUID,
+    description: string,
     additionalTags: Tag[] = []
 ) {
     if (!logActive(state)) return;
 
-    const simulatedRegion = getElement(
-        state,
-        'simulatedRegion',
-        simulatedRegionId
-    );
-
     state.logEntries!.push(
         new LogEntry(
-            `Der letzte Patient der Kategorie ${statusNames[patientStatus]} im simulierten Bereich ${simulatedRegion.name} ist abtransportiert worden`,
+            description,
             [
                 ...additionalTags,
                 createPatientStatusTag(state, patientStatus),
@@ -120,11 +115,31 @@ export function logLastPatientTransportedInSimulatedRegion(
     );
 }
 
+export function logLastPatientTransportedInSimulatedRegion(
+    state: Mutable<ExerciseState>,
+    patientStatus: PatientStatus,
+    simulatedRegionId: UUID
+) {
+    if (!logActive(state)) return;
+
+    const simulatedRegion = getElement(
+        state,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+
+    logLastPatientTransported(
+        state,
+        patientStatus,
+        simulatedRegionId,
+        `Der letzte Patient der Kategorie ${statusNames[patientStatus]} im simulierten Bereich ${simulatedRegion.name} ist abtransportiert worden`
+    );
+}
+
 export function logLastPatientTransportedInMultipleSimulatedRegions(
     state: Mutable<ExerciseState>,
     patientStatus: PatientStatus,
-    managingSimulatedRegionId: UUID,
-    additionalTags: Tag[] = []
+    managingSimulatedRegionId: UUID
 ) {
     if (!logActive(state)) return;
 
@@ -134,16 +149,11 @@ export function logLastPatientTransportedInMultipleSimulatedRegions(
         managingSimulatedRegionId
     );
 
-    state.logEntries!.push(
-        new LogEntry(
-            `Der letzte Patient der Kategorie ${statusNames[patientStatus]} in allen Bereichen, die von der TO in ${simulatedRegion.name} verwaltet werden, ist abtransportiert worden`,
-            [
-                ...additionalTags,
-                createPatientStatusTag(state, patientStatus),
-                createSimulatedRegionTag(state, managingSimulatedRegionId),
-            ],
-            state.currentTime
-        )
+    logLastPatientTransported(
+        state,
+        patientStatus,
+        managingSimulatedRegionId,
+        `Der letzte Patient der Kategorie ${statusNames[patientStatus]} in allen Bereichen, die von der TO in ${simulatedRegion.name} verwaltet werden, ist abtransportiert worden`
     );
 }
 
