@@ -706,6 +706,24 @@ export function logVehicle(
     );
 }
 
+export function logVehicleAdded(
+    state: Mutable<ExerciseState>,
+    vehicleId: UUID
+) {
+    if (!logActive(state)) return;
+
+    logVehicle(state, [], `Ein Fahrzeug wurde hinzugefügt.`, vehicleId);
+}
+
+export function logVehicleRemoved(
+    state: Mutable<ExerciseState>,
+    vehicleId: UUID
+) {
+    if (!logActive(state)) return;
+
+    logVehicle(state, [], `Ein Fahrzeug wurde entfernt.`, vehicleId);
+}
+
 function createPatientTags(
     state: Mutable<ExerciseState>,
     patientIds: UUID[]

@@ -49,6 +49,7 @@ import { deletePatient } from './patient';
 import { completelyLoadVehicle as completelyLoadVehicleHelper } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 import { removeElementPosition } from './utils/spatial-elements';
+import { logVehicleAdded, logVehicleRemoved } from './utils/log';
 
 /**
  * Performs all necessary actions to remove a vehicle from the state.
@@ -59,6 +60,8 @@ export function deleteVehicle(
     draftState: Mutable<ExerciseState>,
     vehicleId: UUID
 ) {
+    logVehicleRemoved(draftState, vehicleId);
+
     const vehicle = getElement(draftState, 'vehicle', vehicleId);
 
     // Delete related material and personnel
@@ -265,6 +268,9 @@ export namespace VehicleActionReducers {
                 );
                 draftState.personnel[person.id] = person;
             }
+
+            logVehicleAdded(draftState, vehicle.id);
+
             return draftState;
         },
         rights: 'trainer',
