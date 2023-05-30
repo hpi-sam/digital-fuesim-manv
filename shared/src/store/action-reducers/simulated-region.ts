@@ -33,6 +33,7 @@ import { getElement, getElementByPredicate } from './utils/get-element';
 import {
     logBehaviorAdded,
     logBehaviorRemoved,
+    logSimulatedRegionAddElement,
     logSimulatedRegionNameChange,
 } from './utils/log';
 
@@ -275,6 +276,13 @@ export namespace SimulatedRegionActionReducers {
                         'Das Fahrzeug kann nur in die simulierte Region verschoben werden, wenn Personal und Material eingestiegen sind.'
                     );
                 }
+
+                logSimulatedRegionAddElement(
+                    draftState,
+                    simulatedRegionId,
+                    elementToBeAddedId,
+                    elementToBeAddedType
+                );
 
                 changePosition(
                     element,

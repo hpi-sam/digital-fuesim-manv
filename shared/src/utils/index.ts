@@ -10,3 +10,4 @@ export * from './strict-object';
 export * from './sleep';
 export * from './assert-exhaustiveness';
 export * from './sort-object';
+export * from './format-duration';

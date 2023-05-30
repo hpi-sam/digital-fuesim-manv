@@ -17,12 +17,13 @@ import {
     createTreatmentProgressTag,
     createVehicleTag,
     createVehicleTypeTag,
+    createPersonnelTypeTag,
 } from '../../../models/utils/tag-helpers';
 import type { TreatmentProgress } from '../../../simulation/utils/treatment';
 import { treatmentProgressToGermanNameDictionary } from '../../../simulation/utils/treatment';
 import type { ExerciseState } from '../../../state';
 import type { UUID } from '../../../utils';
-import { StrictObject } from '../../../utils';
+import { formatDuration, StrictObject } from '../../../utils';
 import type { Mutable } from '../../../utils/immutability';
 import { Patient } from '../../../models/patient';
 import type { PatientStatus, Personnel, Vehicle } from '../../../models';
@@ -89,15 +90,10 @@ export function logPatient(
 ) {
     if (!logActive(state)) return;
 
-    state.logEntries!.push(
-        new LogEntry(
-            description,
-            [
-                ...additionalTags,
-                ...createTagsForSinglePatient(state, patientId),
-            ],
-            state.currentTime
-        )
+    log(
+        state,
+        [...additionalTags, ...createTagsForSinglePatient(state, patientId)],
+        description
     );
 }
 
@@ -217,7 +213,7 @@ export function logSimulatedRegionAddElement(
 
                 logSimulatedRegion(
                     state,
-                    [],
+                    [createPersonnelTypeTag(state, element.personnelType)],
                     `Dem Bereich wurde ein ${element.personnelType} hinzugefügt`,
                     simulatedRegionId
                 );
@@ -229,7 +225,10 @@ export function logSimulatedRegionAddElement(
 
                 logSimulatedRegion(
                     state,
-                    [],
+                    [
+                        createVehicleTag(state, elementId),
+                        createVehicleTypeTag(state, elementId),
+                    ],
                     `Dem Bereich wurde ein ${element.vehicleType} hinzugefügt`,
                     simulatedRegionId
                 );
@@ -279,7 +278,7 @@ export function logBehaviorAdded(
 
     logBehavior(
         state,
-        [createBehaviorTag(state, simulatedRegionId, behaviorId)],
+        [],
         `Das Verhalten ${behavior.type} wurde dem Bereich ${simulatedRegion.name} hinzugefügt.`,
         simulatedRegionId,
         behaviorId
@@ -307,7 +306,7 @@ export function logBehaviorRemoved(
 
     logBehavior(
         state,
-        [createBehaviorTag(state, simulatedRegionId, behaviorId)],
+        [],
         `Das Verhalten ${behavior.type} wurde aus dem Bereich ${simulatedRegion.name} entfernt.`,
         simulatedRegionId,
         behaviorId
@@ -446,44 +445,45 @@ export function logElementAddedToTransfer(
                 elementType === 'personnel'
                     ? (element as Personnel).personnelType
                     : (element as Vehicle).name
-            } wird in ${duration}ms von ${alarmGroup.name} nach ${
+            } wird in ${formatDuration(duration)} von ${alarmGroup.name} nach ${
                 transferTargetType === 'transferPoint'
                     ? (target as TransferPoint).externalName
                     : (target as Hospital).name
             } transferiert.`,
             transferSourceId
         );
-        return;
-    }
+    } else {
+        const source = getElement(state, 'transferPoint', transferSourceId);
 
-    const source = getElement(state, 'transferPoint', transferSourceId);
-
-    logTransferPoint(
-        state,
-        [
-            transferTargetType === 'transferPoint'
-                ? isInSimulatedRegion(target as WithPosition)
-                    ? createSimulatedRegionTag(
-                          state,
-                          currentSimulatedRegionOf(
+        logTransferPoint(
+            state,
+            [
+                transferTargetType === 'transferPoint'
+                    ? isInSimulatedRegion(target as WithPosition)
+                        ? createSimulatedRegionTag(
                               state,
-                              target as WithPosition
-                          ).id
-                      )
-                    : createTransferPointTag(state, transferTargetId)
-                : createHospitalTag(state, transferTargetId),
-        ],
-        `Ein ${
-            elementType === 'personnel'
-                ? (element as Personnel).personnelType
-                : (element as Vehicle).name
-        } wird in ${duration}ms von ${source.externalName} nach ${
-            transferTargetType === 'transferPoint'
-                ? (target as TransferPoint).externalName
-                : (target as Hospital).name
-        } transferiert.`,
-        transferSourceId
-    );
+                              currentSimulatedRegionOf(
+                                  state,
+                                  target as WithPosition
+                              ).id
+                          )
+                        : createTransferPointTag(state, transferTargetId)
+                    : createHospitalTag(state, transferTargetId),
+            ],
+            `Ein ${
+                elementType === 'personnel'
+                    ? (element as Personnel).personnelType
+                    : (element as Vehicle).name
+            } wird in ${formatDuration(duration)} von ${
+                source.externalName
+            } nach ${
+                transferTargetType === 'transferPoint'
+                    ? (target as TransferPoint).externalName
+                    : (target as Hospital).name
+            } transferiert.`,
+            transferSourceId
+        );
+    }
 }
 
 export function logTransferEdited(
@@ -510,11 +510,11 @@ export function logTransferEdited(
             elementType === 'personnel'
                 ? (element as Personnel).personnelType
                 : (element as Vehicle).name
-        } nach ${
-            oldTarget.externalName
-        } in ${oldDuration}ms wurde geändert, und geht jetzt nach ${
+        } nach ${oldTarget.externalName} in ${formatDuration(
+            oldDuration
+        )} wurde geändert, und geht jetzt nach ${
             newTarget.externalName
-        } in ${newDuration}ms.`,
+        } in ${formatDuration(newDuration)}.`,
         newTransferTargetId
     );
 }
@@ -578,17 +578,15 @@ export function logRadiogram(
 
     const radiogram = getExerciseRadiogramById(state, radiogramId);
 
-    state.logEntries!.push(
-        new LogEntry(
-            `${description} ${createRadiogramDescription(state, radiogram)}`,
-            [
-                ...additionalTags,
-                ...createTagsForRadiogramType(state, radiogram),
-                createRadiogramTypeTag(state, radiogramId),
-                createSimulatedRegionTag(state, radiogram.simulatedRegionId),
-            ],
-            state.currentTime
-        )
+    log(
+        state,
+        [
+            ...additionalTags,
+            ...createTagsForRadiogramType(state, radiogram),
+            createRadiogramTypeTag(state, radiogramId),
+            createSimulatedRegionTag(state, radiogram.simulatedRegionId),
+        ],
+        `${description} ${createRadiogramDescription(state, radiogram)}`
     );
 }
 export function logTreatmentStatusChangedInSimulatedRegion(
@@ -605,16 +603,14 @@ export function logTreatmentStatusChangedInSimulatedRegion(
         simulatedRegionId
     );
 
-    state.logEntries!.push(
-        new LogEntry(
-            `Der Behandlungszustand im simulierten Bereich ${simulatedRegion.name} ist zu ${treatmentProgressToGermanNameDictionary[treatmentProgress]} gewechselt.`,
-            [
-                ...additionalTags,
-                createTreatmentProgressTag(state, treatmentProgress),
-                createSimulatedRegionTag(state, simulatedRegionId),
-            ],
-            state.currentTime
-        )
+    log(
+        state,
+        [
+            ...additionalTags,
+            createTreatmentProgressTag(state, treatmentProgress),
+            createSimulatedRegionTag(state, simulatedRegionId),
+        ],
+        `Der Behandlungszustand im simulierten Bereich ${simulatedRegion.name} ist zu ${treatmentProgressToGermanNameDictionary[treatmentProgress]} gewechselt.`
     );
 }
 
@@ -627,16 +623,14 @@ export function logLastPatientTransported(
 ) {
     if (!logActive(state)) return;
 
-    state.logEntries!.push(
-        new LogEntry(
-            description,
-            [
-                ...additionalTags,
-                createPatientStatusTag(state, patientStatus),
-                createSimulatedRegionTag(state, simulatedRegionId),
-            ],
-            state.currentTime
-        )
+    log(
+        state,
+        [
+            ...additionalTags,
+            createPatientStatusTag(state, patientStatus),
+            createSimulatedRegionTag(state, simulatedRegionId),
+        ],
+        description
     );
 }
 
@@ -692,25 +686,23 @@ export function logVehicle(
 
     const vehicle = getElement(state, 'vehicle', vehicleId);
 
-    state.logEntries!.push(
-        new LogEntry(
-            description,
-            [
-                ...additionalTags,
-                ...createPatientTags(state, Object.keys(vehicle.patientIds)),
-                createVehicleTag(state, vehicle.id),
-                createVehicleTypeTag(state, vehicle.id),
-                ...(isInSimulatedRegion(vehicle)
-                    ? [
-                          createSimulatedRegionTag(
-                              state,
-                              currentSimulatedRegionIdOf(vehicle)
-                          ),
-                      ]
-                    : []),
-            ],
-            state.currentTime
-        )
+    log(
+        state,
+        [
+            ...additionalTags,
+            ...createPatientTags(state, Object.keys(vehicle.patientIds)),
+            createVehicleTag(state, vehicle.id),
+            createVehicleTypeTag(state, vehicle.id),
+            ...(isInSimulatedRegion(vehicle)
+                ? [
+                      createSimulatedRegionTag(
+                          state,
+                          currentSimulatedRegionIdOf(vehicle)
+                      ),
+                  ]
+                : []),
+        ],
+        description
     );
 }
 

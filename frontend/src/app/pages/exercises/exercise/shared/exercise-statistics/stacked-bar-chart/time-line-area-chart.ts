@@ -8,8 +8,8 @@ import {
     LinearScale,
     Tooltip,
 } from 'chart.js';
+import { formatDuration } from 'digital-fuesim-manv-shared';
 import { rgbColorPalette } from 'src/app/shared/functions/colors';
-import { formatDuration } from 'src/app/shared/functions/format-duration';
 
 Chart.register(
     CategoryScale,

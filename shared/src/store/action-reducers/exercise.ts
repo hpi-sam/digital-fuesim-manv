@@ -139,12 +139,6 @@ export namespace ExerciseActionReducers {
                         draftState,
                         currentPatient.id
                     );
-                    logPatient(
-                        draftState,
-                        [],
-                        `Die Sichtungskategorie des Patienten hat sich geändert.`,
-                        currentPatient.id
-                    );
                 }
             });
 

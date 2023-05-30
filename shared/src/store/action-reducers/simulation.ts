@@ -35,6 +35,7 @@ import {
     cloneDeepMutable,
     uuidArrayValidationOptions,
     UUIDSet,
+    formatDuration,
 } from '../../utils';
 import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
@@ -655,7 +656,13 @@ export namespace SimulationActionReducers {
                     logBehavior(
                         draftState,
                         [],
-                        `Das ${treatPatientsBehaviorState.type} Verhalten im Bereich ${simulatedRegion.name} wird in der Phase Erkunden alle ${unknown}ms die Zuteilung neu berechnen`,
+                        `Das ${
+                            treatPatientsBehaviorState.type
+                        } Verhalten im Bereich ${
+                            simulatedRegion.name
+                        } wird in der Phase Erkunden alle ${formatDuration(
+                            unknown
+                        )} die Zuteilung neu berechnen`,
                         simulatedRegionId,
                         behaviorStateId
                     );
@@ -665,7 +672,13 @@ export namespace SimulationActionReducers {
                     logBehavior(
                         draftState,
                         [],
-                        `Das ${treatPatientsBehaviorState.type} Verhalten im Bereich ${simulatedRegion.name} wird in der Phase Vorsichtung alle ${counted}ms die Zuteilung neu berechnen`,
+                        `Das ${
+                            treatPatientsBehaviorState.type
+                        } Verhalten im Bereich ${
+                            simulatedRegion.name
+                        } wird in der Phase Vorsichtung alle ${formatDuration(
+                            counted
+                        )} die Zuteilung neu berechnen`,
                         simulatedRegionId,
                         behaviorStateId
                     );
@@ -675,7 +688,13 @@ export namespace SimulationActionReducers {
                     logBehavior(
                         draftState,
                         [],
-                        `Das ${treatPatientsBehaviorState.type} Verhalten im Bereich ${simulatedRegion.name} wird in der Phase Behandeln, Personal fehlt alle ${triaged}ms die Zuteilung neu berechnen`,
+                        `Das ${
+                            treatPatientsBehaviorState.type
+                        } Verhalten im Bereich ${
+                            simulatedRegion.name
+                        } wird in der Phase Behandeln, Personal fehlt alle ${formatDuration(
+                            triaged
+                        )} die Zuteilung neu berechnen`,
                         simulatedRegionId,
                         behaviorStateId
                     );
@@ -685,7 +704,13 @@ export namespace SimulationActionReducers {
                     logBehavior(
                         draftState,
                         [],
-                        `Das ${treatPatientsBehaviorState.type} Verhalten im Bereich ${simulatedRegion.name} wird in der Phase Erstversogung sichergestellt alle ${secured}ms die Zuteilung neu berechnen`,
+                        `Das ${
+                            treatPatientsBehaviorState.type
+                        } Verhalten im Bereich ${
+                            simulatedRegion.name
+                        } wird in der Phase Erstversogung sichergestellt alle ${formatDuration(
+                            secured
+                        )} die Zuteilung neu berechnen`,
                         simulatedRegionId,
                         behaviorStateId
                     );
@@ -696,7 +721,13 @@ export namespace SimulationActionReducers {
                     logBehavior(
                         draftState,
                         [],
-                        `Das ${treatPatientsBehaviorState.type} Verhalten im Bereich ${simulatedRegion.name} wird für das Zählen pro Patient ${countingTimePerPatient}ms benötigen`,
+                        `Das ${
+                            treatPatientsBehaviorState.type
+                        } Verhalten im Bereich ${
+                            simulatedRegion.name
+                        } wird für das Zählen pro Patient ${formatDuration(
+                            countingTimePerPatient
+                        )} benötigen`,
                         simulatedRegionId,
                         behaviorStateId
                     );
@@ -727,7 +758,11 @@ export namespace SimulationActionReducers {
                     logBehavior(
                         draftState,
                         [],
-                        `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} benötigt ${unloadDelay}ms, um Fahrzeuge zu entladen.`,
+                        `Das ${behaviorState.type} Verhalten im Bereich ${
+                            simulatedRegion.name
+                        } benötigt ${formatDuration(
+                            unloadDelay
+                        )}, um Fahrzeuge zu entladen.`,
                         simulatedRegionId,
                         behaviorId
                     );
@@ -826,7 +861,7 @@ export namespace SimulationActionReducers {
                     [],
                     `Das ${reportBehaviorState.type} Verhalten im Bereich ${
                         simulatedRegion.name
-                    } wird den Abschluss des Transports aller Patienten der Region einer Sichtungskategorie ${
+                    } wird den Abschluss des Transports aller Patienten einer Sichtungskategorie in der Region ${
                         reportChanges ? '' : 'nicht '
                     }melden.`,
                     simulatedRegionId,
@@ -867,7 +902,7 @@ export namespace SimulationActionReducers {
                         simulatedRegion.name
                     } wird den Abschluss des Transports aller Patienten einer Sichtungskategorie der Regionen die von ${
                         simulatedRegion.name
-                    } als TO bedient werden  ${
+                    } als TO bedient werden ${
                         reportChanges ? '' : 'nicht '
                     }melden.`,
                     simulatedRegionId,
@@ -910,7 +945,11 @@ export namespace SimulationActionReducers {
                 logBehavior(
                     draftState,
                     [],
-                    `Das ${reportBehaviorState.type} Verhalten im Bereich ${simulatedRegion.name} wird Informationen vom Typ ${informationType} alle ${interval}ms melden.`,
+                    `Das ${reportBehaviorState.type} Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird Informationen vom Typ ${informationType} alle ${formatDuration(
+                        interval
+                    )} melden.`,
                     simulatedRegionId,
                     behaviorId
                 );
@@ -966,7 +1005,11 @@ export namespace SimulationActionReducers {
                 logBehavior(
                     draftState,
                     [],
-                    `Das ${reportBehaviorState.type} Verhalten im Bereich ${simulatedRegion.name} wird Informationen vom Typ ${informationType} alle ${interval}ms melden.`,
+                    `Das ${reportBehaviorState.type} Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird Informationen vom Typ ${informationType} alle ${formatDuration(
+                        interval
+                    )} melden.`,
                     simulatedRegionId,
                     behaviorId
                 );
@@ -1108,7 +1151,11 @@ export namespace SimulationActionReducers {
                 logBehavior(
                     draftState,
                     [],
-                    `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} wird alle ${requestInterval}ms Anfragen versenden.`,
+                    `Das ${behaviorState.type} Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird alle ${formatDuration(
+                        requestInterval
+                    )} Anfragen versenden.`,
                     simulatedRegionId,
                     behaviorId
                 );
@@ -1294,7 +1341,11 @@ export namespace SimulationActionReducers {
                 logBehavior(
                     draftState,
                     [],
-                    `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} wird versprochene Fahrzeuge nach ${promiseInvalidationInterval}ms ignorieren.`,
+                    `Das ${behaviorState.type} Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird versprochene Fahrzeuge nach ${formatDuration(
+                        promiseInvalidationInterval
+                    )} ignorieren.`,
                     simulatedRegionId,
                     behaviorId
                 );
@@ -1321,23 +1372,19 @@ export namespace SimulationActionReducers {
                     'providePersonnelBehavior'
                 );
 
-                let prioritiesString = '';
-                let i = 1;
-                priorities.forEach((priority) => {
-                    prioritiesString += `${i}.`;
-                    prioritiesString += draftState.vehicleTemplates.find(
-                        (vehicleTemplate) => vehicleTemplate.id === priority
-                    )!.name;
-                    prioritiesString += ' ';
-                    i++;
-                });
+                const prioritiesString = priorities
+                    .map((priority, i) => {
+                        const vehicleType = draftState.vehicleTemplates.find(
+                            (vehicleTemplate) => vehicleTemplate.id === priority
+                        )!.vehicleType;
+                        return `${i + 1}. ${vehicleType}`;
+                    })
+                    .join(' ');
 
                 logBehavior(
                     draftState,
                     [],
-                    `Das ${behaviorState.type} Verhalten im Bereich ${
-                        simulatedRegion.name
-                    } wird Fahrzeuge nach der folgenden Priorisierung anfordern: ${prioritiesString.trimEnd()}.`,
+                    `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} wird Fahrzeuge nach der folgenden Priorisierung anfordern: ${prioritiesString}.`,
                     simulatedRegionId,
                     behaviorId
                 );
@@ -1372,7 +1419,11 @@ export namespace SimulationActionReducers {
                 logBehavior(
                     draftState,
                     [],
-                    `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} benötigt ${loadTimePerPatient}ms pro Patient, der eingeladen wird.`,
+                    `Das ${behaviorState.type} Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } benötigt ${formatDuration(
+                        loadTimePerPatient
+                    )} pro Patient, der eingeladen wird.`,
                     simulatedRegionId,
                     behaviorId
                 );
@@ -1406,7 +1457,11 @@ export namespace SimulationActionReducers {
                 logBehavior(
                     draftState,
                     [],
-                    `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} benötigt ${personnelLoadTime}ms, um das Personal einzuladen.`,
+                    `Das ${behaviorState.type} Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } benötigt ${formatDuration(
+                        personnelLoadTime
+                    )}, um das Personal einzuladen.`,
                     simulatedRegionId,
                     behaviorId
                 );
@@ -1440,7 +1495,11 @@ export namespace SimulationActionReducers {
                 logBehavior(
                     draftState,
                     [],
-                    `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} kann alle ${delayBetweenSends}ms ein Fahrzeug versenden.`,
+                    `Das ${behaviorState.type} Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } kann alle ${formatDuration(
+                        delayBetweenSends
+                    )} ein Fahrzeug versenden.`,
                     simulatedRegionId,
                     behaviorId
                 );
@@ -1831,7 +1890,11 @@ export namespace SimulationActionReducers {
                 logBehavior(
                     draftState,
                     [],
-                    `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} fordet alle ${requestVehicleDelay}ms Fahrzeuge an, um Patienten abzutransportieren.`,
+                    `Das ${behaviorState.type} Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } fordet alle ${formatDuration(
+                        requestVehicleDelay
+                    )} Fahrzeuge an, um Patienten abzutransportieren.`,
                     simulatedRegionId,
                     behaviorId
                 );
@@ -1869,7 +1932,11 @@ export namespace SimulationActionReducers {
                 logBehavior(
                     draftState,
                     [],
-                    `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} fordet alle ${requestPatientCountDelay}ms Patientenzahlen von den Übenden an.`,
+                    `Das ${behaviorState.type} Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } fordet alle ${formatDuration(
+                        requestPatientCountDelay
+                    )} Patientenzahlen an.`,
                     simulatedRegionId,
                     behaviorId
                 );
@@ -1906,7 +1973,11 @@ export namespace SimulationActionReducers {
                 logBehavior(
                     draftState,
                     [],
-                    `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} ignoriert zugesagte Fahrzeuge nach ${promiseInvalidationInterval}ms.`,
+                    `Das ${behaviorState.type} Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } ignoriert zugesagte Fahrzeuge nach ${formatDuration(
+                        promiseInvalidationInterval
+                    )}.`,
                     simulatedRegionId,
                     behaviorId
                 );
