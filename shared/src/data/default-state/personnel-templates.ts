@@ -1,6 +1,6 @@
-import type { PersonnelType } from '../../models/utils';
-import { CanCaterFor } from '../../models/utils';
 import { PersonnelTemplate } from '../../models/personnel-template';
+import { CanCaterFor } from '../../models/utils/cater-for';
+import type { PersonnelType } from '../../models/utils/personnel-type';
 import {
     defaultOverrideTreatmentRange,
     defaultTreatmentRange,

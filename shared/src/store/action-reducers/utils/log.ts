@@ -35,6 +35,7 @@ import {
 import type { WithPosition } from '../../../models/utils/position/with-position';
 import type { TransferPoint } from '../../../models/transfer-point';
 import type { Hospital } from '../../../models/hospital';
+import { behaviorTypeToGermanNameDictionary } from '../../../simulation/behaviors/utils';
 import {
     getElement,
     getExerciseBehaviorById,
@@ -279,7 +280,9 @@ export function logBehaviorAdded(
     logBehavior(
         state,
         [],
-        `Das Verhalten ${behavior.type} wurde dem Bereich ${simulatedRegion.name} hinzugefügt.`,
+        `Das Verhalten ${
+            behaviorTypeToGermanNameDictionary[behavior.type]
+        } wurde dem Bereich ${simulatedRegion.name} hinzugefügt.`,
         simulatedRegionId,
         behaviorId
     );
@@ -307,7 +310,9 @@ export function logBehaviorRemoved(
     logBehavior(
         state,
         [],
-        `Das Verhalten ${behavior.type} wurde aus dem Bereich ${simulatedRegion.name} entfernt.`,
+        `Das Verhalten ${
+            behaviorTypeToGermanNameDictionary[behavior.type]
+        } wurde aus dem Bereich ${simulatedRegion.name} entfernt.`,
         simulatedRegionId,
         behaviorId
     );

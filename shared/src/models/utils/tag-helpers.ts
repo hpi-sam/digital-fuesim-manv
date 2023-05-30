@@ -4,7 +4,8 @@
  * and they should figure out the color and name for the tag by themselves.
  */
 
-import type { TreatmentProgress } from '../../simulation';
+import { behaviorTypeToGermanNameDictionary } from '../../simulation/behaviors/utils';
+import type { TreatmentProgress } from '../../simulation/utils/treatment';
 import { treatmentProgressToGermanNameDictionary } from '../../simulation/utils/treatment';
 import type { ExerciseState } from '../../state';
 import {
@@ -288,7 +289,9 @@ export function createBehaviorTag(
         'Verhalten',
         'lightgreen',
         'black',
-        `${simulatedRegion.name}: ${behavior.type}`,
+        `${simulatedRegion.name}: ${
+            behaviorTypeToGermanNameDictionary[behavior.type]
+        }`,
         behavior.id
     );
 }

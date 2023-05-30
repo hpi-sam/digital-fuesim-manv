@@ -1,11 +1,11 @@
 import { IsUUID } from 'class-validator';
-import {
-    PatientStatus,
-    getCreate,
-    patientStatusAllowedValues,
-} from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
+import {
+    PatientStatus,
+    patientStatusAllowedValues,
+} from '../../models/utils/patient-status';
+import { getCreate } from '../../models/utils/get-create';
 import type { SimulationEvent } from './simulation-event';
 
 export class PatientTransferToHospitalSuccessfulEvent

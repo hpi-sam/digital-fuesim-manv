@@ -9,6 +9,7 @@ import { VehicleCountRadiogram } from '../../models/radiogram/vehicle-count-radi
 import type { UUID } from '../../utils';
 import { StrictObject } from '../../utils';
 import type { AllowedValues } from '../../utils/validators';
+import type { ExerciseSimulationBehaviorType } from './exercise-simulation-behavior';
 
 export const reportableInformationAllowedValues: AllowedValues<ReportableInformation> =
     {
@@ -48,4 +49,20 @@ export const createRadiogramMap: {
     transportManagementTransferCounts: TransferCountsRadiogram.create,
     treatmentStatus: TreatmentStatusRadiogram.create,
     materialCount: MaterialCountRadiogram.create,
+};
+
+export const behaviorTypeToGermanNameDictionary: {
+    [Key in ExerciseSimulationBehaviorType]: string;
+} = {
+    assignLeaderBehavior: 'Führung zuweisen',
+    treatPatientsBehavior: 'Patienten behandeln',
+    unloadArrivingVehiclesBehavior: 'Fahrzeuge entladen',
+    reportBehavior: 'Berichte erstellen',
+    providePersonnelBehavior: 'Personal nachfordern',
+    answerRequestsBehavior: 'Fahrzeuganfragen beantworten',
+    automaticallyDistributeVehiclesBehavior: 'Fahrzeuge verteilen',
+    requestBehavior: 'Fahrzeuge anfordern',
+    transferBehavior: 'Fahrzeuge versenden',
+    transferToHospitalBehavior: 'Patienten abtransportieren',
+    managePatientTransportToHospitalBehavior: 'Transportorganisation',
 };

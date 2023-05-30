@@ -1,6 +1,6 @@
 import { IsBoolean, isUUID, IsUUID } from 'class-validator';
 import { RadiogramUnpublishedStatus } from '../../models/radiogram/status/radiogram-unpublished-status';
-import { getCreate } from '../../models/utils';
+import { getCreate } from '../../models/utils/get-create';
 import {
     cloneDeepMutable,
     StrictObject,
