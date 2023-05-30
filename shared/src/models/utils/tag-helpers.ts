@@ -208,17 +208,10 @@ export function createVehicleTag(
 }
 
 export function createVehicleTypeTag(
-    draftState: Mutable<ExerciseState>,
-    vehicleId: UUID
+    _draftState: Mutable<ExerciseState>,
+    vehicleType: UUID
 ): Tag {
-    const vehicle = getElement(draftState, 'vehicle', vehicleId);
-    return new Tag(
-        'Fahrzeugtyp',
-        'grey',
-        'white',
-        vehicle.vehicleType,
-        vehicle.vehicleType
-    );
+    return new Tag('Fahrzeugtyp', 'grey', 'white', vehicleType, vehicleType);
 }
 
 export function createOccupationTag(

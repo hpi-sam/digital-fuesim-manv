@@ -48,6 +48,11 @@ import {
     PatientStatusForTransport,
     patientStatusAllowedValues,
     statusNames,
+    createSimulatedRegionTag,
+    createPatientStatusTag,
+    createVehicleTypeTag,
+    isInSimulatedRegion,
+    currentSimulatedRegionIdOf,
 } from '../../models';
 import {
     TransferDestination,
@@ -1088,7 +1093,7 @@ export namespace SimulationActionReducers {
 
                 logBehavior(
                     draftState,
-                    [],
+                    [createVehicleTypeTag(draftState, vehicleType)],
                     `Das ${
                         automaticDistributionBehaviorState.type
                     } Verhalten im Bereich ${
@@ -1208,7 +1213,14 @@ export namespace SimulationActionReducers {
 
                 logBehavior(
                     draftState,
-                    [],
+                    isInSimulatedRegion(destination)
+                        ? [
+                              createSimulatedRegionTag(
+                                  draftState,
+                                  currentSimulatedRegionIdOf(destination)
+                              ),
+                          ]
+                        : [],
                     `Das ${automaticDistributionBehaviorState.type} Verhalten im Bereich ${simulatedRegion.name} wird Fahrzeuge nach ${destination.externalName} schicken.`,
                     simulatedRegionId,
                     behaviorId
@@ -1589,13 +1601,20 @@ export namespace SimulationActionReducers {
 
                 logBehavior(
                     draftState,
-                    [],
+                    requestTargetId === undefined
+                        ? []
+                        : [
+                              createSimulatedRegionTag(
+                                  draftState,
+                                  requestTargetId
+                              ),
+                          ],
                     `Das ${behaviorState.type} Verhalten im Bereich ${
                         simulatedRegion.name
                     } fordert ${
                         requestTargetId === undefined
                             ? 'keine Fahrzeuge'
-                            : `Fahrzeuge von${
+                            : `Fahrzeuge von ${
                                   getElement(
                                       draftState,
                                       'simulatedRegion',
@@ -1639,7 +1658,12 @@ export namespace SimulationActionReducers {
 
                 logBehavior(
                     draftState,
-                    [],
+                    [
+                        createSimulatedRegionTag(
+                            draftState,
+                            managedSimulatedRegionId
+                        ),
+                    ],
                     `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} verwaltet den Patientenabtransport im Bereich ${managedSimulatedRegion.name}.`,
                     simulatedRegionId,
                     behaviorId
@@ -1696,7 +1720,12 @@ export namespace SimulationActionReducers {
                 );
                 logBehavior(
                     draftState,
-                    [],
+                    [
+                        createSimulatedRegionTag(
+                            draftState,
+                            managedSimulatedRegionId
+                        ),
+                    ],
                     `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} verwaltet den Patientenabtransport im Bereich ${managedSimulatedRegion.name} nicht.`,
                     simulatedRegionId,
                     behaviorId
@@ -1751,7 +1780,13 @@ export namespace SimulationActionReducers {
 
                 logBehavior(
                     draftState,
-                    [],
+                    [
+                        createPatientStatusTag(draftState, patientStatus),
+                        createSimulatedRegionTag(
+                            draftState,
+                            managedSimulatedRegionId
+                        ),
+                    ],
                     `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} erwartet ${patientsExpected} ${statusNames[patientStatus]} Patienten im Bereich ${managedSimulatedRegion.name}.`,
                     simulatedRegionId,
                     behaviorId
@@ -1801,7 +1836,10 @@ export namespace SimulationActionReducers {
 
                 logBehavior(
                     draftState,
-                    [],
+                    [
+                        createPatientStatusTag(draftState, patientStatus),
+                        createVehicleTypeTag(draftState, vehicleTypeName),
+                    ],
                     `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} verwendet Fahrzeuge vom Typ ${vehicleTypeName} um ${statusNames[patientStatus]} Patienten abzutransportieren.`,
                     simulatedRegionId,
                     behaviorId
@@ -2009,7 +2047,12 @@ export namespace SimulationActionReducers {
                 );
                 logBehavior(
                     draftState,
-                    [],
+                    [
+                        createPatientStatusTag(
+                            draftState,
+                            maximumCategoryToTransport
+                        ),
+                    ],
                     `Das ${behaviorState.type} Verhalten im Bereich ${simulatedRegion.name} transprortiert Patienten bis zu ${statusNames[maximumCategoryToTransport]} Patienten ab.`,
                     simulatedRegionId,
                     behaviorId

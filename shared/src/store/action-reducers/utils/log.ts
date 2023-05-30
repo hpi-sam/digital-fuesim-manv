@@ -131,7 +131,7 @@ export function logPatientVisibleStatusChanged(
 
     logPatient(
         state,
-        [createPatientStatusTag(state, visibleStatus)],
+        [],
         `Ein Patient wurde als ${statusNames[visibleStatus]} gesichtet.`,
         patientId
     );
@@ -227,7 +227,7 @@ export function logSimulatedRegionAddElement(
                     state,
                     [
                         createVehicleTag(state, elementId),
-                        createVehicleTypeTag(state, elementId),
+                        createVehicleTypeTag(state, element.vehicleType),
                     ],
                     `Dem Bereich wurde ein ${element.vehicleType} hinzugefügt`,
                     simulatedRegionId
@@ -429,22 +429,36 @@ export function logElementAddedToTransfer(
         logAlarmGroup(
             state,
             [
-                transferTargetType === 'transferPoint'
-                    ? isInSimulatedRegion(target as WithPosition)
-                        ? createSimulatedRegionTag(
-                              state,
-                              currentSimulatedRegionOf(
+                ...[
+                    transferTargetType === 'transferPoint'
+                        ? isInSimulatedRegion(target as WithPosition)
+                            ? createSimulatedRegionTag(
                                   state,
-                                  target as WithPosition
-                              ).id
+                                  currentSimulatedRegionOf(
+                                      state,
+                                      target as WithPosition
+                                  ).id
+                              )
+                            : createTransferPointTag(state, transferTargetId)
+                        : createHospitalTag(state, transferTargetId),
+                    elementType === 'personnel'
+                        ? createPersonnelTypeTag(
+                              state,
+                              (element as Personnel).personnelType
                           )
-                        : createTransferPointTag(state, transferTargetId)
-                    : createHospitalTag(state, transferTargetId),
+                        : createVehicleTypeTag(
+                              state,
+                              (element as Vehicle).vehicleType
+                          ),
+                ],
+                ...(elementType === 'vehicle'
+                    ? [createVehicleTag(state, elementId)]
+                    : []),
             ],
             `Ein ${
                 elementType === 'personnel'
                     ? (element as Personnel).personnelType
-                    : (element as Vehicle).name
+                    : (element as Vehicle).vehicleType
             } wird in ${formatDuration(duration)} von ${alarmGroup.name} nach ${
                 transferTargetType === 'transferPoint'
                     ? (target as TransferPoint).externalName
@@ -458,17 +472,31 @@ export function logElementAddedToTransfer(
         logTransferPoint(
             state,
             [
-                transferTargetType === 'transferPoint'
-                    ? isInSimulatedRegion(target as WithPosition)
-                        ? createSimulatedRegionTag(
-                              state,
-                              currentSimulatedRegionOf(
+                ...[
+                    transferTargetType === 'transferPoint'
+                        ? isInSimulatedRegion(target as WithPosition)
+                            ? createSimulatedRegionTag(
                                   state,
-                                  target as WithPosition
-                              ).id
+                                  currentSimulatedRegionOf(
+                                      state,
+                                      target as WithPosition
+                                  ).id
+                              )
+                            : createTransferPointTag(state, transferTargetId)
+                        : createHospitalTag(state, transferTargetId),
+                    elementType === 'personnel'
+                        ? createPersonnelTypeTag(
+                              state,
+                              (element as Personnel).personnelType
                           )
-                        : createTransferPointTag(state, transferTargetId)
-                    : createHospitalTag(state, transferTargetId),
+                        : createVehicleTypeTag(
+                              state,
+                              (element as Vehicle).vehicleType
+                          ),
+                ],
+                ...(elementType === 'vehicle'
+                    ? [createVehicleTag(state, elementId)]
+                    : []),
             ],
             `Ein ${
                 elementType === 'personnel'
@@ -503,9 +531,20 @@ export function logTransferEdited(
 
     logTransferPoint(
         state,
-        newTransferTargetId === oldTransferTargetId
-            ? []
-            : [createTransferPointTag(state, oldTransferTargetId)],
+        [
+            elementType === 'personnel'
+                ? createPersonnelTypeTag(
+                      state,
+                      (element as Personnel).personnelType
+                  )
+                : createVehicleTypeTag(state, (element as Vehicle).vehicleType),
+            ...(newTransferTargetId === oldTransferTargetId
+                ? []
+                : [createTransferPointTag(state, oldTransferTargetId)]),
+            ...(elementType === 'vehicle'
+                ? [createVehicleTag(state, elementId)]
+                : []),
+        ],
         `Der Transfer von ${
             elementType === 'personnel'
                 ? (element as Personnel).personnelType
@@ -532,7 +571,17 @@ export function logTransferFinished(
 
     logTransferPoint(
         state,
-        [],
+        [
+            elementType === 'personnel'
+                ? createPersonnelTypeTag(
+                      state,
+                      (element as Personnel).personnelType
+                  )
+                : createVehicleTypeTag(state, (element as Vehicle).vehicleType),
+            ...(elementType === 'vehicle'
+                ? [createVehicleTag(state, elementId)]
+                : []),
+        ],
         `Der Transfer von ${
             elementType === 'personnel'
                 ? (element as Personnel).personnelType
@@ -556,7 +605,17 @@ export function logTransferPause(
 
     logTransferPoint(
         state,
-        [],
+        [
+            elementType === 'personnel'
+                ? createPersonnelTypeTag(
+                      state,
+                      (element as Personnel).personnelType
+                  )
+                : createVehicleTypeTag(state, (element as Vehicle).vehicleType),
+            ...(elementType === 'vehicle'
+                ? [createVehicleTag(state, elementId)]
+                : []),
+        ],
         `Der Transfer von ${
             elementType === 'personnel'
                 ? (element as Personnel).personnelType
@@ -692,7 +751,7 @@ export function logVehicle(
             ...additionalTags,
             ...createPatientTags(state, Object.keys(vehicle.patientIds)),
             createVehicleTag(state, vehicle.id),
-            createVehicleTypeTag(state, vehicle.id),
+            createVehicleTypeTag(state, vehicle.vehicleType),
             ...(isInSimulatedRegion(vehicle)
                 ? [
                       createSimulatedRegionTag(

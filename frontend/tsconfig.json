@@ -10,7 +10,7 @@
         "useDefineForClassFields": false // TODO: Enabling this requires multiple changes in the code
     },
     // this fixes jest globals in .spec.ts being overwritten by cypress globals
-    "include": ["src", "../shared/src/utils/format-duration.ts"],
+    "include": ["src"],
     "angularCompilerOptions": {
         "enableI18nLegacyMessageIdFormat": false,
         "strictInjectionParameters": true,
