@@ -16,7 +16,14 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Log entries are being generated for the following actions:
     -   Publishing, accepting and marking radiograms as done.
     -   Accepting or denying resource request radiograms.
+    -   Vehicle and Patient addition and deletion
+    -   AlarmGroup sent
+    -   Addition of elements to transfer
+    -   Edit or pause of transfer
+    -   All configuration of the simulation
+    -   Connection and disconnection of transfer points and hospitals
 -   Log entries are being generated for the following occurrences:
+    -   Completion of transfer
     -   Treatment status changes.
     -   Completion of the transfer of patients of one category
         -   Either in one region or in all regions managed by one behavior

@@ -78,7 +78,7 @@ export function logAlarmGroupSent(
     logAlarmGroup(
         state,
         [],
-        `Die Alarm Gruppe ${alarmGroup.name} wurde alarmiert`,
+        `Die Alarmgruppe ${alarmGroup.name} wurde alarmiert`,
         alarmGroupId
     );
 }

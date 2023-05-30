@@ -192,7 +192,7 @@ export function createAlarmGroupTag(
 ): Tag {
     const alarmGroup = getElement(draftState, 'alarmGroup', alarmGroupId);
     return new Tag(
-        'Alarm Gruppe',
+        'Alarmgruppe',
         'lightgreen',
         'black',
         alarmGroup.name,

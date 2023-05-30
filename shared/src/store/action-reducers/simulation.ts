@@ -848,7 +848,7 @@ export namespace SimulationActionReducers {
                         ]
                     } Verhalten im Bereich ${
                         simulatedRegion.name
-                    } wird Behandlungsfortschritsänderungen ${
+                    } wird Behandlungsfortschrittsänderungen ${
                         reportTreatmentProgressChanges ? '' : 'nicht '
                     }melden.`,
                     simulatedRegionId,
