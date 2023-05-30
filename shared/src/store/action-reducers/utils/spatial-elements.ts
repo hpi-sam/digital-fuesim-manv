@@ -1,15 +1,16 @@
 import type { MapCoordinates } from '../../../models/utils';
 import {
-    isOnMap,
-    isNotOnMap,
     currentCoordinatesOf,
-} from '../../../models/utils';
+    isNotOnMap,
+    isOnMap,
+} from '../../../models/utils/position/position-helpers';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
-import type { Mutable, UUID } from '../../../utils';
-import { cloneDeepMutable } from '../../../utils';
+import { cloneDeepMutable } from '../../../utils/clone-deep';
 import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map';
 import { elementTypePluralMap } from '../../../utils/element-type-plural-map';
+import type { Mutable } from '../../../utils/immutability';
+import type { UUID } from '../../../utils/uuid';
 import { removeTreatmentsOfElement } from './calculate-treatments';
 import { getElement } from './get-element';
 

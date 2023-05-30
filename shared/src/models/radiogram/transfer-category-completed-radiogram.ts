@@ -2,7 +2,11 @@ import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
-import { getCreate, PatientStatus, patientStatusAllowedValues } from '../utils';
+import { getCreate } from '../utils/get-create';
+import {
+    PatientStatus,
+    patientStatusAllowedValues,
+} from '../utils/patient-status';
 import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 import {

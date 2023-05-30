@@ -1,22 +1,23 @@
 import { IsOptional, IsUUID } from 'class-validator';
 import { groupBy } from 'lodash-es';
-import type { SimulatedRegion } from '../../models';
 import type {
     MaterialCountRadiogram,
     PersonnelCountRadiogram,
     VehicleCountRadiogram,
 } from '../../models/radiogram';
-import type { PersonnelType } from '../../models/utils';
-import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
 import { getActivityById, getElement } from '../../store/action-reducers/utils';
 import type { Mutable } from '../../utils';
 import { StrictObject, UUID, uuid, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { LeaderChangedEvent } from '../events/leader-changed';
 import type { ExerciseState } from '../../state';
-import { addActivity } from '../activities/utils';
-import { DelayEventActivityState } from '../activities';
 import { nextUUID } from '../utils/randomness';
+import { getCreate } from '../../models/utils/get-create';
+import type { PersonnelType } from '../../models/utils/personnel-type';
+import { isInSpecificSimulatedRegion } from '../../models/utils/position/position-helpers';
+import type { SimulatedRegion } from '../../models/simulated-region';
+import { addActivity } from '../activities/utils';
+import { DelayEventActivityState } from '../activities/delay-event';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,

@@ -18,20 +18,26 @@ import { ReducerError } from '../../reducer-error';
 export function getElement<
     ElementType extends keyof ElementTypePluralMap,
     State extends ExerciseState | Mutable<ExerciseState>
->(
-    state: State,
-    elementType: ElementType,
-    elementId: UUID
-): State[ElementTypePluralMap[ElementType]][UUID] {
-    const element = state[elementTypePluralMap[elementType]][
-        elementId
-    ] as State[ElementTypePluralMap[ElementType]][UUID];
+>(state: State, elementType: ElementType, elementId: UUID) {
+    const element = tryGetElement(state, elementType, elementId);
     if (!element) {
         throw new ReducerError(
             `Element of type ${elementType} with id ${elementId} does not exist`
         );
     }
     return element;
+}
+
+/**
+ * @returns The element with the given id, or undefined if it does not exist
+ */
+export function tryGetElement<
+    ElementType extends keyof ElementTypePluralMap,
+    State extends ExerciseState | Mutable<ExerciseState>
+>(state: State, elementType: ElementType, elementId: UUID) {
+    return state[elementTypePluralMap[elementType]][elementId] as
+        | State[ElementTypePluralMap[ElementType]][UUID]
+        | undefined;
 }
 
 export function getElementByPredicate<
@@ -55,6 +61,19 @@ export function getElementByPredicate<
     return element;
 }
 
+export function getExerciseRadiogramById(
+    state: Mutable<ExerciseState>,
+    radiogramId: UUID
+) {
+    const radiogram = state.radiograms[radiogramId];
+    if (!radiogram) {
+        throw new ReducerError(
+            `Radiogram with id ${radiogramId} does not exist`
+        );
+    }
+    return radiogram;
+}
+
 export function getRadiogramById<R extends ExerciseRadiogram>(
     state: Mutable<ExerciseState>,
     radiogramId: UUID,
@@ -72,6 +91,25 @@ export function getRadiogramById<R extends ExerciseRadiogram>(
         );
     }
     return radiogram as Mutable<R>;
+}
+
+export function getExerciseBehaviorById(
+    state: Mutable<ExerciseState>,
+    simulatedRegionId: UUID,
+    behaviorId: UUID
+) {
+    const simulatedRegion = getElement(
+        state,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+    const behavior = simulatedRegion.behaviors.find((b) => b.id === behaviorId);
+    if (!behavior) {
+        throw new ReducerError(
+            `Behavior with id ${behaviorId} does not exist in simulated region ${simulatedRegionId}`
+        );
+    }
+    return behavior;
 }
 
 export function getBehaviorById<T extends ExerciseSimulationBehaviorType>(

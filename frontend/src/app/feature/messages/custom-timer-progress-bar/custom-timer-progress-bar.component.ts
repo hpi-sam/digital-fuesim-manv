@@ -116,6 +116,7 @@ export class CustomTimerProgressBarComponent implements OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChangesGeneric<this>) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (changes.timer) {
             this.animationParams$.next(undefined);
             this.timer$.next(this.timer);

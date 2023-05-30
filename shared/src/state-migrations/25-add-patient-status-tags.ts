@@ -2,7 +2,7 @@ import type { Migration } from './migration-functions';
 
 export const addPatientStatusTags25: Migration = {
     action: (_intermediaryState, action) => {
-        const actionType = (action as { type: string } | null)?.type;
+        const actionType = (action as { type: string }).type;
 
         if (actionType === '[Patient] Add patient') {
             const typedAction = action as {

@@ -21,12 +21,16 @@ import { addActivity } from '../activities/utils';
 import { DelayEventActivityState } from '../activities';
 import { nextUUID } from '../utils/randomness';
 import { PatientCategoryTransferToHospitalFinishedEvent } from '../events';
-import { getActivityById, getElement } from '../../store/action-reducers/utils';
+import {
+    getActivityById,
+    tryGetElement,
+} from '../../store/action-reducers/utils';
 import { IsUUIDSet } from '../../utils/validators';
 import { TransferPatientToHospitalActivityState } from '../activities/transfer-patient-to-hospital';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { ResourceDescription } from '../../models/utils/resource-description';
 import type { TransferCountsRadiogram } from '../../models/radiogram';
+import { logLastPatientTransportedInSimulatedRegion } from '../../store/action-reducers/utils/log';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -47,12 +51,12 @@ export class TransferToHospitalBehaviorState
     @IsResourceDescription(patientStatusAllowedValues)
     public readonly transferredPatientsCount: ResourceDescription<PatientStatus> =
         {
-            black: 0,
-            blue: 0,
-            green: 0,
             red: 0,
-            white: 0,
             yellow: 0,
+            green: 0,
+            blue: 0,
+            black: 0,
+            white: 0,
         };
 
     static readonly create = getCreate(this);
@@ -64,13 +68,14 @@ export const transferToHospitalBehavior: SimulationBehavior<TransferToHospitalBe
         handleEvent: (draftState, simulatedRegion, behaviorState, event) => {
             switch (event.type) {
                 case 'vehicleArrivedEvent': {
-                    const vehicle = getElement(
+                    const vehicle = tryGetElement(
                         draftState,
                         'vehicle',
                         event.vehicleId
                     );
 
                     if (
+                        vehicle === undefined ||
                         vehicle.occupation.type !== 'patientTransferOccupation'
                     ) {
                         // This vehicle is not meant to be used for patient transfer
@@ -178,6 +183,11 @@ export const transferToHospitalBehavior: SimulationBehavior<TransferToHospitalBe
                                             draftState.currentTime
                                         )
                                     );
+                                    logLastPatientTransportedInSimulatedRegion(
+                                        draftState,
+                                        status,
+                                        simulatedRegion.id
+                                    );
                                 }
                             }
                         }
@@ -220,12 +230,12 @@ export const transferToHospitalBehavior: SimulationBehavior<TransferToHospitalBe
                     radiogram.transferredPatientsCounts =
                         behaviorState.transferredPatientsCount;
                     radiogram.remainingPatientsCounts = {
-                        black: 0,
-                        blue: 0,
-                        green: 0,
                         red: 0,
-                        white: 0,
                         yellow: 0,
+                        green: 0,
+                        blue: 0,
+                        black: 0,
+                        white: 0,
                         ...remainingPatients,
                     };
                     radiogram.informationAvailable = true;

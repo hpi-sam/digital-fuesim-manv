@@ -5,7 +5,7 @@ import {
     radiogramTypeOptions,
 } from '../../models/radiogram/exercise-radiogram';
 import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutable';
-import { getCreate } from '../../models/utils';
+import { getCreate } from '../../models/utils/get-create';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import {

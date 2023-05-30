@@ -315,9 +315,7 @@ describe('transfer to hospital behavior', () => {
                 };
 
                 expect(activity).toBeDefined();
-                expect(activity?.type).toBe(
-                    'transferPatientToHospitalActivity'
-                );
+                expect(activity.type).toBe('transferPatientToHospitalActivity');
                 expect(activity.patientIds).toStrictEqual(patientUUIDSet);
 
                 expect(
@@ -375,9 +373,7 @@ describe('transfer to hospital behavior', () => {
                 };
 
                 expect(activity).toBeDefined();
-                expect(activity?.type).toBe(
-                    'transferPatientToHospitalActivity'
-                );
+                expect(activity.type).toBe('transferPatientToHospitalActivity');
                 expect(activity.patientIds).toStrictEqual(patientUUIDSet);
 
                 expect(
@@ -441,9 +437,7 @@ describe('transfer to hospital behavior', () => {
                 );
 
                 expect(activity).toBeDefined();
-                expect(activity?.type).toBe(
-                    'transferPatientToHospitalActivity'
-                );
+                expect(activity.type).toBe('transferPatientToHospitalActivity');
                 expect(activity.patientIds).toStrictEqual(patientsUUIDSet);
 
                 expect(

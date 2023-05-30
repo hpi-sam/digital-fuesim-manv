@@ -1,6 +1,6 @@
 {
     "name": "digital-fuesim-manv-backend",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "type": "module",
     "scripts": {
         "start:once:linux-macos": "NODE_ENV=production node --experimental-specifier-resolution=node dist/src/index.js",

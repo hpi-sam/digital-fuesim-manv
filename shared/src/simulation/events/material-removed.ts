@@ -1,5 +1,5 @@
 import { IsUUID } from 'class-validator';
-import { getCreate } from '../../models/utils';
+import { getCreate } from '../../models/utils/get-create';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { SimulationEvent } from './simulation-event';
@@ -9,7 +9,7 @@ export class MaterialRemovedEvent implements SimulationEvent {
     readonly type = 'materialRemovedEvent';
 
     @IsUUID(4, uuidValidationOptions)
-    readonly materialId!: UUID;
+    readonly materialId: UUID;
 
     /**
      * @deprecated Use {@link create} instead

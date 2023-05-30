@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
-import { getCreate } from '../../models/utils';
+import { getCreate } from '../../models/utils/get-create';
 import { VehicleResource } from '../../models/utils/rescue-resource';
 import { IsValue } from '../../utils/validators';
 import { UUID, uuidValidationOptions } from '../../utils';

@@ -62,3 +62,18 @@ export const radiogramTypeOptions: Parameters<typeof Type> = [
         },
     },
 ];
+
+export const radiogramTypeToGermanDictionary: {
+    [Key in ExerciseRadiogram['type']]: string;
+} = {
+    materialCountRadiogram: 'Vorhandene Materialien',
+    missingTransferConnectionRadiogram: 'Fehlende Verbindung',
+    patientCountRadiogram: 'Meldung über Patientenanzahlen',
+    personnelCountRadiogram: 'Personalstatus',
+    resourceRequestRadiogram: 'Anfrage von Ressourcen',
+    transferCategoryCompletedRadiogram: 'Transport für SK abgeschlossen',
+    transferCountsRadiogram: 'Transportstatus',
+    treatmentStatusRadiogram: 'Behandlungsphase',
+    vehicleCountRadiogram: 'Meldung über Fahrzeuganzahlen',
+    newPatientDataRequestedRadiogram: 'Anfrage nach Patientenzahlen',
+};

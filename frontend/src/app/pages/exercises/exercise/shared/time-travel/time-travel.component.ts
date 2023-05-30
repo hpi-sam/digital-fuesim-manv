@@ -106,7 +106,7 @@ export class TimeTravelComponent implements OnDestroy {
             selectTimeConstraints,
             this.store
         )!;
-        this.timeTravelService.jumpToTime(timeConstraints!.start);
+        this.timeTravelService.jumpToTime(timeConstraints.start);
         this.startReplay();
     }
 

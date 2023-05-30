@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsOptional, IsUUID, ValidateNested } from 'class-validator';
-import { Client } from '../../models';
+import { Client } from '../../models/client';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
