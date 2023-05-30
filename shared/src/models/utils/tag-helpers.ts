@@ -275,11 +275,6 @@ export function createBehaviorTag(
     simulatedRegionId: UUID,
     behaviorId: UUID
 ): Tag {
-    const simulatedRegion = getElement(
-        draftState,
-        'simulatedRegion',
-        simulatedRegionId
-    );
     const behavior = getExerciseBehaviorById(
         draftState,
         simulatedRegionId,
@@ -289,9 +284,7 @@ export function createBehaviorTag(
         'Verhalten',
         'lightgreen',
         'black',
-        `${simulatedRegion.name}: ${
-            behaviorTypeToGermanNameDictionary[behavior.type]
-        }`,
+        behaviorTypeToGermanNameDictionary[behavior.type],
         behavior.id
     );
 }

@@ -55,6 +55,7 @@ import {
     createVehicleTypeTag,
     isInSimulatedRegion,
     currentSimulatedRegionIdOf,
+    createTransferPointTag,
 } from '../../models';
 import {
     TransferDestination,
@@ -1267,14 +1268,14 @@ export namespace SimulationActionReducers {
 
                 logBehavior(
                     draftState,
-                    isInSimulatedRegion(destination)
-                        ? [
-                              createSimulatedRegionTag(
+                    [
+                        isInSimulatedRegion(destination)
+                            ? createSimulatedRegionTag(
                                   draftState,
                                   currentSimulatedRegionIdOf(destination)
-                              ),
-                          ]
-                        : [],
+                              )
+                            : createTransferPointTag(draftState, destinationId),
+                    ],
                     `Das ${
                         behaviorTypeToGermanNameDictionary[
                             automaticDistributionBehaviorState.type
