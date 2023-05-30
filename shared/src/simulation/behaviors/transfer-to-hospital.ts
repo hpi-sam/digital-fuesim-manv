@@ -21,7 +21,10 @@ import { addActivity } from '../activities/utils';
 import { DelayEventActivityState } from '../activities';
 import { nextUUID } from '../utils/randomness';
 import { PatientCategoryTransferToHospitalFinishedEvent } from '../events';
-import { getActivityById, getElement } from '../../store/action-reducers/utils';
+import {
+    getActivityById,
+    tryGetElement,
+} from '../../store/action-reducers/utils';
 import { IsUUIDSet } from '../../utils/validators';
 import { TransferPatientToHospitalActivityState } from '../activities/transfer-patient-to-hospital';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
@@ -65,13 +68,14 @@ export const transferToHospitalBehavior: SimulationBehavior<TransferToHospitalBe
         handleEvent: (draftState, simulatedRegion, behaviorState, event) => {
             switch (event.type) {
                 case 'vehicleArrivedEvent': {
-                    const vehicle = getElement(
+                    const vehicle = tryGetElement(
                         draftState,
                         'vehicle',
                         event.vehicleId
                     );
 
                     if (
+                        vehicle === undefined ||
                         vehicle.occupation.type !== 'patientTransferOccupation'
                     ) {
                         // This vehicle is not meant to be used for patient transfer

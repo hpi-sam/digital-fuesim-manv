@@ -9,6 +9,7 @@ import {
     Tooltip,
 } from 'chart.js';
 import { rgbColorPalette } from 'src/app/shared/functions/colors';
+import { formatDuration } from 'src/app/shared/functions/format-duration';
 
 Chart.register(
     CategoryScale,
@@ -25,17 +26,37 @@ export type StackedBarChartDatasets = ChartDataset<'bar', Data[]>[];
 
 export class StackedBarChart {
     public static readonly backgroundAlpha = 0.8;
-    public readonly chart: Chart<'bar', Data[], string>;
+    public readonly chart: Chart<'bar', Data[], number>;
+    markedTime: number | undefined;
+    lineMarkerIndex: number | undefined;
 
-    constructor(canvas: HTMLCanvasElement) {
-        this.chart = new Chart<'bar', Data[], string>(
-            canvas,
-            this.canvasConfig
-        );
+    constructor(
+        canvas: HTMLCanvasElement,
+        readonly clickCallback?: (time: number) => void
+    ) {
+        this.chart = new Chart(canvas, this.canvasConfig);
+    }
+
+    public setHighlightTime(time: number | undefined) {
+        this.markedTime = time;
+        this.updateMarkerIndex();
+        this.chart.update();
+    }
+
+    private updateMarkerIndex() {
+        if (this.markedTime === undefined) {
+            this.lineMarkerIndex = undefined;
+        } else {
+            const index =
+                this.chart.data.labels?.findIndex(
+                    (label) => this.markedTime! <= (label as number)
+                ) ?? -1;
+            this.lineMarkerIndex = index < 0 ? undefined : index;
+        }
     }
 
     public setChartData(
-        newLabels: string[],
+        newLabels: number[],
         newDatasets: StackedBarChartDatasets
     ) {
         this.chart.data.labels = newLabels;
@@ -59,7 +80,7 @@ export class StackedBarChart {
             // Add the properties from the new dataset
             Object.assign(oldDataset, newDataset);
         });
-
+        this.updateMarkerIndex();
         this.chart.update();
     }
 
@@ -68,26 +89,14 @@ export class StackedBarChart {
     }
 
     // It causes problems if this object is shared between multiple charts.
-    private readonly canvasConfig: ChartConfiguration<'bar', Data[], string> = {
+    private readonly canvasConfig: ChartConfiguration<'bar', Data[], number> = {
         type: 'bar',
         data: {
             labels: [],
             datasets: [],
         },
         options: {
-            transitions: {
-                // Disable the clunky animations for showing and hiding datasets
-                hide: {
-                    animation: {
-                        duration: 0,
-                    },
-                },
-                show: {
-                    animation: {
-                        duration: 0,
-                    },
-                },
-            },
+            animation: false,
             plugins: {
                 tooltip: {
                     position: 'nearest',
@@ -95,6 +104,11 @@ export class StackedBarChart {
                     callbacks: {
                         label: (tooltipItem) =>
                             `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue}`,
+                        title(tooltipItems) {
+                            return formatDuration(
+                                Number(tooltipItems[0]!.label)
+                            );
+                        },
                     },
                 },
                 legend: {
@@ -114,8 +128,16 @@ export class StackedBarChart {
             scales: {
                 x: {
                     stacked: true,
+                    type: 'category',
                     ticks: {
                         maxTicksLimit: 10,
+                        callback(tickValue) {
+                            return formatDuration(
+                                this.chart.data.labels?.[
+                                    tickValue as number
+                                ] as number
+                            );
+                        },
                     },
                 },
                 y: {
@@ -137,6 +159,40 @@ export class StackedBarChart {
                     normalized: false,
                 },
             },
+            onClick: (event, elements, chart) => {
+                const {
+                    scales: { x },
+                    data: { labels },
+                } = chart;
+                if (event.x === null || !this.clickCallback) return;
+                const index = x?.getValueForPixel(event.x);
+                if (index !== undefined && labels?.[index] !== undefined) {
+                    this.clickCallback(labels[index] as number);
+                }
+            },
         },
+        plugins: [
+            {
+                id: 'timeMarker',
+                afterDraw: (chart) => {
+                    if (this.lineMarkerIndex === undefined) return;
+                    const {
+                        ctx,
+                        chartArea: { top, bottom },
+                        scales: { x },
+                    } = chart;
+                    const xCoord = x!.getPixelForValue(this.lineMarkerIndex);
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'blue';
+                    ctx.lineWidth = 3;
+                    ctx.moveTo(xCoord, top);
+                    ctx.lineTo(xCoord, bottom);
+                    ctx.stroke();
+                    ctx.restore();
+                },
+            },
+        ],
     };
 }

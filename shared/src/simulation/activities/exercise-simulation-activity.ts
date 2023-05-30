@@ -57,7 +57,7 @@ export const simulationActivityDictionary = Object.fromEntries(
 export function getSimulationActivityConstructor(
     state: ExerciseSimulationActivityState
 ) {
-    return simulationActivityDictionary[state.type]?.activityState;
+    return simulationActivityDictionary[state.type].activityState;
 }
 
 export const simulationActivityTypeOptions: Parameters<typeof Type> = [

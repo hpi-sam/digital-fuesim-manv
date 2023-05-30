@@ -5,11 +5,13 @@ import { personnelTypeNames } from '../../../models/utils/personnel-type';
 import { statusNames } from '../../../models/utils/patient-status';
 import {
     createPatientStatusTag,
-    createPatientTag,
     createRadiogramTypeTag,
     createSimulatedRegionTag,
+    createTagsForSinglePatient,
     createTransferPointTag,
     createTreatmentProgressTag,
+    createVehicleTag,
+    createVehicleTypeTag,
 } from '../../../models/utils/tag-helpers';
 import type { TreatmentProgress } from '../../../simulation/utils/treatment';
 import { treatmentProgressToGermanNameDictionary } from '../../../simulation/utils/treatment';
@@ -18,6 +20,10 @@ import type { UUID } from '../../../utils';
 import { StrictObject } from '../../../utils';
 import type { Mutable } from '../../../utils/immutability';
 import type { PatientStatus } from '../../../models';
+import {
+    currentSimulatedRegionIdOf,
+    isInSimulatedRegion,
+} from '../../../models/utils/position/position-helpers';
 import { getElement, getExerciseRadiogramById } from './get-element';
 
 export function logPatient(
@@ -28,15 +34,12 @@ export function logPatient(
 ) {
     if (!logActive(state)) return;
 
-    const patient = getElement(state, 'patient', patientId);
-
     state.logEntries!.push(
         new LogEntry(
             description,
             [
                 ...additionalTags,
-                createPatientTag(state, patient.id),
-                createPatientStatusTag(state, patient.pretriageStatus),
+                ...createTagsForSinglePatient(state, patientId),
             ],
             state.currentTime
         )
@@ -157,6 +160,47 @@ export function logLastPatientTransportedInMultipleSimulatedRegions(
     );
 }
 
+export function logVehicle(
+    state: Mutable<ExerciseState>,
+    additionalTags: Tag[],
+    description: string,
+    vehicleId: UUID
+) {
+    if (!logActive(state)) return;
+
+    const vehicle = getElement(state, 'vehicle', vehicleId);
+
+    state.logEntries!.push(
+        new LogEntry(
+            description,
+            [
+                ...additionalTags,
+                ...createPatientTags(state, Object.keys(vehicle.patientIds)),
+                createVehicleTag(state, vehicle.id),
+                createVehicleTypeTag(state, vehicle.id),
+                ...(isInSimulatedRegion(vehicle)
+                    ? [
+                          createSimulatedRegionTag(
+                              state,
+                              currentSimulatedRegionIdOf(vehicle)
+                          ),
+                      ]
+                    : []),
+            ],
+            state.currentTime
+        )
+    );
+}
+
+function createPatientTags(
+    state: Mutable<ExerciseState>,
+    patientIds: UUID[]
+): Tag[] {
+    return patientIds.flatMap((patientId) =>
+        createTagsForSinglePatient(state, patientId)
+    );
+}
+
 function createTagsForRadiogramType(
     state: Mutable<ExerciseState>,
     radiogram: ExerciseRadiogram
@@ -263,6 +307,6 @@ function generateCountString<K extends string>(
         .join(', ');
 }
 
-function logActive(state: Mutable<ExerciseState>): boolean {
+export function logActive(state: Mutable<ExerciseState>): boolean {
     return !!state.logEntries;
 }

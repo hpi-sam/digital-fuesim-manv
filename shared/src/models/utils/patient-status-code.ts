@@ -89,6 +89,7 @@ export class PatientStatusCode {
      */
     constructor(code: string) {
         // Plain to Instance calls constructors without arguments, therefore we have to catch it
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (code === undefined) {
             return;
         }

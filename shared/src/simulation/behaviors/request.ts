@@ -11,7 +11,10 @@ import { IsStringMap } from '../../utils/validators/is-string-map';
 import { cloneDeepMutable, StrictObject, uuid, UUID } from '../../utils';
 import type { Mutable } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import { getActivityById, getElement } from '../../store/action-reducers/utils';
+import {
+    getActivityById,
+    tryGetElement,
+} from '../../store/action-reducers/utils';
 import type { ExerciseState } from '../../state';
 import { addActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
@@ -117,11 +120,14 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                 break;
             }
             case 'vehicleArrivedEvent': {
-                const vehicle = getElement(
+                const vehicle = tryGetElement(
                     draftState,
                     'vehicle',
                     event.vehicleId
                 );
+                if (vehicle === undefined) {
+                    break;
+                }
                 let arrivedResourceDescription: Partial<ResourceDescription> = {
                     [vehicle.vehicleType]: 1,
                 };

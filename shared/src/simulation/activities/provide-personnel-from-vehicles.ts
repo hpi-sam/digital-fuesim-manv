@@ -24,6 +24,7 @@ import { IsValue } from '../../utils/validators';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { ResourceRequiredEvent } from '../events';
 import { sendSimulationEvent } from '../events/utils';
+import { tryGetElement } from '../../store/action-reducers/utils';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -182,10 +183,15 @@ function personnelInUnloadingVehicles(
         )
         .flatMap((activity) =>
             StrictObject.keys(
-                draftState.vehicles[activity.vehicleId]?.personnelIds ?? {}
+                tryGetElement(draftState, 'vehicle', activity.vehicleId)
+                    ?.personnelIds ?? {}
             )
         )
-        .map((personnelId) => draftState.personnel[personnelId]?.personnelType)
+        .map(
+            (personnelId) =>
+                tryGetElement(draftState, 'personnel', personnelId)
+                    ?.personnelType
+        )
         .filter((pt): pt is PersonnelType => pt !== undefined)
         .forEach((pt) => resource[pt]++);
     return resource;

@@ -13,6 +13,8 @@ export const activitiesToUnloadVehiclesBehavior28: Migration = {
                 };
             };
             if (
+                // Disabled due to incomplete typings in the migration
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 typedAction.behaviorState.type ===
                 'unloadArrivingVehiclesBehavior'
             ) {
@@ -64,6 +66,8 @@ function migrateSimulatedRegion(
         };
     };
     const unloadBehaviors = Object.values(region.behaviors).filter(
+        // Disabled due to incomplete typings in the migration
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         (behavior) => behavior.type === 'unloadArrivingVehiclesBehavior'
     );
     unloadBehaviors.forEach((behavior) => {
@@ -74,6 +78,8 @@ function migrateSimulatedRegion(
         return;
     }
     Object.values(region.activities)
+        // Disabled due to incomplete typings in the migration
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         .filter((activity) => activity.type === 'unloadVehicleActivity')
         .forEach(({ id: activityId, vehicleId }) => {
             const vehicle = typedState.vehicles[vehicleId];

@@ -110,13 +110,13 @@ export class VehicleFeatureManager extends MoveableFeatureManager<Vehicle> {
     }
 
     public override onFeatureDrop(
-        droppedElement: Element,
+        droppedElement: Element | undefined,
         droppedOnFeature: Feature<Point>,
         dropEvent?: TranslateEvent
     ) {
         const droppedOnVehicle = this.getElementFromFeature(
             droppedOnFeature
-        ) as Vehicle;
+        ) as Vehicle | undefined;
         if (!droppedElement || !droppedOnVehicle) {
             console.error('Could not find element for the features');
             return false;

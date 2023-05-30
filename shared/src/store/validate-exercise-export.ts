@@ -22,6 +22,8 @@ export function validateExerciseExport(
         exportImportFile.type
     ];
     // if the exportImportFile.type is not a valid exportImportClass type, the exportImportClass is undefined.
+    // Defensive, see comment above
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!exportImportClass) {
         return [`Unknown export/import type: ${exportImportFile.type}`];
     }

@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { SimulatedRegion, TransferPoint } from '../../models';
+import { SimulatedRegion } from '../../models/simulated-region';
+import { TransferPoint } from '../../models/transfer-point';
 import {
     isInSpecificSimulatedRegion,
     MapCoordinates,

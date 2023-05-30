@@ -23,7 +23,7 @@ import {
 import { IsValue } from '../../utils/validators';
 import { addActivity, terminateActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
-import { getElement } from '../../store/action-reducers/utils';
+import { getElement, tryGetElement } from '../../store/action-reducers/utils';
 import {
     DelayEventActivityState,
     LoadVehicleActivityState,
@@ -31,6 +31,7 @@ import {
     SendRemoteEventActivityState,
 } from '../activities';
 import {
+    changeOccupation,
     isUnoccupied,
     isUnoccupiedOrIntermediarilyOccupied,
 } from '../../models/utils/occupations/occupation-helpers-mutable';
@@ -119,9 +120,7 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                     // sort the unoccupied vehicles by number of loaded resources descending and use the one with the most
 
                     const vehicleToLoad = vehiclesOfCorrectType
-                        .filter((vehicle) =>
-                            isUnoccupied(vehicle, draftState.currentTime)
-                        )
+                        .filter((vehicle) => isUnoccupied(draftState, vehicle))
                         .sort(
                             (vehicle1, vehicle2) =>
                                 amountOfResourcesInVehicle(
@@ -148,7 +147,9 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                 behaviorState.personnelLoadTime
                             )
                         );
-                        vehicleToLoad.occupation = cloneDeepMutable(
+                        changeOccupation(
+                            draftState,
+                            vehicleToLoad,
                             LoadOccupation.create(activityId)
                         );
                     }
@@ -156,19 +157,20 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                 break;
             case 'transferPatientsInSpecificVehicleRequestEvent':
                 {
-                    const vehicle = getElement(
+                    const vehicle = tryGetElement(
                         draftState,
                         'vehicle',
                         event.vehicleId
                     );
                     // Don't do anything if vehicle is occupied
                     if (
+                        vehicle === undefined ||
                         !isUnoccupiedOrIntermediarilyOccupied(
-                            vehicle,
-                            draftState.currentTime
+                            draftState,
+                            vehicle
                         )
                     ) {
-                        return;
+                        break;
                     }
 
                     const activityId = nextUUID(draftState);
@@ -184,21 +186,26 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             behaviorState.personnelLoadTime
                         )
                     );
-                    vehicle.occupation = cloneDeepMutable(
+                    changeOccupation(
+                        draftState,
+                        vehicle,
                         LoadOccupation.create(activityId)
                     );
                 }
                 break;
             case 'transferSpecificVehicleRequestEvent':
                 {
-                    const vehicle = getElement(
+                    const vehicle = tryGetElement(
                         draftState,
                         'vehicle',
                         event.vehicleId
                     );
                     // Don't do anything if vehicle is occupied
-                    if (!isUnoccupied(vehicle, draftState.currentTime)) {
-                        return;
+                    if (
+                        vehicle === undefined ||
+                        !isUnoccupied(draftState, vehicle)
+                    ) {
+                        break;
                     }
 
                     const activityId = nextUUID(draftState);
@@ -216,7 +223,9 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             event.successorOccupation
                         )
                     );
-                    vehicle.occupation = cloneDeepMutable(
+                    changeOccupation(
+                        draftState,
+                        vehicle,
                         LoadOccupation.create(activityId)
                     );
                 }
@@ -251,10 +260,7 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                 vehicleType
                             ]
                                 ?.filter((vehicle) =>
-                                    isUnoccupied(
-                                        vehicle,
-                                        draftState.currentTime
-                                    )
+                                    isUnoccupied(draftState, vehicle)
                                 )
                                 .sort(
                                     (vehicle1, vehicle2) =>
@@ -296,10 +302,11 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                         )
                                     )
                                 );
-                                loadableVehicles![index]!.occupation =
-                                    cloneDeepMutable(
-                                        LoadOccupation.create(activityId)
-                                    );
+                                changeOccupation(
+                                    draftState,
+                                    loadableVehicles![index]!,
+                                    LoadOccupation.create(activityId)
+                                );
                                 sentVehicles[vehicleType]++;
                             }
                         }
@@ -381,12 +388,17 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                 break;
             case 'startTransferEvent':
                 {
-                    const vehicle = getElement(
+                    const vehicle = tryGetElement(
                         draftState,
                         'vehicle',
                         event.vehicleId
                     );
-                    vehicle.occupation = cloneDeepMutable(
+                    if (vehicle === undefined) {
+                        break;
+                    }
+                    changeOccupation(
+                        draftState,
+                        vehicle,
                         WaitForTransferOccupation.create()
                     );
 
@@ -415,39 +427,44 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                 break;
             case 'doTransferEvent':
                 {
-                    if (
-                        behaviorState.startTransferEventQueue.length === 0 &&
-                        behaviorState.recurringActivityId
-                    ) {
-                        terminateActivity(
-                            draftState,
-                            simulatedRegion,
-                            behaviorState.recurringActivityId
-                        );
-                        behaviorState.recurringActivityId = undefined;
-                        return;
-                    }
-
                     const transferEvent =
                         behaviorState.startTransferEventQueue.shift();
-                    const vehicle =
-                        draftState.vehicles[transferEvent!.vehicleId];
-                    if (
-                        vehicle?.occupation.type !== 'waitForTransferOccupation'
-                    ) {
-                        return;
+                    if (transferEvent === undefined) {
+                        if (behaviorState.recurringActivityId) {
+                            terminateActivity(
+                                draftState,
+                                simulatedRegion,
+                                behaviorState.recurringActivityId
+                            );
+                            behaviorState.recurringActivityId = undefined;
+                            break;
+                        }
+                    } else {
+                        const vehicle = tryGetElement(
+                            draftState,
+                            'vehicle',
+                            transferEvent.vehicleId
+                        );
+                        if (
+                            vehicle?.occupation.type !==
+                            'waitForTransferOccupation'
+                        ) {
+                            break;
+                        }
+                        addActivity(
+                            simulatedRegion,
+                            TransferVehicleActivityState.create(
+                                nextUUID(draftState),
+                                vehicle.id,
+                                transferEvent.transferDestinationType,
+                                transferEvent.transferDestinationId,
+                                transferEvent.key,
+                                cloneDeepMutable(
+                                    transferEvent.successorOccupation
+                                )
+                            )
+                        );
                     }
-                    addActivity(
-                        simulatedRegion,
-                        TransferVehicleActivityState.create(
-                            nextUUID(draftState),
-                            vehicle.id,
-                            transferEvent!.transferDestinationType,
-                            transferEvent!.transferDestinationId,
-                            transferEvent!.key,
-                            cloneDeepMutable(transferEvent!.successorOccupation)
-                        )
-                    );
                 }
                 break;
             default:
