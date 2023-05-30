@@ -4,11 +4,13 @@
  * and they should figure out the color and name for the tag by themselves.
  */
 
-import type { TreatmentProgress } from '../../simulation';
+import { behaviorTypeToGermanNameDictionary } from '../../simulation/behaviors/utils';
+import type { TreatmentProgress } from '../../simulation/utils/treatment';
 import { treatmentProgressToGermanNameDictionary } from '../../simulation/utils/treatment';
 import type { ExerciseState } from '../../state';
 import {
     getElement,
+    getExerciseBehaviorById,
     getExerciseRadiogramById,
 } from '../../store/action-reducers/utils/get-element';
 import type { UUID } from '../../utils';
@@ -132,12 +134,24 @@ export function createSimulatedRegionTag(
         'simulatedRegion',
         simulatedRegionId
     );
+    return createSimulatedRegionTagWithName(
+        draftState,
+        simulatedRegionId,
+        simulatedRegion.name
+    );
+}
+
+export function createSimulatedRegionTagWithName(
+    _draftState: Mutable<ExerciseState>,
+    simulatedRegionId: UUID,
+    name: string
+): Tag {
     return new Tag(
         'Simulierter Bereich',
         'lightblue',
         'black',
-        simulatedRegion.name,
-        simulatedRegion.id
+        name,
+        simulatedRegionId
     );
 }
 
@@ -172,6 +186,20 @@ export function createTreatmentProgressTag(
     );
 }
 
+export function createAlarmGroupTag(
+    draftState: Mutable<ExerciseState>,
+    alarmGroupId: UUID
+): Tag {
+    const alarmGroup = getElement(draftState, 'alarmGroup', alarmGroupId);
+    return new Tag(
+        'Alarmgruppe',
+        'lightgreen',
+        'black',
+        alarmGroup.name,
+        alarmGroup.id
+    );
+}
+
 export function createVehicleTag(
     draftState: Mutable<ExerciseState>,
     vehicleId: UUID
@@ -181,17 +209,10 @@ export function createVehicleTag(
 }
 
 export function createVehicleTypeTag(
-    draftState: Mutable<ExerciseState>,
-    vehicleId: UUID
+    _draftState: Mutable<ExerciseState>,
+    vehicleType: UUID
 ): Tag {
-    const vehicle = getElement(draftState, 'vehicle', vehicleId);
-    return new Tag(
-        'Fahrzeugtyp',
-        'grey',
-        'white',
-        vehicle.vehicleType,
-        vehicle.vehicleType
-    );
+    return new Tag('Fahrzeugtyp', 'grey', 'white', vehicleType, vehicleType);
 }
 
 export function createOccupationTag(
@@ -249,6 +270,24 @@ export function createHospitalTag(
     );
 }
 
+export function createBehaviorTag(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegionId: UUID,
+    behaviorId: UUID
+): Tag {
+    const behavior = getExerciseBehaviorById(
+        draftState,
+        simulatedRegionId,
+        behaviorId
+    );
+    return new Tag(
+        'Verhalten',
+        'lightgreen',
+        'black',
+        behaviorTypeToGermanNameDictionary[behavior.type],
+        behavior.id
+    );
+}
 export function createPersonnelTypeTag(
     _draftState: Mutable<ExerciseState>,
     personnelType: PersonnelType

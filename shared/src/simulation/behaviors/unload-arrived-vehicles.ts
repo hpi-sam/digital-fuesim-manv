@@ -1,5 +1,5 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
-import { getCreate } from '../../models/utils';
+import { getCreate } from '../../models/utils/get-create';
 import {
     changeOccupation,
     isUnoccupied,

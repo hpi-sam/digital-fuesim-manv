@@ -1,10 +1,4 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
-import type { PatientStatus, PersonnelType } from '../../models/utils';
-import {
-    PersonnelResource,
-    getCreate,
-    isInSpecificSimulatedRegion,
-} from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { CatersFor } from '../../store/action-reducers/utils/calculate-treatments';
 import {
@@ -40,6 +34,11 @@ import {
     subtractResourceDescription,
 } from '../../models/utils/resource-description';
 import { logTreatmentStatusChangedInSimulatedRegion } from '../../store/action-reducers/utils/log';
+import { getCreate } from '../../models/utils/get-create';
+import { isInSpecificSimulatedRegion } from '../../models/utils/position/position-helpers';
+import type { PersonnelType } from '../../models/utils/personnel-type';
+import { PersonnelResource } from '../../models/utils/rescue-resource';
+import type { PatientStatus } from '../../models/utils/patient-status';
 import type {
     SimulationActivity,
     SimulationActivityState,

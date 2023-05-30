@@ -1,6 +1,6 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
 import { cloneDeep } from 'lodash-es';
-import { getCreate } from '../../models/utils';
+import { getCreate } from '../../models/utils/get-create';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, UUID, uuid, UUIDSet } from '../../utils';
 import { IsUUIDSet, IsUUIDSetMap, IsValue } from '../../utils/validators';

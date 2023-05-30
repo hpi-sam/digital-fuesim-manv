@@ -1,8 +1,9 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { VehicleResource, getCreate } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
+import { VehicleResource } from '../../models/utils/rescue-resource';
+import { getCreate } from '../../models/utils/get-create';
 import type { SimulationEvent } from './simulation-event';
 
 export class VehicleTransferSuccessfulEvent implements SimulationEvent {

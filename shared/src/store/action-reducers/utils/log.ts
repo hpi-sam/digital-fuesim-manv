@@ -4,6 +4,11 @@ import type { Tag } from '../../../models/tag';
 import { personnelTypeNames } from '../../../models/utils/personnel-type';
 import { statusNames } from '../../../models/utils/patient-status';
 import {
+    createAlarmGroupTag,
+    createBehaviorTag,
+    createHospitalTag,
+    createPatientTag,
+    createSimulatedRegionTagWithName,
     createPatientStatusTag,
     createRadiogramTypeTag,
     createSimulatedRegionTag,
@@ -12,19 +17,71 @@ import {
     createTreatmentProgressTag,
     createVehicleTag,
     createVehicleTypeTag,
+    createPersonnelTypeTag,
 } from '../../../models/utils/tag-helpers';
 import type { TreatmentProgress } from '../../../simulation/utils/treatment';
 import { treatmentProgressToGermanNameDictionary } from '../../../simulation/utils/treatment';
 import type { ExerciseState } from '../../../state';
 import type { UUID } from '../../../utils';
-import { StrictObject } from '../../../utils';
+import { formatDuration, StrictObject } from '../../../utils';
 import type { Mutable } from '../../../utils/immutability';
-import type { PatientStatus } from '../../../models';
+import { Patient } from '../../../models/patient';
+import type { PatientStatus, Personnel, Vehicle } from '../../../models';
 import {
     currentSimulatedRegionIdOf,
+    currentSimulatedRegionOf,
     isInSimulatedRegion,
 } from '../../../models/utils/position/position-helpers';
-import { getElement, getExerciseRadiogramById } from './get-element';
+import type { WithPosition } from '../../../models/utils/position/with-position';
+import type { TransferPoint } from '../../../models/transfer-point';
+import type { Hospital } from '../../../models/hospital';
+import { behaviorTypeToGermanNameDictionary } from '../../../simulation/behaviors/utils';
+import {
+    getElement,
+    getExerciseBehaviorById,
+    getExerciseRadiogramById,
+} from './get-element';
+
+export function log(
+    state: Mutable<ExerciseState>,
+    tags: Tag[],
+    description: string
+) {
+    if (!logActive(state)) return;
+
+    state.logEntries!.push(new LogEntry(description, tags, state.currentTime));
+}
+
+export function logAlarmGroup(
+    state: Mutable<ExerciseState>,
+    additionalTags: Tag[],
+    description: string,
+    alarmGroupId: UUID
+) {
+    if (!logActive(state)) return;
+
+    log(
+        state,
+        [...additionalTags, createAlarmGroupTag(state, alarmGroupId)],
+        description
+    );
+}
+
+export function logAlarmGroupSent(
+    state: Mutable<ExerciseState>,
+    alarmGroupId: UUID
+) {
+    if (!logActive(state)) return;
+
+    const alarmGroup = getElement(state, 'alarmGroup', alarmGroupId);
+
+    logAlarmGroup(
+        state,
+        [],
+        `Die Alarmgruppe ${alarmGroup.name} wurde alarmiert`,
+        alarmGroupId
+    );
+}
 
 export function logPatient(
     state: Mutable<ExerciseState>,
@@ -34,15 +91,544 @@ export function logPatient(
 ) {
     if (!logActive(state)) return;
 
-    state.logEntries!.push(
-        new LogEntry(
-            description,
+    log(
+        state,
+        [...additionalTags, ...createTagsForSinglePatient(state, patientId)],
+        description
+    );
+}
+
+export function logPatientAdded(
+    state: Mutable<ExerciseState>,
+    patientId: UUID
+) {
+    if (!logActive(state)) return;
+
+    logPatient(state, [], `Ein Patient wurde hinzugefügt.`, patientId);
+}
+
+export function logPatientRemoved(
+    state: Mutable<ExerciseState>,
+    patientId: UUID
+) {
+    if (!logActive(state)) return;
+
+    logPatient(state, [], `Ein Patient wurde entfernt.`, patientId);
+}
+
+export function logPatientVisibleStatusChanged(
+    state: Mutable<ExerciseState>,
+    patientId: UUID
+) {
+    if (!logActive(state)) return;
+
+    const patient = getElement(state, 'patient', patientId);
+
+    const visibleStatus = Patient.getVisibleStatus(
+        patient,
+        state.configuration.pretriageEnabled,
+        state.configuration.bluePatientsEnabled
+    );
+
+    logPatient(
+        state,
+        [],
+        `Ein Patient wurde als ${statusNames[visibleStatus]} gesichtet.`,
+        patientId
+    );
+}
+
+export function logSimulatedRegion(
+    state: Mutable<ExerciseState>,
+    additionalTags: Tag[],
+    description: string,
+    simulatedRegionId: UUID
+) {
+    if (!logActive(state)) return;
+
+    log(
+        state,
+        [...additionalTags, createSimulatedRegionTag(state, simulatedRegionId)],
+        description
+    );
+}
+
+export function logSimulatedRegionNameChange(
+    state: Mutable<ExerciseState>,
+    simulatedRegionId: UUID,
+    newName: string
+) {
+    if (!logActive(state)) return;
+
+    const simulatedRegion = getElement(
+        state,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+
+    logSimulatedRegion(
+        state,
+        [createSimulatedRegionTagWithName(state, simulatedRegionId, newName)],
+        `Der ehemalige Bereich ${simulatedRegion.name} heißt nun ${newName}`,
+        simulatedRegionId
+    );
+}
+
+export function logSimulatedRegionAddElement(
+    state: Mutable<ExerciseState>,
+    simulatedRegionId: UUID,
+    elementId: string,
+    elementType: 'material' | 'patient' | 'personnel' | 'vehicle'
+) {
+    if (!logActive(state)) return;
+
+    switch (elementType) {
+        case 'material':
+            {
+                logSimulatedRegion(
+                    state,
+                    [],
+                    `Dem Bereich wurde Material hinzugefügt.`,
+                    simulatedRegionId
+                );
+            }
+            break;
+        case 'patient':
+            {
+                const element = getElement(state, elementType, elementId);
+
+                logSimulatedRegion(
+                    state,
+                    [
+                        createPatientTag(state, element.id),
+                        createPatientStatusTag(state, element.pretriageStatus),
+                    ],
+                    `Dem Bereich wurde ein Patient hinzugefügt.`,
+                    simulatedRegionId
+                );
+            }
+            break;
+        case 'personnel':
+            {
+                const element = getElement(state, elementType, elementId);
+
+                logSimulatedRegion(
+                    state,
+                    [createPersonnelTypeTag(state, element.personnelType)],
+                    `Dem Bereich wurde ein ${element.personnelType} hinzugefügt`,
+                    simulatedRegionId
+                );
+            }
+            break;
+        case 'vehicle':
+            {
+                const element = getElement(state, elementType, elementId);
+
+                logSimulatedRegion(
+                    state,
+                    [
+                        createVehicleTag(state, elementId),
+                        createVehicleTypeTag(state, element.vehicleType),
+                    ],
+                    `Dem Bereich wurde ein ${element.vehicleType} hinzugefügt`,
+                    simulatedRegionId
+                );
+            }
+            break;
+    }
+}
+
+export function logBehavior(
+    state: Mutable<ExerciseState>,
+    additionalTags: Tag[],
+    description: string,
+    simulatedRegionId: UUID,
+    behaviorId: UUID
+) {
+    if (!logActive(state)) return;
+
+    logSimulatedRegion(
+        state,
+        [
+            ...additionalTags,
+            createBehaviorTag(state, simulatedRegionId, behaviorId),
+        ],
+        description,
+        simulatedRegionId
+    );
+}
+
+export function logBehaviorAdded(
+    state: Mutable<ExerciseState>,
+    simulatedRegionId: UUID,
+    behaviorId: UUID
+) {
+    if (!logActive(state)) return;
+
+    const simulatedRegion = getElement(
+        state,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+
+    const behavior = getExerciseBehaviorById(
+        state,
+        simulatedRegionId,
+        behaviorId
+    );
+
+    logBehavior(
+        state,
+        [],
+        `Das Verhalten ${
+            behaviorTypeToGermanNameDictionary[behavior.type]
+        } wurde dem Bereich ${simulatedRegion.name} hinzugefügt.`,
+        simulatedRegionId,
+        behaviorId
+    );
+}
+
+export function logBehaviorRemoved(
+    state: Mutable<ExerciseState>,
+    simulatedRegionId: UUID,
+    behaviorId: UUID
+) {
+    if (!logActive(state)) return;
+
+    const simulatedRegion = getElement(
+        state,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+
+    const behavior = getExerciseBehaviorById(
+        state,
+        simulatedRegionId,
+        behaviorId
+    );
+
+    logBehavior(
+        state,
+        [],
+        `Das Verhalten ${
+            behaviorTypeToGermanNameDictionary[behavior.type]
+        } wurde aus dem Bereich ${simulatedRegion.name} entfernt.`,
+        simulatedRegionId,
+        behaviorId
+    );
+}
+
+export function logTransferPoint(
+    state: Mutable<ExerciseState>,
+    additionalTags: Tag[],
+    description: string,
+    transferPointId: UUID
+) {
+    if (!logActive(state)) return;
+
+    const transferPoint = getElement(state, 'transferPoint', transferPointId);
+
+    log(
+        state,
+        [
+            ...additionalTags,
+            isInSimulatedRegion(transferPoint)
+                ? createSimulatedRegionTag(
+                      state,
+                      currentSimulatedRegionOf(state, transferPoint).id
+                  )
+                : createTransferPointTag(state, transferPointId),
+        ],
+        description
+    );
+}
+
+export function logTransferPointConnection(
+    state: Mutable<ExerciseState>,
+    transferSourceId: UUID,
+    transferTargetId: UUID,
+    transferTargetType: 'hospital' | 'transferPoint'
+) {
+    if (!logActive(state)) return;
+
+    const source = getElement(state, 'transferPoint', transferSourceId);
+    const target = getElement(state, transferTargetType, transferTargetId);
+
+    logTransferPoint(
+        state,
+        [
+            transferTargetType === 'transferPoint'
+                ? isInSimulatedRegion(target as WithPosition)
+                    ? createSimulatedRegionTag(
+                          state,
+                          currentSimulatedRegionOf(
+                              state,
+                              target as WithPosition
+                          ).id
+                      )
+                    : createTransferPointTag(state, transferTargetId)
+                : createHospitalTag(state, transferTargetId),
+        ],
+        `Es wurde ein Transfer von ${source.externalName} nach ${
+            transferTargetType === 'transferPoint'
+                ? (target as TransferPoint).externalName
+                : (target as Hospital).name
+        } eingerichtet.`,
+        transferSourceId
+    );
+}
+
+export function logTransferPointConnectionRemoved(
+    state: Mutable<ExerciseState>,
+    transferSourceId: UUID,
+    transferTargetId: UUID,
+    transferTargetType: 'hospital' | 'transferPoint'
+) {
+    if (!logActive(state)) return;
+
+    const source = getElement(state, 'transferPoint', transferSourceId);
+    const target = getElement(state, transferTargetType, transferTargetId);
+
+    logTransferPoint(
+        state,
+        [
+            transferTargetType === 'transferPoint'
+                ? isInSimulatedRegion(target as WithPosition)
+                    ? createSimulatedRegionTag(
+                          state,
+                          currentSimulatedRegionOf(
+                              state,
+                              target as WithPosition
+                          ).id
+                      )
+                    : createTransferPointTag(state, transferTargetId)
+                : createHospitalTag(state, transferTargetId),
+        ],
+        `Der Transfer von ${source.externalName} nach ${
+            transferTargetType === 'transferPoint'
+                ? (target as TransferPoint).externalName
+                : (target as Hospital).name
+        } wurde entfernt.`,
+        transferSourceId
+    );
+}
+
+export function logElementAddedToTransfer(
+    state: Mutable<ExerciseState>,
+    transferSourceId: UUID,
+    transferSourceType: 'alarmGroup' | 'transferPoint',
+    elementId: UUID,
+    elementType: 'personnel' | 'vehicle',
+    transferTargetId: UUID,
+    transferTargetType: 'hospital' | 'transferPoint',
+    duration: number
+) {
+    if (!logActive(state)) return;
+
+    const target = getElement(state, transferTargetType, transferTargetId);
+    const element = getElement(state, elementType, elementId);
+
+    if (transferSourceType === 'alarmGroup') {
+        const alarmGroup = getElement(state, 'alarmGroup', transferSourceId);
+
+        logAlarmGroup(
+            state,
             [
-                ...additionalTags,
-                ...createTagsForSinglePatient(state, patientId),
+                ...[
+                    transferTargetType === 'transferPoint'
+                        ? isInSimulatedRegion(target as WithPosition)
+                            ? createSimulatedRegionTag(
+                                  state,
+                                  currentSimulatedRegionOf(
+                                      state,
+                                      target as WithPosition
+                                  ).id
+                              )
+                            : createTransferPointTag(state, transferTargetId)
+                        : createHospitalTag(state, transferTargetId),
+                    elementType === 'personnel'
+                        ? createPersonnelTypeTag(
+                              state,
+                              (element as Personnel).personnelType
+                          )
+                        : createVehicleTypeTag(
+                              state,
+                              (element as Vehicle).vehicleType
+                          ),
+                ],
+                ...(elementType === 'vehicle'
+                    ? [createVehicleTag(state, elementId)]
+                    : []),
             ],
-            state.currentTime
-        )
+            `Ein ${
+                elementType === 'personnel'
+                    ? (element as Personnel).personnelType
+                    : (element as Vehicle).vehicleType
+            } wird in ${formatDuration(duration)} von ${alarmGroup.name} nach ${
+                transferTargetType === 'transferPoint'
+                    ? (target as TransferPoint).externalName
+                    : (target as Hospital).name
+            } transferiert.`,
+            transferSourceId
+        );
+    } else {
+        const source = getElement(state, 'transferPoint', transferSourceId);
+
+        logTransferPoint(
+            state,
+            [
+                ...[
+                    transferTargetType === 'transferPoint'
+                        ? isInSimulatedRegion(target as WithPosition)
+                            ? createSimulatedRegionTag(
+                                  state,
+                                  currentSimulatedRegionOf(
+                                      state,
+                                      target as WithPosition
+                                  ).id
+                              )
+                            : createTransferPointTag(state, transferTargetId)
+                        : createHospitalTag(state, transferTargetId),
+                    elementType === 'personnel'
+                        ? createPersonnelTypeTag(
+                              state,
+                              (element as Personnel).personnelType
+                          )
+                        : createVehicleTypeTag(
+                              state,
+                              (element as Vehicle).vehicleType
+                          ),
+                ],
+                ...(elementType === 'vehicle'
+                    ? [createVehicleTag(state, elementId)]
+                    : []),
+            ],
+            `Ein ${
+                elementType === 'personnel'
+                    ? (element as Personnel).personnelType
+                    : (element as Vehicle).name
+            } wird in ${formatDuration(duration)} von ${
+                source.externalName
+            } nach ${
+                transferTargetType === 'transferPoint'
+                    ? (target as TransferPoint).externalName
+                    : (target as Hospital).name
+            } transferiert.`,
+            transferSourceId
+        );
+    }
+}
+
+export function logTransferEdited(
+    state: Mutable<ExerciseState>,
+    elementId: UUID,
+    elementType: 'personnel' | 'vehicle',
+    oldTransferTargetId: UUID,
+    newTransferTargetId: UUID,
+    oldDuration: number,
+    newDuration: number
+) {
+    if (!logActive(state)) return;
+
+    const oldTarget = getElement(state, 'transferPoint', oldTransferTargetId);
+    const newTarget = getElement(state, 'transferPoint', newTransferTargetId);
+    const element = getElement(state, elementType, elementId);
+
+    logTransferPoint(
+        state,
+        [
+            elementType === 'personnel'
+                ? createPersonnelTypeTag(
+                      state,
+                      (element as Personnel).personnelType
+                  )
+                : createVehicleTypeTag(state, (element as Vehicle).vehicleType),
+            ...(newTransferTargetId === oldTransferTargetId
+                ? []
+                : [createTransferPointTag(state, oldTransferTargetId)]),
+            ...(elementType === 'vehicle'
+                ? [createVehicleTag(state, elementId)]
+                : []),
+        ],
+        `Der Transfer von ${
+            elementType === 'personnel'
+                ? (element as Personnel).personnelType
+                : (element as Vehicle).name
+        } nach ${oldTarget.externalName} in ${formatDuration(
+            oldDuration
+        )} wurde geändert, und geht jetzt nach ${
+            newTarget.externalName
+        } in ${formatDuration(newDuration)}.`,
+        newTransferTargetId
+    );
+}
+
+export function logTransferFinished(
+    state: Mutable<ExerciseState>,
+    elementId: UUID,
+    elementType: 'personnel' | 'vehicle',
+    transferTargetId: UUID
+) {
+    if (!logActive(state)) return;
+
+    const target = getElement(state, 'transferPoint', transferTargetId);
+    const element = getElement(state, elementType, elementId);
+
+    logTransferPoint(
+        state,
+        [
+            elementType === 'personnel'
+                ? createPersonnelTypeTag(
+                      state,
+                      (element as Personnel).personnelType
+                  )
+                : createVehicleTypeTag(state, (element as Vehicle).vehicleType),
+            ...(elementType === 'vehicle'
+                ? [createVehicleTag(state, elementId)]
+                : []),
+        ],
+        `Der Transfer von ${
+            elementType === 'personnel'
+                ? (element as Personnel).personnelType
+                : (element as Vehicle).name
+        } nach ${target.externalName} wurde abgeschlossen.`,
+        transferTargetId
+    );
+}
+
+export function logTransferPause(
+    state: Mutable<ExerciseState>,
+    elementId: UUID,
+    elementType: 'personnel' | 'vehicle',
+    transferTargetId: UUID,
+    paused: boolean
+) {
+    if (!logActive(state)) return;
+
+    const target = getElement(state, 'transferPoint', transferTargetId);
+    const element = getElement(state, elementType, elementId);
+
+    logTransferPoint(
+        state,
+        [
+            elementType === 'personnel'
+                ? createPersonnelTypeTag(
+                      state,
+                      (element as Personnel).personnelType
+                  )
+                : createVehicleTypeTag(state, (element as Vehicle).vehicleType),
+            ...(elementType === 'vehicle'
+                ? [createVehicleTag(state, elementId)]
+                : []),
+        ],
+        `Der Transfer von ${
+            elementType === 'personnel'
+                ? (element as Personnel).personnelType
+                : (element as Vehicle).name
+        } nach ${target.externalName} wurde ${
+            paused ? 'pausiert' : 'fortgesetzt'
+        }.`,
+        transferTargetId
     );
 }
 
@@ -56,17 +642,15 @@ export function logRadiogram(
 
     const radiogram = getExerciseRadiogramById(state, radiogramId);
 
-    state.logEntries!.push(
-        new LogEntry(
-            `${description} ${createRadiogramDescription(state, radiogram)}`,
-            [
-                ...additionalTags,
-                ...createTagsForRadiogramType(state, radiogram),
-                createRadiogramTypeTag(state, radiogramId),
-                createSimulatedRegionTag(state, radiogram.simulatedRegionId),
-            ],
-            state.currentTime
-        )
+    log(
+        state,
+        [
+            ...additionalTags,
+            ...createTagsForRadiogramType(state, radiogram),
+            createRadiogramTypeTag(state, radiogramId),
+            createSimulatedRegionTag(state, radiogram.simulatedRegionId),
+        ],
+        `${description} ${createRadiogramDescription(state, radiogram)}`
     );
 }
 export function logTreatmentStatusChangedInSimulatedRegion(
@@ -83,16 +667,14 @@ export function logTreatmentStatusChangedInSimulatedRegion(
         simulatedRegionId
     );
 
-    state.logEntries!.push(
-        new LogEntry(
-            `Der Behandlungszustand im simulierten Bereich ${simulatedRegion.name} ist zu ${treatmentProgressToGermanNameDictionary[treatmentProgress]} gewechselt.`,
-            [
-                ...additionalTags,
-                createTreatmentProgressTag(state, treatmentProgress),
-                createSimulatedRegionTag(state, simulatedRegionId),
-            ],
-            state.currentTime
-        )
+    log(
+        state,
+        [
+            ...additionalTags,
+            createTreatmentProgressTag(state, treatmentProgress),
+            createSimulatedRegionTag(state, simulatedRegionId),
+        ],
+        `Der Behandlungszustand im simulierten Bereich ${simulatedRegion.name} ist zu ${treatmentProgressToGermanNameDictionary[treatmentProgress]} gewechselt.`
     );
 }
 
@@ -105,16 +687,14 @@ export function logLastPatientTransported(
 ) {
     if (!logActive(state)) return;
 
-    state.logEntries!.push(
-        new LogEntry(
-            description,
-            [
-                ...additionalTags,
-                createPatientStatusTag(state, patientStatus),
-                createSimulatedRegionTag(state, simulatedRegionId),
-            ],
-            state.currentTime
-        )
+    log(
+        state,
+        [
+            ...additionalTags,
+            createPatientStatusTag(state, patientStatus),
+            createSimulatedRegionTag(state, simulatedRegionId),
+        ],
+        description
     );
 }
 
@@ -170,26 +750,42 @@ export function logVehicle(
 
     const vehicle = getElement(state, 'vehicle', vehicleId);
 
-    state.logEntries!.push(
-        new LogEntry(
-            description,
-            [
-                ...additionalTags,
-                ...createPatientTags(state, Object.keys(vehicle.patientIds)),
-                createVehicleTag(state, vehicle.id),
-                createVehicleTypeTag(state, vehicle.id),
-                ...(isInSimulatedRegion(vehicle)
-                    ? [
-                          createSimulatedRegionTag(
-                              state,
-                              currentSimulatedRegionIdOf(vehicle)
-                          ),
-                      ]
-                    : []),
-            ],
-            state.currentTime
-        )
+    log(
+        state,
+        [
+            ...additionalTags,
+            ...createPatientTags(state, Object.keys(vehicle.patientIds)),
+            createVehicleTag(state, vehicle.id),
+            createVehicleTypeTag(state, vehicle.vehicleType),
+            ...(isInSimulatedRegion(vehicle)
+                ? [
+                      createSimulatedRegionTag(
+                          state,
+                          currentSimulatedRegionIdOf(vehicle)
+                      ),
+                  ]
+                : []),
+        ],
+        description
     );
+}
+
+export function logVehicleAdded(
+    state: Mutable<ExerciseState>,
+    vehicleId: UUID
+) {
+    if (!logActive(state)) return;
+
+    logVehicle(state, [], `Ein Fahrzeug wurde hinzugefügt.`, vehicleId);
+}
+
+export function logVehicleRemoved(
+    state: Mutable<ExerciseState>,
+    vehicleId: UUID
+) {
+    if (!logActive(state)) return;
+
+    logVehicle(state, [], `Ein Fahrzeug wurde entfernt.`, vehicleId);
 }
 
 function createPatientTags(
