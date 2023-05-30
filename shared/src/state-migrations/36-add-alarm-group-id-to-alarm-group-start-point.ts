@@ -79,20 +79,6 @@ export const addAlarmGroupIdToAlarmGroupStartPoint36: Migration = {
             };
         };
 
-        Object.values(typedState.materials).forEach((material) => {
-            if (material.position.type === 'transfer') {
-                if (
-                    material.position.transfer.startPoint.type ===
-                    'alarmGroupStartPoint'
-                ) {
-                    migrateAlarmGroupStartPoint(
-                        material.position.transfer.startPoint,
-                        state as StateStub
-                    );
-                }
-            }
-        });
-
         Object.values(typedState.vehicles).forEach((vehicle) => {
             if (vehicle.position.type === 'transfer') {
                 if (

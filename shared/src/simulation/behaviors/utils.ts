@@ -70,13 +70,13 @@ export const behaviorTypeToGermanNameDictionary: {
 export const reportableInformationTypeToGermanNameDictionary: {
     [Key in ReportableInformation]: string;
 } = {
-    materialCount: 'Anzahl von Material',
-    patientCount: 'Anzahl von Patienten',
-    personnelCount: 'Anzahl von Personal',
-    singleRegionTransferCounts:
-        'Abtransportierte Patienten aus der eigenen Region',
-    transportManagementTransferCounts:
-        'Abtransportierte Patienten aus verwalteten Regionen',
+    patientCount: 'Anzahl an Patienten',
+    vehicleCount: 'Anzahl an Fahrzeugen',
+    personnelCount: 'Anzahl an Rettungskräften',
+    materialCount: 'Anzahl an Material',
     treatmentStatus: 'Behandlungsstatus',
-    vehicleCount: 'Anzahl von Fahrzeugen',
+    singleRegionTransferCounts:
+        'Anzahl aus diesem Bereich in Krankenhäuser abtransportierter Patienten',
+    transportManagementTransferCounts:
+        'Anzahl unter dieser Transportorganisation in Krankenhäuser abtransportierter Patienten',
 };
