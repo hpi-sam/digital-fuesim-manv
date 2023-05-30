@@ -93,6 +93,25 @@ export function getRadiogramById<R extends ExerciseRadiogram>(
     return radiogram as Mutable<R>;
 }
 
+export function getExerciseBehaviorById(
+    state: Mutable<ExerciseState>,
+    simulatedRegionId: UUID,
+    behaviorId: UUID
+) {
+    const simulatedRegion = getElement(
+        state,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+    const behavior = simulatedRegion.behaviors.find((b) => b.id === behaviorId);
+    if (!behavior) {
+        throw new ReducerError(
+            `Behavior with id ${behaviorId} does not exist in simulated region ${simulatedRegionId}`
+        );
+    }
+    return behavior;
+}
+
 export function getBehaviorById<T extends ExerciseSimulationBehaviorType>(
     state: Mutable<ExerciseState>,
     simulatedRegionId: UUID,

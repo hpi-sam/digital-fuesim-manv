@@ -199,11 +199,7 @@ function sendAlarmGroupVehicle(
         elementType: vehicleParameters.vehicle.type,
         elementId: vehicleParameters.vehicle.id,
         startPoint: cloneDeepMutable(
-            AlarmGroupStartPoint.create(
-                alarmGroupId,
-                alarmGroupName,
-                alarmGroupVehicle.time
-            )
+            AlarmGroupStartPoint.create(alarmGroupId, alarmGroupVehicle.time)
         ),
         targetTransferPointId,
     });

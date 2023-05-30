@@ -33,7 +33,11 @@ import type { WithPosition } from '../../../models/utils/position/with-position'
 import type { TransferPoint } from '../../../models/transfer-point';
 import type { Hospital } from '../../../models/hospital';
 import type { Personnel, Vehicle } from '../../../models';
-import { getElement, getExerciseRadiogramById } from './get-element';
+import {
+    getElement,
+    getExerciseBehaviorById,
+    getExerciseRadiogramById,
+} from './get-element';
 
 export function log(
     state: Mutable<ExerciseState>,
@@ -266,9 +270,11 @@ export function logBehaviorAdded(
         simulatedRegionId
     );
 
-    const behavior = simulatedRegion.behaviors.find(
-        (behaviorState) => behaviorId === behaviorState.id
-    )!;
+    const behavior = getExerciseBehaviorById(
+        state,
+        simulatedRegionId,
+        behaviorId
+    );
 
     logBehavior(
         state,
@@ -292,9 +298,11 @@ export function logBehaviorRemoved(
         simulatedRegionId
     );
 
-    const behavior = simulatedRegion.behaviors.find(
-        (behaviorState) => behaviorId === behaviorState.id
-    )!;
+    const behavior = getExerciseBehaviorById(
+        state,
+        simulatedRegionId,
+        behaviorId
+    );
 
     logBehavior(
         state,

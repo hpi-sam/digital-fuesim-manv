@@ -1,5 +1,5 @@
 import type { TypeOptions } from 'class-transformer';
-import { IsNumber, IsString, IsUUID, Min } from 'class-validator';
+import { IsNumber, IsUUID, Min } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { getCreate } from './get-create';
@@ -27,9 +27,6 @@ export class AlarmGroupStartPoint {
     @IsValue('alarmGroupStartPoint' as const)
     public readonly type = 'alarmGroupStartPoint';
 
-    @IsString()
-    public readonly alarmGroupName: string;
-
     @IsUUID(4, uuidValidationOptions)
     public readonly alarmGroupId: UUID;
 
@@ -40,9 +37,8 @@ export class AlarmGroupStartPoint {
     /**
      * @deprecated Use {@link create} instead
      */
-    constructor(alarmGroupId: UUID, alarmGroupName: string, duration: number) {
+    constructor(alarmGroupId: UUID, duration: number) {
         this.alarmGroupId = alarmGroupId;
-        this.alarmGroupName = alarmGroupName;
         this.duration = duration;
     }
 

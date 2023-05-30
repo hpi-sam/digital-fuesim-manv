@@ -125,7 +125,7 @@ export const addAlarmGroupIdToAlarmGroupStartPoint36: Migration = {
 
 interface AlarmGroupStartPointStub {
     type: 'alarmGroupStartPoint';
-    alarmGroupName: string;
+    alarmGroupName?: string;
     alarmGroupId: UUID;
 }
 
@@ -145,4 +145,5 @@ function migrateAlarmGroupStartPoint(
     alarmGroupStartPoint.alarmGroupId = Object.values(state.alarmGroups).find(
         (alarmGroup) => alarmGroup.name === alarmGroupStartPoint.alarmGroupName
     )!.id;
+    delete alarmGroupStartPoint.alarmGroupName;
 }

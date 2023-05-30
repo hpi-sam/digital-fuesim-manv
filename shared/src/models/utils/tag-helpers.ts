@@ -9,6 +9,7 @@ import { treatmentProgressToGermanNameDictionary } from '../../simulation/utils/
 import type { ExerciseState } from '../../state';
 import {
     getElement,
+    getExerciseBehaviorById,
     getExerciseRadiogramById,
 } from '../../store/action-reducers/utils/get-element';
 import type { UUID } from '../../utils';
@@ -285,9 +286,11 @@ export function createBehaviorTag(
         'simulatedRegion',
         simulatedRegionId
     );
-    const behavior = simulatedRegion.behaviors.find(
-        (behaviorState) => behaviorId === behaviorState.id
-    )!;
+    const behavior = getExerciseBehaviorById(
+        draftState,
+        simulatedRegionId,
+        behaviorId
+    );
     return new Tag(
         'Verhalten',
         'lightgreen',
