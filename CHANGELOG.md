@@ -21,6 +21,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   Addition of elements to transfer
     -   Edit or pause of transfer
     -   All configuration of the simulation
+    -   Addition of elements to simulated regions
     -   Connection and disconnection of transfer points and hospitals
 -   Log entries are being generated for the following occurrences:
     -   Completion of transfer
