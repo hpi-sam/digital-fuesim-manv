@@ -553,7 +553,7 @@ export function logTransferPause(
                 ? (element as Personnel).personnelType
                 : (element as Vehicle).name
         } nach ${target.externalName} wurde ${
-            paused ? 'pausiers' : 'fortgesetzt'
+            paused ? 'pausiert' : 'fortgesetzt'
         }.`,
         transferTargetId
     );
