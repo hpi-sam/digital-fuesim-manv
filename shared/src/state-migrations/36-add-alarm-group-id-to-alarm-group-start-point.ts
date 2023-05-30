@@ -26,23 +26,6 @@ export const addAlarmGroupIdToAlarmGroupStartPoint36: Migration = {
     },
     state: (state) => {
         const typedState = state as {
-            materials: {
-                [materialId: UUID]: {
-                    position: {
-                        type: 'transfer';
-                        transfer: {
-                            startPoint:
-                                | AlarmGroupStartPointStub
-                                | {
-                                      type: Exclude<
-                                          'alarmGroupStartPoint',
-                                          unknown
-                                      >;
-                                  };
-                        };
-                    };
-                };
-            };
             vehicles: {
                 [vehicleId: UUID]: {
                     position: {

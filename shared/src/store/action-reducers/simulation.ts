@@ -1693,7 +1693,8 @@ export namespace SimulationActionReducers {
 
                 logBehavior(
                     draftState,
-                    requestTargetId === undefined
+                    requestTargetId === undefined ||
+                        requestTargetId === simulatedRegionId
                         ? []
                         : [
                               createSimulatedRegionTag(
