@@ -1324,7 +1324,14 @@ export namespace SimulationActionReducers {
 
                 logBehavior(
                     draftState,
-                    [],
+                    requestTarget.type === 'traineesRequestTarget'
+                        ? []
+                        : [
+                              createSimulatedRegionTag(
+                                  draftState,
+                                  requestTarget.targetSimulatedRegionId
+                              ),
+                          ],
                     `Das ${
                         behaviorTypeToGermanNameDictionary[behaviorState.type]
                     } Verhalten im Bereich ${
@@ -1743,12 +1750,14 @@ export namespace SimulationActionReducers {
 
                 logBehavior(
                     draftState,
-                    [
-                        createSimulatedRegionTag(
-                            draftState,
-                            managedSimulatedRegionId
-                        ),
-                    ],
+                    managedSimulatedRegionId === simulatedRegionId
+                        ? []
+                        : [
+                              createSimulatedRegionTag(
+                                  draftState,
+                                  managedSimulatedRegionId
+                              ),
+                          ],
                     `Das ${
                         behaviorTypeToGermanNameDictionary[behaviorState.type]
                     } Verhalten im Bereich ${
@@ -1811,12 +1820,14 @@ export namespace SimulationActionReducers {
                 );
                 logBehavior(
                     draftState,
-                    [
-                        createSimulatedRegionTag(
-                            draftState,
-                            managedSimulatedRegionId
-                        ),
-                    ],
+                    managedSimulatedRegionId === simulatedRegionId
+                        ? []
+                        : [
+                              createSimulatedRegionTag(
+                                  draftState,
+                                  managedSimulatedRegionId
+                              ),
+                          ],
                     `Das ${
                         behaviorTypeToGermanNameDictionary[behaviorState.type]
                     } Verhalten im Bereich ${
@@ -1879,10 +1890,14 @@ export namespace SimulationActionReducers {
                     draftState,
                     [
                         createPatientStatusTag(draftState, patientStatus),
-                        createSimulatedRegionTag(
-                            draftState,
-                            managedSimulatedRegionId
-                        ),
+                        ...(managedSimulatedRegionId === simulatedRegionId
+                            ? []
+                            : [
+                                  createSimulatedRegionTag(
+                                      draftState,
+                                      managedSimulatedRegionId
+                                  ),
+                              ]),
                     ],
                     `Das ${
                         behaviorTypeToGermanNameDictionary[behaviorState.type]
