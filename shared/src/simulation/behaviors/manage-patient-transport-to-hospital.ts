@@ -59,6 +59,7 @@ import {
 } from '../../models/utils/resource-description';
 import type { SimulatedRegion } from '../../models/simulated-region';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
+import { logLastPatientTransportedInMultipleSimulatedRegions } from '../../store/action-reducers/utils/log';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -332,6 +333,11 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                                     ),
                                     draftState.currentTime
                                 )
+                            );
+                            logLastPatientTransportedInMultipleSimulatedRegions(
+                                draftState,
+                                event.patientCategory,
+                                simulatedRegion.id
                             );
                         }
                     }
