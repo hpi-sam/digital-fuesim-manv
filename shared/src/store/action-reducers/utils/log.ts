@@ -4,6 +4,7 @@ import type { Tag } from '../../../models/tag';
 import { personnelTypeNames } from '../../../models/utils/personnel-type';
 import { statusNames } from '../../../models/utils/patient-status';
 import {
+    createPatientStatusTag,
     createRadiogramTypeTag,
     createSimulatedRegionTag,
     createTagsForSinglePatient,
@@ -12,11 +13,13 @@ import {
     createVehicleTag,
     createVehicleTypeTag,
 } from '../../../models/utils/tag-helpers';
+import type { TreatmentProgress } from '../../../simulation/utils/treatment';
 import { treatmentProgressToGermanNameDictionary } from '../../../simulation/utils/treatment';
 import type { ExerciseState } from '../../../state';
 import type { UUID } from '../../../utils';
 import { StrictObject } from '../../../utils';
 import type { Mutable } from '../../../utils/immutability';
+import type { PatientStatus } from '../../../models';
 import {
     currentSimulatedRegionIdOf,
     isInSimulatedRegion,
@@ -64,6 +67,96 @@ export function logRadiogram(
             ],
             state.currentTime
         )
+    );
+}
+export function logTreatmentStatusChangedInSimulatedRegion(
+    state: Mutable<ExerciseState>,
+    treatmentProgress: TreatmentProgress,
+    simulatedRegionId: UUID,
+    additionalTags: Tag[] = []
+) {
+    if (!logActive(state)) return;
+
+    const simulatedRegion = getElement(
+        state,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+
+    state.logEntries!.push(
+        new LogEntry(
+            `Der Behandlungszustand im simulierten Bereich ${simulatedRegion.name} ist zu ${treatmentProgressToGermanNameDictionary[treatmentProgress]} gewechselt.`,
+            [
+                ...additionalTags,
+                createTreatmentProgressTag(state, treatmentProgress),
+                createSimulatedRegionTag(state, simulatedRegionId),
+            ],
+            state.currentTime
+        )
+    );
+}
+
+export function logLastPatientTransported(
+    state: Mutable<ExerciseState>,
+    patientStatus: PatientStatus,
+    simulatedRegionId: UUID,
+    description: string,
+    additionalTags: Tag[] = []
+) {
+    if (!logActive(state)) return;
+
+    state.logEntries!.push(
+        new LogEntry(
+            description,
+            [
+                ...additionalTags,
+                createPatientStatusTag(state, patientStatus),
+                createSimulatedRegionTag(state, simulatedRegionId),
+            ],
+            state.currentTime
+        )
+    );
+}
+
+export function logLastPatientTransportedInSimulatedRegion(
+    state: Mutable<ExerciseState>,
+    patientStatus: PatientStatus,
+    simulatedRegionId: UUID
+) {
+    if (!logActive(state)) return;
+
+    const simulatedRegion = getElement(
+        state,
+        'simulatedRegion',
+        simulatedRegionId
+    );
+
+    logLastPatientTransported(
+        state,
+        patientStatus,
+        simulatedRegionId,
+        `Der letzte Patient der Kategorie ${statusNames[patientStatus]} im simulierten Bereich ${simulatedRegion.name} ist abtransportiert worden`
+    );
+}
+
+export function logLastPatientTransportedInMultipleSimulatedRegions(
+    state: Mutable<ExerciseState>,
+    patientStatus: PatientStatus,
+    managingSimulatedRegionId: UUID
+) {
+    if (!logActive(state)) return;
+
+    const simulatedRegion = getElement(
+        state,
+        'simulatedRegion',
+        managingSimulatedRegionId
+    );
+
+    logLastPatientTransported(
+        state,
+        patientStatus,
+        managingSimulatedRegionId,
+        `Der letzte Patient der Kategorie ${statusNames[patientStatus]} in allen Bereichen, die von der TO in ${simulatedRegion.name} verwaltet werden, ist abtransportiert worden`
     );
 }
 
