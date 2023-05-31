@@ -1,7 +1,7 @@
 <div class="container d-flex flex-row h-100" style="min-height: 0; gap: 4px">
     <div
         class="col mh-100 overflow-auto border-end border-secondary pe-1"
-        style="max-width: 30%"
+        style="max-width: 35%"
     >
         <app-simulated-region-overview-patients-table
             [patients]="(patients$ | async) ?? []"
@@ -9,7 +9,7 @@
             scope="simulatedRegion"
         />
     </div>
-    <div class="col overflow-hidden d-flex flex-column" style="max-width: 70%">
+    <div class="col overflow-hidden d-flex flex-column" style="max-width: 65%">
         <app-patients-details
             class="overflow-auto w-100 d-inline-block flex-grow-1"
             *ngIf="selectedPatientId; else noSelectedPatient"

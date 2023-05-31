@@ -1,9 +1,7 @@
 <ng-container>
     <h5 class="popover-header">
         <app-patient-identifier [patientId]="patientId" />
-        <span class="text-muted">
-            {{ ' ' }}<app-patient-name [patientId]="patientId" />
-        </span>
+        <span>{{ ' ' }}</span>
         <app-patient-health-point-display [patientId]="patientId" />
         <button
             (click)="closePopup()"
