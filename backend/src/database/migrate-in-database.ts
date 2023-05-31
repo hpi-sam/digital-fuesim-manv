@@ -1,4 +1,9 @@
-import type { ExerciseState, Mutable, UUID } from 'digital-fuesim-manv-shared';
+import type {
+    ExerciseAction,
+    ExerciseState,
+    Mutable,
+    UUID,
+} from 'digital-fuesim-manv-shared';
 import { applyMigrations } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import { RestoreError } from '../utils/restore-error';
@@ -27,16 +32,17 @@ export async function migrateInDatabase(
             order: { index: 'ASC' },
         })
     ).map((action) => JSON.parse(action.actionString));
+
     const {
         newVersion,
         migratedProperties: { currentState, history },
-    } = applyMigrations(exercise.stateVersion, {
-        currentState: loadedCurrentState,
-        history: {
-            initialState: loadedInitialState,
-            actions: loadedActions,
-        },
-    });
+    } = migrateWithFallback(
+        exercise,
+        loadedCurrentState,
+        loadedInitialState,
+        loadedActions
+    );
+
     const initialState: Mutable<ExerciseState> =
         history?.initialState ?? currentState;
     const actions = history?.actions ?? [];
@@ -105,5 +111,48 @@ export async function migrateInDatabase(
             .from(ActionWrapperEntity)
             .where({ exercise: { id: exerciseId } })
             .execute();
+    }
+}
+function migrateWithFallback(
+    exercise: ExerciseWrapperEntity,
+    loadedCurrentState: any,
+    loadedInitialState: any,
+    loadedActions: any[]
+): {
+    newVersion: any;
+    migratedProperties: {
+        currentState: Mutable<ExerciseState>;
+        history:
+            | {
+                  initialState: Mutable<ExerciseState>;
+                  actions: (Mutable<ExerciseAction> | null)[];
+              }
+            | undefined;
+    };
+} {
+    try {
+        return applyMigrations(
+            exercise.stateVersion,
+            {
+                currentState: loadedCurrentState,
+                history: {
+                    initialState: loadedInitialState,
+                    actions: loadedActions,
+                },
+            },
+            'complete-history'
+        );
+    } catch {
+        return applyMigrations(
+            exercise.stateVersion,
+            {
+                currentState: loadedCurrentState,
+                history: {
+                    initialState: loadedInitialState,
+                    actions: loadedActions,
+                },
+            },
+            'current'
+        );
     }
 }

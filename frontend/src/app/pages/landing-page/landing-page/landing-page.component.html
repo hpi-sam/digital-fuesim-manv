@@ -52,32 +52,29 @@
             >
                 Übung erstellen
             </button>
-            <label
-                class="btn btn-outline-primary btn-lg ms-5"
-                [class.disabled]="importService.currentlyImporting$ | async"
-            >
-                <i class="bi-cloud-upload me-2"> </i>
-                Übung importieren
-                <span
-                    *ngIf="importService.currentlyImporting$ | async"
-                    class="spinner-border spinner-border-sm"
-                ></span>
-                <input
-                    (appFileInput)="importExerciseState($event)"
-                    type="file"
-                    accept="application/json"
-                    class="d-none"
-                    [disabled]="importService.currentlyImporting$ | async"
-                />
-            </label>
             <div
                 ngbDropdown
                 placement="bottom-end top-end"
                 class="btn-group ms-5"
             >
-                <button type="button" class="btn btn-outline-primary btn-lg">
-                    Action
-                </button>
+                <label
+                    class="btn btn-outline-primary btn-lg"
+                    [class.disabled]="importService.currentlyImporting$ | async"
+                >
+                    <i class="bi-cloud-upload me-2"> </i>
+                    {{ importService.historyImportStrategy }}
+                    <span
+                        *ngIf="importService.currentlyImporting$ | async"
+                        class="spinner-border spinner-border-sm"
+                    ></span>
+                    <input
+                        (appFileInput)="importExerciseState($event)"
+                        type="file"
+                        accept="application/json"
+                        class="d-none"
+                        [disabled]="importService.currentlyImporting$ | async"
+                    />
+                </label>
                 <button
                     ngbDropdownToggle
                     type="button"
@@ -88,24 +85,42 @@
                 </button>
                 <ul ngbDropdownMenu class="dropdown-menu">
                     <li>
-                        <a ngbDropdownItem class="dropdown-item" href="#"
-                            >Action</a
+                        <a
+                            ngbDropdownItem
+                            class="dropdown-item"
+                            href="#"
+                            (click)="
+                                importService.historyImportStrategy =
+                                    'complete-history'
+                            "
                         >
+                            Kompletten Verlauf importieren
+                        </a>
                     </li>
                     <li>
-                        <a ngbDropdownItem class="dropdown-item" href="#"
-                            >Another action</a
+                        <a
+                            ngbDropdownItem
+                            class="dropdown-item"
+                            href="#"
+                            (click)="
+                                importService.historyImportStrategy =
+                                    'up-to-start'
+                            "
                         >
+                            Zustand bis zum Start importieren
+                        </a>
                     </li>
                     <li>
-                        <a ngbDropdownItem class="dropdown-item" href="#"
-                            >Something else here</a
+                        <a
+                            ngbDropdownItem
+                            class="dropdown-item"
+                            href="#"
+                            (click)="
+                                importService.historyImportStrategy = 'current'
+                            "
                         >
-                    </li>
-                    <li>
-                        <a ngbDropdownItem class="dropdown-item" href="#"
-                            >Separated link</a
-                        >
+                            Aktuellen Zustand importieren
+                        </a>
                     </li>
                 </ul>
             </div>

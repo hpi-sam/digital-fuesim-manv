@@ -4,6 +4,7 @@ import type {
     Constructor,
     ExerciseIds,
     ExportImportFile,
+    HistoryImportStrategy,
 } from 'digital-fuesim-manv-shared';
 import { PartialExport, StateExport } from 'digital-fuesim-manv-shared';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -18,6 +19,7 @@ export class ExerciseImportService {
         new BehaviorSubject<HistoryImportStrategy>('complete-history');
     public readonly currentlyImporting$ = new BehaviorSubject<boolean>(false);
     public readonly ids$ = new Subject<ExerciseIds>();
+    public historyImportStrategy: HistoryImportStrategy = 'complete-history';
 
     constructor(
         private readonly apiService: ApiService,
@@ -62,7 +64,6 @@ export class ExerciseImportService {
                 (type === 'complete'
                     ? StateExport
                     : PartialExport) as Constructor<
-                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
                     PartialExport | StateExport
                 >,
                 importPlain
@@ -70,7 +71,8 @@ export class ExerciseImportService {
             switch (importInstance.type) {
                 case 'complete': {
                     const ids = await this.apiService.importExercise(
-                        importInstance
+                        importInstance,
+                        this.historyImportStrategy
                     );
                     this.ids$.next(ids);
 
@@ -100,8 +102,3 @@ export class ExerciseImportService {
         }
     }
 }
-
-export type HistoryImportStrategy =
-    | 'complete-history'
-    | 'current'
-    | 'up-to-start';
