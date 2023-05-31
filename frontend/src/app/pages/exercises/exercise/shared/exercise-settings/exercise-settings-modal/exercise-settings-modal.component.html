@@ -90,6 +90,20 @@
 
             <div class="form-group">
                 <label class="form-label mb-0">Präfix der Patienten-IDs:</label>
+                <span
+                    class="text-warning"
+                    ngbTooltip="Das Präfix bestehender IDs wird nicht geändert!"
+                >
+                    {{ ' ' }}<i class="bi bi-exclamation-triangle"></i>
+                </span>
+                <span
+                    *ngIf="configuration.patientIdentifierPrefix.length > 3"
+                    class="text-warning d-block"
+                >
+                    IDs mit langen Präfixen können ggfs nicht vollständig
+                    angezeigt werden. Bitte ziehen Sie ein kürzeres Präfix in
+                    Betracht.
+                </span>
                 <span class="text-muted d-block">
                     Mit den aktuellen Einstellungen haben Patienten-IDs die
                     folgende Form:
@@ -101,7 +115,7 @@
                     (appSaveOnTyping)="updatePatientIdentifierPrefix($event)"
                     class="form-control"
                     type="text"
-                    placeholder="B-"
+                    placeholder="Präfix, z.B. B-"
                 />
                 <app-display-validation
                     [ngModelInput]="patientIdentifierPrefixInput"
