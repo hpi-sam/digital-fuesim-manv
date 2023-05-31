@@ -54,12 +54,12 @@
             </button>
             <label
                 class="btn btn-outline-primary btn-lg ms-5"
-                [class.disabled]="importingExercise"
+                [class.disabled]="importService.currentlyImporting$ | async"
             >
                 <i class="bi-cloud-upload me-2"> </i>
                 Übung importieren
                 <span
-                    *ngIf="importingExercise"
+                    *ngIf="importService.currentlyImporting$ | async"
                     class="spinner-border spinner-border-sm"
                 ></span>
                 <input
@@ -67,7 +67,7 @@
                     type="file"
                     accept="application/json"
                     class="d-none"
-                    [disabled]="importingExercise"
+                    [disabled]="importService.currentlyImporting$ | async"
                 />
             </label>
             <div
@@ -111,14 +111,14 @@
             </div>
         </div>
 
-        <p *ngIf="exerciseHasBeenCreated" class="mb-0">
+        <p *ngIf="importService.ids$ | async as ids" class="mb-0">
             Sie haben eine Übung mit der Übungsleitungs-ID
             <span class="font-monospace fw-bolder user-select-all">{{
-                trainerId
+                ids.trainerId
             }}</span>
             und der Teilnehmer-ID
             <span class="font-monospace fw-bolder user-select-all">{{
-                participantId
+                ids.participantId
             }}</span>
             erstellt.
         </p>
