@@ -52,6 +52,13 @@ export class ExerciseSettingsModalComponent {
         });
     }
 
+    public updatePatientIdentifierPrefix(patientIdentifierPrefix: string) {
+        this.exerciseService.proposeAction({
+            type: '[Configuration] Set patientIdentifierPrefix',
+            patientIdentifierPrefix,
+        });
+    }
+
     public close() {
         this.activeModal.close();
     }
