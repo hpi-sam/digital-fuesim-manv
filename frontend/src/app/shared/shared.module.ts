@@ -43,6 +43,9 @@ import { VehicleLoadUnloadControlsComponent } from './components/vehicle-load-un
 import { VehicleAvailableSlotsDisplayComponent } from './components/vehicle-available-slots-display/vehicle-available-slots-display.component';
 import { VehicleOccupationEditorComponent } from './components/vehicle-occupation-editor/vehicle-occupation-editor.component';
 import { StartPauseButtonComponent } from './components/start-pause-button/start-pause-button.component';
+import { GeographicCoordinateDirective } from './validation/geographic-coordinate-validator.directive';
+import { SimulatedRegionNameComponent } from './components/simulated-region-name/simulated-region-name.component';
+import { SearchableDropdownComponent } from './components/searchable-dropdown/searchable-dropdown.component';
 
 @NgModule({
     declarations: [
@@ -82,6 +85,9 @@ import { StartPauseButtonComponent } from './components/start-pause-button/start
         VehicleAvailableSlotsDisplayComponent,
         VehicleOccupationEditorComponent,
         StartPauseButtonComponent,
+        SimulatedRegionNameComponent,
+        GeographicCoordinateDirective,
+        SearchableDropdownComponent,
     ],
     imports: [
         CommonModule,
@@ -124,6 +130,9 @@ import { StartPauseButtonComponent } from './components/start-pause-button/start
         VehicleAvailableSlotsDisplayComponent,
         VehicleOccupationEditorComponent,
         StartPauseButtonComponent,
+        SimulatedRegionNameComponent,
+        GeographicCoordinateDirective,
+        SearchableDropdownComponent,
     ],
 })
 export class SharedModule {}

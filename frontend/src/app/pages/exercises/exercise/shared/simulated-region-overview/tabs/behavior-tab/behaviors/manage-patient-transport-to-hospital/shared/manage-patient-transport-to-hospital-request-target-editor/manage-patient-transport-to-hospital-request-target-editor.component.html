@@ -1,0 +1,23 @@
+<ng-container *ngIf="behaviorState$ | async as behaviorState">
+    <ng-container
+        *ngIf="possibleRequestTargets$ | async as possibleRequestTargets"
+    >
+        <select
+            #requestTargetSelect
+            class="form-select no-validation"
+            [ngModel]="behaviorState.requestTargetId ?? 'noTarget'"
+            (change)="changeRequestTarget(requestTargetSelect.value)"
+        >
+            <option [value]="'noTarget'">Kein Ziel</option>
+            <option
+                *ngFor="
+                    let option of possibleRequestTargets;
+                    trackBy: 'id' | appTrackByProperty : possibleRequestTargets
+                "
+                [value]="option.id"
+            >
+                {{ option.name }}
+            </option>
+        </select>
+    </ng-container>
+</ng-container>

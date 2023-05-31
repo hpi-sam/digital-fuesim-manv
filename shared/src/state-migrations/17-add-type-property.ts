@@ -3,7 +3,7 @@ import type { Migration } from './migration-functions';
 
 export const addTypeProperty17: Migration = {
     action: (_intermediaryState, action) => {
-        const actionType = (action as { type: string } | null)?.type;
+        const actionType = (action as { type: string }).type;
 
         if (actionType === '[AlarmGroup] Add AlarmGroup') {
             const typedAction = action as {

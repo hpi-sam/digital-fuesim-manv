@@ -7,14 +7,15 @@ import {
     SpatialTree,
 } from '../../src/models/utils';
 import type { ExerciseState } from '../../src/state';
-import type { Mutable } from '../../src/utils';
+import type { Mutable, UUID } from '../../src/utils';
 import { cloneDeepMutable } from '../../src/utils';
 
 export function addPatient(
     state: Mutable<ExerciseState>,
     pretriageStatus: PatientStatus,
     realStatus: PatientStatus,
-    position?: Position
+    position?: Position,
+    uuid?: UUID
 ): Mutable<Patient> {
     const patient = cloneDeepMutable(generateDummyPatient());
     patient.pretriageStatus = pretriageStatus;
@@ -32,6 +33,9 @@ export function addPatient(
                 currentCoordinatesOf(patient)
             );
         }
+    }
+    if (uuid) {
+        patient.id = uuid;
     }
     state.patients[patient.id] = patient;
     return patient;

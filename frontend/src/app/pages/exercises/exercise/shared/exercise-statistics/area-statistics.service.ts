@@ -9,27 +9,33 @@ import { StatisticsService } from '../core/statistics/statistics.service';
     providedIn: 'root',
 })
 export class AreaStatisticsService {
-    /**
-     * UUID: the viewportId
-     * null: the whole exercise
-     */
-    private areaId: UUID | null = null;
-    public readonly areaId$ = new BehaviorSubject<UUID | null>(this.areaId);
+    private readonly areaSpec: AreaSpec = { type: 'all' };
+    public readonly areaSpec$ = new BehaviorSubject<AreaSpec>(this.areaSpec);
 
     /**
      * Emits the statistics for the current area and the accompanying correct exerciseTime
      */
     public readonly areaStatistics$: Observable<AreaStatisticsEntry[]> =
-        combineLatest([this.statisticsService.statistics$, this.areaId$]).pipe(
+        combineLatest([
+            this.statisticsService.statistics$,
+            this.areaSpec$,
+        ]).pipe(
             map(
-                ([statistics, areaId]) =>
+                ([statistics, areaSpec]) =>
                     statistics
                         .map((statisticEntry) => ({
                             value:
-                                areaId === null
+                                areaSpec.type === 'all'
                                     ? statisticEntry.exercise
-                                    : // This is filtered out in the next step, if the viewport didn't exist yet
-                                      statisticEntry.viewports[areaId],
+                                    : areaSpec.type === 'viewport'
+                                    ? statisticEntry.viewports[areaSpec.id]
+                                    : // Safeguard for when new types are added
+                                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                                    areaSpec.type === 'simulatedRegion'
+                                    ? statisticEntry.simulatedRegions[
+                                          areaSpec.id
+                                      ]
+                                    : undefined,
                             exerciseTime: statisticEntry.exerciseTime,
                         }))
                         .filter(
@@ -40,11 +46,15 @@ export class AreaStatisticsService {
 
     constructor(private readonly statisticsService: StatisticsService) {}
 
-    public setAreaId(areaId: UUID | null) {
-        this.areaId = areaId;
-        this.areaId$.next(areaId);
+    public setArea(areaSpec: AreaSpec) {
+        this.areaSpec$.next(areaSpec);
     }
 }
+
+export type AreaSpec =
+    | { type: 'all' }
+    | { type: 'simulatedRegion'; id: UUID }
+    | { type: 'viewport'; id: UUID };
 
 export interface AreaStatisticsEntry {
     value: AreaStatistics;

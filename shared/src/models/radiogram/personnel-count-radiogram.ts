@@ -4,7 +4,7 @@ import { IsValue } from '../../utils/validators';
 import { IsPersonnelCount } from '../../utils/validators/is-personnel-count';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
 import type { PersonnelType } from '../utils';
-import { getCreate } from '../utils';
+import { getCreate } from '../utils/get-create';
 import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
 

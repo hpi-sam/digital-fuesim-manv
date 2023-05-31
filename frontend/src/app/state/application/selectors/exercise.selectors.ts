@@ -7,9 +7,7 @@ import type {
     ExerciseSimulationBehaviorState,
     ExerciseSimulationBehaviorType,
     ExerciseState,
-    Personnel,
     UUID,
-    Vehicle,
     WithPosition,
 } from 'digital-fuesim-manv-shared';
 import {
@@ -184,9 +182,7 @@ export function createSelectReachableHospitals(transferPointId: UUID) {
 export const selectVehiclesInTransfer = createSelector(
     selectVehicles,
     (vehicles) =>
-        Object.values(vehicles).filter((vehicle) =>
-            isInTransfer(vehicle)
-        ) as Vehicle[]
+        Object.values(vehicles).filter((vehicle) => isInTransfer(vehicle))
 );
 
 export const selectPersonnelInTransfer = createSelector(
@@ -194,7 +190,7 @@ export const selectPersonnelInTransfer = createSelector(
     (personnel) =>
         Object.values(personnel).filter((_personnel) =>
             isInTransfer(_personnel)
-        ) as Personnel[]
+        )
 );
 
 export function createSelectElementsInSimulatedRegion<E extends WithPosition>(

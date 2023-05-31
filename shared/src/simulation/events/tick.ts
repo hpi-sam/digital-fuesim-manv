@@ -1,6 +1,6 @@
 import { IsInt, IsPositive } from 'class-validator';
-import { getCreate } from '../../models/utils';
 import { IsValue } from '../../utils/validators';
+import { getCreate } from '../../models/utils/get-create';
 import type { SimulationEvent } from './simulation-event';
 
 export class TickEvent implements SimulationEvent {

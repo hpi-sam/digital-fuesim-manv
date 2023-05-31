@@ -1,5 +1,5 @@
 import { IsOptional, IsString, IsUUID } from 'class-validator';
-import { getCreate } from '../../models/utils';
+import { getCreate } from '../../models/utils/get-create';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import { ResourceDescription } from '../../models/utils/resource-description';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';

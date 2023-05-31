@@ -1,10 +1,5 @@
 import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-    ExerciseOccupation,
-    getCreate,
-    occupationTypeOptions,
-} from '../../models/utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import { ResourceDescription } from '../../models/utils/resource-description';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
@@ -13,6 +8,11 @@ import {
     TransferDestination,
     transferDestinationTypeAllowedValues,
 } from '../utils/transfer-destination';
+import {
+    ExerciseOccupation,
+    occupationTypeOptions,
+} from '../../models/utils/occupations/exercise-occupation';
+import { getCreate } from '../../models/utils/get-create';
 import type { SimulationEvent } from './simulation-event';
 
 export class TransferVehiclesRequestEvent implements SimulationEvent {
@@ -21,6 +21,9 @@ export class TransferVehiclesRequestEvent implements SimulationEvent {
 
     @IsResourceDescription()
     readonly requestedVehicles: ResourceDescription;
+
+    @IsUUID(4, uuidValidationOptions)
+    readonly transferInitiatingRegionId?: UUID;
 
     @IsLiteralUnion(transferDestinationTypeAllowedValues)
     readonly transferDestinationType: TransferDestination;
@@ -43,10 +46,12 @@ export class TransferVehiclesRequestEvent implements SimulationEvent {
         requestedVehicles: ResourceDescription,
         transferDestinationType: TransferDestination,
         transferDestinationId: UUID,
+        transferInitiatingRegionId?: UUID,
         key?: string,
         successorOccupation?: ExerciseOccupation
     ) {
         this.requestedVehicles = requestedVehicles;
+        this.transferInitiatingRegionId = transferInitiatingRegionId;
         this.transferDestinationType = transferDestinationType;
         this.transferDestinationId = transferDestinationId;
         this.key = key;

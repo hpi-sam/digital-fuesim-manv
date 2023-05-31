@@ -33,6 +33,7 @@ import { sendSimulationEvent } from '../../simulation/events/utils';
 import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 import { removeElementPosition } from './utils/spatial-elements';
+import { logPatientAdded, logPatientRemoved } from './utils/log';
 
 /**
  * Performs all necessary actions to remove a patient from the state.
@@ -151,6 +152,7 @@ export namespace PatientActionReducers {
             const mutablePatient = cloneDeepMutable(patient);
             draftState.patients[mutablePatient.id] = mutablePatient;
             changePosition(mutablePatient, patient.position, draftState);
+            logPatientAdded(draftState, patient.id);
             return draftState;
         },
         rights: 'trainer',
@@ -228,7 +230,7 @@ export namespace PatientActionReducers {
                     PatientRemovedEvent.create(patientId)
                 );
             }
-
+            logPatientRemoved(draftState, patientId);
             deletePatient(draftState, patientId);
             return draftState;
         },

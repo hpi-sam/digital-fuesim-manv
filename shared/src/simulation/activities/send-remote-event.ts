@@ -1,10 +1,11 @@
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
-import { getCreate } from '../../models/utils';
+import { getCreate } from '../../models/utils/get-create';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { ExerciseSimulationEvent, simulationEventTypeOptions } from '../events';
 import { sendSimulationEvent } from '../events/utils';
+import { tryGetElement } from '../../store/action-reducers/utils';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -50,10 +51,11 @@ export const sendRemoteEventActivity: SimulationActivity<SendRemoteEventActivity
             _tickInterval,
             terminate
         ) {
-            const targetSimulatedRegion =
-                draftState.simulatedRegions[
-                    activityState.targetSimulatedRegionId
-                ];
+            const targetSimulatedRegion = tryGetElement(
+                draftState,
+                'simulatedRegion',
+                activityState.targetSimulatedRegionId
+            );
             if (targetSimulatedRegion) {
                 sendSimulationEvent(targetSimulatedRegion, activityState.event);
             }

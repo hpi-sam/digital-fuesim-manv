@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material } from '../../models/material';
 import {
+    changeOccupation,
     currentCoordinatesOf,
     currentSimulatedRegionIdOf,
     currentSimulatedRegionOf,
@@ -48,6 +49,7 @@ import { deletePatient } from './patient';
 import { completelyLoadVehicle as completelyLoadVehicleHelper } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 import { removeElementPosition } from './utils/spatial-elements';
+import { logVehicleAdded, logVehicleRemoved } from './utils/log';
 
 /**
  * Performs all necessary actions to remove a vehicle from the state.
@@ -58,6 +60,8 @@ export function deleteVehicle(
     draftState: Mutable<ExerciseState>,
     vehicleId: UUID
 ) {
+    logVehicleRemoved(draftState, vehicleId);
+
     const vehicle = getElement(draftState, 'vehicle', vehicleId);
 
     // Delete related material and personnel
@@ -264,6 +268,9 @@ export namespace VehicleActionReducers {
                 );
                 draftState.personnel[person.id] = person;
             }
+
+            logVehicleAdded(draftState, vehicle.id);
+
             return draftState;
         },
         rights: 'trainer',
@@ -596,7 +603,7 @@ export namespace VehicleActionReducers {
             action: SetVehicleOccupationAction,
             reducer: (draftState, { vehicleId, occupation }) => {
                 const vehicle = getElement(draftState, 'vehicle', vehicleId);
-                vehicle.occupation = cloneDeepMutable(occupation);
+                changeOccupation(draftState, vehicle, occupation);
                 return draftState;
             },
             rights: 'trainer',

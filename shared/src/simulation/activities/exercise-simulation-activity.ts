@@ -11,6 +11,8 @@ import { loadVehicleActivity } from './load-vehicle';
 import { sendRemoteEventActivity } from './send-remote-event';
 import { transferVehicleActivity } from './transfer-vehicle';
 import { publishRadiogramActivity } from './publish-radiogram';
+import { transferPatientToHospitalActivity } from './transfer-patient-to-hospital';
+import { countPatientsActivity } from './count-patients';
 
 export const simulationActivities = {
     reassignTreatmentsActivity,
@@ -24,6 +26,8 @@ export const simulationActivities = {
     sendRemoteEventActivity,
     transferVehicleActivity,
     publishRadiogramActivity,
+    transferPatientToHospitalActivity,
+    countPatientsActivity,
 };
 
 export type ExerciseSimulationActivity =
@@ -53,7 +57,7 @@ export const simulationActivityDictionary = Object.fromEntries(
 export function getSimulationActivityConstructor(
     state: ExerciseSimulationActivityState
 ) {
-    return simulationActivityDictionary[state.type]?.activityState;
+    return simulationActivityDictionary[state.type].activityState;
 }
 
 export const simulationActivityTypeOptions: Parameters<typeof Type> = [

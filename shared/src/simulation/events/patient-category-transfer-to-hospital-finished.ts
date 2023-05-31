@@ -1,10 +1,10 @@
 import { IsBoolean } from 'class-validator';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import {
     PatientStatus,
-    getCreate,
     patientStatusAllowedValues,
-} from '../../models/utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
+} from '../../models/utils/patient-status';
+import { getCreate } from '../../models/utils/get-create';
 import type { SimulationEvent } from './simulation-event';
 
 export class PatientCategoryTransferToHospitalFinishedEvent

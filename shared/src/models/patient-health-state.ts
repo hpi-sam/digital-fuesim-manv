@@ -8,7 +8,8 @@ import {
 } from 'class-validator';
 import { uuid, UUID, uuidValidationOptions } from '../utils';
 import { IsValue } from '../utils/validators';
-import { getCreate, HealthPoints, IsValidHealthPoint } from './utils';
+import { getCreate } from './utils/get-create';
+import { HealthPoints, IsValidHealthPoint } from './utils/health-points';
 
 /**
  * These parameters determine the increase or decrease of a patients health every second

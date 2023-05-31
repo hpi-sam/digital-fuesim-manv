@@ -3,7 +3,8 @@ import { UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
 import type { PatientStatus } from '../utils';
-import { getCreate } from '../utils';
+import { getCreate } from '../utils/get-create';
+import { patientStatusAllowedValues } from '../utils/patient-status';
 import { ResourceDescription } from '../utils/resource-description';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import type { Radiogram } from './radiogram';
@@ -31,7 +32,7 @@ export class TransferCountsRadiogram implements Radiogram {
     @IsBoolean()
     readonly informationAvailable: boolean = false;
 
-    @IsResourceDescription()
+    @IsResourceDescription(patientStatusAllowedValues)
     readonly transferredPatientsCounts: ResourceDescription<PatientStatus> = {
         red: 0,
         yellow: 0,
@@ -41,7 +42,7 @@ export class TransferCountsRadiogram implements Radiogram {
         white: 0,
     };
 
-    @IsResourceDescription()
+    @IsResourceDescription(patientStatusAllowedValues)
     readonly remainingPatientsCounts: ResourceDescription<PatientStatus> = {
         red: 0,
         yellow: 0,

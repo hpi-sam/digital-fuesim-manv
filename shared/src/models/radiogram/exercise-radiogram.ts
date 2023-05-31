@@ -10,6 +10,7 @@ import { VehicleCountRadiogram } from './vehicle-count-radiogram';
 import { ResourceRequestRadiogram } from './resource-request-radiogram';
 import { TransferCountsRadiogram } from './transfer-counts-radiogram';
 import { TransferCategoryCompletedRadiogram } from './transfer-category-completed-radiogram';
+import { NewPatientDataRequestedRadiogram } from './new-patient-data-requested-radiogram';
 
 export const radiograms = {
     MaterialCountRadiogram,
@@ -21,6 +22,7 @@ export const radiograms = {
     TransferCountsRadiogram,
     TreatmentStatusRadiogram,
     VehicleCountRadiogram,
+    NewPatientDataRequestedRadiogram,
 };
 
 export type ExerciseRadiogram = InstanceType<
@@ -41,6 +43,7 @@ export const radiogramDictionary: ExerciseRadiogramDictionary = {
     transferCountsRadiogram: TransferCountsRadiogram,
     treatmentStatusRadiogram: TreatmentStatusRadiogram,
     vehicleCountRadiogram: VehicleCountRadiogram,
+    newPatientDataRequestedRadiogram: NewPatientDataRequestedRadiogram,
 };
 
 export function getRadiogramConstructor(radiogram: ExerciseRadiogram) {
@@ -59,3 +62,18 @@ export const radiogramTypeOptions: Parameters<typeof Type> = [
         },
     },
 ];
+
+export const radiogramTypeToGermanDictionary: {
+    [Key in ExerciseRadiogram['type']]: string;
+} = {
+    materialCountRadiogram: 'Vorhandene Materialien',
+    missingTransferConnectionRadiogram: 'Fehlende Verbindung',
+    patientCountRadiogram: 'Meldung über Patientenanzahlen',
+    personnelCountRadiogram: 'Personalstatus',
+    resourceRequestRadiogram: 'Anfrage von Ressourcen',
+    transferCategoryCompletedRadiogram: 'Transport für SK abgeschlossen',
+    transferCountsRadiogram: 'Transportstatus',
+    treatmentStatusRadiogram: 'Behandlungsphase',
+    vehicleCountRadiogram: 'Meldung über Fahrzeuganzahlen',
+    newPatientDataRequestedRadiogram: 'Anfrage nach Patientenzahlen',
+};

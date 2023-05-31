@@ -11,3 +11,4 @@ export * from './status';
 export * from './transfer-counts-radiogram';
 export * from './transfer-category-completed-radiogram';
 export * from './utils';
+export * from './new-patient-data-requested-radiogram';

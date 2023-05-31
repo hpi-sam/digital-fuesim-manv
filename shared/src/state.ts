@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+    Equals,
     IsArray,
     IsInt,
     IsObject,
@@ -8,11 +9,6 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import {
-    defaultMapImagesTemplates,
-    defaultPatientCategories,
-    defaultVehicleTemplates,
-} from './data';
 import { defaultMaterialTemplates } from './data/default-state/material-templates';
 import { defaultPersonnelTemplates } from './data/default-state/personnel-templates';
 import {
@@ -55,6 +51,11 @@ import {
     createCatchAllHospital,
     catchAllHospitalId,
 } from './data/default-state/catch-all-hospital';
+import { defaultPatientCategories } from './data/default-state/patient-templates';
+import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
+import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
+import type { LogEntry } from './models/log-entry';
+import { TreatmentAssignment } from './store/action-reducers/exercise';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -153,6 +154,17 @@ export class ExerciseState {
     public readonly configuration = ExerciseConfiguration.create();
 
     /**
+     * The log entries generated for the statistics.
+     * This must not be defined on a normal state,
+     * unless the statistics are currently being generated.
+     */
+    @Equals(undefined)
+    public logEntries?: LogEntry[];
+
+    @Equals(undefined)
+    public previousTreatmentAssignment?: TreatmentAssignment;
+
+    /**
      * @deprecated Use {@link create} instead.
      */
     constructor(participantId: string) {
@@ -166,5 +178,5 @@ export class ExerciseState {
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 34;
+    static readonly currentStateVersion = 36;
 }

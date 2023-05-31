@@ -19,21 +19,22 @@ import {
 } from '../utils/validators';
 import { IsPosition } from '../utils/validators/is-position';
 import { PatientHealthState } from './patient-health-state';
-import {
-    BiometricInformation,
-    PatientStatusCode,
-    PatientStatus,
-    patientStatusAllowedValues,
-    ImageProperties,
-    healthPointsDefaults,
-    HealthPoints,
-    getCreate,
-    isOnMap,
-    isInSimulatedRegion,
-} from './utils';
 import { Position } from './utils/position/position';
 import { PersonalInformation } from './utils/personal-information';
 import { PretriageInformation } from './utils/pretriage-information';
+import { BiometricInformation } from './utils/biometric-information';
+import { PatientStatusCode } from './utils/patient-status-code';
+import {
+    PatientStatus,
+    patientStatusAllowedValues,
+} from './utils/patient-status';
+import { ImageProperties } from './utils/image-properties';
+import { HealthPoints, healthPointsDefaults } from './utils/health-points';
+import { getCreate } from './utils/get-create';
+import {
+    isInSimulatedRegion,
+    isOnMap,
+} from './utils/position/position-helpers';
 
 export class Patient {
     @IsUUID(4, uuidValidationOptions)

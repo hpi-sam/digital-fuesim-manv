@@ -50,7 +50,7 @@ export class SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent
             );
         this.unloadDuration$ = this.store
             .select(selectBehavior)
-            .pipe(map((state) => state?.unloadDelay ?? 0));
+            .pipe(map((state) => state.unloadDelay));
 
         const unloadingSelector = createSelector(
             createSelectActivityStates(this.simulatedRegionId),

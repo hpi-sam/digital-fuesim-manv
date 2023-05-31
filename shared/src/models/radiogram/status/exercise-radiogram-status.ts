@@ -40,3 +40,12 @@ export const radiogramStatusTypeOptions: Parameters<typeof Type> = [
         },
     },
 ];
+
+export const radiogramStatusTypeToGermanDictionary: {
+    [Key in ExerciseRadiogramStatus['type']]: string;
+} = {
+    acceptedRadiogramStatus: 'angenommen',
+    doneRadiogramStatus: 'durchgesagt',
+    unreadRadiogramStatus: 'veröffentlicht',
+    unpublishedRadiogramStatus: 'noch nicht veröffentlicht',
+};

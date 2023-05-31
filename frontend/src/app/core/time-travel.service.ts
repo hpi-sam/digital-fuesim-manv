@@ -60,6 +60,8 @@ export class TimeTravelService {
         });
         // Freeze to prevent accidental modification
         freeze(exerciseTimeLine, true);
+        // False positive, could be changed by the `catch`
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (!this.activatingTimeTravel) {
             // The timeTravel has been stopped during the retrieval of the timeline
             return;

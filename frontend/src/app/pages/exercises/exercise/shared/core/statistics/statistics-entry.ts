@@ -13,5 +13,9 @@ export interface StatisticsEntry {
         readonly [viewportId: string]: AreaStatistics;
     };
 
+    readonly simulatedRegions: {
+        readonly [simulatedRegionId: string]: AreaStatistics;
+    };
+
     readonly exercise: AreaStatistics;
 }

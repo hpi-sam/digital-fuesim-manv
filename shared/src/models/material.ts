@@ -12,8 +12,10 @@ import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
 import { IsUUIDSet, IsValue } from '../utils/validators';
 import { IsPosition } from '../utils/validators/is-position';
 import type { MaterialTemplate } from './material-template';
-import { CanCaterFor, ImageProperties, getCreate } from './utils';
 import { Position } from './utils/position/position';
+import { CanCaterFor } from './utils/cater-for';
+import { ImageProperties } from './utils/image-properties';
+import { getCreate } from './utils/get-create';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)
