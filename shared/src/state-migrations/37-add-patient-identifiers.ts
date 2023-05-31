@@ -18,6 +18,9 @@ export const addPatientIdentifiers37: Migration = {
             patients: {
                 [patientId: UUID]: Patient;
             };
+            hospitalPatients: {
+                [hospitalPatientId: UUID]: Patient;
+            };
             configuration: {
                 patientIdentifierPrefix?: string;
             };
@@ -41,5 +44,11 @@ export const addPatientIdentifiers37: Migration = {
                 ).padStart(4, '0');
                 patient.identifier = `${typedState.configuration.patientIdentifierPrefix}${paddedCounter}`;
             });
+
+        Object.values(typedState.hospitalPatients).forEach(
+            (hospitalPatient) => {
+                hospitalPatient.identifier = '';
+            }
+        );
     },
 };

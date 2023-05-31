@@ -32,6 +32,9 @@ export class HospitalPatient {
     @IsValue('hospitalPatient' as const)
     public readonly type = 'hospitalPatient';
 
+    @IsString()
+    public readonly identifier: string;
+
     /**
      * the vehicle that a patient was transported with
      */
@@ -94,6 +97,7 @@ export class HospitalPatient {
      */
     constructor(
         patientId: UUID,
+        identifier: string,
         vehicleType: string,
         startTime: number,
         arrivalTime: number,
@@ -108,6 +112,7 @@ export class HospitalPatient {
         treatmentTime: number
     ) {
         this.patientId = patientId;
+        this.identifier = identifier;
         this.vehicleType = vehicleType;
         this.startTime = startTime;
         this.arrivalTime = arrivalTime;
@@ -140,6 +145,7 @@ export class HospitalPatient {
         return cloneDeepMutable(
             HospitalPatient.create(
                 patient.id,
+                patient.identifier,
                 vehicleType,
                 startTime,
                 arrivalTime,
