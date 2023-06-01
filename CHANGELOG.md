@@ -7,6 +7,14 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## Added
+
+-   Patients can be identified with an unique ID
+    -   The ID is assigned to every patient automatically
+    -   The ID consists of a 4 digit number incremented for each patients
+    -   Optionally, a prefix for the IDs can be set
+    -   The ID is shown in the patient popup, the simulation overview, statistics log entries and for hospital patients
+
 ## [0.7.0] - 2023-05-30
 
 ### Added
