@@ -43,6 +43,9 @@ export class Patient {
     @IsValue('patient')
     public readonly type = 'patient';
 
+    @IsString()
+    public readonly identifier: string = '';
+
     @ValidateNested()
     @Type(() => PersonalInformation)
     public readonly personalInformation: PersonalInformation;

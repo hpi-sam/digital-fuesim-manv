@@ -150,6 +150,12 @@ export namespace PatientActionReducers {
                 );
             }
             const mutablePatient = cloneDeepMutable(patient);
+            draftState.patientCounter++;
+            const paddedCounter = String(draftState.patientCounter).padStart(
+                4,
+                '0'
+            );
+            mutablePatient.identifier = `${draftState.configuration.patientIdentifierPrefix}${paddedCounter}`;
             draftState.patients[mutablePatient.id] = mutablePatient;
             changePosition(mutablePatient, patient.position, draftState);
             logPatientAdded(draftState, patient.id);

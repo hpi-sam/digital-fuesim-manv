@@ -4,6 +4,7 @@
 >
     <thead>
         <tr>
+            <th scope="col">ID</th>
             <th scope="col">SK</th>
             <th scope="col">Gesichtet</th>
             <th scope="col">Verlauf</th>
@@ -19,6 +20,9 @@
             [class.table-primary]="selectedPatientId === patient.id"
             style="cursor: pointer"
         >
+            <td>
+                <app-patient-identifier [patientId]="patient.id" />
+            </td>
             <td>
                 <app-patient-status-badge [status]="patient.realStatus" />
             </td>
